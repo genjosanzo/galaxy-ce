@@ -1,0 +1,15 @@
+<classpath>
+  <classpathentry kind="src" path="src/main/java"/>
+  <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
+  <classpathentry kind="src" path="src/test/java" output="target/test-classes"/>
+  <classpathentry kind="src" path="src/test/resources" output="target/test-classes" excluding="**/*.java"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="var" path="M2_REPO/org/mule/transports/mule-transport-tcp/2.0/mule-transport-tcp-2.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/mule/modules/mule-module-client/2.0/mule-module-client-2.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/mule/transports/mule-transport-stream/2.0/mule-transport-stream-2.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/mule/transports/mule-transport-file/2.0/mule-transport-file-2.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/mule/mule-core/2.0/mule-core-2.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/mule/transports/mule-transport-vm/2.0/mule-transport-vm-2.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/mule/tests/mule-tests-functional/2.0/mule-tests-functional-2.0.jar"/>
+</classpath>
