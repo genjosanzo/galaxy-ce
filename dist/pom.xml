@@ -18,13 +18,13 @@
 		<repository>
 			<id>muleforge.webdav.releases</id>
 			<name>REGISTRY Distributions Release Repository</name>
-			<url>dav:https://dav.muleforge.org/dist/registy</url>
+			<url>dav:https://dav.muleforge.org/dist/registry</url>
 		</repository>
 		<snapshotRepository>
 			<id>>muleforge.webdav.snapshots</id>
 			<name>REGISTRY Distributions Snapshot Repository</name>
 			<url>
-				dav:https://dav.muleforge.org/snapshots.dist/registy</url>
+				dav:https://dav.muleforge.org/snapshots.dist/registry</url>
 			<uniqueVersion>false</uniqueVersion>
 		</snapshotRepository>
 	</distributionManagement>
