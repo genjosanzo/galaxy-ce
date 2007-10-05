@@ -8,7 +8,7 @@
 	<packaging>jar</packaging>
 	<version>1.0</version>
 	<properties>
-		<muleVersion>2.0</muleVersion>
+		<muleVersion>2.0-M1</muleVersion>
 	</properties>
 	<name>Registry</name>
 	<description></description>
@@ -27,13 +27,13 @@
 		</site>
 	</distributionManagement>
 	<build>
-		<!--extensions>
+		<extensions>
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-webdav</artifactId>
 				<version>1.0-beta-2</version>
 			</extension>
-		</extensions-->
+		</extensions>
 		<plugins>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -61,11 +61,6 @@
 		<dependency>
 			<groupId>org.mule.transports</groupId>
 			<artifactId>mule-transport-file</artifactId>
-			<version>${muleVersion}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mule.transports</groupId>
-			<artifactId>mule-transport-stream</artifactId>
 			<version>${muleVersion}</version>
 		</dependency>
 		<dependency>
