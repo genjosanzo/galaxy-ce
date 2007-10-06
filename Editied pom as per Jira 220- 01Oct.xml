@@ -8,7 +8,7 @@
 	<packaging>jar</packaging>
 	<version>1.0</version>
 	<properties>
-		<muleVersion>2.0</muleVersion>
+		<muleVersion>2.0-M1</muleVersion>
 	</properties>
 	<name>Registry</name>
 	<description></description>
