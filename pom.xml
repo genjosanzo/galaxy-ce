@@ -8,10 +8,8 @@
 	<packaging>jar</packaging>
 	<version>1.0</version>
 	<properties>
-		<muleVersion>2.0-M1</muleVersion>
+		<muleVersion>1.4.1</muleVersion>
 	</properties>
-	<name>Registry</name>
-	<description></description>
 	<distributionManagement>
 		<repository>
 			<id>muleforge.webdav.releases</id>
@@ -47,6 +45,8 @@
 			</plugin>
 		</plugins>
 	</build>
+	<name>Registry</name>
+	<description></description>
 	<dependencies>
 		<dependency>
 			<groupId>org.mule.transports</groupId>
@@ -61,6 +61,11 @@
 		<dependency>
 			<groupId>org.mule.transports</groupId>
 			<artifactId>mule-transport-file</artifactId>
+			<version>${muleVersion}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.transports</groupId>
+			<artifactId>mule-transport-stream</artifactId>
 			<version>${muleVersion}</version>
 		</dependency>
 		<dependency>
