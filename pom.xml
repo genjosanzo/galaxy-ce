@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0    http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.mule.galaxy</groupId>
+	<artifactId>galaxy-parent</artifactId>
+	<packaging>pom</packaging>
+	<version>1.0-M1-SNAPSHOT</version>
+	<name>Galaxy</name>
+
+	<modules>
+		<module>core</module>
+		<module>wsdldiff</module>
+		<module>testutils</module>
+	</modules>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+			<version>4.3.1</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+		</plugins>
+    <defaultGoal>install</defaultGoal>
+	</build>
+
+
+
+	<scm>
+		<connection>
+			scm:svn:https://svn.muleforge.org/registry/trunk 
+		</connection>
+		<developerConnection>
+			scm:svn:https://svn.muleforge.org/registry/trunk 
+		</developerConnection>
+		<url>http://svn.registry.muleforge.org/</url>
+	</scm>
+</project>
