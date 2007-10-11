@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0    http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.mule.galaxy</groupId>
+    <artifactId>galaxy-parent</artifactId>
+    <version>1.0-M1-SNAPSHOT</version>
+  </parent>  
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.mule.galaxy</groupId>
+  <artifactId>galaxy-wsdldiff</artifactId>
+  <packaging>jar</packaging>
+  <name>Galaxy WSDL Diff</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.sun.xsom</groupId>
+      <artifactId>xsom</artifactId>
+      <version>20070515</version>
+    </dependency>
+
+    <dependency>
+      <groupId>wsdl4j</groupId>
+      <artifactId>wsdl4j</artifactId>
+      <version>1.6.1</version>
+    </dependency>  
+
+    <dependency>
+      <groupId>org.mule.galaxy</groupId>
+      <artifactId>galaxy-testutils</artifactId>
+      <version>${version}</version>
+      <scope>test</scope>
+    </dependency>  
+  </dependencies>
+
+  <repositories>
+    <!-- For XSOM -->
+    <repository>
+      <id>java.net</id>
+      <name>java.nety</name>
+      <url>https://maven-repository.dev.java.net/nonav/repository/</url>
+      <layout>legacy</layout>
+    </repository>
+    
+  </repositories>
+
+</project>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.4"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee   http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+      classpath:/META-INF/applicationContext.xml
+      classpath:applicationContext-test.xml
+    </param-value>
+  </context-param>
+
+  <listener>
+    <listener-class>
+      org.springframework.web.context.ContextLoaderListener
+    </listener-class>
+  </listener>
+  
+  <servlet id="abdera">
+    <servlet-name>Abdera</servlet-name>  
+    <servlet-class>org.apache.abdera.protocol.server.servlet.AbderaServlet</servlet-class>
+    <init-param>
+      <param-name>org.apache.abdera.protocol.server.ServiceContext</param-name>
+      <param-value>com.envoisolutions.galaxy.atom.GDocumentServiceContext</param-value>
+    </init-param>
+  </servlet>
+    
+<!--  <servlet>-->
+<!--    <servlet-name>CXFServlet</servlet-name>-->
+<!--    <servlet-class>-->
+<!--      org.apache.cxf.transport.servlet.CXFServlet-->
+<!--    </servlet-class>-->
+<!--    <load-on-startup>0</load-on-startup>-->
+<!--  </servlet>-->
+  
+  <servlet-mapping id="abdera-mapping">
+    <servlet-name>Abdera</servlet-name>
+    <url-pattern>/atom/*</url-pattern>
+  </servlet-mapping>
+
+<!--  <servlet-mapping>-->
+<!--    <servlet-name>CXFServlet</servlet-name>-->
+<!--    <url-pattern>/services/*</url-pattern>-->
+<!--  </servlet-mapping>-->
+
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+</web-app>
+
