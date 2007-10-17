@@ -3,6 +3,9 @@ package org.mule.galaxy.impl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import javax.activation.MimeType;
+import javax.wsdl.Definition;
+
 import org.junit.Test;
 import org.mule.galaxy.AbstractGalaxyTest;
 import org.mule.galaxy.ContentHandler;
@@ -27,12 +30,12 @@ public class ContentServiceTest extends AbstractGalaxyTest {
     public void testCHs() throws Exception {
         contentService = (ContentService) applicationContext.getBean("contentService");
         
-        ContentHandler ch = contentService.getContentHandler("application/xml");
+        ContentHandler ch = contentService.getContentHandler(new MimeType("application/xml"));
         
         assertNotNull(ch);
-        assertTrue(ch instanceof W3CDocumentContentHandler);
+        assertTrue(ch instanceof XmlDocumentContentHandler);
         
-        W3CDocumentContentHandler docHandler = (W3CDocumentContentHandler) ch;
+        XmlDocumentContentHandler docHandler = (XmlDocumentContentHandler) ch;
         
         Document document = DOMUtils.createDocument();
         Element el = document.createElement("foo");
@@ -46,6 +49,14 @@ public class ContentServiceTest extends AbstractGalaxyTest {
         
         ch = contentService.getContentHandler(Document.class);
         assertNotNull(ch);
-        assertTrue(ch instanceof W3CDocumentContentHandler);
+        assertTrue(ch instanceof XmlDocumentContentHandler);
+        
+        ch = contentService.getContentHandler(new MimeType("application/wsdl+xml"));
+        assertNotNull(ch);
+        
+        ch = contentService.getContentHandler(Definition.class);
+        assertNotNull(ch);
+        
+        
     }
 }

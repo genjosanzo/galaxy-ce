@@ -9,6 +9,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
 
+import org.mule.galaxy.util.JcrUtil;
+
 public class AbstractJcrObject {
 
     protected Node node;
@@ -18,47 +20,14 @@ public class AbstractJcrObject {
     }
 
     protected String getStringOrNull(String propName) {
-        try {
-            Value v = getValueOrNull(propName);   
-            if (v != null) {
-                return v.getString();
-            }
-        } catch (ValueFormatException e) {
-            throw new RuntimeException(e);
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }  
-        
-        return null;
+        return JcrUtil.getStringOrNull(node, propName);
     }
     
     protected Calendar getDateOrNull(String propName) {
-        try {
-            Value v = getValueOrNull(propName);   
-            if (v != null) {
-                return v.getDate();
-            }
-        } catch (ValueFormatException e) {
-            throw new RuntimeException(e);
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }  
-        
-        return null;
+        return JcrUtil.getDateOrNull(node, propName);
     }
     
     protected Value getValueOrNull(String propName) throws PathNotFoundException, RepositoryException {
-        Property p = null;
-        try {
-            p = node.getProperty(propName);
-        } catch (PathNotFoundException e) {
-            return null;
-        }
-        
-        if (p == null) {
-            return null;
-        }
-        
-        return p.getValue();
+        return JcrUtil.getValueOrNull(node, propName);
     }
 }

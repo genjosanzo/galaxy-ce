@@ -8,7 +8,7 @@ import org.apache.abdera.protocol.server.content.CollectionProvider;
 import org.apache.abdera.protocol.server.content.ResponseContextException;
 import org.apache.abdera.protocol.server.content.WorkspaceInfo;
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactException;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
@@ -27,7 +27,7 @@ public class ArtifactWorkspaceInfo implements WorkspaceInfo<Artifact> {
             return new ArtifactCollectionProvider(registry, workspace);
         } catch (NotFoundException e) {
             throw new ResponseContextException(404);
-        } catch (ArtifactException e) {
+        } catch (RegistryException e) {
             throw new ResponseContextException(500, e);
         }
     }
@@ -42,7 +42,7 @@ public class ArtifactWorkspaceInfo implements WorkspaceInfo<Artifact> {
                 providers.put(w.getId(), new ArtifactCollectionProvider(registry, w));
                 // TODO: go through child workspaces or have the feed contain other workspaces
             }
-        } catch (ArtifactException e) {
+        } catch (RegistryException e) {
             throw new RuntimeException(e);
         }
         

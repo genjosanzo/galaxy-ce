@@ -23,7 +23,14 @@
   
   <bean id="settings" class="org.mule.galaxy.impl.SettingsImpl"/>
   
-  <bean id="contentService" class="org.mule.galaxy.impl.ContentServiceImpl"/>
+  <bean id="contentService" class="org.mule.galaxy.impl.ContentServiceImpl">
+    <constructor-arg>
+      <list>
+        <bean class="org.mule.galaxy.impl.XmlDocumentContentHandler"/>
+        <bean class="org.mule.galaxy.impl.WSDLContentHandler"/>
+      </list>
+    </constructor-arg>
+  </bean>
 
   <bean id="jcrRepository" class="org.apache.jackrabbit.core.TransientRepository"/>
 </beans>

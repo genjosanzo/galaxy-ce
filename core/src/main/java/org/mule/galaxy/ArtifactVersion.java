@@ -19,4 +19,8 @@ public interface ArtifactVersion {
     public InputStream getStream();
     
     public Artifact getParent();
+
+    public ArtifactVersion getPrevious();
+    
+    public void setProperty(String name, Object value);
 }

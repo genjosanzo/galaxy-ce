@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.UnsupportedRepositoryOperationException;
@@ -60,8 +62,15 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
         return getDateOrNull(UPDATED);
     }
 
-    public String getContentType() {
-        return getStringOrNull(CONTENT_TYPE);
+    public MimeType getContentType() {
+        String ct = getStringOrNull(CONTENT_TYPE);
+        
+        try {
+            return new MimeType(ct);
+        } catch (MimeTypeParseException e) {
+            // we've already previously validated this, so this can't happen
+            throw new RuntimeException(e);
+        }
     }
 
     
@@ -73,9 +82,9 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
         return getStringOrNull(NAME);
     }
     
-    public void setContentType(String ct) {
+    public void setContentType(MimeType contentType) {
         try {
-            node.setProperty(CONTENT_TYPE, ct);
+            node.setProperty(CONTENT_TYPE, contentType.toString());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -11,19 +11,19 @@ import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.protocol.server.content.AbstractCollectionProvider;
-import org.mule.galaxy.ArtifactException;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
 
-public class ArtifactVersionContentProvider extends AbstractCollectionProvider<ArtifactVersion> {
+public class ArtifactVersionCollectionProvider extends AbstractCollectionProvider<ArtifactVersion> {
     
     private static final String ID_PREFIX = "urn:galaxy:document:version:";
     private Registry registry;
     private Factory factory = new Abdera().getFactory();
     private Artifact artifact;
     
-    public ArtifactVersionContentProvider(Artifact document, Registry registry) {
+    public ArtifactVersionCollectionProvider(Artifact document, Registry registry) {
         super();
         this.artifact = document;
     }
@@ -35,7 +35,7 @@ public class ArtifactVersionContentProvider extends AbstractCollectionProvider<A
     public ArtifactVersion createMediaEntry(MimeType mimeType, String slug, InputStream inputStream) {
         try {
             return registry.newVersion(artifact, inputStream);
-        } catch (ArtifactException e) {
+        } catch (RegistryException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -53,12 +53,12 @@ public class ArtifactVersionContentProvider extends AbstractCollectionProvider<A
     public Content getContent(ArtifactVersion doc) {
         Content content = factory.newContent();
         content.setSrc(doc.getVersion());
-        content.setMimeType(artifact.getContentType());
+        content.setMimeType(artifact.getContentType().toString());
         return content;
     }
 
     public String getContentType(ArtifactVersion entry) {
-        return artifact.getContentType();
+        return artifact.getContentType().toString();
     }
 
     public Iterable<ArtifactVersion> getEntries() {

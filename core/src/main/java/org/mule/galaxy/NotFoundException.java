@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.util.Message;
 
-public class NotFoundException extends ArtifactException {
+public class NotFoundException extends RegistryException {
 
     private static final Logger logger = LogUtils.getL7dLogger(NotFoundException.class);
     

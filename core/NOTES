@@ -1,0 +1,31 @@
+Modeling:
+- How do we deal with groups of artifacts? POM + Jar? Schema & Wsdls & document resolution?
+- Implement a custom version naming scheme
+
+Use case ideas:
+- Apple Configuration Management
+- logistics
+- movie store?
+- financial...
+
+Outside help:
+- Name confirmation
+- License Confirmation
+- Logo 
+- Web template
+- EE Edition
+  * Clustering
+  * Dynamic Configuration Changes
+
+M1 TODOs:
+- Query Model
+- Web Interface
+- Support for: policies, Schemas, Mule Config
+- Security
+- Approval process/workflow
+- Mule Bootup & reference of things in the registry
+- Maven Itnegration
+- Verify that my usage of threading & Sessions works
+
+M2 TODOs:
+- WSDL references & locator?

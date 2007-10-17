@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
 
+import javax.activation.MimeType;
 import javax.xml.namespace.QName;
 
 /**
@@ -24,9 +25,7 @@ public interface Artifact  {
     
     void setName(String name);
     
-    String getContentType();
-    
-    void setContentType(String ct);
+    MimeType getContentType();
     
     QName getDocumentType();
     

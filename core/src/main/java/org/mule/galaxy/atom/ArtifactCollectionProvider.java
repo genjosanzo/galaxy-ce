@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Set;
 
 import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 
 import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
@@ -16,7 +17,7 @@ import org.apache.abdera.model.Text.Type;
 import org.apache.abdera.protocol.server.content.AbstractCollectionProvider;
 import org.apache.abdera.protocol.server.content.ResponseContextException;
 import org.apache.abdera.protocol.server.impl.EmptyResponseContext;
-import org.mule.galaxy.ArtifactException;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.ArtifactVersion;
@@ -63,7 +64,7 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
 
     @Override
     public String getContentType(Artifact entry) {
-        return entry.getContentType();
+        return entry.getContentType().toString();
     }
 
     public String getAuthor() {
@@ -91,18 +92,7 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
     }
 
     public Date getUpdated(Artifact doc) {
-        Set<ArtifactVersion> versions = doc.getVersions();
-        if (versions == null) {
-            return doc.getCreated().getTime();
-        }
-        
-        Date last = new Date(0);
-        for (ArtifactVersion v : doc.getVersions()) {
-            if (v.getCreated().after(last)) {
-                last = v.getCreated().getTime();
-            }
-        }
-        return last;
+        return doc.getLatestVersion().getCreated().getTime();
     }
 
     public Artifact createEntry(String title, 
@@ -115,9 +105,11 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
     public Artifact createMediaEntry(MimeType mimeType, String slug, InputStream inputStream) throws ResponseContextException {
         try {
             return registry.createArtifact(workspace, mimeType.toString(), slug, inputStream);
-        } catch (ArtifactException e) {
+        } catch (RegistryException e) {
             throw new ResponseContextException(500, e);
         } catch (IOException e) {
+            throw new ResponseContextException(500, e);
+        } catch (MimeTypeParseException e) {
             throw new ResponseContextException(500, e);
         }
     }
@@ -130,7 +122,7 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
     public Iterable<Artifact> getEntries() {
         try {
             return registry.getArtifacts(workspace);
-        } catch (ArtifactException e) {
+        } catch (RegistryException e) {
             throw new RuntimeException(e);
         }
     }
@@ -146,7 +138,7 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
         
         try {
             registry.delete(artifact);
-        } catch (ArtifactException e) {
+        } catch (RegistryException e) {
             throw new RuntimeException(e);
         }
     }

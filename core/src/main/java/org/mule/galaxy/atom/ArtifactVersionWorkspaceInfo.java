@@ -22,7 +22,7 @@ public class ArtifactVersionWorkspaceInfo implements WorkspaceInfo {
         try {
             Artifact doc = registry.getArtifact(id);
             
-            return new ArtifactVersionContentProvider(doc, registry);
+            return new ArtifactVersionCollectionProvider(doc, registry);
         } catch (NotFoundException e) {
             // TODO
             throw new RuntimeException(e);
