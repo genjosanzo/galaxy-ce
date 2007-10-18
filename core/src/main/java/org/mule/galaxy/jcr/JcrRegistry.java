@@ -1,6 +1,8 @@
 package org.mule.galaxy.jcr;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -8,12 +10,14 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import javax.jcr.Credentials;
+import javax.jcr.ImportUUIDBehavior;
 import javax.jcr.InvalidItemStateException;
 import javax.jcr.ItemExistsException;
 import javax.jcr.ItemNotFoundException;
@@ -34,6 +38,13 @@ import javax.jcr.version.Version;
 import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
 
+import net.sf.saxon.javax.xml.xquery.XQConnection;
+import net.sf.saxon.javax.xml.xquery.XQDataSource;
+import net.sf.saxon.javax.xml.xquery.XQItem;
+import net.sf.saxon.javax.xml.xquery.XQItemType;
+import net.sf.saxon.javax.xml.xquery.XQPreparedExpression;
+import net.sf.saxon.javax.xml.xquery.XQResultSequence;
+import net.sf.saxon.xqj.SaxonXQDataSource;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
@@ -46,10 +57,13 @@ import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.Index.Language;
+import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.JcrUtil;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.QNameUtil;
+
+import org.w3c.dom.Document;
 
 public class JcrRegistry implements Registry {
     private Logger LOGGER = LogUtils.getL7dLogger(JcrRegistry.class);
@@ -182,7 +196,7 @@ public class JcrRegistry implements Registry {
             artifactNode.setProperty(JcrVersion.DATA, s);
             
             JcrVersion jcrVersion = new JcrVersion(artifact, artifactNode);
-            
+            jcrVersion.setData(data);
             index(jcrVersion);
             
             session.save();
@@ -404,9 +418,53 @@ public class JcrRegistry implements Registry {
     private void index(JcrVersion jcrVersion) throws RegistryException {
         Set<Index> indices = getIndices(jcrVersion.getParent().getDocumentType());
         
-        
+        for (Index idx : indices) {
+            switch (idx.getLanguage()) {
+            case XQUERY:
+                indexWithXQuery(jcrVersion, idx);
+                break;
+            default:
+                throw new UnsupportedOperationException();
+            }
+        }
     }
 
+    private void indexWithXQuery(JcrVersion jcrVersion, Index idx) throws RegistryException {
+        XQDataSource ds = new SaxonXQDataSource();
+        
+        try {
+            XQConnection conn = ds.getConnection();
+            
+            XQPreparedExpression ex = conn.prepareExpression(idx.getExpression());
+            ex.bindNode(new QName("document"), (Document) jcrVersion.getData(), null);
+            
+            XQResultSequence result = ex.executeQuery();
+            
+            Node versionNode = jcrVersion.node;
+            
+            
+            Node property = JcrUtil.getOrCreate(versionNode, idx.getId());
+            JcrUtil.removeChildren(property);
+            
+            while (result.next()) {
+                XQItem item = result.getItem();
+
+                org.w3c.dom.Node node = item.getNode();
+                
+                String content = DOMUtils.getContent(node);
+                Node valueNode = property.addNode(JcrVersion.VALUE);
+                valueNode.setProperty(JcrVersion.VALUE, content);
+            }
+            
+        } catch (Exception e) {
+            // TODO: better error handling for frontends
+            // We should log this and make the logs retrievable
+            // We should also prepare the expressions when the expression is created
+            // or on startup
+            throw new RegistryException(e);
+        }
+        
+    }
 
     public void initialize() throws Exception {
         session = jcrRepository.login(credentials);

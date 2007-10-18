@@ -117,7 +117,7 @@ public class WSDLContentHandler extends AbstractContentHandler implements XmlCon
             return createWsdlDiff(v1, v2, doc1, doc2);
         }
         
-        return "Version " + v2.getVersion();
+        return "Version " + v2.getLabel();
     }
     
     private String createWsdlDiff(ArtifactVersion v1, ArtifactVersion v2, Document doc1, Document doc2) {
@@ -144,12 +144,12 @@ public class WSDLContentHandler extends AbstractContentHandler implements XmlCon
         });
         
         if (changes.size() == 0) {
-            return "Version " + v2.getVersion() + ". There were no structural changes since the previous version.";
+            return "Version " + v2.getLabel() + ". There were no structural changes since the previous version.";
         }
         
         StringBuilder sb = new StringBuilder();
         sb.append("Version ")
-          .append(v2.getVersion())
+          .append(v2.getLabel())
           .append(". The following changes since the previous version. <ul>");
         for (String c : changes) {
             sb.append("<li>")

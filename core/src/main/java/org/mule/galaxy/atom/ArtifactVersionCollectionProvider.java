@@ -52,7 +52,7 @@ public class ArtifactVersionCollectionProvider extends AbstractCollectionProvide
 
     public Content getContent(ArtifactVersion doc) {
         Content content = factory.newContent();
-        content.setSrc(doc.getVersion());
+        content.setSrc(doc.getLabel());
         content.setMimeType(artifact.getContentType().toString());
         return content;
     }
@@ -78,7 +78,7 @@ public class ArtifactVersionCollectionProvider extends AbstractCollectionProvide
     }
 
     public String getId(ArtifactVersion entry) {
-        return ID_PREFIX + artifact.getId() + ":" + entry.getVersion();
+        return ID_PREFIX + artifact.getId() + ":" + entry.getLabel();
     }
 
     public InputStream getMediaStream(ArtifactVersion entry) {
@@ -90,7 +90,7 @@ public class ArtifactVersionCollectionProvider extends AbstractCollectionProvide
     }
 
     public String getName(ArtifactVersion entry) {
-        return entry.getVersion();
+        return entry.getLabel();
     }
 
     public String getTitle() {
@@ -98,7 +98,7 @@ public class ArtifactVersionCollectionProvider extends AbstractCollectionProvide
     }
 
     public String getTitle(ArtifactVersion entry) {
-        return artifact.getName() + " Version " + entry.getVersion();
+        return artifact.getName() + " Version " + entry.getLabel();
     }
 
     @Override

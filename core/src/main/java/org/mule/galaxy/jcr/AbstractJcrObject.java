@@ -19,6 +19,10 @@ public class AbstractJcrObject {
         this.node = node;
     }
 
+    public Node getNode() {
+        return node;
+    }
+
     protected String getStringOrNull(String propName) {
         return JcrUtil.getStringOrNull(node, propName);
     }

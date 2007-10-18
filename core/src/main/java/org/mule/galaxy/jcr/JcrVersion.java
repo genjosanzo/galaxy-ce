@@ -1,11 +1,14 @@
 package org.mule.galaxy.jcr;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.List;
 
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
@@ -15,6 +18,7 @@ import javax.jcr.version.VersionException;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.util.JcrUtil;
 
 public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     public static final String CREATED = "created";
@@ -37,7 +41,7 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
         return parent;
     }
 
-    public String getVersion() {
+    public String getLabel() {
         try {
             return node.getName();
         } catch (RepositoryException e) {
@@ -107,8 +111,29 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
         }
     }
 
+    public Object getProperty(String name) {
+        try {
+            Node child = node.getNode(name);
+            
+            List<String> values = new ArrayList<String>();
+            for (NodeIterator itr = child.getNodes(); itr.hasNext();) {
+                Node next = itr.nextNode();
+
+                String value = JcrUtil.getStringOrNull(next, VALUE);
+                
+                values.add(value);
+            }
+            return values;
+        } catch (PathNotFoundException e) {
+            return null;
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
+        
+        
+    }
+
     public void setNode(Node versionNode) {
         this.node = versionNode;
     }
-
 }

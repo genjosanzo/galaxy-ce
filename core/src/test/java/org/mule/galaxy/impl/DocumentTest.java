@@ -18,7 +18,6 @@ import org.mule.galaxy.util.DOMUtils;
 import org.w3c.dom.Document;
 
 public class DocumentTest extends AbstractGalaxyTest {
-    protected Registry registry;
     
     public void testAddWsdl() throws Exception {
         InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
@@ -41,6 +40,7 @@ public class DocumentTest extends AbstractGalaxyTest {
         // Test the version history
         ArtifactVersion version = versions.iterator().next();
         assertTrue(version.getData() instanceof Definition);
+        assertEquals(settings.getInitialDocumentVersion(), version.getLabel());
         
         Calendar created = version.getCreated();
         assertTrue(created.getTime().getTime() > 0);

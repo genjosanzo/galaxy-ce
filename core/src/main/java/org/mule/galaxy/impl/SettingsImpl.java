@@ -8,10 +8,6 @@ public class SettingsImpl implements Settings {
         return "0.0.1";
     }
 
-    public String getInitialServiceVersion() {
-        return "0.0.1";
-    }
-
     public String getDefaultWorkspaceName() {
         return "Default Workspace";
     }

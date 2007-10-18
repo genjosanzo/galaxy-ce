@@ -132,7 +132,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
 
     public ArtifactVersion getVersion(String versionName) {
         for (ArtifactVersion v : getVersions()) {
-            if (v.getVersion().equals(versionName)) {
+            if (v.getLabel().equals(versionName)) {
                 return v;
             }
         }

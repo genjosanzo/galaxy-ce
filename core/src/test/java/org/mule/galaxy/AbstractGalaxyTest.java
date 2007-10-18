@@ -16,6 +16,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
     
     protected JackrabbitRepository jcrRepository;
     protected Registry registry;
+    protected Settings settings;
     
     public AbstractGalaxyTest() {
         super();
@@ -42,9 +43,6 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
         try {
             Session session = jcrRepository.login(new SimpleCredentials("username", "password".toCharArray()));
             
-//            for (NodeIterator nodes = session.getRootNode().getNodes(); nodes.hasNext();) {
-//                System.out.println(nodes.nextNode().getName());
-//            }
             Node node = session.getRootNode();
             
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {

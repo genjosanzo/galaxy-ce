@@ -51,7 +51,7 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
     public Text getSummary(Artifact entry) {
         Text summary = factory.newSummary();
         
-        summary.setText("Version " + entry.getLatestVersion().getVersion());
+        summary.setText("Version " + entry.getLatestVersion().getLabel());
         summary.setTextType(Type.TEXT);
         
         return summary;
