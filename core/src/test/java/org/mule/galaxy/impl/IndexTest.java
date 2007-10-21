@@ -8,9 +8,12 @@ import javax.xml.namespace.QName;
 
 import org.mule.galaxy.AbstractGalaxyTest;
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Index;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.jcr.JcrVersion;
+import org.mule.galaxy.jcr.AbstractJcrObject;
+import org.mule.galaxy.query.Query;
+import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.util.Constants;
 
 public class IndexTest extends AbstractGalaxyTest {
@@ -67,7 +70,7 @@ public class IndexTest extends AbstractGalaxyTest {
         
         Artifact artifact = registry.createArtifact(workspace, "application/xml", null, helloWsdl);
         
-        JcrVersion version = (JcrVersion) artifact.getLatestVersion();
+        AbstractJcrObject version = (AbstractJcrObject) artifact.getLatestVersion();
         Object property = version.getProperty("wsdl.service");
         assertNotNull(property);
         assertTrue(property instanceof Collection);
@@ -76,7 +79,13 @@ public class IndexTest extends AbstractGalaxyTest {
         assertTrue(services.contains("HelloWorldService"));
         
         // Try out search!
-        Set<Artifact> results = registry.search("//wsdl.service", new QName("http://acme.com", "EchoService"));
+        Set<Artifact> results = registry.search(new Query(ArtifactVersion.class, 
+                                                          Restriction.eq("artifactVersion.wsdl.service", 
+                                                                         new QName("HelloWorldService"))));
         
+        assertEquals(1, results.size());
+        
+        Artifact next = results.iterator().next();
+        assertEquals(1, next.getVersions().size());
     }
 }

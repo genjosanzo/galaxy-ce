@@ -36,4 +36,8 @@ public interface Artifact  {
     ArtifactVersion getVersion(String versionName);
 
     ArtifactVersion getLatestVersion();
+
+    public void setProperty(String name, Object value);
+    
+    public Object getProperty(String name);
 }

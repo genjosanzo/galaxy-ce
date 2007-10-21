@@ -1,18 +1,14 @@
 package org.mule.galaxy.jcr;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
-import javax.jcr.UnsupportedRepositoryOperationException;
-import javax.jcr.version.Version;
-import javax.jcr.version.VersionHistory;
-import javax.jcr.version.VersionIterator;
 import javax.xml.namespace.QName;
 
 import org.mule.galaxy.Artifact;
@@ -29,7 +25,6 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     private static final String QNAME = "qname";
     
     private Set<ArtifactVersion> versions;
-    private VersionHistory vh;
     private Workspace workspace;
     private ContentHandler contentHandler;
     
@@ -111,14 +106,11 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
         if (versions == null) {
             versions = new HashSet<ArtifactVersion>();
 
-            VersionHistory vh = getVersionHistory();
             try {
-                Version root = vh.getRootVersion();
-                for (VersionIterator itr = vh.getAllVersions(); itr.hasNext();) {
-                    Version v = itr.nextVersion();
+                for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
+                    Node node = itr.nextNode();
                     
-                    Node node = v.getNodes().nextNode();
-                    if (!v.equals(root)) {
+                    if ("version".equals(node.getName())) {
                         versions.add(new JcrVersion(this, node));
                     }
                 }
@@ -141,19 +133,6 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
 
     public Node getNode() {
         return node;
-    }
-
-    public VersionHistory getVersionHistory() {
-        if (vh == null) {
-            try {
-                vh = node.getVersionHistory();
-            } catch (UnsupportedRepositoryOperationException e) {
-                throw new RuntimeException(e);
-            } catch (RepositoryException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return vh;
     }
 
     public ArtifactVersion getLatestVersion() {

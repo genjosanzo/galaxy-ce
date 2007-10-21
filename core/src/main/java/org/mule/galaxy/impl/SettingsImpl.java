@@ -4,8 +4,20 @@ import org.mule.galaxy.Settings;
 
 public class SettingsImpl implements Settings {
 
-    public String getInitialDocumentVersion() {
-        return "0.0.1";
+    
+    public String getNextVersion(String version) {
+        // TODO refactor into a version service
+        try {
+            int v = Integer.parseInt(version);
+            
+            return new Integer(v++).toString();
+        } catch (NumberFormatException e) {
+            return version + "-copy";
+        }
+    }
+
+    public String getInitialVersion() {
+        return "1";
     }
 
     public String getDefaultWorkspaceName() {

@@ -7,12 +7,10 @@ import java.util.Collection;
 import java.util.Set;
 
 import javax.activation.MimeTypeParseException;
-import javax.jcr.query.Query;
 import javax.xml.namespace.QName;
 
 import org.mule.galaxy.Index.Language;
-
-import org.w3c.dom.Document;
+import org.mule.galaxy.query.Query;
 
 public interface Registry {
 
@@ -42,7 +40,7 @@ public interface Registry {
                         String indexExpression, 
                         QName... documentTypes) throws RegistryException;
 
-    Set<Artifact> search(String index, Object input) throws RegistryException;
+    Set<Artifact> search(Query query) throws RegistryException, QueryException;
 
     Set<Index> getIndices(QName documentType) throws RegistryException;
 }

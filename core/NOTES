@@ -29,3 +29,9 @@ M1 TODOs:
 
 M2 TODOs:
 - WSDL references & locator?
+
+Example searches:
+- Return ArtifactVersion where tag = production && wsdl.portType.implemented = xxx
+   * Do we want to return an actual wsdl:service fragment??
+   * Or a doc which gives reference to the service?
+    
