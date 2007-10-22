@@ -87,7 +87,7 @@ public class WSDLContentHandler extends AbstractContentHandler implements XmlCon
     }
     
     public QName getDocumentType(Object o) {
-        return Constants.WSDL_DEFINITION;
+        return Constants.WSDL_DEFINITION_QNAME;
     }
 
     @Override
@@ -113,7 +113,7 @@ public class WSDLContentHandler extends AbstractContentHandler implements XmlCon
         Document doc1 = (Document) v1.getData();
         Document doc2 = (Document) v2.getData();
         
-        if (Constants.WSDL_DEFINITION.equals(QNameUtil.getName(doc1.getDocumentElement()))) {
+        if (Constants.WSDL_DEFINITION_QNAME.equals(QNameUtil.getName(doc1.getDocumentElement()))) {
             return createWsdlDiff(v1, v2, doc1, doc2);
         }
         

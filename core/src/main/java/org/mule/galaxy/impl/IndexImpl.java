@@ -1,4 +1,4 @@
-package org.mule.galaxy.jcr;
+package org.mule.galaxy.impl;
 
 import java.util.Set;
 
@@ -9,7 +9,7 @@ import javax.xml.namespace.QName;
 import org.mule.galaxy.Index;
 import org.mule.galaxy.util.JcrUtil;
 
-public class JcrIndex implements Index {
+public class IndexImpl implements Index {
 
     public static final String EXPRESSION = "expression";
     public static final String ID = "id";

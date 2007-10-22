@@ -24,32 +24,8 @@ public class IndexTest extends AbstractGalaxyTest {
                               "/META-INF/applicationContext-test.xml" };
         
     }
-    public void testIndex() throws Exception {
-        /**
-         * Creates a document like:
-         * <values>
-         * <value>{http://acme.com}EchoService</value>
-         * <value>{http://acme.com}EchoService2</value>
-         * </values>
-         * etc.
-         */
-        String exp = 
-            "declare namespace wsdl=\"http://schemas.xmlsoap.org/wsdl/\";\n" +
-            "declare variable $document external;\n" +
-            "" +
-            "for $svc in $document//wsdl:service\n" +
-            "let $ns := $document/wsdl:definition/@targetNamespace\n" +
-            "    return <value>{data($svc/@name)}</value>\n" +
-            "";
-       
-        registry.registerIndex("wsdl.service", // index field name
-                               "WSDL Service", // Display Name
-                               Index.Language.XQUERY,
-                               QName.class, // search input type
-                               exp, // the xquery expression
-                               Constants.WSDL_DEFINITION); // document QName which this applies to
-                
-        Set<Index> indices = registry.getIndices(Constants.WSDL_DEFINITION);
+    public void testWsdlIndex() throws Exception {
+        Set<Index> indices = registry.getIndices(Constants.WSDL_DEFINITION_QNAME);
         assertNotNull(indices);
         assertEquals(1, indices.size());
         
@@ -58,7 +34,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals("WSDL Service", idx.getName());
         assertEquals(Index.Language.XQUERY, idx.getLanguage());
         assertEquals(QName.class, idx.getQueryType());
-        assertEquals(exp, idx.getExpression());
+        assertNotNull(idx.getExpression());
         assertEquals(1, idx.getDocumentTypes().size());
         
         // Import a document which should now be indexed
@@ -79,13 +55,74 @@ public class IndexTest extends AbstractGalaxyTest {
         assertTrue(services.contains("HelloWorldService"));
         
         // Try out search!
-        Set<Artifact> results = registry.search(new Query(ArtifactVersion.class, 
-                                                          Restriction.eq("artifactVersion.wsdl.service", 
-                                                                         new QName("HelloWorldService"))));
+        Set results = registry.search(new Query(Artifact.class, 
+                                                Restriction.eq("artifactVersion.wsdl.service", 
+                                                               new QName("HelloWorldService"))));
         
         assertEquals(1, results.size());
         
-        Artifact next = results.iterator().next();
+        Artifact next = (Artifact) results.iterator().next();
         assertEquals(1, next.getVersions().size());
+        
+        results = registry.search(new Query(ArtifactVersion.class, 
+                                            Restriction.eq("artifactVersion.wsdl.service", 
+                                                           new QName("HelloWorldService"))));
+    
+        assertEquals(1, results.size());
+        
+        ArtifactVersion nextAV = (ArtifactVersion) results.iterator().next();
+        // assertNotNull(nextAV.getData());
+        // TODO test data
+    }
+
+    public void testMuleIndex() throws Exception {
+        Set<Index> indices = registry.getIndices(Constants.MULE_QNAME);
+        assertNotNull(indices);
+        assertEquals(1, indices.size());
+        
+        Index idx = indices.iterator().next();
+        assertEquals("mule.service", idx.getId());
+        assertEquals("Mule Service", idx.getName());
+        assertEquals(Index.Language.XQUERY, idx.getLanguage());
+        assertEquals(String.class, idx.getQueryType());
+        assertNotNull(idx.getExpression());
+        assertEquals(1, idx.getDocumentTypes().size());
+        
+        // Import a document which should now be indexed
+        InputStream helloWsdl = getResourceAsStream("/mule/hello-config.xml");
+        
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+        
+        Artifact artifact = registry.createArtifact(workspace, "application/xml", null, helloWsdl);
+        
+        AbstractJcrObject version = (AbstractJcrObject) artifact.getLatestVersion();
+        Object property = version.getProperty("mule.service");
+        assertNotNull(property);
+        assertTrue(property instanceof Collection);
+        Collection services = (Collection) property;
+        
+        assertTrue(services.contains("GreeterUMO"));
+        
+        // Try out search!
+        Set results = registry.search(new Query(Artifact.class, 
+                                                Restriction.eq("artifactVersion.mule.service", 
+                                                               "GreeterUMO")));
+        
+        assertEquals(1, results.size());
+        
+        Artifact next = (Artifact) results.iterator().next();
+        assertEquals(1, next.getVersions().size());
+        
+        results = registry.search(new Query(ArtifactVersion.class, 
+                                            Restriction.eq("artifactVersion.mule.service", 
+                                                           "GreeterUMO")));
+    
+        assertEquals(1, results.size());
+        
+        ArtifactVersion nextAV = (ArtifactVersion) results.iterator().next();
+        // assertNotNull(nextAV.getData());
+        // TODO test data
     }
 }

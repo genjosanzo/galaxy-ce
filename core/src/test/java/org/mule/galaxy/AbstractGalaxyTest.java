@@ -31,10 +31,12 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
         return getClass().getResourceAsStream(name);
     }
 
+
     @Override
     protected void onTearDown() throws Exception {
         if (jcrRepository != null) {
             clearJcrRepository();
+            setDirty();
         }
         super.onTearDown();
     }

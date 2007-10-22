@@ -31,7 +31,6 @@ import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.version.Version;
 import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
 
@@ -54,6 +53,7 @@ import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.Index.Language;
+import org.mule.galaxy.impl.IndexImpl;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.JcrUtil;
@@ -67,18 +67,21 @@ public class JcrRegistry implements Registry {
     private Logger LOGGER = LogUtils.getL7dLogger(JcrRegistry.class);
 
     private Settings settings;
+    
     private ContentService contentService;
 
     private Repository jcrRepository;
+    
     private Session session;
+    
     private Credentials credentials;
 
     private Node root;
 
     private Node workspaces;
 
-    private Node indices;
-
+    private Node indexes;
+    
     public Workspace getWorkspace(String id) throws RegistryException {
         // TODO: implement a query
         // TODO: possibility for injenction in the id here?
@@ -289,8 +292,7 @@ public class JcrRegistry implements Registry {
     public Set<Index> getIndices(QName documentType) throws RegistryException {
         try {
             QueryManager qm = getQueryManager();
-            
-            Query query = qm.createQuery("//indices/*/documentType[@value='" + documentType.toString() + "']", 
+            Query query = qm.createQuery("//indexes/*/documentType[@value='" + documentType.toString() + "']", 
                                          Query.XPATH);
             
             QueryResult result = query.execute();
@@ -308,14 +310,14 @@ public class JcrRegistry implements Registry {
     }
 
     private Index createIndexFromNode(Node node) throws RegistryException, RepositoryException {
-        JcrIndex idx = new JcrIndex();
+        IndexImpl idx = new IndexImpl();
         
-        idx.setId(JcrUtil.getStringOrNull(node, JcrIndex.ID));
-        idx.setExpression(JcrUtil.getStringOrNull(node, JcrIndex.EXPRESSION));
-        idx.setLanguage(Language.valueOf(JcrUtil.getStringOrNull(node, JcrIndex.LANGUAGE)));
-        idx.setName(JcrUtil.getStringOrNull(node, JcrIndex.NAME));
+        idx.setId(JcrUtil.getStringOrNull(node, IndexImpl.ID));
+        idx.setExpression(JcrUtil.getStringOrNull(node, IndexImpl.EXPRESSION));
+        idx.setLanguage(Language.valueOf(JcrUtil.getStringOrNull(node, IndexImpl.LANGUAGE)));
+        idx.setName(JcrUtil.getStringOrNull(node, IndexImpl.NAME));
         
-        String qt = JcrUtil.getStringOrNull(node, JcrIndex.QUERY_TYPE);
+        String qt = JcrUtil.getStringOrNull(node, IndexImpl.QUERY_TYPE);
         try {
             idx.setQueryType(getClass().getClassLoader().loadClass(qt));
         } catch (ClassNotFoundException e) {
@@ -327,8 +329,8 @@ public class JcrRegistry implements Registry {
         for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
             Node child = nodes.nextNode();
             
-            if (child.getName().equals(JcrIndex.DOCUMENT_TYPE)) {
-                String value = JcrUtil.getStringOrNull(child, JcrIndex.DOCUMENT_TYPE_VALUE);
+            if (child.getName().equals(IndexImpl.DOCUMENT_TYPE)) {
+                String value = JcrUtil.getStringOrNull(child, IndexImpl.DOCUMENT_TYPE_VALUE);
                 
                 docTypes.add(QNameUtil.fromString(value));
             }
@@ -348,27 +350,29 @@ public class JcrRegistry implements Registry {
                                Class<?> searchType,
                                String expression, 
                                QName... documentTypes) throws RegistryException {
+        // TODO: check if index name already exists.
+        
         try {
-            Node idxNode = JcrUtil.getOrCreate(indices, indexId);
+            Node idxNode = JcrUtil.getOrCreate(indexes, indexId);
             
-            idxNode.setProperty(JcrIndex.ID, indexId);
-            idxNode.setProperty(JcrIndex.EXPRESSION, expression);
-            idxNode.setProperty(JcrIndex.NAME, displayName);
-            idxNode.setProperty(JcrIndex.QUERY_TYPE, searchType.getName());
-            idxNode.setProperty(JcrIndex.LANGUAGE, language.toString());
+            idxNode.setProperty(IndexImpl.ID, indexId);
+            idxNode.setProperty(IndexImpl.EXPRESSION, expression);
+            idxNode.setProperty(IndexImpl.NAME, displayName);
+            idxNode.setProperty(IndexImpl.QUERY_TYPE, searchType.getName());
+            idxNode.setProperty(IndexImpl.LANGUAGE, language.toString());
             
-            JcrUtil.removeChildren(idxNode, JcrIndex.DOCUMENT_TYPE);
+            JcrUtil.removeChildren(idxNode, IndexImpl.DOCUMENT_TYPE);
             
             Set<QName> typeSet = new HashSet<QName>();
             for (QName q : documentTypes) {
                 typeSet.add(q);
-                Node typeNode = idxNode.addNode(JcrIndex.DOCUMENT_TYPE);
-                typeNode.setProperty(JcrIndex.DOCUMENT_TYPE_VALUE, q.toString());
+                Node typeNode = idxNode.addNode(IndexImpl.DOCUMENT_TYPE);
+                typeNode.setProperty(IndexImpl.DOCUMENT_TYPE_VALUE, q.toString());
             }
             
             session.save();
             
-            JcrIndex idx = new JcrIndex();
+            IndexImpl idx = new IndexImpl();
             idx.setId(indexId);
             idx.setName(displayName);
             idx.setLanguage(language);
@@ -394,47 +398,44 @@ public class JcrRegistry implements Registry {
         }
     }
 
-    public Set<Artifact> search(org.mule.galaxy.query.Query query) 
+    public Set search(org.mule.galaxy.query.Query query) 
         throws RegistryException, QueryException {
-        try {
-            JcrUtil.dump(workspaces);
-        } catch (RepositoryException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
+        
         try {
             QueryManager qm = getQueryManager();
             StringBuilder qstr = new StringBuilder();
             
-            Set<Artifact> artifacts = new HashSet<Artifact>();
+            Set<Object> artifacts = new HashSet<Object>();
+            
+            boolean av = false;
+            Class<?> selectType = query.getSelectType();
+            if (selectType.equals(ArtifactVersion.class)) {
+                av = true;
+            } else if (!selectType.equals(Artifact.class)) {
+                throw new QueryException(new Message("INVALID_SELECT_TYPE", LOGGER, selectType.getName()));
+            }
             
             for (Restriction r : query.getRestrictions()) {
-                boolean av = false;
                 
-                // TODO: NOT
+                // TODO: NOT, LIKE, OR, etc
                 
                 String property = r.getProperty();
                 if (property.startsWith("artifact.")) {
                     property = property.substring("artifact.".length());
                     
-                    qstr.append("//artifact/")
-                        .append(property)
-                        .append("/value[@value = \"")
-                        .append(r.getValue())
-                        .append("\"]");
+                    qstr.append("//artifact/");
+                        
                 } else if (property.startsWith("artifactVersion.")) {
                     property = property.substring("artifactVersion.".length());
-                    av = true;
-                    
-                    qstr.append("//artifact/version/")
-                        .append(property)
-                        .append("/value[@value = \"")
-                        .append(r.getValue())
-                        .append("\"]");
+                    qstr.append("//artifact/version/");
                 } else {
                     throw new QueryException(new Message("INVALID_QUERY_PROPERTY", LOGGER, property));
                 }
                 
+                qstr.append(property)
+                    .append("/value[@value = \"")
+                    .append(r.getValue())
+                    .append("\"]");
             }
             
             LOGGER.info("Query: " + qstr.toString());
@@ -446,12 +447,22 @@ public class JcrRegistry implements Registry {
                 Node node = nodes.nextNode();
                 
                 // UGH: jackrabbit does not support parent::* xpath expressions
-                // so we need to traverse the hierarchy
-                while (!node.getName().equals("artifact")) {
-                    node = node.getParent();
+                // so we need to traverse the hierarchy to find the right node
+                if (av) {
+                    while (!node.getName().equals("version")) {
+                        node = node.getParent();
+                    }
+                    Node artifactNode = node.getParent();
+                    JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(artifactNode.getParent()), artifactNode);
+                    artifacts.add(new JcrVersion(artifact, node));
+                } else {
+                    while (!node.getName().equals("artifact")) {
+                        node = node.getParent();
+                    }
+                    artifacts.add(new JcrArtifact(new JcrWorkspace(node.getParent()), node));
                 }
                 
-                artifacts.add(new JcrArtifact(new JcrWorkspace(node.getParent()), node));
+                
             }
             
             return artifacts;
@@ -523,7 +534,7 @@ public class JcrRegistry implements Registry {
         root = session.getRootNode();
         
         workspaces = JcrUtil.getOrCreate(root, "workspaces");
-        indices = JcrUtil.getOrCreate(root, "indices");
+        indexes = JcrUtil.getOrCreate(root, "indexes");
 
         session.save();
         
@@ -561,6 +572,5 @@ public class JcrRegistry implements Registry {
     public void setContentService(ContentService contentService) {
         this.contentService = contentService;
     }
-
 
 }

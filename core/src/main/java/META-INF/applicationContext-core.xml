@@ -33,4 +33,9 @@
   </bean>
 
   <bean id="jcrRepository" class="org.apache.jackrabbit.core.TransientRepository"/>
+  
+  <bean id="initialIndexBuilder" class="org.mule.galaxy.impl.InitialIndexBuilder" 
+    init-method="initialize" lazy-init="false">
+    <property name="registry" ref="registry"/>
+  </bean>
 </beans>
