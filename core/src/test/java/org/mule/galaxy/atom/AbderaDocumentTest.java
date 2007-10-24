@@ -97,6 +97,7 @@ public class AbderaDocumentTest extends AbstractGalaxyTest {
         RequestOptions opts = new RequestOptions();
         opts.setContentType("application/xml; charset=utf-8");
         opts.setSlug("hello_world.wsdl");
+        opts.setHeader("X-Version-Label", "0.1");
         
         res = client.post(colUri.toASCIIString(), getWsdl(), opts);
         assertEquals(201, res.getStatus());

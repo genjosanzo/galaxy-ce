@@ -48,7 +48,7 @@ public abstract class AbstractContentHandler implements ContentHandler {
     }
 
     public String describeDifferences(ArtifactVersion prev, ArtifactVersion v) {
-        return "Version " + v.getLabel();
+        return "Version " + v.getVersionLabel();
     }
 
     public InputStream read(Object data) throws IOException {

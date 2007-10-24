@@ -6,18 +6,16 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Set;
 
+import javax.jcr.Node;
 import javax.wsdl.Definition;
 
 import org.mule.galaxy.AbstractGalaxyTest;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.util.DOMUtils;
+import org.mule.galaxy.jcr.JcrVersion;
 
-import org.w3c.dom.Document;
-
-public class DocumentTest extends AbstractGalaxyTest {
+public class ArtifactTest extends AbstractGalaxyTest {
     
     public void testAddWsdl() throws Exception {
         InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
@@ -26,7 +24,7 @@ public class DocumentTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        Artifact artifact = registry.createArtifact(workspace, "application/wsdl+xml", null, helloWsdl);
+        Artifact artifact = registry.createArtifact(workspace, "application/wsdl+xml", null, "0.1", helloWsdl);
         
         assertNotNull(artifact.getId());
         assertEquals("application/wsdl+xml", artifact.getContentType().toString());
@@ -38,9 +36,12 @@ public class DocumentTest extends AbstractGalaxyTest {
         assertEquals(1, versions.size());
         
         // Test the version history
-        ArtifactVersion version = versions.iterator().next();
+        JcrVersion version = (JcrVersion) versions.iterator().next();
+        Node node = version.getNode();
+        assertEquals("version", node.getName());
+        
         assertTrue(version.getData() instanceof Definition);
-//        assertEquals(settings.getInitialVersion(), version.getLabel());
+        assertEquals("0.1", version.getVersionLabel());
         
         Calendar created = version.getCreated();
         assertTrue(created.getTime().getTime() > 0);
@@ -48,12 +49,13 @@ public class DocumentTest extends AbstractGalaxyTest {
         InputStream stream = version.getStream();
         assertNotNull(stream);
         
-        
         InputStream helloWsdl2 = getResourceAsStream("/wsdl/hello.wsdl");
-        ArtifactVersion newVersion = registry.newVersion(artifact, helloWsdl2);
+        ArtifactVersion newVersion = registry.newVersion(artifact, helloWsdl2, "0.2");
         
         versions = artifact.getVersions();
         assertEquals(2, versions.size());
+        
+        assertEquals("0.2", newVersion.getVersionLabel());
         
         stream = newVersion.getStream();
         assertNotNull(stream);

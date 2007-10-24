@@ -12,6 +12,7 @@ import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Index;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.jcr.AbstractJcrObject;
+import org.mule.galaxy.jcr.JcrVersion;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.util.Constants;
@@ -44,9 +45,9 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        Artifact artifact = registry.createArtifact(workspace, "application/xml", null, helloWsdl);
+        Artifact artifact = registry.createArtifact(workspace, "application/xml", null, "0.1", helloWsdl);
         
-        AbstractJcrObject version = (AbstractJcrObject) artifact.getLatestVersion();
+        JcrVersion version = (JcrVersion) artifact.getLatestVersion();
         Object property = version.getProperty("wsdl.service");
         assertNotNull(property);
         assertTrue(property instanceof Collection);
@@ -71,6 +72,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, results.size());
         
         ArtifactVersion nextAV = (ArtifactVersion) results.iterator().next();
+        assertEquals("0.1", nextAV.getVersionLabel());
         // assertNotNull(nextAV.getData());
         // TODO test data
     }
@@ -95,9 +97,9 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        Artifact artifact = registry.createArtifact(workspace, "application/xml", null, helloWsdl);
+        Artifact artifact = registry.createArtifact(workspace, "application/xml", null, "0.1", helloWsdl);
         
-        AbstractJcrObject version = (AbstractJcrObject) artifact.getLatestVersion();
+        JcrVersion version = (JcrVersion) artifact.getLatestVersion();
         Object property = version.getProperty("mule.service");
         assertNotNull(property);
         assertTrue(property instanceof Collection);
@@ -122,6 +124,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, results.size());
         
         ArtifactVersion nextAV = (ArtifactVersion) results.iterator().next();
+        assertEquals("0.1", nextAV.getVersionLabel());
         // assertNotNull(nextAV.getData());
         // TODO test data
     }

@@ -33,7 +33,7 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
         return parent;
     }
 
-    public String getLabel() {
+    public String getVersionLabel() {
         return getStringOrNull(LABEL);
     }
 
@@ -41,7 +41,7 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
         this.data = data;
     }
 
-    public void setVersion(String vname) {
+    public void setVersionLabel(String vname) {
         setProperty(LABEL, vname);
     }
 

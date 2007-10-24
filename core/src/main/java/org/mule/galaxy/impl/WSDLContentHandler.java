@@ -48,6 +48,16 @@ public class WSDLContentHandler extends AbstractContentHandler implements XmlCon
         supportedTypes.add(Definition.class);
     }
 
+    public Document getDocument(Object o) throws IOException {
+        Definition d = (Definition) o;
+        
+        try {
+            return factory.newWSDLWriter().getDocument(d);
+        } catch (WSDLException e) {
+            throw new GalaxyIOException(e);
+        }
+    }
+    
     public MimeType getContentType(Object o) {
         return primaryContentType;
     }
@@ -117,7 +127,7 @@ public class WSDLContentHandler extends AbstractContentHandler implements XmlCon
             return createWsdlDiff(v1, v2, doc1, doc2);
         }
         
-        return "Version " + v2.getLabel();
+        return "Version " + v2.getVersionLabel();
     }
     
     private String createWsdlDiff(ArtifactVersion v1, ArtifactVersion v2, Document doc1, Document doc2) {
@@ -144,12 +154,12 @@ public class WSDLContentHandler extends AbstractContentHandler implements XmlCon
         });
         
         if (changes.size() == 0) {
-            return "Version " + v2.getLabel() + ". There were no structural changes since the previous version.";
+            return "Version " + v2.getVersionLabel() + ". There were no structural changes since the previous version.";
         }
         
         StringBuilder sb = new StringBuilder();
         sb.append("Version ")
-          .append(v2.getLabel())
+          .append(v2.getVersionLabel())
           .append(". The following changes since the previous version. <ul>");
         for (String c : changes) {
             sb.append("<li>")

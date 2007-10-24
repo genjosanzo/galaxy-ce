@@ -18,14 +18,14 @@ public interface Registry {
     
     Collection<Workspace> getWorkspaces() throws RegistryException;
     
-    Artifact createArtifact(Workspace workspace, Object data) throws RegistryException, MimeTypeParseException;
+    Artifact createArtifact(Workspace workspace, Object data, String versionLabel) throws RegistryException, MimeTypeParseException;
     
-    Artifact createArtifact(Workspace workspace, String contentType, String name, InputStream inputStream) 
+    Artifact createArtifact(Workspace workspace, String contentType, String name, String versionLabel, InputStream inputStream) 
         throws RegistryException, IOException, MimeTypeParseException;
     
-    ArtifactVersion newVersion(Artifact artifact, Object data) throws RegistryException, IOException;
+    ArtifactVersion newVersion(Artifact artifact, Object data, String versionLabel) throws RegistryException, IOException;
     
-    ArtifactVersion newVersion(Artifact artifact, InputStream inputStream) throws RegistryException, IOException;
+    ArtifactVersion newVersion(Artifact artifact, InputStream inputStream, String versionLabel) throws RegistryException, IOException;
 
     Collection<Artifact> getArtifacts(Workspace workspace) throws RegistryException;
     

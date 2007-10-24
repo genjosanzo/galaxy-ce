@@ -16,9 +16,10 @@ Outside help:
 - EE Edition
   * Clustering
   * Dynamic Configuration Changes
-
+  * UDDI
+  
 M1 TODOs:
-- Query Model
+- Version enforcement & make user specify it
 - Web Interface
 - Support for: policies, Schemas, Mule Config
 - Security
@@ -26,12 +27,20 @@ M1 TODOs:
 - Mule Bootup & reference of things in the registry
 - Maven Itnegration
 - Verify that my usage of threading & Sessions works
-
-M2 TODOs:
 - WSDL references & locator?
 
-Example searches:
-- Return ArtifactVersion where tag = production && wsdl.portType.implemented = xxx
-   * Do we want to return an actual wsdl:service fragment??
-   * Or a doc which gives reference to the service?
-    
+M2 TODOs:
+
+   
+Ross
+- CXF Training
+- Biz aspects of Registry
+- Registry review
+- San Fran
+- eBay  
+
+#if ( get_option('db_version') != $wp_db_version ) {
+##      wp_redirect(get_option('siteurl') . '/wp-admin/upgrade.php?_wp_http_referer=' . urlencode(stripslashes($_SERVER[
+'REQUEST_URI'])));
+#       exit;
+#}

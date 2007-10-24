@@ -37,10 +37,12 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
     @Override
     public void addMetadata(ArtifactVersion v) {
         super.addMetadata(v);
-        
-        
     }
 
+
+    public Document getDocument(Object o) {
+        return (Document) o;
+    }
 
     public String getName(Object o) {
         return null;

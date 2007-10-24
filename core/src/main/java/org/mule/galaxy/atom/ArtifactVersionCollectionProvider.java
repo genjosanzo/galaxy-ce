@@ -34,7 +34,7 @@ public class ArtifactVersionCollectionProvider extends AbstractCollectionProvide
 
     public ArtifactVersion createMediaEntry(MimeType mimeType, String slug, InputStream inputStream) {
         try {
-            return registry.newVersion(artifact, inputStream);
+            return registry.newVersion(artifact, inputStream, null);
         } catch (RegistryException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -52,7 +52,7 @@ public class ArtifactVersionCollectionProvider extends AbstractCollectionProvide
 
     public Content getContent(ArtifactVersion doc) {
         Content content = factory.newContent();
-        content.setSrc(doc.getLabel());
+        content.setSrc(doc.getVersionLabel());
         content.setMimeType(artifact.getContentType().toString());
         return content;
     }
@@ -78,7 +78,7 @@ public class ArtifactVersionCollectionProvider extends AbstractCollectionProvide
     }
 
     public String getId(ArtifactVersion entry) {
-        return ID_PREFIX + artifact.getId() + ":" + entry.getLabel();
+        return ID_PREFIX + artifact.getId() + ":" + entry.getVersionLabel();
     }
 
     public InputStream getMediaStream(ArtifactVersion entry) {
@@ -90,7 +90,7 @@ public class ArtifactVersionCollectionProvider extends AbstractCollectionProvide
     }
 
     public String getName(ArtifactVersion entry) {
-        return entry.getLabel();
+        return entry.getVersionLabel();
     }
 
     public String getTitle() {
@@ -98,7 +98,7 @@ public class ArtifactVersionCollectionProvider extends AbstractCollectionProvide
     }
 
     public String getTitle(ArtifactVersion entry) {
-        return artifact.getName() + " Version " + entry.getLabel();
+        return artifact.getName() + " Version " + entry.getVersionLabel();
     }
 
     @Override

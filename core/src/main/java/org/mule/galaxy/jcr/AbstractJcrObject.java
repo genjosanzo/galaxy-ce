@@ -64,6 +64,10 @@ public class AbstractJcrObject {
                 Node valueNode = child.addNode(VALUE);
                 valueNode.setProperty(VALUE, o.toString());
             }
+        } else if (value instanceof String) {
+            n.setProperty(name, value.toString());
+        } else {
+            throw new UnsupportedOperationException();
         }
     }
 

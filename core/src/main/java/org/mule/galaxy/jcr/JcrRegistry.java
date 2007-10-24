@@ -150,7 +150,7 @@ public class JcrRegistry implements Registry {
         }
     }
 
-    public Artifact createArtifact(Workspace workspace, Object data) throws RegistryException, MimeTypeParseException {
+    public Artifact createArtifact(Workspace workspace, Object data, String versionLabel) throws RegistryException, MimeTypeParseException {
         ContentHandler ch = contentService.getContentHandler(data.getClass());
         
         if (ch == null) {
@@ -160,11 +160,11 @@ public class JcrRegistry implements Registry {
         MimeType ct = ch.getContentType(data);
         String name = ch.getName(data);
         
-        return createArtifact(workspace, data, name, ct);
+        return createArtifact(workspace, data, name, versionLabel, ct);
     }
 
     public Artifact createArtifact(Workspace workspace, Object data, 
-                                   String name, MimeType contentType)
+                                   String name, String versionLabel, MimeType contentType)
         throws RegistryException {
 
         try {
@@ -198,7 +198,7 @@ public class JcrRegistry implements Registry {
             
             JcrVersion jcrVersion = new JcrVersion(artifact, versionNode);
             jcrVersion.setData(data);
-            jcrVersion.setVersion(settings.getInitialVersion());
+            jcrVersion.setVersionLabel(versionLabel);
             index(jcrVersion);
             
             session.save();
@@ -215,13 +215,13 @@ public class JcrRegistry implements Registry {
     }
 
     public Artifact createArtifact(Workspace workspace, String contentType, String name,
-                                   InputStream inputStream) throws RegistryException, IOException, MimeTypeParseException {
+                                   String versionLabel, InputStream inputStream) throws RegistryException, IOException, MimeTypeParseException {
         contentType = trimContentType(contentType);
         MimeType ct = new MimeType(contentType);
 
         Object data = getData(ct, inputStream);
 
-        return createArtifact(workspace, data, name, ct);
+        return createArtifact(workspace, data, name, versionLabel, ct);
     }
 
     private Object getData(MimeType contentType, InputStream inputStream) 
@@ -235,7 +235,7 @@ public class JcrRegistry implements Registry {
         return ch.read(inputStream);
     }
 
-    public ArtifactVersion newVersion(Artifact artifact, Object data) throws RegistryException, IOException {
+    public ArtifactVersion newVersion(Artifact artifact, Object data, String versionLabel) throws RegistryException, IOException {
         // TODO: Locking
         try {
             JcrArtifact jcrArtifact = (JcrArtifact) artifact;
@@ -255,8 +255,8 @@ public class JcrRegistry implements Registry {
             versionNode.setProperty(JcrVersion.DATA, s);
 
             JcrVersion next = new JcrVersion(jcrArtifact, versionNode);
-            next.setVersion(settings.getNextVersion(artifact.getLatestVersion().getLabel()));
             next.setData(data);
+            next.setVersionLabel(versionLabel);
             jcrArtifact.getVersions().add(next);
             ch.addMetadata(next);
             
@@ -277,12 +277,13 @@ public class JcrRegistry implements Registry {
     }
 
     public ArtifactVersion newVersion(Artifact artifact, 
-                                      InputStream inputStream) throws RegistryException, IOException {
+                                      InputStream inputStream, 
+                                      String versionLabel) throws RegistryException, IOException {
         // TODO: assert artifact is of the same type as the previous revision
         
         Object data = getData(artifact.getContentType(), inputStream);
 
-        return newVersion(artifact, data);
+        return newVersion(artifact, data, versionLabel);
     }
 
     public void delete(Artifact artifact) {
@@ -500,12 +501,13 @@ public class JcrRegistry implements Registry {
             XQConnection conn = ds.getConnection();
             
             XQPreparedExpression ex = conn.prepareExpression(idx.getExpression());
-            ex.bindNode(new QName("document"), (Document) jcrVersion.getData(), null);
+            XmlContentHandler ch = (XmlContentHandler) contentService.getContentHandler(jcrVersion.getParent().getContentType());
+            
+            ex.bindNode(new QName("document"), ch.getDocument(jcrVersion.getData()), null);
             
             XQResultSequence result = ex.executeQuery();
             
             Node versionNode = jcrVersion.node;
-            
             
             Node property = JcrUtil.getOrCreate(versionNode, idx.getId());
             JcrUtil.removeChildren(property);
@@ -536,8 +538,6 @@ public class JcrRegistry implements Registry {
         workspaces = JcrUtil.getOrCreate(root, "workspaces");
         indexes = JcrUtil.getOrCreate(root, "indexes");
 
-        session.save();
-        
         NodeIterator nodes = workspaces.getNodes();
         // ignore the system node
         if (nodes.getSize() == 0) {
@@ -546,9 +546,9 @@ public class JcrRegistry implements Registry {
 
             JcrWorkspace w = new JcrWorkspace(node);
             w.setName(settings.getDefaultWorkspaceName());
-
-            session.save();
         } 
+        
+        session.save();
     }
 
     public void destroy() {

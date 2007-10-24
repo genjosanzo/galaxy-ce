@@ -14,6 +14,8 @@ import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Text;
 import org.apache.abdera.model.Text.Type;
+import org.apache.abdera.protocol.server.RequestContext;
+import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.content.AbstractCollectionProvider;
 import org.apache.abdera.protocol.server.content.ResponseContextException;
 import org.apache.abdera.protocol.server.impl.EmptyResponseContext;
@@ -51,7 +53,7 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
     public Text getSummary(Artifact entry) {
         Text summary = factory.newSummary();
         
-        summary.setText("Version " + entry.getLatestVersion().getLabel());
+        summary.setText("Version " + entry.getLatestVersion().getVersionLabel());
         summary.setTextType(Type.TEXT);
         
         return summary;
@@ -101,10 +103,15 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
         throw new ResponseContextException(new EmptyResponseContext(500));
     }
 
+    @Override
+    protected ResponseContext createMediaEntry(RequestContext request) {
+        // TODO Auto-generated method stub
+        return super.createMediaEntry(request);
+    }
 
     public Artifact createMediaEntry(MimeType mimeType, String slug, InputStream inputStream) throws ResponseContextException {
         try {
-            return registry.createArtifact(workspace, mimeType.toString(), slug, inputStream);
+            return registry.createArtifact(workspace, mimeType.toString(), slug, null, inputStream);
         } catch (RegistryException e) {
             throw new ResponseContextException(500, e);
         } catch (IOException e) {
