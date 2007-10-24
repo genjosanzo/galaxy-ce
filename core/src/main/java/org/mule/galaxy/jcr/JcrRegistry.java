@@ -420,7 +420,7 @@ public class JcrRegistry implements Registry {
                 
                 // TODO: NOT, LIKE, OR, etc
                 
-                String property = r.getProperty();
+                String property = (String) r.getLeft();
                 if (property.startsWith("artifact.")) {
                     property = property.substring("artifact.".length());
                     
@@ -435,7 +435,7 @@ public class JcrRegistry implements Registry {
                 
                 qstr.append(property)
                     .append("/value[@value = \"")
-                    .append(r.getValue())
+                    .append(r.getRight())
                     .append("\"]");
             }
             

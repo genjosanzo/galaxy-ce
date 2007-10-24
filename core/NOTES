@@ -24,6 +24,7 @@ M1 TODOs:
 - Support for: policies, Schemas, Mule Config
 - Security
 - Approval process/workflow
+
 - Mule Bootup & reference of things in the registry
 - Maven Itnegration
 - Verify that my usage of threading & Sessions works
@@ -31,16 +32,3 @@ M1 TODOs:
 
 M2 TODOs:
 
-   
-Ross
-- CXF Training
-- Biz aspects of Registry
-- Registry review
-- San Fran
-- eBay  
-
-#if ( get_option('db_version') != $wp_db_version ) {
-##      wp_redirect(get_option('siteurl') . '/wp-admin/upgrade.php?_wp_http_referer=' . urlencode(stripslashes($_SERVER[
-'REQUEST_URI'])));
-#       exit;
-#}

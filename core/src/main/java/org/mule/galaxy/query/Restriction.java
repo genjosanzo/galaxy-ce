@@ -1,7 +1,7 @@
 package org.mule.galaxy.query;
 
 public class Restriction {
-    public enum Comparison {
+    public enum Operator {
         EQUALS,
         NOT,
         GT,
@@ -10,38 +10,38 @@ public class Restriction {
     }
 
     private Object value;
-    private String property;
-    private Comparison comparison;
+    private Object left;
+    private Operator operator;
     
-    protected Restriction(Comparison c, String prop, Object value) {
-        this.comparison = c;
-        this.property = prop;
-        this.value = value;
+    protected Restriction(Operator o, Object left, Object right) {
+        this.operator = o;
+        this.left = left;
+        this.value = right;
     }
     
-    protected Restriction(Comparison not, Restriction restriction) {
-        this.comparison = not;
+    protected Restriction(Operator not, Restriction restriction) {
+        this.operator = not;
         this.value = restriction;
     }
 
-    public Object getValue() {
+    public Object getRight() {
         return value;
     }
 
-    public String getProperty() {
-        return property;
+    public Object getLeft() {
+        return left;
     }
 
-    public Comparison getComparison() {
-        return comparison;
+    public Operator getOperator() {
+        return operator;
     }
 
     public static Restriction eq(String property, Object value) {
-        return new Restriction(Comparison.EQUALS, property, value);
+        return new Restriction(Operator.EQUALS, property, value);
     }
 
     public static Restriction not(Restriction restriction) {
-        return new Restriction(Comparison.NOT, restriction);
+        return new Restriction(Operator.NOT, restriction);
     }
 }
 
