@@ -1,0 +1,82 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:a="http://abdera.apache.org"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+    http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
+
+  <bean id="sessionFactory" class="org.springmodules.jcr.JcrSessionFactory">
+    <property name="repository" ref="repository"/>
+    <property name="credentials">
+     <bean class="javax.jcr.SimpleCredentials">
+      <constructor-arg value="username"/>
+      <!-- create the credentials using a bean factory -->
+      <constructor-arg><value type="char[]">password</value></constructor-arg>
+     </bean>
+    </property>
+  </bean>
+
+  <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean">
+    <!-- normal factory beans params -->
+    <property name="configuration" value="classpath:/META-INF/jackrabbit-repo.xml"/>
+  </bean>
+
+  <bean id="registry" parent="txProxyTemplate">
+    <property name="target" ref="registryTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="registryTarget" class="org.mule.galaxy.jcr.JcrRegistry"
+        init-method="initialize" destroy-method="destroy">
+    <property name="contentService" ref="contentService" />
+    <property name="settings" ref="settings" />
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="allowCreate" value="true"/>
+  </bean>
+  
+  <bean id="artifactTypeDao" class="org.mule.galaxy.jcr.ArtifactTypeDao">
+    <property name="registry" ref="registry"/>
+  </bean>
+  
+  <bean id="settings" class="org.mule.galaxy.impl.SettingsImpl"/>
+  
+  <bean id="contentService" class="org.mule.galaxy.impl.ContentServiceImpl">
+    <constructor-arg>
+      <list>
+        <bean class="org.mule.galaxy.impl.XmlDocumentContentHandler"/>
+        <bean class="org.mule.galaxy.impl.WSDLContentHandler"/>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <bean id="registryInitializer" class="org.mule.galaxy.impl.RegistryInitializer" 
+    init-method="initialize" lazy-init="false">
+    <property name="registry" ref="registry"/>
+    <property name="artifactTypeDao" ref="artifactTypeDao"/>
+  </bean>
+  
+  <bean id="jcrTransactionManager"
+   class="org.springmodules.jcr.jackrabbit.LocalTransactionManager">
+     <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
+  <!-- transaction proxy for Jcr services/facades -->
+  <bean id="txProxyTemplate" abstract="true" 
+      class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+   <property name="proxyTargetClass" value="true"/>
+   <property name="transactionManager" ref="jcrTransactionManager"/>
+   <property name="transactionAttributes">
+     <props>
+        <prop key="*">PROPAGATION_REQUIRED</prop>
+        <!-- We can optimize this later -->
+        <!-- prop key="*">PROPAGATION_REQUIRED, readOnly</prop  -->
+     </props>
+   </property>
+  </bean>
+  
+  
+</beans>

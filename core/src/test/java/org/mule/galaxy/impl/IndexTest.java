@@ -53,7 +53,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertTrue(property instanceof Collection);
         Collection services = (Collection) property;
         
-        assertTrue(services.contains("HelloWorldService"));
+        assertTrue(services.contains(new QName("HelloWorldService")));
         
         // Try out search!
         Set results = registry.search(new Query(Artifact.class, 

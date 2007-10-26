@@ -14,24 +14,15 @@ import java.util.logging.Logger;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
-import javax.jcr.Credentials;
-import javax.jcr.InvalidItemStateException;
-import javax.jcr.ItemExistsException;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
-import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.UnsupportedRepositoryOperationException;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
 
 import net.sf.saxon.javax.xml.xquery.XQConnection;
@@ -60,34 +51,29 @@ import org.mule.galaxy.util.JcrUtil;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.QNameUtil;
+import org.springmodules.jcr.JcrCallback;
+import org.springmodules.jcr.JcrTemplate;
 
-import org.w3c.dom.Document;
+public class JcrRegistry extends JcrTemplate implements Registry {
 
-public class JcrRegistry implements Registry {
     private Logger LOGGER = LogUtils.getL7dLogger(JcrRegistry.class);
 
     private Settings settings;
     
     private ContentService contentService;
 
-    private Repository jcrRepository;
-    
-    private Session session;
-    
-    private Credentials credentials;
+    private String workspacesId;
 
-    private Node root;
+    private String indexesId;
 
-    private Node workspaces;
-
-    private Node indexes;
+    private String artifactTypesId;
     
     public Workspace getWorkspace(String id) throws RegistryException {
         // TODO: implement a query
         // TODO: possibility for injenction in the id here?
         
         try {
-            Node node = workspaces.getNode(id);
+            Node node = getWorkspacesNode().getNode(id);
 
             return new JcrWorkspace(node);
         } catch (PathNotFoundException e) {
@@ -99,10 +85,22 @@ public class JcrRegistry implements Registry {
         }
     }
 
+    Node getWorkspacesNode() {
+        return getNodeByUUID(workspacesId);
+    }
+
+    Node getIndexNode() {
+        return getNodeByUUID(indexesId);
+    }
+    
+    Node getArtifactTypesNode() {
+        return getNodeByUUID(artifactTypesId);
+    }
+    
     public Collection<Workspace> getWorkspaces() throws RegistryException {
         try {
             Collection<Workspace> workspaceCol = new ArrayList<Workspace>();
-            for (NodeIterator itr = workspaces.getNodes(); itr.hasNext();) {
+            for (NodeIterator itr = getWorkspacesNode().getNodes(); itr.hasNext();) {
                 Node n = itr.nextNode();
 
                 if (!n.getName().equals("jcr:system")) {
@@ -134,20 +132,18 @@ public class JcrRegistry implements Registry {
         return artifacts;
     }
 
-    public Artifact getArtifact(String id) throws NotFoundException {
-        try {
-            Node node = session.getNodeByUUID(id);
-            Node wNode = node.getParent();
-            JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(wNode), node);
-            
-            artifact.setContentHandler(contentService.getContentHandler(artifact.getContentType()));
+    public Artifact getArtifact(final String id) throws NotFoundException {
+        return (Artifact) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node node = session.getNodeByUUID(id);
+                Node wNode = node.getParent();
+                JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(wNode), node);
+                
+                artifact.setContentHandler(contentService.getContentHandler(artifact.getContentType()));
 
-            return artifact;
-        } catch (ItemNotFoundException e) {
-            throw new NotFoundException(e);
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
+                return artifact;
+            }
+        });
     }
 
     public Artifact createArtifact(Workspace workspace, Object data, String versionLabel) throws RegistryException, MimeTypeParseException {
@@ -163,55 +159,63 @@ public class JcrRegistry implements Registry {
         return createArtifact(workspace, data, name, versionLabel, ct);
     }
 
-    public Artifact createArtifact(Workspace workspace, Object data, 
-                                   String name, String versionLabel, MimeType contentType)
+    public Artifact createArtifact(final Workspace workspace, 
+                                   final Object data, 
+                                   final String name, 
+                                   final String versionLabel,
+                                   final MimeType contentType)
         throws RegistryException {
 
-        try {
-            Node workspaceNode = ((JcrWorkspace)workspace).getNode();
-            Node artifactNode = workspaceNode.addNode("artifact");
-            artifactNode.addMixin("mix:referenceable");
+        return (Artifact) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node workspaceNode = ((JcrWorkspace)workspace).getNode();
+                Node artifactNode = workspaceNode.addNode("artifact");
+                artifactNode.addMixin("mix:referenceable");
+    
+                ContentHandler ch = contentService.getContentHandler(contentType);
+                
+                JcrArtifact artifact = new JcrArtifact(workspace, artifactNode, ch);
+                artifact.setContentType(contentType);
+                artifact.setName(name);
+    
+                if (ch instanceof XmlContentHandler) {
+                    XmlContentHandler xch = (XmlContentHandler) ch;
+                    artifact.setDocumentType(xch.getDocumentType(data));
+                }
+    
+                session.save();
+                
+                // create an initial version
+                Node versionNode = artifactNode.addNode("version");
+                
+                Calendar now = Calendar.getInstance();
+                now.setTime(new Date());
+                versionNode.setProperty(JcrVersion.CREATED, now);
+                
+                // Store the data
+                InputStream s = ch.read(data);
+                versionNode.setProperty(JcrVersion.DATA, s);
+                
+                JcrVersion jcrVersion = new JcrVersion(artifact, versionNode);
+                jcrVersion.setData(data);
+                jcrVersion.setVersionLabel(versionLabel);
 
-            ContentHandler ch = contentService.getContentHandler(contentType);
-            
-            JcrArtifact artifact = new JcrArtifact(workspace, artifactNode, ch);
-            artifact.setContentType(contentType);
-            artifact.setName(name);
-
-            if (ch instanceof XmlContentHandler) {
-                XmlContentHandler xch = (XmlContentHandler) ch;
-                artifact.setDocumentType(xch.getDocumentType(data));
+                try {
+                    index(jcrVersion);
+                } catch (RegistryException e) {
+                    throw new RuntimeException(e);
+                }
+                
+                session.save();
+    
+                JcrVersion next = (JcrVersion)artifact.getVersions().iterator().next();
+                next.setData(data);
+    
+                LOGGER.info("Created artifact " + artifact.getId());
+    
+                return artifact;
             }
-
-            session.save();
-            
-            // create an initial version
-            Node versionNode = artifactNode.addNode("version");
-            
-            Calendar now = Calendar.getInstance();
-            now.setTime(new Date());
-            versionNode.setProperty(JcrVersion.CREATED, now);
-            
-            // Store the data
-            InputStream s = ch.read(data);
-            versionNode.setProperty(JcrVersion.DATA, s);
-            
-            JcrVersion jcrVersion = new JcrVersion(artifact, versionNode);
-            jcrVersion.setData(data);
-            jcrVersion.setVersionLabel(versionLabel);
-            index(jcrVersion);
-            
-            session.save();
-
-            JcrVersion next = (JcrVersion)artifact.getVersions().iterator().next();
-            next.setData(data);
-
-            LOGGER.info("Created artifact " + artifact.getId());
-
-            return artifact;
-        } catch (Exception e) {
-            throw new RegistryException(e);
-        }
+        });
     }
 
     public Artifact createArtifact(Workspace workspace, String contentType, String name,
@@ -235,45 +239,37 @@ public class JcrRegistry implements Registry {
         return ch.read(inputStream);
     }
 
-    public ArtifactVersion newVersion(Artifact artifact, Object data, String versionLabel) throws RegistryException, IOException {
+    public ArtifactVersion newVersion(final Artifact artifact, final Object data, final String versionLabel) throws RegistryException, IOException {
         // TODO: Locking
-        try {
-            JcrArtifact jcrArtifact = (JcrArtifact) artifact;
-            Node artifactNode = jcrArtifact.getNode();
-            
-            ContentHandler ch = contentService.getContentHandler(jcrArtifact.getContentType());
-            
-            // create a new version node
-            Node versionNode = artifactNode.addNode("version");
-            
-            Calendar now = Calendar.getInstance();
-            now.setTime(new Date());
-            versionNode.setProperty(JcrVersion.CREATED, now);
-            
-            // Store the data
-            InputStream s = ch.read(data);
-            versionNode.setProperty(JcrVersion.DATA, s);
-
-            JcrVersion next = new JcrVersion(jcrArtifact, versionNode);
-            next.setData(data);
-            next.setVersionLabel(versionLabel);
-            jcrArtifact.getVersions().add(next);
-            ch.addMetadata(next);
-            
-            session.save();
-            
-            return next;
-        } catch (VersionException e) {
-            throw new RegistryException(e);
-        } catch (UnsupportedRepositoryOperationException e) {
-            throw new RegistryException(e);
-        } catch (InvalidItemStateException e) {
-            throw new RegistryException(e);
-        } catch (LockException e) {
-            throw new RegistryException(e);
-        } catch (RepositoryException e) {
-            throw new RegistryException(e);
-        }
+        return (ArtifactVersion) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                JcrArtifact jcrArtifact = (JcrArtifact) artifact;
+                Node artifactNode = jcrArtifact.getNode();
+                
+                ContentHandler ch = contentService.getContentHandler(jcrArtifact.getContentType());
+                
+                // create a new version node
+                Node versionNode = artifactNode.addNode("version");
+                
+                Calendar now = Calendar.getInstance();
+                now.setTime(new Date());
+                versionNode.setProperty(JcrVersion.CREATED, now);
+                
+                // Store the data
+                InputStream s = ch.read(data);
+                versionNode.setProperty(JcrVersion.DATA, s);
+    
+                JcrVersion next = new JcrVersion(jcrArtifact, versionNode);
+                next.setData(data);
+                next.setVersionLabel(versionLabel);
+                jcrArtifact.getVersions().add(next);
+                ch.addMetadata(next);
+                
+                session.save();
+                
+                return next;
+            }
+        });
     }
 
     public ArtifactVersion newVersion(Artifact artifact, 
@@ -290,27 +286,28 @@ public class JcrRegistry implements Registry {
         throw new UnsupportedOperationException();
     }
     
-    public Set<Index> getIndices(QName documentType) throws RegistryException {
-        try {
-            QueryManager qm = getQueryManager();
-            Query query = qm.createQuery("//indexes/*/documentType[@value='" + documentType.toString() + "']", 
-                                         Query.XPATH);
-            
-            QueryResult result = query.execute();
-            
-            Set<Index> indices = new HashSet<Index>();
-            for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
-                Node node = nodes.nextNode();
+    @SuppressWarnings("unchecked")
+    public Set<Index> getIndices(final QName documentType) throws RegistryException {
+        return (Set<Index>) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                QueryManager qm = getQueryManager(session);
+                Query query = qm.createQuery("//indexes/*/documentType[@value='" + documentType.toString() + "']", 
+                                             Query.XPATH);
                 
-                indices.add(createIndexFromNode(node.getParent()));
+                QueryResult result = query.execute();
+                
+                Set<Index> indices = new HashSet<Index>();
+                for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
+                    Node node = nodes.nextNode();
+                    
+                    indices.add(createIndexFromNode(node.getParent()));
+                }
+                return indices;
             }
-            return indices;
-        } catch (RepositoryException e) {
-            throw new RegistryException(e);
-        }
+        });
     }
 
-    private Index createIndexFromNode(Node node) throws RegistryException, RepositoryException {
+    private Index createIndexFromNode(Node node) throws RepositoryException {
         IndexImpl idx = new IndexImpl();
         
         idx.setId(JcrUtil.getStringOrNull(node, IndexImpl.ID));
@@ -323,7 +320,7 @@ public class JcrRegistry implements Registry {
             idx.setQueryType(getClass().getClassLoader().loadClass(qt));
         } catch (ClassNotFoundException e) {
             // not gonna happen
-            throw new RegistryException(e);
+            throw new RuntimeException(e);
         }
         
         HashSet<QName> docTypes = new HashSet<QName>();
@@ -341,135 +338,129 @@ public class JcrRegistry implements Registry {
         return idx;
     }
 
-    private QueryManager getQueryManager() throws RepositoryException {
+    private QueryManager getQueryManager(Session session) throws RepositoryException {
         return session.getWorkspace().getQueryManager();
     }
 
-    public Index registerIndex(String indexId, 
-                               String displayName, 
-                               Index.Language language,
-                               Class<?> searchType,
-                               String expression, 
-                               QName... documentTypes) throws RegistryException {
+    public Index registerIndex(final String indexId, 
+                               final String displayName, 
+                               final Index.Language language,
+                               final Class<?> searchType,
+                               final String expression, 
+                               final QName... documentTypes) throws RegistryException {
         // TODO: check if index name already exists.
         
-        try {
-            Node idxNode = JcrUtil.getOrCreate(indexes, indexId);
-            
-            idxNode.setProperty(IndexImpl.ID, indexId);
-            idxNode.setProperty(IndexImpl.EXPRESSION, expression);
-            idxNode.setProperty(IndexImpl.NAME, displayName);
-            idxNode.setProperty(IndexImpl.QUERY_TYPE, searchType.getName());
-            idxNode.setProperty(IndexImpl.LANGUAGE, language.toString());
-            
-            JcrUtil.removeChildren(idxNode, IndexImpl.DOCUMENT_TYPE);
-            
-            Set<QName> typeSet = new HashSet<QName>();
-            for (QName q : documentTypes) {
-                typeSet.add(q);
-                Node typeNode = idxNode.addNode(IndexImpl.DOCUMENT_TYPE);
-                typeNode.setProperty(IndexImpl.DOCUMENT_TYPE_VALUE, q.toString());
+        return (Index) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                
+                Node idxNode = JcrUtil.getOrCreate(getIndexNode(), indexId);
+                
+                idxNode.setProperty(IndexImpl.ID, indexId);
+                idxNode.setProperty(IndexImpl.EXPRESSION, expression);
+                idxNode.setProperty(IndexImpl.NAME, displayName);
+                idxNode.setProperty(IndexImpl.QUERY_TYPE, searchType.getName());
+                idxNode.setProperty(IndexImpl.LANGUAGE, language.toString());
+                
+                String name = IndexImpl.DOCUMENT_TYPE;
+                JcrUtil.removeChildren(idxNode, name);
+                
+                Set<QName> typeSet = new HashSet<QName>();
+                for (QName q : documentTypes) {
+                    typeSet.add(q);
+                    Node typeNode = idxNode.addNode(name);
+                    typeNode.setProperty(IndexImpl.DOCUMENT_TYPE_VALUE, q.toString());
+                }
+                
+                session.save();
+                
+                IndexImpl idx = new IndexImpl();
+                idx.setId(indexId);
+                idx.setName(displayName);
+                idx.setLanguage(language);
+                idx.setQueryType(searchType);
+                idx.setExpression(expression);
+                idx.setDocumentTypes(typeSet);
+                
+                return idx;
             }
-            
-            session.save();
-            
-            IndexImpl idx = new IndexImpl();
-            idx.setId(indexId);
-            idx.setName(displayName);
-            idx.setLanguage(language);
-            idx.setQueryType(searchType);
-            idx.setExpression(expression);
-            idx.setDocumentTypes(typeSet);
-            
-            return idx;
-        } catch (ItemExistsException e) {
-            throw new RegistryException(e);
-        } catch (PathNotFoundException e) {
-            throw new RegistryException(e);
-        } catch (VersionException e) {
-            throw new RegistryException(e);
-        } catch (ConstraintViolationException e) {
-            throw new RegistryException(e);
-        } catch (LockException e) {
-            throw new RegistryException(e);
-        } catch (NoSuchNodeTypeException e) {
-            throw new RegistryException(e);
-        } catch (RepositoryException e) {
-            throw new RegistryException(e);
-        }
+        });
     }
 
-    public Set search(org.mule.galaxy.query.Query query) 
+    public Set search(final org.mule.galaxy.query.Query query) 
         throws RegistryException, QueryException {
-        
-        try {
-            QueryManager qm = getQueryManager();
-            StringBuilder qstr = new StringBuilder();
-            
-            Set<Object> artifacts = new HashSet<Object>();
-            
-            boolean av = false;
-            Class<?> selectType = query.getSelectType();
-            if (selectType.equals(ArtifactVersion.class)) {
-                av = true;
-            } else if (!selectType.equals(Artifact.class)) {
-                throw new QueryException(new Message("INVALID_SELECT_TYPE", LOGGER, selectType.getName()));
-            }
-            
-            for (Restriction r : query.getRestrictions()) {
-                
-                // TODO: NOT, LIKE, OR, etc
-                
-                String property = (String) r.getLeft();
-                if (property.startsWith("artifact.")) {
-                    property = property.substring("artifact.".length());
-                    
-                    qstr.append("//artifact/");
+        return (Set) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
                         
-                } else if (property.startsWith("artifactVersion.")) {
-                    property = property.substring("artifactVersion.".length());
-                    qstr.append("//artifact/version/");
-                } else {
-                    throw new QueryException(new Message("INVALID_QUERY_PROPERTY", LOGGER, property));
+                QueryManager qm = getQueryManager(session);
+                StringBuilder qstr = new StringBuilder();
+                
+                Set<Object> artifacts = new HashSet<Object>();
+                
+                boolean av = false;
+                Class<?> selectType = query.getSelectType();
+                if (selectType.equals(ArtifactVersion.class)) {
+                    av = true;
+                } else if (!selectType.equals(Artifact.class)) {
+                    throw new RuntimeException(new QueryException(new Message("INVALID_SELECT_TYPE", LOGGER, selectType.getName())));
                 }
                 
-                qstr.append(property)
-                    .append("/value[@value = \"")
-                    .append(r.getRight())
-                    .append("\"]");
-            }
-            
-            LOGGER.info("Query: " + qstr.toString());
-            
-            Query jcrQuery = qm.createQuery(qstr.toString(), Query.XPATH);
-            
-            QueryResult result = jcrQuery.execute();
-            for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
-                Node node = nodes.nextNode();
-                
-                // UGH: jackrabbit does not support parent::* xpath expressions
-                // so we need to traverse the hierarchy to find the right node
-                if (av) {
-                    while (!node.getName().equals("version")) {
-                        node = node.getParent();
+                for (Restriction r : query.getRestrictions()) {
+                    
+                    // TODO: NOT, LIKE, OR, etc
+                    
+                    String property = (String) r.getLeft();
+                    if (property.startsWith("artifact.")) {
+                        property = property.substring("artifact.".length());
+                        
+                        qstr.append("//artifact/");
+                            
+                    } else if (property.startsWith("artifactVersion.")) {
+                        property = property.substring("artifactVersion.".length());
+                        qstr.append("//artifact/version/");
+                    } else {
+                        throw new RuntimeException(new QueryException(new Message("INVALID_QUERY_PROPERTY", LOGGER, property)));
                     }
-                    Node artifactNode = node.getParent();
-                    JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(artifactNode.getParent()), artifactNode);
-                    artifacts.add(new JcrVersion(artifact, node));
-                } else {
-                    while (!node.getName().equals("artifact")) {
-                        node = node.getParent();
-                    }
-                    artifacts.add(new JcrArtifact(new JcrWorkspace(node.getParent()), node));
+                    
+                    qstr.append(property)
+                        .append("/")
+                        .append(JcrUtil.VALUE)
+                        .append("[@")
+                        .append(JcrUtil.VALUE)
+                        .append("= \"")
+                        .append(r.getRight())
+                        .append("\"]");
                 }
                 
+                LOGGER.info("Query: " + qstr.toString());
                 
+                Query jcrQuery = qm.createQuery(qstr.toString(), Query.XPATH);
+                
+                QueryResult result = jcrQuery.execute();
+                for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
+                    Node node = nodes.nextNode();
+                    
+                    // UGH: jackrabbit does not support parent::* xpath expressions
+                    // so we need to traverse the hierarchy to find the right node
+                    if (av) {
+                        while (!node.getName().equals("version")) {
+                            node = node.getParent();
+                        }
+                        Node artifactNode = node.getParent();
+                        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(artifactNode.getParent()), artifactNode);
+                        artifacts.add(new JcrVersion(artifact, node));
+                    } else {
+                        while (!node.getName().equals("artifact")) {
+                            node = node.getParent();
+                        }
+                        artifacts.add(new JcrArtifact(new JcrWorkspace(node.getParent()), node));
+                    }
+                    
+                    
+                }                                                   
+                
+                return artifacts;
             }
-            
-            return artifacts;
-        } catch (RepositoryException e) {
-            throw new RegistryException(e);
-        }
+        });
     }
 
     private String trimContentType(String contentType) {
@@ -512,15 +503,23 @@ public class JcrRegistry implements Registry {
             Node property = JcrUtil.getOrCreate(versionNode, idx.getId());
             JcrUtil.removeChildren(property);
             
+            List<Object> results = new ArrayList<Object>();
+            
             while (result.next()) {
                 XQItem item = result.getItem();
 
                 org.w3c.dom.Node node = item.getNode();
                 
-                String content = DOMUtils.getContent(node);
-                Node valueNode = property.addNode(AbstractJcrObject.VALUE);
-                valueNode.setProperty(AbstractJcrObject.VALUE, content);
+                Object content = DOMUtils.getContent(node);
+              
+                if (idx.getQueryType().equals(QName.class)) {
+                    results.add(QNameUtil.fromString(content.toString())); 
+                } else {
+                    results.add(content);
+                }
             }
+            
+            jcrVersion.setProperty(idx.getId(), results);
         } catch (Exception e) {
             // TODO: better error handling for frontends
             // We should log this and make the logs retrievable
@@ -532,11 +531,13 @@ public class JcrRegistry implements Registry {
     }
 
     public void initialize() throws Exception {
-        session = jcrRepository.login(credentials);
-        root = session.getRootNode();
+        Session session = getSessionFactory().getSession();
+        Node root = session.getRootNode();
         
-        workspaces = JcrUtil.getOrCreate(root, "workspaces");
-        indexes = JcrUtil.getOrCreate(root, "indexes");
+        Node workspaces = JcrUtil.getOrCreate(root, "workspaces");
+        workspacesId = workspaces.getUUID();
+        indexesId = JcrUtil.getOrCreate(root, "indexes").getUUID();
+        artifactTypesId = JcrUtil.getOrCreate(root, "artifactTypes").getUUID();
 
         NodeIterator nodes = workspaces.getNodes();
         // ignore the system node
@@ -549,20 +550,7 @@ public class JcrRegistry implements Registry {
         } 
         
         session.save();
-    }
-
-    public void destroy() {
-        if (session != null) {
-            session.logout();
-        }
-    }
-
-    public void setJcrRepository(Repository jcrRepository) {
-        this.jcrRepository = jcrRepository;
-    }
-
-    public void setCredentials(Credentials credentials) {
-        this.credentials = credentials;
+//        session.logout();
     }
 
     public void setSettings(Settings settings) {

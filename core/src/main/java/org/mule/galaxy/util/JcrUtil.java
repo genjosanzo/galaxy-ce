@@ -1,6 +1,13 @@
 package org.mule.galaxy.util;
 
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
@@ -15,8 +22,14 @@ import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.version.VersionException;
+import javax.xml.namespace.QName;
 
 public class JcrUtil {
+
+    public static final String VALUE = "__value";
+    private static final String TYPE = "__type";
+    private static final String COMPONENT_TYPE = "__componentType";
+    
     /** Recursively outputs the contents of the given node. */
     public static void dump(Node node) throws RepositoryException {
         // First output the node path
@@ -128,5 +141,80 @@ public class JcrUtil {
         }
         
         return p.getValue();
+    }
+
+    public static void setProperty(String name, Object value, Node n) throws ItemExistsException,
+        PathNotFoundException, VersionException, ConstraintViolationException, LockException,
+        RepositoryException {
+        if (value instanceof Collection) {
+            Node child = getOrCreate(n, name);
+            
+            Collection<?> c = (Collection<?>) value;
+            
+            if (c instanceof Set) {
+                n.setProperty(TYPE, Set.class.getName());
+            } else if (c instanceof Map) {
+                n.setProperty(TYPE, Map.class.getName());
+            } else {
+                n.setProperty(TYPE, Collection.class.getName());
+            }
+            
+            n.setProperty(COMPONENT_TYPE, getComponentType(c));
+            
+            for (Object o : c) {
+                Node valueNode = child.addNode(VALUE);
+                valueNode.setProperty(VALUE, o.toString());
+            }
+        } else if (value instanceof String) {
+            n.setProperty(TYPE, String.class.getName());
+            n.setProperty(name, value.toString());
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    private static String getComponentType(Collection<?> c) {
+        return c.iterator().next().getClass().getName();
+    }
+
+    public static Object getProperty(String name, Node node) {
+        try {
+            Node child = node.getNode(name);
+            
+            String type = getStringOrNull(node, TYPE);
+            
+            if (type.equals(String.class.getName())) {
+                return getStringOrNull(child, name);
+            } 
+            
+            Collection<Object> values = null;
+            if (type.equals(Set.class.getName())) {
+                values = new HashSet<Object>();
+            } else {
+                values = new ArrayList<Object>();
+            }
+            
+            String component = JcrUtil.getStringOrNull(node, COMPONENT_TYPE);
+            Class componentCls = JcrUtil.class.getClassLoader().loadClass(component);
+            
+            for (NodeIterator itr = child.getNodes(); itr.hasNext();) {
+                Node next = itr.nextNode();
+
+                Object value = JcrUtil.getStringOrNull(next, VALUE);
+                
+                if (componentCls.equals(QName.class)) {
+                    value = QNameUtil.fromString(value.toString());
+                }
+                
+                values.add(value);
+            }
+            return values;
+        } catch (PathNotFoundException e) {
+            return getStringOrNull(node, name);
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

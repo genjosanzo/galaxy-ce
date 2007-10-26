@@ -2,18 +2,32 @@ package org.mule.galaxy.impl;
 
 import javax.xml.namespace.QName;
 
+import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.Dao;
 import org.mule.galaxy.Index;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.util.Constants;
 
-public class InitialIndexBuilder {
+public class RegistryInitializer {
     private Registry registry;
-
+    private Dao<ArtifactType> artifactTypeDao;
+    
     public void setRegistry(Registry registry) {
         this.registry = registry;
     }
     
     public void initialize() throws Exception {
+        createIndexes();
+        createTypes();
+    }
+
+    private void createTypes() {
+        artifactTypeDao.save(new ArtifactType("WSDL", "application/wsdl+xml", Constants.WSDL_DEFINITION_QNAME));
+        artifactTypeDao.save(new ArtifactType("Mule Configuration", "application/mule+xml", Constants.MULE_QNAME));
+    }
+
+    private void createIndexes() throws RegistryException {
         /**
          * Creates a document like:
          * <values>
@@ -53,7 +67,10 @@ public class InitialIndexBuilder {
                                String.class, // search input type
                                exp, // the xquery expression
                                Constants.MULE_QNAME); // document QName which this applies to
-                
-
     }
+
+    public void setArtifactTypeDao(Dao<ArtifactType> artifactTypeDao) {
+        this.artifactTypeDao = artifactTypeDao;
+    }
+    
 }
