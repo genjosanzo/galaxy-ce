@@ -24,14 +24,17 @@ M1 TODOs:
 - Support for: policies, Schemas, Mule Config
 - Security
 - Approval process/workflow
-
 - Mule Bootup & reference of things in the registry
 - Maven Itnegration
 - Verify that my usage of threading & Sessions works
 - WSDL references & locator?
-
 - workspace hierarchies, properties, description, querying
 - Views (WSDL)
 
 M2 TODOs:
 
+TODO -
+- blog on atom
+- check in code
+- status report (CXF)
+- 

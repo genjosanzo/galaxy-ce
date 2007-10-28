@@ -7,4 +7,9 @@ public interface Constants {
                                       "definitions");
 
     QName MULE_QNAME = new QName("http://www.mulesource.org/schema/mule/core/2.0", "mule");
+    
+    QName SCHEMA_QNAME = new QName("http://www.w3.org/2001/XMLSchema", "schema");
+    
+    QName POLICY_QNAME = new QName("http://schemas.xmlsoap.org/ws/2004/09/policy", "Policy");
+    
 }

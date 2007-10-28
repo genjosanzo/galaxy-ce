@@ -13,6 +13,8 @@
 		<module>core</module>
 		<module>wsdldiff</module>
 		<module>testutils</module>
+                <module>web</module>
+                <module>gwt-client</module>
 	</modules>
 
 	<dependencies>

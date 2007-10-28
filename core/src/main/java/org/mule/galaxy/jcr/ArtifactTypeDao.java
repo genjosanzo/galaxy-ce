@@ -1,6 +1,8 @@
 package org.mule.galaxy.jcr;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -46,15 +48,9 @@ public class ArtifactTypeDao extends AbstractDao<ArtifactType> {
         node.setProperty(DESCRIPTION, t.getDescription());
         node.setProperty(CONTENT_TYPE, t.getContentType());
         JcrUtil.setProperty(DOCUMENT_TYPES, t.getDocumentTypes(), node);
+        session.save();
     }
 
-    @Override
-    protected void doDelete(String id, Session session) throws ValueFormatException, VersionException,
-        LockException, ConstraintViolationException, RepositoryException, AccessDeniedException,
-        ItemExistsException, InvalidItemStateException, NoSuchNodeTypeException {
-        // TODO Auto-generated method stub
-        
-    }
 
     @Override
     protected ArtifactType doGet(String id, Session session) throws RepositoryException {
@@ -77,9 +73,17 @@ public class ArtifactTypeDao extends AbstractDao<ArtifactType> {
 
     protected List<ArtifactType> doListAll(Session session) throws RepositoryException {
         List<ArtifactType> types = new ArrayList<ArtifactType>();
+        
         for (NodeIterator itr = registry.getArtifactTypesNode().getNodes(); itr.hasNext();) {
             types.add(createArtifact(itr.nextNode()));
         }
+        
+        Collections.sort(types, new Comparator<ArtifactType>() {
+            public int compare(ArtifactType o1, ArtifactType o2) {
+                return o1.getDescription().compareTo(o2.getDescription());
+            }
+        });
+        
         return types;
     }
 

@@ -9,7 +9,7 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
     http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
 
-  <bean id="sessionFactory" class="org.springmodules.jcr.JcrSessionFactory">
+  <bean id="sessionFactory" class="org.mule.galaxy.util.JackrabbitSessionFactory">
     <property name="repository" ref="repository"/>
     <property name="credentials">
      <bean class="javax.jcr.SimpleCredentials">
@@ -23,6 +23,7 @@
   <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean">
     <!-- normal factory beans params -->
     <property name="configuration" value="classpath:/META-INF/jackrabbit-repo.xml"/>
+    <property name="homeDir" value="file:./jackrabbit"/>
   </bean>
 
   <bean id="registry" parent="txProxyTemplate">
@@ -30,7 +31,7 @@
     <property name="proxyTargetClass" value="true"/>
   </bean>
   
-  <bean id="registryTarget" class="org.mule.galaxy.jcr.JcrRegistry"
+  <bean id="registryTarget" class="org.mule.galaxy.jcr.JcrRegistryImpl"
         init-method="initialize" destroy-method="destroy">
     <property name="contentService" ref="contentService" />
     <property name="settings" ref="settings" />
@@ -77,6 +78,5 @@
      </props>
    </property>
   </bean>
-  
   
 </beans>

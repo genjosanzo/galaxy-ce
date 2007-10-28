@@ -18,11 +18,14 @@ public class RegistryInitializer {
     }
     
     public void initialize() throws Exception {
+        
         createIndexes();
         createTypes();
     }
 
     private void createTypes() {
+        artifactTypeDao.save(new ArtifactType("WS-Policy", "application/xml", Constants.POLICY_QNAME));
+        artifactTypeDao.save(new ArtifactType("XML Schema", "application/xml", Constants.SCHEMA_QNAME));
         artifactTypeDao.save(new ArtifactType("WSDL", "application/wsdl+xml", Constants.WSDL_DEFINITION_QNAME));
         artifactTypeDao.save(new ArtifactType("Mule Configuration", "application/mule+xml", Constants.MULE_QNAME));
     }

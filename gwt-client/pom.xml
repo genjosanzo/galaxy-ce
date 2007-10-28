@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0    http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.mule.galaxy</groupId>
+    <artifactId>galaxy-parent</artifactId>
+    <version>1.0-M1-SNAPSHOT</version>
+  </parent>  
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.mule.galaxy</groupId>
+  <artifactId>galaxy-gwt-rpc</artifactId>
+  <packaging>jar</packaging>
+  <name>Galaxy GWT RPC</name>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.mule.galaxy</groupId>
+      <artifactId>galaxy-core</artifactId>
+      <version>${version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-servlet</artifactId>
+      <version>1.4.60</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>1.4.60</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.mule.galaxy</groupId>
+      <artifactId>galaxy-testutils</artifactId>
+      <version>${version}</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.0.2</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  
+  
+</project>

@@ -3,6 +3,7 @@ package org.mule.galaxy.jcr;
 import java.io.IOException;
 import java.util.List;
 
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
@@ -11,9 +12,9 @@ import org.mule.galaxy.Identifiable;
 import org.springmodules.jcr.JcrCallback;
 
 public abstract class AbstractDao<T extends Identifiable> implements Dao<T> {
-    protected JcrRegistry registry;
+    protected JcrRegistryImpl registry;
     
-    public void setRegistry(JcrRegistry registry) {
+    public void setRegistry(JcrRegistryImpl registry) {
         this.registry = registry;
     }
 
@@ -59,5 +60,9 @@ public abstract class AbstractDao<T extends Identifiable> implements Dao<T> {
 
     protected abstract List<T> doListAll(Session session) throws RepositoryException;
     
-    protected abstract void doDelete(String id, Session session) throws RepositoryException;
+    protected void doDelete(String id, Session session) throws RepositoryException {
+        Node node = registry.getNodeByUUID(id);
+        node.remove();
+        session.save();
+    }
 }
