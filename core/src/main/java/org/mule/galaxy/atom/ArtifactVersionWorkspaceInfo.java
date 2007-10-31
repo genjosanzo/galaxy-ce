@@ -4,8 +4,8 @@ package org.mule.galaxy.atom;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.abdera.protocol.server.content.CollectionProvider;
-import org.apache.abdera.protocol.server.content.WorkspaceInfo;
+import org.apache.abdera.protocol.server.CollectionProvider;
+import org.apache.abdera.protocol.server.WorkspaceInfo;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;

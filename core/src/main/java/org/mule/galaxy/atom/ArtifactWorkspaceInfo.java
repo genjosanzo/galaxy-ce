@@ -4,23 +4,23 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.abdera.protocol.server.content.CollectionProvider;
-import org.apache.abdera.protocol.server.content.ResponseContextException;
-import org.apache.abdera.protocol.server.content.WorkspaceInfo;
+import org.apache.abdera.protocol.server.CollectionProvider;
+import org.apache.abdera.protocol.server.WorkspaceInfo;
+import org.apache.abdera.protocol.server.impl.ResponseContextException;
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 
 /**
  * This workspace contains collections which map to the Galaxy workspaces.
  * 
  */
-public class ArtifactWorkspaceInfo implements WorkspaceInfo<Artifact> {
+public class ArtifactWorkspaceInfo implements WorkspaceInfo {
     private Registry registry;
     
-    public CollectionProvider<Artifact> getCollectionProvider(String id) throws ResponseContextException {
+    public CollectionProvider getCollectionProvider(String id) throws ResponseContextException {
         try {
             Workspace workspace = registry.getWorkspace(id);
             
@@ -32,9 +32,9 @@ public class ArtifactWorkspaceInfo implements WorkspaceInfo<Artifact> {
         }
     }
 
-    public Map<String, CollectionProvider<Artifact>> getCollectionProviders() {
-        HashMap<String, CollectionProvider<Artifact>> providers = 
-            new HashMap<String, CollectionProvider<Artifact>>();
+    public Map<String, CollectionProvider> getCollectionProviders() {
+        HashMap<String, CollectionProvider> providers = 
+            new HashMap<String, CollectionProvider>();
         
         try {
             Collection<Workspace> workspaces = registry.getWorkspaces();
@@ -59,6 +59,5 @@ public class ArtifactWorkspaceInfo implements WorkspaceInfo<Artifact> {
 
     public void setRegistry(Registry registry) {
         this.registry = registry;
-    } 
-
+    }
 }

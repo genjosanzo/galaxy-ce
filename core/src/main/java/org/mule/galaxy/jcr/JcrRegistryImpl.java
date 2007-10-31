@@ -4,10 +4,12 @@ package org.mule.galaxy.jcr;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -53,7 +55,6 @@ import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.QNameUtil;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
-import org.springmodules.jcr.SessionFactory;
 
 public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistry {
 
@@ -392,6 +393,104 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
         });
     }
+
+    public Set search(String queryString) throws RegistryException, QueryException {
+        List<String> tokens = new ArrayList<String>();
+        int start = 0;
+        for (int i = 0; i < queryString.length(); i++) {
+            char c = queryString.charAt(i);
+            switch (c) {
+            case ' ':
+                if (start != i) {
+                    tokens.add(queryString.substring(start, i));
+                }
+                start = i + 1;
+                break;
+            case '=':
+                 tokens.add("=");
+                 start = i+1;
+                 break;
+            case '<':
+                if (queryString.charAt(i+1) == '=') {
+                    i++;
+                    tokens.add("<=");
+                } else {
+                    tokens.add("<");
+                }
+                start = i+1;  
+                break;
+            }
+        }
+        
+        if (start != queryString.length()) {
+            tokens.add(queryString.substring(start));
+        }
+    
+        System.out.println(Arrays.toString(tokens.toArray()));
+        
+        Iterator<String> itr = tokens.iterator(); 
+        if (!itr.hasNext()) {
+            throw new QueryException(new Message("EMPTY_QUERY_STRING", LOGGER));
+        }
+        
+        if (!itr.next().toLowerCase().equals("select")){
+            throw new QueryException(new Message("EXPECTED_SELECT", LOGGER));
+        }
+        
+        if (!itr.hasNext()) {
+            throw new QueryException(new Message("EXPECTED_SELECT_TYPE", LOGGER));
+        }
+        
+        Class<?> selectTypeCls = null;
+        String selectType = itr.next();
+        if (selectType.equals("artifact")) {
+            selectTypeCls = Artifact.class;
+        } else if (selectType.equals("artifactVersion")) {
+            selectTypeCls = ArtifactVersion.class;
+        } else {
+            throw new QueryException(new Message("UNKNOWN_SELECT_TYPE", LOGGER, selectType));
+        }
+        
+        if (!itr.hasNext() || !itr.next().toLowerCase().equals("where")){
+            throw new QueryException(new Message("EXPECTED_WHERE", LOGGER));
+        }
+        
+        org.mule.galaxy.query.Query q = null;
+        while (itr.hasNext()) {
+            String left = itr.next();
+            if (!itr.hasNext()) {
+                throw new QueryException(new Message("EXPECTED_COMPARATOR", LOGGER));
+            }
+            
+            String compare = itr.next();
+            
+            if (!itr.hasNext()) {
+                throw new QueryException(new Message("EXPECTED_RIGHT", LOGGER));
+            }
+            
+            String right = itr.next();
+            
+            if (right.startsWith("'") && right.endsWith("'")) {
+                right = right.substring(1, right.length()-1);
+            }
+            
+            Restriction r = null;
+            if (compare.equals("=")) {
+                r = Restriction.eq(left, right);
+            } else {
+                new QueryException(new Message("UNKNOWN_COMPARATOR", LOGGER));
+            }
+            
+            if (q == null) {
+                q = new org.mule.galaxy.query.Query(selectTypeCls, r);
+            } else {
+                q.add(r);
+            }
+        }
+        
+        return search(q);
+    }
+
 
     public Set search(final org.mule.galaxy.query.Query query) 
         throws RegistryException, QueryException {

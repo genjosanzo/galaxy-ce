@@ -30,9 +30,9 @@
     
   </a:serviceContext>
 
-  <bean id="provider" class="org.apache.abdera.protocol.server.content.WorkspaceProvider">
+  <bean id="provider" class="org.apache.abdera.protocol.server.impl.WorkspaceProvider">
     <property name="workspaces">
-      <list value-type="org.apache.abdera.protocol.server.content.WorkspaceInfo">
+      <list value-type="org.apache.abdera.protocol.server.WorkspaceInfo">
         <bean class="org.mule.galaxy.atom.ArtifactWorkspaceInfo">
           <property name="registry" ref="registry"/>
         </bean>

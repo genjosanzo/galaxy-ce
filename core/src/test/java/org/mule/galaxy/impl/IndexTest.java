@@ -6,12 +6,12 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.junit.Ignore;
 import org.mule.galaxy.AbstractGalaxyTest;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Index;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.jcr.AbstractJcrObject;
 import org.mule.galaxy.jcr.JcrVersion;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.Restriction;
@@ -56,13 +56,19 @@ public class IndexTest extends AbstractGalaxyTest {
         assertTrue(services.contains(new QName("HelloWorldService")));
         
         // Try out search!
-        Set results = registry.search(new Query(Artifact.class, 
+        Set results = registry.search("select artifact where artifactVersion.wsdl.service = 'HelloWorldService'");
+        assertEquals(1, results.size());
+        
+        Artifact next = (Artifact) results.iterator().next();
+        assertEquals(1, next.getVersions().size());
+        
+        results = registry.search(new Query(Artifact.class, 
                                                 Restriction.eq("artifactVersion.wsdl.service", 
                                                                new QName("HelloWorldService"))));
         
         assertEquals(1, results.size());
         
-        Artifact next = (Artifact) results.iterator().next();
+        next = (Artifact) results.iterator().next();
         assertEquals(1, next.getVersions().size());
         
         results = registry.search(new Query(ArtifactVersion.class, 
@@ -77,6 +83,7 @@ public class IndexTest extends AbstractGalaxyTest {
         // TODO test data
     }
 
+    @Ignore
     public void testMuleIndex() throws Exception {
         Set<Index> indices = registry.getIndices(Constants.MULE_QNAME);
         assertNotNull(indices);

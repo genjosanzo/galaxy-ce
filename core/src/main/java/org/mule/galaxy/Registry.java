@@ -40,6 +40,8 @@ public interface Registry {
                         String indexExpression, 
                         QName... documentTypes) throws RegistryException;
 
+    Set search(String queryString) throws RegistryException, QueryException;
+
     Set search(Query query) throws RegistryException, QueryException;
 
     Set<Index> getIndices(QName documentType) throws RegistryException;

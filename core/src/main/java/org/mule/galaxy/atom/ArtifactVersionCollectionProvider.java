@@ -4,17 +4,22 @@ package org.mule.galaxy.atom;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 
 import javax.activation.MimeType;
 
 import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
+import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.Content;
-import org.apache.abdera.protocol.server.content.AbstractCollectionProvider;
-import org.mule.galaxy.RegistryException;
+import org.apache.abdera.model.Person;
+import org.apache.abdera.protocol.server.RequestContext;
+import org.apache.abdera.protocol.server.impl.AbstractCollectionProvider;
+import org.apache.abdera.protocol.server.impl.ResponseContextException;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
 
 public class ArtifactVersionCollectionProvider extends AbstractCollectionProvider<ArtifactVersion> {
     
@@ -28,11 +33,14 @@ public class ArtifactVersionCollectionProvider extends AbstractCollectionProvide
         this.artifact = document;
     }
 
-    public ArtifactVersion createEntry(String title, String summary, Content content) {
+    @Override
+    public ArtifactVersion createEntry(String arg0, IRI arg1, String arg2, Date arg3, List<Person> arg4,
+                                       Content arg5, RequestContext request) throws ResponseContextException {
         throw new UnsupportedOperationException();
     }
 
-    public ArtifactVersion createMediaEntry(MimeType mimeType, String slug, InputStream inputStream) {
+    public ArtifactVersion createMediaEntry(MimeType mimeType, String slug, 
+                                            InputStream inputStream, RequestContext request) {
         try {
             return registry.newVersion(artifact, inputStream, null);
         } catch (RegistryException e) {
@@ -42,7 +50,7 @@ public class ArtifactVersionCollectionProvider extends AbstractCollectionProvide
         }
     }
 
-    public void deleteEntry(String resourceName) {
+    public void deleteEntry(String resourceName, RequestContext request) {
         throw new UnsupportedOperationException();
     }
 
@@ -50,7 +58,7 @@ public class ArtifactVersionCollectionProvider extends AbstractCollectionProvide
         return "Mule Galaxy";
     }
 
-    public Content getContent(ArtifactVersion doc) {
+    public Content getContent(ArtifactVersion doc, RequestContext request) {
         Content content = factory.newContent();
         content.setSrc(doc.getVersionLabel());
         content.setMimeType(artifact.getContentType().toString());
@@ -61,15 +69,15 @@ public class ArtifactVersionCollectionProvider extends AbstractCollectionProvide
         return artifact.getContentType().toString();
     }
 
-    public Iterable<ArtifactVersion> getEntries() {
+    public Iterable<ArtifactVersion> getEntries(RequestContext request) {
         return artifact.getVersions();
     }
 
-    public ArtifactVersion getEntry(String resourceName) {
+    public ArtifactVersion getEntry(String resourceName, RequestContext request) {
         return artifact.getVersion(resourceName);
     }
 
-    public ArtifactVersion getEntryFromId(String id) {
+    public ArtifactVersion getEntryFromId(String id, RequestContext request) {
         return artifact.getVersion(id);
     }
 
@@ -110,7 +118,19 @@ public class ArtifactVersionCollectionProvider extends AbstractCollectionProvide
         return entry.getCreated().getTime();
     }
 
-    public ArtifactVersion updateEntry(ArtifactVersion entry, Content content) {
-        throw new UnsupportedOperationException();
+    @Override
+    public List<Person> getAuthors(ArtifactVersion entry, RequestContext request)
+        throws ResponseContextException {
+        // TODO Auto-generated method stub
+        return null;
     }
+
+    @Override
+    public void updateEntry(ArtifactVersion entry, String title, Date updated, List<Person> authors,
+                            String summary, Content content, RequestContext request)
+        throws ResponseContextException {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

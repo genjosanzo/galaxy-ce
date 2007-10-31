@@ -3,27 +3,33 @@ package org.mule.galaxy.atom;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
 import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
+import org.apache.abdera.i18n.iri.IRI;
+import org.apache.abdera.model.Collection;
 import org.apache.abdera.model.Content;
+import org.apache.abdera.model.Entry;
+import org.apache.abdera.model.Person;
 import org.apache.abdera.model.Text;
 import org.apache.abdera.model.Text.Type;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.ResponseContext;
-import org.apache.abdera.protocol.server.content.AbstractCollectionProvider;
-import org.apache.abdera.protocol.server.content.ResponseContextException;
+import org.apache.abdera.protocol.server.impl.AbstractCollectionProvider;
 import org.apache.abdera.protocol.server.impl.EmptyResponseContext;
-import org.mule.galaxy.RegistryException;
+import org.apache.abdera.protocol.server.impl.ResponseContextException;
+import org.apache.abdera.protocol.util.EncodingUtil;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.QueryException;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 
 public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artifact> {
@@ -42,15 +48,26 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
         return "tag:mule.org/galaxy,2007:feed";
     }
     
-    public Content getContent(Artifact doc) {
-        Content content = factory.newContent();
-
-        content.setText("Hey its an artifact!");
-        return content;
+    public Content getContent(Artifact doc, RequestContext request) {
+        // Not used since these are media entries
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    protected void addEntryDetails(RequestContext request, Entry e, IRI entryBaseIri, Artifact entryObj)
+        throws ResponseContextException {
+        super.addEntryDetails(request, e, entryBaseIri, entryObj);
+        
+        Factory factory = request.getAbdera().getFactory();
+        Collection col = factory.newCollection();
+        col.setAttributeValue("id", "versions");
+        col.setHref("feed/versions/" + getId(entryObj));
+        col.setTitle("Artifact Versions");
+        e.addExtension(col);
     }
 
     @Override
-    public Text getSummary(Artifact entry) {
+    public Text getSummary(Artifact entry, RequestContext request) {
         Text summary = factory.newSummary();
         
         summary.setText("Version " + entry.getLatestVersion().getVersionLabel());
@@ -97,21 +114,27 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
         return doc.getLatestVersion().getCreated().getTime();
     }
 
-    public Artifact createEntry(String title, 
-                                String summary, 
-                                Content content) throws ResponseContextException {
+    @Override
+    public Artifact createEntry(String arg0, IRI arg1, String arg2, Date arg3, List<Person> arg4, Content arg5, RequestContext request)
+        throws ResponseContextException {
         throw new ResponseContextException(new EmptyResponseContext(500));
     }
 
-    @Override
-    protected ResponseContext createMediaEntry(RequestContext request) {
-        // TODO Auto-generated method stub
-        return super.createMediaEntry(request);
-    }
-
-    public Artifact createMediaEntry(MimeType mimeType, String slug, InputStream inputStream) throws ResponseContextException {
+    public Artifact createMediaEntry(MimeType mimeType, String slug, 
+                                     InputStream inputStream, RequestContext request) throws ResponseContextException {
         try {
-            return registry.createArtifact(workspace, mimeType.toString(), slug, null, inputStream);
+            String version = request.getHeader("X-Artifact-Version");
+            
+            if (version == null || version.equals("")) {
+                EmptyResponseContext ctx = new EmptyResponseContext(500);
+                ctx.setStatusText("You must supply an X-Artifact-Version header!");
+                
+                throw new ResponseContextException(ctx);
+            }
+            return registry.createArtifact(workspace, 
+                                           mimeType.toString(), 
+                                           slug, 
+                                           version, inputStream);
         } catch (RegistryException e) {
             throw new ResponseContextException(500, e);
         } catch (IOException e) {
@@ -126,15 +149,26 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
         return true;
     }
 
-    public Iterable<Artifact> getEntries() {
+    @SuppressWarnings("unchecked")
+    public Iterable<Artifact> getEntries(RequestContext request) throws ResponseContextException {
         try {
-            return registry.getArtifacts(workspace);
+            String q = request.getParameter("q");
+            
+            if (q != null) {
+                q = EncodingUtil.decode(q);
+                
+                return registry.search(q);
+            } else {
+                return registry.getArtifacts(workspace);
+            }
         } catch (RegistryException e) {
-            throw new RuntimeException(e);
+            throw new ResponseContextException(500, e);
+        } catch (QueryException e) {
+            throw new ResponseContextException(500, e);
         }
     }
 
-    public void deleteEntry(String name) {
+    public void deleteEntry(String name, RequestContext request) {
         name = parseName(name);
         Artifact artifact;
         try {
@@ -151,12 +185,21 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
     }
     
 
-    public Artifact updateEntry(Artifact entry, Content content) {
-        // TODO Auto-generated method stub
-        return null;
+    @Override
+    public List<Person> getAuthors(Artifact entry, RequestContext request) throws ResponseContextException {
+        Person author = request.getAbdera().getFactory().newAuthor();
+        author.setName("Galaxy");
+        return Arrays.asList(author);
     }
 
-    public Artifact getEntryFromId(String id) {
+    @Override
+    public void updateEntry(Artifact entry, String title, Date updated, List<Person> authors, String summary,
+                            Content content, RequestContext request) throws ResponseContextException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public Artifact getEntryFromId(String id, RequestContext request) {
         id = id.substring(ID_PREFIX.length());
         
         try {
@@ -166,7 +209,7 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
         }
     }
 
-    public Artifact getEntry(String name) {
+    public Artifact getEntry(String name, RequestContext request) {
         name = parseName(name);
         try {
             return registry.getArtifact(name);

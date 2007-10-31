@@ -169,7 +169,7 @@ public class JcrUtil {
             n.setProperty(TYPE, String.class.getName());
             n.setProperty(name, value.toString());
         } else {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Unsupported type " + value.getClass());
         }
     }
 
