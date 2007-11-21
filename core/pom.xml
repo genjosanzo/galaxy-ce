@@ -139,6 +139,11 @@
       <name>Apache Incubating Repository</name>
       <url>http://people.apache.org/repo/m2-incubating-repository/</url>
     </repository>
+    <repository>
+      <id>apache-snapshots</id>
+      <name>Apache Snapshot Repository</name>
+      <url>http://people.apache.org/repo/m2-snapshot-repository/</url>
+    </repository>
     <!-- Saxon -->
     <repository>
       <id>local</id>
