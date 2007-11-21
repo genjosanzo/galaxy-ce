@@ -296,6 +296,21 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
     
     @SuppressWarnings("unchecked")
+    public Set<Index> getIndices() {
+        return (Set<Index>) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Set<Index> indices = new HashSet<Index>();
+                for (NodeIterator nodes = getIndexNode().getNodes(); nodes.hasNext();) {
+                    Node node = nodes.nextNode();
+                    
+                    indices.add(createIndexFromNode(node.getParent()));
+                }
+                return indices;
+            }
+        });
+    }
+
+    @SuppressWarnings("unchecked")
     public Set<Index> getIndices(final QName documentType) throws RegistryException {
         return (Set<Index>) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {

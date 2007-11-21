@@ -4,7 +4,7 @@ package org.mule.galaxy.atom;
 import java.io.InputStream;
 import java.util.List;
 
-import org.apache.abdera.i18n.iri.Constants;
+import org.apache.abdera.i18n.io.CharUtils.Profile;
 import org.apache.abdera.i18n.iri.Escaping;
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.Collection;
@@ -49,7 +49,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         // Check out the feed, yo
         System.out.println("Grabbing the Feed");
         IRI colUri = new IRI(base).resolve(collection.getHref());
-        res = client.get(Escaping.encode(colUri.toString(), Constants.PATH));
+        res = client.get(Escaping.encode(colUri.toString(), Profile.PATH));
         assertEquals(200, res.getStatus());
         prettyPrint(res.getDocument());
         
@@ -68,7 +68,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         // Check the new feed for our entry
         System.out.println("Grabbing the Feed Again");
-        res = client.get(Escaping.encode(colUri.toString(), Constants.PATH));
+        res = client.get(Escaping.encode(colUri.toString(), Profile.PATH));
         assertEquals(200, res.getStatus());
         prettyPrint(res.getDocument());
         

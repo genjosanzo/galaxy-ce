@@ -11,5 +11,7 @@ public interface Constants {
     QName SCHEMA_QNAME = new QName("http://www.w3.org/2001/XMLSchema", "schema");
     
     QName POLICY_QNAME = new QName("http://schemas.xmlsoap.org/ws/2004/09/policy", "Policy");
+
+    QName XSLT_QNAME = new QName("http://www.w3.org/1999/XSL/Transform", "stylesheet");
     
 }
