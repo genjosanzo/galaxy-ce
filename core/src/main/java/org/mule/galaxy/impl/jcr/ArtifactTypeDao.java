@@ -1,4 +1,4 @@
-package org.mule.galaxy.jcr;
+package org.mule.galaxy.impl.jcr;
 
 import java.util.ArrayList;
 import java.util.Collections;

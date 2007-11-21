@@ -6,7 +6,6 @@ import java.io.ByteArrayOutputStream;
 import javax.activation.MimeType;
 import javax.wsdl.Definition;
 
-import org.junit.Test;
 import org.mule.galaxy.AbstractGalaxyTest;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
@@ -26,7 +25,6 @@ public class ContentServiceTest extends AbstractGalaxyTest {
         
     }
 
-    @Test
     public void testCHs() throws Exception {
         contentService = (ContentService) applicationContext.getBean("contentService");
         

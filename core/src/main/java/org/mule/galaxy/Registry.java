@@ -13,6 +13,8 @@ import org.mule.galaxy.Index.Language;
 import org.mule.galaxy.query.Query;
 
 public interface Registry {
+    public static final String PRODUCTION_TAG = "production";
+    public static final String DEVELOPMENT_TAG = "development";
 
     Workspace getWorkspace(String id) throws RegistryException, NotFoundException;
     

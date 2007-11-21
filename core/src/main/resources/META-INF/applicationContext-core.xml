@@ -20,6 +20,13 @@
     </property>
   </bean>
 
+  <bean id="lifecycleManager" 
+        class="org.mule.galaxy.impl.lifecycle.LifecycleManagerImpl" 
+        init-method="initialize">
+    
+  </bean>
+
+
   <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean">
     <!-- normal factory beans params -->
     <property name="configuration" value="classpath:/META-INF/jackrabbit-repo.xml"/>
@@ -31,15 +38,16 @@
     <property name="proxyTargetClass" value="true"/>
   </bean>
   
-  <bean id="registryTarget" class="org.mule.galaxy.jcr.JcrRegistryImpl"
+  <bean id="registryTarget" class="org.mule.galaxy.impl.jcr.JcrRegistryImpl"
         init-method="initialize" destroy-method="destroy">
     <property name="contentService" ref="contentService" />
     <property name="settings" ref="settings" />
     <property name="sessionFactory" ref="sessionFactory" />
+    <property name="lifecycleManager" ref="lifecycleManager" />
     <property name="allowCreate" value="true"/>
   </bean>
   
-  <bean id="artifactTypeDao" class="org.mule.galaxy.jcr.ArtifactTypeDao">
+  <bean id="artifactTypeDao" class="org.mule.galaxy.impl.jcr.ArtifactTypeDao">
     <property name="registry" ref="registry"/>
   </bean>
   

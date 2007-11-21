@@ -1,40 +1,45 @@
-Modeling:
-- How do we deal with groups of artifacts? POM + Jar? Schema & Wsdls & document resolution?
-- Implement a custom version naming scheme
-
-Use case ideas:
-- Apple Configuration Management
-- logistics
-- movie store?
-- financial...
-
 Outside help:
 - Name confirmation
-- License Confirmation
 - Logo 
 - Web template
-- EE Edition
-  * Clustering
-  * Dynamic Configuration Changes
-  * UDDI
-  
+
 M1 TODOs:
-- Version enforcement & make user specify it
 - Web Interface
-- Support for: policies, Schemas, Mule Config
 - Security
-- Approval process/workflow
 - Mule Bootup & reference of things in the registry
-- Maven Itnegration
-- Verify that my usage of threading & Sessions works
 - WSDL references & locator?
-- workspace hierarchies, properties, description, querying
-- Views (WSDL)
+- Views (WSDL, Mule)
+- Workspace hierarchies, properties, description, querying
+- Maven Integration
+- Flesh out queries
+- OSGI bundles
 
-M2 TODOs:
+1.0 CE TODOs:
+- Saved queries
+- Version enforcement
+- Dependency mgmt
 
-TODO -
-- blog on atom
-- check in code
-- status report (CXF)
+1.0 EE TODOs
+- Cluster Management
+- Registry Clustering
+
+TODO
+- Galaxy Lifecycle and Service Dependency mgmt
+- Jersey release (pending: M3)
+- CXF on Mule 2 (pending: internet, research recent xfire changes)
+- HTTP client changes (pending: internet, svn up, run tests)
+- Abdera:
+  - Abdera/Mule Demo App
+  - JCR cleanup (pending: internet - how do I do custom nodes?)
+  - Maven build
+  - Chris merge
+- Atom/Mule white papers
+- Schneider: registry discussion
+- Restlet
+- Send Paul check
+- CXF & WS-RM
+
+Ideas:
+- periodic update over web service
+  File -> CXF Client -> CXF WS
 - 

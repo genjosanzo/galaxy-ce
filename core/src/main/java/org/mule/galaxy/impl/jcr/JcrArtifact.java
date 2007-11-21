@@ -1,4 +1,4 @@
-package org.mule.galaxy.jcr;
+package org.mule.galaxy.impl.jcr;
 
 import java.util.Calendar;
 import java.util.HashSet;
@@ -15,6 +15,9 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.util.QNameUtil;
 
 public class JcrArtifact extends AbstractJcrObject implements Artifact {
@@ -23,18 +26,22 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     private static final String UPDATED = "updated";
     private static final String NAME = "name";
     private static final String QNAME = "qname";
+    private static final String LIFECYCLE = "lifecycle";
+    private static final String PHASE = "phase";
     
     private Set<ArtifactVersion> versions;
     private Workspace workspace;
     private ContentHandler contentHandler;
+    private LifecycleManager lifecycleManager;
     
-    public JcrArtifact(Workspace w, Node node) {
-        this(w, node, null);
+    public JcrArtifact(Workspace w, Node node, LifecycleManager lifecycleManager) {
+        this(w, node, null, lifecycleManager);
     } 
-    public JcrArtifact(Workspace w, Node node, ContentHandler contentHandler) {
+    public JcrArtifact(Workspace w, Node node, ContentHandler contentHandler, LifecycleManager lifecycleManager) {
         super(node);
         this.workspace = w;
         this.contentHandler = contentHandler;
+        this.lifecycleManager = lifecycleManager;
     }
 
     public String getId() {
@@ -147,11 +154,32 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
         return latest;
     }
     
+    public Phase getPhase() {
+        String lifecycle = getStringOrNull(LIFECYCLE);
+        if (lifecycle == null) {
+            return null;
+        }
+        
+        String phase = getStringOrNull(PHASE);
+        if (phase == null) {
+            return null;
+        }
+        
+        Lifecycle l = lifecycleManager.getLifecycle(lifecycle);
+        
+        return l.getPhase(phase);
+    }
+    
     public ContentHandler getContentHandler() {
         return contentHandler;
     }
     public void setContentHandler(ContentHandler contentHandler) {
         this.contentHandler = contentHandler;
+    }
+    
+    public void setPhase(Phase p) {
+        setProperty(LIFECYCLE, p.getLifecycle().getName());
+        setProperty(PHASE, p.getName());
     }
 
 }

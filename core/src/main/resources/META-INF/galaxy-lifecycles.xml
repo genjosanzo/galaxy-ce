@@ -1,0 +1,10 @@
+<lifecycles xmlns="http://galaxy.mule.org/lifecycle">
+  <lifecycle name="Default" initialPhases="Created">
+    <phase name="Created" nextPhases="Developed"/>
+    <phase name="Developed" nextPhases="Tested"/>
+    <phase name="Tested" nextPhases="Staged,Deployed,Retired"/>
+    <phase name="Staged" nextPhases="Deployed,Retired"/>
+    <phase name="Deployed" nextPhases="Retired"/>
+    <phase name="Retired" nextPhases=""/>
+  </lifecycle>
+</lifecycles>

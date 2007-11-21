@@ -1,42 +1,15 @@
 package org.mule.galaxy.atom;
 
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.abdera.Abdera;
-import org.apache.abdera.factory.Factory;
-import org.apache.abdera.i18n.iri.Constants;
-import org.apache.abdera.i18n.iri.Escaping;
-import org.apache.abdera.i18n.iri.IRI;
-import org.apache.abdera.model.Base;
-import org.apache.abdera.model.Collection;
-import org.apache.abdera.model.Entry;
-import org.apache.abdera.model.Feed;
-import org.apache.abdera.model.Service;
-import org.apache.abdera.model.Workspace;
 import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
-import org.apache.abdera.protocol.server.ServiceContext;
 import org.apache.abdera.protocol.util.EncodingUtil;
-import org.apache.abdera.spring.SpringAbderaServlet;
-import org.junit.Test;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.FilterHolder;
-import org.mortbay.jetty.servlet.ServletHolder;
-import org.mule.galaxy.AbstractGalaxyTest;
-import org.mule.galaxy.Registry;
-import org.springmodules.jcr.SessionFactory;
-import org.springmodules.jcr.support.OpenSessionInViewFilter;
 
 public class ArtifactCollectionQueryTest extends AbstractAtomTest {
     
-    @Test
     public void testAddWsdl() throws Exception {
         assertNotNull(registry);
         
@@ -58,7 +31,7 @@ public class ArtifactCollectionQueryTest extends AbstractAtomTest {
         
         opts = new RequestOptions();
         
-        String search = EncodingUtil.encode("select artifact where artifactVersion.wsdl.service = 'HelloWorldService'");
+        String search = EncodingUtil.encode("select artifactVersion where artifactVersion.wsdl.service = 'HelloWorldService'");
         url = url + "?q=" + search;
         
         res = client.get(url);

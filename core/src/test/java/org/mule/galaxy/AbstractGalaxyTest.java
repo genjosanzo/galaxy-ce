@@ -1,22 +1,22 @@
 package org.mule.galaxy;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collection;
 
+import javax.activation.MimeTypeParseException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springmodules.jcr.JcrTemplate;
 import org.springmodules.jcr.SessionFactory;
 import org.springmodules.jcr.SessionFactoryUtils;
 import org.springmodules.jcr.jackrabbit.support.UserTxSessionHolder;
@@ -43,6 +43,19 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
 
     public InputStream getResourceAsStream(String name) {
         return getClass().getResourceAsStream(name);
+    }
+
+    protected Artifact importHelloWsdl() throws RegistryException, IOException, MimeTypeParseException {
+        InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
+        
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+        
+        Artifact artifact = registry.createArtifact(workspace, 
+                                                    "application/xml", null, 
+                                                    "0.1", helloWsdl);
+        return artifact;
     }
 
     private void clearJcrRepository() {

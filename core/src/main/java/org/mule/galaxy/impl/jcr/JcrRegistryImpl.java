@@ -1,4 +1,4 @@
-package org.mule.galaxy.jcr;
+package org.mule.galaxy.impl.jcr;
 
 
 import java.io.IOException;
@@ -47,6 +47,7 @@ import org.mule.galaxy.Workspace;
 import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.Index.Language;
 import org.mule.galaxy.impl.IndexImpl;
+import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.JcrUtil;
@@ -64,6 +65,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     private ContentService contentService;
 
+    private LifecycleManager lifecycleManager;
+
     private String workspacesId;
 
     private String indexesId;
@@ -72,9 +75,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     public JcrRegistryImpl() {
         super();
-        // TODO Auto-generated constructor stub
     }
-
 
     public Workspace getWorkspace(String id) throws RegistryException {
         // TODO: implement a query
@@ -129,7 +130,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         ArrayList<Artifact> artifacts = new ArrayList<Artifact>();
         try {
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
-                JcrArtifact artifact = new JcrArtifact(jw, itr.nextNode());
+                JcrArtifact artifact = new JcrArtifact(jw, itr.nextNode(), lifecycleManager);
                 artifact.setContentHandler(contentService.getContentHandler(artifact.getContentType()));
                 artifacts.add(artifact);
             }
@@ -145,7 +146,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node node = session.getNodeByUUID(id);
                 Node wNode = node.getParent();
-                JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(wNode), node);
+                JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(wNode), node, lifecycleManager);
                 
                 artifact.setContentHandler(contentService.getContentHandler(artifact.getContentType()));
 
@@ -182,7 +183,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
                 ContentHandler ch = contentService.getContentHandler(contentType);
                 
-                JcrArtifact artifact = new JcrArtifact(workspace, artifactNode, ch);
+                JcrArtifact artifact = new JcrArtifact(workspace, artifactNode, ch, lifecycleManager);
                 artifact.setContentType(contentType);
                 artifact.setName(name);
     
@@ -527,14 +528,23 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         throw new RuntimeException(new QueryException(new Message("INVALID_QUERY_PROPERTY", LOGGER, property)));
                     }
                     
-                    qstr.append(property)
-                        .append("/")
-                        .append(JcrUtil.VALUE)
-                        .append("[@")
-                        .append(JcrUtil.VALUE)
-                        .append("= \"")
-                        .append(r.getRight())
-                        .append("\"]");
+//                    if (property.equals("lifecycleTag")) {
+//                        qstr.append(JcrVersion.LIFECYCLE_TAG)
+//                            .append("[@")
+//                            .append(JcrUtil.VALUE)
+//                            .append("= \"")
+//                            .append(r.getRight())
+//                            .append("\"]");
+//                    } else {
+                        qstr.append(property)
+                            .append("/")
+                            .append(JcrUtil.VALUE)
+                            .append("[@")
+                            .append(JcrUtil.VALUE)
+                            .append("= \"")
+                            .append(r.getRight())
+                            .append("\"]");
+//                    }
                 }
                 
                 LOGGER.info("Query: " + qstr.toString());
@@ -552,13 +562,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                             node = node.getParent();
                         }
                         Node artifactNode = node.getParent();
-                        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(artifactNode.getParent()), artifactNode);
+                        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(artifactNode.getParent()), artifactNode, lifecycleManager);
                         artifacts.add(new JcrVersion(artifact, node));
                     } else {
                         while (!node.getName().equals("artifact")) {
                             node = node.getParent();
                         }
-                        artifacts.add(new JcrArtifact(new JcrWorkspace(node.getParent()), node));
+                        artifacts.add(new JcrArtifact(new JcrWorkspace(node.getParent()), node, lifecycleManager));
                     }
                     
                     
@@ -665,6 +675,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public void setContentService(ContentService contentService) {
         this.contentService = contentService;
+    }
+
+    public void setLifecycleManager(LifecycleManager lifecycleManager) {
+        this.lifecycleManager = lifecycleManager;
     }
 
 }

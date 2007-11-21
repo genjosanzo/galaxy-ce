@@ -4,7 +4,6 @@ package org.mule.galaxy.wsdl.compat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
 import org.mule.galaxy.wsdl.diff.DifferenceEvent;
 import org.mule.galaxy.wsdl.diff.DifferenceListener;
 import org.mule.galaxy.wsdl.diff.WsdlDiff;
@@ -15,7 +14,6 @@ import junit.framework.TestCase;
 public class WsdlDiffTest extends TestCase {
     List<String> events = new ArrayList<String>();
     
-    @Test
     public void testMissingOperation() throws Exception {
         WsdlDiff checker = new WsdlDiff();
         

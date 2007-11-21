@@ -12,8 +12,9 @@ import javax.wsdl.Definition;
 import org.mule.galaxy.AbstractGalaxyTest;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.jcr.JcrVersion;
+import org.mule.galaxy.impl.jcr.JcrVersion;
 
 public class ArtifactTest extends AbstractGalaxyTest {
     
@@ -42,6 +43,8 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         assertTrue(version.getData() instanceof Definition);
         assertEquals("0.1", version.getVersionLabel());
+        
+        assertNull(artifact.getPhase());
         
         Calendar created = version.getCreated();
         assertTrue(created.getTime().getTime() > 0);

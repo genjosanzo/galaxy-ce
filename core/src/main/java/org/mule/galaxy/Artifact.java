@@ -2,11 +2,12 @@ package org.mule.galaxy;
 
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Set;
 
 import javax.activation.MimeType;
 import javax.xml.namespace.QName;
+
+import org.mule.galaxy.lifecycle.Phase;
 
 /**
  * An artifact which can be versioned inside a repository. Can be anything
@@ -36,8 +37,10 @@ public interface Artifact  {
     ArtifactVersion getVersion(String versionName);
 
     ArtifactVersion getLatestVersion();
-
+    
     public void setProperty(String name, Object value);
     
     public Object getProperty(String name);
+    
+    public Phase getPhase();
 }

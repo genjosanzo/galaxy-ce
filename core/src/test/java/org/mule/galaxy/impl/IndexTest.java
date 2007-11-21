@@ -6,13 +6,12 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.junit.Ignore;
 import org.mule.galaxy.AbstractGalaxyTest;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Index;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.jcr.JcrVersion;
+import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.util.Constants;
@@ -39,13 +38,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, idx.getDocumentTypes().size());
         
         // Import a document which should now be indexed
-        InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
-        
-        Collection<Workspace> workspaces = registry.getWorkspaces();
-        assertEquals(1, workspaces.size());
-        Workspace workspace = workspaces.iterator().next();
-        
-        Artifact artifact = registry.createArtifact(workspace, "application/xml", null, "0.1", helloWsdl);
+        Artifact artifact = importHelloWsdl();
         
         JcrVersion version = (JcrVersion) artifact.getLatestVersion();
         Object property = version.getProperty("wsdl.service");
@@ -82,8 +75,7 @@ public class IndexTest extends AbstractGalaxyTest {
         // assertNotNull(nextAV.getData());
         // TODO test data
     }
-
-    @Ignore
+    
     public void testMuleIndex() throws Exception {
         Set<Index> indices = registry.getIndices(Constants.MULE_QNAME);
         assertNotNull(indices);
