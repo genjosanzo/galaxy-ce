@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.view.ArtifactView;
+import org.mule.galaxy.view.ArtifactTypeView;
 import org.mule.galaxy.view.Column;
 import org.mule.galaxy.view.ColumnEvaluator;
 import org.mule.galaxy.view.ViewLink;
 
-public class CustomArtifactView implements ArtifactView {
+public class CustomArtifactView implements ArtifactTypeView {
     private List<Column> columns = new ArrayList<Column>();
 
     

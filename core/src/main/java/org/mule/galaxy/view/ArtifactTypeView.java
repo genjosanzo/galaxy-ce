@@ -5,7 +5,10 @@ import java.util.Iterator;
 
 import org.mule.galaxy.Artifact;
 
-public interface ArtifactView {
+/**
+ * Information necessary to display a group of similar artifacts.
+ */
+public interface ArtifactTypeView {
     String[] getColumnNames();
 
     String getColumnValue(Artifact row, int column);

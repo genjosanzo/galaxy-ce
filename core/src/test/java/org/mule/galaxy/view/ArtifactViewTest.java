@@ -7,7 +7,7 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.impl.WsdlContentHandler;
 import org.mule.galaxy.impl.view.CustomArtifactView;
 import org.mule.galaxy.util.Constants;
-import org.mule.galaxy.view.ArtifactView;
+import org.mule.galaxy.view.ArtifactTypeView;
 import org.mule.galaxy.view.ViewLink;
 
 public class ArtifactViewTest extends AbstractGalaxyTest {
@@ -22,7 +22,7 @@ public class ArtifactViewTest extends AbstractGalaxyTest {
     public void testView() throws Exception {
         assertNotNull(viewManager);
         
-        CustomArtifactView view = (CustomArtifactView) viewManager.getArtifactView(Constants.WSDL_DEFINITION_QNAME);
+        CustomArtifactView view = (CustomArtifactView) viewManager.getArtifactTypeView(Constants.WSDL_DEFINITION_QNAME);
         
         assertEquals(5, view.getColumns().size());
         

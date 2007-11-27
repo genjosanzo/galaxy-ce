@@ -8,21 +8,21 @@ import javax.xml.namespace.QName;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.util.Constants;
-import org.mule.galaxy.view.ArtifactView;
+import org.mule.galaxy.view.ArtifactTypeView;
 import org.mule.galaxy.view.Column;
 import org.mule.galaxy.view.ColumnEvaluator;
 import org.mule.galaxy.view.ViewManager;
 
 public class ViewManagerImpl implements ViewManager {
-    private Map<QName, ArtifactView> artifactViews = new HashMap<QName, ArtifactView>();
-    private ArtifactView defaultView = new DefaultArtifactView();
+    private Map<QName, ArtifactTypeView> artifactViews = new HashMap<QName, ArtifactTypeView>();
+    private ArtifactTypeView defaultView = new DefaultArtifactView();
 
-    public ArtifactView getArtifactView(String contentType) {
+    public ArtifactTypeView getArtifactTypeView(String contentType) {
         return defaultView;
     }
 
-    public ArtifactView getArtifactView(QName documentType) {
-        ArtifactView view = artifactViews.get(documentType);
+    public ArtifactTypeView getArtifactTypeView(QName documentType) {
+        ArtifactTypeView view = artifactViews.get(documentType);
         if (view != null) {
             return view;
         }
@@ -30,7 +30,7 @@ public class ViewManagerImpl implements ViewManager {
         return defaultView;
     }
 
-    public void addView(ArtifactView view, QName... documentTypes) {
+    public void addView(ArtifactTypeView view, QName... documentTypes) {
         for (QName q : documentTypes) {
             artifactViews.put(q, view);
         }
