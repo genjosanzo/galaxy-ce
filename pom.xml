@@ -13,8 +13,8 @@
 		<module>core</module>
 		<module>wsdldiff</module>
 		<module>testutils</module>
-                <module>web</module>
-                <module>gwt-client</module>
+		<module>web</module>
+		<module>gwt-client</module>
 	</modules>
 
 	<dependencies>
@@ -36,37 +36,46 @@
 					<target>1.5</target>
 				</configuration>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<childDelegation>true</childDelegation>
+				</configuration>
+			</plugin>
 		</plugins>
-    <defaultGoal>install</defaultGoal>
-    
-    <resources>
-      <resource>
-        <directory>src/main/java</directory>
-        <includes>
-          <include>**/*.properties</include>
-          <include>**/*.xml</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>src/main/resources</directory>
-        <includes>
-          <include>**/*</include>
-        </includes>
-      </resource>
-    </resources>
-    
+
+		<defaultGoal>install</defaultGoal>
+
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.properties</include>
+					<include>**/*.xml</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+		</resources>
+
 	</build>
 
 
 
 	<scm>
 		<connection>
-			scm:svn:https://svn.muleforge.org/registry/trunk 
+			scm:svn:https://svn.muleforge.org/registry/trunk
 		</connection>
 		<developerConnection>
-			scm:svn:https://svn.muleforge.org/registry/trunk 
+			scm:svn:https://svn.muleforge.org/registry/trunk
 		</developerConnection>
 		<url>http://svn.registry.muleforge.org/</url>
 	</scm>
-	
+
 </project>
