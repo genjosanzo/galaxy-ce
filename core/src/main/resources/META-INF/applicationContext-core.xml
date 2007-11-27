@@ -26,7 +26,6 @@
     
   </bean>
 
-
   <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean">
     <!-- normal factory beans params -->
     <property name="configuration" value="classpath:/META-INF/jackrabbit-repo.xml"/>
@@ -39,7 +38,7 @@
   </bean>
   
   <bean id="registryTarget" class="org.mule.galaxy.impl.jcr.JcrRegistryImpl"
-        init-method="initialize" destroy-method="destroy">
+        init-method="initialize">
     <property name="contentService" ref="contentService" />
     <property name="settings" ref="settings" />
     <property name="sessionFactory" ref="sessionFactory" />
@@ -57,16 +56,17 @@
     <constructor-arg>
       <list>
         <bean class="org.mule.galaxy.impl.XmlDocumentContentHandler"/>
-        <bean class="org.mule.galaxy.impl.WSDLContentHandler"/>
+        <bean class="org.mule.galaxy.impl.WsdlContentHandler"/>
       </list>
     </constructor-arg>
   </bean>
 
   <bean id="registryInitializer" class="org.mule.galaxy.impl.RegistryInitializer" 
     init-method="initialize" lazy-init="false">
-    <property name="registry" ref="registry"/>
     <property name="artifactTypeDao" ref="artifactTypeDao"/>
   </bean>
+
+  <bean id="viewManager" class="org.mule.galaxy.impl.view.ViewManagerImpl"/>
   
   <bean id="jcrTransactionManager"
    class="org.springmodules.jcr.jackrabbit.LocalTransactionManager">
@@ -86,5 +86,14 @@
      </props>
    </property>
   </bean>
+    
+  <bean id="abstractArtifactPlugin" abstract="true" init-method="initialize" lazy-init="false">
+    <property name="artifactTypeDao" ref="artifactTypeDao"/>
+    <property name="registry" ref="registry"/>
+    <property name="viewManager" ref="viewManager"/>
+  </bean>
+  
+  <bean class="org.mule.galaxy.impl.artifact.MuleArtifactPlugin" parent="abstractArtifactPlugin"/>
+  <bean class="org.mule.galaxy.impl.artifact.WsdlArtifactPlugin" parent="abstractArtifactPlugin"/>
   
 </beans>

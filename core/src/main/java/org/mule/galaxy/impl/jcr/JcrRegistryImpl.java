@@ -675,7 +675,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 org.w3c.dom.Node node = item.getNode();
                 
                 Object content = DOMUtils.getContent(node);
-              
+                
                 if (idx.getQueryType().equals(QName.class)) {
                     results.add(QNameUtil.fromString(content.toString())); 
                 } else {

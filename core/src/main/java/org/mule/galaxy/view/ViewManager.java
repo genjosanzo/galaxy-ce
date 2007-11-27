@@ -4,5 +4,9 @@ import javax.xml.namespace.QName;
 
 public interface ViewManager {
     
-    ArtifactView getArtifactView(String contentType, QName documentType);
+    ArtifactView getArtifactView(String contentType);
+    
+    ArtifactView getArtifactView(QName documentType);
+    
+    void addView(ArtifactView view, QName... documentTypes);
 }

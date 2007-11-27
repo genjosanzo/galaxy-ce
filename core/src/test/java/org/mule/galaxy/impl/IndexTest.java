@@ -2,7 +2,6 @@ package org.mule.galaxy.impl;
 
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -28,13 +27,16 @@ public class IndexTest extends AbstractGalaxyTest {
     public void testWsdlIndex() throws Exception {
         Set<Index> indices = registry.getIndices(Constants.WSDL_DEFINITION_QNAME);
         assertNotNull(indices);
-        assertEquals(2, indices.size());
+        assertEquals(3, indices.size());
         
         Index idx = null;
         Index tnsIdx = null;
+        Index epIdx = null;
         for (Index i : indices) {
             if (i.getId().equals("wsdl.service")) {
                 idx = i;
+            } else if (i.getId().equals("wsdl.endpoint")) {
+                epIdx = i;
             } else {
                 tnsIdx = i;
             }
@@ -56,7 +58,7 @@ public class IndexTest extends AbstractGalaxyTest {
         // Import a document which should now be indexed
         Artifact artifact = importHelloWsdl();
         
-        JcrVersion version = (JcrVersion) artifact.getLatestVersion();
+        ArtifactVersion version = artifact.getLatestVersion();
         Object property = version.getProperty("wsdl.service");
         assertNotNull(property);
         assertTrue(property instanceof Collection);
@@ -67,6 +69,12 @@ public class IndexTest extends AbstractGalaxyTest {
         property = version.getProperty("wsdl.targetNamespace");
         assertNotNull(property);
         assertEquals("http://mule.org/hello_world", property);
+        
+        property = version.getProperty(epIdx.getId());
+        assertNotNull(property);
+        assertTrue(property instanceof Collection);
+        Collection endpoints = (Collection) property;
+        assertTrue(endpoints.contains(new QName("SoapPort")));
         
         // Try out search!
         Set results = registry.search("select artifact where artifactVersion.wsdl.service = 'HelloWorldService'");

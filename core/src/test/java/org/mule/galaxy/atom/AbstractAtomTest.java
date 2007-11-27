@@ -10,6 +10,8 @@ import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Base;
 import org.apache.abdera.protocol.server.ServiceContext;
 import org.apache.abdera.spring.SpringAbderaServlet;
+import org.apache.abdera.writer.Writer;
+import org.apache.abdera.writer.WriterFactory;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.FilterHolder;
@@ -44,9 +46,9 @@ public class AbstractAtomTest extends AbstractGalaxyTest {
     }
 
     protected void prettyPrint(Base doc) throws IOException {
-        abdera.getWriterFactory()
-        .getWriter("prettyxml")
-        .writeTo(doc, System.out);
+        WriterFactory writerFactory = abdera.getWriterFactory();
+        Writer writer = writerFactory.getWriter("prettyxml");
+        writer.writeTo(doc, System.out);
         System.out.println();
     }
 

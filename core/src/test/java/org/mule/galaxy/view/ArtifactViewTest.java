@@ -4,12 +4,14 @@ import java.util.Collection;
 
 import org.mule.galaxy.AbstractGalaxyTest;
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.impl.WsdlContentHandler;
 import org.mule.galaxy.impl.view.CustomArtifactView;
 import org.mule.galaxy.util.Constants;
 import org.mule.galaxy.view.ArtifactView;
 import org.mule.galaxy.view.ViewLink;
 
 public class ArtifactViewTest extends AbstractGalaxyTest {
+    protected ViewManager viewManager;
     
     @Override
     protected String[] getConfigLocations() {
@@ -18,23 +20,9 @@ public class ArtifactViewTest extends AbstractGalaxyTest {
     }
     
     public void testView() throws Exception {
-        CustomArtifactView view = new CustomArtifactView();
-        view.getColumns().add(new Column("Services", new ColumnEvaluator() {
-            public Object getValue(Artifact artifact) {
-                Object o = artifact.getLatestVersion().getProperty("wsdl.service");
-                
-                if (o != null) {
-                    return ((Collection) o).size();
-                }
-                return 0;
-            }
-        }));
+        assertNotNull(viewManager);
         
-        view.getColumns().add(1, new Column("Namespace", new ColumnEvaluator() {
-            public Object getValue(Artifact artifact) {
-                return artifact.getLatestVersion().getProperty("wsdl.targetNamespace");
-            }
-        }));
+        CustomArtifactView view = (CustomArtifactView) viewManager.getArtifactView(Constants.WSDL_DEFINITION_QNAME);
         
         assertEquals(5, view.getColumns().size());
         

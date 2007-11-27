@@ -47,9 +47,9 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals("workspaces/Default%20Workspace", collection.getHref().toString());
 
         // Check out the feed, yo
-        System.out.println("Grabbing the Feed");
         IRI colUri = new IRI(base).resolve(collection.getHref());
-        res = client.get(Escaping.encode(colUri.toString(), Profile.PATH));
+        System.out.println("Grabbing the Feed " + colUri.toString());
+        res = client.get(colUri.toString());
         assertEquals(200, res.getStatus());
         prettyPrint(res.getDocument());
         

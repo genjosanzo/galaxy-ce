@@ -26,6 +26,7 @@ public class ArtifactWorkspaceInfo implements WorkspaceInfo {
             
             return new ArtifactCollectionProvider(registry, workspace);
         } catch (NotFoundException e) {
+            System.out.println("No such workspace " + id);
             throw new ResponseContextException(404);
         } catch (RegistryException e) {
             throw new ResponseContextException(500, e);

@@ -28,7 +28,7 @@ public class ArtifactTypeDaoTest extends AbstractGalaxyTest {
     
     public void testRegistration() throws Exception {
         List<ArtifactType> all = artifactTypeDao.listAll();
-        assertEquals(2, all.size());
+        assertEquals(5, all.size());
     }
     
     @Override
