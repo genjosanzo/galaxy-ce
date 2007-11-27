@@ -8,10 +8,10 @@ import org.mule.galaxy.AbstractArtifactPlugin;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.Index;
-import org.mule.galaxy.impl.view.CustomArtifactView;
 import org.mule.galaxy.util.Constants;
 import org.mule.galaxy.view.Column;
 import org.mule.galaxy.view.ColumnEvaluator;
+import org.mule.galaxy.view.CustomArtifactView;
 
 
 import org.xml.sax.InputSource;

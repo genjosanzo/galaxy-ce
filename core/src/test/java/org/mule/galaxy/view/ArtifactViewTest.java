@@ -5,7 +5,6 @@ import java.util.Collection;
 import org.mule.galaxy.AbstractGalaxyTest;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.impl.WsdlContentHandler;
-import org.mule.galaxy.impl.view.CustomArtifactView;
 import org.mule.galaxy.util.Constants;
 import org.mule.galaxy.view.ArtifactTypeView;
 import org.mule.galaxy.view.ViewLink;
