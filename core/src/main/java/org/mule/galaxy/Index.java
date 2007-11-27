@@ -7,6 +7,7 @@ import javax.xml.namespace.QName;
 public interface Index {
     public enum Language  {
         GROOVY,
+        XPATH,
         XQUERY
     }
     

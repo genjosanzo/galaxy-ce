@@ -1,0 +1,30 @@
+<project>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.sf.gwt-widget</groupId>
+  <artifactId>gwt-widgets</artifactId>
+  <version>0.1.5</version>
+  <packaging>jar</packaging>
+  <name>GWT Widget Library</name>
+  <url>http://gwt-widget.sourceforge.net/</url>
+  <description>The GWT Widget Library is a set of enhancements and utilities for the Google Web Toolkit client-side code.</description>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <url>http://gwt-widget.svn.sourceforge.net/viewvc/gwt-widget/</url>
+  </scm>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>1.4.60</version>
+    </dependency>
+  </dependencies>
+
+</project>

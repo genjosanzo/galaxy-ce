@@ -2,6 +2,7 @@ package org.mule.galaxy.impl;
 
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -27,15 +28,30 @@ public class IndexTest extends AbstractGalaxyTest {
     public void testWsdlIndex() throws Exception {
         Set<Index> indices = registry.getIndices(Constants.WSDL_DEFINITION_QNAME);
         assertNotNull(indices);
-        assertEquals(1, indices.size());
+        assertEquals(2, indices.size());
         
-        Index idx = indices.iterator().next();
+        Index idx = null;
+        Index tnsIdx = null;
+        for (Index i : indices) {
+            if (i.getId().equals("wsdl.service")) {
+                idx = i;
+            } else {
+                tnsIdx = i;
+            }
+        }
+        
         assertEquals("wsdl.service", idx.getId());
         assertEquals("WSDL Service", idx.getName());
         assertEquals(Index.Language.XQUERY, idx.getLanguage());
         assertEquals(QName.class, idx.getQueryType());
         assertNotNull(idx.getExpression());
         assertEquals(1, idx.getDocumentTypes().size());
+        
+        assertEquals("wsdl.targetNamespace", tnsIdx.getId());
+        assertEquals(Index.Language.XPATH, tnsIdx.getLanguage());
+        assertEquals(String.class, tnsIdx.getQueryType());
+        assertNotNull(tnsIdx.getExpression());
+        assertEquals(1, tnsIdx.getDocumentTypes().size());
         
         // Import a document which should now be indexed
         Artifact artifact = importHelloWsdl();
@@ -47,6 +63,10 @@ public class IndexTest extends AbstractGalaxyTest {
         Collection services = (Collection) property;
         
         assertTrue(services.contains(new QName("HelloWorldService")));
+        
+        property = version.getProperty("wsdl.targetNamespace");
+        assertNotNull(property);
+        assertEquals("http://mule.org/hello_world", property);
         
         // Try out search!
         Set results = registry.search("select artifact where artifactVersion.wsdl.service = 'HelloWorldService'");

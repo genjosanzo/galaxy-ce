@@ -55,7 +55,15 @@ public class RegistryInitializer {
                                QName.class, // search input type
                                exp, // the xquery expression
                                Constants.WSDL_DEFINITION_QNAME); // document QName which this applies to
-              
+       
+        // Index the target namespace
+        registry.registerIndex("wsdl.targetNamespace", // index field name
+                               "WSDL Target Namespace", // Display Name
+                               Index.Language.XPATH,
+                               String.class, // search input type
+                               "/*/@targetNamespace", // the xquery expression
+                               Constants.WSDL_DEFINITION_QNAME); // document QName which this applies to
+                 
         // Read <mule:service> elements
         exp = 
             "declare namespace mule=\"http://www.mulesource.org/schema/mule/core/2.0\";\n" +

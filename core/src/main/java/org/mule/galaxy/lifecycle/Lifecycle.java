@@ -39,6 +39,4 @@ public class Lifecycle {
     public void setPhases(Map<String, Phase> phases) {
         this.phases = phases;
     }
-    
-    
 }

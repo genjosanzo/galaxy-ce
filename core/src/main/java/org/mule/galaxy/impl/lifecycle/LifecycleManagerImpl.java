@@ -19,6 +19,7 @@ import org.mule.galaxy.impl.jcr.JcrArtifact;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.lifecycle.PhaseApprovalListener;
 import org.mule.galaxy.lifecycle.TransitionException;
 import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.LogUtils;
@@ -29,11 +30,12 @@ import org.w3c.dom.Node;
 
 public class LifecycleManagerImpl implements LifecycleManager {
 
-    private Logger LOGGER = LogUtils.getL7dLogger(LifecycleManagerImpl.class);
+    private static final String DEFAULT_LIFECYCLE = "Default";
+    private static final Logger LOGGER = LogUtils.getL7dLogger(LifecycleManagerImpl.class);
 
     private List<String> lifecycleDocuments = new ArrayList<String>();
     private Map<String,Lifecycle> lifecycles = new ConcurrentHashMap<String, Lifecycle>();
-    private static final String DEFAULT_LIFECYCLE = "Default";
+    private List<PhaseApprovalListener> phaseApprovalListeners = new ArrayList<PhaseApprovalListener>();
     
     public Lifecycle getDefaultLifecycle() {
         return lifecycles.get(DEFAULT_LIFECYCLE);
@@ -167,6 +169,14 @@ public class LifecycleManagerImpl implements LifecycleManager {
 
     public void setLifecycleDocuments(List<String> lifecycleDocuments) {
         this.lifecycleDocuments = lifecycleDocuments;
+    }
+
+    public List<PhaseApprovalListener> getPhaseApprovalListeners() {
+        return phaseApprovalListeners;
+    }
+
+    public void setPhaseApprovalListeners(List<PhaseApprovalListener> phaseApprovalListeners) {
+        this.phaseApprovalListeners = phaseApprovalListeners;
     }
     
 }

@@ -26,6 +26,11 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.xml.namespace.QName;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import net.sf.saxon.javax.xml.xquery.XQConnection;
 import net.sf.saxon.javax.xml.xquery.XQDataSource;
@@ -56,6 +61,9 @@ import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.QNameUtil;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistry {
 
@@ -610,10 +618,35 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             case XQUERY:
                 indexWithXQuery(jcrVersion, idx);
                 break;
+            case XPATH:
+                indexWithXPath(jcrVersion, idx);
+                break;
             default:
                 throw new UnsupportedOperationException();
             }
         }
+    }
+
+    private void indexWithXPath(JcrVersion jcrVersion, Index idx) throws RegistryException {
+        XmlContentHandler ch = (XmlContentHandler) contentService.getContentHandler(jcrVersion.getParent().getContentType());
+        try {
+            Document document = ch.getDocument(jcrVersion.getData());
+            
+            XPathFactory factory = XPathFactory.newInstance();
+            XPath xpath = factory.newXPath();
+            XPathExpression expr = xpath.compile(idx.getExpression());
+
+            Object result = expr.evaluate(document, XPathConstants.STRING);
+            
+            if (result instanceof String) {
+                jcrVersion.setProperty(idx.getId(), result);
+            }
+        } catch (IOException e) {
+            throw new RegistryException(e);
+        } catch (XPathExpressionException e) {
+            throw new RegistryException(e);
+        }
+        
     }
 
     private void indexWithXQuery(JcrVersion jcrVersion, Index idx) throws RegistryException {

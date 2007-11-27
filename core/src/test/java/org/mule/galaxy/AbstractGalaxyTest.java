@@ -53,8 +53,10 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
         Workspace workspace = workspaces.iterator().next();
         
         Artifact artifact = registry.createArtifact(workspace, 
-                                                    "application/xml", null, 
-                                                    "0.1", helloWsdl);
+                                                    "application/xml", 
+                                                    "hello_world.wsdl", 
+                                                    "0.1", 
+                                                    helloWsdl);
         return artifact;
     }
 
