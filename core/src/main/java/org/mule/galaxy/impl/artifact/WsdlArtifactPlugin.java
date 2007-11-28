@@ -12,7 +12,7 @@ import org.mule.galaxy.Index;
 import org.mule.galaxy.util.Constants;
 import org.mule.galaxy.view.Column;
 import org.mule.galaxy.view.ColumnEvaluator;
-import org.mule.galaxy.view.CustomArtifactView;
+import org.mule.galaxy.view.CustomArtifactTypeView;
 
 
 import org.xml.sax.InputSource;
@@ -71,10 +71,10 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
                                Constants.WSDL_DEFINITION_QNAME); // document QName which this applies to
                  
         
-        CustomArtifactView view = new CustomArtifactView();
+        CustomArtifactTypeView view = new CustomArtifactTypeView();
         view.getColumns().add(new Column("Services", new ColumnEvaluator() {
-            public Object getValue(Artifact artifact) {
-                Object o = artifact.getLatestVersion().getProperty("wsdl.service");
+            public Object getValue(Object artifact) {
+                Object o = ((Artifact)artifact).getLatestVersion().getProperty("wsdl.service");
                 
                 if (o != null) {
                     return ((Collection) o).size();
@@ -84,8 +84,8 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
         }));
         
         view.getColumns().add(1, new Column("Namespace", new ColumnEvaluator() {
-            public Object getValue(Artifact artifact) {
-                return artifact.getLatestVersion().getProperty("wsdl.targetNamespace");
+            public Object getValue(Object artifact) {
+                return ((Artifact)artifact).getLatestVersion().getProperty("wsdl.targetNamespace");
             }
         }));
         viewManager.addView(view, Constants.WSDL_DEFINITION_QNAME);

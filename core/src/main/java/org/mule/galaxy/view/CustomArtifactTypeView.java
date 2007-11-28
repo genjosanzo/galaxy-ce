@@ -4,29 +4,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.lifecycle.Phase;
 
-public class CustomArtifactView implements ArtifactTypeView {
+public class CustomArtifactTypeView implements ArtifactTypeView {
     private List<Column> columns = new ArrayList<Column>();
 
     
-    public CustomArtifactView() {
+    public CustomArtifactTypeView() {
         super();
         columns.add(new Column("Name", new ColumnEvaluator() {
-            public Object getValue(Artifact artifact) {
-                return artifact.getName();
+            public Object getValue(Object artifact) {
+                return ((Artifact) artifact).getName();
             }
         }));
         
         columns.add(new Column("Version", new ColumnEvaluator() {
-            public Object getValue(Artifact artifact) {
-                return artifact.getLatestVersion().getVersionLabel();
+            public Object getValue(Object artifact) {
+                return ((Artifact) artifact).getLatestVersion().getVersionLabel();
             }
         }));
         
         columns.add(new Column("Lifecycle", new ColumnEvaluator() {
-            public Object getValue(Artifact artifact) {
-                if (artifact.getPhase() != null)
-                    return artifact.getPhase().getName();
+            public Object getValue(Object artifact) {
+                Phase p = ((Artifact) artifact).getPhase();
+                if (p != null)
+                    return p.getName();
                 
                 return "";
             }

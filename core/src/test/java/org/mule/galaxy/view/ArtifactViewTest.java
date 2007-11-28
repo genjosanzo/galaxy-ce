@@ -21,7 +21,7 @@ public class ArtifactViewTest extends AbstractGalaxyTest {
     public void testView() throws Exception {
         assertNotNull(viewManager);
         
-        CustomArtifactView view = (CustomArtifactView) viewManager.getArtifactTypeView(Constants.WSDL_DEFINITION_QNAME);
+        CustomArtifactTypeView view = (CustomArtifactTypeView) viewManager.getArtifactTypeView(Constants.WSDL_DEFINITION_QNAME);
         
         assertEquals(5, view.getColumns().size());
         

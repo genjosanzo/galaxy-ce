@@ -11,7 +11,7 @@ import org.mule.galaxy.Index;
 import org.mule.galaxy.util.Constants;
 import org.mule.galaxy.view.Column;
 import org.mule.galaxy.view.ColumnEvaluator;
-import org.mule.galaxy.view.CustomArtifactView;
+import org.mule.galaxy.view.CustomArtifactTypeView;
 
 
 import org.xml.sax.InputSource;
@@ -41,10 +41,10 @@ public class MuleArtifactPlugin extends AbstractArtifactPlugin {
                                Constants.MULE_QNAME); // document QName which this applies to
         
         // Create a custom view
-        CustomArtifactView view = new CustomArtifactView();
+        CustomArtifactTypeView view = new CustomArtifactTypeView();
         view.getColumns().add(new Column("Services", new ColumnEvaluator() {
-            public Object getValue(Artifact artifact) {
-                Object o = artifact.getLatestVersion().getProperty("mule.service");
+            public Object getValue(Object artifact) {
+                Object o = ((Artifact)artifact).getLatestVersion().getProperty("mule.service");
                 
                 if (o != null) {
                     return ((Collection) o).size();
