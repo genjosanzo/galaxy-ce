@@ -67,7 +67,7 @@ import org.w3c.dom.NodeList;
 
 public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistry {
 
-    public static final String WORKSPACE = "workspace";
+    public static final String ARTIFACT_NODE_NAME = "__artifact";
 
     private Logger LOGGER = LogUtils.getL7dLogger(JcrRegistryImpl.class);
 
@@ -90,7 +90,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     public Workspace getWorkspace(String id) throws RegistryException {
         // TODO: implement a query
         // TODO: possibility for injenction in the id here?
-        
         try {
             Node node = getWorkspacesNode().getNode(id);
 
@@ -103,7 +102,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     public Workspace createWorkspace(String name) throws RegistryException {
         try {
-            Node node = getWorkspacesNode().addNode(WORKSPACE);
+            Node node = getWorkspacesNode().addNode(name);
             node.addMixin("mix:referenceable");
 
             JcrWorkspace workspace = new JcrWorkspace(node);
@@ -120,7 +119,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             Collection<Workspace> workspaces = parent.getWorkspaces();
             
             Node parentNode = ((JcrWorkspace) parent).getNode();
-            Node node = parentNode.addNode(WORKSPACE);
+            Node node = parentNode.addNode(name);
             node.addMixin("mix:referenceable");
 
             JcrWorkspace workspace = new JcrWorkspace(node);
@@ -225,7 +224,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return (Artifact) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node workspaceNode = ((JcrWorkspace)workspace).getNode();
-                Node artifactNode = workspaceNode.addNode("artifact");
+                Node artifactNode = workspaceNode.addNode(ARTIFACT_NODE_NAME);
                 artifactNode.addMixin("mix:referenceable");
     
                 ContentHandler ch = contentService.getContentHandler(contentType);
@@ -488,9 +487,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         if (start != queryString.length()) {
             tokens.add(queryString.substring(start));
         }
-    
-        System.out.println(Arrays.toString(tokens.toArray()));
-        
+
         Iterator<String> itr = tokens.iterator(); 
         if (!itr.hasNext()) {
             throw new QueryException(new Message("EMPTY_QUERY_STRING", LOGGER));
@@ -581,11 +578,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     if (property.startsWith("artifact.")) {
                         property = property.substring("artifact.".length());
                         
-                        qstr.append("//artifact/");
+                        qstr.append("//")
+                            .append(ARTIFACT_NODE_NAME)
+                            .append("/");
                             
                     } else if (property.startsWith("artifactVersion.")) {
                         property = property.substring("artifactVersion.".length());
-                        qstr.append("//artifact/version/");
+                        qstr.append("//")
+                            .append(ARTIFACT_NODE_NAME)
+                            .append("/version/");
                     } else {
                         throw new RuntimeException(new QueryException(new Message("INVALID_QUERY_PROPERTY", LOGGER, property)));
                     }
@@ -627,7 +628,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(artifactNode.getParent()), artifactNode, lifecycleManager);
                         artifacts.add(new JcrVersion(artifact, node));
                     } else {
-                        while (!node.getName().equals("artifact")) {
+                        while (!node.getName().equals(ARTIFACT_NODE_NAME)) {
                             node = node.getParent();
                         }
                         artifacts.add(new JcrArtifact(new JcrWorkspace(node.getParent()), node, lifecycleManager));
@@ -745,7 +746,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         NodeIterator nodes = workspaces.getNodes();
         // ignore the system node
         if (nodes.getSize() == 0) {
-            Node node = workspaces.addNode(WORKSPACE);
+            Node node = workspaces.addNode(settings.getDefaultWorkspaceName());
             node.addMixin("mix:referenceable");
 
             JcrWorkspace w = new JcrWorkspace(node);

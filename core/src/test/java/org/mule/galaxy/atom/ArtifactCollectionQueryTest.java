@@ -3,10 +3,11 @@ package org.mule.galaxy.atom;
 
 import java.io.InputStream;
 
+import org.apache.abdera.i18n.iri.Escaping;
 import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
-import org.apache.abdera.protocol.util.EncodingUtil;
+import org.mule.galaxy.test.AbstractAtomTest;
 
 public class ArtifactCollectionQueryTest extends AbstractAtomTest {
     
@@ -31,7 +32,7 @@ public class ArtifactCollectionQueryTest extends AbstractAtomTest {
         
         opts = new RequestOptions();
         
-        String search = EncodingUtil.encode("select artifactVersion where artifactVersion.wsdl.service = 'HelloWorldService'");
+        String search = Escaping.encode("select artifactVersion where artifactVersion.wsdl.service = 'HelloWorldService'");
         url = url + "?q=" + search;
         
         res = client.get(url);

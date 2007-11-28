@@ -6,9 +6,9 @@ import java.io.ByteArrayOutputStream;
 import javax.activation.MimeType;
 import javax.wsdl.Definition;
 
-import org.mule.galaxy.AbstractGalaxyTest;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
+import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.DOMUtils;
 
 import org.w3c.dom.Document;

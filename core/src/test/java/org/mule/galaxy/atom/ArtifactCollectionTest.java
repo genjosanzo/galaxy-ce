@@ -4,6 +4,8 @@ package org.mule.galaxy.atom;
 import java.io.InputStream;
 import java.util.List;
 
+import org.mule.galaxy.test.AbstractAtomTest;
+
 import org.apache.abdera.i18n.io.CharUtils.Profile;
 import org.apache.abdera.i18n.iri.Escaping;
 import org.apache.abdera.i18n.iri.IRI;

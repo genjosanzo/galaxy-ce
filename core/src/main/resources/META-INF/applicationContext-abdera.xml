@@ -22,7 +22,7 @@
 
         <a:collection>/repository/workspaces/([^/#?]+)(\?[^#]*)?</a:collection>
         <a:entry>/repository/workspaces/([^/#?]+)/([^/#?]+).atom(\?[^#]*)?</a:entry>
-        <a:media>/repository/workspaces/([^/#?]+)/([^/#?]+)(\?[^#]*)?</a:media>
+        <a:media>/repository/workspaces/([^/#?]+)/media/([^/#?]+)(\?[^#]*)?</a:media>
         
         <a:service>/repository/(\?[^#]*)?</a:service>
       </a:regexTargetResolver> 

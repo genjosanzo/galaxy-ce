@@ -15,6 +15,7 @@
 		<module>testutils</module>
 		<module>web</module>
 		<module>gwt-client</module>
+                <module>integration/mule1</module>
 	</modules>
 
 	<dependencies>

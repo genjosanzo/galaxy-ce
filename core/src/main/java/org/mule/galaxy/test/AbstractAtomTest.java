@@ -1,4 +1,4 @@
-package org.mule.galaxy.atom;
+package org.mule.galaxy.test;
 
 
 import java.io.IOException;
@@ -16,7 +16,6 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.FilterHolder;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.mule.galaxy.AbstractGalaxyTest;
 import org.mule.galaxy.Registry;
 import org.springmodules.jcr.SessionFactory;
 import org.springmodules.jcr.support.OpenSessionInViewFilter;
@@ -25,9 +24,9 @@ public class AbstractAtomTest extends AbstractGalaxyTest {
     
     protected Registry registry;
     protected ServiceContext abderaServiceContext;
+    protected Abdera abdera = new Abdera();
+    protected Factory factory = abdera.getFactory();
     private Server server;
-    Abdera abdera = new Abdera();
-    Factory factory = abdera.getFactory();
     
     @Override
     protected void onSetUp() throws Exception {

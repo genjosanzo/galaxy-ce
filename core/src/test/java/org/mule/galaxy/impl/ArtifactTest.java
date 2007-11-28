@@ -9,12 +9,12 @@ import java.util.Set;
 import javax.jcr.Node;
 import javax.wsdl.Definition;
 
-import org.mule.galaxy.AbstractGalaxyTest;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrVersion;
+import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class ArtifactTest extends AbstractGalaxyTest {
     public void testWorkspaces() throws Exception {

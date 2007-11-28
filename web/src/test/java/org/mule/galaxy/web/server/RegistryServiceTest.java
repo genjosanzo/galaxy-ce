@@ -6,7 +6,6 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.mule.galaxy.AbstractGalaxyTest;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Index;
@@ -15,6 +14,7 @@ import org.mule.galaxy.impl.jcr.AbstractJcrObject;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
 import org.mule.galaxy.web.client.RegistryService;
 

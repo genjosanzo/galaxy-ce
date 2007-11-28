@@ -3,8 +3,8 @@ package org.mule.galaxy.lifecycle;
 import java.util.Collection;
 import java.util.Set;
 
-import org.mule.galaxy.AbstractGalaxyTest;
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class LifecycleManagerTest extends AbstractGalaxyTest {
     protected LifecycleManager lifecycleManager;

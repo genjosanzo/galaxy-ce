@@ -13,6 +13,7 @@ import javax.activation.MimeTypeParseException;
 
 import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
+import org.apache.abdera.i18n.iri.Escaping;
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.Collection;
 import org.apache.abdera.model.Content;
@@ -81,6 +82,10 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
         return entry.getParent().getId() + "+" + entry.getParent().getName();
     }
 
+    public InputStream getMediaStream(ArtifactVersion entry) throws ResponseContextException {
+        return entry.getStream();
+    }
+    
     @Override
     public String getContentType(ArtifactVersion entry) {
         return entry.getParent().getContentType().toString();
@@ -155,7 +160,7 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
             String q = request.getParameter("q");
             
             if (q != null) {
-                q = EncodingUtil.decode(q);
+                q = Escaping.decode(q);
                 
                 return registry.search(q);
             } else {
