@@ -17,6 +17,24 @@ import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 
 public class ArtifactTest extends AbstractGalaxyTest {
+    public void testWorkspaces() throws Exception {
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        
+        Workspace newWork = registry.createWorkspace("New Workspace");
+        assertEquals("New Workspace", newWork.getName());
+        assertNotNull(newWork.getId());
+        
+        Workspace child = registry.createWorkspace(newWork, "Child");
+        assertEquals("Child", child.getName());
+        assertNotNull(child.getId());
+        
+        assertEquals(1, newWork.getWorkspaces().size());
+        
+        registry.removeWorkspace(newWork);
+        
+        assertEquals(1, registry.getWorkspaces().size());
+    }
     
     public void testAddWsdl() throws Exception {
         InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");

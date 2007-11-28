@@ -1,8 +1,10 @@
 package org.mule.galaxy.impl.jcr;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 
 import org.mule.galaxy.Workspace;
@@ -10,13 +12,13 @@ import org.mule.galaxy.Workspace;
 public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.Workspace {
 
     public static final String NAME = "name";
+    private Collection<Workspace> workspaces;
     
     public JcrWorkspace(Node node) {
         super(node);
     }
 
     public String getId() {
-        
         // this will need to be redone when we support multiple workspaces
         String id = getName();
         try {
@@ -32,7 +34,7 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
     }
 
     public String getName() {
-        return getStringOrNull( NAME);
+        return getStringOrNull(NAME);
     }
 
     public Workspace getParent() {
@@ -40,7 +42,20 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
     }
 
     public Collection<Workspace> getWorkspaces() {
-        return null;
+        if (workspaces == null) {
+            workspaces = new ArrayList<Workspace>();
+            try {
+                NodeIterator nodes = node.getNodes(JcrRegistryImpl.WORKSPACE);
+                while (nodes.hasNext()) {
+                    Node n = nodes.nextNode();
+                    workspaces.add(new JcrWorkspace(n));
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            } 
+        }
+        
+        return workspaces;
     }
 
     public Node getNode() {
@@ -51,7 +66,7 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
         try {
             node.setProperty(NAME, name);
         } catch (Exception e) {
-            throw new RuntimeException(name);
+            throw new RuntimeException(e);
         } 
     }
 }

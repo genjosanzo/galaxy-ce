@@ -67,6 +67,8 @@ import org.w3c.dom.NodeList;
 
 public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistry {
 
+    public static final String WORKSPACE = "workspace";
+
     private Logger LOGGER = LogUtils.getL7dLogger(JcrRegistryImpl.class);
 
     private Settings settings;
@@ -93,10 +95,47 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             Node node = getWorkspacesNode().getNode(id);
 
             return new JcrWorkspace(node);
-        } catch (PathNotFoundException e) {
-            throw new NotFoundException(id);
-        } catch (ItemNotFoundException e) {
-            throw new NotFoundException(id);
+        } catch (RepositoryException e) {
+            throw new RegistryException(e);
+        }
+    }
+
+    
+    public Workspace createWorkspace(String name) throws RegistryException {
+        try {
+            Node node = getWorkspacesNode().addNode(WORKSPACE);
+            node.addMixin("mix:referenceable");
+
+            JcrWorkspace workspace = new JcrWorkspace(node);
+            workspace.setName(name);
+            return workspace;
+        } catch (RepositoryException e) {
+            throw new RegistryException(e);
+        }
+    }
+    
+
+    public Workspace createWorkspace(Workspace parent, String name) throws RegistryException {
+        try {
+            Collection<Workspace> workspaces = parent.getWorkspaces();
+            
+            Node parentNode = ((JcrWorkspace) parent).getNode();
+            Node node = parentNode.addNode(WORKSPACE);
+            node.addMixin("mix:referenceable");
+
+            JcrWorkspace workspace = new JcrWorkspace(node);
+            workspace.setName(name);
+            workspaces.add(workspace);
+            return workspace;
+        } catch (RepositoryException e) {
+            throw new RegistryException(e);
+        }
+    
+    }
+
+    public void removeWorkspace(Workspace w) throws RegistryException {
+        try {
+            ((JcrWorkspace) w).getNode().remove();
         } catch (RepositoryException e) {
             throw new RegistryException(e);
         }
@@ -706,7 +745,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         NodeIterator nodes = workspaces.getNodes();
         // ignore the system node
         if (nodes.getSize() == 0) {
-            Node node = workspaces.addNode(settings.getDefaultWorkspaceName());
+            Node node = workspaces.addNode(WORKSPACE);
             node.addMixin("mix:referenceable");
 
             JcrWorkspace w = new JcrWorkspace(node);

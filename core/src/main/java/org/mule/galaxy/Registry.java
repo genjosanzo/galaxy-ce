@@ -13,9 +13,10 @@ import org.mule.galaxy.Index.Language;
 import org.mule.galaxy.query.Query;
 
 public interface Registry {
-    public static final String PRODUCTION_TAG = "production";
-    public static final String DEVELOPMENT_TAG = "development";
+    Workspace createWorkspace(String name) throws RegistryException;
 
+    Workspace createWorkspace(Workspace parent, String name) throws RegistryException;
+    
     Workspace getWorkspace(String id) throws RegistryException, NotFoundException;
     
     Collection<Workspace> getWorkspaces() throws RegistryException;
@@ -49,5 +50,9 @@ public interface Registry {
     Set<Index> getIndices();
     
     Set<Index> getIndices(QName documentType) throws RegistryException;
+
+    void removeWorkspace(Workspace newWork) throws RegistryException;
+
+
     
 }

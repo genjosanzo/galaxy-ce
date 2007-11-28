@@ -14,6 +14,11 @@ public class Column {
         this.evaluator = evaluator;
     }
 
+    public Column(String name, ViewLink link, ColumnEvaluator evaluator) {
+        this.name = name;
+        this.evaluator = evaluator;
+    }
+
     public String getName() {
         return name;
     }
