@@ -1,0 +1,80 @@
+package org.mule.galaxy.mule1;
+
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+import javax.activation.MimeTypeParseException;
+import javax.jcr.Node;
+import javax.wsdl.Definition;
+
+import org.apache.abdera.i18n.iri.Escaping;
+import org.apache.abdera.model.Document;
+import org.apache.abdera.model.Entry;
+import org.apache.abdera.model.Feed;
+import org.apache.abdera.protocol.client.AbderaClient;
+import org.apache.abdera.protocol.client.ClientResponse;
+import org.apache.abdera.protocol.client.RequestOptions;
+import org.apache.abdera.protocol.util.EncodingUtil;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.jcr.JcrVersion;
+import org.mule.galaxy.test.AbstractAtomTest;
+import org.mule.galaxy.test.AbstractGalaxyTest;
+import org.mule.galaxy.util.IOUtils;
+
+public class RegistryConfigLookupTest extends AbstractAtomTest {
+
+    public void testMuleLookup() throws Exception {
+        AbderaClient client = new AbderaClient(abdera);
+
+        String url = "http://localhost:9002/repository/workspaces/Default%20Workspace";
+        
+        // POST a Mule configuration
+        RequestOptions opts = new RequestOptions();
+        opts.setContentType("application/xml; charset=utf-8");
+        opts.setSlug("hello-config.xml");
+        opts.setHeader("X-Artifact-Version", "0.1");
+        
+        ClientResponse res = client.post(url, getResourceAsStream("/mule/hello-config.xml"), opts);
+        assertEquals(201, res.getStatus());
+        
+        // TODO: this query language will improve in the future, so don't read too much into it yet
+        String search = Escaping.encode("select artifactVersion where artifactVersion.mule.service = 'GreeterUMO'");
+        url = url + "?q=" + search;
+        
+        // GET a Feed with Mule Configurations which match the criteria
+        res = client.get(url);
+        assertEquals(200, res.getStatus());
+        
+        Document<Feed> feedDoc = res.getDocument();
+        // prettyPrint(feedDoc);
+        List<Entry> entries = feedDoc.getRoot().getEntries();
+        assertEquals(1, entries.size());
+        Entry entry = entries.get(0);
+        
+        // GET the actual mule configuration
+        String muleConfigUrlLink = entry.getContentSrc().toString();
+        System.out.println(muleConfigUrlLink);
+        res = client.get(muleConfigUrlLink);
+        assertEquals(200, res.getStatus());
+        
+        // Use this as your handle to the mule configuration
+        InputStream is = res.getInputStream();
+        IOUtils.copy(is, System.out);
+    }
+    
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[] {"/META-INF/applicationContext-core.xml",
+                             "/META-INF/applicationContext-abdera.xml"};
+    }
+
+}
