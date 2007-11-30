@@ -58,6 +58,8 @@ public class IndexTest extends AbstractGalaxyTest {
         // Import a document which should now be indexed
         Artifact artifact = importHelloWsdl();
         
+        Thread.sleep(1000);
+        
         ArtifactVersion version = artifact.getLatestVersion();
         Object property = version.getProperty("wsdl.service");
         assertNotNull(property);
@@ -77,14 +79,14 @@ public class IndexTest extends AbstractGalaxyTest {
         assertTrue(endpoints.contains(new QName("SoapPort")));
         
         // Try out search!
-        Set results = registry.search("select artifact where artifactVersion.wsdl.service = 'HelloWorldService'");
+        Set results = registry.search("select artifact where wsdl.service = 'HelloWorldService'");
         assertEquals(1, results.size());
         
         Artifact next = (Artifact) results.iterator().next();
         assertEquals(1, next.getVersions().size());
         
         results = registry.search(new Query(Artifact.class, 
-                                                Restriction.eq("artifactVersion.wsdl.service", 
+                                                Restriction.eq("wsdl.service", 
                                                                new QName("HelloWorldService"))));
         
         assertEquals(1, results.size());
@@ -93,7 +95,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, next.getVersions().size());
         
         results = registry.search(new Query(ArtifactVersion.class, 
-                                            Restriction.eq("artifactVersion.wsdl.service", 
+                                            Restriction.eq("wsdl.service", 
                                                            new QName("HelloWorldService"))));
     
         assertEquals(1, results.size());
@@ -136,8 +138,7 @@ public class IndexTest extends AbstractGalaxyTest {
         
         // Try out search!
         Set results = registry.search(new Query(Artifact.class, 
-                                                Restriction.eq("artifactVersion.mule.service", 
-                                                               "GreeterUMO")));
+                                                Restriction.eq("mule.service", "GreeterUMO")));
         
         assertEquals(1, results.size());
         
@@ -145,8 +146,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, next.getVersions().size());
         
         results = registry.search(new Query(ArtifactVersion.class, 
-                                            Restriction.eq("artifactVersion.mule.service", 
-                                                           "GreeterUMO")));
+                                            Restriction.eq("mule.service", "GreeterUMO")));
     
         assertEquals(1, results.size());
         

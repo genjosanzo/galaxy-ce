@@ -19,6 +19,7 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     public static final String CREATED = "created";
     public static final String DATA = "data";
     public static final String LABEL = "label";
+    public static final String LATEST = "latest";
 
     private JcrArtifact parent;
     private Object data;

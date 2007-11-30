@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
@@ -162,7 +163,33 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
             if (q != null) {
                 q = Escaping.decode(q);
                 
-                return registry.search(q);
+                final Iterator results = registry.search(q).iterator();
+                return new Iterable<ArtifactVersion>() {
+
+                    public Iterator<ArtifactVersion> iterator() {
+                        return new Iterator<ArtifactVersion>() {
+
+                            public boolean hasNext() {
+                                return results.hasNext();
+                            }
+
+                            public ArtifactVersion next() {
+                                Object next = results.next();
+                                if (next instanceof ArtifactVersion) {
+                                    return (ArtifactVersion) next;
+                                } else {
+                                    return ((Artifact) next).getLatestVersion();
+                                }
+                            }
+
+                            public void remove() {
+                                throw new UnsupportedOperationException();
+                            }
+                            
+                        };
+                    }
+                    
+                };
             } else {
                 final Iterator<Artifact> iterator = registry.getArtifacts(workspace).iterator();
                 return new Iterable<ArtifactVersion>() {

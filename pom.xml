@@ -18,15 +18,17 @@
                 <module>integration/mule1</module>
 	</modules>
 
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-			<version>3.8.1</version>
-		</dependency>
-	</dependencies>
-
+	<dependencyManagement>
+	  <dependencies>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<scope>test</scope>
+				<version>3.8.1</version>
+			</dependency>
+		</dependencies>
+  </dependencyManagement>
+  
 	<build>
 		<plugins>
 			<plugin>
@@ -41,7 +43,7 @@
                                 <groupId>org.apache.maven.plugins</groupId>
                                 <artifactId>maven-surefire-plugin</artifactId>
                                 <configuration>
- <childDelegationX>falsex</childDelegationX>
+ <childDelegation>false</childDelegation>
                                 </configuration>
                         </plugin>
 		</plugins>

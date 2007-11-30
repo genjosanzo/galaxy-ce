@@ -22,6 +22,7 @@ import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.Value;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
@@ -68,6 +69,7 @@ import org.w3c.dom.NodeList;
 public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistry {
 
     public static final String ARTIFACT_NODE_NAME = "__artifact";
+    public static final String LATEST = "latest";
 
     private Logger LOGGER = LogUtils.getL7dLogger(JcrRegistryImpl.class);
 
@@ -250,6 +252,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 // Store the data
                 InputStream s = ch.read(data);
                 versionNode.setProperty(JcrVersion.DATA, s);
+                versionNode.setProperty(JcrVersion.LATEST, true);
                 
                 JcrVersion jcrVersion = new JcrVersion(artifact, versionNode);
                 jcrVersion.setData(data);
@@ -265,7 +268,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
                 JcrVersion next = (JcrVersion)artifact.getVersions().iterator().next();
                 next.setData(data);
-    
+                
                 LOGGER.info("Created artifact " + artifact.getId());
     
                 return artifact;
@@ -300,6 +303,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 JcrArtifact jcrArtifact = (JcrArtifact) artifact;
                 Node artifactNode = jcrArtifact.getNode();
+                JcrVersion previousLatest = ((JcrVersion)jcrArtifact.getLatestVersion());
+                previousLatest.getNode().setProperty(JcrVersion.LATEST, (String) null);
                 
                 ContentHandler ch = contentService.getContentHandler(jcrArtifact.getContentType());
                 
@@ -313,7 +318,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 // Store the data
                 InputStream s = ch.read(data);
                 versionNode.setProperty(JcrVersion.DATA, s);
-    
+                versionNode.setProperty(JcrVersion.LATEST, true);
+                
                 JcrVersion next = new JcrVersion(jcrArtifact, versionNode);
                 next.setData(data);
                 next.setVersionLabel(versionLabel);
@@ -582,13 +588,16 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                             .append(ARTIFACT_NODE_NAME)
                             .append("/");
                             
-                    } else if (property.startsWith("artifactVersion.")) {
-                        property = property.substring("artifactVersion.".length());
-                        qstr.append("//")
-                            .append(ARTIFACT_NODE_NAME)
-                            .append("/version/");
                     } else {
-                        throw new RuntimeException(new QueryException(new Message("INVALID_QUERY_PROPERTY", LOGGER, property)));
+                        qstr.append("//")
+                            .append(ARTIFACT_NODE_NAME);
+                        // Search the latest if we're searching for artifacts, otherwise
+                        // search all versions
+                        if (!av) {
+                            qstr.append("/version[@latest='true']/");
+                        } else {
+                            qstr.append("/version/");
+                        }
                     }
                     
 //                    if (property.equals("lifecycleTag")) {
