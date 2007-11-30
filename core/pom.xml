@@ -79,6 +79,14 @@
           <artifactId>jackrabbit-jca</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>org.apache.jackrabbit</groupId>
+          <artifactId>jackrabbit-jcr-commons</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.jackrabbit</groupId>
+          <artifactId>jackrabbit-jcr-rmi</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>jug</groupId>
           <artifactId>jug-asl</artifactId>
         </exclusion>
@@ -138,7 +146,17 @@
     </dependency>
     
   </dependencies>
-
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <childDelegation>false</childDelegation>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <repositories>
     <!-- For Abdera -->
     <repository>
