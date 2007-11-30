@@ -146,17 +146,7 @@
     </dependency>
     
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <childDelegation>false</childDelegation>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+  
   <repositories>
     <!-- For Abdera -->
     <repository>
