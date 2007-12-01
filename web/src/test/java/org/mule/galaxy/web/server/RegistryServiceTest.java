@@ -33,7 +33,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         
         Collection artifactTypes = gwtRegistry.getArtifactTypes();
-        assertEquals(4, artifactTypes.size());
+        assertEquals(5, artifactTypes.size());
         
     }
 }
