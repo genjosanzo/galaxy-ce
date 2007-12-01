@@ -181,5 +181,8 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
         setProperty(LIFECYCLE, p.getLifecycle().getName());
         setProperty(PHASE, p.getName());
     }
+    public void setVersions(Set<ArtifactVersion> versions2) {
+        this.versions = versions2;
+    }
 
 }

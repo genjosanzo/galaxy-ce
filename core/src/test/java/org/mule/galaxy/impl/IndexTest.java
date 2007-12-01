@@ -24,7 +24,7 @@ public class IndexTest extends AbstractGalaxyTest {
                               "/META-INF/applicationContext-test.xml" };
         
     }
-    public void xtestWsdlIndex() throws Exception {
+    public void testWsdlIndex() throws Exception {
         Set<Index> indices = registry.getIndices(Constants.WSDL_DEFINITION_QNAME);
         assertNotNull(indices);
         assertEquals(3, indices.size());

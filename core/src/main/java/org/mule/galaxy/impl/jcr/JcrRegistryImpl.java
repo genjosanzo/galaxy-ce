@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.activation.MimeType;
@@ -266,8 +267,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 session.save();
     
-                JcrVersion next = (JcrVersion)artifact.getVersions().iterator().next();
-                next.setData(data);
+                Set<ArtifactVersion> versions = new HashSet<ArtifactVersion>();
+                versions.add(jcrVersion);
+                artifact.setVersions(versions);
                 
                 LOGGER.info("Created artifact " + artifact.getId());
     
@@ -663,15 +665,19 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         Set<Index> indices = getIndices(jcrVersion.getParent().getDocumentType());
         
         for (Index idx : indices) {
-            switch (idx.getLanguage()) {
-            case XQUERY:
-                indexWithXQuery(jcrVersion, idx);
-                break;
-            case XPATH:
-                indexWithXPath(jcrVersion, idx);
-                break;
-            default:
-                throw new UnsupportedOperationException();
+            try {
+                switch (idx.getLanguage()) {
+                case XQUERY:
+                    indexWithXQuery(jcrVersion, idx);
+                    break;
+                case XPATH:
+                    indexWithXPath(jcrVersion, idx);
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+                }
+            } catch (Throwable t) {
+                LOGGER.log(Level.SEVERE, "Could not process index " + idx.getId(), t);
             }
         }
     }
