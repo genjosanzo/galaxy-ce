@@ -58,29 +58,17 @@
   <build>
     <plugins>
       <!-- All the fantastical settings that GWT needs -->
-      <plugin>
+      <!--  plugin>
         <groupId>com.totsp.gwt</groupId>
         <artifactId>maven-googlewebtoolkit2-plugin</artifactId>
-        <!-- patched version see http://code.google.com/p/gwt-maven/issues/detail?id=43 -->
-        <!-- NOTE there is now a newer version .. 1.5.3-SNAPSHOT and a 2.0-beta. I have not tried any of them -->
         <version>2.0-beta</version>
         <configuration>
-          <!--  <logLevel>ALL</logLevel>  -->
           <runTarget>org.mule.galaxy.web.Galaxy/Galaxy.html</runTarget>
           <style>OBF</style>
-          <!--
-            <style>DETAILED</style>
-          -->
-          <!-- each compile target added here (repeat the <value> ... </value> -->
-          <!-- NOTE if you upgrade from 1.5.3 to 2.0-beta this becomes compileTargets -->
           <compileTargets>
             <value>org.mule.galaxy.web.Galaxy</value>
           </compileTargets>
           <generateGettersAndSetters>true</generateGettersAndSetters>
-          <!-- 
-          <gen>${basedir}/src/main/webapp</gen>
-          <output>${basedir}/src/main/webapp</output>
-           -->
         </configuration>
         <executions>
           <execution>
@@ -90,7 +78,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
+      </plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>

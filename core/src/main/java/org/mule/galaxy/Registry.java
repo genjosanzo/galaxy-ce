@@ -11,6 +11,7 @@ import javax.xml.namespace.QName;
 
 import org.mule.galaxy.Index.Language;
 import org.mule.galaxy.query.Query;
+import org.mule.galaxy.query.QueryException;
 
 public interface Registry {
     Workspace createWorkspace(String name) throws RegistryException;
