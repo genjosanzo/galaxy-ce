@@ -20,6 +20,7 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springmodules.jcr.SessionFactory;
@@ -28,14 +29,14 @@ import org.springmodules.jcr.jackrabbit.support.UserTxSessionHolder;
 
 public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContextTests {
 
+    protected static final Log log = LogFactory.getLog(AbstractGalaxyTest.class);
+
     protected JackrabbitRepository repository;
     protected Registry registry;
     protected Settings settings;
     protected SessionFactory sessionFactory;
-
-    protected static final Log log = LogFactory.getLog(AbstractGalaxyTest.class);
-
-    private Session session;
+    protected LifecycleManager lifecycleManager;
+    protected Session session;
     
     public AbstractGalaxyTest() {
         super();

@@ -1,5 +1,5 @@
 <lifecycles xmlns="http://galaxy.mule.org/lifecycle">
-  <lifecycle name="Default" initialPhases="Created">
+  <lifecycle name="Default" initialPhase="Created">
     <phase name="Created" nextPhases="Developed"/>
     <phase name="Developed" nextPhases="Tested"/>
     <phase name="Tested" nextPhases="Staged,Deployed,Retired"/>

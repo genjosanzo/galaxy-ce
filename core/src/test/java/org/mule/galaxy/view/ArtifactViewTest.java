@@ -36,7 +36,7 @@ public class ArtifactViewTest extends AbstractGalaxyTest {
         assertEquals(name, view.getColumnValue(artifact, 0));
         assertEquals("http://mule.org/hello_world", view.getColumnValue(artifact, 1));
         assertEquals("0.1", view.getColumnValue(artifact, 2));
-        assertEquals("", view.getColumnValue(artifact, 3));
+        assertEquals("Created", view.getColumnValue(artifact, 3));
         
         assertEquals("1", view.getColumnValue(artifact, 4));
     }

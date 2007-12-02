@@ -24,13 +24,49 @@ public interface Registry {
     
     Artifact createArtifact(Workspace workspace, Object data, String versionLabel) throws RegistryException, MimeTypeParseException;
     
-    Artifact createArtifact(Workspace workspace, String contentType, String name, String versionLabel, InputStream inputStream) 
+    Artifact createArtifact(Workspace workspace, 
+                            String contentType, 
+                            String name, 
+                            String versionLabel, 
+                            InputStream inputStream) 
         throws RegistryException, IOException, MimeTypeParseException;
     
-    ArtifactVersion newVersion(Artifact artifact, Object data, String versionLabel) throws RegistryException, IOException;
+    /**
+     * Create a new ArtifactVersion from a POJOish object.
+     * @param artifact
+     * @param data
+     * @param versionLabel
+     * @return
+     * @throws RegistryException
+     * @throws IOException
+     */
+    ArtifactVersion newVersion(Artifact artifact, 
+                               Object data, 
+                               String versionLabel) throws RegistryException, IOException;
     
-    ArtifactVersion newVersion(Artifact artifact, InputStream inputStream, String versionLabel) throws RegistryException, IOException;
+    /**
+     * Create a new ArtifactVersion its byte form. 
+     * @param artifact
+     * @param data
+     * @param versionLabel
+     * @return
+     * @throws RegistryException
+     * @throws IOException
+     */
+    ArtifactVersion newVersion(Artifact artifact, 
+                               InputStream inputStream, 
+                               String versionLabel) throws RegistryException, IOException;
 
+    /**
+     * Assess whether or not the new version is approved based on the policies which
+     * apply to this artifact & workspace. 
+     * 
+     * @param newVersion
+     * @return
+     * @throws RegistryException
+     */
+    Collection<VersionApproval> approve(ArtifactVersion newVersion) throws RegistryException;
+    
     Collection<Artifact> getArtifacts(Workspace workspace) throws RegistryException;
     
     Artifact getArtifact(String id) throws NotFoundException;

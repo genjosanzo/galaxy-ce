@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class Lifecycle {
     private String name;
-    private Set<Phase> initialPhases;
+    private Phase initialPhase;
     private Map<String, Phase> phases;
     
     public String getName() {
@@ -17,17 +17,14 @@ public class Lifecycle {
         this.name = name;
     }
     
-    public Set<Phase> getInitialPhases() {
-        if (initialPhases == null) {
-            initialPhases = new HashSet<Phase>();
-        }
-        return initialPhases;
+    public Phase getInitialPhase() {
+        return initialPhase;
     }
-    
-    public void setInitialPhases(Set<Phase> initialPhases) {
-        this.initialPhases = initialPhases;
+
+    public void setInitialPhase(Phase initialPhase) {
+        this.initialPhase = initialPhase;
     }
-    
+
     public Phase getPhase(String phase) {
         return phases.get(phase);
     }

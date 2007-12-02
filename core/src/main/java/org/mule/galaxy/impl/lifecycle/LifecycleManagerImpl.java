@@ -14,12 +14,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.VersionAssessor;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrArtifact;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.lifecycle.PhaseApprovalListener;
 import org.mule.galaxy.lifecycle.TransitionException;
 import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.LogUtils;
@@ -35,7 +35,7 @@ public class LifecycleManagerImpl implements LifecycleManager {
 
     private List<String> lifecycleDocuments = new ArrayList<String>();
     private Map<String,Lifecycle> lifecycles = new ConcurrentHashMap<String, Lifecycle>();
-    private List<PhaseApprovalListener> phaseApprovalListeners = new ArrayList<PhaseApprovalListener>();
+    private List<VersionAssessor> phaseApprovalListeners = new ArrayList<VersionAssessor>();
     
     public Lifecycle getDefaultLifecycle() {
         return lifecycles.get(DEFAULT_LIFECYCLE);
@@ -114,23 +114,16 @@ public class LifecycleManagerImpl implements LifecycleManager {
             }
             
             // Set up initial phases
-            String initialPhases = lifecycleEl.getAttribute("initialPhases");
-            if (initialPhases != null && !"".equals(initialPhases)) {
-                StringTokenizer st = new StringTokenizer(initialPhases, ",");
-                while (st.hasMoreTokens()) {
-                    String nextPhaseName = st.nextToken().trim();
-                    Phase nextPhase = phases.get(nextPhaseName);
-                    
-                    if (nextPhase == null) {
-                        throw new Exception("Phase " + nextPhaseName + 
-                                            " is not a valid initial phase in lifecycle " + name);
-                    }
-                    
-                    l.getInitialPhases().add(nextPhase);
-                }
-            } else {
+            String initialPhase = lifecycleEl.getAttribute("initialPhase");
+            if (initialPhase == null || "".equals(initialPhase)) {
                 throw new Exception("Lifecycle " + name + " must have at least one initial phase!");
             }
+
+            Phase p = phases.get(initialPhase);
+            if (p == null) {
+                throw new Exception("Initial phase " + name + " isn't a valid phase!");
+            }
+            l.setInitialPhase(p);
             
             
             lifecycleEl = (Element) DOMUtils.getNext(lifecycleEl, "lifecycle", Node.ELEMENT_NODE);
@@ -147,7 +140,7 @@ public class LifecycleManagerImpl implements LifecycleManager {
         Lifecycle l = p2.getLifecycle();
         
         if (p == null) {
-            return l.getInitialPhases().contains(p2);
+            return l.getInitialPhase().equals(p2);
         } else {
             return p != null && p.getNextPhases() != null && p.getNextPhases().contains(p2);
         }
@@ -171,11 +164,11 @@ public class LifecycleManagerImpl implements LifecycleManager {
         this.lifecycleDocuments = lifecycleDocuments;
     }
 
-    public List<PhaseApprovalListener> getPhaseApprovalListeners() {
+    public List<VersionAssessor> getPhaseApprovalListeners() {
         return phaseApprovalListeners;
     }
 
-    public void setPhaseApprovalListeners(List<PhaseApprovalListener> phaseApprovalListeners) {
+    public void setPhaseApprovalListeners(List<VersionAssessor> phaseApprovalListeners) {
         this.phaseApprovalListeners = phaseApprovalListeners;
     }
     

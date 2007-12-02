@@ -49,10 +49,12 @@ import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
+import org.mule.galaxy.VersionApproval;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.Index.Language;
 import org.mule.galaxy.impl.IndexImpl;
+import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
@@ -265,6 +267,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     throw new RuntimeException(e);
                 }
                 
+                Lifecycle lifecycle = lifecycleManager.getLifecycle(workspace);
+                artifact.setPhase(lifecycle.getInitialPhase());
+                
                 session.save();
     
                 Set<ArtifactVersion> versions = new HashSet<ArtifactVersion>();
@@ -343,6 +348,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         Object data = getData(artifact.getContentType(), inputStream);
 
         return newVersion(artifact, data, versionLabel);
+    }
+
+    public Collection<VersionApproval> approve(ArtifactVersion newVersion) throws RegistryException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     public void delete(Artifact artifact) {

@@ -62,7 +62,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertTrue(version.getData() instanceof Definition);
         assertEquals("0.1", version.getVersionLabel());
         
-        assertNull(artifact.getPhase());
+        assertEquals("Created", artifact.getPhase().getName());
         
         Calendar created = version.getCreated();
         assertTrue(created.getTime().getTime() > 0);

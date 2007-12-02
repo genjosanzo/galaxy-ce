@@ -18,16 +18,15 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         
         assertEquals("Default", l.getName());
         
-        Set<Phase> phases = l.getInitialPhases();
+        Phase init = l.getInitialPhase();
+        assertNotNull(init);
+        
+        assertEquals("Created", init.getName());
+        
+        Set<Phase> phases = init.getNextPhases();
         assertEquals(1, phases.size());
         
         Phase p = phases.iterator().next();
-        assertEquals("Created", p.getName());
-        
-        phases = p.getNextPhases();
-        assertEquals(1, phases.size());
-        
-        p = phases.iterator().next();
         assertEquals("Developed", p.getName());
     }
     
@@ -36,15 +35,12 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         assertEquals(1, lifecycles.size());
         
         Lifecycle l = lifecycles.iterator().next();
-        Set<Phase> phases = l.getInitialPhases();
-        Phase created = phases.iterator().next();
+        Phase created = l.getInitialPhase();
         Phase dev = created.getNextPhases().iterator().next();
         
         Artifact artifact = importHelloWsdl();
-        assertTrue(lifecycleManager.isTransitionAllowed(artifact, created));
-        assertFalse(lifecycleManager.isTransitionAllowed(artifact, dev));
-        
-        lifecycleManager.transition(artifact, created);
+        assertFalse(lifecycleManager.isTransitionAllowed(artifact, created));
+        assertTrue(lifecycleManager.isTransitionAllowed(artifact, dev));
         
         Phase current = artifact.getPhase();
         assertEquals(created.getName(), current.getName());
