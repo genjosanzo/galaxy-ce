@@ -92,7 +92,7 @@ public class WsdlDiff {
     public void setNewWSDL(Document wsdl, WSDLLocator loc) throws WSDLException {
         WSDLReader reader = WSDLFactory.newInstance().newWSDLReader();
         
-        this.original = reader.readWSDL(loc, wsdl.getDocumentElement());
+        this.newWsdl = reader.readWSDL(loc, wsdl.getDocumentElement());
     }
 
 }

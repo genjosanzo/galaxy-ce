@@ -109,6 +109,12 @@
 
     <dependency>
       <groupId>org.mule.galaxy</groupId>
+      <artifactId>galaxy-wsi</artifactId>
+      <version>${version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-testutils</artifactId>
       <version>${version}</version>
       <scope>test</scope>

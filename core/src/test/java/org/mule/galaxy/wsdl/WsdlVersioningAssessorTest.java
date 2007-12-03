@@ -3,25 +3,30 @@ package org.mule.galaxy.wsdl;
 import java.util.HashSet;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.policy.Approval;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class WsdlVersioningAssessorTest extends AbstractGalaxyTest {
     
     public void testVersioning() throws Exception {
         Artifact a1 = importHelloWsdl();
+        ArtifactVersion prev = a1.getLatestVersion();
         
-        WsdlVersioningAssessor assessor = new WsdlVersioningAssessor();
-        Lifecycle l = lifecycleManager.getDefaultLifecycle();
-        Phase init = l.getInitialPhase();
-        Phase next = init.getNextPhases().iterator().next();
+        assertNotNull(a1.getLatestVersion().getData());
+        BackwardCompatibilityAssessor assessor = new BackwardCompatibilityAssessor();
+
+        ArtifactVersion next = registry.newVersion(a1, 
+                                                   getResourceAsStream("/wsdl/hello-noOperation.wsdl"), 
+                                                   "0.2");
+        assertNotNull(next.getData());
+        Approval approval = assessor.isApproved(a1, prev, next);
         
-        HashSet<Phase> phases = new HashSet<Phase>();
-        phases.add(next);
-        assessor.setBackwardCompatabilityPhases(phases);
+        assertFalse(approval.isApproved());
         
-        // assessor.isApproved(a1, next)
+        assertEquals(2, approval.getMessages().size());
     }
     
     @Override

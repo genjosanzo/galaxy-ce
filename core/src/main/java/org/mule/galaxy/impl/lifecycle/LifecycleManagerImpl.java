@@ -14,13 +14,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.VersionAssessor;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrArtifact;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.lifecycle.TransitionException;
+import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.LogUtils;
 
@@ -35,7 +35,7 @@ public class LifecycleManagerImpl implements LifecycleManager {
 
     private List<String> lifecycleDocuments = new ArrayList<String>();
     private Map<String,Lifecycle> lifecycles = new ConcurrentHashMap<String, Lifecycle>();
-    private List<VersionAssessor> phaseApprovalListeners = new ArrayList<VersionAssessor>();
+    private List<ArtifactPolicy> phaseApprovalListeners = new ArrayList<ArtifactPolicy>();
     
     public Lifecycle getDefaultLifecycle() {
         return lifecycles.get(DEFAULT_LIFECYCLE);
@@ -164,11 +164,11 @@ public class LifecycleManagerImpl implements LifecycleManager {
         this.lifecycleDocuments = lifecycleDocuments;
     }
 
-    public List<VersionAssessor> getPhaseApprovalListeners() {
+    public List<ArtifactPolicy> getPhaseApprovalListeners() {
         return phaseApprovalListeners;
     }
 
-    public void setPhaseApprovalListeners(List<VersionAssessor> phaseApprovalListeners) {
+    public void setPhaseApprovalListeners(List<ArtifactPolicy> phaseApprovalListeners) {
         this.phaseApprovalListeners = phaseApprovalListeners;
     }
     

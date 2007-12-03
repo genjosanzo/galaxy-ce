@@ -10,6 +10,7 @@ import javax.activation.MimeTypeParseException;
 import javax.xml.namespace.QName;
 
 import org.mule.galaxy.Index.Language;
+import org.mule.galaxy.policy.Approval;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
 
@@ -65,7 +66,7 @@ public interface Registry {
      * @return
      * @throws RegistryException
      */
-    Collection<VersionApproval> approve(ArtifactVersion newVersion) throws RegistryException;
+    Collection<Approval> approve(ArtifactVersion newVersion) throws RegistryException;
     
     Collection<Artifact> getArtifacts(Workspace workspace) throws RegistryException;
     

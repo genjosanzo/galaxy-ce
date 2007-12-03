@@ -1,10 +1,11 @@
-package org.mule.galaxy;
+package org.mule.galaxy.policy;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class VersionApproval {
+public class Approval {
     private boolean approved;
-    private List<String> messages;
+    private List<String> messages = new ArrayList<String>();
     
     public boolean isApproved() {
         return approved;

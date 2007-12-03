@@ -37,7 +37,7 @@ public class WsdlStructureRule implements Rule {
             if (pt2 == null) {
                 listener
                     .onEvent(new DifferenceEvent("PortType \"" + pt.getQName() + "\" was removed.",
-                                                 MISSING_PORT_TYPE, true, false));
+                                                 MISSING_PORT_TYPE, false, false));
 
                 continue;
             }
@@ -52,7 +52,7 @@ public class WsdlStructureRule implements Rule {
                     listener
                     .onEvent(new DifferenceEvent("Operation \"" + op.getName() + "\" was removed." +
                                                                           pt.getQName(),
-                                                                          MISSING_OPERATION, true, false));
+                                                                          MISSING_OPERATION, false, false));
 
                 }
             }
@@ -67,7 +67,7 @@ public class WsdlStructureRule implements Rule {
                 listener
                     .onEvent(new DifferenceEvent("Binding \"" + b.getQName()
                                                                           + "\" was removed.",
-                                                                          MISSING_BINDING, true, false));
+                                                                          MISSING_BINDING, false, false));
 
                 continue;
             }
@@ -84,7 +84,7 @@ public class WsdlStructureRule implements Rule {
                     .onEvent(new DifferenceEvent("Binding Operation \"" + op.getName()
                                                                           + "\" was removed from binding " +
                                                                           b.getQName(),
-                                                                          MISSING_BINDING_OPERATION, true, false));
+                                                                          MISSING_BINDING_OPERATION, false, false));
 
                 }
             }
