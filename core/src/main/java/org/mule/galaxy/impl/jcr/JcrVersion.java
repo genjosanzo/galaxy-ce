@@ -13,7 +13,7 @@ import javax.jcr.Value;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.util.JcrUtil;
+import org.mule.galaxy.security.User;
 
 public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     public static final String CREATED = "created";
@@ -73,4 +73,10 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
         // TODO Auto-generated method stub
         return null;
     }
+
+    public User getAuthor() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
 }

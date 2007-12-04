@@ -1,5 +1,46 @@
 package org.mule.galaxy.security;
 
-public interface User {
-    String getUsername();
+import java.util.Calendar;
+import java.util.Map;
+
+import org.mule.galaxy.Identifiable;
+
+public class User implements Identifiable {
+    private String username;
+    private String name;
+    private Calendar created;
+    private Map<String,Object> properties;
+    
+    public String getId() {
+        return getUsername();
+    }
+    
+    public void setId(String id) {
+        setUsername(username);
+    }
+
+    public String getUsername() {
+        return username;
+    }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
+    }
+    public Calendar getCreated() {
+        return created;
+    }
+    public void setCreated(Calendar created) {
+        this.created = created;
+    }
 }

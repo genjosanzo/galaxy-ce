@@ -1,7 +1,8 @@
-package org.mule.galaxy.util;
+package org.mule.galaxy.impl.jcr;
 
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
+import static org.mule.galaxy.impl.jcr.JcrUtil.getOrCreate;
+import static org.mule.galaxy.impl.jcr.JcrUtil.setProperty;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -15,6 +16,7 @@ import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
+import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
@@ -23,6 +25,8 @@ import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
+
+import org.mule.galaxy.util.QNameUtil;
 
 public class JcrUtil {
 
@@ -146,7 +150,9 @@ public class JcrUtil {
     public static void setProperty(String name, Object value, Node n) throws ItemExistsException,
         PathNotFoundException, VersionException, ConstraintViolationException, LockException,
         RepositoryException {
-        if (value instanceof Collection) {
+        if (value instanceof Map) {
+            setMap(n, name, (Map<?, ?>) value);
+        } else if (value instanceof Collection) {
             Node child = getOrCreate(n, name);
             
             Collection<?> c = (Collection<?>) value;
@@ -166,10 +172,23 @@ public class JcrUtil {
                 valueNode.setProperty(VALUE, o.toString());
             }
         } else if (value instanceof String) {
-            n.setProperty(TYPE, String.class.getName());
             n.setProperty(name, value.toString());
+        } else if (value instanceof Calendar) {
+            n.setProperty(name, (Calendar) value);
+        } else if (value == null) {
+            n.setProperty(name, (String) null);
         } else {
             throw new UnsupportedOperationException("Unsupported type " + value.getClass());
+        }
+    }
+
+    public static void setMap(Node n, String name, Map<?,?> result) throws RepositoryException {
+        Node mapNode = getOrCreate(n, name);
+
+        // TODO: make this lazy and write a LazyNodeMap
+        for (Map.Entry<?,?> e : result.entrySet()) {
+            // TODO: handle more complex maps
+            setProperty((String) e.getKey(), e.getValue(), mapNode);
         }
     }
 
@@ -179,14 +198,39 @@ public class JcrUtil {
 
     public static Object getProperty(String name, Node node) {
         try {
-            Node child = node.getNode(name);
+            Property property = null;
             
-            String type = getStringOrNull(node, TYPE);
-            
-            if (type.equals(String.class.getName())) {
-                return getStringOrNull(child, name);
+            try {
+                property = node.getProperty(name);
+                
+                Value val = property.getValue();
+                if (val == null) {
+                    return null;
+                }
+
+                switch (val.getType()) {
+                case PropertyType.STRING:
+                    return val.getString();
+                case PropertyType.BOOLEAN:
+                    return val.getBoolean();
+                case PropertyType.DATE:
+                    return val.getDate();
+                case PropertyType.DOUBLE:
+                    return val.getDouble();
+                case PropertyType.LONG:
+                    return val.getLong();
+                default:
+                    return null;
+                }
+            } catch (PathNotFoundException e) {
             } 
             
+            Node child = node.getNode(name);
+            if (child == null) {
+                return null;
+            }
+            
+            String type = getStringOrNull(node, TYPE);
             Collection<Object> values = null;
             if (type.equals(Set.class.getName())) {
                 values = new HashSet<Object>();

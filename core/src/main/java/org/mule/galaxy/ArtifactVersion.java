@@ -6,6 +6,8 @@ import java.util.Set;
 
 import javax.wsdl.Definition;
 
+import org.mule.galaxy.security.User;
+
 import org.w3c.dom.Document;
 
 
@@ -35,4 +37,11 @@ public interface ArtifactVersion {
     void setProperty(String name, Object value);
     
     Object getProperty(String name);
+    
+    /**
+     * The author of this version. They may or may not be the actual author, but they
+     * are the entity responsible for adding it to the repository.
+     * @return
+     */
+    User getAuthor();
 }

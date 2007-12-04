@@ -4,14 +4,12 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-public interface Index {
+public interface Index extends Identifiable {
     public enum Language  {
         GROOVY,
         XPATH,
         XQUERY
     }
-    
-    public String getId();
     
     public void setId(String id);
     

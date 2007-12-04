@@ -7,7 +7,7 @@ import javax.jcr.NodeIterator;
 import javax.xml.namespace.QName;
 
 import org.mule.galaxy.Index;
-import org.mule.galaxy.util.JcrUtil;
+import org.mule.galaxy.impl.jcr.JcrUtil;
 
 public class IndexImpl implements Index {
 

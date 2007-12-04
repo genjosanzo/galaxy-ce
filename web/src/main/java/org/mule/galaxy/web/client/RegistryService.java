@@ -13,5 +13,5 @@ public interface RegistryService extends RemoteService {
      * @return
      */
     public Collection getArtifactTypes();
-   
+
 }

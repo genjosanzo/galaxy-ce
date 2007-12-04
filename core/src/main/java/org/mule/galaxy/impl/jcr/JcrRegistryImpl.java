@@ -59,7 +59,6 @@ import org.mule.galaxy.policy.Approval;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.util.DOMUtils;
-import org.mule.galaxy.util.JcrUtil;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.QNameUtil;
@@ -741,6 +740,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 Object content = DOMUtils.getContent(node);
                 
+                LOGGER.info("Adding value " + content + " to index " + idx.getId());
+
                 if (idx.getQueryType().equals(QName.class)) {
                     results.add(QNameUtil.fromString(content.toString())); 
                 } else {

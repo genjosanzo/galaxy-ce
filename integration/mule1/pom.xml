@@ -35,6 +35,13 @@
     </dependency>
     
     <dependency>
+      <groupId>org.mule.galaxy</groupId>
+      <artifactId>galaxy-web</artifactId>
+      <version>${version}</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty</artifactId>
       <version>6.1.5</version>

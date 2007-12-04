@@ -17,7 +17,6 @@ import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.version.VersionException;
 
-import org.mule.galaxy.util.JcrUtil;
 
 public class AbstractJcrObject {
 

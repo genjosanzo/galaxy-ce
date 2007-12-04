@@ -46,8 +46,24 @@
     <property name="allowCreate" value="true"/>
   </bean>
   
-  <bean id="artifactTypeDao" class="org.mule.galaxy.impl.jcr.ArtifactTypeDao">
-    <property name="registry" ref="registry"/>
+  <bean id="userManager" parent="txProxyTemplate">
+    <property name="target" ref="userManagerTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="userManagerTarget" class="org.mule.galaxy.impl.jcr.UserManagerImpl"
+        init-method="initialize">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <bean id="artifactTypeDao" parent="txProxyTemplate">
+    <property name="target" ref="artifactTypeDaoTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="artifactTypeDaoTarget" class="org.mule.galaxy.impl.jcr.ArtifactTypeDao"
+    init-method="initialize">
+    <property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
   <bean id="settings" class="org.mule.galaxy.impl.SettingsImpl"/>
