@@ -159,7 +159,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         } 
         
         QueryManager qm = getQueryManager(session);
-        Query q = qm.createQuery("/" + rootNode + "/*[@" + idNode + "='" + id + "']", Query.XPATH);
+        Query q = qm.createQuery("/*/users/*[@" + idNode + "='" + id + "']", Query.XPATH);
         
         QueryResult qr = q.execute();
         

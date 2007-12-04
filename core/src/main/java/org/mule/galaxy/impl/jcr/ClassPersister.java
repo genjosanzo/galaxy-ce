@@ -65,7 +65,7 @@ public class ClassPersister {
             Method method = e.getValue();
             String name = e.getKey();
             Object value = getProperty(name, n);
-            System.out.println(name + " : " + value);
+            
             method.invoke(o, value);
         }
         

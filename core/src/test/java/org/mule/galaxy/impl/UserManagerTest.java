@@ -30,7 +30,7 @@ public class UserManagerTest extends AbstractGalaxyTest {
         assertEquals(2, users.size());
         
         User authUser = userManager.authenticate("admin", "admin");
-//        assertNotNull(authUser);
+        assertNotNull(authUser);
     }
     
     @Override
