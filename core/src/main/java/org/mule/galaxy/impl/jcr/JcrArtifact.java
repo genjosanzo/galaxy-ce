@@ -18,6 +18,7 @@ import org.mule.galaxy.Workspace;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.util.QNameUtil;
 
 public class JcrArtifact extends AbstractJcrObject implements Artifact {
@@ -33,15 +34,18 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     private Workspace workspace;
     private ContentHandler contentHandler;
     private LifecycleManager lifecycleManager;
+    private UserManager userManager;
     
-    public JcrArtifact(Workspace w, Node node, LifecycleManager lifecycleManager) {
-        this(w, node, null, lifecycleManager);
+    public JcrArtifact(Workspace w, Node node, LifecycleManager lifecycleManager, UserManager userManager) {
+        this(w, node, null, lifecycleManager, userManager);
     } 
-    public JcrArtifact(Workspace w, Node node, ContentHandler contentHandler, LifecycleManager lifecycleManager) {
+    public JcrArtifact(Workspace w, Node node, ContentHandler contentHandler, 
+                       LifecycleManager lifecycleManager, UserManager userManager) {
         super(node);
         this.workspace = w;
         this.contentHandler = contentHandler;
         this.lifecycleManager = lifecycleManager;
+        this.userManager = userManager;
     }
 
     public String getId() {
@@ -118,7 +122,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
                     Node node = itr.nextNode();
                     
                     if ("version".equals(node.getName())) {
-                        versions.add(new JcrVersion(this, node));
+                        versions.add(new JcrVersion(this, node, userManager));
                     }
                 }
             } catch (RepositoryException e) {
@@ -181,8 +185,8 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
         setProperty(LIFECYCLE, p.getLifecycle().getName());
         setProperty(PHASE, p.getName());
     }
+    
     public void setVersions(Set<ArtifactVersion> versions2) {
         this.versions = versions2;
     }
-
 }

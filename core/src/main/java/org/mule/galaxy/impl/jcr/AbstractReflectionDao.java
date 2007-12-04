@@ -82,7 +82,11 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
 
     @SuppressWarnings("unchecked")
     protected T build(Node node) throws Exception {
-        return (T) persister.build(node);
+        T t = (T) persister.build(node);
+        if (useNodeId) {
+            t.setId(node.getUUID());
+        }
+        return t;
     }
 
     @SuppressWarnings("unchecked")
@@ -93,7 +97,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
             Node node = nodes.nextNode();
             
             try {
-                objs.add((T) persister.build(node));
+                objs.add((T) build(node));
             } catch (Exception e) {
                 // TODO: not sure what to do here
                 if (e instanceof RepositoryException) {
@@ -159,7 +163,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         } 
         
         QueryManager qm = getQueryManager(session);
-        Query q = qm.createQuery("/*/users/*[@" + idNode + "='" + id + "']", Query.XPATH);
+        Query q = qm.createQuery("/*/" + rootNode + "/*[@" + idNode + "='" + id + "']", Query.XPATH);
         
         QueryResult qr = q.execute();
         

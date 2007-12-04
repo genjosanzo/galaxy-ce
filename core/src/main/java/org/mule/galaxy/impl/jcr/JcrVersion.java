@@ -14,19 +14,24 @@ import javax.jcr.Value;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.security.User;
+import org.mule.galaxy.security.UserManager;
 
 public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     public static final String CREATED = "created";
     public static final String DATA = "data";
     public static final String LABEL = "label";
     public static final String LATEST = "latest";
+    private static final String AUTHOR_ID = "authorId";
 
     private JcrArtifact parent;
     private Object data;
+    private User author;
+    private UserManager userManager;
 
-    public JcrVersion(JcrArtifact parent, Node v) {
+    public JcrVersion(JcrArtifact parent, Node v, UserManager userManager) {
         super(v);
         this.parent = parent;
+        this.userManager = userManager;
     }
 
     public Object getData() {
@@ -75,8 +80,19 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     }
 
     public User getAuthor() {
-        // TODO Auto-generated method stub
-        return null;
+        if (author == null) {
+            String authId = getStringOrNull(AUTHOR_ID);
+            
+            if (authId != null) {
+                author = userManager.get(authId);
+            }
+        }
+        return author;
     }
     
+    public void setAuthor(User author) {
+        this.author = author;
+        
+        setProperty(AUTHOR_ID, author.getId());
+    }
 }

@@ -17,18 +17,20 @@ import org.apache.abdera.model.Workspace;
 import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
+import org.apache.axiom.om.util.Base64;
 
 public class ArtifactCollectionTest extends AbstractAtomTest {
     
     public void testAddWsdl() throws Exception {
-        assertNotNull(registry);
-        
+        //Thread.sleep(100000);
         AbderaClient client = new AbderaClient(abdera);
-
+        RequestOptions defaultOpts = client.getDefaultRequestOptions();
+        defaultOpts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
+        
         String base = "http://localhost:9002/repository/";
         // Grab workspaces & collections
-        ClientResponse res = client.get(base);
-        assertEquals(200, res.getStatus());
+        ClientResponse res = client.get(base, defaultOpts);
+        assertEquals(res.getStatusText(), 200, res.getStatus());
         prettyPrint(res.getDocument());
         
         org.apache.abdera.model.Document<Service> svcDoc = res.getDocument();
@@ -51,7 +53,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         // Check out the feed, yo
         IRI colUri = new IRI(base).resolve(collection.getHref());
         System.out.println("Grabbing the Feed " + colUri.toString());
-        res = client.get(colUri.toString());
+        res = client.get(colUri.toString(), defaultOpts);
         assertEquals(200, res.getStatus());
         prettyPrint(res.getDocument());
         
@@ -62,6 +64,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         opts.setContentType("application/xml; charset=utf-8");
         opts.setSlug("hello_world.wsdl");
         opts.setHeader("X-Artifact-Version", "0.1");
+        opts.setAuthorization(defaultOpts.getAuthorization());
         
         res = client.post(colUri.toASCIIString(), getWsdl(), opts);
         assertEquals(201, res.getStatus());
@@ -70,7 +73,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         // Check the new feed for our entry
         System.out.println("Grabbing the Feed Again");
-        res = client.get(Escaping.encode(colUri.toString(), Profile.PATH));
+        res = client.get(Escaping.encode(colUri.toString(), Profile.PATH), defaultOpts);
         assertEquals(200, res.getStatus());
         prettyPrint(res.getDocument());
         
@@ -86,6 +89,6 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
 
 
     private InputStream getWsdl() {
-        return getResourceAsStream("/wsdl/hello.wsdl");
+        return getClass().getResourceAsStream("/wsdl/hello.wsdl");
     }
 }

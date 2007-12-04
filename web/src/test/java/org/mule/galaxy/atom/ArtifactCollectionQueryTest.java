@@ -7,13 +7,12 @@ import org.apache.abdera.i18n.iri.Escaping;
 import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
+import org.apache.axiom.om.util.Base64;
 import org.mule.galaxy.test.AbstractAtomTest;
 
 public class ArtifactCollectionQueryTest extends AbstractAtomTest {
     
     public void testAddWsdl() throws Exception {
-        assertNotNull(registry);
-        
         AbderaClient client = new AbderaClient(abdera);
 
         String url = "http://localhost:9002/repository/workspaces/Default%20Workspace";
@@ -24,7 +23,7 @@ public class ArtifactCollectionQueryTest extends AbstractAtomTest {
         opts.setContentType("application/xml; charset=utf-8");
         opts.setSlug("hello_world.wsdl");
         opts.setHeader("X-Artifact-Version", "0.1");
-        
+        opts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
         ClientResponse res = client.post(url, getWsdl(), opts);
         assertEquals(201, res.getStatus());
         
@@ -35,13 +34,14 @@ public class ArtifactCollectionQueryTest extends AbstractAtomTest {
         String search = Escaping.encode("select artifact where wsdl.service = 'HelloWorldService'");
         url = url + "?q=" + search;
         
-        res = client.get(url);
+        RequestOptions opts2 = client.getDefaultRequestOptions();
+        opts2.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
+        res = client.get(url, opts2);
         
         prettyPrint(res.getDocument());
     }
 
-
     private InputStream getWsdl() {
-        return getResourceAsStream("/wsdl/hello.wsdl");
+        return getClass().getResourceAsStream("/wsdl/hello.wsdl");
     }
 }

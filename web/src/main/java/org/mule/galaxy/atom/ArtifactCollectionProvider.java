@@ -7,11 +7,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
+import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.i18n.iri.Escaping;
@@ -26,13 +26,13 @@ import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.impl.AbstractCollectionProvider;
 import org.apache.abdera.protocol.server.impl.EmptyResponseContext;
 import org.apache.abdera.protocol.server.impl.ResponseContextException;
-import org.apache.abdera.protocol.util.EncodingUtil;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 
 public class ArtifactCollectionProvider extends AbstractCollectionProvider<ArtifactVersion> {
     private static final String ID_PREFIX = "urn:galaxy:artifact:";
@@ -56,7 +56,10 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
     }
     
     @Override
-    protected void addEntryDetails(RequestContext request, Entry e, IRI entryBaseIri, ArtifactVersion entryObj)
+    protected void addEntryDetails(RequestContext request, 
+                                   Entry e, 
+                                   IRI entryBaseIri, 
+                                   ArtifactVersion entryObj)
         throws ResponseContextException {
         super.addEntryDetails(request, e, entryBaseIri, entryObj);
         
@@ -137,10 +140,14 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
                 
                 throw new ResponseContextException(ctx);
             }
+            UserDetailsWrapper wrapper = 
+                (UserDetailsWrapper) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            
             return registry.createArtifact(workspace, 
                                            mimeType.toString(), 
                                            slug, 
-                                           version, inputStream).getLatestVersion();
+                                           version, inputStream, 
+                                           wrapper.getUser()).getLatestVersion();
         } catch (RegistryException e) {
             throw new ResponseContextException(500, e);
         } catch (IOException e) {

@@ -13,6 +13,7 @@ import org.mule.galaxy.Index.Language;
 import org.mule.galaxy.policy.Approval;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.security.User;
 
 public interface Registry {
     Workspace createWorkspace(String name) throws RegistryException;
@@ -23,13 +24,14 @@ public interface Registry {
     
     Collection<Workspace> getWorkspaces() throws RegistryException;
     
-    Artifact createArtifact(Workspace workspace, Object data, String versionLabel) throws RegistryException, MimeTypeParseException;
+    Artifact createArtifact(Workspace workspace, Object data, String versionLabel, User user) throws RegistryException, MimeTypeParseException;
     
     Artifact createArtifact(Workspace workspace, 
                             String contentType, 
                             String name, 
                             String versionLabel, 
-                            InputStream inputStream) 
+                            InputStream inputStream, 
+                            User user) 
         throws RegistryException, IOException, MimeTypeParseException;
     
     /**
@@ -37,26 +39,30 @@ public interface Registry {
      * @param artifact
      * @param data
      * @param versionLabel
+     * @param user TODO
      * @return
      * @throws RegistryException
      * @throws IOException
      */
     ArtifactVersion newVersion(Artifact artifact, 
                                Object data, 
-                               String versionLabel) throws RegistryException, IOException;
+                               String versionLabel, 
+                               User user) throws RegistryException, IOException;
     
     /**
      * Create a new ArtifactVersion its byte form. 
      * @param artifact
-     * @param data
      * @param versionLabel
+     * @param user TODO
+     * @param data
      * @return
      * @throws RegistryException
      * @throws IOException
      */
     ArtifactVersion newVersion(Artifact artifact, 
                                InputStream inputStream, 
-                               String versionLabel) throws RegistryException, IOException;
+                               String versionLabel, 
+                               User user) throws RegistryException, IOException;
 
     /**
      * Assess whether or not the new version is approved based on the policies which

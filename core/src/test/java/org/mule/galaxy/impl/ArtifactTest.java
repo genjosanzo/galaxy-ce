@@ -43,7 +43,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        Artifact artifact = registry.createArtifact(workspace, "application/wsdl+xml", null, "0.1", helloWsdl);
+        Artifact artifact = registry.createArtifact(workspace, "application/wsdl+xml", null, "0.1", helloWsdl, getAdmin());
         
         assertNotNull(artifact.getId());
         assertEquals("application/wsdl+xml", artifact.getContentType().toString());
@@ -61,6 +61,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         assertTrue(version.getData() instanceof Definition);
         assertEquals("0.1", version.getVersionLabel());
+        assertNotNull(version.getAuthor());
         
         assertEquals("Created", artifact.getPhase().getName());
         
@@ -71,7 +72,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertNotNull(stream);
         
         InputStream helloWsdl2 = getResourceAsStream("/wsdl/hello.wsdl");
-        ArtifactVersion newVersion = registry.newVersion(artifact, helloWsdl2, "0.2");
+        ArtifactVersion newVersion = registry.newVersion(artifact, helloWsdl2, "0.2", getAdmin());
         
         versions = artifact.getVersions();
         assertEquals(2, versions.size());
@@ -80,6 +81,8 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         stream = newVersion.getStream();
         assertNotNull(stream);
+        assertNotNull(newVersion.getAuthor());
+        
     }
     
     @Override

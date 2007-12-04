@@ -20,7 +20,8 @@ public class WsdlVersioningAssessorTest extends AbstractGalaxyTest {
 
         ArtifactVersion next = registry.newVersion(a1, 
                                                    getResourceAsStream("/wsdl/hello-noOperation.wsdl"), 
-                                                   "0.2");
+                                                   "0.2", 
+                                                   getAdmin());
         assertNotNull(next.getData());
         Approval approval = assessor.isApproved(a1, prev, next);
         

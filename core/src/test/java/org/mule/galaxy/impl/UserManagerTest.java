@@ -19,6 +19,7 @@ public class UserManagerTest extends AbstractGalaxyTest {
         assertEquals("admin", u.getUsername());
         assertEquals("Administrator", u.getName());
         assertNotNull(u.getCreated());
+        assertNotNull(u.getId());
         
         User user = userManager.create("dan", "dan", "Dan Diephouse");
         assertNotNull(user);

@@ -42,7 +42,7 @@ public class ArtifactVersionCollectionProvider extends AbstractCollectionProvide
     public ArtifactVersion createMediaEntry(MimeType mimeType, String slug, 
                                             InputStream inputStream, RequestContext request) {
         try {
-            return registry.newVersion(artifact, inputStream, null);
+            return registry.newVersion(artifact, inputStream, null, null);
         } catch (RegistryException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {

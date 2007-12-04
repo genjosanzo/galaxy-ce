@@ -20,6 +20,7 @@ import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
 import org.apache.abdera.protocol.util.EncodingUtil;
+import org.apache.axiom.om.util.Base64;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
@@ -42,8 +43,8 @@ public class RegistryConfigLookupTest extends AbstractAtomTest {
         opts.setContentType("application/xml; charset=utf-8");
         opts.setSlug("hello-config.xml");
         opts.setHeader("X-Artifact-Version", "0.1");
-        
-        ClientResponse res = client.post(url, getResourceAsStream("/mule/hello-config.xml"), opts);
+        opts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
+        ClientResponse res = client.post(url, getClass().getResourceAsStream("/mule/hello-config.xml"), opts);
         assertEquals(201, res.getStatus());
         
         // TODO: this query language will improve in the future, so don't read too much into it yet
@@ -51,7 +52,9 @@ public class RegistryConfigLookupTest extends AbstractAtomTest {
         url = url + "?q=" + search;
         
         // GET a Feed with Mule Configurations which match the criteria
-        res = client.get(url);
+        RequestOptions defaultOpts = client.getDefaultRequestOptions();
+        defaultOpts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
+        res = client.get(url, defaultOpts);
         assertEquals(200, res.getStatus());
         
         Document<Feed> feedDoc = res.getDocument();
@@ -63,7 +66,7 @@ public class RegistryConfigLookupTest extends AbstractAtomTest {
         // GET the actual mule configuration
         String muleConfigUrlLink = entry.getContentSrc().toString();
         System.out.println(muleConfigUrlLink);
-        res = client.get(muleConfigUrlLink);
+        res = client.get(muleConfigUrlLink, defaultOpts);
         assertEquals(200, res.getStatus());
         
         // Use this as your handle to the mule configuration
@@ -71,10 +74,7 @@ public class RegistryConfigLookupTest extends AbstractAtomTest {
         IOUtils.copy(is, System.out);
     }
     
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {"/META-INF/applicationContext-core.xml",
-                             "/META-INF/applicationContext-abdera.xml"};
+    protected String getWebappDirectory() {
+        return "../../web/src/main/webapp";
     }
-
 }

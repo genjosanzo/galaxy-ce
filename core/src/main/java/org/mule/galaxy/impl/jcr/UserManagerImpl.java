@@ -1,6 +1,5 @@
 package org.mule.galaxy.impl.jcr;
 
-import static org.mule.galaxy.impl.jcr.JcrUtil.getDateOrNull;
 import static org.mule.galaxy.impl.jcr.JcrUtil.getStringOrNull;
 
 import java.io.IOException;
@@ -15,13 +14,17 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
+import org.acegisecurity.userdetails.UserDetails;
+import org.acegisecurity.userdetails.UserDetailsService;
+import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserExistsException;
 import org.mule.galaxy.security.UserManager;
+import org.springframework.dao.DataAccessException;
 import org.springmodules.jcr.JcrCallback;
 
 public class UserManagerImpl extends AbstractReflectionDao<User> 
-    implements UserManager {
+    implements UserManager, UserDetailsService {
     
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
@@ -30,7 +33,24 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     private static final String CREATED = "created";
 
     public UserManagerImpl() throws Exception {
-        super(User.class, "users", "username");
+        super(User.class, "users", true);
+    }
+
+    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException, DataAccessException {
+        return (UserDetails) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node userNode = findUser(username, session);
+                try {
+                    return new UserDetailsWrapper(build(userNode), 
+                                                  getStringOrNull(userNode, PASSWORD));
+                } catch (Exception e) {
+                    if (e instanceof RepositoryException) {
+                        throw (RepositoryException) e;
+                    }
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 
     public boolean setPassword(String username, String oldPassword, String newPassword) {
@@ -41,7 +61,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     public User authenticate(final String username, final String password) {
         return (User) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node node = findNode(username, session);
+                Node node = findUser(username, session);
                 if (node == null) {
                     return null;
                 }
@@ -64,12 +84,27 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         });
     }
 
+    protected Node findUser(String username, Session session) throws RepositoryException {
+        QueryManager qm = getQueryManager(session);
+        Query q = qm.createQuery("/*/users/*[@username='" + username + "']", Query.XPATH);
+        
+        QueryResult qr = q.execute();
+        
+        NodeIterator nodes = qr.getNodes();
+        if (!nodes.hasNext()) {
+            return null;
+        }
+        
+        return nodes.nextNode();
+    }
+
     public User create(final String username, final String password, final String name) throws UserExistsException {
         return (User) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node users = getObjectsNode();
                 
                 Node node = users.addNode(USER);
+                node.addMixin("mix:referenceable");
                 node.setProperty(PASSWORD, password);
                 
                 User user = new User();

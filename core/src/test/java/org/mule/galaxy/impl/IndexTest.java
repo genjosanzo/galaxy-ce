@@ -126,7 +126,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        Artifact artifact = registry.createArtifact(workspace, "application/xml", null, "0.1", helloWsdl);
+        Artifact artifact = registry.createArtifact(workspace, "application/xml", null, "0.1", helloWsdl, getAdmin());
         
         JcrVersion version = (JcrVersion) artifact.getLatestVersion();
         Object property = version.getProperty("mule.service");

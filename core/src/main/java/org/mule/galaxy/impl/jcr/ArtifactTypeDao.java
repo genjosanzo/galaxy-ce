@@ -28,13 +28,6 @@ public class ArtifactTypeDao extends AbstractReflectionDao<ArtifactType> {
         super(ArtifactType.class, "artifactTypes", true);
     }
 
-    @Override
-    protected ArtifactType build(Node node) throws Exception {
-        ArtifactType at = super.build(node);
-        at.setId(node.getUUID());
-        return at;
-    }
-
     protected List<ArtifactType> doListAll(Session session) throws RepositoryException {
         List<ArtifactType> types = super.doListAll(session);
         

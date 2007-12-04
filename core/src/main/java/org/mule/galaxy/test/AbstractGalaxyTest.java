@@ -20,8 +20,9 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.security.UserManager;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springmodules.jcr.SessionFactory;
@@ -37,6 +38,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
     protected Settings settings;
     protected SessionFactory sessionFactory;
     protected LifecycleManager lifecycleManager;
+    protected UserManager userManager;
     protected Session session;
     
     public AbstractGalaxyTest() {
@@ -52,6 +54,10 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
         return getClass().getResourceAsStream(name);
     }
 
+    protected User getAdmin() {
+        return userManager.authenticate("admin", "admin");
+    }
+    
     protected Artifact importHelloWsdl() throws RegistryException, IOException, MimeTypeParseException {
         InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
         
@@ -63,7 +69,8 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
                                                     "application/xml", 
                                                     "hello_world.wsdl", 
                                                     "0.1", 
-                                                    helloWsdl);
+                                                    helloWsdl, 
+                                                    getAdmin());
         return artifact;
     }
 

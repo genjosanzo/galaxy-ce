@@ -6,17 +6,18 @@ import java.util.Map;
 import org.mule.galaxy.Identifiable;
 
 public class User implements Identifiable {
+    private String id;
     private String username;
     private String name;
     private Calendar created;
     private Map<String,Object> properties;
     
     public String getId() {
-        return getUsername();
+        return id;
     }
     
     public void setId(String id) {
-        setUsername(username);
+        this.id = id;
     }
 
     public String getUsername() {
@@ -42,5 +43,9 @@ public class User implements Identifiable {
     }
     public void setCreated(Calendar created) {
         this.created = created;
+    }
+
+    public boolean isEnabled() {
+        return true;
     }
 }
