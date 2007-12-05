@@ -26,6 +26,7 @@ import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
 
+import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.util.QNameUtil;
 
 public class JcrUtil {
@@ -177,6 +178,8 @@ public class JcrUtil {
             n.setProperty(name, (Calendar) value);
         } else if (value == null) {
             n.setProperty(name, (String) null);
+        } else if (value instanceof Identifiable) {
+            n.setProperty(name, ((Identifiable) value).getId());
         } else {
             throw new UnsupportedOperationException("Unsupported type " + value.getClass());
         }

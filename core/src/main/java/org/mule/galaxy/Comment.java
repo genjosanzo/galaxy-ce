@@ -1,0 +1,44 @@
+package org.mule.galaxy;
+
+import java.util.Calendar;
+
+import org.mule.galaxy.security.User;
+
+public class Comment implements Identifiable {
+    private String id;
+    private User user;
+    private Calendar date;
+    private Comment parent;
+    private Artifact artifact;
+    
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+    public User getUser() {
+        return user;
+    }
+    public void setUser(User user) {
+        this.user = user;
+    }
+    public Calendar getDate() {
+        return date;
+    }
+    public void setDate(Calendar date) {
+        this.date = date;
+    }
+    public Comment getParent() {
+        return parent;
+    }
+    public void setParent(Comment parent) {
+        this.parent = parent;
+    }
+    public Artifact getArtifact() {
+        return artifact;
+    }
+    public void setArtifact(Artifact artifact) {
+        this.artifact = artifact;
+    }
+}

@@ -17,6 +17,7 @@ import javax.jcr.query.QueryResult;
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
+import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserExistsException;
 import org.mule.galaxy.security.UserManager;

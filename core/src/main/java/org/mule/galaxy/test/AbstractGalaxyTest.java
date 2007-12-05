@@ -95,7 +95,9 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
 
     @Override
     protected String[] getConfigLocations() {
-        return new String[] {"classpath:WEB-INF/applicationContext.xml"};
+        return new String[] {
+            "/META-INF/applicationContext-core.xml"
+        };
     }
 
     @Override

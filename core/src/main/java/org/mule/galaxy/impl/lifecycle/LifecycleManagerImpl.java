@@ -3,8 +3,10 @@ package org.mule.galaxy.impl.lifecycle;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -14,13 +16,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.Dao;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrArtifact;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.lifecycle.PhaseLogEntry;
 import org.mule.galaxy.lifecycle.TransitionException;
 import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.security.User;
 import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.LogUtils;
 
@@ -36,6 +41,7 @@ public class LifecycleManagerImpl implements LifecycleManager {
     private List<String> lifecycleDocuments = new ArrayList<String>();
     private Map<String,Lifecycle> lifecycles = new ConcurrentHashMap<String, Lifecycle>();
     private List<ArtifactPolicy> phaseApprovalListeners = new ArrayList<ArtifactPolicy>();
+    private Dao<PhaseLogEntry> entryDao;
     
     public Lifecycle getDefaultLifecycle() {
         return lifecycles.get(DEFAULT_LIFECYCLE);
@@ -146,7 +152,7 @@ public class LifecycleManagerImpl implements LifecycleManager {
         }
     }
     
-    public void transition(Artifact a, Phase p) throws TransitionException {
+    public void transition(Artifact a, Phase p, User user) throws TransitionException {
         if (!isTransitionAllowed(a, p)) {
             throw new TransitionException(p);
         }
@@ -154,6 +160,17 @@ public class LifecycleManagerImpl implements LifecycleManager {
         JcrArtifact ja =(JcrArtifact) a;
         
         ja.setPhase(p);
+        
+        PhaseLogEntry entry = new PhaseLogEntry();
+        entry.setUser(user);
+        entry.setPhase(p);
+        entry.setArtifact(a);
+        
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        entry.setCalendar(cal);
+        
+        entryDao.save(entry);
     }
 
     public List<String> getLifecycleDocuments() {
@@ -170,6 +187,10 @@ public class LifecycleManagerImpl implements LifecycleManager {
 
     public void setPhaseApprovalListeners(List<ArtifactPolicy> phaseApprovalListeners) {
         this.phaseApprovalListeners = phaseApprovalListeners;
+    }
+
+    public void setPhaseLogEntryDao(Dao<PhaseLogEntry> entryDao) {
+        this.entryDao = entryDao;
     }
     
 }

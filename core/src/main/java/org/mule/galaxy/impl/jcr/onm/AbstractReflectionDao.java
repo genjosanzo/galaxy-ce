@@ -1,4 +1,4 @@
-package org.mule.galaxy.impl.jcr;
+package org.mule.galaxy.impl.jcr.onm;
 
 import static org.mule.galaxy.impl.jcr.JcrUtil.getOrCreate;
 
@@ -23,7 +23,9 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
     private String idNode;
     private boolean useNodeId;
     private String objectNodeName;
-
+    private PersisterManager persisterManager;
+    private Class type;
+    
     protected AbstractReflectionDao(Class t, String rootNode, boolean useNodeId) throws Exception {
         this(t, rootNode, useNodeId, "id");
     }
@@ -33,16 +35,18 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
     }
     
     private AbstractReflectionDao(Class t, String rootNode, boolean useNodeId, String idNode) throws Exception {
-        this.persister = new ClassPersister(t);
         this.rootNode = rootNode;
         this.idNode = idNode;
         this.useNodeId = useNodeId;
+        this.type = t;
         
         objectNodeName = t.getSimpleName();
         objectNodeName = objectNodeName.substring(0, 1).toLowerCase() + objectNodeName.substring(1);
     }
     
     public void initialize() throws Exception {
+        persisterManager.getPersisters().put(type, new DaoPersister(this));
+        this.persister = new ClassPersister(type, persisterManager);
         Session session = getSessionFactory().getSession();
         Node root = session.getRootNode();
         
@@ -53,6 +57,10 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         
         session.save();
 //        ?? session.logout(); 
+    }
+
+    public void setPersisterManager(PersisterManager persisterManager) {
+        this.persisterManager = persisterManager;
     }
 
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {

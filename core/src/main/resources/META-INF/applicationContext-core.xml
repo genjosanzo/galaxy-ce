@@ -23,7 +23,7 @@
   <bean id="lifecycleManager" 
         class="org.mule.galaxy.impl.lifecycle.LifecycleManagerImpl" 
         init-method="initialize">
-    
+    <property name="phaseLogEntryDao" ref="phaseLogEntryDao"/>
   </bean>
 
   <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean">
@@ -54,6 +54,18 @@
   <bean id="userManagerTarget" class="org.mule.galaxy.impl.jcr.UserManagerImpl"
         init-method="initialize">
     <property name="sessionFactory" ref="sessionFactory" />
+    <property name="persisterManager" ref="persisterManager" />
+  </bean>
+    
+  <bean id="phaseLogEntryDao" parent="txProxyTemplate">
+    <property name="target" ref="phaseLogEntryDaoTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="phaseLogEntryDaoTarget" class="org.mule.galaxy.impl.lifecycle.PhaseLogEntryDaoImpl"
+        init-method="initialize">
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="persisterManager" ref="persisterManager" />
   </bean>
   
   <bean id="artifactTypeDao" parent="txProxyTemplate">
@@ -64,6 +76,24 @@
   <bean id="artifactTypeDaoTarget" class="org.mule.galaxy.impl.jcr.ArtifactTypeDao"
     init-method="initialize">
     <property name="sessionFactory" ref="sessionFactory" />
+    <property name="persisterManager" ref="persisterManager" />
+  </bean>
+  
+  <bean id="persisterManager" class="org.mule.galaxy.impl.jcr.onm.PersisterManager">
+    <property name="persisters">
+      <map>
+        <entry key="org.mule.galaxy.lifecycle.Phase">
+          <bean class="org.mule.galaxy.impl.lifecycle.PhasePersister">
+            <constructor-arg ref="lifecycleManager"/>
+          </bean>
+        </entry>
+        <entry key="org.mule.galaxy.Artifact">
+          <bean class="org.mule.galaxy.impl.jcr.ArtifactPersister">
+            <constructor-arg ref="registry"/>
+          </bean>
+        </entry>
+      </map>
+    </property>
   </bean>
   
   <bean id="settings" class="org.mule.galaxy.impl.SettingsImpl"/>

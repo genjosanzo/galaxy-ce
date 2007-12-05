@@ -1,4 +1,4 @@
-package org.mule.galaxy.impl.jcr;
+package org.mule.galaxy.impl.jcr.onm;
 
 import static org.mule.galaxy.impl.jcr.JcrUtil.*;
 
@@ -23,9 +23,13 @@ public class ClassPersister {
     private Class type;
     private Map<String, Method> propertyToSetter = new HashMap<String, Method>();
     private Map<Method, String> getterToProperty = new HashMap<Method, String>();
+    private Map<String, Class> propertyToType = new HashMap<String, Class>();
     
-    public ClassPersister(Class type) throws Exception {
+    private PersisterManager persisterManager;
+    
+    public ClassPersister(Class type, PersisterManager persisterManager) throws Exception {
         this.type = type;
+        this.persisterManager = persisterManager;
         
         BeanInfo info = Introspector.getBeanInfo(type);
         for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
@@ -45,26 +49,34 @@ public class ClassPersister {
                 continue;
             }
             
+            propertyToType.put(pd.getName(), pd.getPropertyType());
             propertyToSetter.put(pd.getName(), write);
             getterToProperty.put(read, pd.getName());
         }
     }
     
+    /** {@inheritDoc}*/
     public void persist(Object o, Node n) throws Exception {
         for (Map.Entry<Method, String> e : getterToProperty.entrySet()) {
             Object result = e.getKey().invoke(o, new Object[0]);
+            String name = e.getValue();
+            FieldPersister persister = persisterManager.getPersister(propertyToType.get(name));
             
-            setProperty(e.getValue(), result, n);
+            persister.persist(result, n, name);
         }
     }
     
+    /** {@inheritDoc}*/
     public Object build(Node n) throws Exception {
         Object o = type.newInstance();
         
         for (Map.Entry<String, Method> e : propertyToSetter.entrySet()) {
             Method method = e.getValue();
             String name = e.getKey();
-            Object value = getProperty(name, n);
+            
+            FieldPersister persister = persisterManager.getPersister(propertyToType.get(name));
+            
+            Object value = persister.build(n, name);
             
             method.invoke(o, value);
         }

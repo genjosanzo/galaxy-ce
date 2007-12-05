@@ -21,6 +21,7 @@ import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
 
 import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 
 public class ArtifactTypeDao extends AbstractReflectionDao<ArtifactType> {
 
