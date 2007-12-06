@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.client;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -21,12 +22,13 @@ public class RepositoryPanel extends Composite {
 
     private List artifactTypes;
     private String currentWorkspace;
-    private VerticalPanel artifactPanel;
+    private VerticalPanel mainPanel;
     private VerticalPanel artifactTypesPanel;
     private String workspaceId;
     private AddArtifactPanel addArtifactPanel;
     private RegistryServiceAsync service;
     private DockPanel repoPanel;
+    private WorkspacePanel workspacePanel;
     
     public RepositoryPanel(RegistryServiceAsync service) {
         super();
@@ -52,20 +54,25 @@ public class RepositoryPanel extends Composite {
         repoPanel.add(leftMenu, DockPanel.WEST);
         
         // Load the workspaces into a tree on the left
-        service.getWorkspaces(new AsyncCallback() {
+        //service.getWorkspaces(new AsyncCallback() {
+        //    public void onFailure(Throwable arg0) {
+        //    }
 
-            public void onFailure(Throwable arg0) {
-            }
-
-            public void onSuccess(Object o) {
-                Collection workspaces = (Collection) o;
-                
-                TreeItem treeItem = workspaceTree.addItem("Workspaces");
-                initWorkspaces(treeItem, workspaces);
-                
-                treeItem.setState(true);
-            }
-        });
+        //    public void onSuccess(Object o) {
+        //        Collection workspaces = (Collection) o;
+        //        
+        //        TreeItem treeItem = workspaceTree.addItem("Workspaces");
+        //        initWorkspaces(treeItem, workspaces);
+        //        
+        //        treeItem.setState(true);
+        //    }
+        //});
+        
+        TreeItem treeItem = workspaceTree.addItem("Workspaces");
+        treeItem.addItem("Workspace 1");
+        treeItem.addItem("Workspace 2");
+        treeItem.addItem("Workspace 3");
+        treeItem.setState(true);
 
         artifactTypesPanel = new VerticalPanel();
         leftMenu.add(artifactTypesPanel);
@@ -77,34 +84,34 @@ public class RepositoryPanel extends Composite {
         
         initArtifactTypes();
         
-        artifactPanel = new VerticalPanel();
-        //repoPanel.add(artifactPanel, DockPanel.EAST);
+        mainPanel = new VerticalPanel();
+        mainPanel.setWidth("100%");
+        mainPanel.setStyleName("main-panel");
+        repoPanel.add(mainPanel, DockPanel.CENTER);
+        repoPanel.setCellWidth(mainPanel, "100%");
         
         addArtifactPanel = new AddArtifactPanel();
-        setRightPanel(addArtifactPanel);
+        //setRightPanel(addArtifactPanel);
         
-        artifactPanel.add(new Label("Galaxy Init'd...."));
+        workspacePanel = new WorkspacePanel();
+        mainPanel.add(workspacePanel);
         
         initWidget(repoPanel);
-    }
-
-    private void setRightPanel(Widget w) {
-        Label titleLabel = new Label(((Navigation) w).getNavigationTitle());
-        titleLabel.setStyleName("right-title");
-        
-        repoPanel.add(titleLabel, DockPanel.NORTH);
-        repoPanel.add(w, DockPanel.EAST);
     }
 
     private void initArtifactTypes() {
         // Load the workspaces into a tree on the left
         service.getArtifactTypes(new AsyncCallback() {
 
-            public void onFailure(Throwable arg0) {
+            public void onFailure(Throwable t) {
+                //t.printStackTrace();
+                //mainPanel.add(new Label("message: " + t.getMessage()));
+                
             }
 
             public void onSuccess(Object o) {
                 Collection workspaces = (Collection) o;
+                mainPanel.add(new Label("success: " + o));
                 
                 for (Iterator itr = workspaces.iterator(); itr.hasNext();) {
                     final ArtifactTypeInfo at = (ArtifactTypeInfo) itr.next();
@@ -145,17 +152,17 @@ public class RepositoryPanel extends Composite {
     }
     
     public void addArtifactTypeFilter(String id) {
-        artifactPanel.add(new Label("Artifact filter " + id));
+        mainPanel.add(new Label("Artifact filter " + id));
     }
     
     public void removeArtifactTypeFilter(String id) {
-        artifactPanel.add(new Label("Removed artifact filter " + id));
+        mainPanel.add(new Label("Removed artifact filter " + id));
     }
 
     public void setActiveWorkspace(String userObject) {
         this.workspaceId = userObject;
         refresh();
-        artifactPanel.add(new Label("Active workspace set to " + userObject));
+        mainPanel.add(new Label("Active workspace set to " + userObject));
     }
 
     public void refresh() {

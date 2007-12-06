@@ -1,3 +1,10 @@
+
+/**
+ **
+ ** Global Defaults
+ **
+ **/
+
 body {
   background-color: white;
   color: black;
@@ -41,11 +48,19 @@ a:visited {
 .selected-link a, a:visited {
 	color: darkblue;
 }
-	
+
+
+/**
+ **
+ ** The Left Menu
+ **
+ **/
+
 .left-menu {
 	background-color: white;
 	padding: 10px;
 	border: 2px #C3D9FF solid;
+	width: 150px;
 }
 
 .left-menu-header {
@@ -72,6 +87,29 @@ a:visited {
 .header {
 	font-size: 2em;
 	padding: .5em;
+}
+
+
+/**
+ **
+ ** The Main Panel
+ **
+ **/
+
+.main-panel {
+	padding: 1em;
+}
+
+
+/**
+ **
+ ** Search Panel
+ **
+ **/
+
+.search-panel {
+	background: white;
+	padding: 3px;
 }
 
 .gwt-BorderedPanel {
@@ -119,7 +157,19 @@ a:visited {
   cursor: default;
 }
 
+.bordered {
+	border: solid red 2px;
+}
+
 .gwt-FileUpload {
+}
+
+.gwt-FlexTable {
+	background: white;
+}
+
+.gwt-FlexTable-header {
+	font-weight: bold;
 }
 
 .gwt-Frame {
