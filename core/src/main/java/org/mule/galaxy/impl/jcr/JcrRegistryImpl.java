@@ -428,7 +428,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
      */
     public Collection<Approval> approve(ArtifactVersion previous, 
                                         ArtifactVersion next) throws RegistryException {
-        List<ArtifactPolicy> policies = policyManager.getActivePolicies(next.getParent());
+        Collection<ArtifactPolicy> policies = policyManager.getActivePolicies(next.getParent());
         ArrayList<Approval> approvals = new ArrayList<Approval>();
         for (ArtifactPolicy p : policies) {
             approvals.add(p.isApproved(next.getParent(), previous, next));

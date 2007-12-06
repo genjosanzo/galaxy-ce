@@ -26,33 +26,43 @@
     <property name="phaseLogEntryDao" ref="phaseLogEntryDao"/>
   </bean>
 
-  <bean id="policyManager" 
-        class="org.mule.galaxy.impl.policy.PolicyManagerImpl">
-    <property name="policies">
-      <list>
-      </list>
-    </property>
-  </bean>
+
+  <bean class="org.mule.galaxy.wsdl.BackwardCompatibilityPolicy"/>
+  <bean class="org.mule.galaxy.wsdl.ForwardCompatibilityPolicy"/>
+
 
   <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean">
     <!-- normal factory beans params -->
     <property name="configuration" value="classpath:/META-INF/jackrabbit-repo.xml"/>
     <property name="homeDir" value="file:./jackrabbit"/>
   </bean>
-
+  
+  <bean id="policyManager" parent="txProxyTemplate">
+    <property name="target" ref="policyManagerTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="policyManagerTarget" 
+        class="org.mule.galaxy.impl.policy.PolicyManagerImpl" init-method="initilaize">
+    <property name="jcrTemplate" ref="jcrTemplate" />
+  </bean>
+  
+  <bean id="jcrTemplate" class="org.springmodules.jcr.JcrTemplate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
   <bean id="registry" parent="txProxyTemplate">
     <property name="target" ref="registryTarget"/>
     <property name="proxyTargetClass" value="true"/>
   </bean>
   
   <bean id="registryTarget" class="org.mule.galaxy.impl.jcr.JcrRegistryImpl"
-        init-method="initialize">
+        init-method="initialize" lazy-init="false">
     <property name="contentService" ref="contentService" />
     <property name="settings" ref="settings" />
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="lifecycleManager" ref="lifecycleManager" />
     <property name="policyManager" ref="policyManager" />
-    <property name="allowCreate" value="true"/>
   </bean>
   
   <bean id="userManager" parent="txProxyTemplate">
@@ -61,7 +71,7 @@
   </bean>
   
   <bean id="userManagerTarget" class="org.mule.galaxy.impl.jcr.UserManagerImpl"
-        init-method="initialize">
+        init-method="initialize" depends-on="persisterManager">
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
   </bean>
@@ -72,7 +82,7 @@
   </bean>
   
   <bean id="phaseLogEntryDaoTarget" class="org.mule.galaxy.impl.lifecycle.PhaseLogEntryDaoImpl"
-        init-method="initialize">
+        init-method="initialize" >
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
   </bean>
@@ -83,7 +93,7 @@
   </bean>
   
   <bean id="artifactTypeDaoTarget" class="org.mule.galaxy.impl.jcr.ArtifactTypeDao"
-    init-method="initialize">
+    init-method="initialize" lazy-init="false">
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
   </bean>

@@ -9,8 +9,6 @@ import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
 
 public class UserManagerTest extends AbstractGalaxyTest {
-    protected UserManager userManager;
-    
     public void testDao() throws Exception {
         List<User> users = userManager.listAll();
         

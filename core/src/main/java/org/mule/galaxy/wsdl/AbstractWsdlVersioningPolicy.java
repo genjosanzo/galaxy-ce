@@ -20,8 +20,8 @@ import org.w3c.dom.Document;
 /**
  * Provides means to ensure that WSDL versioning rules are met.
  */
-public abstract class AbstractWsdlVersioningAssessor implements ArtifactPolicy {
-    private Logger LOGGER = LogUtils.getL7dLogger(AbstractWsdlVersioningAssessor.class);
+public abstract class AbstractWsdlVersioningPolicy implements ArtifactPolicy {
+    private Logger LOGGER = LogUtils.getL7dLogger(AbstractWsdlVersioningPolicy.class);
 
     public Approval isApproved(final Artifact a, ArtifactVersion previous, final ArtifactVersion next) {
         if (previous == null) {

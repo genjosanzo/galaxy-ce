@@ -75,7 +75,6 @@ public class ClassPersister {
             String name = e.getKey();
             
             FieldPersister persister = persisterManager.getPersister(propertyToType.get(name));
-            
             Object value = persister.build(n, name);
             
             method.invoke(o, value);

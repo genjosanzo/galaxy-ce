@@ -1,7 +1,6 @@
 package org.mule.galaxy.policy;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Workspace;
@@ -9,11 +8,11 @@ import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.Phase;
 
 public interface PolicyManager {
-    List<ArtifactPolicy> getPolicies();
+    Collection<ArtifactPolicy> getPolicies();
     
-    List<ArtifactPolicy> getActivePolicies(Artifact a);
+    Collection<ArtifactPolicy> getActivePolicies(Artifact a);
 
-    List<ArtifactPolicy> getActivePolicies(Workspace w);
+    Collection<ArtifactPolicy> getActivePolicies(Workspace w);
     
     void activatePolicy(ArtifactPolicy p, Workspace w, Collection<Phase> phases);
     
@@ -26,4 +25,16 @@ public interface PolicyManager {
     void activatePolicy(ArtifactPolicy p, Artifact a, Lifecycle lifecycle);
 
     void activatePolicy(ArtifactPolicy p, Lifecycle lifecycle);
+    
+    void deactivatePolicy(ArtifactPolicy p, Workspace w, Collection<Phase> phases);
+    
+    void deactivatePolicy(ArtifactPolicy p, Artifact a, Collection<Phase> phases);
+
+    void deactivatePolicy(ArtifactPolicy p, Collection<Phase> phases);
+    
+    void deactivatePolicy(ArtifactPolicy p, Workspace w, Lifecycle lifecycle);
+    
+    void deactivatePolicy(ArtifactPolicy p, Artifact a, Lifecycle lifecycle);
+
+    void deactivatePolicy(ArtifactPolicy p, Lifecycle lifecycle);
 }

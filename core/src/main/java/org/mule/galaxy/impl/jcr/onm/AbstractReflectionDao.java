@@ -45,7 +45,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
     }
     
     public void initialize() throws Exception {
-        persisterManager.getPersisters().put(type, new DaoPersister(this));
+        persisterManager.getPersisters().put(type.getName(), new DaoPersister(this));
         this.persister = new ClassPersister(type, persisterManager);
         Session session = getSessionFactory().getSession();
         Node root = session.getRootNode();

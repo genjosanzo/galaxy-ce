@@ -13,18 +13,18 @@ import org.mule.galaxy.wsdl.diff.DifferenceEvent;
 import org.mule.galaxy.wsdl.diff.DifferenceListener;
 import org.mule.galaxy.wsdl.diff.WsdlDiff;
 
-public class BackwardCompatibilityAssessor extends AbstractWsdlVersioningAssessor {
+public class ForwardCompatibilityPolicy extends AbstractWsdlVersioningPolicy {
    
     public String getDescription() {
-        return "Enforces restrictions to ensure all new WSDL versions are backward compatabile.";
+        return "Enforces restrictions to ensure all new WSDL versions are forward compatabile.";
     }
 
     public String getName() {
-        return "WSDL Backward Compatability";
+        return "WSDL Forward Compatability";
     }
 
     protected void check(final Approval app, DifferenceEvent event) {
-        if (!event.isBackwardCompatabile()) {
+        if (!event.isForwardCompatabile()) {
             app.getMessages().add(event.getDescription());
             app.setApproved(false);
         }
