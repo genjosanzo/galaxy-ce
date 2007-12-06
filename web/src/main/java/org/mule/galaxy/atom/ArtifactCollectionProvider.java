@@ -27,6 +27,7 @@ import org.apache.abdera.protocol.server.impl.AbstractCollectionProvider;
 import org.apache.abdera.protocol.server.impl.EmptyResponseContext;
 import org.apache.abdera.protocol.server.impl.ResponseContextException;
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
@@ -147,12 +148,14 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
                                            mimeType.toString(), 
                                            slug, 
                                            version, inputStream, 
-                                           wrapper.getUser()).getLatestVersion();
+                                           wrapper.getUser()).getArtifactVersion();
         } catch (RegistryException e) {
             throw new ResponseContextException(500, e);
         } catch (IOException e) {
             throw new ResponseContextException(500, e);
         } catch (MimeTypeParseException e) {
+            throw new ResponseContextException(500, e);
+        } catch (ArtifactPolicyException e) {
             throw new ResponseContextException(500, e);
         }
     }

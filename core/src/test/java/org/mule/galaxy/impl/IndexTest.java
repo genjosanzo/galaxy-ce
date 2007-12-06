@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Index;
 import org.mule.galaxy.Workspace;
@@ -126,7 +127,8 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        Artifact artifact = registry.createArtifact(workspace, "application/xml", null, "0.1", helloWsdl, getAdmin());
+        ArtifactResult ar = registry.createArtifact(workspace, "application/xml", null, "0.1", helloWsdl, getAdmin());
+        Artifact artifact = ar.getArtifact();
         
         JcrVersion version = (JcrVersion) artifact.getLatestVersion();
         Object property = version.getProperty("mule.service");

@@ -10,8 +10,8 @@ import javax.jcr.Node;
 import javax.wsdl.Definition;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.test.AbstractGalaxyTest;
@@ -43,7 +43,9 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        Artifact artifact = registry.createArtifact(workspace, "application/wsdl+xml", null, "0.1", helloWsdl, getAdmin());
+        ArtifactResult ar = registry.createArtifact(workspace, "application/wsdl+xml", null, "0.1", helloWsdl, getAdmin());
+        
+        Artifact artifact = ar.getArtifact();
         
         assertNotNull(artifact.getId());
         assertEquals("application/wsdl+xml", artifact.getContentType().toString());
@@ -72,7 +74,9 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertNotNull(stream);
         
         InputStream helloWsdl2 = getResourceAsStream("/wsdl/hello.wsdl");
-        ArtifactVersion newVersion = registry.newVersion(artifact, helloWsdl2, "0.2", getAdmin());
+        
+        ar = registry.newVersion(artifact, helloWsdl2, "0.2", getAdmin());
+        ArtifactVersion newVersion = ar.getArtifactVersion();
         
         versions = artifact.getVersions();
         assertEquals(2, versions.size());

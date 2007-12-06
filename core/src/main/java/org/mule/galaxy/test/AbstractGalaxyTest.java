@@ -16,6 +16,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
@@ -58,20 +60,21 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
         return userManager.authenticate("admin", "admin");
     }
     
-    protected Artifact importHelloWsdl() throws RegistryException, IOException, MimeTypeParseException {
+    protected Artifact importHelloWsdl() 
+        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException {
         InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
         
         Collection<Workspace> workspaces = registry.getWorkspaces();
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        Artifact artifact = registry.createArtifact(workspace, 
+        ArtifactResult ar = registry.createArtifact(workspace, 
                                                     "application/xml", 
                                                     "hello_world.wsdl", 
                                                     "0.1", 
                                                     helloWsdl, 
                                                     getAdmin());
-        return artifact;
+        return ar.getArtifact();
     }
 
     private void clearJcrRepository() {

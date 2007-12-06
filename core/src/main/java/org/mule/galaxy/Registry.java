@@ -24,15 +24,34 @@ public interface Registry {
     
     Collection<Workspace> getWorkspaces() throws RegistryException;
     
-    Artifact createArtifact(Workspace workspace, Object data, String versionLabel, User user) throws RegistryException, MimeTypeParseException;
+    /**
+     * Creates an artifact from a Java representation of it (as opposed
+     * to a byte[] level representation). The artifact must be apporved
+     * by the appropriate policies, or an ArtifactPolicyException will be
+     * throw.
+     * 
+     * @param workspace
+     * @param data
+     * @param versionLabel
+     * @param user
+     * @return
+     * @throws RegistryException
+     * @throws ArtifactPolicyException
+     * @throws MimeTypeParseException
+     */
+    ArtifactResult createArtifact(Workspace workspace, 
+                                  Object data, 
+                                  String versionLabel, 
+                                  User user) 
+        throws RegistryException, ArtifactPolicyException, MimeTypeParseException;
     
-    Artifact createArtifact(Workspace workspace, 
-                            String contentType, 
-                            String name, 
-                            String versionLabel, 
-                            InputStream inputStream, 
-                            User user) 
-        throws RegistryException, IOException, MimeTypeParseException;
+    ArtifactResult createArtifact(Workspace workspace, 
+                                  String contentType, 
+                                  String name,
+                                  String versionLabel, 
+                                  InputStream inputStream, 
+                                  User user) 
+        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException;
     
     /**
      * Create a new ArtifactVersion from a POJOish object.
@@ -44,10 +63,11 @@ public interface Registry {
      * @throws RegistryException
      * @throws IOException
      */
-    ArtifactVersion newVersion(Artifact artifact, 
-                               Object data, 
-                               String versionLabel, 
-                               User user) throws RegistryException, IOException;
+    ArtifactResult newVersion(Artifact artifact, 
+                              Object data, 
+                              String versionLabel, 
+                              User user) 
+        throws RegistryException, ArtifactPolicyException, IOException;
     
     /**
      * Create a new ArtifactVersion its byte form. 
@@ -59,21 +79,12 @@ public interface Registry {
      * @throws RegistryException
      * @throws IOException
      */
-    ArtifactVersion newVersion(Artifact artifact, 
+    ArtifactResult newVersion(Artifact artifact, 
                                InputStream inputStream, 
                                String versionLabel, 
-                               User user) throws RegistryException, IOException;
+                               User user) 
+        throws RegistryException, ArtifactPolicyException, IOException;
 
-    /**
-     * Assess whether or not the new version is approved based on the policies which
-     * apply to this artifact & workspace. 
-     * 
-     * @param newVersion
-     * @return
-     * @throws RegistryException
-     */
-    Collection<Approval> approve(ArtifactVersion newVersion) throws RegistryException;
-    
     Collection<Artifact> getArtifacts(Workspace workspace) throws RegistryException;
     
     Artifact getArtifact(String id) throws NotFoundException;

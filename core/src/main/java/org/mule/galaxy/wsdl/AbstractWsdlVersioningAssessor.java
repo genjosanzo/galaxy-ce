@@ -24,6 +24,10 @@ public abstract class AbstractWsdlVersioningAssessor implements ArtifactPolicy {
     private Logger LOGGER = LogUtils.getL7dLogger(AbstractWsdlVersioningAssessor.class);
 
     public Approval isApproved(final Artifact a, ArtifactVersion previous, final ArtifactVersion next) {
+        if (previous == null) {
+            return Approval.APPROVED;
+        }
+        
         final Approval app = new Approval();
         app.setApproved(true);
         

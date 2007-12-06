@@ -4,9 +4,9 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 
 /**
- * A VersionAssessor allows custom criteria to be setting a new Active ArtifactVersion. 
+ * An ArtifactPolicy allows custom criteria to be setting a new Active ArtifactVersion. 
  * For instance, you could implement a WSDL versioning policy which enforced backward 
- * compatability when moving.
+ * compatability.
  */
 public interface ArtifactPolicy {
     

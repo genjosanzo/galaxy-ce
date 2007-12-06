@@ -1,11 +1,8 @@
 package org.mule.galaxy.wsdl;
 
-import java.util.HashSet;
-
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.Approval;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
@@ -18,10 +15,12 @@ public class WsdlVersioningAssessorTest extends AbstractGalaxyTest {
         assertNotNull(a1.getLatestVersion().getData());
         BackwardCompatibilityAssessor assessor = new BackwardCompatibilityAssessor();
 
-        ArtifactVersion next = registry.newVersion(a1, 
-                                                   getResourceAsStream("/wsdl/hello-noOperation.wsdl"), 
-                                                   "0.2", 
-                                                   getAdmin());
+        ArtifactResult ar = registry.newVersion(a1, 
+                                                getResourceAsStream("/wsdl/hello-noOperation.wsdl"), 
+                                                "0.2", 
+                                                getAdmin());
+        ArtifactVersion next = ar.getArtifactVersion();
+        
         assertNotNull(next.getData());
         Approval approval = assessor.isApproved(a1, prev, next);
         

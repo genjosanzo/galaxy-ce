@@ -17,6 +17,7 @@ import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.impl.AbstractCollectionProvider;
 import org.apache.abdera.protocol.server.impl.ResponseContextException;
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
@@ -42,10 +43,12 @@ public class ArtifactVersionCollectionProvider extends AbstractCollectionProvide
     public ArtifactVersion createMediaEntry(MimeType mimeType, String slug, 
                                             InputStream inputStream, RequestContext request) {
         try {
-            return registry.newVersion(artifact, inputStream, null, null);
+            return registry.newVersion(artifact, inputStream, null, null).getArtifactVersion();
         } catch (RegistryException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ArtifactPolicyException e) {
             throw new RuntimeException(e);
         }
     }

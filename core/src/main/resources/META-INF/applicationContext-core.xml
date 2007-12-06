@@ -26,6 +26,14 @@
     <property name="phaseLogEntryDao" ref="phaseLogEntryDao"/>
   </bean>
 
+  <bean id="policyManager" 
+        class="org.mule.galaxy.impl.policy.PolicyManagerImpl">
+    <property name="policies">
+      <list>
+      </list>
+    </property>
+  </bean>
+
   <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean">
     <!-- normal factory beans params -->
     <property name="configuration" value="classpath:/META-INF/jackrabbit-repo.xml"/>
@@ -43,6 +51,7 @@
     <property name="settings" ref="settings" />
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="lifecycleManager" ref="lifecycleManager" />
+    <property name="policyManager" ref="policyManager" />
     <property name="allowCreate" value="true"/>
   </bean>
   
