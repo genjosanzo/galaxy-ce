@@ -1,4 +1,4 @@
-package org.mule.galaxy.wsdl;
+package org.mule.galaxy.policy.wsdl;
 
 import java.util.Set;
 
@@ -13,18 +13,18 @@ import org.mule.galaxy.wsdl.diff.DifferenceEvent;
 import org.mule.galaxy.wsdl.diff.DifferenceListener;
 import org.mule.galaxy.wsdl.diff.WsdlDiff;
 
-public class ForwardCompatibilityPolicy extends AbstractWsdlVersioningPolicy {
+public class BackwardCompatibilityPolicy extends AbstractWsdlVersioningPolicy {
    
     public String getDescription() {
-        return "Enforces restrictions to ensure all new WSDL versions are forward compatabile.";
+        return "Enforces restrictions to ensure all new WSDL versions are backward compatabile.";
     }
 
     public String getName() {
-        return "WSDL Forward Compatability";
+        return "WSDL Backward Compatability";
     }
 
     protected void check(final Approval app, DifferenceEvent event) {
-        if (!event.isForwardCompatabile()) {
+        if (!event.isBackwardCompatabile()) {
             app.getMessages().add(event.getDescription());
             app.setApproved(false);
         }

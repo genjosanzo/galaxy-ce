@@ -1,4 +1,4 @@
-package org.mule.galaxy.wsdl;
+package org.mule.galaxy.policy.wsdl;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -19,7 +19,6 @@ import javax.jcr.Session;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.ArtifactPolicy;
@@ -38,6 +37,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     private String artifactsLifecyclesNodeId;
     private String artifactsPhasesNodeId;
     private String workspacesPhasesNodeId;
+    private String phasesNodeId;
     
     public void initilaize() throws Exception{
         Session session = jcrTemplate.getSessionFactory().getSession();
@@ -45,7 +45,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         
         Node activations = getOrCreate(root, "policyActivations");
         lifecyclesNodeId = getOrCreate(activations, "lifecycles").getUUID();
-        getOrCreate(root, "phases");
+        phasesNodeId = getOrCreate(root, "phases").getUUID();
 
         Node artifacts = getOrCreate(activations, "artifacts");
         artifactsLifecyclesNodeId = getOrCreate(artifacts, "lifecycles").getUUID();
@@ -85,9 +85,9 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                 for (String name : nodes) {
                     node = getOrCreate(node, name);
                 }
-                
                 for (Phase p : phases) {
-                    Node pNode = getOrCreate(node, p.getName());
+                    Node lNode = getOrCreate(node, p.getLifecycle().getName());
+                    Node pNode = getOrCreate(lNode, p.getName());
                     getOrCreate(pNode, policyId);
                 }
                 
@@ -101,8 +101,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     }
 
     public void activatePolicy(ArtifactPolicy p, Collection<Phase> phases) {
-        // TODO Auto-generated method stub
-        
+        activatePolicy(phasesNodeId, phases, p.getName());
     }
 
     public void activatePolicy(final ArtifactPolicy p, final Lifecycle lifecycle) {
@@ -136,11 +135,20 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         final Set<ArtifactPolicy> activePolicies = new HashSet<ArtifactPolicy>();
         jcrTemplate.execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                addPolicies(activePolicies, session, lifecyclesNodeId, a.getPhase().getLifecycle().getName());
+                String lifecycle = a.getPhase().getLifecycle().getName();
+                String workspace = a.getWorkspace().getName();
+                
+                addPolicies(activePolicies, session, lifecyclesNodeId, lifecycle);
                 addPolicies(activePolicies, session, workspaceLifecyclesNodeId, 
-                            a.getWorkspace().getName(), a.getPhase().getLifecycle().getName());
+                            workspace, lifecycle);
                 addPolicies(activePolicies, session, artifactsLifecyclesNodeId, 
-                            a.getId(), a.getPhase().getLifecycle().getName());
+                            a.getId(), lifecycle);
+                addPolicies(activePolicies, session, phasesNodeId, 
+                            lifecycle, a.getPhase().getName());
+                addPolicies(activePolicies, session, workspacesPhasesNodeId, 
+                            workspace, lifecycle, a.getPhase().getName());
+                addPolicies(activePolicies, session, artifactsPhasesNodeId, 
+                            a.getId(), lifecycle, a.getPhase().getName());
                 
                 return null;
             }
@@ -169,14 +177,9 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
             
         }
     }
-
-    public Collection<ArtifactPolicy> getActivePolicies(Workspace w) {
-        return Collections.EMPTY_LIST;
-    }
-
+    
     public void deactivatePolicy(ArtifactPolicy p, Artifact a, Collection<Phase> phases) {
-        // TODO Auto-generated method stub
-        
+        deactivatePolicy(artifactsPhasesNodeId, phases, p.getName(), a.getId());
     }
     
     public void deactivatePolicy(ArtifactPolicy p, Artifact a, Lifecycle lifecycle) {
@@ -184,10 +187,39 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     }
 
     public void deactivatePolicy(ArtifactPolicy p, Collection<Phase> phases) {
-        // TODO Auto-generated method stub
-        
+        deactivatePolicy(phasesNodeId, phases, p.getName());
     }
-
+    
+    private void deactivatePolicy(final String nodeId, 
+                                  final Collection<Phase> phases,
+                                  final String policyId,
+                                  final String... nodes) {
+        jcrTemplate.execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node node = session.getNodeByUUID(nodeId);
+                
+                try {
+                    for (String name : nodes) {
+                        node = node.getNode(name);
+                    }
+                } catch (PathNotFoundException e) {
+                    return null;
+                }
+            
+                for (Phase p : phases) {
+                    try {
+                        Node lNode = node.getNode(p.getLifecycle().getName());
+                        Node pNode = lNode.getNode(p.getName());
+                        pNode.getNode(policyId).remove();
+                    } catch (PathNotFoundException e) {
+                    }
+                }
+                
+                session.save();
+                return null;
+            }
+        });
+    }
     public void deactivatePolicy(ArtifactPolicy p, Lifecycle lifecycle) {
         deactivatePolicy(lifecyclesNodeId, lifecycle.getName(), p.getName());
     }
@@ -213,8 +245,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     }
     
     public void deactivatePolicy(ArtifactPolicy p, Workspace w, Collection<Phase> phases) {
-        // TODO Auto-generated method stub
-        
+        deactivatePolicy(workspacesPhasesNodeId, phases, p.getName(), w.getId());
     }
 
     public void deactivatePolicy(ArtifactPolicy p, Workspace w, Lifecycle lifecycle) {

@@ -1,10 +1,14 @@
 package org.mule.galaxy.impl;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
@@ -26,10 +30,6 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         Collection<ArtifactPolicy> active = policyManager.getActivePolicies(artifact);
         assertNotNull(active);
         assertEquals(1, active.size());
-        
-        active = policyManager.getActivePolicies(workspace);
-        assertNotNull(active);
-        assertEquals(0, active.size());
         
         policyManager.deactivatePolicy(p, lifecycle);
         active = policyManager.getActivePolicies(artifact);
@@ -58,6 +58,59 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         
         policyManager.deactivatePolicy(p, artifact, lifecycle);
         
+        active = policyManager.getActivePolicies(artifact);
+        assertNotNull(active);
+        assertEquals(0, active.size());
+        
+        // Try phase activations
+        Phase phase1 = lifecycle.getInitialPhase();
+        Phase phase2 = phase1.getNextPhases().iterator().next();
+        
+        List<Phase> phases1 = Arrays.asList(phase1);
+        
+        policyManager.activatePolicy(p, phases1);
+        
+        active = policyManager.getActivePolicies(artifact);
+        assertNotNull(active);
+        assertEquals(1, active.size());
+        
+        policyManager.deactivatePolicy(p, phases1);
+        active = policyManager.getActivePolicies(artifact);
+        active = policyManager.getActivePolicies(artifact);
+        assertNotNull(active);
+        assertEquals(0, active.size());
+        
+        // Try a phase which an artifact isn't in
+        List<Phase> phases2 = Arrays.asList(phase2);
+        
+        policyManager.activatePolicy(p, phases2);
+        
+        active = policyManager.getActivePolicies(artifact);
+        assertNotNull(active);
+        assertEquals(0, active.size());
+        
+        policyManager.deactivatePolicy(p, phases2);
+        
+        // Try phase activations on workspaces
+        policyManager.activatePolicy(p, workspace, phases1);
+        
+        active = policyManager.getActivePolicies(artifact);
+        assertNotNull(active);
+        assertEquals(1, active.size());
+        
+        policyManager.deactivatePolicy(p, workspace, phases1);
+        active = policyManager.getActivePolicies(artifact);
+        assertNotNull(active);
+        assertEquals(0, active.size());
+        
+        // Try phase activations on artifacts
+        policyManager.activatePolicy(p, artifact, phases1);
+        
+        active = policyManager.getActivePolicies(artifact);
+        assertNotNull(active);
+        assertEquals(1, active.size());
+        
+        policyManager.deactivatePolicy(p, artifact, phases1);
         active = policyManager.getActivePolicies(artifact);
         assertNotNull(active);
         assertEquals(0, active.size());
