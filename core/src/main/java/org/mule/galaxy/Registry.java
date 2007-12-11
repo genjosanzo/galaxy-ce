@@ -4,6 +4,7 @@ package org.mule.galaxy;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import javax.activation.MimeTypeParseException;
@@ -108,6 +109,7 @@ public interface Registry {
 
     void removeWorkspace(Workspace newWork) throws RegistryException;
 
+    List<Comment> getComments(Artifact a);
 
-    
+    void addComment(Comment c);
 }

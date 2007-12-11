@@ -1,6 +1,7 @@
 package org.mule.galaxy.impl.jcr.onm;
 
 import javax.jcr.Node;
+import javax.jcr.Session;
 
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Identifiable;
@@ -14,8 +15,8 @@ public class DaoPersister implements FieldPersister {
         this.dao = dao;
     }
 
-    public Object build(Node n, String property) throws Exception {
-        String id = JcrUtil.getStringOrNull(n, property);
+    public Object build(Node n, FieldDescriptor fd, Session session) throws Exception {
+        String id = JcrUtil.getStringOrNull(n, fd.getName());
         if (id == null) {
             return null;
         }
@@ -23,11 +24,12 @@ public class DaoPersister implements FieldPersister {
         return dao.get(id);
     }
 
-    public void persist(Object o, Node n, String property) throws Exception {
+    public void persist(Object o, Node n, FieldDescriptor fd, Session session) throws Exception {
+        String name = fd.getName();
         if (o == null) {
-            n.setProperty(property, (String) null);
+            n.setProperty(name, (String) null);
         } else {
-            n.setProperty(property, ((Identifiable) o).getId());
+            n.setProperty(name, ((Identifiable) o).getId());
         }
     }
 }

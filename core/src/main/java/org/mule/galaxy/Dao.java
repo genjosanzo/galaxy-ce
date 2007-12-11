@@ -11,4 +11,6 @@ public interface Dao<T extends Identifiable> {
     void delete(String id);
     
     List<T> listAll();
+    
+    List<T> find(String property, String value);
 }

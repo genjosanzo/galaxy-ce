@@ -2,8 +2,10 @@ package org.mule.galaxy.impl.lifecycle;
 
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
+import javax.jcr.Session;
 
 import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.impl.jcr.onm.FieldDescriptor;
 import org.mule.galaxy.impl.jcr.onm.FieldPersister;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
@@ -21,9 +23,9 @@ public class PhasePersister implements FieldPersister{
         this.lifecycleManager = lifecycleManager;
     }
 
-    public Object build(Node n, String property) throws Exception {
+    public Object build(Node n, FieldDescriptor fd, Session session) throws Exception {
         try {
-            n = n.getNode(property);
+            n = n.getNode(fd.getName());
         } catch (PathNotFoundException e) {
             return null;
         }
@@ -39,8 +41,8 @@ public class PhasePersister implements FieldPersister{
         return l.getPhase(phase);
     }
 
-    public void persist(Object o, Node n, String property) throws Exception {
-        Node child = JcrUtil.getOrCreate(n, property);
+    public void persist(Object o, Node n, FieldDescriptor fd, Session session) throws Exception {
+        Node child = JcrUtil.getOrCreate(n, fd.getName());
         Phase p = (Phase) o;
         if (p == null) return;
         

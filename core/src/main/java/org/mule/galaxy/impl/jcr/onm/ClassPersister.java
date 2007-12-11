@@ -1,18 +1,18 @@
 package org.mule.galaxy.impl.jcr.onm;
 
-import static org.mule.galaxy.impl.jcr.JcrUtil.*;
-
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
+import org.mule.galaxy.impl.jcr.JcrUtil;
 
 /**
  * A simple way to persist/build objects to and from JCR nodes. Only works for a 
@@ -21,15 +21,16 @@ import javax.jcr.RepositoryException;
 public class ClassPersister {
     
     private Class type;
-    private Map<String, Method> propertyToSetter = new HashMap<String, Method>();
-    private Map<Method, String> getterToProperty = new HashMap<Method, String>();
-    private Map<String, Class> propertyToType = new HashMap<String, Class>();
+    private Map<String, FieldDescriptor> propertyToFD = new HashMap<String, FieldDescriptor>();
+    private List<String> parents = new ArrayList<String>();
     
     private PersisterManager persisterManager;
+    private String path;
     
-    public ClassPersister(Class type, PersisterManager persisterManager) throws Exception {
+    public ClassPersister(Class type, String path, PersisterManager persisterManager) throws Exception {
         this.type = type;
         this.persisterManager = persisterManager;
+        this.path = path;
         
         BeanInfo info = Introspector.getBeanInfo(type);
         for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
@@ -49,37 +50,55 @@ public class ClassPersister {
                 continue;
             }
             
-            propertyToType.put(pd.getName(), pd.getPropertyType());
-            propertyToSetter.put(pd.getName(), write);
-            getterToProperty.put(read, pd.getName());
-        }
-    }
-    
-    /** {@inheritDoc}*/
-    public void persist(Object o, Node n) throws Exception {
-        for (Map.Entry<Method, String> e : getterToProperty.entrySet()) {
-            Object result = e.getKey().invoke(o, new Object[0]);
-            String name = e.getValue();
-            FieldPersister persister = persisterManager.getPersister(propertyToType.get(name));
+            FieldDescriptor fd = new FieldDescriptor();
+            fd.setName(pd.getName());
+            fd.setReadMethod(read);
+            fd.setWriteMethod(write);
+            fd.setType(pd.getPropertyType());
             
-            persister.persist(result, n, name);
+            OneToMany otm = read.getAnnotation(OneToMany.class);
+            if (otm != null) {
+                fd.setOneToMany(otm);
+                
+                parents.add(otm.mappedBy());
+            }
+            fd.setClassPersister(this);
+            
+            propertyToFD.put(pd.getName(), fd);
         }
     }
     
-    /** {@inheritDoc}*/
-    public Object build(Node n) throws Exception {
+    public void persist(Object o, Node n, Session session) throws Exception {
+        for (FieldDescriptor fd : propertyToFD.values()) {
+            Object result = fd.getReadMethod().invoke(o, new Object[0]);
+            FieldPersister persister = persisterManager.getPersister(fd.getType());
+            
+            persister.persist(result, n, fd, session);
+        }
+    }
+    
+    public Object build(Node n, Session session) throws Exception {
         Object o = type.newInstance();
         
-        for (Map.Entry<String, Method> e : propertyToSetter.entrySet()) {
-            Method method = e.getValue();
-            String name = e.getKey();
+        for (FieldDescriptor fd : propertyToFD.values()) {
+            if (parents.contains(fd.getName())) {
+                continue;
+            }
             
-            FieldPersister persister = persisterManager.getPersister(propertyToType.get(name));
-            Object value = persister.build(n, name);
+            FieldPersister persister = persisterManager.getPersister(fd.getType());
+            Object value = persister.build(n, fd, session);
             
-            method.invoke(o, value);
+            fd.getWriteMethod().invoke(o, value);
         }
         
         return o;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public Class getType() {
+        return type;
     }
 }

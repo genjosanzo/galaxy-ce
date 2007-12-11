@@ -42,7 +42,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node userNode = findUser(username, session);
                 try {
-                    return new UserDetailsWrapper(build(userNode), 
+                    return new UserDetailsWrapper(build(userNode, session), 
                                                   getStringOrNull(userNode, PASSWORD));
                 } catch (Exception e) {
                     if (e instanceof RepositoryException) {
@@ -70,7 +70,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
                 String pass = getStringOrNull(node, PASSWORD);
                 if (password != null && password.equals(pass)) {
                     try {
-                        return build(node);
+                        return build(node, session);
                     } catch (Exception e) {
                         if (e instanceof RepositoryException) {
                             throw (RepositoryException) e;
@@ -118,7 +118,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
                 user.setCreated(cal);
                 
                 try {
-                    persist(user, node);
+                    persist(user, node, session);
                 } catch (Exception e) {
                     if (e instanceof RepositoryException) {
                         throw (RepositoryException) e;

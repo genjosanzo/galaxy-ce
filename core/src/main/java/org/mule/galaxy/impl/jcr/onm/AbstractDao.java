@@ -54,6 +54,15 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
         });
     }
     
+    @SuppressWarnings("unchecked")
+    public List<T> find(final String property, final String value) {
+        return (List<T>) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                return doFind(property, value, session);
+            }
+        });
+    }
+
     protected QueryManager getQueryManager(Session session) throws RepositoryException {
         return session.getWorkspace().getQueryManager();
     }
@@ -65,4 +74,7 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     protected abstract List<T> doListAll(Session session) throws RepositoryException;
     
     protected abstract void doDelete(String id, Session session) throws RepositoryException;
+    
+    protected abstract List<T> doFind(String property, String value, Session session) throws RepositoryException;
+
 }

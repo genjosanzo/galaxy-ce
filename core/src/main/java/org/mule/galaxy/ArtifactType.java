@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.mule.galaxy.impl.jcr.onm.OneToMany;
+
 public class ArtifactType implements Identifiable {
     private String id;
     private String description;
@@ -36,6 +38,7 @@ public class ArtifactType implements Identifiable {
     public void setDescription(String description) {
         this.description = description;
     }
+    @OneToMany(treatAsField=true)
     public Set<QName> getDocumentTypes() {
         return documentTypes;
     }

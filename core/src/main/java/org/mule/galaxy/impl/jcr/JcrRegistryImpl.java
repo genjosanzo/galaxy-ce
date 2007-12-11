@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,20 +16,13 @@ import java.util.logging.Logger;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
-import javax.jcr.AccessDeniedException;
-import javax.jcr.InvalidItemStateException;
-import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -48,8 +40,10 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Comment;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
+import org.mule.galaxy.Dao;
 import org.mule.galaxy.Index;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
@@ -94,6 +88,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     private UserManager userManager;
 
+    private Dao<Comment> commentDao;
+    
     private String workspacesId;
 
     private String indexesId;
@@ -869,6 +865,19 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 //        session.logout();
     }
 
+    public void addComment(Comment c) {
+        commentDao.save(c);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Comment> getComments(final Artifact a) {
+        return (List) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                return commentDao.find("artifact", a.getId());
+            }
+        });
+    }
+
     public void setSettings(Settings settings) {
         this.settings = settings;
     }
@@ -887,6 +896,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public void setPolicyManager(PolicyManager policyManager) {
         this.policyManager = policyManager;
+    }
+
+    public void setCommentDao(Dao<Comment> commentDao) {
+        this.commentDao = commentDao;
     }
 
 }

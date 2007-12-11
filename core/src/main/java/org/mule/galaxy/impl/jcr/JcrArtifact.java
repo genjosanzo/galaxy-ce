@@ -24,6 +24,7 @@ import org.mule.galaxy.util.QNameUtil;
 public class JcrArtifact extends AbstractJcrObject implements Artifact {
     private static final String CONTENT_TYPE = "contentType";
     private static final String CREATED = "created";
+    private static final String DESCRIPTION = "description";
     private static final String UPDATED = "updated";
     private static final String NAME = "name";
     private static final String QNAME = "qname";
@@ -88,9 +89,21 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
         return getStringOrNull(NAME);
     }
     
+    public String getDescription() {
+        return getStringOrNull(DESCRIPTION);
+    }
+    
     public void setContentType(MimeType contentType) {
         try {
             node.setProperty(CONTENT_TYPE, contentType.toString());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public void setDescription(String desc) {
+        try {
+            node.setProperty(DESCRIPTION, desc);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

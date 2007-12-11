@@ -26,6 +26,10 @@ public interface Artifact  {
     
     void setName(String name);
     
+    String getDescription();
+    
+    void setDescription(String name);
+    
     MimeType getContentType();
     
     QName getDocumentType();

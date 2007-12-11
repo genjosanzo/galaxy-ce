@@ -60,6 +60,7 @@
     <property name="contentService" ref="contentService" />
     <property name="settings" ref="settings" />
     <property name="sessionFactory" ref="sessionFactory" />
+    <property name="commentDao" ref="commentDao" />
     <property name="lifecycleManager" ref="lifecycleManager" />
     <property name="policyManager" ref="policyManager" />
   </bean>
@@ -81,6 +82,17 @@
   </bean>
   
   <bean id="phaseLogEntryDaoTarget" class="org.mule.galaxy.impl.lifecycle.PhaseLogEntryDaoImpl"
+        init-method="initialize" >
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="persisterManager" ref="persisterManager" />
+  </bean>
+      
+  <bean id="commentDao" parent="txProxyTemplate">
+    <property name="target" ref="commentDaoTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="commentDaoTarget" class="org.mule.galaxy.impl.jcr.CommentDaoImpl"
         init-method="initialize" >
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />

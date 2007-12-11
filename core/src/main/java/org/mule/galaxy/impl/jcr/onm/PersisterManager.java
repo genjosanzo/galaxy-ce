@@ -1,15 +1,26 @@
 package org.mule.galaxy.impl.jcr.onm;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
+import org.mule.galaxy.impl.jcr.CollectionPersister;
 
 /**
  * 
  */
 public class PersisterManager {
     private Map<String, FieldPersister> persisters = new HashMap<String, FieldPersister>();
+    private Map<String, ClassPersister> classPersisters = new HashMap<String, ClassPersister>();
     private FieldPersister defaultPersister = new DefaultPersister();
     
+    public PersisterManager() {
+        super();
+        
+        persisters.put(Set.class.getName(), new CollectionPersister(HashSet.class, this));
+    }
+
     public FieldPersister getPersister(Class c) {
         FieldPersister p = persisters.get(c.getName());
         if (p == null) {
@@ -33,6 +44,14 @@ public class PersisterManager {
 
     public void setDefaultPersister(FieldPersister defaultPersister) {
         this.defaultPersister = defaultPersister;
+    }
+
+    public Map<String, ClassPersister> getClassPersisters() {
+        return classPersisters;
+    }
+    
+    public void setClassPersisters(Map<String, ClassPersister> classPersister) {
+        this.classPersisters = classPersister;
     }
     
 }

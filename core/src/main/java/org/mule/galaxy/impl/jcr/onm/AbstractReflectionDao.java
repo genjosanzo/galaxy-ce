@@ -46,7 +46,8 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
     
     public void initialize() throws Exception {
         persisterManager.getPersisters().put(type.getName(), new DaoPersister(this));
-        this.persister = new ClassPersister(type, persisterManager);
+        this.persister = new ClassPersister(type, rootNode, persisterManager);
+        persisterManager.getClassPersisters().put(type.getName(), persister);
         Session session = getSessionFactory().getSession();
         Node root = session.getRootNode();
         
@@ -66,8 +67,8 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
     }
     
-    protected void persist(T o, Node node) throws Exception {
-        persister.persist(o, node);
+    protected void persist(T o, Node node, Session session) throws Exception {
+        persister.persist(o, node, session);
     }
     
     @Override
@@ -79,18 +80,20 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         }
         
         try {
-            return build(node);
+            return build(node, session);
         } catch (Exception e) {
             if (e instanceof RepositoryException) {
                 throw ((RepositoryException) e);
+            } else if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
             }
             throw new RuntimeException(e);
         }
     }
 
     @SuppressWarnings("unchecked")
-    protected T build(Node node) throws Exception {
-        T t = (T) persister.build(node);
+    public T build(Node node, Session session) throws Exception {
+        T t = (T) persister.build(node, session);
         if (useNodeId) {
             t.setId(node.getUUID());
         }
@@ -105,11 +108,13 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
             Node node = nodes.nextNode();
             
             try {
-                objs.add((T) build(node));
+                objs.add((T) build(node, session));
             } catch (Exception e) {
                 // TODO: not sure what to do here
                 if (e instanceof RepositoryException) {
                     throw ((RepositoryException) e);
+                } else if (e instanceof RuntimeException) {
+                    throw (RuntimeException) e;
                 }
                 throw new RuntimeException(e);
             }
@@ -144,10 +149,12 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         if (node == null) throw new NullPointerException("Could not find node");
         
         try {
-            persister.persist(t, node);
+            persister.persist(t, node, session);
         } catch (Exception e) {
             if (e instanceof RepositoryException) {
                 throw ((RepositoryException) e);
+            } else if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
             }
             throw new RuntimeException(e);
         }
@@ -183,4 +190,31 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         return nodes.nextNode();
     }
 
+    @Override
+    protected List<T> doFind(String property, String value, Session session) throws RepositoryException {
+        QueryManager qm = getQueryManager(session);
+        Query q = qm.createQuery("/*/" + rootNode + "/*[@" + property + "='" + value + "']", Query.XPATH);
+        
+        QueryResult qr = q.execute();
+        
+        List<T> values = new ArrayList<T>();
+        
+        for (NodeIterator nodes = qr.getNodes(); nodes.hasNext();) {
+            try {
+                values.add(build(nodes.nextNode(), session));
+            } catch (Exception e) {
+                if (e instanceof RepositoryException) {
+                    throw ((RepositoryException) e);
+                } else if (e instanceof RuntimeException) {
+                    throw (RuntimeException) e;
+                }
+                throw new RuntimeException(e);
+            }
+        }
+
+        return values;
+    }
+
+
+    
 }

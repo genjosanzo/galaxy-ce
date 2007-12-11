@@ -1,7 +1,9 @@
 package org.mule.galaxy;
 
 import java.util.Calendar;
+import java.util.Set;
 
+import org.mule.galaxy.impl.jcr.onm.OneToMany;
 import org.mule.galaxy.security.User;
 
 public class Comment implements Identifiable {
@@ -10,6 +12,9 @@ public class Comment implements Identifiable {
     private Calendar date;
     private Comment parent;
     private Artifact artifact;
+    private String text;
+    
+    private Set<Comment> comments;
     
     public String getId() {
         return id;
@@ -41,4 +46,19 @@ public class Comment implements Identifiable {
     public void setArtifact(Artifact artifact) {
         this.artifact = artifact;
     }
+    public String getText() {
+        return text;
+    }
+    public void setText(String text) {
+        this.text = text;
+    }
+    
+    @OneToMany(mappedBy="parent")
+    public Set<Comment> getComments() {
+        return comments;
+    }
+    public void setComments(Set<Comment> comments) {
+        this.comments = comments;
+    }
+    
 }
