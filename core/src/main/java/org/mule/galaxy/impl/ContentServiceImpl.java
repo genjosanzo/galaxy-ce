@@ -47,6 +47,11 @@ public class ContentServiceImpl implements ContentService {
         return null;
     }
 
+    public Collection<ContentHandler> getContentHandlers() {
+        return contentHandlers;
+    }
+
+
     public ContentHandler getContentHandler(MimeType contentType) {
         for (ContentHandler ch : contentHandlers) {
             for (MimeType candidate : ch.getSupportedContentTypes()) {

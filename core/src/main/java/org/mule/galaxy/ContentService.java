@@ -1,7 +1,8 @@
 package org.mule.galaxy;
 
+import java.util.Collection;
+
 import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 import javax.xml.namespace.QName;
 
 public interface ContentService {
@@ -17,4 +18,6 @@ public interface ContentService {
     ContentHandler getContentHandler(Class<?> c);
     
     public void registerContentHandler(ContentHandler ch);
+
+    Collection<ContentHandler> getContentHandlers();
 }

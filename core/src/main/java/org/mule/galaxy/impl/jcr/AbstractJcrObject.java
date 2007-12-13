@@ -61,7 +61,9 @@ public class AbstractJcrObject {
         try {
             Node propNode = JcrUtil.setProperty(name, value, propertyNode);
             
-            propNode.setProperty(VISIBLE, true);
+            if (propNode != null) {
+                propNode.setProperty(VISIBLE, true);
+            }
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }

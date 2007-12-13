@@ -21,10 +21,18 @@ public interface ContentHandler {
     
     void addMetadata(ArtifactVersion v);
     
-    Object read(InputStream stream) throws IOException;
+    Object read(InputStream stream, Workspace workspace) throws IOException;
 
     InputStream read(Object data) throws IOException;
     
     void write(Object o, OutputStream stream) throws IOException;
 
+    Set<Artifact> detectDependencies(Object o, Workspace w);
+    
+    /**
+     * This will be called after the registry is initialized so the ContentHandler
+     * can resolve imported artifacts.
+     * @param registry
+     */
+    void setRegistry(Registry registry);
 }

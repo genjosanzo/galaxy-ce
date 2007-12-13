@@ -12,6 +12,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Workspace;
 import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.QNameUtil;
@@ -58,7 +59,7 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
         return QNameUtil.getName(doc.getDocumentElement());
     }
 
-    public Object read(InputStream stream) throws IOException {
+    public Object read(InputStream stream, Workspace workspace) throws IOException {
         try {
             return DOMUtils.readXml(stream);
         } catch (SAXException e) {

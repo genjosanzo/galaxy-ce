@@ -42,7 +42,7 @@ public class ContentServiceTest extends AbstractGalaxyTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         docHandler.write(document, out);
         
-        Document doc2 = (Document) docHandler.read(new ByteArrayInputStream(out.toByteArray()));
+        Document doc2 = (Document) docHandler.read(new ByteArrayInputStream(out.toByteArray()), null);
         assertNotNull(doc2);
         
         ch = contentService.getContentHandler(Document.class);

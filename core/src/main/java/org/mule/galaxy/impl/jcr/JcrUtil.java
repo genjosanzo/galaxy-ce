@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -167,9 +168,12 @@ public class JcrUtil {
         if (value instanceof Map) {
             return setMap(n, name, (Map<?, ?>) value);
         } else if (value instanceof Collection) {
-            Node child = getOrCreate(n, name);
-            
             Collection<?> c = (Collection<?>) value;
+            if (c.size() == 0) {
+                return null;
+            }
+            
+            Node child = getOrCreate(n, name);
             
             if (c instanceof Set) {
                 child.setProperty(TYPE, Set.class.getName());
@@ -216,7 +220,12 @@ public class JcrUtil {
     }
 
     private static String getComponentType(Collection<?> c) {
-        return c.iterator().next().getClass().getName();
+        Iterator<?> itr = c.iterator();
+        if (!itr.hasNext()) {
+            return null;
+        }
+        
+        return itr.next().getClass().getName();
     }
 
     public static Object getProperty(String name, Node node) {

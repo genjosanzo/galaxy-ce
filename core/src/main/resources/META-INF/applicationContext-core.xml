@@ -26,7 +26,6 @@
     <property name="phaseLogEntryDao" ref="phaseLogEntryDao"/>
   </bean>
 
-
   <bean class="org.mule.galaxy.policy.wsdl.BackwardCompatibilityPolicy"/>
   <bean class="org.mule.galaxy.policy.wsdl.ForwardCompatibilityPolicy"/>
 
@@ -56,7 +55,7 @@
   </bean>
   
   <bean id="registryTarget" class="org.mule.galaxy.impl.jcr.JcrRegistryImpl"
-        init-method="initialize" lazy-init="false">
+        init-method="initialize">
     <property name="contentService" ref="contentService" />
     <property name="settings" ref="settings" />
     <property name="sessionFactory" ref="sessionFactory" />
@@ -71,7 +70,7 @@
   </bean>
   
   <bean id="userManagerTarget" class="org.mule.galaxy.impl.jcr.UserManagerImpl"
-        init-method="initialize" depends-on="persisterManager" lazy-init="false">
+        init-method="initialize" depends-on="persisterManager">
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
   </bean>
@@ -104,7 +103,7 @@
   </bean>
   
   <bean id="artifactTypeDaoTarget" class="org.mule.galaxy.impl.jcr.ArtifactTypeDao"
-    init-method="initialize" lazy-init="false">
+    init-method="initialize" >
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
   </bean>
@@ -138,7 +137,7 @@
   </bean>
 
   <bean id="registryInitializer" class="org.mule.galaxy.impl.RegistryInitializer" 
-    init-method="initialize" lazy-init="false">
+    init-method="initialize" >
     <property name="artifactTypeDao" ref="artifactTypeDao"/>
   </bean>
 
@@ -163,7 +162,7 @@
    </property>
   </bean>
     
-  <bean id="abstractArtifactPlugin" abstract="true" init-method="initialize" lazy-init="false">
+  <bean id="abstractArtifactPlugin" abstract="true" init-method="initialize" >
     <property name="artifactTypeDao" ref="artifactTypeDao"/>
     <property name="registry" ref="registry"/>
     <property name="viewManager" ref="viewManager"/>

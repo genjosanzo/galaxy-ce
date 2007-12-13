@@ -12,4 +12,8 @@ public interface Workspace {
     
     Collection<Workspace> getWorkspaces();
 
+    Workspace getWorkspace(String name);
+
+    String getPath();
+
 }

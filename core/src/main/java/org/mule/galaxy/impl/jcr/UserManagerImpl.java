@@ -62,9 +62,6 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     public User authenticate(final String username, final String password) {
         return (User) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                System.out.println("username " + username);
-                System.out.println("pass " + password);
-                
                 Node node = findUser(username, session);
                 if (node == null) {
                     return null;

@@ -1,6 +1,5 @@
 package org.mule.galaxy.impl.jcr;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -58,6 +57,26 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
+    }
+    
+    public String getPath() {
+        StringBuilder sb = getBasePath();
+        
+        sb.append(getName());
+        return sb.toString();
+    }
+    
+    private StringBuilder getBasePath() {
+        StringBuilder sb = new StringBuilder();
+        
+        Workspace w = workspace;
+        while (w != null) {
+            sb.insert(0, '/');
+            sb.insert(0, w.getName());
+            w = w.getParent();
+        }
+        sb.insert(0, '/');
+        return sb;
     }
     
     public Workspace getWorkspace() {

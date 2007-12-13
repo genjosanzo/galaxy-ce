@@ -9,7 +9,7 @@ import org.w3c.dom.Document;
 
 public interface XmlContentHandler extends ContentHandler {
 
-    Object read(Source source) throws Exception;
+    Object read(Source source, Workspace workspace) throws Exception;
 
     Document getDocument(Object o) throws IOException;
     

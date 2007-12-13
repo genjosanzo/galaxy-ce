@@ -275,11 +275,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         MimeType ct = ch.getContentType(data);
         String name = ch.getName(data);
         
-        return createArtifact(workspace, data, name, versionLabel, ct, user);
+        return createArtifact(workspace, null, data, name, versionLabel, ct, user);
     }
 
     public ArtifactResult createArtifact(final Workspace workspace, 
-                                         final Object data, 
+                                         final InputStream is, 
+                                         final Object data,
                                          final String name, 
                                          final String versionLabel,
                                          final MimeType contentType,
@@ -298,34 +299,44 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 Node workspaceNode = ((JcrWorkspace)workspace).getNode();
                 Node artifactNode = workspaceNode.addNode(ARTIFACT_NODE_NAME);
                 artifactNode.addMixin("mix:referenceable");
-    
+                Node versionNode = artifactNode.addNode("version");
+                if (is != null) {
+                    versionNode.setProperty(JcrVersion.DATA, is);
+                }
+                
                 ContentHandler ch = contentService.getContentHandler(contentType);
                 
                 JcrArtifact artifact = new JcrArtifact(workspace, artifactNode, ch, lifecycleManager, userManager);
                 artifact.setContentType(contentType);
                 artifact.setName(name);
-    
-                if (ch instanceof XmlContentHandler) {
-                    XmlContentHandler xch = (XmlContentHandler) ch;
-                    artifact.setDocumentType(xch.getDocumentType(data));
-                }
-    
-                session.save();
-                
-                // create an initial version
-                Node versionNode = artifactNode.addNode("version");
+
+                // set up the initial version
                 
                 Calendar now = Calendar.getInstance();
                 now.setTime(new Date());
                 versionNode.setProperty(JcrVersion.CREATED, now);
-                
-                // Store the data
-                InputStream s = ch.read(data);
-                versionNode.setProperty(JcrVersion.DATA, s);
                 versionNode.setProperty(JcrVersion.LATEST, true);
                 
                 JcrVersion jcrVersion = new JcrVersion(artifact, versionNode, userManager);
-                jcrVersion.setData(data);
+                
+                // Store the data
+                Object loadedData = null;
+                if (data != null) {
+                    jcrVersion.setData(data);
+                    InputStream dataStream = ch.read(data);
+                    versionNode.setProperty(JcrVersion.DATA, dataStream);
+                    loadedData = data;
+                } else {
+                    InputStream dataStream = versionNode.getProperty(JcrVersion.DATA).getStream();
+                    jcrVersion.setData(ch.read(dataStream, workspace));
+                    loadedData = jcrVersion.getData();
+                }
+                
+                if (ch instanceof XmlContentHandler) {
+                    XmlContentHandler xch = (XmlContentHandler) ch;
+                    artifact.setDocumentType(xch.getDocumentType(loadedData));
+                }
+    
                 jcrVersion.setVersionLabel(versionLabel);
                 jcrVersion.setAuthor(user);
                 jcrVersion.setLatest(true);
@@ -391,18 +402,20 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return new ArtifactResult(artifact, next, approvals);
     }
     
-    public ArtifactResult createArtifact(Workspace workspace, String contentType, String name,
-                                   String versionLabel, InputStream inputStream, User user) 
+    public ArtifactResult createArtifact(Workspace workspace, 
+                                         String contentType, 
+                                         String name,
+                                         String versionLabel, 
+                                         InputStream inputStream, 
+                                         User user) 
         throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException {
         contentType = trimContentType(contentType);
         MimeType ct = new MimeType(contentType);
 
-        Object data = getData(ct, inputStream);
-
-        return createArtifact(workspace, data, name, versionLabel, ct, user);
+        return createArtifact(workspace, inputStream, null, name, versionLabel, ct, user);
     }
 
-    private Object getData(MimeType contentType, InputStream inputStream) 
+    private Object getData(Workspace workspace, MimeType contentType, InputStream inputStream) 
         throws RegistryException, IOException {
         ContentHandler ch = contentService.getContentHandler(contentType);
 
@@ -410,15 +423,37 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             throw new RegistryException(new Message("UNSUPPORTED_CONTENT_TYPE", LOGGER, contentType));
         }
 
-        return ch.read(inputStream);
+        return ch.read(inputStream, workspace);
     }
 
-    public ArtifactResult newVersion(final Artifact artifact, final Object data, 
-                                      final String versionLabel, final User user) 
+
+    public ArtifactResult newVersion(Artifact artifact, 
+                                     Object data, 
+                                     String versionLabel, 
+                                     User user)
         throws RegistryException, ArtifactPolicyException, IOException {
+        return newVersion(artifact, null, data, versionLabel, user);
+    }
+
+    public ArtifactResult newVersion(final Artifact artifact, 
+                                     final InputStream inputStream, 
+                                     final String versionLabel, 
+                                     final User user) 
+        throws RegistryException, ArtifactPolicyException, IOException {
+        return newVersion(artifact, inputStream, null, versionLabel, user);
+    }
+    
+    protected ArtifactResult newVersion(final Artifact artifact, 
+                                        final InputStream inputStream, 
+                                        final Object data,
+                                        final String versionLabel, 
+                                        final User user) 
+        throws RegistryException, ArtifactPolicyException, IOException {
+       
         if (user == null) {
             throw new NullPointerException("User cannot be null!");
         }
+        
         return (ArtifactResult) executeAndDewrap(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 JcrArtifact jcrArtifact = (JcrArtifact) artifact;
@@ -434,33 +469,43 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 // create a new version node
                 Node versionNode = artifactNode.addNode("version");
                 
-                
                 Calendar now = Calendar.getInstance();
                 now.setTime(new Date());
                 versionNode.setProperty(JcrVersion.CREATED, now);
-                
-                // Store the data
-                InputStream s = ch.read(data);
-                versionNode.setProperty(JcrVersion.DATA, s);
+
                 versionNode.setProperty(JcrVersion.LATEST, true);
                 
+                
+                
                 JcrVersion next = new JcrVersion(jcrArtifact, versionNode, userManager);
-                next.setData(data);
-                next.setVersionLabel(versionLabel);
-                next.setAuthor(user);
-                next.setLatest(true);
-                
-                jcrArtifact.getVersions().add(next);
-                ch.addMetadata(next);
-                
-                Node newProps = JcrUtil.getOrCreate(versionNode, "properties");
-                Node prevProps = previousNode.getNode("properties");
-                
-                for (NodeIterator nodes = prevProps.getNodes(); nodes.hasNext();) {
-                    copy(nodes.nextNode(), newProps);
-                }
                 
                 try {
+                    // Store the data
+                    if (inputStream != null) {
+                        versionNode.setProperty(JcrVersion.DATA, inputStream);
+                        
+                        InputStream s = versionNode.getProperty(JcrVersion.DATA).getStream();
+                        Object data = getData(artifact.getWorkspace(), artifact.getContentType(), s);
+                        next.setData(data);
+                    } else {
+                        next.setData(data);
+                        versionNode.setProperty(JcrVersion.DATA, ch.read(data));
+                    }
+                    
+                    next.setVersionLabel(versionLabel);
+                    next.setAuthor(user);
+                    next.setLatest(true);
+                    
+                    jcrArtifact.getVersions().add(next);
+                    ch.addMetadata(next);
+                    
+                    Node newProps = JcrUtil.getOrCreate(versionNode, "properties");
+                    Node prevProps = previousNode.getNode("properties");
+                    
+                    for (NodeIterator nodes = prevProps.getNodes(); nodes.hasNext();) {
+                        copy(nodes.nextNode(), newProps);
+                    }
+                
                     return approve(session, artifact, previousLatest, next);
                 } catch (RegistryException e) {
                     // this will get dewrapped
@@ -487,18 +532,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 copy(child, node);
             }
         }
-    }
-
-    public ArtifactResult newVersion(Artifact artifact, 
-                                     InputStream inputStream, 
-                                     String versionLabel, 
-                                     User user) 
-        throws RegistryException, ArtifactPolicyException, IOException {
-        // TODO: assert artifact is of the same type as the previous revision
-        
-        Object data = getData(artifact.getContentType(), inputStream);
-
-        return newVersion(artifact, data, versionLabel, user);
     }
 
     /**
@@ -967,6 +1000,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         } 
         
         session.save();
+        
+        for (ContentHandler ch : contentService.getContentHandlers()) {
+            ch.setRegistry(this);
+        }
 //        session.logout();
     }
 

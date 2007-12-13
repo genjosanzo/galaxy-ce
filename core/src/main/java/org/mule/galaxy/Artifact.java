@@ -16,6 +16,8 @@ import org.mule.galaxy.lifecycle.Phase;
 public interface Artifact  {
     String getId();
     
+    String getPath();
+    
     Workspace getWorkspace();
     
     Calendar getCreated();

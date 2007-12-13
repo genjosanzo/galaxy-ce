@@ -14,12 +14,15 @@ import javax.wsdl.Service;
 import javax.wsdl.WSDLException;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLLocator;
+import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.GalaxyIOException;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.Workspace;
 import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.util.Constants;
 import org.mule.galaxy.util.QNameUtil;
@@ -29,8 +32,6 @@ import org.mule.galaxy.wsdl.diff.WsdlDiff;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import org.xml.sax.InputSource;
 
 public class WsdlContentHandler extends AbstractContentHandler implements XmlContentHandler {
 
@@ -74,18 +75,22 @@ public class WsdlContentHandler extends AbstractContentHandler implements XmlCon
         return null;
     }
 
-    public Object read(Source source) throws Exception {
+    public Object read(Source source, Workspace workspace) throws Exception {
         if (source instanceof DOMSource) {
             DOMSource ds = (DOMSource) source;
             
-            return factory.newWSDLReader().readWSDL(new RegistryWSDLLocator(), (Element) ds.getNode());
+            return factory.newWSDLReader().readWSDL(new RegistryLocator(registry, workspace), 
+                                                    (Element) ds.getNode());
         }
+        
         throw new UnsupportedOperationException();
     }
 
-    public Object read(InputStream stream) throws IOException {
+    public Object read(InputStream stream, Workspace workspace) throws IOException {
         try {
-            return factory.newWSDLReader().readWSDL("", new InputSource(stream));
+            WSDLReader reader = factory.newWSDLReader();
+            
+            return reader.readWSDL(new RegistryLocator(stream, registry, workspace));
         } catch (WSDLException e) {
             throw new GalaxyIOException(e);
         }
@@ -133,7 +138,7 @@ public class WsdlContentHandler extends AbstractContentHandler implements XmlCon
     private String createWsdlDiff(ArtifactVersion v1, ArtifactVersion v2, Document doc1, Document doc2) {
         WsdlDiff diff = new WsdlDiff();
         // TODO - get a reference to the registry for the locator
-        WSDLLocator l = new RegistryWSDLLocator();
+        WSDLLocator l = new RegistryLocator(registry, v1.getParent().getWorkspace());
         try {
             diff.setOriginalWSDL(doc1, l);
         } catch (WSDLException e) {

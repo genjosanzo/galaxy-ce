@@ -17,6 +17,7 @@ import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.test.AbstractGalaxyTest;
+import org.mule.galaxy.util.IOUtils;
 
 public class ArtifactTest extends AbstractGalaxyTest {
     public void testWorkspaces() throws Exception {
@@ -118,6 +119,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         stream = newVersion.getStream();
         assertNotNull(stream);
+        assertTrue(stream.available() > 0);
         assertNotNull(newVersion.getAuthor());
         
         newVersion.setProperty("foo2", "bar");

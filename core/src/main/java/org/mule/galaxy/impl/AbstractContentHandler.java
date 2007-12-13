@@ -5,14 +5,18 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.activation.MimeType;
 import javax.xml.transform.Source;
 
+import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.Workspace;
 
 public abstract class AbstractContentHandler implements ContentHandler {
 
@@ -21,6 +25,8 @@ public abstract class AbstractContentHandler implements ContentHandler {
     protected Set<MimeType> supportedContentTypes = new HashSet<MimeType>();
     protected Set<Class<?>> supportedTypes = new HashSet<Class<?>>();
 
+    protected Registry registry;
+    
     public Set<Class<?>> getSupportedTypes() {
         return supportedTypes;
     }
@@ -29,7 +35,7 @@ public abstract class AbstractContentHandler implements ContentHandler {
         return supportedContentTypes;
     }
     
-    public Object read(Source source) throws Exception {
+    public Object read(Source source, Workspace workspace) throws Exception {
         throw new UnsupportedOperationException();
     }
 
@@ -68,6 +74,15 @@ public abstract class AbstractContentHandler implements ContentHandler {
                 temp.delete();
             }
         };
+    }
+
+    @SuppressWarnings("unchecked")
+    public Set<Artifact> detectDependencies(Object o, Workspace w) {
+        return Collections.EMPTY_SET;
+    }
+
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
     }
 
 }

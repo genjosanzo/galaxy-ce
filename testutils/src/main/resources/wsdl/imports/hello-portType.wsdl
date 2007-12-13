@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="HelloWorld"
+  targetNamespace="http://mule.org/hello_world"
+  xmlns="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:tns="http://mule.org/hello_world"
+  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://mule.org/hello_world">
+       <xsd:import namespace="http://mule.org/hello_world" schemaLocation="hello.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="sayHiRequest">
+    <wsdl:part element="sayHi" name="in" />
+  </wsdl:message>
+  <wsdl:message name="sayHiResponse">
+    <wsdl:part element="sayHiResponse" name="out" />
+  </wsdl:message>
+
+  <wsdl:portType name="HelloWorld">
+    <wsdl:operation name="sayHi">
+      <wsdl:input message="tns:sayHiRequest" name="sayHiRequest" />
+      <wsdl:output message="tns:sayHiResponse" name="sayHiResponse" />
+    </wsdl:operation>
+
+  </wsdl:portType>
+</wsdl:definitions>
+

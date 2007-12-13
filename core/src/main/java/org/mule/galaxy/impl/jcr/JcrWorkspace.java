@@ -52,7 +52,7 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
                         workspaces.add(new JcrWorkspace(n));
                     }
                 }
-            } catch (Exception e) {
+            } catch (RepositoryException e) {
                 throw new RuntimeException(e);
             } 
         }
@@ -70,5 +70,37 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
         } catch (Exception e) {
             throw new RuntimeException(e);
         } 
+    }
+
+    public Workspace getWorkspace(String name) {
+        try {
+            NodeIterator nodes = node.getNodes();
+            while (nodes.hasNext()) {
+                Node n = nodes.nextNode();
+                if (n.getDefinition().getName().equals("galaxy:workspace")) {
+                    String wname = JcrUtil.getStringOrNull(n, NAME);
+                    
+                    if (wname != null && wname.equals(name)) {
+                        return new JcrWorkspace(n);
+                    }
+                }
+            }
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        } 
+        return null;
+    }
+    
+    public String getPath() {
+        StringBuilder sb = new StringBuilder();
+        
+        Workspace w = this;
+        while (w != null) {
+            sb.insert(0, '/');
+            sb.insert(0, w.getName());
+            w = w.getParent();
+        }
+        sb.insert(0, '/');
+        return sb.toString();
     }
 }

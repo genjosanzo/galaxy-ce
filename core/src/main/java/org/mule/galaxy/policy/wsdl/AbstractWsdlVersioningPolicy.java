@@ -7,7 +7,8 @@ import javax.wsdl.WSDLException;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.impl.RegistryWSDLLocator;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.impl.RegistryLocator;
 import org.mule.galaxy.policy.Approval;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.util.LogUtils;
@@ -22,7 +23,8 @@ import org.w3c.dom.Document;
  */
 public abstract class AbstractWsdlVersioningPolicy implements ArtifactPolicy {
     private Logger LOGGER = LogUtils.getL7dLogger(AbstractWsdlVersioningPolicy.class);
-
+    private Registry registry;
+    
     public Approval isApproved(final Artifact a, ArtifactVersion previous, final ArtifactVersion next) {
         if (previous == null) {
             return Approval.APPROVED;
@@ -33,11 +35,11 @@ public abstract class AbstractWsdlVersioningPolicy implements ArtifactPolicy {
         
         try {
             WsdlDiff diff = new WsdlDiff();
-            diff.setOriginalWSDL((Document) previous.getData(), new RegistryWSDLLocator());
-            diff.setNewWSDL((Document) next.getData(), new RegistryWSDLLocator());
+            // TODO: make data a Definition object
+            diff.setOriginalWSDL((Document) previous.getData(), new RegistryLocator(registry, a.getWorkspace()));
+            diff.setNewWSDL((Document) next.getData(), new RegistryLocator(registry, a.getWorkspace()));
             diff.check(new DifferenceListener() {
                 public void onEvent(DifferenceEvent event) {
-                    System.out.println("EVENT " + event.getDescription());
                     check(app, event);
                 }
             });
@@ -51,4 +53,9 @@ public abstract class AbstractWsdlVersioningPolicy implements ArtifactPolicy {
     }
     
     protected abstract void check(final Approval app, DifferenceEvent event);
+
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
+    }
+    
 }
