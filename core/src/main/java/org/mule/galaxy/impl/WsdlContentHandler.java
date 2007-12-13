@@ -1,11 +1,11 @@
 package org.mule.galaxy.impl;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
@@ -14,14 +14,12 @@ import javax.wsdl.Service;
 import javax.wsdl.WSDLException;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLLocator;
-import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
+import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.GalaxyIOException;
-import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.util.Constants;
@@ -32,73 +30,40 @@ import org.mule.galaxy.wsdl.diff.WsdlDiff;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
-public class WsdlContentHandler extends AbstractContentHandler implements XmlContentHandler {
+public class WsdlContentHandler extends XmlDocumentContentHandler implements XmlContentHandler {
 
-    private WSDLFactory factory;
     private MimeType primaryContentType;
     
     public WsdlContentHandler() throws WSDLException, MimeTypeParseException {
-        super();
-        factory = WSDLFactory.newInstance();
+        super(false);
         
         primaryContentType = new MimeType("application/wsdl+xml");
         supportedContentTypes.add(primaryContentType);
         supportedContentTypes.add(new MimeType("text/wsdl+xml"));
         
-        supportedTypes.add(Definition.class);
+        supportedTypes.add(Document.class);
     }
 
-    public Document getDocument(Object o) throws IOException {
-        Definition d = (Definition) o;
-        
-        try {
-            return factory.newWSDLWriter().getDocument(d);
-        } catch (WSDLException e) {
-            throw new GalaxyIOException(e);
-        }
-    }
-    
     public MimeType getContentType(Object o) {
         return primaryContentType;
     }
 
     public String getName(Object o) {
-        Definition d = (Definition) o;
+        Document d = (Document) o;
         
-        Object name = d.getExtensionAttribute(new QName("name"));
+        Node n = d.getAttributes().getNamedItem("name");
         
-        if (name != null) {
-            return name.toString();
+        if (n != null) {
+            return n.getNodeValue();
         }
         
         return null;
     }
 
-    public Object read(Source source, Workspace workspace) throws Exception {
-        if (source instanceof DOMSource) {
-            DOMSource ds = (DOMSource) source;
-            
-            return factory.newWSDLReader().readWSDL(new RegistryLocator(registry, workspace), 
-                                                    (Element) ds.getNode());
-        }
-        
-        throw new UnsupportedOperationException();
-    }
-
-    public Object read(InputStream stream, Workspace workspace) throws IOException {
-        try {
-            WSDLReader reader = factory.newWSDLReader();
-            
-            return reader.readWSDL(new RegistryLocator(stream, registry, workspace));
-        } catch (WSDLException e) {
-            throw new GalaxyIOException(e);
-        }
-    }
-
     public void write(Object o, OutputStream stream) throws IOException {
         // TODO Auto-generated method stub
-        
     }
     
     public QName getDocumentType(Object o) {
@@ -106,21 +71,9 @@ public class WsdlContentHandler extends AbstractContentHandler implements XmlCon
     }
 
     @Override
-    public void addMetadata(ArtifactVersion v) {
-        super.addMetadata(v);
-        
-        Definition d = (Definition) v.getData();
-        
-        List<QName> svcNames = new ArrayList<QName>();
-        Map svcs = d.getAllServices();
-        if (svcs != null) {
-            for (Object sObj : svcs.values()) {
-                Service svc = (Service) sObj;
-             
-                svcNames.add(svc.getQName());
-            }
-        }
-        v.setProperty("services", svcNames);
+    public Set<Artifact> detectDependencies(Object o, Workspace w) {
+        // TODO Auto-generated method stub
+        return super.detectDependencies(o, w);
     }
 
     public String describeDifferences(ArtifactVersion v1, ArtifactVersion v2) {

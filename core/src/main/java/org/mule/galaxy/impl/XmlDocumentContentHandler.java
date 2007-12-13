@@ -27,11 +27,17 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
     private MimeType primaryContentType;
 
     public XmlDocumentContentHandler() throws MimeTypeParseException {
+        this(true);
+    }
+
+    protected XmlDocumentContentHandler(boolean init) throws MimeTypeParseException {
         super();
-        primaryContentType = new MimeType("application/xml");
-        supportedContentTypes.add(primaryContentType);
-        supportedContentTypes.add(new MimeType("application/xml"));
-        supportedTypes.add(Document.class);
+        if (init) {
+            primaryContentType = new MimeType("application/xml");
+            supportedContentTypes.add(primaryContentType);
+            supportedContentTypes.add(new MimeType("application/xml"));
+            supportedTypes.add(Document.class);
+        }
     }
 
     

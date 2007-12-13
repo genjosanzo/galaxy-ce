@@ -10,6 +10,8 @@ import java.util.Set;
 import javax.jcr.Node;
 import javax.wsdl.Definition;
 
+import org.w3c.dom.Document;
+
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
@@ -90,7 +92,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         Node node = version.getNode();
         assertEquals("version", node.getName());
         
-        assertTrue(version.getData() instanceof Definition);
+        assertTrue(version.getData() instanceof Document);
         assertEquals("0.1", version.getVersionLabel());
         assertNotNull(version.getAuthor());
         assertTrue(version.isLatest());
