@@ -10,6 +10,8 @@ import org.apache.abdera.i18n.io.CharUtils.Profile;
 import org.apache.abdera.i18n.iri.Escaping;
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.Collection;
+import org.apache.abdera.model.Document;
+import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Service;
@@ -22,12 +24,12 @@ import org.apache.axiom.om.util.Base64;
 public class ArtifactCollectionTest extends AbstractAtomTest {
     
     public void testAddWsdl() throws Exception {
-        //Thread.sleep(100000);
+//        Thread.sleep(100000);
         AbderaClient client = new AbderaClient(abdera);
         RequestOptions defaultOpts = client.getDefaultRequestOptions();
         defaultOpts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
         
-        String base = "http://localhost:9002/repository/";
+        String base = "http://localhost:9002/api/";
         // Grab workspaces & collections
         ClientResponse res = client.get(base, defaultOpts);
         assertEquals(res.getStatusText(), 200, res.getStatus());
@@ -40,7 +42,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals(1, workspaces.size());
         
         Workspace workspace = workspaces.get(0);
-        assertEquals("Galaxy Registry & Repository", workspace.getTitle());
+        assertEquals("Mule Galaxy Registry & Repository", workspace.getTitle());
         
         List<Collection> collections = workspace.getCollections();
         assertEquals(1, collections.size());
@@ -48,7 +50,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         Collection collection = collections.get(0);
         
         System.out.println(collection.getHref().toString());
-        assertEquals("workspaces/Default%20Workspace", collection.getHref().toString());
+        assertEquals("repository", collection.getHref().toString());
 
         // Check out the feed, yo
         IRI colUri = new IRI(base).resolve(collection.getHref());
@@ -64,6 +66,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         opts.setContentType("application/xml; charset=utf-8");
         opts.setSlug("hello_world.wsdl");
         opts.setHeader("X-Artifact-Version", "0.1");
+        opts.setHeader("X-Workspace", "Default Workspace");
         opts.setAuthorization(defaultOpts.getAuthorization());
         
         res = client.post(colUri.toASCIIString(), getWsdl(), opts);
@@ -85,6 +88,12 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         Entry e = entries.get(0);
         assertEquals("hello_world.wsdl", e.getTitle());
+        
+        res = client.get(e.getContentSrc().toString(), defaultOpts);
+        assertEquals(200, res.getStatus());
+        Document<Entry> entryDoc = res.getDocument();
+        Entry entry = entryDoc.getRoot();
+
     }
 
 

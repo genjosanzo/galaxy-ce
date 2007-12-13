@@ -9,7 +9,7 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
     http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
 
-  <bean id="sessionFactory" class="org.mule.galaxy.util.JackrabbitSessionFactory" >
+  <bean id="sessionFactory" class="org.mule.galaxy.util.JackrabbitSessionFactory">
     <property name="repository" ref="repository"/>
     <property name="credentials">
      <bean class="javax.jcr.SimpleCredentials">

@@ -27,11 +27,20 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     private Object data;
     private User author;
     private UserManager userManager;
-
-    public JcrVersion(JcrArtifact parent, Node v, UserManager userManager) {
+    private boolean latest;
+    
+    public JcrVersion(JcrArtifact parent, Node v, UserManager userManager) throws RepositoryException  {
         super(v);
         this.parent = parent;
         this.userManager = userManager;
+    }
+
+    public boolean isLatest() {
+        return latest;
+    }
+
+    public void setLatest(boolean latest) {
+        this.latest = latest;
     }
 
     public Object getData() {
@@ -51,7 +60,7 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     }
 
     public void setVersionLabel(String vname) {
-        setProperty(LABEL, vname);
+        setNodeProperty(LABEL, vname);
     }
 
     public Calendar getCreated() {
@@ -93,6 +102,8 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     public void setAuthor(User author) {
         this.author = author;
         
-        setProperty(AUTHOR_ID, author.getId());
+        setNodeProperty(AUTHOR_ID, author.getId());
     }
+
+    
 }

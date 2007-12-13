@@ -18,22 +18,16 @@
     </a:provider>
     
     <a:targetResolver>
-     <a:regexTargetResolver>
-
-        <a:collection>/repository/workspaces/([^/#?]+)(\?[^#]*)?</a:collection>
-        <a:entry>/repository/workspaces/([^/#?]+)/([^/#?]+).atom(\?[^#]*)?</a:entry>
-        <a:media>/repository/workspaces/([^/#?]+)/media/([^/#?]+)(\?[^#]*)?</a:media>
-        
-        <a:service>/repository/(\?[^#]*)?</a:service>
-      </a:regexTargetResolver> 
+      <ref bean="provider"/> 
     </a:targetResolver>
     
   </a:serviceContext>
 
-  <bean id="provider" class="org.apache.abdera.protocol.server.impl.WorkspaceProvider">
+  <bean id="provider" class="org.apache.abdera.protocol.server.impl.ServiceProvider">
+    <property name="servicesPath" value="/api/"/>
     <property name="workspaces">
-      <list value-type="org.apache.abdera.protocol.server.WorkspaceInfo">
-        <bean class="org.mule.galaxy.atom.ArtifactWorkspaceInfo">
+      <list>
+        <bean class="org.mule.galaxy.atom.ArtifactWorkspaceInfo" init-method="initialize">
           <property name="registry" ref="registry"/>
         </bean>
       </list>

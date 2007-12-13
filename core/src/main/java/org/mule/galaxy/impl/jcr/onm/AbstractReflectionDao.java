@@ -57,7 +57,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         doCreateInitialNodes(session, objects); 
         
         session.save();
-//        ?? session.logout(); 
+        session.logout(); 
     }
 
     public void setPersisterManager(PersisterManager persisterManager) {

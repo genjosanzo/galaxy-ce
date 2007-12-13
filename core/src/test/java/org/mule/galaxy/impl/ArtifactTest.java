@@ -56,6 +56,9 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertNotNull(versions);
         assertEquals(1, versions.size());
         
+        artifact.setProperty("foo", "bar");
+        assertEquals("bar", artifact.getProperty("foo"));
+        
         // Test the version history
         JcrVersion version = (JcrVersion) versions.iterator().next();
         Node node = version.getNode();
@@ -64,19 +67,24 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertTrue(version.getData() instanceof Definition);
         assertEquals("0.1", version.getVersionLabel());
         assertNotNull(version.getAuthor());
-        
+        assertTrue(version.isLatest());
         assertEquals("Created", artifact.getPhase().getName());
         
         Calendar created = version.getCreated();
         assertTrue(created.getTime().getTime() > 0);
         
+        assertEquals("bar", version.getProperty("foo"));
+        
+        // Create another version
         InputStream stream = version.getStream();
         assertNotNull(stream);
         
         InputStream helloWsdl2 = getResourceAsStream("/wsdl/hello.wsdl");
         
         ar = registry.newVersion(artifact, helloWsdl2, "0.2", getAdmin());
-        ArtifactVersion newVersion = ar.getArtifactVersion();
+        JcrVersion newVersion = (JcrVersion) ar.getArtifactVersion();
+        assertTrue(newVersion.isLatest());
+        assertFalse(version.isLatest());
         
         versions = artifact.getVersions();
         assertEquals(2, versions.size());
@@ -87,6 +95,10 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertNotNull(stream);
         assertNotNull(newVersion.getAuthor());
         
+        newVersion.setProperty("foo2", "bar");
+        assertEquals("bar", newVersion.getProperty("foo2"));
+        assertEquals("bar", artifact.getProperty("foo2"));
+        assertNull(version.getProperty("foo2"));
     }
     
     @Override

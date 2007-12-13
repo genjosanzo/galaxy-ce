@@ -159,14 +159,14 @@ public class JcrUtil {
             Collection<?> c = (Collection<?>) value;
             
             if (c instanceof Set) {
-                n.setProperty(TYPE, Set.class.getName());
+                child.setProperty(TYPE, Set.class.getName());
             } else if (c instanceof Map) {
-                n.setProperty(TYPE, Map.class.getName());
+                child.setProperty(TYPE, Map.class.getName());
             } else {
-                n.setProperty(TYPE, Collection.class.getName());
+                child.setProperty(TYPE, Collection.class.getName());
             }
             
-            n.setProperty(COMPONENT_TYPE, getComponentType(c));
+            child.setProperty(COMPONENT_TYPE, getComponentType(c));
             
             for (Object o : c) {
                 Node valueNode = child.addNode(VALUE);
@@ -233,7 +233,7 @@ public class JcrUtil {
                 return null;
             }
             
-            String type = getStringOrNull(node, TYPE);
+            String type = getStringOrNull(child, TYPE);
             Collection<Object> values = null;
             if (type.equals(Set.class.getName())) {
                 values = new HashSet<Object>();
@@ -241,7 +241,7 @@ public class JcrUtil {
                 values = new ArrayList<Object>();
             }
             
-            String component = JcrUtil.getStringOrNull(node, COMPONENT_TYPE);
+            String component = JcrUtil.getStringOrNull(child, COMPONENT_TYPE);
             Class componentCls = JcrUtil.class.getClassLoader().loadClass(component);
             
             for (NodeIterator itr = child.getNodes(); itr.hasNext();) {

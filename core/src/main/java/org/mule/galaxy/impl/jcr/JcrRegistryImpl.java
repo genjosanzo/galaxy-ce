@@ -16,13 +16,22 @@ import java.util.logging.Logger;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
+import javax.jcr.ItemExistsException;
+import javax.jcr.NamespaceException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
+import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -36,6 +45,10 @@ import net.sf.saxon.javax.xml.xquery.XQItem;
 import net.sf.saxon.javax.xml.xquery.XQPreparedExpression;
 import net.sf.saxon.javax.xml.xquery.XQResultSequence;
 import net.sf.saxon.xqj.SaxonXQDataSource;
+import org.apache.jackrabbit.core.nodetype.NodeTypeDef;
+import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
+import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
+import org.apache.jackrabbit.core.nodetype.xml.NodeTypeReader;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
@@ -75,6 +88,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public static final String ARTIFACT_NODE_NAME = "__artifact";
     public static final String LATEST = "latest";
+    private static final String NAMESPACE = "http://galaxy.mule.org";
 
     private Logger LOGGER = LogUtils.getL7dLogger(JcrRegistryImpl.class);
 
@@ -115,7 +129,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     public Workspace createWorkspace(String name) throws RegistryException {
         try {
-            Node node = getWorkspacesNode().addNode(name);
+            Node node = getWorkspacesNode().addNode(name, "galaxy:workspace");
             node.addMixin("mix:referenceable");
 
             JcrWorkspace workspace = new JcrWorkspace(node);
@@ -275,6 +289,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 jcrVersion.setData(data);
                 jcrVersion.setVersionLabel(versionLabel);
                 jcrVersion.setAuthor(user);
+                jcrVersion.setLatest(true);
                 
                 try {
                     index(jcrVersion);
@@ -369,13 +384,17 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 JcrArtifact jcrArtifact = (JcrArtifact) artifact;
                 Node artifactNode = jcrArtifact.getNode();
+                artifactNode.refresh(false);
                 JcrVersion previousLatest = ((JcrVersion)jcrArtifact.getLatestVersion());
-                previousLatest.getNode().setProperty(JcrVersion.LATEST, (String) null);
-                
+                Node previousNode = previousLatest.getNode();
+                previousNode.setProperty(JcrVersion.LATEST, (String) null);
+                previousLatest.setLatest(false);
+
                 ContentHandler ch = contentService.getContentHandler(jcrArtifact.getContentType());
                 
                 // create a new version node
                 Node versionNode = artifactNode.addNode("version");
+                
                 
                 Calendar now = Calendar.getInstance();
                 now.setTime(new Date());
@@ -390,17 +409,45 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 next.setData(data);
                 next.setVersionLabel(versionLabel);
                 next.setAuthor(user);
+                next.setLatest(true);
+                
                 jcrArtifact.getVersions().add(next);
                 ch.addMetadata(next);
+                
+                Node newProps = JcrUtil.getOrCreate(versionNode, "properties");
+                Node prevProps = previousNode.getNode("properties");
+                
+                for (NodeIterator nodes = prevProps.getNodes(); nodes.hasNext();) {
+                    copy(nodes.nextNode(), newProps);
+                }
                 
                 try {
                     return approve(session, artifact, previousLatest, next);
                 } catch (RegistryException e) {
-                    // gets dewrapped
+                    // this will get dewrapped
                     throw new RuntimeException(e);
                 }
             }
         });
+    }
+
+    protected void copy(Node original, Node parent) throws RepositoryException {
+        Node node = parent.addNode(original.getName());
+        node.addMixin("mix:referenceable");
+        
+        for (PropertyIterator props = original.getProperties(); props.hasNext();) {
+            Property p = props.nextProperty();
+            if (!p.getName().startsWith("jcr:")) {
+                node.setProperty(p.getName(), p.getValue());
+            }
+        }
+        
+        for (NodeIterator nodes = original.getNodes(); nodes.hasNext();) {
+            Node child = nodes.nextNode();
+            if (!child.getName().startsWith("jcr:")) {
+                copy(child, node);
+            }
+        }
     }
 
     public ArtifactResult newVersion(Artifact artifact, 
@@ -606,7 +653,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             throw new QueryException(new Message("UNKNOWN_SELECT_TYPE", LOGGER, selectType));
         }
         
-        if (!itr.hasNext() || !itr.next().toLowerCase().equals("where")){
+        if (!itr.hasNext()){
+            return search(new org.mule.galaxy.query.Query(selectTypeCls));
+        } else if  (!itr.next().toLowerCase().equals("where")) {
             throw new QueryException(new Message("EXPECTED_WHERE", LOGGER));
         }
         
@@ -670,42 +719,31 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     // TODO: NOT, LIKE, OR, etc
                     
                     String property = (String) r.getLeft();
-                    if (property.startsWith("artifact.")) {
-                        property = property.substring("artifact.".length());
-                        
-                        qstr.append("//")
-                            .append(ARTIFACT_NODE_NAME)
-                            .append("/");
-                            
+                    qstr.append("//")
+                        .append(ARTIFACT_NODE_NAME);
+                    // Search the latest if we're searching for artifacts, otherwise
+                    // search all versions
+                    if (!av) {
+                        qstr.append("/version[@latest='true']");
                     } else {
-                        qstr.append("//")
-                            .append(ARTIFACT_NODE_NAME);
-                        // Search the latest if we're searching for artifacts, otherwise
-                        // search all versions
-                        if (!av) {
-                            qstr.append("/version[@latest='true']/");
-                        } else {
-                            qstr.append("/version/");
-                        }
+                        qstr.append("/version");
                     }
                     
-//                    if (property.equals("lifecycleTag")) {
-//                        qstr.append(JcrVersion.LIFECYCLE_TAG)
-//                            .append("[@")
-//                            .append(JcrUtil.VALUE)
-//                            .append("= \"")
-//                            .append(r.getRight())
-//                            .append("\"]");
-//                    } else {
-                        qstr.append(property)
-                            .append("/")
-                            .append(JcrUtil.VALUE)
-                            .append("[@")
-                            .append(JcrUtil.VALUE)
-                            .append("= \"")
-                            .append(r.getRight())
-                            .append("\"]");
-//                    }
+                    qstr.append("/properties/")
+                        .append(property)
+                        .append("/")
+                        .append(JcrUtil.VALUE)
+                        .append("[@")
+                        .append(JcrUtil.VALUE)
+                        .append("= \"")
+                        .append(r.getRight())
+                        .append("\"]");
+                }
+                
+                // No search criteria
+                if (qstr.length() == 0) {
+                    qstr.append("//")
+                        .append(ARTIFACT_NODE_NAME);
                 }
                 
                 LOGGER.info("Query: " + qstr.toString());
@@ -846,6 +884,33 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         Session session = getSessionFactory().getSession();
         Node root = session.getRootNode();
         
+        // UGH, Jackrabbit specific code
+        javax.jcr.Workspace workspace = session.getWorkspace();
+        try {
+            workspace.getNamespaceRegistry().getPrefix(NAMESPACE);
+        } catch (NamespaceException e) {
+            workspace.getNamespaceRegistry().registerNamespace("galaxy", NAMESPACE);
+        }
+
+        NodeTypeDef[] nodeTypes = NodeTypeReader.read(getClass()
+            .getResourceAsStream("/org/mule/galaxy/impl/jcr/nodeTypes.xml"));
+
+        // Get the NodeTypeManager from the Workspace.
+        // Note that it must be cast from the generic JCR NodeTypeManager to the
+        // Jackrabbit-specific implementation.
+        NodeTypeManagerImpl ntmgr = (NodeTypeManagerImpl)workspace.getNodeTypeManager();
+
+        // Acquire the NodeTypeRegistry
+        NodeTypeRegistry ntreg = ntmgr.getNodeTypeRegistry();
+
+        // Loop through the prepared NodeTypeDefs
+        for (NodeTypeDef ntd : nodeTypes) {
+            // ...and register it
+            if (!ntreg.isRegistered(ntd.getName())) {
+                ntreg.registerNodeType(ntd);
+            }
+        }
+        
         Node workspaces = JcrUtil.getOrCreate(root, "workspaces");
         workspacesId = workspaces.getUUID();
         indexesId = JcrUtil.getOrCreate(root, "indexes").getUUID();
@@ -854,7 +919,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         NodeIterator nodes = workspaces.getNodes();
         // ignore the system node
         if (nodes.getSize() == 0) {
-            Node node = workspaces.addNode(settings.getDefaultWorkspaceName());
+            Node node = workspaces.addNode(settings.getDefaultWorkspaceName(),
+                                           "galaxy:workspace");
             node.addMixin("mix:referenceable");
 
             JcrWorkspace w = new JcrWorkspace(node);

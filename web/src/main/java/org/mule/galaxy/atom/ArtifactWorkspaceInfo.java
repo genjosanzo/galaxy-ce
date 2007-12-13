@@ -19,43 +19,27 @@ import org.mule.galaxy.Workspace;
  */
 public class ArtifactWorkspaceInfo implements WorkspaceInfo {
     private Registry registry;
+    private Map<String,CollectionProvider> providers;
     
-    public CollectionProvider getCollectionProvider(String id) throws ResponseContextException {
-        try {
-            Workspace workspace = registry.getWorkspace(id);
-            
-            return new ArtifactCollectionProvider(registry, workspace);
-        } catch (NotFoundException e) {
-            System.out.println("No such workspace " + id);
-            throw new ResponseContextException(404);
-        } catch (RegistryException e) {
-            throw new ResponseContextException(500, e);
-        }
+    public ArtifactWorkspaceInfo() {
+        super();
+        providers = new HashMap<String, CollectionProvider>();
+    }
+    
+    public void initialize() {
+        providers.put("repository", new ArtifactCollectionProvider(registry));
+    }
+
+    public CollectionProvider getCollectionProvider(String id) {
+        return providers.get(id);
     }
 
     public Map<String, CollectionProvider> getCollectionProviders() {
-        HashMap<String, CollectionProvider> providers = 
-            new HashMap<String, CollectionProvider>();
-        
-        try {
-            Collection<Workspace> workspaces = registry.getWorkspaces();
-            for (Workspace w : workspaces) {
-                providers.put(w.getId(), new ArtifactCollectionProvider(registry, w));
-                // TODO: go through child workspaces or have the feed contain other workspaces
-            }
-        } catch (RegistryException e) {
-            throw new RuntimeException(e);
-        }
-        
         return providers;
     }
-
-    public String getId() {
-        return "workspaces";
-    }
-
+    
     public String getName() {
-        return "Galaxy Registry & Repository";
+        return "Mule Galaxy Registry & Repository";
     }
 
     public void setRegistry(Registry registry) {

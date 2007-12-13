@@ -14,7 +14,7 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
     public static final String NAME = "name";
     private Collection<Workspace> workspaces;
     
-    public JcrWorkspace(Node node) {
+    public JcrWorkspace(Node node) throws RepositoryException  {
         super(node);
     }
 
@@ -48,7 +48,7 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
                 NodeIterator nodes = node.getNodes();
                 while (nodes.hasNext()) {
                     Node n = nodes.nextNode();
-                    if (!n.getName().equals(JcrRegistryImpl.ARTIFACT_NODE_NAME)) {
+                    if (n.getDefinition().getName().equals("galaxy:workspace")) {
                         workspaces.add(new JcrWorkspace(n));
                     }
                 }

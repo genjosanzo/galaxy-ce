@@ -2,7 +2,7 @@ package org.mule.galaxy.view;
 
 import org.mule.galaxy.Artifact;
 
-public class DefaultArtifactView implements ArtifactTypeView {
+public class DefaultArtifactTypeView implements ArtifactTypeView {
 
     public String[] getColumnNames() {
         return new String [] {

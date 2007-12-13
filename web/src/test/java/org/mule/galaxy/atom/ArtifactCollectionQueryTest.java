@@ -15,14 +15,14 @@ public class ArtifactCollectionQueryTest extends AbstractAtomTest {
     public void testAddWsdl() throws Exception {
         AbderaClient client = new AbderaClient(abdera);
 
-        String url = "http://localhost:9002/repository/workspaces/Default%20Workspace";
+        String url = "http://localhost:9002/api/repository";
         // Testing of entry creation
-        System.out.println("Creating Entry from a WSDL");
         
         RequestOptions opts = new RequestOptions();
         opts.setContentType("application/xml; charset=utf-8");
         opts.setSlug("hello_world.wsdl");
         opts.setHeader("X-Artifact-Version", "0.1");
+        opts.setHeader("X-Workspace", "Default Workspace");
         opts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
         ClientResponse res = client.post(url, getWsdl(), opts);
         assertEquals(201, res.getStatus());

@@ -43,7 +43,7 @@
   
   <filter-mapping>
     <filter-name>jcr</filter-name>
-    <url-pattern>/repository/*</url-pattern>
+    <url-pattern>/api/*</url-pattern>
   </filter-mapping>
   
   <listener>
@@ -72,7 +72,7 @@
 
   <servlet-mapping id="abdera-mapping">
     <servlet-name>Abdera</servlet-name>
-    <url-pattern>/repository/*</url-pattern>
+    <url-pattern>/api/*</url-pattern>
   </servlet-mapping>
   
   <error-page>

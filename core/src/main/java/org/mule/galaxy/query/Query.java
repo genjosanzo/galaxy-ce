@@ -15,6 +15,10 @@ public class Query {
         restrictions.add(restriction);
     }
     
+    public Query(Class selectType) {
+        this.selectType = selectType;
+    }
+
     public Query add(Restriction restriction) {
         restrictions.add(restriction);
         return this;

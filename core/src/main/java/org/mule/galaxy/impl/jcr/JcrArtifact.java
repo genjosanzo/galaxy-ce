@@ -37,11 +37,13 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     private LifecycleManager lifecycleManager;
     private UserManager userManager;
     
-    public JcrArtifact(Workspace w, Node node, LifecycleManager lifecycleManager, UserManager userManager) {
+    public JcrArtifact(Workspace w, Node node, LifecycleManager lifecycleManager, UserManager userManager) 
+        throws RepositoryException {
         this(w, node, null, lifecycleManager, userManager);
     } 
     public JcrArtifact(Workspace w, Node node, ContentHandler contentHandler, 
-                       LifecycleManager lifecycleManager, UserManager userManager) {
+                       LifecycleManager lifecycleManager, UserManager userManager) 
+        throws RepositoryException {
         super(node);
         this.workspace = w;
         this.contentHandler = contentHandler;
@@ -195,11 +197,26 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     }
     
     public void setPhase(Phase p) {
-        setProperty(LIFECYCLE, p.getLifecycle().getName());
-        setProperty(PHASE, p.getName());
+        try {
+            JcrUtil.setProperty(LIFECYCLE, p.getLifecycle().getName(), node);
+            JcrUtil.setProperty(PHASE, p.getName(), node);
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
     }
     
     public void setVersions(Set<ArtifactVersion> versions2) {
         this.versions = versions2;
+    }
+    
+
+    @Override
+    public Object getProperty(String name) {
+        return getLatestVersion().getProperty(name);
+    }
+
+    @Override
+    public void setProperty(String name, Object value) {
+        getLatestVersion().setProperty(name, value);
     }
 }

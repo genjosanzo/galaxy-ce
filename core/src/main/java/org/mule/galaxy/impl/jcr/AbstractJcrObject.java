@@ -20,10 +20,13 @@ import javax.jcr.version.VersionException;
 
 public class AbstractJcrObject {
 
+    private static final String PROPERTIES = "properties";
     protected Node node;
+    protected Node propertyNode;
 
-    public AbstractJcrObject(Node node) {
+    public AbstractJcrObject(Node node) throws RepositoryException {
         this.node = node;
+        this.propertyNode = JcrUtil.getOrCreate(node, PROPERTIES);
     }
 
     public Node getNode() {
@@ -42,9 +45,16 @@ public class AbstractJcrObject {
         return JcrUtil.getValueOrNull(node, propName);
     }
 
-    public void setProperty(String name, Object value) {
+    public void setNodeProperty(String name, Object value) {
         try {
             JcrUtil.setProperty(name, value, node);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void setProperty(String name, Object value) {
+        try {
+            JcrUtil.setProperty(name, value, propertyNode);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -52,7 +62,7 @@ public class AbstractJcrObject {
 
 
     public Object getProperty(String name) {
-        return JcrUtil.getProperty(name, node);
+        return JcrUtil.getProperty(name, propertyNode);
     }
 
 }

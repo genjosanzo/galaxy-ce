@@ -39,12 +39,10 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
     private static final String ID_PREFIX = "urn:galaxy:artifact:";
     private Registry registry;
     private Factory factory = new Abdera().getFactory();
-    private Workspace workspace;
     
-    public ArtifactCollectionProvider(Registry registry, Workspace workspace) {
+    public ArtifactCollectionProvider(Registry registry) {
         super();
         this.registry = registry;
-        this.workspace = workspace;
     }
 
     public String getId() {
@@ -76,8 +74,11 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
     public Text getSummary(ArtifactVersion entry, RequestContext request) {
         Text summary = factory.newSummary();
         
-        summary.setText("Version " + entry.getVersionLabel());
-        summary.setTextType(Type.TEXT);
+        String d = entry.getParent().getDescription();
+        if (d == null) d = "";
+        
+        summary.setText(d);
+        summary.setTextType(Type.XHTML);
         
         return summary;
     }
@@ -97,7 +98,7 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
     }
 
     public String getAuthor() {
-        return "Galaxy";
+        return "Mule Galaxy";
     }
 
     public String getId(ArtifactVersion doc) {
@@ -109,14 +110,14 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
     }
 
     public String getTitle() {
-        return workspace.getName();
+        return "Mule Galaxy Registry/Repository";
     }
 
     public String getTitle(ArtifactVersion doc) {
         if (doc.getParent().getName() != null) {
             return doc.getParent().getName();
         } else {
-            return doc.getParent().getDocumentType().toString();
+            return "(No title) " + doc.getParent().getDocumentType().toString();
         }
     }
 
@@ -134,6 +135,7 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
                                      InputStream inputStream, RequestContext request) throws ResponseContextException {
         try {
             String version = request.getHeader("X-Artifact-Version");
+            String workspaceId = request.getHeader("X-Workspace");
             
             if (version == null || version.equals("")) {
                 EmptyResponseContext ctx = new EmptyResponseContext(500);
@@ -141,8 +143,26 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
                 
                 throw new ResponseContextException(ctx);
             }
+            
+            if (workspaceId == null || workspaceId.equals("")) {
+                EmptyResponseContext ctx = new EmptyResponseContext(500);
+                ctx.setStatusText("You must supply an X-Workspace header!");
+                
+                throw new ResponseContextException(ctx);
+            }
+            
+            
             UserDetailsWrapper wrapper = 
                 (UserDetailsWrapper) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            
+            Workspace workspace = registry.getWorkspace(workspaceId);
+            
+            if (workspace == null) {
+                EmptyResponseContext ctx = new EmptyResponseContext(500);
+                ctx.setStatusText("The specified workspace is invalid.");
+                
+                throw new ResponseContextException(ctx);
+            }
             
             return registry.createArtifact(workspace, 
                                            mimeType.toString(), 
@@ -170,60 +190,40 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
         try {
             String q = request.getParameter("q");
             
-            if (q != null) {
-                q = Escaping.decode(q);
-                
-                final Iterator results = registry.search(q).iterator();
-                return new Iterable<ArtifactVersion>() {
-
-                    public Iterator<ArtifactVersion> iterator() {
-                        return new Iterator<ArtifactVersion>() {
-
-                            public boolean hasNext() {
-                                return results.hasNext();
-                            }
-
-                            public ArtifactVersion next() {
-                                Object next = results.next();
-                                if (next instanceof ArtifactVersion) {
-                                    return (ArtifactVersion) next;
-                                } else {
-                                    return ((Artifact) next).getLatestVersion();
-                                }
-                            }
-
-                            public void remove() {
-                                throw new UnsupportedOperationException();
-                            }
-                            
-                        };
-                    }
-                    
-                };
+            if (q == null || "".equals(q)) {
+                q = "select artifact";
             } else {
-                final Iterator<Artifact> iterator = registry.getArtifacts(workspace).iterator();
-                return new Iterable<ArtifactVersion>() {
-
-                    public Iterator<ArtifactVersion> iterator() {
-                        return new Iterator<ArtifactVersion>() {
-
-                            public boolean hasNext() {
-                                return iterator.hasNext();
-                            }
-
-                            public ArtifactVersion next() {
-                                return selectVersion(iterator.next());
-                            }
-
-                            public void remove() {
-                                throw new UnsupportedOperationException();
-                            }
-                            
-                        };
-                    }
-                    
-                };
+                q = Escaping.decode(q);
             }
+            
+            final Iterator results = registry.search(q).iterator();
+            return new Iterable<ArtifactVersion>() {
+
+                public Iterator<ArtifactVersion> iterator() {
+                    return new Iterator<ArtifactVersion>() {
+
+                        public boolean hasNext() {
+                            return results.hasNext();
+                        }
+
+                        public ArtifactVersion next() {
+                            Object next = results.next();
+                            if (next instanceof ArtifactVersion) {
+                                return (ArtifactVersion) next;
+                            } else {
+                                return ((Artifact) next).getLatestVersion();
+                            }
+                        }
+
+                        public void remove() {
+                            throw new UnsupportedOperationException();
+                        }
+                        
+                    };
+                }
+                
+            };
+            
         } catch (RegistryException e) {
             throw new ResponseContextException(500, e);
         }
@@ -258,10 +258,16 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
     }
 
     @Override
-    public void updateEntry(ArtifactVersion entry, String title, Date updated, List<Person> authors, String summary,
-                            Content content, RequestContext request) throws ResponseContextException {
-        // TODO Auto-generated method stub
-        
+    public void updateEntry(ArtifactVersion entry, 
+                            String title, 
+                            Date updated, 
+                            List<Person> authors, 
+                            String summary,
+                            Content content, 
+                            RequestContext request) throws ResponseContextException {
+        Artifact artifact = entry.getParent();
+        artifact.setDescription(summary);
+        artifact.setName(title);
     }
 
     public ArtifactVersion getEntryFromId(String id, RequestContext request) {

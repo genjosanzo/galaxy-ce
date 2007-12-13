@@ -36,13 +36,14 @@ public class RegistryConfigLookupTest extends AbstractAtomTest {
     public void testMuleLookup() throws Exception {
         AbderaClient client = new AbderaClient(abdera);
 
-        String url = "http://localhost:9002/repository/workspaces/Default%20Workspace";
+        String url = "http://localhost:9002/api/repository";
         
         // POST a Mule configuration
         RequestOptions opts = new RequestOptions();
         opts.setContentType("application/xml; charset=utf-8");
         opts.setSlug("hello-config.xml");
         opts.setHeader("X-Artifact-Version", "0.1");
+        opts.setHeader("X-Workspace", "Default Workspace");
         opts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
         ClientResponse res = client.post(url, getClass().getResourceAsStream("/mule/hello-config.xml"), opts);
         assertEquals(201, res.getStatus());
