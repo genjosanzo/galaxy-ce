@@ -62,11 +62,14 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     public User authenticate(final String username, final String password) {
         return (User) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
+                System.out.println("username " + username);
+                System.out.println("pass " + password);
+                
                 Node node = findUser(username, session);
                 if (node == null) {
                     return null;
                 }
-                
+               
                 String pass = getStringOrNull(node, PASSWORD);
                 if (password != null && password.equals(pass)) {
                     try {
@@ -87,7 +90,8 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
 
     protected Node findUser(String username, Session session) throws RepositoryException {
         QueryManager qm = getQueryManager(session);
-        Query q = qm.createQuery("/*/users/*[@username='" + username + "']", Query.XPATH);
+        Query q = qm.createQuery("/*/users/*/username[@" +
+        		JcrUtil.VALUE + "='" + username + "']", Query.XPATH);
         
         QueryResult qr = q.execute();
         
@@ -96,7 +100,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
             return null;
         }
         
-        return nodes.nextNode();
+        return nodes.nextNode().getParent();
     }
 
     public User create(final String username, final String password, final String name) throws UserExistsException {
@@ -114,7 +118,6 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
                 
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(new Date());
-                node.setProperty(CREATED, cal);
                 user.setCreated(cal);
                 
                 try {
@@ -134,13 +137,14 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         if (objects.getNodes().getSize() == 0) {
             Node node = objects.addNode(USER);
             node.addMixin("mix:referenceable");
-            node.setProperty(USERNAME, "admin");
             node.setProperty(PASSWORD, "admin");
-            node.setProperty(NAME, "Administrator");
+            
+            JcrUtil.setProperty(USERNAME, "admin", node);
+            JcrUtil.setProperty(NAME, "Administrator", node);
             
             Calendar cal = Calendar.getInstance();
             cal.setTime(new Date());
-            node.setProperty(CREATED, cal);
+            JcrUtil.setProperty(CREATED, cal, node);
         }
     }
 }

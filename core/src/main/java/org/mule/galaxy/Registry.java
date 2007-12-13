@@ -112,4 +112,6 @@ public interface Registry {
     List<Comment> getComments(Artifact a);
 
     void addComment(Comment c);
+
+    Artifact getArtifact(Workspace w, String name) throws NotFoundException;
 }

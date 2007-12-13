@@ -4,6 +4,7 @@ package org.mule.galaxy.impl;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.jcr.Node;
@@ -12,6 +13,7 @@ import javax.wsdl.Definition;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.test.AbstractGalaxyTest;
@@ -43,7 +45,8 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        ArtifactResult ar = registry.createArtifact(workspace, "application/wsdl+xml", null, "0.1", helloWsdl, getAdmin());
+        ArtifactResult ar = registry.createArtifact(workspace, "application/wsdl+xml", 
+                                                    "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
         
         Artifact artifact = ar.getArtifact();
         
@@ -56,11 +59,33 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertNotNull(versions);
         assertEquals(1, versions.size());
         
+        // test properties
+        JcrVersion version = (JcrVersion) versions.iterator().next();
+        Iterator<PropertyInfo> properties = version.getProperties(); 
+        boolean testedTNS = false;
+        while(properties.hasNext()) {
+            PropertyInfo next = properties.next();
+            if (next.getName().equals("wsdl.targetNamespace")) {
+                assertEquals("wsdl.targetNamespace", next.getName());
+                assertNotNull(next.getValue());
+                assertFalse(next.isLocked());
+                assertTrue(next.isVisible());
+                testedTNS = true;
+            }
+        }
+        
+        assertTrue(testedTNS);
+        
+        version.setLocked("wsdl.targetNamespace", true);
+        version.setVisible("wsdl.targetNamespace", false);
+        PropertyInfo pi = version.getPropertyInfo("wsdl.targetNamespace");
+        assertTrue(pi.isLocked());
+        assertFalse(pi.isVisible());
+        
         artifact.setProperty("foo", "bar");
         assertEquals("bar", artifact.getProperty("foo"));
         
         // Test the version history
-        JcrVersion version = (JcrVersion) versions.iterator().next();
         Node node = version.getNode();
         assertEquals("version", node.getName());
         
@@ -74,7 +99,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertTrue(created.getTime().getTime() > 0);
         
         assertEquals("bar", version.getProperty("foo"));
-        
+         
         // Create another version
         InputStream stream = version.getStream();
         assertNotNull(stream);
@@ -99,6 +124,9 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals("bar", newVersion.getProperty("foo2"));
         assertEquals("bar", artifact.getProperty("foo2"));
         assertNull(version.getProperty("foo2"));
+        
+        Artifact a2 = registry.getArtifact(workspace, artifact.getName());
+        assertNotNull(a2);
     }
     
     @Override

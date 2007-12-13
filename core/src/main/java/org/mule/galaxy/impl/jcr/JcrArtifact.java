@@ -1,5 +1,6 @@
 package org.mule.galaxy.impl.jcr;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -198,8 +199,8 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     
     public void setPhase(Phase p) {
         try {
-            JcrUtil.setProperty(LIFECYCLE, p.getLifecycle().getName(), node);
-            JcrUtil.setProperty(PHASE, p.getName(), node);
+            node.setProperty(LIFECYCLE, p.getLifecycle().getName());
+            node.setProperty(PHASE, p.getName());
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }

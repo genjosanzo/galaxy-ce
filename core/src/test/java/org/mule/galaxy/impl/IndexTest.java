@@ -127,7 +127,8 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        ArtifactResult ar = registry.createArtifact(workspace, "application/xml", null, "0.1", helloWsdl, getAdmin());
+        ArtifactResult ar = registry.createArtifact(workspace, "application/xml", "hello.wsdl", 
+                                                    "0.1", helloWsdl, getAdmin());
         Artifact artifact = ar.getArtifact();
         
         JcrVersion version = (JcrVersion) artifact.getLatestVersion();

@@ -3,6 +3,7 @@ package org.mule.galaxy.impl.jcr;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.jcr.Node;
@@ -13,6 +14,7 @@ import javax.jcr.Value;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 
@@ -21,8 +23,7 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     public static final String DATA = "data";
     public static final String LABEL = "label";
     public static final String LATEST = "latest";
-    private static final String AUTHOR_ID = "authorId";
-
+    public static final String AUTHOR_ID = "authorId";
     private JcrArtifact parent;
     private Object data;
     private User author;
@@ -105,5 +106,4 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
         setNodeProperty(AUTHOR_ID, author.getId());
     }
 
-    
 }

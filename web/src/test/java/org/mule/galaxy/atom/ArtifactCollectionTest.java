@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.mule.galaxy.test.AbstractAtomTest;
+import org.mule.galaxy.util.IOUtils;
 
 import org.apache.abdera.i18n.io.CharUtils.Profile;
 import org.apache.abdera.i18n.iri.Escaping;
@@ -91,9 +92,11 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         res = client.get(e.getContentSrc().toString(), defaultOpts);
         assertEquals(200, res.getStatus());
-        Document<Entry> entryDoc = res.getDocument();
-        Entry entry = entryDoc.getRoot();
-
+        
+        InputStream is = res.getInputStream();
+        while (is.read() != -1);
+        
+        
     }
 
 

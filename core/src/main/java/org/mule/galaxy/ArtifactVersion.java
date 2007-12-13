@@ -2,6 +2,7 @@ package org.mule.galaxy;
 
 import java.io.InputStream;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.wsdl.Definition;
@@ -37,6 +38,14 @@ public interface ArtifactVersion {
     void setProperty(String name, Object value);
     
     Object getProperty(String name);
+
+    Iterator<PropertyInfo> getProperties();
+    
+    PropertyInfo getPropertyInfo(String name);
+
+    void setLocked(String name, boolean locked);
+
+    void setVisible(String property, boolean visible);
     
     /**
      * The author of this version. They may or may not be the actual author, but they

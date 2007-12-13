@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
+import javax.xml.namespace.QName;
 
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.abdera.Abdera;
@@ -18,6 +19,7 @@ import org.apache.abdera.i18n.iri.Escaping;
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.Collection;
 import org.apache.abdera.model.Content;
+import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.model.Text;
@@ -26,16 +28,19 @@ import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.impl.AbstractCollectionProvider;
 import org.apache.abdera.protocol.server.impl.EmptyResponseContext;
 import org.apache.abdera.protocol.server.impl.ResponseContextException;
+import org.apache.abdera.protocol.util.EncodingUtil;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 
 public class ArtifactCollectionProvider extends AbstractCollectionProvider<ArtifactVersion> {
+    public static final String NAMESPACE = "http://galaxy.mule.org/1.0";
     private static final String ID_PREFIX = "urn:galaxy:artifact:";
     private Registry registry;
     private Factory factory = new Abdera().getFactory();
@@ -43,6 +48,7 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
     public ArtifactCollectionProvider(Registry registry) {
         super();
         this.registry = registry;
+        setBaseMediaIri("");
     }
 
     public String getId() {
@@ -68,6 +74,20 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
         col.setHref("feed/versions/" + getId(entryObj));
         col.setTitle("Artifact Versions");
         e.addExtension(col);
+        
+        Element metadata = factory.newElement(new QName(NAMESPACE, "metadata"));
+        
+        for (Iterator<PropertyInfo> props = entryObj.getProperties(); props.hasNext();) {
+            PropertyInfo p = props.next();
+            if (p.isVisible()) {
+                Element prop = factory.newElement(new QName(NAMESPACE, "property"), metadata);
+                prop.setAttributeValue("name", p.getName());
+                prop.setAttributeValue("locked", new Boolean(p.isLocked()).toString());
+                prop.setAttributeValue("value", p.getValue().toString());
+            }
+        }
+        
+        e.addExtension(metadata);
     }
 
     @Override
@@ -85,7 +105,11 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
 
     @Override
     public String getMediaName(ArtifactVersion entry) {
-        return entry.getParent().getId() + "+" + entry.getParent().getName();
+        Artifact a = entry.getParent();
+        StringBuilder path = getBasePath(a);
+        
+        path.append(entry.getParent().getName());
+        return path.toString();
     }
 
     public InputStream getMediaStream(ArtifactVersion entry) throws ResponseContextException {
@@ -106,7 +130,24 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
     }
 
     public String getName(ArtifactVersion doc) {
-        return doc.getParent().getId() + "+" +  doc.getParent().getName() + ".atom";
+        Artifact a = doc.getParent();
+        StringBuilder sb = getBasePath(a);
+        
+        sb.append(Escaping.encode(a.getName()));
+        sb.append(".atom");
+        return sb.toString();
+    }
+
+    private StringBuilder getBasePath(Artifact a) {
+        StringBuilder sb = new StringBuilder();
+        
+        Workspace w = a.getWorkspace();
+        while (w != null) {
+            sb.insert(0, '/');
+            sb.insert(0, Escaping.encode(w.getName()));
+            w = w.getParent();
+        }
+        return sb;
     }
 
     public String getTitle() {
@@ -233,15 +274,9 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
         return next.getLatestVersion();
     }
 
-    public void deleteEntry(String name, RequestContext request) {
-        name = parseName(name);
-        Artifact artifact;
-        try {
-            artifact = registry.getArtifact(name);
-        } catch (NotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        
+    public void deleteEntry(String name, RequestContext request) throws ResponseContextException {
+        Artifact artifact = findArtifact(name);
+
         try {
             registry.delete(artifact);
         } catch (RegistryException e) {
@@ -280,22 +315,34 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
         }
     }
 
-    public ArtifactVersion getEntry(String name, RequestContext request) {
-        name = parseName(name);
+    public ArtifactVersion getEntry(String name, RequestContext request) throws ResponseContextException {
+        Artifact a = findArtifact(name);
+        return selectVersion(a);
+    }
+
+    private Artifact findArtifact(String name) throws ResponseContextException {
+        String[] paths = name.split("/");
+        
+        Workspace w = null;
+        for (int i = 0; i < paths.length-1; i++) {
+            try {
+                w = registry.getWorkspace(Escaping.decode(paths[0]));
+            } catch (NotFoundException e) {
+                throw new ResponseContextException(404);
+            } catch (RegistryException e) {
+                throw new ResponseContextException(500, e);
+            }
+        }
+        Artifact a = null;
         try {
-            return selectVersion(registry.getArtifact(name));
+            a = registry.getArtifact(w, Escaping.decode(paths[paths.length-1]));
+            
         } catch (NotFoundException e) {
             throw new RuntimeException(e);
         }
+        return a;
     }
 
-    private String parseName(String name) {
-        int idx = name.indexOf('+');
-        if (idx != -1) {
-            name = name.substring(0, idx);
-        }
-        return name;
-    }
 
     public Registry getRegistry() {
         return registry;

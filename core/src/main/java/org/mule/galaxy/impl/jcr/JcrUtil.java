@@ -117,6 +117,21 @@ public class JcrUtil {
         
         return null;
     }
+
+    public static boolean getBooleanOrNull(Node node, String propName) {
+        try {
+            Value v = getValueOrNull(node, propName);   
+            if (v != null) {
+                return v.getBoolean();
+            }
+        } catch (ValueFormatException e) {
+            throw new RuntimeException(e);
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }  
+        
+        return false;
+    }
     
     public static Calendar getDateOrNull(Node node, String propName) {
         try {
@@ -148,11 +163,9 @@ public class JcrUtil {
         return p.getValue();
     }
 
-    public static void setProperty(String name, Object value, Node n) throws ItemExistsException,
-        PathNotFoundException, VersionException, ConstraintViolationException, LockException,
-        RepositoryException {
+    public static Node setProperty(String name, Object value, Node n) throws RepositoryException {
         if (value instanceof Map) {
-            setMap(n, name, (Map<?, ?>) value);
+            return setMap(n, name, (Map<?, ?>) value);
         } else if (value instanceof Collection) {
             Node child = getOrCreate(n, name);
             
@@ -172,20 +185,26 @@ public class JcrUtil {
                 Node valueNode = child.addNode(VALUE);
                 valueNode.setProperty(VALUE, o.toString());
             }
-        } else if (value instanceof String) {
-            n.setProperty(name, value.toString());
-        } else if (value instanceof Calendar) {
-            n.setProperty(name, (Calendar) value);
-        } else if (value == null) {
-            n.setProperty(name, (String) null);
-        } else if (value instanceof Identifiable) {
-            n.setProperty(name, ((Identifiable) value).getId());
+            return child;
         } else {
-            throw new UnsupportedOperationException("Unsupported type " + value.getClass());
+            Node child = getOrCreate(n, name);
+            
+            if (value instanceof String) {
+                child.setProperty(VALUE, value.toString());
+            } else if (value instanceof Calendar) {
+                child.setProperty(VALUE, (Calendar) value);
+            } else if (value == null) {
+                child.setProperty(VALUE, (String) null);
+            } else if (value instanceof Identifiable) {
+                child.setProperty(VALUE, ((Identifiable) value).getId());
+            } else {
+                throw new UnsupportedOperationException("Unsupported type " + value.getClass());
+            }
+            return child;
         }
     }
 
-    public static void setMap(Node n, String name, Map<?,?> result) throws RepositoryException {
+    public static Node setMap(Node n, String name, Map<?,?> result) throws RepositoryException {
         Node mapNode = getOrCreate(n, name);
 
         // TODO: make this lazy and write a LazyNodeMap
@@ -193,6 +212,7 @@ public class JcrUtil {
             // TODO: handle more complex maps
             setProperty((String) e.getKey(), e.getValue(), mapNode);
         }
+        return mapNode;
     }
 
     private static String getComponentType(Collection<?> c) {
@@ -201,10 +221,15 @@ public class JcrUtil {
 
     public static Object getProperty(String name, Node node) {
         try {
-            Property property = null;
+            Node child = node.getNode(name);
+            if (child == null) {
+                return null;
+            }
             
-            try {
-                property = node.getProperty(name);
+            String type = getStringOrNull(child, TYPE);
+            
+            if (type == null) {
+                Property property = child.getProperty(VALUE);
                 
                 Value val = property.getValue();
                 if (val == null) {
@@ -225,15 +250,8 @@ public class JcrUtil {
                 default:
                     return null;
                 }
-            } catch (PathNotFoundException e) {
             } 
             
-            Node child = node.getNode(name);
-            if (child == null) {
-                return null;
-            }
-            
-            String type = getStringOrNull(child, TYPE);
             Collection<Object> values = null;
             if (type.equals(Set.class.getName())) {
                 values = new HashSet<Object>();
@@ -257,7 +275,7 @@ public class JcrUtil {
             }
             return values;
         } catch (PathNotFoundException e) {
-            return getStringOrNull(node, name);
+            return null;
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {

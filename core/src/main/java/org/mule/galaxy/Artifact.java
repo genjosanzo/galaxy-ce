@@ -45,10 +45,6 @@ public interface Artifact  {
     public void setProperty(String name, Object value);
     
     Object getProperty(String name);
-//    Object getPropertyValue(String name);
-//    Property getProperty(String name);
-//    void setLocked(String name);
-//    void setVisible(String property, boolean visible);
     
     public Phase getPhase();
 }

@@ -228,6 +228,42 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         });
     }
 
+    
+    public Artifact getArtifact(final Workspace w, final  String name) throws NotFoundException {
+        Artifact a = (Artifact) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                QueryManager qm = getQueryManager(session);
+                StringBuilder sb = new StringBuilder();
+                sb.append("//")
+                  .append(ARTIFACT_NODE_NAME)
+                  .append("[@name='")
+                  .append(name)
+                  .append("']");
+                
+                Query query = qm.createQuery(sb.toString(), Query.XPATH);
+                
+                QueryResult result = query.execute();
+                NodeIterator nodes = result.getNodes();
+                
+                if (nodes.hasNext()) {
+                    Node node = nodes.nextNode();
+                    JcrArtifact artifact = new JcrArtifact(w, node, lifecycleManager, userManager);
+                    
+                    artifact.setContentHandler(contentService.getContentHandler(artifact.getContentType()));
+
+                    return artifact;
+                }
+                return null;
+            }
+        });
+        
+        if (a == null) {
+            throw new NotFoundException(name);
+        }
+        
+        return a;
+    }
+
     public ArtifactResult createArtifact(Workspace workspace, Object data, String versionLabel, User user) 
         throws RegistryException, ArtifactPolicyException, MimeTypeParseException {
         ContentHandler ch = contentService.getContentHandler(data.getClass());
@@ -252,6 +288,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         
         if (user == null) {
             throw new NullPointerException("User cannot be null.");
+        }
+        if (name == null) {
+            throw new NullPointerException("Artifact name cannot be null.");
         }
         
         return (ArtifactResult) executeAndDewrap(new JcrCallback() {
