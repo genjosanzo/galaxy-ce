@@ -1,4 +1,4 @@
-package org.mule.galaxy.impl;
+package org.mule.galaxy.impl.content;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,6 +23,8 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.XmlContentHandler;
+import org.mule.galaxy.impl.MapNamespaceContext;
+import org.mule.galaxy.impl.RegistryLocator;
 import org.mule.galaxy.util.Constants;
 import org.mule.galaxy.util.QNameUtil;
 import org.mule.galaxy.wsdl.diff.DifferenceEvent;

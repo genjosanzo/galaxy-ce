@@ -127,11 +127,11 @@
   
   <bean id="settings" class="org.mule.galaxy.impl.SettingsImpl"/>
   
-  <bean id="contentService" class="org.mule.galaxy.impl.ContentServiceImpl">
+  <bean id="contentService" class="org.mule.galaxy.impl.content.ContentServiceImpl">
     <constructor-arg>
       <list>
-        <bean class="org.mule.galaxy.impl.XmlDocumentContentHandler"/>
-        <bean class="org.mule.galaxy.impl.WsdlContentHandler"/>
+        <bean class="org.mule.galaxy.impl.content.XmlDocumentContentHandler"/>
+        <bean class="org.mule.galaxy.impl.content.WsdlContentHandler"/>
       </list>
     </constructor-arg>
   </bean>

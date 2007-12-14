@@ -1,4 +1,4 @@
-package org.mule.galaxy.impl;
+package org.mule.galaxy.impl.content;
 
 
 import java.util.Collection;
@@ -12,7 +12,8 @@ import org.mule.galaxy.ContentService;
 
 public class ContentServiceImpl implements ContentService {
     private Collection<ContentHandler> contentHandlers;
-
+    private ContentHandler defaultContentHandler = new DefaultContentHandler();
+    
     public ContentServiceImpl(Collection<ContentHandler> contentHandlers) {
         super();
         this.contentHandlers = contentHandlers;
@@ -39,7 +40,7 @@ public class ContentServiceImpl implements ContentService {
                 }
             }
         }
-        return null;
+        return defaultContentHandler;
     }
 
     public MimeType getContentType(QName name) {
@@ -60,10 +61,21 @@ public class ContentServiceImpl implements ContentService {
                 }
             }
         }
-        return null;
+        return defaultContentHandler;
     }
     
     public void registerContentHandler(ContentHandler ch) {
         contentHandlers.add(ch);
     }
+
+
+    public ContentHandler getDefaultContentHandler() {
+        return defaultContentHandler;
+    }
+
+
+    public void setDefaultContentHandler(ContentHandler defaultContentHandler) {
+        this.defaultContentHandler = defaultContentHandler;
+    }
+    
 }

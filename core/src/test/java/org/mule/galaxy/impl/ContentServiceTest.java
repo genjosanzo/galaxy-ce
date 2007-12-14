@@ -8,6 +8,8 @@ import javax.wsdl.Definition;
 
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
+import org.mule.galaxy.impl.content.DefaultContentHandler;
+import org.mule.galaxy.impl.content.XmlDocumentContentHandler;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.DOMUtils;
 
@@ -52,6 +54,8 @@ public class ContentServiceTest extends AbstractGalaxyTest {
         ch = contentService.getContentHandler(new MimeType("application/wsdl+xml"));
         assertNotNull(ch);
 
-        
+        ch = contentService.getContentHandler(new MimeType("text/plain"));
+        assertNotNull(ch);
+        assertTrue(ch instanceof DefaultContentHandler);
     }
 }

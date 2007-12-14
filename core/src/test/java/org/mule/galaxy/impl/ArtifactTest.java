@@ -133,6 +133,22 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertNotNull(a2);
     }
     
+    public void testAddNonUnderstood() throws Exception {
+        InputStream logProps = getResourceAsStream("/log4j.properties");
+        
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+        
+        ArtifactResult ar = registry.createArtifact(workspace, 
+                                                    "text/palin", 
+                                                    "log4j.properties", 
+                                                    "0.1", 
+                                                    logProps, 
+                                                    getAdmin());
+        
+        assertNotNull(ar);
+    }
     @Override
     protected String[] getConfigLocations() {
         return new String[] { "/META-INF/applicationContext-core.xml", 

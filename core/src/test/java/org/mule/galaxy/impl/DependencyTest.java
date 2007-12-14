@@ -63,6 +63,19 @@ public class DependencyTest extends AbstractGalaxyTest {
         assertEquals(portType.getArtifact().getId(), dep.getArtifact().getId());
         assertFalse(dep.isUserSpecified());
         
+        // yeah, this doesn't make sense dependency-wise, but we're just seeing if user specified dependencies work
+        ArtifactVersion schemaV = schema.getArtifactVersion();
+        registry.addDependencies(schemaV, svcWsdl.getArtifact());
+        
+        deps = schemaV.getDependencies();
+        assertEquals(1, deps.size());
+        dep = deps.iterator().next();
+        assertEquals(svcWsdl.getArtifact().getId(), dep.getArtifact().getId());
+        assertTrue(dep.isUserSpecified());
+        
+        registry.removeDependencies(schemaV, svcWsdl.getArtifact());
+        deps = schemaV.getDependencies();
+        assertEquals(0, deps.size());
     }
     
     

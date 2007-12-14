@@ -116,4 +116,8 @@ public interface Registry {
     Artifact getArtifact(Workspace w, String name) throws NotFoundException;
 
     Artifact resolve(Workspace w, String location);
+
+    void addDependencies(ArtifactVersion artifactVersion, Artifact... artifacts) throws RegistryException;
+
+    void removeDependencies(ArtifactVersion artifactVersion, Artifact... artifact) throws RegistryException;
 }

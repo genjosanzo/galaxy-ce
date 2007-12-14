@@ -340,7 +340,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 JcrArtifact artifact = new JcrArtifact(workspace, artifactNode, registry);
                 artifact.setContentType(contentType);
                 artifact.setName(name);
-
+                artifact.setContentHandler(ch);
+                
                 // set up the initial version
                 
                 Calendar now = Calendar.getInstance();
@@ -897,7 +898,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     private void index(JcrVersion jcrVersion) throws RegistryException {
-        Set<Index> indices = getIndices(jcrVersion.getParent().getDocumentType());
+        QName dt = jcrVersion.getParent().getDocumentType();
+        if (dt == null) return;
+        
+        Set<Index> indices = getIndices(dt);
         
         for (Index idx : indices) {
             try {
@@ -1075,6 +1079,47 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         });
     }
 
+    public void addDependencies(ArtifactVersion artifactVersion, final Artifact... dependencies)
+        throws RegistryException {
+        final JcrVersion jcrVersion = (JcrVersion) artifactVersion;
+        
+        if (dependencies != null) {
+            execute(new JcrCallback() {
+                public Object doInJcr(Session session) throws IOException, RepositoryException {
+                    jcrVersion.addDependencies(dependencies, true);
+                    session.save();
+                    return null;
+                }
+            });
+        }
+    }
+    
+    public void removeDependencies(ArtifactVersion artifactVersion, final Artifact... dependencies)
+        throws RegistryException {
+        final JcrVersion jcrVersion = (JcrVersion) artifactVersion;
+        
+        if (dependencies != null) {
+            execute(new JcrCallback() {
+                public Object doInJcr(Session session) throws IOException, RepositoryException {
+                    Set<String> ids = new HashSet<String>();
+                    for (Artifact a : dependencies) {
+                        ids.add(a.getId());
+                    }
+
+                    Node depsNode = JcrUtil.getOrCreate(jcrVersion.node, JcrVersion.DEPENDENCIES);
+                    for (NodeIterator nodes = depsNode.getNodes(); nodes.hasNext();) {
+                        Node dep = nodes.nextNode();
+                        boolean user = JcrUtil.getBooleanOrNull(dep, JcrVersion.USER_SPECIFIED);
+                        if (user && ids.contains(dep.getUUID())) {
+                            dep.remove();
+                        }
+                    }
+                    session.save();
+                    return null;
+                }
+            });
+        }
+    }
     public void setSettings(Settings settings) {
         this.settings = settings;
     }

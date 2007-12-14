@@ -6,11 +6,17 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
+import javax.jcr.ValueFormatException;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
+import javax.jcr.version.VersionException;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
@@ -121,8 +127,7 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
             Node depsNode = JcrUtil.getOrCreate(node, DEPENDENCIES);
             
             for (Artifact a : dependencies) {
-                Node dep = depsNode.addNode(a.getId());
-                dep.setProperty(USER_SPECIFIED, userSpecified);
+                addDependency(userSpecified, depsNode, a);
             }
 
         } catch (RepositoryException e) {
@@ -130,6 +135,25 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
         }
     }
 
+    private void addDependency(boolean userSpecified, Node depsNode, Artifact a) throws RepositoryException {
+        Node dep = depsNode.addNode(a.getId());
+        dep.addMixin("mix:referenceable");
+        dep.setProperty(USER_SPECIFIED, userSpecified);
+    }
+    
+    public void addDependencies(Artifact[] dependencies, boolean userSpecified) {
+        try {
+            Node depsNode = JcrUtil.getOrCreate(node, DEPENDENCIES);
+            
+            for (Artifact a : dependencies) {
+                addDependency(userSpecified, depsNode, a);
+            }
+
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
     public Set<Dependency> getDependencies() {
         try {
             Node depsNode = JcrUtil.getOrCreate(node, DEPENDENCIES);
@@ -159,7 +183,6 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
-        
     }
 
 }
