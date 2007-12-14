@@ -45,6 +45,7 @@ import net.sf.saxon.javax.xml.xquery.XQItem;
 import net.sf.saxon.javax.xml.xquery.XQPreparedExpression;
 import net.sf.saxon.javax.xml.xquery.XQResultSequence;
 import net.sf.saxon.xqj.SaxonXQDataSource;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.jackrabbit.core.nodetype.NodeTypeDef;
 import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
 import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
@@ -83,6 +84,8 @@ import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 
 public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistry {
 
@@ -484,7 +487,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             throw new NullPointerException("User cannot be null!");
         }
         
-        final JcrRegistryImpl registry = this;
         return (ArtifactResult) executeAndDewrap(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 JcrArtifact jcrArtifact = (JcrArtifact) artifact;
@@ -956,23 +958,45 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             
             List<Object> results = new ArrayList<Object>();
             
-            while (result.next()) {
+            boolean locked = true;
+            boolean visible = true;
+            
+            if (result.next()) {
                 XQItem item = result.getItem();
 
-                org.w3c.dom.Node node = item.getNode();
+                org.w3c.dom.Node values = item.getNode();
                 
-                Object content = DOMUtils.getContent(node);
+                // check locking & visibility
+                NamedNodeMap atts = values.getAttributes();
+                org.w3c.dom.Node lockedNode = atts.getNamedItem("locked");
+                if (lockedNode != null) {
+                    locked = BooleanUtils.toBoolean(lockedNode.getNodeValue());
+                }
+                org.w3c.dom.Node visibleNode = atts.getNamedItem("visible");
+                if (visibleNode != null) {
+                    visible = BooleanUtils.toBoolean(visibleNode.getNodeValue());
+                }
                 
-                LOGGER.info("Adding value " + content + " to index " + idx.getId());
-
-                if (idx.getQueryType().equals(QName.class)) {
-                    results.add(QNameUtil.fromString(content.toString())); 
-                } else {
-                    results.add(content);
+                // loop through the values
+                Element value = DOMUtils.getFirstElement(values);
+                while (value != null) {
+                    Object content = DOMUtils.getContent(value);
+                    
+                    LOGGER.info("Adding value " + content + " to index " + idx.getId());
+    
+                    if (idx.getQueryType().equals(QName.class)) {
+                        results.add(QNameUtil.fromString(content.toString())); 
+                    } else {
+                        results.add(content);
+                    }
+                    
+                    value = (Element) DOMUtils.getNext(value, "value", org.w3c.dom.Node.ELEMENT_NODE);
                 }
             }
             
             jcrVersion.setProperty(idx.getId(), results);
+            jcrVersion.setLocked(idx.getId(), locked);
+            jcrVersion.setVisible(idx.getId(), visible);
         } catch (Exception e) {
             // TODO: better error handling for frontends
             // We should log this and make the logs retrievable

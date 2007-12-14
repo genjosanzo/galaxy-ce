@@ -29,9 +29,10 @@ public class MuleArtifactPlugin extends AbstractArtifactPlugin {
             "declare namespace mule=\"http://www.mulesource.org/schema/mule/core/2.0\";\n" +
             "declare variable $document external;\n" +
             "" +
+            "<values visible=\"false\"> {\n" +
             "for $svc in $document//mule:service\n" +
             "    return <value>{data($svc/@name)}</value>\n" +
-            "";
+            "} </values>";
        
         registry.registerIndex("mule.service", // index field name
                                "Mule Service", // Display Name

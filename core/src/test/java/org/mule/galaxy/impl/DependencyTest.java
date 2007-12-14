@@ -21,7 +21,7 @@ import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class DependencyTest extends AbstractGalaxyTest {
     
-    public void testAddDependencies() throws Exception {
+    public void testWsdlDependencies() throws Exception {
 
         Collection<Workspace> workspaces = registry.getWorkspaces();
         assertEquals(1, workspaces.size());
@@ -66,7 +66,7 @@ public class DependencyTest extends AbstractGalaxyTest {
     }
     
     
-    public void testMissingDependencies() throws Exception {
+    public void testMissingWsdlDependencies() throws Exception {
 
         Collection<Workspace> workspaces = registry.getWorkspaces();
         assertEquals(1, workspaces.size());
@@ -78,7 +78,8 @@ public class DependencyTest extends AbstractGalaxyTest {
                                                          "0.1", 
                                                          getResourceAsStream("/wsdl/imports/hello-missing.wsdl"), 
                                                          getAdmin());
-        
+        Set<Dependency> deps = svcWsdl.getArtifactVersion().getDependencies();
+        assertEquals(0, deps.size());
     }
     
     @Override

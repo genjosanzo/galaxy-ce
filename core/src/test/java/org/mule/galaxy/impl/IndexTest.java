@@ -10,6 +10,7 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Index;
+import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.query.Query;
@@ -136,6 +137,10 @@ public class IndexTest extends AbstractGalaxyTest {
         assertNotNull(property);
         assertTrue(property instanceof Collection);
         Collection services = (Collection) property;
+        
+        PropertyInfo pi = version.getPropertyInfo("mule.service");
+        assertFalse(pi.isVisible());
+        assertTrue(pi.isLocked());
         
         assertTrue(services.contains("GreeterUMO"));
         

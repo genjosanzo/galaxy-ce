@@ -128,7 +128,6 @@ public class AbstractJcrObject {
     public void setVisible(String name, boolean visible) {
         try {
             Node property = propertyNode.getNode(name);
-            
             property.setProperty(VISIBLE, visible);
         } catch (PathNotFoundException e) {
             return;

@@ -1,5 +1,6 @@
 package org.mule.galaxy.impl.jcr;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -47,6 +48,13 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     }
 
     public Object getData() {
+        if (data == null) {
+            try {
+                data = parent.getContentHandler().read(getStream(), parent.getWorkspace());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return data;
     }
 

@@ -14,12 +14,9 @@ import javax.xml.namespace.QName;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.Dependency;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.util.QNameUtil;
 
 public class JcrArtifact extends AbstractJcrObject implements Artifact {
@@ -229,6 +226,10 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     
     public JcrRegistryImpl getRegistry() {
         return registry;
+    }
+
+    public ContentHandler getContentHandler() {
+        return contentHandler;
     }
 
     public void setContentHandler(ContentHandler contentHandler) {

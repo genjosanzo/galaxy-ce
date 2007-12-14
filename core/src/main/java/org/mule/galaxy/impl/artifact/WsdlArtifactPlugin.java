@@ -35,10 +35,11 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
             "declare namespace wsdl=\"http://schemas.xmlsoap.org/wsdl/\";\n" +
             "declare variable $document external;\n" +
             "" +
+            "<values visible=\"false\"> {\n" +
             "for $svc in $document//wsdl:service\n" +
             "let $ns := $document/wsdl:definition/@targetNamespace\n" +
             "    return <value>{data($svc/@name)}</value>\n" +
-            "";
+            "} </values>";
        
         registry.registerIndex("wsdl.service", // index field name
                                "WSDL Service", // Display Name
@@ -47,13 +48,15 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
                                exp, // the xquery expression
                                Constants.WSDL_DEFINITION_QNAME); // document QName which this applies to
         exp = 
+            "" +
             "declare namespace wsdl=\"http://schemas.xmlsoap.org/wsdl/\";\n" +
             "declare variable $document external;\n" +
             "" +
+            "<values visible=\"false\"> {\n" +
             "for $ep in $document//wsdl:service/wsdl:port\n" +
             "let $ns := $document/wsdl:definition/@targetNamespace\n" +
             "    return <value>{data($ep/@name)}</value>\n" +
-            "";
+            "} </values>";
        
         registry.registerIndex("wsdl.endpoint", // index field name
                                "WSDL Endpoint", // Display Name
