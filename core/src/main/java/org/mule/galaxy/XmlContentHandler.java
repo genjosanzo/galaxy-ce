@@ -1,6 +1,7 @@
 package org.mule.galaxy;
 
 import java.io.IOException;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
@@ -19,5 +20,7 @@ public interface XmlContentHandler extends ContentHandler {
      * @return
      */
     QName getDocumentType(Object o);
+    
+    Set<QName> getSupportedDocumentTypes();
     
 }

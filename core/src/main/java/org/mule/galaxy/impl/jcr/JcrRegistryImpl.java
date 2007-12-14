@@ -367,6 +367,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 if (ch instanceof XmlContentHandler) {
                     XmlContentHandler xch = (XmlContentHandler) ch;
                     artifact.setDocumentType(xch.getDocumentType(loadedData));
+                    ch = contentService.getContentHandler(artifact.getDocumentType());
                 }
     
                 jcrVersion.setVersionLabel(versionLabel);

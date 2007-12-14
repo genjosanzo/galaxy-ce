@@ -37,10 +37,6 @@ import org.w3c.dom.NodeList;
 
 public class WsdlContentHandler extends XmlDocumentContentHandler implements XmlContentHandler {
 
-    private MimeType primaryContentType;
-    private XPathExpression wsdlImportXPath;
-    private XPathExpression xsdImportXPath;
-    
     public WsdlContentHandler() 
         throws WSDLException, MimeTypeParseException, XPathExpressionException {
         super(false);
@@ -51,19 +47,12 @@ public class WsdlContentHandler extends XmlDocumentContentHandler implements Xml
         
         supportedTypes.add(Document.class);
         
-
-        XPath xpath = factory.newXPath();
-        Map<String, String> ns = new HashMap<String,String>();
-        ns.put("xsd", Constants.SCHEMA_QNAME.getNamespaceURI());
-        ns.put("wsdl", Constants.WSDL_DEFINITION_QNAME.getNamespaceURI());
-        xpath.setNamespaceContext(new MapNamespaceContext(ns));
+        supportedDocumentTypes.add(Constants.WSDL_DEFINITION_QNAME);
         
-        wsdlImportXPath = xpath.compile("//wsdl:import/@location");
-        xsdImportXPath = xpath.compile("//xsd:import/@schemaLocation");
-    }
-
-    public MimeType getContentType(Object o) {
-        return primaryContentType;
+        namespaces.put("xsd", Constants.SCHEMA_QNAME.getNamespaceURI());
+        namespaces.put("wsdl", Constants.WSDL_DEFINITION_QNAME.getNamespaceURI());
+        imports.add(xpath.compile("//wsdl:import/@location"));
+        imports.add(xpath.compile("//xsd:import/@schemaLocation"));
     }
 
     public String getName(Object o) {
@@ -84,44 +73,6 @@ public class WsdlContentHandler extends XmlDocumentContentHandler implements Xml
     
     public QName getDocumentType(Object o) {
         return Constants.WSDL_DEFINITION_QNAME;
-    }
-
-    @Override
-    public Set<Artifact> detectDependencies(Object o, Workspace w) {
-        HashSet<Artifact> deps = new HashSet<Artifact>();
-        try {
-            NodeList result = (NodeList) wsdlImportXPath.evaluate((Document) o, 
-                                                                  XPathConstants.NODESET);
-            
-            for (int i = 0; i < result.getLength(); i++) {
-                Node item = result.item(i);
-                
-                String location = item.getNodeValue();
-                
-                Artifact a = registry.resolve(w, location);
-                if (a != null) {
-                    deps.add(a);
-                }
-            }
-            
-            result = (NodeList) xsdImportXPath.evaluate((Document) o, 
-                                                         XPathConstants.NODESET);
-   
-           for (int i = 0; i < result.getLength(); i++) {
-               Node item = result.item(i);
-               
-               String location = item.getNodeValue();
-               
-               Artifact a = registry.resolve(w, location);
-               if (a != null) {
-                   deps.add(a);
-               }
-           }
-        } catch (XPathExpressionException e) {
-            e.printStackTrace();
-        }
-        
-        return deps;
     }
 
     public String describeDifferences(ArtifactVersion v1, ArtifactVersion v2) {

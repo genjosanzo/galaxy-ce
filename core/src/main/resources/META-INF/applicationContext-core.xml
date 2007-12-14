@@ -132,6 +132,7 @@
       <list>
         <bean class="org.mule.galaxy.impl.content.XmlDocumentContentHandler"/>
         <bean class="org.mule.galaxy.impl.content.WsdlContentHandler"/>
+        <bean class="org.mule.galaxy.impl.content.SchemaContentHandler"/>
       </list>
     </constructor-arg>
   </bean>

@@ -78,6 +78,35 @@ public class DependencyTest extends AbstractGalaxyTest {
         assertEquals(0, deps.size());
     }
     
+    public void testSchemaDependencies() throws Exception {
+
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+        
+        ArtifactResult schema = registry.createArtifact(workspace, 
+                                                        "application/xml", 
+                                                        "hello.xsd", 
+                                                        "0.1", 
+                                                        getResourceAsStream("/schema/hello.xsd"), 
+                                                        getAdmin());
+        
+        Set<Dependency> deps = schema.getArtifactVersion().getDependencies();
+        assertEquals(0, deps.size());
+        
+        ArtifactResult schema2 = registry.createArtifact(workspace, 
+                                                         "application/xml", 
+                                                         "hello-import.xsd", 
+                                                         "0.1", 
+                                                         getResourceAsStream("/schema/hello-import.xsd"), 
+                                                         getAdmin());
+         
+        deps = schema2.getArtifactVersion().getDependencies();
+        assertEquals(1, deps.size());
+        Dependency dep = deps.iterator().next();
+        assertEquals(schema.getArtifact().getId(), dep.getArtifact().getId());
+        assertFalse(dep.isUserSpecified());
+    }
     
     public void testMissingWsdlDependencies() throws Exception {
 

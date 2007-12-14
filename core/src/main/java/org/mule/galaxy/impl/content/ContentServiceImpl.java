@@ -9,14 +9,17 @@ import javax.xml.namespace.QName;
 
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
+import org.mule.galaxy.XmlContentHandler;
 
 public class ContentServiceImpl implements ContentService {
     private Collection<ContentHandler> contentHandlers;
     private ContentHandler defaultContentHandler = new DefaultContentHandler();
+    private MimeType xmlMimeType;
     
-    public ContentServiceImpl(Collection<ContentHandler> contentHandlers) {
+    public ContentServiceImpl(Collection<ContentHandler> contentHandlers) throws MimeTypeParseException {
         super();
         this.contentHandlers = contentHandlers;
+        xmlMimeType = new MimeType("application/xml");
     }
     
 
@@ -42,6 +45,21 @@ public class ContentServiceImpl implements ContentService {
         }
         return defaultContentHandler;
     }
+
+    public ContentHandler getContentHandler(QName documentType) {
+        for (ContentHandler ch : contentHandlers) {
+            
+            if (ch instanceof XmlContentHandler) {
+                XmlContentHandler xch = (XmlContentHandler) ch;
+                
+                if (xch.getSupportedDocumentTypes().contains(documentType)) {
+                    return xch;
+                }
+            }
+        }
+        return getContentHandler(xmlMimeType);
+    }
+
 
     public MimeType getContentType(QName name) {
         // TODO Auto-generated method stub
