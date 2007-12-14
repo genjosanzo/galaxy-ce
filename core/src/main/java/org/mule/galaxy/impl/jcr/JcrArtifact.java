@@ -14,6 +14,7 @@ import javax.xml.namespace.QName;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.Dependency;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
@@ -33,22 +34,15 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     
     private Set<ArtifactVersion> versions;
     private Workspace workspace;
+    private JcrRegistryImpl registry;
     private ContentHandler contentHandler;
-    private LifecycleManager lifecycleManager;
-    private UserManager userManager;
     
-    public JcrArtifact(Workspace w, Node node, LifecycleManager lifecycleManager, UserManager userManager) 
-        throws RepositoryException {
-        this(w, node, null, lifecycleManager, userManager);
-    } 
-    public JcrArtifact(Workspace w, Node node, ContentHandler contentHandler, 
-                       LifecycleManager lifecycleManager, UserManager userManager) 
+    public JcrArtifact(Workspace w, Node node, JcrRegistryImpl registry) 
         throws RepositoryException {
         super(node);
         this.workspace = w;
-        this.contentHandler = contentHandler;
-        this.lifecycleManager = lifecycleManager;
-        this.userManager = userManager;
+        this.registry = registry;
+        
     }
 
     public String getId() {
@@ -157,7 +151,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
                     Node node = itr.nextNode();
                     
                     if ("version".equals(node.getName())) {
-                        versions.add(new JcrVersion(this, node, userManager));
+                        versions.add(new JcrVersion(this, node));
                     }
                 }
             } catch (RepositoryException e) {
@@ -204,16 +198,9 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
             return null;
         }
         
-        Lifecycle l = lifecycleManager.getLifecycle(lifecycle);
+        Lifecycle l = registry.getLifecycleManager().getLifecycle(lifecycle);
         
         return l.getPhase(phase);
-    }
-    
-    public ContentHandler getContentHandler() {
-        return contentHandler;
-    }
-    public void setContentHandler(ContentHandler contentHandler) {
-        this.contentHandler = contentHandler;
     }
     
     public void setPhase(Phase p) {
@@ -239,4 +226,13 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     public void setProperty(String name, Object value) {
         getLatestVersion().setProperty(name, value);
     }
+    
+    public JcrRegistryImpl getRegistry() {
+        return registry;
+    }
+
+    public void setContentHandler(ContentHandler contentHandler) {
+        this.contentHandler = contentHandler;
+    }
+
 }

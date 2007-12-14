@@ -53,4 +53,6 @@ public interface ArtifactVersion {
      * @return
      */
     User getAuthor();
+    
+    Set<Dependency> getDependencies();
 }

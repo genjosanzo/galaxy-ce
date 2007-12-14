@@ -92,6 +92,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     private Logger LOGGER = LogUtils.getL7dLogger(JcrRegistryImpl.class);
 
+    private XPathFactory factory = XPathFactory.newInstance();
+    
     private Settings settings;
     
     private ContentService contentService;
@@ -109,6 +111,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private String indexesId;
 
     private String artifactTypesId;
+    
     
     public JcrRegistryImpl() {
         super();
@@ -167,6 +170,27 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
 
+    public Artifact resolve(Workspace w, String location) {
+        String[] paths = location.split("/");
+        
+        for (int i = 0; i < paths.length - 1; i++) {
+            String p = paths[i];
+            
+            // TODO: escaping?
+            if (p.equals("..")) {
+                w = w.getParent();
+            } else if (!p.equals(".")) {
+                w = w.getWorkspace(p);
+            }
+        }
+
+        try {
+            return getArtifact(w, paths[paths.length-1]);
+        } catch (NotFoundException e) {
+            return null;
+        }
+    }
+    
     public Node getWorkspacesNode() {
         return getNodeByUUID(workspacesId);
     }
@@ -203,7 +227,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         ArrayList<Artifact> artifacts = new ArrayList<Artifact>();
         try {
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
-                JcrArtifact artifact = new JcrArtifact(jw, itr.nextNode(), lifecycleManager, userManager);
+                JcrArtifact artifact = new JcrArtifact(jw, itr.nextNode(), this);
                 artifact.setContentHandler(contentService.getContentHandler(artifact.getContentType()));
                 artifacts.add(artifact);
             }
@@ -215,11 +239,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     public Artifact getArtifact(final String id) throws NotFoundException {
+        final JcrRegistryImpl registry = this;
         return (Artifact) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node node = session.getNodeByUUID(id);
                 Node wNode = node.getParent();
-                JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(wNode), node, lifecycleManager, userManager);
+                JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(wNode), 
+                                                       node, registry);
                 
                 artifact.setContentHandler(contentService.getContentHandler(artifact.getContentType()));
 
@@ -230,6 +256,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     
     public Artifact getArtifact(final Workspace w, final  String name) throws NotFoundException {
+        final JcrRegistryImpl registry = this;
         Artifact a = (Artifact) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 QueryManager qm = getQueryManager(session);
@@ -247,7 +274,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 if (nodes.hasNext()) {
                     Node node = nodes.nextNode();
-                    JcrArtifact artifact = new JcrArtifact(w, node, lifecycleManager, userManager);
+                    JcrArtifact artifact = new JcrArtifact(w, node, registry);
                     
                     artifact.setContentHandler(contentService.getContentHandler(artifact.getContentType()));
 
@@ -294,6 +321,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             throw new NullPointerException("Artifact name cannot be null.");
         }
         
+        final JcrRegistryImpl registry = this;
         return (ArtifactResult) executeAndDewrap(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node workspaceNode = ((JcrWorkspace)workspace).getNode();
@@ -306,7 +334,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 ContentHandler ch = contentService.getContentHandler(contentType);
                 
-                JcrArtifact artifact = new JcrArtifact(workspace, artifactNode, ch, lifecycleManager, userManager);
+                JcrArtifact artifact = new JcrArtifact(workspace, artifactNode, registry);
                 artifact.setContentType(contentType);
                 artifact.setName(name);
 
@@ -317,7 +345,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 versionNode.setProperty(JcrVersion.CREATED, now);
                 versionNode.setProperty(JcrVersion.LATEST, true);
                 
-                JcrVersion jcrVersion = new JcrVersion(artifact, versionNode, userManager);
+                JcrVersion jcrVersion = new JcrVersion(artifact, versionNode);
                 
                 // Store the data
                 Object loadedData = null;
@@ -344,7 +372,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 try {
                     index(jcrVersion);
                 
-                
+                    Set<Artifact> dependencies = ch.detectDependencies(loadedData, workspace);
+                    jcrVersion.addDependencies(dependencies, false);
+                    
                     Lifecycle lifecycle = lifecycleManager.getLifecycle(workspace);
                     artifact.setPhase(lifecycle.getInitialPhase());
                     
@@ -454,6 +484,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             throw new NullPointerException("User cannot be null!");
         }
         
+        final JcrRegistryImpl registry = this;
         return (ArtifactResult) executeAndDewrap(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 JcrArtifact jcrArtifact = (JcrArtifact) artifact;
@@ -477,7 +508,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 
                 
-                JcrVersion next = new JcrVersion(jcrArtifact, versionNode, userManager);
+                JcrVersion next = new JcrVersion(jcrArtifact, versionNode);
                 
                 try {
                     // Store the data
@@ -770,6 +801,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public Set search(final org.mule.galaxy.query.Query query) 
         throws RegistryException, QueryException {
+        final JcrRegistryImpl registry = this;
         return (Set) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                         
@@ -835,15 +867,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         Node artifactNode = node.getParent();
                         JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(artifactNode.getParent()), 
                                                                artifactNode, 
-                                                               lifecycleManager,
-                                                               userManager);
-                        artifacts.add(new JcrVersion(artifact, node, userManager));
+                                                               registry);
+                        artifacts.add(new JcrVersion(artifact, node));
                     } else {
                         while (!node.getName().equals(ARTIFACT_NODE_NAME)) {
                             node = node.getParent();
                         }
                         artifacts.add(new JcrArtifact(new JcrWorkspace(node.getParent()), 
-                                                      node, lifecycleManager, userManager));
+                                                      node, 
+                                                      registry));
                     }
                     
                     
@@ -888,7 +920,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         try {
             Document document = ch.getDocument(jcrVersion.getData());
             
-            XPathFactory factory = XPathFactory.newInstance();
             XPath xpath = factory.newXPath();
             XPathExpression expr = xpath.compile(idx.getExpression());
 
@@ -1042,6 +1073,18 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public void setCommentDao(Dao<Comment> commentDao) {
         this.commentDao = commentDao;
+    }
+
+    public LifecycleManager getLifecycleManager() {
+        return lifecycleManager;
+    }
+
+    public PolicyManager getPolicyManager() {
+        return policyManager;
+    }
+
+    public UserManager getUserManager() {
+        return userManager;
     }
 
 }

@@ -13,6 +13,7 @@ import javax.wsdl.Definition;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Dependency;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrVersion;
@@ -33,12 +34,21 @@ public class DependencyTest extends AbstractGalaxyTest {
                                                         getResourceAsStream("/wsdl/imports/hello.xsd"), 
                                                         getAdmin());
         
+        Set<Dependency> deps = schema.getArtifactVersion().getDependencies();
+        assertEquals(0, deps.size());
+        
         ArtifactResult portType = registry.createArtifact(workspace, 
                                                           "application/wsdl+xml", 
                                                           "hello-portType.wsdl", 
                                                           "0.1", 
                                                           getResourceAsStream("/wsdl/imports/hello-portType.wsdl"), 
                                                           getAdmin());
+        deps = portType.getArtifactVersion().getDependencies();
+        assertEquals(1, deps.size());
+        
+        Dependency dep = deps.iterator().next();
+        assertEquals(schema.getArtifact().getId(), dep.getArtifact().getId());
+        assertFalse(dep.isUserSpecified());
         
         ArtifactResult svcWsdl = registry.createArtifact(workspace, 
                                                          "application/wsdl+xml", 
@@ -46,6 +56,12 @@ public class DependencyTest extends AbstractGalaxyTest {
                                                          "0.1", 
                                                          getResourceAsStream("/wsdl/imports/hello.wsdl"), 
                                                          getAdmin());
+        deps = svcWsdl.getArtifactVersion().getDependencies();
+        assertEquals(1, deps.size());
+        
+        dep = deps.iterator().next();
+        assertEquals(portType.getArtifact().getId(), dep.getArtifact().getId());
+        assertFalse(dep.isUserSpecified());
         
     }
     

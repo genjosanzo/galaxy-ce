@@ -10,6 +10,7 @@ import javax.activation.MimeTypeParseException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathFactory;
 
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Workspace;
@@ -26,6 +27,8 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
 
     private MimeType primaryContentType;
 
+    protected XPathFactory factory = XPathFactory.newInstance();
+    
     public XmlDocumentContentHandler() throws MimeTypeParseException {
         this(true);
     }

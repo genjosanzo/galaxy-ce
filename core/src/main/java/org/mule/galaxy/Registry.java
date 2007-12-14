@@ -114,4 +114,6 @@ public interface Registry {
     void addComment(Comment c);
 
     Artifact getArtifact(Workspace w, String name) throws NotFoundException;
+
+    Artifact resolve(Workspace w, String location);
 }

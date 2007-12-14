@@ -3,20 +3,21 @@ package org.mule.galaxy.impl;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
-import javax.wsdl.Definition;
-import javax.wsdl.Service;
 import javax.wsdl.WSDLException;
-import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLLocator;
 import javax.xml.namespace.QName;
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
@@ -29,14 +30,17 @@ import org.mule.galaxy.wsdl.diff.DifferenceListener;
 import org.mule.galaxy.wsdl.diff.WsdlDiff;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class WsdlContentHandler extends XmlDocumentContentHandler implements XmlContentHandler {
 
     private MimeType primaryContentType;
+    private XPathExpression wsdlImportXPath;
+    private XPathExpression xsdImportXPath;
     
-    public WsdlContentHandler() throws WSDLException, MimeTypeParseException {
+    public WsdlContentHandler() 
+        throws WSDLException, MimeTypeParseException, XPathExpressionException {
         super(false);
         
         primaryContentType = new MimeType("application/wsdl+xml");
@@ -44,6 +48,16 @@ public class WsdlContentHandler extends XmlDocumentContentHandler implements Xml
         supportedContentTypes.add(new MimeType("text/wsdl+xml"));
         
         supportedTypes.add(Document.class);
+        
+
+        XPath xpath = factory.newXPath();
+        Map<String, String> ns = new HashMap<String,String>();
+        ns.put("xsd", Constants.SCHEMA_QNAME.getNamespaceURI());
+        ns.put("wsdl", Constants.WSDL_DEFINITION_QNAME.getNamespaceURI());
+        xpath.setNamespaceContext(new MapNamespaceContext(ns));
+        
+        wsdlImportXPath = xpath.compile("//wsdl:import/@location");
+        xsdImportXPath = xpath.compile("//xsd:import/@schemaLocation");
     }
 
     public MimeType getContentType(Object o) {
@@ -72,8 +86,40 @@ public class WsdlContentHandler extends XmlDocumentContentHandler implements Xml
 
     @Override
     public Set<Artifact> detectDependencies(Object o, Workspace w) {
-        // TODO Auto-generated method stub
-        return super.detectDependencies(o, w);
+        HashSet<Artifact> deps = new HashSet<Artifact>();
+        try {
+            NodeList result = (NodeList) wsdlImportXPath.evaluate((Document) o, 
+                                                                  XPathConstants.NODESET);
+            
+            for (int i = 0; i < result.getLength(); i++) {
+                Node item = result.item(i);
+                
+                String location = item.getNodeValue();
+                
+                Artifact a = registry.resolve(w, location);
+                if (a != null) {
+                    deps.add(a);
+                }
+            }
+            
+            result = (NodeList) xsdImportXPath.evaluate((Document) o, 
+                                                         XPathConstants.NODESET);
+   
+           for (int i = 0; i < result.getLength(); i++) {
+               Node item = result.item(i);
+               
+               String location = item.getNodeValue();
+               
+               Artifact a = registry.resolve(w, location);
+               if (a != null) {
+                   deps.add(a);
+               }
+           }
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+        }
+        
+        return deps;
     }
 
     public String describeDifferences(ArtifactVersion v1, ArtifactVersion v2) {

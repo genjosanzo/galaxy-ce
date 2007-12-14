@@ -66,29 +66,15 @@ public class RegistryLocator implements WSDLLocator {
         
         Workspace w = workspace;
         if (importLoc.indexOf("://") == -1) {
-            String[] paths = importLoc.split("/");
-            
-            for (int i = 0; i < paths.length - 1; i++) {
-                String p = paths[i];
-                
-                // TODO: escaping?
-                if (p.equals("..")) {
-                    w = w.getParent();
-                } else if (!p.equals(".")) {
-                    w = w.getWorkspace(p);
-                }
-            }
-
-            try {
-                Artifact artifact = registry.getArtifact(w, paths[paths.length-1]);
-                
+            Artifact artifact = registry.resolve(w, importLoc);
+            if (artifact != null) {
                 InputStream is = artifact.getLatestVersion().getStream();
                 InputSource source = new InputSource(is);
                 source.setSystemId(artifact.getPath());
                 return source;
-            } catch (NotFoundException e) {
             }
         }
+        
         
         try {
             URL url = new URL(importLoc);
