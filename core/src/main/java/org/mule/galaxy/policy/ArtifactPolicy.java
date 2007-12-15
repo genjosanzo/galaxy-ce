@@ -10,6 +10,8 @@ import org.mule.galaxy.ArtifactVersion;
  */
 public interface ArtifactPolicy {
     
+    String getId();
+    
     String getName();
     
     String getDescription();

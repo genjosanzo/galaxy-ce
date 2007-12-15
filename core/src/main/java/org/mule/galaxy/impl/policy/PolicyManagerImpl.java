@@ -62,8 +62,12 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         String[] names = ctx.getBeanNamesForType(ArtifactPolicy.class);
         for (String s : names) {
             ArtifactPolicy p = (ArtifactPolicy) ctx.getBean(s);
-            policies.put(p.getName(), p);
+            policies.put(p.getId(), p);
         }
+    }
+
+    public ArtifactPolicy getPolicy(String id) {
+        return policies.get(id);
     }
 
     public Collection<ArtifactPolicy> getPolicies() {
@@ -71,7 +75,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     }
 
     public void activatePolicy(ArtifactPolicy p, Artifact a, Collection<Phase> phases) {
-        activatePolicy(artifactsPhasesNodeId, phases, p.getName(), a.getId());
+        activatePolicy(artifactsPhasesNodeId, phases, p.getId(), a.getId());
     }
     
     private void activatePolicy(final String nodeId, 
@@ -97,23 +101,23 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         });
     }
     public void activatePolicy(ArtifactPolicy p, Artifact a, Lifecycle lifecycle) {
-        activatePolicy(artifactsLifecyclesNodeId, a.getId(), lifecycle.getName(), p.getName());
+        activatePolicy(artifactsLifecyclesNodeId, a.getId(), lifecycle.getName(), p.getId());
     }
 
     public void activatePolicy(ArtifactPolicy p, Collection<Phase> phases) {
-        activatePolicy(phasesNodeId, phases, p.getName());
+        activatePolicy(phasesNodeId, phases, p.getId());
     }
 
     public void activatePolicy(final ArtifactPolicy p, final Lifecycle lifecycle) {
-        activatePolicy(lifecyclesNodeId, lifecycle.getName(), p.getName());
+        activatePolicy(lifecyclesNodeId, lifecycle.getName(), p.getId());
     }
 
     public void activatePolicy(ArtifactPolicy p, Workspace w, Collection<Phase> phases) {
-        activatePolicy(workspacesPhasesNodeId, phases, p.getName(), w.getId());
+        activatePolicy(workspacesPhasesNodeId, phases, p.getId(), w.getId());
     }
 
     public void activatePolicy(final ArtifactPolicy p, final Workspace w, final Lifecycle lifecycle) {
-        activatePolicy(workspaceLifecyclesNodeId, w.getId(), lifecycle.getName(), p.getName());
+        activatePolicy(workspaceLifecyclesNodeId, w.getId(), lifecycle.getName(), p.getId());
     }
 
     private void activatePolicy(final String nodeId, final String... nodes) {
@@ -179,15 +183,15 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     }
     
     public void deactivatePolicy(ArtifactPolicy p, Artifact a, Collection<Phase> phases) {
-        deactivatePolicy(artifactsPhasesNodeId, phases, p.getName(), a.getId());
+        deactivatePolicy(artifactsPhasesNodeId, phases, p.getId(), a.getId());
     }
     
     public void deactivatePolicy(ArtifactPolicy p, Artifact a, Lifecycle lifecycle) {
-        deactivatePolicy(artifactsLifecyclesNodeId, a.getId(), lifecycle.getName(), p.getName());
+        deactivatePolicy(artifactsLifecyclesNodeId, a.getId(), lifecycle.getName(), p.getId());
     }
 
     public void deactivatePolicy(ArtifactPolicy p, Collection<Phase> phases) {
-        deactivatePolicy(phasesNodeId, phases, p.getName());
+        deactivatePolicy(phasesNodeId, phases, p.getId());
     }
     
     private void deactivatePolicy(final String nodeId, 
@@ -221,7 +225,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         });
     }
     public void deactivatePolicy(ArtifactPolicy p, Lifecycle lifecycle) {
-        deactivatePolicy(lifecyclesNodeId, lifecycle.getName(), p.getName());
+        deactivatePolicy(lifecyclesNodeId, lifecycle.getName(), p.getId());
     }
 
     private void deactivatePolicy(final String nodeId, final String... nodes) {
@@ -245,11 +249,11 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     }
     
     public void deactivatePolicy(ArtifactPolicy p, Workspace w, Collection<Phase> phases) {
-        deactivatePolicy(workspacesPhasesNodeId, phases, p.getName(), w.getId());
+        deactivatePolicy(workspacesPhasesNodeId, phases, p.getId(), w.getId());
     }
 
     public void deactivatePolicy(ArtifactPolicy p, Workspace w, Lifecycle lifecycle) {
-        deactivatePolicy(workspaceLifecyclesNodeId, w.getId(), lifecycle.getName(), p.getName());
+        deactivatePolicy(workspaceLifecyclesNodeId, w.getId(), lifecycle.getName(), p.getId());
     }
     
     public void setJcrTemplate(JcrTemplate jcrTemplate) {

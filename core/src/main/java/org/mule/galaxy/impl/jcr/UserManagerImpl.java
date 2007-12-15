@@ -32,6 +32,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     private static final String USER = "user";
     private static final String NAME = "name";
     private static final String CREATED = "created";
+    protected static final String ENABLED = "enabled";
 
     public UserManagerImpl() throws Exception {
         super(User.class, "users", true);
@@ -87,9 +88,8 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
 
     protected Node findUser(String username, Session session) throws RepositoryException {
         QueryManager qm = getQueryManager(session);
-        Query q = qm.createQuery("/*/users/*/username[@" +
+        Query q = qm.createQuery("/*/users/*[@enabled='true']/username[@" +
         		JcrUtil.VALUE + "='" + username + "']", Query.XPATH);
-        
         QueryResult qr = q.execute();
         
         NodeIterator nodes = qr.getNodes();
@@ -108,6 +108,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
                 Node node = users.addNode(USER);
                 node.addMixin("mix:referenceable");
                 node.setProperty(PASSWORD, password);
+                node.setProperty(ENABLED, true);
                 
                 User user = new User();
                 user.setUsername(username);
@@ -130,11 +131,21 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         });
     }
 
+    @Override
+    protected void doDelete(String id, Session session) throws RepositoryException {
+        Node userNode = findNode(id, session);
+        
+        if (userNode != null) {
+            userNode.setProperty(ENABLED, false);
+        }
+    }
+
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
         if (objects.getNodes().getSize() == 0) {
             Node node = objects.addNode(USER);
             node.addMixin("mix:referenceable");
             node.setProperty(PASSWORD, "admin");
+            node.setProperty(ENABLED, true);
             
             JcrUtil.setProperty(USERNAME, "admin", node);
             JcrUtil.setProperty(NAME, "Administrator", node);

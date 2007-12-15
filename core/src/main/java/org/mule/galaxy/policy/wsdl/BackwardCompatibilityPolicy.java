@@ -14,7 +14,12 @@ import org.mule.galaxy.wsdl.diff.DifferenceListener;
 import org.mule.galaxy.wsdl.diff.WsdlDiff;
 
 public class BackwardCompatibilityPolicy extends AbstractWsdlVersioningPolicy {
-   
+    private static final String WSDL_BACKWARD_COMPAT = "wsdl-backward-compat";
+
+    public String getId() {
+        return WSDL_BACKWARD_COMPAT;
+    }
+    
     public String getDescription() {
         return "Enforces restrictions to ensure all new WSDL versions are backward compatabile.";
     }

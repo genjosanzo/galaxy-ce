@@ -14,7 +14,11 @@ import org.mule.galaxy.wsdl.diff.DifferenceListener;
 import org.mule.galaxy.wsdl.diff.WsdlDiff;
 
 public class ForwardCompatibilityPolicy extends AbstractWsdlVersioningPolicy {
-   
+    private static final String WSDL_FORWARD_COMPAT = "wsdl-forward-compat";
+
+    public String getId() {
+        return WSDL_FORWARD_COMPAT;
+    }
     public String getDescription() {
         return "Enforces restrictions to ensure all new WSDL versions are forward compatabile.";
     }

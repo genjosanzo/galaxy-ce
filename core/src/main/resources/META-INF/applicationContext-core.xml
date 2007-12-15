@@ -28,6 +28,7 @@
 
   <bean class="org.mule.galaxy.policy.wsdl.BackwardCompatibilityPolicy"/>
   <bean class="org.mule.galaxy.policy.wsdl.ForwardCompatibilityPolicy"/>
+  <bean class="org.mule.galaxy.policy.wsdl.BasicProfilePolicy"/>
 
   <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean">
     <!-- normal factory beans params -->

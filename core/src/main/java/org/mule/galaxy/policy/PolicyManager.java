@@ -35,4 +35,6 @@ public interface PolicyManager {
     void deactivatePolicy(ArtifactPolicy p, Artifact a, Lifecycle lifecycle);
 
     void deactivatePolicy(ArtifactPolicy p, Lifecycle lifecycle);
+
+    ArtifactPolicy getPolicy(String id);
 }
