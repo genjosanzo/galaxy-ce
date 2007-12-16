@@ -25,6 +25,12 @@ import org.mule.galaxy.test.AbstractAtomTest;
 
 public class CxfPolicyTest extends AbstractAtomTest {
 
+    public void testPolicyLoadingWithConfig() throws Exception {
+        System.setProperty("cxf.config.file", "cxf-spring.xml");
+        
+        testPolicyLoading();
+    }
+    
     public void testPolicyLoading() throws Exception {
         AbderaClient client = new AbderaClient(abdera);
         

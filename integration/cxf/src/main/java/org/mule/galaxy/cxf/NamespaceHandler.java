@@ -18,11 +18,32 @@
  */
 package org.mule.galaxy.cxf;
 
+import org.w3c.dom.Element;
+
 import org.apache.cxf.configuration.spring.SimpleBeanDefinitionParser;
+import org.mule.galaxy.util.DOMUtils;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
+import org.springframework.beans.factory.xml.ParserContext;
 
 public class NamespaceHandler extends NamespaceHandlerSupport {
     public void init() {
-        registerBeanDefinitionParser("galaxy", new SimpleBeanDefinitionParser(GalaxyFeature.class));
+        registerBeanDefinitionParser("galaxy", new SimpleBeanDefinitionParser(GalaxyFeature.class) {
+
+            @Override
+            protected void mapElement(ParserContext ctx, BeanDefinitionBuilder bean, Element e, String name) {
+                if (name.equals("policyQuery")) {
+                    bean.addPropertyValue("policyQueries", org.apache.cxf.helpers.DOMUtils.getContent(e));
+                } else {
+                    super.mapElement(ctx, bean, e, name);
+                }
+            }
+
+            @Override
+            protected boolean shouldGenerateId() {
+                return true;
+            }
+            
+        });
     }
 }
