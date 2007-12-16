@@ -3,8 +3,10 @@ package org.mule.galaxy.impl.jcr;
 import static org.mule.galaxy.impl.jcr.JcrUtil.getStringOrNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -113,6 +115,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
                 User user = new User();
                 user.setUsername(username);
                 user.setName(name);
+                user.setId(node.getUUID());
                 
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(new Date());
@@ -126,6 +129,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
                     }
                     throw new RuntimeException(e);
                 }
+                session.save();
                 return user;
             }
         });
@@ -138,6 +142,38 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         if (userNode != null) {
             userNode.setProperty(ENABLED, false);
         }
+        session.save();
+    }
+
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    protected List<User> doListAll(Session session) throws RepositoryException {
+        return (List<User>) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                QueryManager qm = getQueryManager(session);
+                Query q = qm.createQuery("/*/users/user[@enabled='true']", Query.XPATH);
+                QueryResult qr = q.execute();
+                
+                ArrayList<User> users = new ArrayList<User>();
+                for (NodeIterator nodes = qr.getNodes(); nodes.hasNext();) {
+                    Node node = nodes.nextNode();
+                    
+                    try {
+                        users.add(build(node, session));
+                    } catch (Exception e) {
+                        if (e instanceof RepositoryException) {
+                            throw (RepositoryException) e;
+                        } else if (e instanceof RuntimeException) {
+                            throw (RuntimeException) e;
+                        }
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                return users;
+            }
+        });
     }
 
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {

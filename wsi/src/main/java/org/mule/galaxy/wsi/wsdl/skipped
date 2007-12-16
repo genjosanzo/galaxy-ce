@@ -1,0 +1,13 @@
+These are rules I've skipped for now.
+
+R2001  A DESCRIPTION MUST only use the WSDL "import" statement to import another WSDL description.
+R2002  To import XML Schema Definitions, a DESCRIPTION MUST use the XML Schema "import" statement.
+
+Will be caught by R2028:
+R2003 A DESCRIPTION MUST use the XML Schema "import" statement only within the xsd:schema element of the types section. 
+
+R2009  An XML Schema directly or indirectly imported by a DESCRIPTION MAY include the Unicode Byte Order Mark (BOM).
+
+R2010 An XML Schema directly or indirectly imported by a DESCRIPTION MUST use either UTF-8 or UTF-16 encoding.
+
+R2011 An XML Schema directly or indirectly imported by a DESCRIPTION MUST use version 1.0 of the eXtensible Markup Language W3C Recommendation.

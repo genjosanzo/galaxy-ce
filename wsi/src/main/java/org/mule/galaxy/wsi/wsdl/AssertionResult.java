@@ -42,5 +42,8 @@ public class AssertionResult {
     public void addMessage(String message, String systemId, int lineNumber, int columnNumber) {
         this.messages.add(new Message(message, lineNumber, columnNumber, systemId));
     }
+    public void addMessage(String message) {
+        this.messages.add(new Message(message));
+    }
         
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="HelloWorld"
+  targetNamespace="http://mule.org/hello_world"
+  xmlns="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:tns="http://mule.org/hello_world"
+  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <!-- R2803 -->
+  <wsdl:import namespace="./foo" location="foo.wsdl"/>
+  
+  <!-- R2007 -->
+  <wsdl:import namespace="http://mule.org/hello_world" location=""/>
+  
+</wsdl:definitions>
+
