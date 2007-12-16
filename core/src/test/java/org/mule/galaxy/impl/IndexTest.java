@@ -26,7 +26,7 @@ public class IndexTest extends AbstractGalaxyTest {
                               "/META-INF/applicationContext-test.xml" };
         
     }
-    public void xtestWsdlIndex() throws Exception {
+    public void testWsdlIndex() throws Exception {
         Set<Index> indices = registry.getIndices(Constants.WSDL_DEFINITION_QNAME);
         assertNotNull(indices);
         assertEquals(3, indices.size());
@@ -106,6 +106,16 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals("0.1", nextAV.getVersionLabel());
         // assertNotNull(nextAV.getData());
         // TODO test data
+        
+        results = registry.search(new Query(ArtifactVersion.class, 
+                                            Restriction.eq("documentType", Constants.WSDL_DEFINITION_QNAME.toString())));
+    
+        assertEquals(1, results.size());
+        
+        results = registry.search(new Query(ArtifactVersion.class, 
+                                            Restriction.eq("contentType", "application/xml")));
+    
+        assertEquals(1, results.size());
     }
     
     public void testMuleIndex() throws Exception {

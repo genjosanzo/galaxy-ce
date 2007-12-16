@@ -12,18 +12,18 @@ import org.mule.galaxy.util.Constants;
 /**
  * Does some base initialization for the registry.
  */
-public class RegistryInitializer {
+public class RegistryInitializer implements Constants {
     private Dao<ArtifactType> artifactTypeDao;
-    
-    
+
     public void initialize() throws Exception {
-        artifactTypeDao.save(new ArtifactType("WS-Policy", "application/xml", Constants.POLICY_QNAME));
-        artifactTypeDao.save(new ArtifactType("XML Schema", "application/xml", Constants.SCHEMA_QNAME));
-        artifactTypeDao.save(new ArtifactType("XSLT Stylesheet", "application/xml", Constants.XSLT_QNAME));
+        artifactTypeDao
+            .save(new ArtifactType("WS-Policy", "application/xml", POLICY_QNAME, POLICY_2006_QNAME));
+        artifactTypeDao.save(new ArtifactType("XML Schema", "application/xml", SCHEMA_QNAME));
+        artifactTypeDao.save(new ArtifactType("XSLT Stylesheet", "application/xml", XSLT_QNAME));
     }
 
     public void setArtifactTypeDao(Dao<ArtifactType> artifactTypeDao) {
         this.artifactTypeDao = artifactTypeDao;
     }
-    
+
 }

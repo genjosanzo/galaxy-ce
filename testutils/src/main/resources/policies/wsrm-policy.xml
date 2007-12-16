@@ -1,0 +1,9 @@
+<wsp:Policy wsu:Id="RM" xmlns:wsp="http://www.w3.org/2006/07/ws-policy"
+xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+    <wsam:Addressing xmlns:wsam="http://www.w3.org/2007/02/addressing/metadata">
+        <wsp:Policy/>
+    </wsam:Addressing>
+    <wsrmp:RMAssertion xmlns:wsrmp="http://schemas.xmlsoap.org/ws/2005/02/rm/policy">
+        <wsrmp:BaseRetransmissionInterval Milliseconds="10000"/> 
+    </wsrmp:RMAssertion>
+</wsp:Policy>

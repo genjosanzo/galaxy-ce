@@ -20,14 +20,14 @@ import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.util.QNameUtil;
 
 public class JcrArtifact extends AbstractJcrObject implements Artifact {
-    private static final String CONTENT_TYPE = "contentType";
-    private static final String CREATED = "created";
-    private static final String DESCRIPTION = "description";
-    private static final String UPDATED = "updated";
-    private static final String NAME = "name";
-    private static final String QNAME = "qname";
-    private static final String LIFECYCLE = "lifecycle";
-    private static final String PHASE = "phase";
+    public static final String CONTENT_TYPE = "contentType";
+    public static final String CREATED = "created";
+    public static final String DESCRIPTION = "description";
+    public static final String UPDATED = "updated";
+    public static final String NAME = "name";
+    public static final String DOCUMENT_TYPE = "documentType";
+    public static final String LIFECYCLE = "lifecycle";
+    public static final String PHASE = "phase";
     
     private Set<ArtifactVersion> versions;
     private Workspace workspace;
@@ -95,7 +95,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
 
     
     public QName getDocumentType() {
-        return QNameUtil.fromString(getStringOrNull(QNAME));
+        return QNameUtil.fromString(getStringOrNull(DOCUMENT_TYPE));
     }
 
     public String getName() {
@@ -124,7 +124,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     
     public void setDocumentType(QName documentType) {
         try {
-            node.setProperty(QNAME, documentType.toString());
+            node.setProperty(DOCUMENT_TYPE, documentType.toString());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

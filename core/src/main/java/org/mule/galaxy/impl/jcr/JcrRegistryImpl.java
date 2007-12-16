@@ -827,25 +827,33 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     // TODO: NOT, LIKE, OR, etc
                     
                     String property = (String) r.getLeft();
-                    qstr.append("//")
-                        .append(ARTIFACT_NODE_NAME);
-                    // Search the latest if we're searching for artifacts, otherwise
-                    // search all versions
-                    if (!av) {
-                        qstr.append("/version[@latest='true']");
+                    if (property.equals(JcrArtifact.PHASE)) {
+                        createPropertySearch(qstr, r, JcrArtifact.PHASE);
+                    } else if (property.equals(JcrArtifact.DOCUMENT_TYPE)) {
+                        createPropertySearch(qstr, r, JcrArtifact.DOCUMENT_TYPE);
+                    } else if (property.equals(JcrArtifact.CONTENT_TYPE)) {
+                        createPropertySearch(qstr, r, JcrArtifact.CONTENT_TYPE);
                     } else {
-                        qstr.append("/version");
+                        qstr.append("//")
+                            .append(ARTIFACT_NODE_NAME);
+                        // Search the latest if we're searching for artifacts, otherwise
+                        // search all versions
+                        if (!av) {
+                            qstr.append("/version[@latest='true']");
+                        } else {
+                            qstr.append("/version");
+                        }
+                        
+                        qstr.append("/properties/")
+                            .append(property)
+                            .append("/")
+                            .append(JcrUtil.VALUE)
+                            .append("[@")
+                            .append(JcrUtil.VALUE)
+                            .append("= \"")
+                            .append(r.getRight())
+                            .append("\"]");
                     }
-                    
-                    qstr.append("/properties/")
-                        .append(property)
-                        .append("/")
-                        .append(JcrUtil.VALUE)
-                        .append("[@")
-                        .append(JcrUtil.VALUE)
-                        .append("= \"")
-                        .append(r.getRight())
-                        .append("\"]");
                 }
                 
                 // No search criteria
@@ -865,10 +873,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     // UGH: jackrabbit does not support parent::* xpath expressions
                     // so we need to traverse the hierarchy to find the right node
                     if (av) {
-                        while (!node.getName().equals("version")) {
-                            node = node.getParent();
+                        Node artifactNode = node;
+                        if (!artifactNode.getName().equals(ARTIFACT_NODE_NAME)) {
+                            while (!node.getName().equals("version")) {
+                                node = node.getParent();
+                            }
+                            artifactNode = node.getParent(); 
                         }
-                        Node artifactNode = node.getParent();
                         JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(artifactNode.getParent()), 
                                                                artifactNode, 
                                                                registry);
@@ -886,6 +897,16 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 }                                                   
                 
                 return artifacts;
+            }
+
+            private void createPropertySearch(StringBuilder qstr, Restriction r, String property) {
+                qstr.append("//")
+                    .append(ARTIFACT_NODE_NAME)
+                    .append("[@")
+                    .append(property)
+                    .append("='")
+                    .append(r.getRight())
+                    .append("']");
             }
         });
     }
