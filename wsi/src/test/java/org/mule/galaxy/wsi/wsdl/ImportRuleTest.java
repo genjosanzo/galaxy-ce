@@ -12,7 +12,7 @@ public class ImportRuleTest extends AbstractWSITest {
     public void testRelativeNamespaceR2803() throws Exception {
         ImportUriRule rule = new ImportUriRule();
         
-        Document doc = readXml(getResourceAsStream("/wsdl/wsi/imports.wsdl"));
+        Document doc = readXml(getResourceAsStream("/wsdl/wsi/imports/imports.wsdl"));
         
         assertFailedWithMessage(rule, doc, "Failed namespace: ");
     }
@@ -20,7 +20,7 @@ public class ImportRuleTest extends AbstractWSITest {
     public void testEmptyLocationR2007() throws Exception {
         ImportUriRule rule = new ImportUriRule();
         
-        Document doc = readXml(getResourceAsStream("/wsdl/wsi/imports.wsdl"));
+        Document doc = readXml(getResourceAsStream("/wsdl/wsi/imports/imports.wsdl"));
         
         assertFailedWithMessage(rule, doc, "Failed namespace: ");
     }
