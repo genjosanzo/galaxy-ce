@@ -29,6 +29,13 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
             fail("Expected ArtifactPolicyException");
         } catch (ArtifactPolicyException e) {
             Collection<Approval> approvals = e.getApprovals();
+            for (Approval a : approvals) {
+                
+                for (String m : a.getMessages()) {
+                    System.out.println(m);
+                }
+                
+            }
             assertEquals(1, approvals.size());
 
             Approval a = approvals.iterator().next();

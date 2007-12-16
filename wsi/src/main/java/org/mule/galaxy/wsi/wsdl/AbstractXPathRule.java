@@ -38,35 +38,41 @@ public abstract class AbstractXPathRule extends AbstractWsdlRule {
     
     public ValidationResult validate(Document document, Definition def) {
         ValidationResult result = new ValidationResult();
+        AssertionResult ar = new AssertionResult(getName(), true);
+        boolean validated = true;
         
         try {
             for (XPathExpression expr : expressions) {
                 NodeList nodeset = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
                 
-                validate(nodeset, document, result);
+                boolean v1 = validate(nodeset, document, ar);
+                if (!v1) validated = false;
             }
+            
         } catch (XPathException e) {
-            AssertionResult ar = new AssertionResult(getName(), true);
             result.addAssertionResult(ar);
         }
+
+        if (!validated || ar.getMessages().size() > 0) {
+            ar.setFailed(!validated);
+            result.addAssertionResult(ar);
+        }
+        
         return result;
     }
 
-    protected void validate(NodeList nodeset, Document document, ValidationResult result)
+    protected boolean validate(NodeList nodeset, Document document, AssertionResult ar)
         throws XPathExpressionException {
-        boolean validated = false;
-        
-        AssertionResult ar = new AssertionResult(getName(), true);
+        boolean validated = true;
         
         for (int i = 0; i < nodeset.getLength(); i++) {
             Node n = nodeset.item(i);
             
-            validated = validate(ar, n);
+            boolean v1 = validate(ar, n);
+            if (!v1) validated = false;
         }
         
-        if (!validated) {
-            result.addAssertionResult(ar);
-        }
+        return validated;
     }
 
     protected abstract boolean validate(AssertionResult ar, Node n) throws XPathExpressionException;

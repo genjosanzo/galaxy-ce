@@ -1,4 +1,7 @@
-package org.mule.galaxy.wsi.wsdl;
+package org.mule.galaxy.wsi.wsdl.soap;
+
+import org.mule.galaxy.wsi.wsdl.AbstractXPathRule;
+import org.mule.galaxy.wsi.wsdl.AssertionResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

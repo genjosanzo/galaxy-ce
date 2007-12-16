@@ -45,5 +45,8 @@ public class AssertionResult {
     public void addMessage(String message) {
         this.messages.add(new Message(message));
     }
+    public void setFailed(boolean failed) {
+        this.failed = failed;
+    }
         
 }
