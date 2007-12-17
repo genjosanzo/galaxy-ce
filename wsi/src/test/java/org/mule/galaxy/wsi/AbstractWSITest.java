@@ -5,6 +5,10 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
 
+import javax.wsdl.Definition;
+import javax.wsdl.WSDLException;
+import javax.wsdl.factory.WSDLFactory;
+import javax.wsdl.xml.WSDLReader;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -37,6 +41,11 @@ public class AbstractWSITest extends junit.framework.TestCase {
         return db.parse(is);
     }
     
+    public static Definition readDefinition(InputStream is) throws WSDLException {
+        WSDLReader reader = WSDLFactory.newInstance().newWSDLReader();
+        
+        return reader.readWSDL("", new InputSource(is));
+    }
     public static class NullResolver implements EntityResolver {
         public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
             return new InputSource(new StringReader(""));

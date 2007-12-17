@@ -2,6 +2,7 @@ package org.mule.galaxy.policy;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Registry;
 
 /**
  * An ArtifactPolicy allows custom criteria to be setting a new Active ArtifactVersion. 
@@ -18,4 +19,5 @@ public interface ArtifactPolicy {
     
     Approval isApproved(Artifact a, ArtifactVersion previous, ArtifactVersion next);
     
+    void setRegistry(Registry registry);
 }

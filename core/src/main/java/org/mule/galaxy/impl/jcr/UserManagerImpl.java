@@ -44,6 +44,9 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         return (UserDetails) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node userNode = findUser(username, session);
+                if (userNode == null) {
+                    throw new UsernameNotFoundException("Username was not found: " + username);
+                }
                 try {
                     return new UserDetailsWrapper(build(userNode, session), 
                                                   getStringOrNull(userNode, PASSWORD));

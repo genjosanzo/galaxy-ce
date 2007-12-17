@@ -1085,6 +1085,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         for (ContentHandler ch : contentService.getContentHandlers()) {
             ch.setRegistry(this);
         }
+        
+        for (ArtifactPolicy a : policyManager.getPolicies()) {
+            a.setRegistry(this);
+        }
 //        session.logout();
     }
 

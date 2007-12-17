@@ -3,8 +3,14 @@ package org.mule.galaxy.policy.wsdl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.wsdl.Definition;
+import javax.wsdl.factory.WSDLFactory;
+import javax.wsdl.xml.WSDLReader;
+
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.impl.RegistryLocator;
 import org.mule.galaxy.policy.Approval;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.wsi.Message;
@@ -22,7 +28,9 @@ public class BasicProfilePolicy implements ArtifactPolicy {
     public static final String WSI_BP_1_1_WSDL = "WSI_BP_1_1_WSDL";
     private WSIRuleManager wsiManager;
     private List<WSIRule> rules;
-
+    private WSDLReader wsdlReader;
+    private Registry registry;
+    
     public String getId() {
         return WSI_BP_1_1_WSDL;
     }
@@ -32,6 +40,7 @@ public class BasicProfilePolicy implements ArtifactPolicy {
         
         wsiManager = new WSIRuleManagerImpl();
         rules = wsiManager.getRules(WSIRuleManager.WSI_BP_1_1);
+        wsdlReader = WSDLFactory.newInstance().newWSDLReader();
     }
 
     public String getDescription() {
@@ -51,7 +60,16 @@ public class BasicProfilePolicy implements ArtifactPolicy {
             if (r instanceof WsdlRule) {
                 WsdlRule wr = (WsdlRule) r;
                 
-                ValidationResult vr = wr.validate((Document) next.getData(), null);
+                Document doc = (Document) next.getData();
+                Definition def = null;
+                try {
+                    def = wsdlReader.readWSDL(new RegistryLocator(registry, a.getWorkspace()), 
+                                              doc.getDocumentElement());
+                } catch (Exception e) {
+                    // Ignore - its not parsable
+                }
+                
+                ValidationResult vr = wr.validate(doc, def);
                 results.add(vr);
                 
                 if (!failed && vr.isFailed()) {
@@ -87,6 +105,10 @@ public class BasicProfilePolicy implements ArtifactPolicy {
             }
         }
         return approval;
+    }
+
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
     }
 
 }

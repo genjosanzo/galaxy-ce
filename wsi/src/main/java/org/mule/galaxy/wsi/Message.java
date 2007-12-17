@@ -2,8 +2,8 @@ package org.mule.galaxy.wsi;
 
 public class Message {
     private String text;
-    private int lineNumber;
-    private int columnNumber;
+    private int lineNumber = -1;
+    private int columnNumber = -1;
     private String systemId;
     
     public Message(String text, int lineNumber, int columnNumber, String systemId) {

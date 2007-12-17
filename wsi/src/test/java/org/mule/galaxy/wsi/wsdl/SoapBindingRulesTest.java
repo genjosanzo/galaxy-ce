@@ -2,10 +2,13 @@ package org.mule.galaxy.wsi.wsdl;
 
 import java.util.List;
 
+import javax.wsdl.Definition;
+
 import org.mule.galaxy.wsi.AbstractWSITest;
 import org.mule.galaxy.wsi.Message;
 import org.mule.galaxy.wsi.wsdl.soap.EmptySoapBindingTransportAttributeRule;
 import org.mule.galaxy.wsi.wsdl.soap.NoEncodingRule;
+import org.mule.galaxy.wsi.wsdl.soap.OperationSignatureRule;
 import org.mule.galaxy.wsi.wsdl.soap.SoapHttpBindingTransportRule;
 import org.mule.galaxy.wsi.wsdl.soap.StyleConsistencyRule;
 
@@ -18,7 +21,7 @@ public class SoapBindingRulesTest extends AbstractWSITest {
         
         Document doc = readXml(getResourceAsStream("/wsdl/wsi/soapbinding/r2701.wsdl"));
         
-        assertFailedWithMessage(rule, doc, "Binding: ");
+        assertFailedWithMessage(rule, doc, null, "Binding: ");
     }
 
     public void testNonSoapHttpTransportR2702() throws Exception {
@@ -26,7 +29,7 @@ public class SoapBindingRulesTest extends AbstractWSITest {
         
         Document doc = readXml(getResourceAsStream("/wsdl/wsi/soapbinding/r2701.wsdl"));
         
-        assertFailedWithMessage(rule, doc, "Binding: ");
+        assertFailedWithMessage(rule, doc, null, "Binding: ");
     }
     
     public void testStyleConsistencyR2705() throws Exception {
@@ -34,8 +37,9 @@ public class SoapBindingRulesTest extends AbstractWSITest {
         
         Document doc = readXml(getResourceAsStream("/wsdl/wsi/soapbinding/r2705.wsdl"));
         
-        assertFailedWithMessage(rule, doc, "Operation: sayHi");
+        assertFailedWithMessage(rule, doc, null, "Operation: sayHi");
     }    
+    
     public void testNoEncodingR2706() throws Exception {
         NoEncodingRule rule = new NoEncodingRule();
         
@@ -63,9 +67,17 @@ public class SoapBindingRulesTest extends AbstractWSITest {
         }
         assertTrue(found);
     }
+    
+    public void testEmptyTransportR2710() throws Exception {
+        OperationSignatureRule rule = new OperationSignatureRule();
+        
+        Definition def = readDefinition(getResourceAsStream("/wsdl/wsi/soapbinding/r2710.wsdl"));
+        
+        assertFailedWithMessage(rule, null, def, "Binding {http://mule.org/hello_world}HelloWorldBinding has an operation with a duplicate signature: sayHi");
+    }
 
-    private void assertFailedWithMessage(WsdlRule rule, Document doc, String message) {
-        ValidationResult result = rule.validate(doc, null);
+    private void assertFailedWithMessage(WsdlRule rule, Document doc, Definition def, String message) {
+        ValidationResult result = rule.validate(doc, def);
         
         assertTrue(result.isFailed());
         

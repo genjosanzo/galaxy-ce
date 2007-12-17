@@ -43,6 +43,28 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
 
             assertEquals(1, a.getMessages().size());
         }
+        
+        try {
+            registry.createArtifact(workspace, "application/xml", "hello.wsdl", "0.1", 
+                                    getResourceAsStream("/wsdl/wsi/soapbinding/r2710.wsdl"),
+                                    getAdmin());
+            fail("Expected ArtifactPolicyException");
+        } catch (ArtifactPolicyException e) {
+            Collection<Approval> approvals = e.getApprovals();
+            for (Approval a : approvals) {
+                
+                for (String m : a.getMessages()) {
+                    System.out.println(m);
+                }
+                
+            }
+            assertEquals(1, approvals.size());
+
+            Approval a = approvals.iterator().next();
+            assertFalse(a.isApproved());
+
+            assertEquals(1, a.getMessages().size());
+        }
     }
 
     @Override
