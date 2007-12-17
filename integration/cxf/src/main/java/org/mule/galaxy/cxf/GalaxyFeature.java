@@ -5,12 +5,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Entry;
@@ -20,27 +18,16 @@ import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
 import org.apache.axiom.om.util.Base64;
 import org.apache.cxf.Bus;
-import org.apache.cxf.common.i18n.BundleUtils;
-import org.apache.cxf.common.i18n.Message;
 import org.apache.cxf.common.logging.LogUtils;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.endpoint.Endpoint;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.feature.AbstractFeature;
-import org.apache.cxf.helpers.IOUtils;
+import org.apache.cxf.helpers.DOMUtils;
 import org.apache.cxf.service.model.ServiceInfo;
 import org.apache.cxf.ws.policy.PolicyBuilder;
-import org.apache.cxf.ws.policy.PolicyConstants;
 import org.apache.cxf.ws.policy.PolicyEngine;
-import org.apache.cxf.ws.policy.PolicyException;
-import org.apache.cxf.ws.policy.attachment.reference.ReferenceResolver;
-import org.apache.cxf.ws.policy.attachment.reference.RemoteReferenceResolver;
 import org.apache.neethi.Policy;
-import org.apache.neethi.PolicyReference;
-import org.apache.neethi.PolicyRegistry;
-import org.mule.galaxy.util.DOMUtils;
-
-import org.w3c.dom.Element;
 
 import org.xml.sax.SAXException;
 

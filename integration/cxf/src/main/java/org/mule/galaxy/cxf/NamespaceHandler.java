@@ -18,13 +18,12 @@
  */
 package org.mule.galaxy.cxf;
 
-import org.w3c.dom.Element;
-
 import org.apache.cxf.configuration.spring.SimpleBeanDefinitionParser;
-import org.mule.galaxy.util.DOMUtils;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import org.springframework.beans.factory.xml.ParserContext;
+
+import org.w3c.dom.Element;
 
 public class NamespaceHandler extends NamespaceHandlerSupport {
     public void init() {
