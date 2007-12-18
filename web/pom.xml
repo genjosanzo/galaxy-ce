@@ -107,27 +107,7 @@
           <contextPath>/</contextPath>
         </configuration>
       </plugin>
-      <!-- All the fantastical settings that GWT needs -->
-      <plugin>
-        <groupId>com.totsp.gwt</groupId>
-        <artifactId>maven-googlewebtoolkit2-plugin</artifactId>
-        <version>2.0-beta5</version>
-        <configuration>
-          <runTarget>org.mule.galaxy.web.Galaxy/Galaxy.html</runTarget>
-          <style>OBF</style>
-          <compileTargets>
-            <value>org.mule.galaxy.web.Galaxy</value>
-          </compileTargets>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>mergewebxml</goal>
-              <goal>compile</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
@@ -143,12 +123,32 @@
   
   <profiles>
     <profile>
-      <id>jetty</id>
-      
-      <dependencies>
-      
-      
-      </dependencies>
+      <id>gwt</id>
+      <build>
+        <plugins>
+          <!-- All the fantastical settings that GWT needs -->
+          <plugin>
+            <groupId>com.totsp.gwt</groupId>
+            <artifactId>maven-googlewebtoolkit2-plugin</artifactId>
+            <version>2.0-beta5</version>
+            <configuration>
+              <runTarget>org.mule.galaxy.web.Galaxy/Galaxy.html</runTarget>
+              <style>OBF</style>
+              <compileTargets>
+                <value>org.mule.galaxy.web.Galaxy</value>
+              </compileTargets>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>mergewebxml</goal>
+                  <goal>compile</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
   
