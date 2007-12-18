@@ -22,7 +22,8 @@ public class Main {
         
         WebAppContext wac = new WebAppContext();
         wac.setContextPath("/");
-        wac.setWar("./src/main/webapp");    // this is path to .war OR TO expanded, existing webapp; WILL FIND web.xml and parse it
+//        wac.setWar("./target/galaxy-web-1.0-M1-SNAPSHOT");
+        wac.setWar("./src/main/webapp");
         
         HashMap params = new HashMap();
         params.put("useFileMappedBuffer", Boolean.FALSE);

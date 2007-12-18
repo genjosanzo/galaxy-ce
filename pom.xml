@@ -12,12 +12,12 @@
 	<modules>
 		<module>core</module>
 		<module>wsdldiff</module>
-                <module>wsi</module>
+		<module>wsi</module>
 		<module>testutils</module>
 		<module>web</module>
 		<module>gwt-client</module>
-                <module>integration/mule1</module>
-                <module>integration/cxf</module>
+		<module>integration/mule1</module>
+		<module>integration/cxf</module>
 	</modules>
 
 	<dependencyManagement>
@@ -28,6 +28,11 @@
 				<scope>test</scope>
 				<version>3.8.1</version>
 			</dependency>
+			<dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xercesImpl</artifactId>
+        <version>2.8.1</version>
+      </dependency>
 		</dependencies>
   </dependencyManagement>
   
