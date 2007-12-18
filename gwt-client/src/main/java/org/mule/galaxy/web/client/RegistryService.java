@@ -6,6 +6,10 @@ import java.util.Collection;
 
 public interface RegistryService extends RemoteService {
     
+    /**
+     * @gwt typeArgs org.mule.galaxy.web.client.WorkspaceInfo
+     * @return
+     */
     public Collection getWorkspaces();
     
     /**
@@ -14,4 +18,6 @@ public interface RegistryService extends RemoteService {
      */
     public Collection getArtifactTypes();
 
+    
+//    public Collection getArtifacts(String workspace);
 }

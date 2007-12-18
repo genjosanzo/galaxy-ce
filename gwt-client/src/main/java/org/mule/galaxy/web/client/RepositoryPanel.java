@@ -54,25 +54,19 @@ public class RepositoryPanel extends Composite {
         repoPanel.add(leftMenu, DockPanel.WEST);
         
         // Load the workspaces into a tree on the left
-        //service.getWorkspaces(new AsyncCallback() {
-        //    public void onFailure(Throwable arg0) {
-        //    }
+        service.getWorkspaces(new AsyncCallback() {
+            public void onFailure(Throwable arg0) {
+            }
 
-        //    public void onSuccess(Object o) {
-        //        Collection workspaces = (Collection) o;
-        //        
-        //        TreeItem treeItem = workspaceTree.addItem("Workspaces");
-        //        initWorkspaces(treeItem, workspaces);
-        //        
-        //        treeItem.setState(true);
-        //    }
-        //});
-        
-        TreeItem treeItem = workspaceTree.addItem("Workspaces");
-        treeItem.addItem("Workspace 1");
-        treeItem.addItem("Workspace 2");
-        treeItem.addItem("Workspace 3");
-        treeItem.setState(true);
+            public void onSuccess(Object o) {
+                Collection workspaces = (Collection) o;
+                
+                TreeItem treeItem = workspaceTree.addItem("Workspaces");
+                initWorkspaces(treeItem, workspaces);
+                
+                treeItem.setState(true);
+            }
+        });
 
         artifactTypesPanel = new VerticalPanel();
         leftMenu.add(artifactTypesPanel);

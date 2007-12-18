@@ -9,7 +9,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-web</artifactId>
-  <!-- packaging>war</packaging  -->
   <name>Galaxy Web Application</name>
 
   <dependencies>
@@ -24,7 +23,6 @@
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-gwt-rpc</artifactId>
       <version>${version}</version>
-      <classifier>sources</classifier>
     </dependency>
 
     <dependency>
@@ -70,7 +68,7 @@
       <artifactId>abdera-client</artifactId>
       <version>0.4.0-incubating-SNAPSHOT</version>
     </dependency>
-
+    
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty</artifactId>
@@ -78,6 +76,13 @@
       <optional>true</optional>
     </dependency>
 
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jsp-2.1</artifactId>
+      <version>6.1.6</version>
+      <optional>true</optional>
+    </dependency>
+    
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
@@ -98,49 +103,55 @@
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty6-plugin</artifactId>
         <configuration>
-          <scanIntervalSeconds>10</scanIntervalSeconds>
+          <scanIntervalSeconds>5</scanIntervalSeconds>
           <contextPath>/</contextPath>
         </configuration>
       </plugin>
       <!-- All the fantastical settings that GWT needs -->
-      <!--  plugin>
+      <plugin>
         <groupId>com.totsp.gwt</groupId>
         <artifactId>maven-googlewebtoolkit2-plugin</artifactId>
-        <version>2.0-beta4</version>
+        <version>2.0-beta5</version>
         <configuration>
           <runTarget>org.mule.galaxy.web.Galaxy/Galaxy.html</runTarget>
           <style>OBF</style>
           <compileTargets>
             <value>org.mule.galaxy.web.Galaxy</value>
           </compileTargets>
-          <generateGettersAndSetters>true</generateGettersAndSetters>
         </configuration>
         <executions>
           <execution>
             <goals>
-              <goal>generateClientBeans</goal>
               <goal>mergewebxml</goal>
               <goal>compile</goal>
-              <goal>testGwt</goal>
             </goals>
           </execution>
         </executions>
-      </plugin -->
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.0.2</version>
+        <version>2.0</version>
         <configuration>
-          <webappDirectory>src/main/webapp</webappDirectory>
-          <classifier>webapp</classifier>
           <webXml>target/web.xml</webXml>
+          <classifier>webapp</classifier>
         </configuration>
-
       </plugin>
     </plugins>
 
   </build>
-
+  
+  <profiles>
+    <profile>
+      <id>jetty</id>
+      
+      <dependencies>
+      
+      
+      </dependencies>
+    </profile>
+  </profiles>
+  
   <repositories>
     <repository>
       <id>gwt-maven</id>
@@ -162,6 +173,12 @@
       <id>apache-snapshots</id>
       <name>Apache Snapshot Repository</name>
       <url>http://people.apache.org/repo/m2-snapshot-repository/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
     </repository>
 
   </repositories>

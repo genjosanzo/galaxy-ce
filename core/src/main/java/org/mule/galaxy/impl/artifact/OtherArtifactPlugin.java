@@ -1,4 +1,4 @@
-package org.mule.galaxy.impl;
+package org.mule.galaxy.impl.artifact;
 
 import javax.xml.namespace.QName;
 
@@ -10,20 +10,20 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.util.Constants;
 
 /**
- * Does some base initialization for the registry.
+ * Does some initialization for other artifact types.
  */
-public class RegistryInitializer implements Constants {
-    private Dao<ArtifactType> artifactTypeDao;
+public class OtherArtifactPlugin extends AbstractArtifactPlugin implements Constants {
 
-    public void initialize() throws Exception {
+    public void initializeOnce() throws Exception {
         artifactTypeDao
             .save(new ArtifactType("WS-Policy", "application/xml", POLICY_QNAME, POLICY_2006_QNAME));
         artifactTypeDao.save(new ArtifactType("XML Schema", "application/xml", SCHEMA_QNAME));
         artifactTypeDao.save(new ArtifactType("XSLT Stylesheet", "application/xml", XSLT_QNAME));
     }
 
-    public void setArtifactTypeDao(Dao<ArtifactType> artifactTypeDao) {
-        this.artifactTypeDao = artifactTypeDao;
+    public void initializeEverytime() throws Exception {
+        // TODO Auto-generated method stub
+        
     }
-
+    
 }

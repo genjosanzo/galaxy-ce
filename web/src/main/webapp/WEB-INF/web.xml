@@ -64,7 +64,7 @@
     </servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
-
+  
   <servlet-mapping>
     <servlet-name>handler</servlet-name>
     <url-pattern>/handler/*</url-pattern>

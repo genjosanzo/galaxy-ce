@@ -138,11 +138,6 @@
     </constructor-arg>
   </bean>
 
-  <bean id="registryInitializer" class="org.mule.galaxy.impl.RegistryInitializer" 
-    init-method="initialize" >
-    <property name="artifactTypeDao" ref="artifactTypeDao"/>
-  </bean>
-
   <bean id="viewManager" class="org.mule.galaxy.impl.view.ViewManagerImpl"/>
   
   <bean id="jcrTransactionManager"
@@ -164,13 +159,13 @@
    </property>
   </bean>
     
-  <bean id="abstractArtifactPlugin" abstract="true" init-method="initialize" >
+  <bean id="abstractArtifactPlugin" abstract="true">
     <property name="artifactTypeDao" ref="artifactTypeDao"/>
-    <property name="registry" ref="registry"/>
     <property name="viewManager" ref="viewManager"/>
   </bean>
   
   <bean class="org.mule.galaxy.impl.artifact.MuleArtifactPlugin" parent="abstractArtifactPlugin"/>
   <bean class="org.mule.galaxy.impl.artifact.WsdlArtifactPlugin" parent="abstractArtifactPlugin"/>
+  <bean class="org.mule.galaxy.impl.artifact.OtherArtifactPlugin" parent="abstractArtifactPlugin"/>
   
 </beans>

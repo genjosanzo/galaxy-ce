@@ -5,7 +5,6 @@ import java.util.Collection;
 import javax.wsdl.xml.WSDLLocator;
 import javax.xml.namespace.QName;
 
-import org.mule.galaxy.AbstractArtifactPlugin;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.Index;
@@ -19,8 +18,7 @@ import org.xml.sax.InputSource;
 
 public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
 
-    @Override
-    public void initialize() throws Exception {
+    public void initializeOnce() throws Exception {
         artifactTypeDao.save(new ArtifactType("WSDL Documents", "application/wsdl+xml", Constants.WSDL_DEFINITION_QNAME));
         
         /**
@@ -73,6 +71,10 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
                                "/*/@targetNamespace", // the xquery expression
                                Constants.WSDL_DEFINITION_QNAME); // document QName which this applies to
                  
+
+    }
+
+    public void initializeEverytime() throws Exception {
         
         CustomArtifactTypeView view = new CustomArtifactTypeView();
         view.getColumns().add(new Column("Services", new ColumnEvaluator() {

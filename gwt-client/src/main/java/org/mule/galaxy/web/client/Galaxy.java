@@ -36,7 +36,7 @@ public class Galaxy implements EntryPoint {
         service = (RegistryServiceAsync) GWT.create(RegistryService.class);
         
         ServiceDefTarget target = (ServiceDefTarget) service;
-        target.setServiceEntryPoint("http://localhost:9002/handler/registry.rpc");
+        target.setServiceEntryPoint("/handler/registry.rpc");
         
         VerticalPanel base = new VerticalPanel();
         base.setStyleName("base");

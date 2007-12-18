@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import javax.wsdl.xml.WSDLLocator;
 
-import org.mule.galaxy.AbstractArtifactPlugin;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.Index;
@@ -18,8 +17,7 @@ import org.xml.sax.InputSource;
 
 public class MuleArtifactPlugin extends AbstractArtifactPlugin {
 
-    @Override
-    public void initialize() throws Exception {
+    public void initializeOnce() throws Exception {
         artifactTypeDao.save(new ArtifactType("Mule Configuration", 
                                               "application/mule+xml", 
                                               Constants.MULE_QNAME));
@@ -41,6 +39,10 @@ public class MuleArtifactPlugin extends AbstractArtifactPlugin {
                                exp, // the xquery expression
                                Constants.MULE_QNAME); // document QName which this applies to
         
+    }
+
+    public void initializeEverytime() throws Exception {
+
         // Create a custom view
         CustomArtifactTypeView view = new CustomArtifactTypeView();
         view.getColumns().add(new Column("Services", new ColumnEvaluator() {
