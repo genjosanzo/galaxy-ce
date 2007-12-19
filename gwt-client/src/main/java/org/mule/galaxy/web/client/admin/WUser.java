@@ -1,8 +1,10 @@
 package org.mule.galaxy.web.client.admin;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 import java.util.Date;
 
-public class WUser {
+public class WUser implements IsSerializable  {
     private String name;
     private String id;
     private String username;

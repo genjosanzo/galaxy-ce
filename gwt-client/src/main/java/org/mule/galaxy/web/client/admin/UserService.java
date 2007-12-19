@@ -1,11 +1,13 @@
 package org.mule.galaxy.web.client.admin;
 
+import com.google.gwt.user.client.rpc.RemoteService;
+
 import java.util.Collection;
 
 import org.mule.galaxy.web.client.ItemNotFoundException;
 
 
-public interface UserService {
+public interface UserService extends RemoteService {
     
     /**
      * @gwt typeArgs org.mule.galaxy.web.client.admin.WUser

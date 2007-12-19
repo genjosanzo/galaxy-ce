@@ -3,6 +3,7 @@
 		<title>Mule Galaxy</title>
         <link type="text/css" rel="stylesheet" href="Galaxy.css" />
 
+        
 	</head>
 
 	<!--                                           -->
@@ -11,9 +12,11 @@
 	<!-- to create a completely dynamic ui         -->
 	<!--                                           -->
 	<body>
-        <script language='javascript' src='org.mule.galaxy.web.Galaxy.nocache.js'></script>
+	    <meta name="gwt:module" content="org.mule.galaxy.web.Galaxy=org.mule.galaxy.web.Galaxy"/>
+        <script language='javascript' src='/gwt.js'></script>
 		<!-- OPTIONAL: include this if you want history support -->
 		<iframe src="javascript:''" id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
+
 
 	</body>
 </html>

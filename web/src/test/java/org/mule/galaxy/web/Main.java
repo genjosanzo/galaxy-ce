@@ -23,8 +23,8 @@ public class Main {
         
         WebAppContext wac = new WebAppContext();
         wac.setContextPath("/");
-        wac.setWar("./target/galaxy-web-1.0-M1-SNAPSHOT");
-//        wac.setWar("./src/main/webapp");
+//        wac.setWar("./target/galaxy-web-1.0-M1-SNAPSHOT");
+        wac.setWar("./src/main/webapp");
         
         HashMap params = new HashMap();
         params.put("useFileMappedBuffer", Boolean.FALSE);

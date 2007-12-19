@@ -1,5 +1,7 @@
 package org.mule.galaxy.web.client.admin;
 
-public class PasswordChangeException extends Exception {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class PasswordChangeException extends Exception implements IsSerializable {
 
 }

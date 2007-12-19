@@ -23,7 +23,5 @@ public class UserServiceTest extends AbstractGalaxyTest {
         String id = gwtUserService.addUser("dandiep", "Dan Diephouse", "foo");
         
         assertNotNull(id);
-        
-        
     }
 }

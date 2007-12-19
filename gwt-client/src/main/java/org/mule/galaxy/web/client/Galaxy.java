@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mule.galaxy.web.client.admin.AdministrationPanel;
+
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -51,7 +53,7 @@ public class Galaxy implements EntryPoint {
         
         tabPanel.add(new RepositoryPanel(service), "Registry");
         tabPanel.selectTab(0);
-        tabPanel.add(new Label("Admin"), "Administration");
+        tabPanel.add(new AdministrationPanel(), "Administration");
         
         RootPanel.get().add(base);
     }

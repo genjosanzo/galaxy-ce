@@ -27,6 +27,7 @@
 		<property name="mappings">
 			<map>
 				<entry key="/registry.rpc" value-ref="gwtRegistry" />
+                <entry key="/userService.rpc" value-ref="gwtUserService" />
 			</map>
 		</property>
 	</bean>
