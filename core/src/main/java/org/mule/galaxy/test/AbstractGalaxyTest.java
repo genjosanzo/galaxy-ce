@@ -107,9 +107,13 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
         };
     }
 
-    @Override
+    @Override  
     protected void onSetUp() throws Exception {
+        System.setProperty("javax.xml.validation.SchemaFactory:http://www.w3.org/2001/XMLSchema",
+                           "org.apache.xerces.jaxp.validation.XMLSchemaFactory");
+        
         super.onSetUp();
+        
         session = SessionFactoryUtils.getSession(sessionFactory, true);
         TransactionSynchronizationManager.bindResource(sessionFactory, new UserTxSessionHolder(session));
     }

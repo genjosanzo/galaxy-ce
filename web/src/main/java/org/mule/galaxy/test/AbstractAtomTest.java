@@ -39,9 +39,13 @@ public class AbstractAtomTest extends TestCase {
     protected Factory factory = abdera.getFactory();
     private Server server;
     private WebAppContext context;
-    
+
     @Override
     protected void setUp() throws Exception {
+        System.setProperty("javax.xml.validation.SchemaFactory:http://www.w3.org/2001/XMLSchema",
+                           "org.apache.xerces.jaxp.validation.XMLSchemaFactory");
+
+
         super.setUp();
         initializeJetty();
     }
