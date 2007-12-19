@@ -22,7 +22,7 @@ public class WSIRuleManagerImpl implements WSIRuleManager {
     public WSIRuleManagerImpl() throws Exception {
         super();
 
-        wsi11Rules.add(new WsdlSchemaValidationRule());
+//        wsi11Rules.add(new WsdlSchemaValidationRule());
         wsi11Rules.add(new ImportUriRule());
         wsi11Rules.add(new NonEmptyWsdlLocationImportRule());
         
