@@ -13,5 +13,9 @@
       <property name="registry" ref="registry"/>
       <property name="artifactTypeDao" ref="artifactTypeDao"/>
     </bean>
+      
+    <bean id="gwtUserService" class="org.mule.galaxy.web.server.UserServiceImpl">
+      <property name="userManager" ref="userManager"/>
+    </bean>
     
 </beans>
