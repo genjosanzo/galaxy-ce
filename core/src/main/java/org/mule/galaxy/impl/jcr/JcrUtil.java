@@ -36,6 +36,49 @@ public class JcrUtil {
     private static final String TYPE = "__type";
     private static final String COMPONENT_TYPE = "__componentType";
     
+    public static String escape(String name) {
+        String ret = name.replace('/', ' ');
+        ret = ret.replace(':', ' ');
+        ret = ret.replace('[', ' ');
+        ret = ret.replace(']', ' ');
+        ret = ret.replace('*', ' ');
+        ret = ret.replace('\'', ' ');
+        ret = ret.replace('"', ' ');
+        ret = ret.replace('|', ' ');
+        ret = ret.trim();
+        return ret;
+    } 
+    
+    /**
+     * Convert a string to an XPath 2.0 string literal, suitable for inclusion in
+     * a query. See JSR-170 spec v1.0, Sec. 6.6.4.9.
+     * 
+     * @param str
+     *           Any string.
+     * @return A valid XPath 2.0 string literal, including enclosing quotes.
+     */
+    public static String stringToXPathLiteral(String str) {
+       // Single quotes needed for jcr:contains()
+       return "'" + str.replaceAll("'", "''") + "'";
+    }
+
+    /**
+     * Convert a string to a JCR search expression literal, suitable for use in
+     * jcr:contains() (inside XPath queries). The characters - and " have special
+     * meaning, and may be escaped with a backslash to obtain their literal
+     * value. See JSR-170 spec v1.0, Sec. 6.6.5.2.
+     * 
+     * @param str
+     *           Any string.
+     * @return A valid XPath 2.0 string literal suitable for use in
+     *         jcr:contains(), including enclosing quotes.
+     */
+    public static String stringToJCRSearchExp(String str) {
+       // Escape ' and \ everywhere, preceding them with \ except when \ appears
+       // in one of the combinations \" or \-
+       return stringToXPathLiteral(str.replaceAll("\\\\(?![-\" ])", "\\\\\\\\").replaceAll("'", "\\\\'"));
+    }
+    
     /** Recursively outputs the contents of the given node. */
     public static void dump(Node node) throws RepositoryException {
         // First output the node path

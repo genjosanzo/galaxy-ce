@@ -59,9 +59,7 @@ public class IndexTest extends AbstractGalaxyTest {
         
         // Import a document which should now be indexed
         Artifact artifact = importHelloWsdl();
-        
-        Thread.sleep(1000);
-        
+
         ArtifactVersion version = artifact.getLatestVersion();
         Object property = version.getProperty("wsdl.service");
         assertNotNull(property);
@@ -138,7 +136,8 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        ArtifactResult ar = registry.createArtifact(workspace, "application/xml", "hello.wsdl", 
+        ArtifactResult ar = registry.createArtifact(workspace, "application/xml", 
+                                                    "hello-config.xml", 
                                                     "0.1", helloWsdl, getAdmin());
         Artifact artifact = ar.getArtifact();
         

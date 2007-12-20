@@ -146,6 +146,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     public Workspace createWorkspace(String name) throws RegistryException {
         try {
+            // we should throw an error, but lets be defensive for now
+            name = JcrUtil.escape(name);
+            
             Node node = getWorkspacesNode().addNode(name, "galaxy:workspace");
             node.addMixin("mix:referenceable");
 
@@ -833,20 +836,37 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     throw new RuntimeException(new QueryException(new Message("INVALID_SELECT_TYPE", LOGGER, selectType.getName())));
                 }
                 
+                String workspace = query.getWorkspace();
+                if (workspace != null) {
+                    qstr.append("//")
+                        .append(escapeNodeName(workspace))
+                        .append("[@jcr:primaryType=\"galaxy:workspace\"]/")
+                        .append(ARTIFACT_NODE_NAME);
+                } else {
+                    qstr.append("//")
+                        .append(ARTIFACT_NODE_NAME);
+                }
+
+                boolean first = true;
                 for (Restriction r : query.getRestrictions()) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        qstr.append(" and ");
+                    }
                     
                     // TODO: NOT, LIKE, OR, etc
-                    
                     String property = (String) r.getLeft();
+                    String right = r.getRight().toString();
+
                     if (property.equals(JcrArtifact.PHASE)) {
-                        createPropertySearch(qstr, r, JcrArtifact.PHASE);
+                        createPropertySearch(qstr, right, JcrArtifact.PHASE);
                     } else if (property.equals(JcrArtifact.DOCUMENT_TYPE)) {
-                        createPropertySearch(qstr, r, JcrArtifact.DOCUMENT_TYPE);
+                        createPropertySearch(qstr, right, JcrArtifact.DOCUMENT_TYPE);
                     } else if (property.equals(JcrArtifact.CONTENT_TYPE)) {
-                        createPropertySearch(qstr, r, JcrArtifact.CONTENT_TYPE);
+                        createPropertySearch(qstr, right, JcrArtifact.CONTENT_TYPE);
                     } else {
-                        qstr.append("//")
-                            .append(ARTIFACT_NODE_NAME);
+                        
                         // Search the latest if we're searching for artifacts, otherwise
                         // search all versions
                         if (!av) {
@@ -855,6 +875,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                             qstr.append("/version");
                         }
                         
+                        
                         qstr.append("/properties/")
                             .append(property)
                             .append("/")
@@ -862,7 +883,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                             .append("[@")
                             .append(JcrUtil.VALUE)
                             .append("= \"")
-                            .append(r.getRight())
+                            .append(right)
                             .append("\"]");
                     }
                 }
@@ -910,16 +931,20 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 return artifacts;
             }
 
-            private void createPropertySearch(StringBuilder qstr, Restriction r, String property) {
-                qstr.append("//")
-                    .append(ARTIFACT_NODE_NAME)
-                    .append("[@")
-                    .append(property)
-                    .append("='")
-                    .append(r.getRight())
-                    .append("']");
-            }
         });
+    }
+
+
+    protected String escapeNodeName(String right) {
+        return right.replaceAll(" ", "_x0020_");
+    }
+
+    private void createPropertySearch(StringBuilder qstr, String right, String property) {
+        qstr.append("[@")
+            .append(property)
+            .append("='")
+            .append(right)
+            .append("']");
     }
 
     private String trimContentType(String contentType) {

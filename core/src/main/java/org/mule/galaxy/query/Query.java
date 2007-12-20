@@ -8,6 +8,8 @@ public class Query {
     boolean searchLatestVersionOnly = true;
     Class<?> selectType;
     private String groupBy;
+    private String workspace;
+    private boolean workspaceChildren;
     
     public Query(Class selectType, Restriction restriction) {
         this.selectType = selectType;
@@ -39,4 +41,28 @@ public class Query {
         this.groupBy = field;
         return this;
     }
+    
+    public Query workspace(String workspace, boolean searchWorkspaceChildren) {
+        this.workspace = workspace;
+        this.workspaceChildren = searchWorkspaceChildren;
+        return this;
+    }
+    
+    public Query workspace(String workspace) {
+        this.workspace = workspace;
+        return this;
+    }
+
+    public String getGroupBy() {
+        return groupBy;
+    }
+
+    public String getWorkspace() {
+        return workspace;
+    }
+
+    public boolean isSearchWorkspaceChildren() {
+        return workspaceChildren;
+    }
+    
 }
