@@ -2,14 +2,14 @@ package org.mule.galaxy.web.client;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ArtifactTypeInfo implements IsSerializable {
+public class WArtifactType implements IsSerializable {
     private String id;
     private String description;
     
-    public ArtifactTypeInfo() {
+    public WArtifactType() {
         super();
     }
-    public ArtifactTypeInfo(String id, String description) {
+    public WArtifactType(String id, String description) {
         super();
         this.id = id;
         this.description = description;

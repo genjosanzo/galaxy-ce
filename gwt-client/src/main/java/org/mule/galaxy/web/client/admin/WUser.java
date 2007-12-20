@@ -4,6 +4,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.util.Date;
 
+/**
+ * "Web user"
+ */
 public class WUser implements IsSerializable  {
     private String name;
     private String id;

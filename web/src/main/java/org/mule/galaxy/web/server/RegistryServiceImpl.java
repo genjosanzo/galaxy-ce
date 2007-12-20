@@ -9,9 +9,9 @@ import org.mule.galaxy.Dao;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.web.client.ArtifactTypeInfo;
+import org.mule.galaxy.web.client.WArtifactType;
 import org.mule.galaxy.web.client.RegistryService;
-import org.mule.galaxy.web.client.WorkspaceInfo;
+import org.mule.galaxy.web.client.WWorkspace;
 
 public class RegistryServiceImpl implements RegistryService {
     private Registry registry;
@@ -23,7 +23,7 @@ public class RegistryServiceImpl implements RegistryService {
              List wis = new ArrayList();
              
              for (Workspace w : workspaces) {
-                 wis.add(new WorkspaceInfo(w.getId(), w.getName()));
+                 wis.add(new WWorkspace(w.getId(), w.getName()));
              }
              return wis;
         } catch (RegistryException e) {
@@ -36,7 +36,7 @@ public class RegistryServiceImpl implements RegistryService {
         List atis = new ArrayList();
         
         for (ArtifactType a : artifactTypes) {
-            atis.add(new ArtifactTypeInfo(a.getId(), a.getDescription()));
+            atis.add(new WArtifactType(a.getId(), a.getDescription()));
         }
         return atis;
     }

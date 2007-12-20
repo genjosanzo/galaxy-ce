@@ -4,15 +4,15 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.util.Collection;
 
-public class WorkspaceInfo implements IsSerializable {
+public class WWorkspace implements IsSerializable {
     private String id;
     private String name;
     private Collection workspaces;
     
-    public WorkspaceInfo() {
+    public WWorkspace() {
         super();
     }
-    public WorkspaceInfo(String id2, String name2) {
+    public WWorkspace(String id2, String name2) {
         this.id = id2;
         this.name = name2;
     }

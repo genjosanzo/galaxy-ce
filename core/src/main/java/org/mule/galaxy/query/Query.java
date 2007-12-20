@@ -1,14 +1,13 @@
 package org.mule.galaxy.query;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 public class Query {
     List<Restriction> restrictions = new LinkedList<Restriction>();
     boolean searchLatestVersionOnly = true;
     Class<?> selectType;
+    private String groupBy;
     
     public Query(Class selectType, Restriction restriction) {
         this.selectType = selectType;
@@ -36,4 +35,8 @@ public class Query {
         this.selectType = selectType;
     }
 
+    public Query groupBy(String field) {
+        this.groupBy = field;
+        return this;
+    }
 }

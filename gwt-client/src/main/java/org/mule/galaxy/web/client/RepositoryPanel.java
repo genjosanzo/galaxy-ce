@@ -108,7 +108,7 @@ public class RepositoryPanel extends Composite {
                 mainPanel.add(new Label("success: " + o));
                 
                 for (Iterator itr = workspaces.iterator(); itr.hasNext();) {
-                    final ArtifactTypeInfo at = (ArtifactTypeInfo) itr.next();
+                    final WArtifactType at = (WArtifactType) itr.next();
                     
                     Hyperlink hl = new Hyperlink(at.getDescription(), at.getId());
                     hl.addClickListener(new ClickListener() {
@@ -133,7 +133,7 @@ public class RepositoryPanel extends Composite {
     
     private void initWorkspaces(TreeItem ti, Collection workspaces) {
         for (Iterator itr = workspaces.iterator(); itr.hasNext();) {
-            WorkspaceInfo wi = (WorkspaceInfo) itr.next();
+            WWorkspace wi = (WWorkspace) itr.next();
             
             TreeItem treeItem = ti.addItem(wi.getName());
             treeItem.setUserObject(wi.getId());
