@@ -51,7 +51,7 @@ public class Galaxy implements EntryPoint {
         TabPanel tabPanel = new TabPanel();
         base.add(tabPanel);
         
-        tabPanel.add(new RepositoryPanel(service), "Registry");
+        tabPanel.add(new RegistryPanel(service), "Registry");
         tabPanel.selectTab(0);
         tabPanel.add(new AdministrationPanel(), "Administration");
         

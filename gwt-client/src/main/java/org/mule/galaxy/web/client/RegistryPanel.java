@@ -18,7 +18,7 @@ import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class RepositoryPanel extends Composite {
+public class RegistryPanel extends Composite {
 
     private List artifactTypes;
     private String currentWorkspace;
@@ -30,7 +30,7 @@ public class RepositoryPanel extends Composite {
     private DockPanel repoPanel;
     private WorkspacePanel workspacePanel;
     
-    public RepositoryPanel(RegistryServiceAsync service) {
+    public RegistryPanel(RegistryServiceAsync service) {
         super();
         this.service = service;
         

@@ -35,7 +35,7 @@ public class Query {
         this.selectType = selectType;
     }
 
-    public Query groupBy(String field) {
+    public Query orderBy(String field) {
         this.groupBy = field;
         return this;
     }
