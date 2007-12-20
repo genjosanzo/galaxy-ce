@@ -18,23 +18,20 @@ import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class RegistryPanel extends Composite {
+public class RegistryPanel extends AbstractMenuPanel {
 
     private List artifactTypes;
     private String currentWorkspace;
-    private VerticalPanel mainPanel;
     private VerticalPanel artifactTypesPanel;
     private String workspaceId;
     private AddArtifactPanel addArtifactPanel;
     private RegistryServiceAsync service;
-    private DockPanel repoPanel;
     private WorkspacePanel workspacePanel;
     
     public RegistryPanel(RegistryServiceAsync service) {
         super();
         this.service = service;
         
-        repoPanel = new DockPanel();
         
         final Tree workspaceTree = new Tree();
         workspaceTree.addTreeListener(new TreeListener() {
@@ -47,12 +44,8 @@ public class RegistryPanel extends Composite {
             }
         });
         
-        VerticalPanel leftMenu = new VerticalPanel();
-        leftMenu.add(workspaceTree);
-        leftMenu.setStyleName("left-menu");
-        
-        repoPanel.add(leftMenu, DockPanel.WEST);
-        
+        addMenuItem(workspaceTree);
+
         // Load the workspaces into a tree on the left
         service.getWorkspaces(new AsyncCallback() {
             public void onFailure(Throwable arg0) {
@@ -69,7 +62,7 @@ public class RegistryPanel extends Composite {
         });
 
         artifactTypesPanel = new VerticalPanel();
-        leftMenu.add(artifactTypesPanel);
+        addMenuItem(artifactTypesPanel);
         
         Label label = new Label("Artifact Types");
         label.setStyleName("left-menu-header");
@@ -78,19 +71,11 @@ public class RegistryPanel extends Composite {
         
         initArtifactTypes();
         
-        mainPanel = new VerticalPanel();
-        mainPanel.setWidth("100%");
-        mainPanel.setStyleName("main-panel");
-        repoPanel.add(mainPanel, DockPanel.CENTER);
-        repoPanel.setCellWidth(mainPanel, "100%");
-        
         addArtifactPanel = new AddArtifactPanel();
         //setRightPanel(addArtifactPanel);
         
         workspacePanel = new WorkspacePanel();
-        mainPanel.add(workspacePanel);
-        
-        initWidget(repoPanel);
+        setMain(workspacePanel);
     }
 
     private void initArtifactTypes() {
@@ -105,7 +90,6 @@ public class RegistryPanel extends Composite {
 
             public void onSuccess(Object o) {
                 Collection workspaces = (Collection) o;
-                mainPanel.add(new Label("success: " + o));
                 
                 for (Iterator itr = workspaces.iterator(); itr.hasNext();) {
                     final WArtifactType at = (WArtifactType) itr.next();
@@ -146,17 +130,17 @@ public class RegistryPanel extends Composite {
     }
     
     public void addArtifactTypeFilter(String id) {
-        mainPanel.add(new Label("Artifact filter " + id));
+        setMessage(new Label("Artifact filter " + id));
     }
-    
+
     public void removeArtifactTypeFilter(String id) {
-        mainPanel.add(new Label("Removed artifact filter " + id));
+        setMessage(new Label("Removed artifact filter " + id));
     }
 
     public void setActiveWorkspace(String userObject) {
         this.workspaceId = userObject;
         refresh();
-        mainPanel.add(new Label("Active workspace set to " + userObject));
+        setMessage(new Label("Active workspace set to " + userObject));
     }
 
     public void refresh() {

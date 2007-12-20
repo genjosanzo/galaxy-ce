@@ -875,7 +875,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                             qstr.append("/version");
                         }
                         
-                        
                         qstr.append("/properties/")
                             .append(property)
                             .append("/")

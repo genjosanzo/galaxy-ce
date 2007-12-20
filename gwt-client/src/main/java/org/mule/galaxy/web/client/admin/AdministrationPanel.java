@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.AbstractMenuPanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -8,11 +9,9 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class AdministrationPanel extends com.google.gwt.user.client.ui.Composite {
+public class AdministrationPanel extends AbstractMenuPanel {
 
-    
     private DockPanel adminPanel;
-    private Widget currentPanel;
     private UserServiceAsync userService;
     
     public AdministrationPanel() {
@@ -23,10 +22,6 @@ public class AdministrationPanel extends com.google.gwt.user.client.ui.Composite
         ServiceDefTarget target = (ServiceDefTarget) userService;
         target.setServiceEntryPoint("/handler/userService.rpc");
         
-        adminPanel = new DockPanel();
-        VerticalPanel leftMenu = new VerticalPanel();
-        
-        
         Hyperlink usersLink = new Hyperlink("Users", "");
         usersLink.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
@@ -34,21 +29,11 @@ public class AdministrationPanel extends com.google.gwt.user.client.ui.Composite
             }
         });
         
-        leftMenu.add(usersLink);
-        leftMenu.setStyleName("left-menu");
-        
-        adminPanel.add(leftMenu, DockPanel.WEST);
-        
-        initWidget(adminPanel);
+        addMenuItem(usersLink);
     }
 
     protected void showUserPanel() {
-        if (currentPanel != null) {
-            adminPanel.remove(currentPanel);
-        }
-        
-        currentPanel = new UserListPanel(userService);
-        adminPanel.add(currentPanel, DockPanel.WEST);
+        setMain(new UserListPanel(userService));
     }
 
 }
