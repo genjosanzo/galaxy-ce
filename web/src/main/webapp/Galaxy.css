@@ -36,13 +36,17 @@ a:visited {
 .unselected-link {
 	color: darkblue;
 	background-color: white;
-	margin-top: 4px;
+	margin-top: 1px;
+	padding: 2px;
 }
 	
 .selected-link {
 	color: darkblue;
 	background-color: #C3D9FF;
-	margin-top: 4px;
+	margin-top: 1px;
+	padding: 2px;
+	
+	font-weight: bold;
 }
 
 .selected-link a, a:visited {
@@ -59,15 +63,28 @@ a:visited {
 .left-menu {
 	background-color: white;
 	padding: 10px;
-	border: 2px #C3D9FF solid;
-	width: 150px;
+	width: 200px;
 }
 
 .left-menu-header {
   font-weight: bold;
   background-color: #C3D9FF;
   border-bottom: 1px black solid;
+  padding: 2px;
   width: 100%;
+}
+
+.workspaces {
+	margin-bottom: 1em;
+}
+
+.workspaces .gwt-TreeItem {
+	padding: 2px;
+}
+
+.workspaces .gwt-TreeItem-selected {
+	background-color: #e8eef7;
+	font-weight: bold;
 }
 
 .right-title {
@@ -77,6 +94,7 @@ a:visited {
 }
 
 .artifactTypesPanel {
+	border: solid #c3d9ff 2px;
 	width: 100%;
 }
 .base {
@@ -97,7 +115,15 @@ a:visited {
  **/
 
 .main-panel {
-	padding: 1em;
+	padding: 0.3em;
+}
+
+.error-panel {
+	background: #F5B800;
+	margin: 10px;
+	padding: 5px;
+	
+	text-align: center;
 }
 
 
@@ -110,12 +136,23 @@ a:visited {
 .search-panel {
 	background: white;
 	padding: 3px;
+	padding-bottom: 0;
 }
 
-.error-panel {
-	background: #F5B800;
-	padding: 5px;
+.search-panel .gwt-Label {
+	font-size: 1.1em;
+	font-weight: bold;
 }
+
+.search-predicate {
+}
+
+
+/**
+ **
+ ** Raw GWT Styles
+ **
+ **/
 
 .gwt-BorderedPanel {
 }

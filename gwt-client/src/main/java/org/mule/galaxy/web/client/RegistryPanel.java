@@ -34,6 +34,7 @@ public class RegistryPanel extends AbstractMenuPanel {
         
         
         final Tree workspaceTree = new Tree();
+        workspaceTree.setStyleName("workspaces");
         workspaceTree.addTreeListener(new TreeListener() {
             public void onTreeItemSelected(TreeItem ti) {
                 setActiveWorkspace((String) ti.getUserObject());

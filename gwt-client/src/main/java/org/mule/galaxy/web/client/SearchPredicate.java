@@ -23,6 +23,7 @@ public class SearchPredicate
         searchPanel = sp;
         
         DockPanel dock = new DockPanel();
+        dock.setStylePrimaryName("search-predicate");
         dock.setWidth("100%");
         
         listBox = new ListBox();
