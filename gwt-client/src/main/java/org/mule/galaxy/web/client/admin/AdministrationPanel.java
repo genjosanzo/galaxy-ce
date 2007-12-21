@@ -11,7 +11,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class AdministrationPanel extends AbstractMenuPanel {
 
-    private DockPanel adminPanel;
     private UserServiceAsync userService;
     
     public AdministrationPanel() {
@@ -22,18 +21,46 @@ public class AdministrationPanel extends AbstractMenuPanel {
         ServiceDefTarget target = (ServiceDefTarget) userService;
         target.setServiceEntryPoint("/handler/userService.rpc");
         
-        Hyperlink usersLink = new Hyperlink("Users", "");
-        usersLink.addClickListener(new ClickListener() {
+        final AdministrationPanel adminPanel = this;
+        
+        
+        Hyperlink link = new Hyperlink("Lifecycles", "");
+        link.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
-                showUserPanel();
+                setMain(new UserListPanel(adminPanel));
+            }
+        });
+        addMenuItem(link);
+        
+        link = new Hyperlink("Policies", "");
+        link.addClickListener(new ClickListener() {
+            public void onClick(Widget w) {
+                setMain(new UserListPanel(adminPanel));
+            }
+        });
+        addMenuItem(link);
+        
+        link = new Hyperlink("Queries", "");
+        link.addClickListener(new ClickListener() {
+            public void onClick(Widget w) {
+                setMain(new UserListPanel(adminPanel));
+            }
+        });
+        addMenuItem(link);
+        
+        link = new Hyperlink("Users", "");
+        link.addClickListener(new ClickListener() {
+            public void onClick(Widget w) {
+                setMain(new UserListPanel(adminPanel));
             }
         });
         
-        addMenuItem(usersLink);
+        addMenuItem(link);
+        
+        
     }
 
-    protected void showUserPanel() {
-        setMain(new UserListPanel(userService));
+    public UserServiceAsync getUserService() {
+        return userService;
     }
-
 }

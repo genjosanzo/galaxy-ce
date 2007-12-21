@@ -11,6 +11,8 @@ public class WUser implements IsSerializable  {
     private String name;
     private String id;
     private String username;
+    private String email;
+    
     public String getName() {
         return name;
     }
@@ -28,6 +30,12 @@ public class WUser implements IsSerializable  {
     }
     public void setUsername(String username) {
         this.username = username;
+    }
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
     }
     
     

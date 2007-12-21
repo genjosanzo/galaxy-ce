@@ -39,7 +39,6 @@ public class RegistryPanel extends AbstractMenuPanel {
                 setActiveWorkspace((String) ti.getUserObject());
             }
 
-
             public void onTreeItemStateChanged(TreeItem ti) {
             }
         });
@@ -47,9 +46,7 @@ public class RegistryPanel extends AbstractMenuPanel {
         addMenuItem(workspaceTree);
 
         // Load the workspaces into a tree on the left
-        service.getWorkspaces(new AsyncCallback() {
-            public void onFailure(Throwable arg0) {
-            }
+        service.getWorkspaces(new AbstractCallback(this) {
 
             public void onSuccess(Object o) {
                 Collection workspaces = (Collection) o;
@@ -80,13 +77,7 @@ public class RegistryPanel extends AbstractMenuPanel {
 
     private void initArtifactTypes() {
         // Load the workspaces into a tree on the left
-        service.getArtifactTypes(new AsyncCallback() {
-
-            public void onFailure(Throwable t) {
-                //t.printStackTrace();
-                //mainPanel.add(new Label("message: " + t.getMessage()));
-                
-            }
+        service.getArtifactTypes(new AbstractCallback(this) {
 
             public void onSuccess(Object o) {
                 Collection workspaces = (Collection) o;

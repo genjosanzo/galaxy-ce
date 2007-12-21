@@ -9,6 +9,7 @@ public class User implements Identifiable {
     private String id;
     private String username;
     private String name;
+    private String email;
     private Calendar created;
     private Map<String,Object> properties;
     
@@ -32,6 +33,15 @@ public class User implements Identifiable {
     public void setName(String name) {
         this.name = name;
     }
+    
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public Map<String, Object> getProperties() {
         return properties;
     }

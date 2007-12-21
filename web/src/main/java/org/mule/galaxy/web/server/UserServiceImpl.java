@@ -16,8 +16,6 @@ public class UserServiceImpl implements UserService {
 
     private UserManager userManager;
     
-    
-
     public String addUser(String username, String fullname, String password) {
         try {
             return userManager.create(username, password, fullname).getId();
@@ -25,9 +23,7 @@ public class UserServiceImpl implements UserService {
             return null;
         }
     }
-
-
-
+    
     public Collection getUsers() {
         List<User> users = userManager.listAll();
         
@@ -37,6 +33,7 @@ public class UserServiceImpl implements UserService {
             w.setName(user.getName());
             w.setId(user.getId());
             w.setUsername(user.getUsername());
+            w.setEmail(user.getEmail());
             webUsers.add(w);
         }
         return webUsers;

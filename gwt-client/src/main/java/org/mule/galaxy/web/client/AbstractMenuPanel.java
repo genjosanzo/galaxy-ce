@@ -13,14 +13,14 @@ import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class AbstractMenuPanel extends Composite {
+public abstract class AbstractMenuPanel extends Composite {
 
     private DockPanel panel;
     private VerticalPanel leftMenu;
     private VerticalPanel mainPanel;
     private Widget mainWidget;
     private SimplePanel errorPanel;
-
+    
     public AbstractMenuPanel() {
         super();
         
@@ -57,11 +57,19 @@ public class AbstractMenuPanel extends Composite {
         
         this.mainWidget = widget;
         mainPanel.add(widget);
+        
     }
     
+
     public void setMessage(Label label) {
         errorPanel.clear();
         errorPanel.add(label);
         mainPanel.insert(errorPanel, 0);
     }
+    
+    public void setMessage(String string) {
+        setMessage(new Label(string));
+    }
+    
+    
 }
