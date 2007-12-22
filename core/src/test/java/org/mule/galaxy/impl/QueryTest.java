@@ -45,11 +45,11 @@ public class QueryTest extends AbstractGalaxyTest {
         
         assertEquals(2, results.size());
         
-//        results = registry.search(new Query(Artifact.class)
-//            .workspace("Default Workspace")
-//                 .add(Restriction.eq("mule.service", "GreeterUMO"))
-//                 .add(Restriction.eq("documentType", Constants.MULE_QNAME)));
-//        assertEquals(1, results.size());
+        results = registry.search(new Query(Artifact.class)
+            .workspace("Default Workspace")
+                 .add(Restriction.eq("mule.service", "GreeterUMO"))
+                 .add(Restriction.eq("documentType", Constants.MULE_QNAME)));
+        assertEquals(1, results.size());
         
     }
 

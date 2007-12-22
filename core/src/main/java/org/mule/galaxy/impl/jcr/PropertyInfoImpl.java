@@ -1,6 +1,7 @@
 package org.mule.galaxy.impl.jcr;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.mule.galaxy.PropertyInfo;
@@ -8,33 +9,27 @@ import org.mule.galaxy.PropertyInfo;
 public class PropertyInfoImpl implements PropertyInfo {
 
     private Node node;
+    private String name;
 
-    public PropertyInfoImpl(Node node) {
+    public PropertyInfoImpl(String name, Node node) {
         this.node = node;
+        this.name= name;
     }
 
     public String getName() {
-        try {
-            return node.getName();
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
+        return name;
     }
 
     public Object getValue() {
-        try {
-            return JcrUtil.getProperty(node.getName(), node.getParent());
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
+        return JcrUtil.getProperty(getName(), node);
     }
 
     public boolean isLocked() {
-        return JcrUtil.getBooleanOrNull(node, JcrVersion.LOCKED);
+        return JcrUtil.getBooleanOrNull(node, getName() + JcrVersion.LOCKED);
     }
 
     public boolean isVisible() {
-        return JcrUtil.getBooleanOrNull(node, JcrVersion.VISIBLE);
+        return JcrUtil.getBooleanOrNull(node, getName() + JcrVersion.VISIBLE);
     }
 
 }

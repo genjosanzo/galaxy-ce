@@ -14,6 +14,7 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.mule.galaxy.Identifiable;
+import org.mule.galaxy.NotFoundException;
 
 public abstract class AbstractReflectionDao<T extends Identifiable> extends AbstractDao<T> {
 
@@ -133,7 +134,8 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
     }
     
     @Override
-    protected void doSave(T t, Session session) throws RepositoryException {
+    protected void doSave(T t, Session session) 
+        throws RepositoryException, NotFoundException {
         String id = t.getId();
         Node node = null;
         
@@ -143,10 +145,10 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
             id = getId(t, node, session);
             t.setId(id);
         } else {
-            findNode(id, session);
+            node = findNode(id, session);
         }
         
-        if (node == null) throw new NullPointerException("Could not find node");
+        if (node == null) throw new NotFoundException(t.getId());
         
         try {
             persister.persist(t, node, session);

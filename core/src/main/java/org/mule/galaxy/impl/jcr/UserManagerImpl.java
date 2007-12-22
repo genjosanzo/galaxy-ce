@@ -93,8 +93,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
 
     protected Node findUser(String username, Session session) throws RepositoryException {
         QueryManager qm = getQueryManager(session);
-        Query q = qm.createQuery("/*/users/*[@enabled='true']/username[@" +
-        		JcrUtil.VALUE + "='" + username + "']", Query.XPATH);
+        Query q = qm.createQuery("/*/users/user[@enabled='true' and @username='" + username + "']", Query.XPATH);
         QueryResult qr = q.execute();
         
         NodeIterator nodes = qr.getNodes();
@@ -102,7 +101,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
             return null;
         }
         
-        return nodes.nextNode().getParent();
+        return nodes.nextNode();
     }
 
     public User create(final String username, final String password, final String name) throws UserExistsException {

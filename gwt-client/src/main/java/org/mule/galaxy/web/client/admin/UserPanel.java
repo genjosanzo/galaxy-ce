@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.mule.galaxy.web.client.AbstractCallback;
+import org.mule.galaxy.web.client.ItemNotFoundException;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -16,10 +17,18 @@ import com.google.gwt.user.client.ui.Widget;
 public class UserPanel extends Composite {
 
     private AdministrationPanel adminPanel;
+    private WUser user;
+    private PasswordTextBox oldPassTB;
+    private PasswordTextBox passTB;
+    private PasswordTextBox confirmTB;
+    private Button save;
+    private TextBox nameTB;
+    private TextBox emailTB;
 
     public UserPanel(AdministrationPanel adminPanel, 
                      WUser u) {
         this.adminPanel = adminPanel;
+        this.user = u;
         
         adminPanel.setTitle("Edit User");
         
@@ -38,29 +47,89 @@ public class UserPanel extends Composite {
         
         table.setText(0, 1, u.getUsername());
         
-        TextBox nameTB = new TextBox();
+        nameTB = new TextBox();
         nameTB.setText(u.getName());
         table.setWidget(1, 1, nameTB);
         
-        TextBox emailTB = new TextBox();
+        emailTB = new TextBox();
         emailTB.setText(u.getEmail());
         table.setWidget(2, 1, emailTB);
 
-        PasswordTextBox oldPass = new PasswordTextBox();
-        table.setWidget(3, 1, oldPass);
+        oldPassTB = new PasswordTextBox();
+        table.setWidget(3, 1, oldPassTB);
         
-        PasswordTextBox pass = new PasswordTextBox();
-        table.setWidget(4, 1, pass);
+        passTB = new PasswordTextBox();
+        table.setWidget(4, 1, passTB);
         
-        PasswordTextBox confirm = new PasswordTextBox();
-        table.setWidget(5, 1, confirm);
+        confirmTB = new PasswordTextBox();
+        table.setWidget(5, 1, confirmTB);
         
-        Button submit = new Button("Save");
-        table.setWidget(6, 1, submit);
+        save = new Button("Save");
+        table.setWidget(6, 1, save);
+        save.addClickListener(new ClickListener() {
+
+            public void onClick(Widget sender) {
+                save();
+            }
+            
+        });
         
         table.getRowFormatter().setStyleName(0, "gwt-FlexTable-header");
                 
         initWidget(table);
+    }
+
+    protected void save() {
+        save.setEnabled(false);
+        save.setText("Saving...");
+        
+        UserServiceAsync svc = adminPanel.getUserService();
+        
+        String old = oldPassTB.getText();
+        String p = passTB.getText();
+        String c = confirmTB.getText();
+        
+        if (old != null || old.equals("")) {
+            if (p == null || "".equals(p)){
+                adminPanel.setMessage("You must specify a new password.");
+                reenable();
+            }
+            
+            if (!p.equals(c)){
+                adminPanel.setMessage("The confirmation password does not match.");
+                reenable();
+            }
+        }
+    
+        user.setEmail(emailTB.getText());
+        user.setName(nameTB.getText());
+        
+        svc.updateUser(user, old, p, c, new AbstractCallback(adminPanel) {
+
+            
+            public void onFailure(Throwable caught) {
+                if (caught instanceof PasswordChangeException) {
+                    adminPanel.setMessage("Old password was not correct.");
+                    reenable();
+                } else if (caught instanceof ItemNotFoundException) {
+                    adminPanel.setMessage("User was not found! " + user.getId());
+                    reenable();
+                } else {
+                    super.onFailure(caught);
+                }
+            }
+
+            public void onSuccess(Object result) {
+                adminPanel.showUsers();
+                adminPanel.setMessage("User " + user.getUsername() + " was saved.");
+            }
+            
+        });
+    }
+
+    private void reenable() {
+        save.setEnabled(true);
+        save.setText("Save");
     }
 
 }

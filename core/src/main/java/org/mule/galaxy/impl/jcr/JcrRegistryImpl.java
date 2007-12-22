@@ -10,29 +10,24 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
-import javax.jcr.ItemExistsException;
 import javax.jcr.NamespaceException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
-import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.Value;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -51,6 +46,7 @@ import org.apache.jackrabbit.core.nodetype.NodeTypeDef;
 import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
 import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
 import org.apache.jackrabbit.core.nodetype.xml.NodeTypeReader;
+import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPlugin;
 import org.mule.galaxy.ArtifactPolicyException;
@@ -69,7 +65,6 @@ import org.mule.galaxy.Workspace;
 import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.Index.Language;
 import org.mule.galaxy.impl.IndexImpl;
-import org.mule.galaxy.impl.artifact.AbstractArtifactPlugin;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.Approval;
@@ -89,8 +84,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
-import org.springmodules.jcr.SessionFactoryUtils;
-import org.springmodules.jcr.SessionHolder;
 import org.springmodules.jcr.jackrabbit.support.UserTxSessionHolder;
 
 import org.w3c.dom.Document;
@@ -548,13 +541,23 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     jcrArtifact.getVersions().add(next);
                     ch.addMetadata(next);
                     
-                    Node newProps = JcrUtil.getOrCreate(versionNode, "properties");
-                    Node prevProps = previousNode.getNode("properties");
+                    try {
+                        Property pNames = previousNode.getProperty(AbstractJcrObject.PROPERTIES);
                     
-                    for (NodeIterator nodes = prevProps.getNodes(); nodes.hasNext();) {
-                        copy(nodes.nextNode(), newProps);
+                        for (Value name : pNames.getValues()) {
+                            Property prop = previousNode.getProperty(name.getString());
+                            
+                            if (prop.getDefinition().isMultiple()) {
+                                versionNode.setProperty(prop.getName(), prop.getValues());
+                            } else {
+                                versionNode.setProperty(prop.getName(), prop.getValue());
+                            }
+                        }
+                        
+                        versionNode.setProperty(pNames.getName(), pNames.getValues());
+                    } catch (PathNotFoundException e) {
                     }
-                
+                    
                     return approve(session, artifact, previousLatest, next);
                 } catch (RegistryException e) {
                     // this will get dewrapped
@@ -846,15 +849,20 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     qstr.append("//")
                         .append(ARTIFACT_NODE_NAME);
                 }
+                
+                StringBuilder propStr = new StringBuilder();
 
+                // Search the latest if we're searching for artifacts, otherwise
+                // search all versions
+                if (!av) {
+                    propStr.append("/version[@latest='true']");
+                } else {
+                    propStr.append("/version");
+                }
+                
                 boolean first = true;
                 for (Restriction r : query.getRestrictions()) {
-                    if (first) {
-                        first = false;
-                    } else {
-                        qstr.append(" and ");
-                    }
-                    
+
                     // TODO: NOT, LIKE, OR, etc
                     String property = (String) r.getLeft();
                     String right = r.getRight().toString();
@@ -866,24 +874,18 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     } else if (property.equals(JcrArtifact.CONTENT_TYPE)) {
                         createPropertySearch(qstr, right, JcrArtifact.CONTENT_TYPE);
                     } else {
-                        
-                        // Search the latest if we're searching for artifacts, otherwise
-                        // search all versions
-                        if (!av) {
-                            qstr.append("/version[@latest='true']");
+                        if (first) {
+                            first = false;
+                            propStr.append("[");
                         } else {
-                            qstr.append("/version");
+                            propStr.append(" and ");
                         }
                         
-                        qstr.append("/properties/")
+                        propStr.append("@")
                             .append(property)
-                            .append("/")
-                            .append(JcrUtil.VALUE)
-                            .append("[@")
-                            .append(JcrUtil.VALUE)
-                            .append("= \"")
+                            .append("='")
                             .append(right)
-                            .append("\"]");
+                            .append("'");
                     }
                 }
                 
@@ -891,6 +893,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 if (qstr.length() == 0) {
                     qstr.append("//")
                         .append(ARTIFACT_NODE_NAME);
+                } else {
+                    if (!first) propStr.append("]");
+                    
+                    qstr.append(propStr);
                 }
                 
                 LOGGER.info("Query: " + qstr.toString());
@@ -935,7 +941,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
 
     protected String escapeNodeName(String right) {
-        return right.replaceAll(" ", "_x0020_");
+        return ISO9075.encode(right);
     }
 
     private void createPropertySearch(StringBuilder qstr, String right, String property) {
@@ -1011,11 +1017,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             ex.bindNode(new QName("document"), ch.getDocument(jcrVersion.getData()), null);
             
             XQResultSequence result = ex.executeQuery();
-            
-            Node versionNode = jcrVersion.node;
-            
-            Node property = JcrUtil.getOrCreate(versionNode, idx.getId());
-            JcrUtil.removeChildren(property);
             
             List<Object> results = new ArrayList<Object>();
             

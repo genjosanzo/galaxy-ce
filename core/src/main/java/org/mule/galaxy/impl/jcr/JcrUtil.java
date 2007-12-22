@@ -1,8 +1,5 @@
 package org.mule.galaxy.impl.jcr;
 
-import static org.mule.galaxy.impl.jcr.JcrUtil.getOrCreate;
-import static org.mule.galaxy.impl.jcr.JcrUtil.setProperty;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -27,14 +24,21 @@ import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
 
+import org.apache.jackrabbit.value.BooleanValue;
+import org.apache.jackrabbit.value.DateValue;
+import org.apache.jackrabbit.value.DoubleValue;
+import org.apache.jackrabbit.value.LongValue;
+import org.apache.jackrabbit.value.StringValue;
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.util.QNameUtil;
 
 public class JcrUtil {
 
     public static final String VALUE = "__value";
-    private static final String TYPE = "__type";
-    private static final String COMPONENT_TYPE = "__componentType";
+    public static final String TYPE = "__type";
+    public static final String TYPE_SUFFIX = ".type";
+    public static final String COMPONENT_TYPE = "__componentType";
+    private static final String COMPONENT_TYPE_SUFFIX = ".componentType";
     
     public static String escape(String name) {
         String ret = name.replace('/', ' ');
@@ -207,62 +211,69 @@ public class JcrUtil {
         return p.getValue();
     }
 
-    public static Node setProperty(String name, Object value, Node n) throws RepositoryException {
-        if (value instanceof Map) {
-            return setMap(n, name, (Map<?, ?>) value);
-        } else if (value instanceof Collection) {
+    public static void setProperty(String name, Object value, Node n) throws RepositoryException {
+        name = escape(name);
+        
+        if (value instanceof Collection) {
             Collection<?> c = (Collection<?>) value;
             if (c.size() == 0) {
-                return null;
+                // clear the property
+                n.setProperty(name, (String)null);
+                return;
             }
             
-            Node child = getOrCreate(n, name);
-            
+            String typeProp = name + TYPE_SUFFIX;
             if (c instanceof Set) {
-                child.setProperty(TYPE, Set.class.getName());
+                n.setProperty(typeProp, Set.class.getName());
             } else if (c instanceof Map) {
-                child.setProperty(TYPE, Map.class.getName());
+                throw new UnsupportedOperationException();
             } else {
-                child.setProperty(TYPE, Collection.class.getName());
+                n.setProperty(typeProp, Collection.class.getName());
             }
             
-            child.setProperty(COMPONENT_TYPE, getComponentType(c));
-            
+            Value[] values = new Value[c.size()];
+            int i = 0;
+            boolean setComponent = false;
             for (Object o : c) {
-                Node valueNode = child.addNode(VALUE);
-                valueNode.setProperty(VALUE, o.toString());
+                if (o instanceof Boolean) {
+                    values[i] = new BooleanValue((Boolean) o);
+                } else if (o instanceof Calendar) {
+                    values[i] = new DateValue((Calendar) o);
+                } else if (o instanceof Double) {
+                    values[i] = new DoubleValue((Double) o);
+                } else if (o instanceof Long) {
+                    values[i] = new LongValue((Long) o);
+                } else if (o instanceof String) {
+                    values[i] = new StringValue((String) o);
+                } else {
+                    setComponent = true;
+                    values[i] = new StringValue(o.toString());
+                }
+                
+                i++;
             }
-            return child;
-        } else {
-            Node child = getOrCreate(n, name);
             
+            if (setComponent) {
+                n.setProperty(name + COMPONENT_TYPE_SUFFIX, getComponentType(c));
+            }
+            
+            n.setProperty(name, values);
+        } else {
             if (value instanceof String) {
-                child.setProperty(VALUE, value.toString());
+                n.setProperty(name, value.toString());
             } else if (value instanceof Calendar) {
-                child.setProperty(VALUE, (Calendar) value);
+                n.setProperty(name, (Calendar) value);
             } else if (value == null) {
-                child.setProperty(VALUE, (String) null);
+                n.setProperty(name, (String) null);
             } else if (value instanceof Identifiable) {
-                child.setProperty(VALUE, ((Identifiable) value).getId());
+                n.setProperty(name, ((Identifiable) value).getId());
             } else {
                 throw new UnsupportedOperationException("Unsupported type " + value.getClass());
             }
-            return child;
         }
     }
 
-    public static Node setMap(Node n, String name, Map<?,?> result) throws RepositoryException {
-        Node mapNode = getOrCreate(n, name);
-
-        // TODO: make this lazy and write a LazyNodeMap
-        for (Map.Entry<?,?> e : result.entrySet()) {
-            // TODO: handle more complex maps
-            setProperty((String) e.getKey(), e.getValue(), mapNode);
-        }
-        return mapNode;
-    }
-
-    private static String getComponentType(Collection<?> c) {
+    public static String getComponentType(Collection<?> c) {
         Iterator<?> itr = c.iterator();
         if (!itr.hasNext()) {
             return null;
@@ -272,16 +283,14 @@ public class JcrUtil {
     }
 
     public static Object getProperty(String name, Node node) {
+        name = escape(name);
+        
         try {
-            Node child = node.getNode(name);
-            if (child == null) {
-                return null;
-            }
-            
-            String type = getStringOrNull(child, TYPE);
+            String typeProp = name + TYPE_SUFFIX;
+            String type = getStringOrNull(node, typeProp);
             
             if (type == null) {
-                Property property = child.getProperty(VALUE);
+                Property property = node.getProperty(name);
                 
                 Value val = property.getValue();
                 if (val == null) {
@@ -311,19 +320,39 @@ public class JcrUtil {
                 values = new ArrayList<Object>();
             }
             
-            String component = JcrUtil.getStringOrNull(child, COMPONENT_TYPE);
-            Class componentCls = JcrUtil.class.getClassLoader().loadClass(component);
-            
-            for (NodeIterator itr = child.getNodes(); itr.hasNext();) {
-                Node next = itr.nextNode();
-
-                Object value = JcrUtil.getStringOrNull(next, VALUE);
-                
-                if (componentCls.equals(QName.class)) {
-                    value = QNameUtil.fromString(value.toString());
+            String component = JcrUtil.getStringOrNull(node, name + COMPONENT_TYPE_SUFFIX);
+            Class componentCls = null;
+            if (component != null) {
+                componentCls = JcrUtil.class.getClassLoader().loadClass(component);
+            }
+           
+            Property prop = node.getProperty(name);
+            for (Value val : prop.getValues()) {
+                switch (val.getType()) {
+                case PropertyType.STRING:
+                    if (componentCls != null) {
+                        if (componentCls.equals(QName.class)) {
+                            values.add(QName.valueOf(val.getString()));
+                        }
+                    } else {
+                        values.add(val.getString());
+                    }
+                    break;
+                case PropertyType.BOOLEAN:
+                    values.add(val.getBoolean());
+                    break;
+                case PropertyType.DATE:
+                    values.add(val.getDate());
+                    break;
+                case PropertyType.DOUBLE:
+                    values.add(val.getDouble());
+                    break;
+                case PropertyType.LONG:
+                    values.add(val.getLong());
+                    break;
+                default:
+                    return null;
                 }
-                
-                values.add(value);
             }
             return values;
         } catch (PathNotFoundException e) {

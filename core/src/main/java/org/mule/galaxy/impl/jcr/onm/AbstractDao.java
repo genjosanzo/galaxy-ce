@@ -10,6 +10,7 @@ import javax.jcr.query.QueryManager;
 
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Identifiable;
+import org.mule.galaxy.NotFoundException;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
@@ -28,7 +29,12 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     public void save(final T t) {
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                doSave(t, session);
+                try {
+                    doSave(t, session);
+                } catch (NotFoundException e) {
+                    // TODO Auto-generated catch block
+                    throw new RuntimeException(e);
+                }
                 session.save();
                 return null;
             }
@@ -67,7 +73,7 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
         return session.getWorkspace().getQueryManager();
     }
 
-    protected abstract void doSave(T t, Session session) throws RepositoryException;
+    protected abstract void doSave(T t, Session session) throws RepositoryException, NotFoundException;
 
     protected abstract T doGet(String id, Session session) throws RepositoryException;
 

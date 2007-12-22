@@ -12,6 +12,5 @@ public interface UserServiceAsync extends RemoteService {
     
     void addUser(String username, String fullname, String password, AsyncCallback callback);
     
-    void updateUser(WUser user, String oldPassword, String password, String confirm, AsyncCallback callback) 
-        throws PasswordChangeException, ItemNotFoundException;
+    void updateUser(WUser user, String oldPassword, String password, String confirm, AsyncCallback callback);
 }

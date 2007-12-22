@@ -1,15 +1,10 @@
 package org.mule.galaxy.web.client;
 
-import java.util.Collection;
-
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Tree;
-import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -19,7 +14,7 @@ public abstract class AbstractMenuPanel extends Composite {
     private VerticalPanel leftMenu;
     private VerticalPanel mainPanel;
     private Widget mainWidget;
-    private SimplePanel errorPanel;
+    private FlowPanel errorPanel;
     
     public AbstractMenuPanel() {
         super();
@@ -37,7 +32,7 @@ public abstract class AbstractMenuPanel extends Composite {
         panel.add(mainPanel, DockPanel.CENTER);
         panel.setCellWidth(mainPanel, "100%");
         
-        errorPanel = new SimplePanel();
+        errorPanel = new FlowPanel();
         errorPanel.setStyleName("error-panel");
         
         initWidget(panel);

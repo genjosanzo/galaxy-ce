@@ -2,36 +2,28 @@ package org.mule.galaxy.impl.jcr;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
-import javax.jcr.ValueFormatException;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.version.VersionException;
 
+import org.apache.jackrabbit.value.StringValue;
 import org.mule.galaxy.PropertyInfo;
 
 
 public class AbstractJcrObject {
 
-    private static final String PROPERTIES = "properties";
-    public static final String LOCKED = "locked";
-    public static final String VISIBLE = "visible";
+    public static final String PROPERTIES = "properties";
+    public static final String LOCKED = ".locked";
+    public static final String VISIBLE = ".visible";
     protected Node node;
-    protected Node propertyNode;
 
     public AbstractJcrObject(Node node) throws RepositoryException {
         this.node = node;
-        this.propertyNode = JcrUtil.getOrCreate(node, PROPERTIES);
     }
 
     public Node getNode() {
@@ -59,40 +51,75 @@ public class AbstractJcrObject {
     }
     public void setProperty(String name, Object value) {
         try {
-            Node propNode = JcrUtil.setProperty(name, value, propertyNode);
+            JcrUtil.setProperty(name, value, node);
             
-            if (propNode != null) {
-                propNode.setProperty(VISIBLE, true);
-            }
+            node.setProperty(name + VISIBLE, true);
+            ensureProperty(name);
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
     }
 
 
+    private void ensureProperty(String name) throws RepositoryException {
+        Property p = null;
+        try {
+            p = node.getProperty(PROPERTIES);
+            
+            for (Value v : p.getValues()) {
+                if (v.getString().equals(name)) {
+                    return;
+                }
+            }
+            
+            List<Value> values = new ArrayList<Value>();
+            for (Value v : p.getValues()) {
+                values.add(v);
+            }
+            values.add(new StringValue(name));
+            p.setValue(values.toArray(new Value[values.size()]));
+            
+        } catch (PathNotFoundException e) {
+            Value[] values = new Value[1];
+            values[0] = new StringValue(name);
+            node.setProperty(PROPERTIES, values);
+            
+            return;
+        }
+    }
+
     public Object getProperty(String name) {
-        return JcrUtil.getProperty(name, propertyNode);
+        return JcrUtil.getProperty(name, node);
     }
 
     public Iterator<PropertyInfo> getProperties() {
         try {
-            final NodeIterator nodes = propertyNode.getNodes();
+            Property p = null;
+            try {
+                p = node.getProperty(PROPERTIES);
+            } catch (PathNotFoundException e) {
+                return null;
+            }
+            
+            final Value[] values = p.getValues();
             return new Iterator<PropertyInfo>() {
-    
+                private int i = 0;
+                
                 public boolean hasNext() {
-                    return nodes.hasNext();
+                    return i < values.length;
                 }
     
                 public PropertyInfo next() {
-                    return new PropertyInfoImpl(nodes.nextNode());
-                }
-    
-                public void remove() {
+                    i++;
                     try {
-                        nodes.nextNode().remove();
+                        return new PropertyInfoImpl(values[i-1].getString(), node);
                     } catch (RepositoryException e) {
                         throw new RuntimeException(e);
                     }
+                }
+    
+                public void remove() {
+                    throw new UnsupportedOperationException();
                 }
                 
             };
@@ -102,24 +129,12 @@ public class AbstractJcrObject {
     }
 
     public PropertyInfo getPropertyInfo(String name) {
-        try {
-            Node property = propertyNode.getNode(name);
-            
-            return new PropertyInfoImpl(property);
-        } catch (PathNotFoundException e) {
-            return null;  
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
+        return new PropertyInfoImpl(name, node);
     }
 
     public void setLocked(String name, boolean locked) {
         try {
-            Node property = propertyNode.getNode(name);
-            
-            property.setProperty(LOCKED, locked);
-        } catch (PathNotFoundException e) {
-            return;
+            node.setProperty(name + LOCKED, locked);
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
@@ -127,10 +142,7 @@ public class AbstractJcrObject {
 
     public void setVisible(String name, boolean visible) {
         try {
-            Node property = propertyNode.getNode(name);
-            property.setProperty(VISIBLE, visible);
-        } catch (PathNotFoundException e) {
-            return;
+            node.setProperty(name + VISIBLE, visible);
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }

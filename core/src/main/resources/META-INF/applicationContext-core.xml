@@ -122,6 +122,9 @@
             <constructor-arg ref="registry"/>
           </bean>
         </entry>
+        <entry key="java.util.Map">
+          <bean class="org.mule.galaxy.impl.jcr.onm.MapPersister"/>
+        </entry>
       </map>
     </property>
   </bean>
