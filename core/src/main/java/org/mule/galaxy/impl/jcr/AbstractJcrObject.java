@@ -98,7 +98,21 @@ public class AbstractJcrObject {
             try {
                 p = node.getProperty(PROPERTIES);
             } catch (PathNotFoundException e) {
-                return null;
+                return new Iterator<PropertyInfo>() {
+
+                    public boolean hasNext() {
+                        return false;
+                    }
+
+                    public PropertyInfo next() {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                    
+                };
             }
             
             final Value[] values = p.getValues();

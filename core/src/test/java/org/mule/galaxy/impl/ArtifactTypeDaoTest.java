@@ -3,12 +3,12 @@ package org.mule.galaxy.impl;
 import java.util.List;
 
 import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.impl.jcr.ArtifactTypeDao;
+import org.mule.galaxy.impl.jcr.ArtifactTypeDaoImpl;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
 
 public class ArtifactTypeDaoTest extends AbstractGalaxyTest {
-    protected ArtifactTypeDao artifactTypeDao;
+    protected ArtifactTypeDaoImpl artifactTypeDao;
     
     public void testDao() throws Exception {
         ArtifactType a = new ArtifactType();
@@ -24,11 +24,22 @@ public class ArtifactTypeDaoTest extends AbstractGalaxyTest {
         assertEquals(a.getId(), a2.getId());
         assertEquals(a.getDescription(), a2.getDescription());
         assertEquals(a.getContentType(), a2.getContentType());
+        
+        ArtifactType at = artifactTypeDao.getDefaultArtifactType();
+        at = artifactTypeDao.getArtifactType("application/wsdl+xml", 
+                                             Constants.WSDL_DEFINITION_QNAME);
+        
+        assertNotNull(at);
+        
+        at = artifactTypeDao.getArtifactType("foobar", null);
+        
+        assertNotNull(at);
+        assertEquals("Other Artifacts", at.getDescription());
     }
     
     public void testRegistration() throws Exception {
         List<ArtifactType> all = artifactTypeDao.listAll();
-        assertEquals(5, all.size());
+        assertEquals(6, all.size());
     }
     
     @Override

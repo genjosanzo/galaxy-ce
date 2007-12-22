@@ -1,21 +1,10 @@
 package org.mule.galaxy.web.server;
 
-import java.io.InputStream;
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 
-import javax.xml.namespace.QName;
-
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Index;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.jcr.AbstractJcrObject;
-import org.mule.galaxy.impl.jcr.JcrVersion;
-import org.mule.galaxy.query.Query;
-import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.util.Constants;
+import org.mule.galaxy.web.client.ArtifactGroup;
 import org.mule.galaxy.web.client.RegistryService;
 
 public class RegistryServiceTest extends AbstractGalaxyTest {
@@ -35,5 +24,21 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         Collection artifactTypes = gwtRegistry.getArtifactTypes();
         assertTrue(artifactTypes.size() > 0);
         
+        
+        importHelloMule();
+        importHelloWsdl();
+        
+        Collection artifacts = gwtRegistry.getArtifacts(null);
+        
+        assertEquals(2, artifacts.size());
+        
+        ArtifactGroup g1 = (ArtifactGroup) artifacts.iterator().next();
+        assertEquals("Mule Configuration", g1.getName());
+        
+        List columns = g1.getColumns();
+        assertEquals(4, columns.size());
+        
+        List rows = g1.getRows();
+        assertEquals(1, rows.size());
     }
 }

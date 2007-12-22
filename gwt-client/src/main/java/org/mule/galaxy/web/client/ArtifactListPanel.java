@@ -6,8 +6,11 @@ import com.google.gwt.user.client.ui.FlexTable;
 public class ArtifactListPanel
     extends Composite
 {
-    public ArtifactListPanel() {
+    private ArtifactGroup group;
+
+    public ArtifactListPanel(ArtifactGroup group) {
         super();
+        this.group = group;
         
         FlexTable table = new FlexTable();
         table.setStyleName("gwt-FlexTable");
@@ -15,27 +18,23 @@ public class ArtifactListPanel
         table.setCellPadding(0);
         table.setWidth("100%");
         
-        table.setText(0, 0, "Name");
-        table.setText(0, 1, "Namespace");
-        table.setText(0, 2, "Services");
-        table.setText(0, 3, "Endpoints");
+        for (int i = 0; i < group.getColumns().size(); i++) {
+            table.setText(0, i, (String) group.getColumns().get(i));
+        }
         table.getRowFormatter().setStyleName(0, "gwt-FlexTable-header");
         
-        table.setText(1, 0, "GoogleSearch");
-        table.setText(1, 1, "urn:GoogleSearch");
-        table.setText(1, 2, "1");
-        table.setText(1, 3, "1");
-        
-        table.setText(2, 0, "FooService");
-        table.setText(2, 1, "urn:FooBar");
-        table.setText(2, 2, "4");
-        table.setText(2, 3, "2");
+        for (int i = 0; i < group.getRows().size(); i++) {
+            BasicArtifactInfo info = (BasicArtifactInfo) group.getRows().get(i);
+            for (int c = 0; c < group.getColumns().size(); c++) {
+                table.setText(i+1, c, info.getValue(c));
+            }
+        }
         
         initWidget(table);
     }
 
     public String getTitle()
     {
-        return "WSDL";
+        return group.getName();
     }
 }

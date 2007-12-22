@@ -103,7 +103,7 @@
     <property name="proxyTargetClass" value="true"/>
   </bean>
   
-  <bean id="artifactTypeDaoTarget" class="org.mule.galaxy.impl.jcr.ArtifactTypeDao"
+  <bean id="artifactTypeDaoTarget" class="org.mule.galaxy.impl.jcr.ArtifactTypeDaoImpl"
     init-method="initialize" >
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />

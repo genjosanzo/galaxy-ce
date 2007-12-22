@@ -19,6 +19,7 @@ public class OtherArtifactPlugin extends AbstractArtifactPlugin implements Const
             .save(new ArtifactType("WS-Policy", "application/xml", POLICY_QNAME, POLICY_2006_QNAME));
         artifactTypeDao.save(new ArtifactType("XML Schema", "application/xml", SCHEMA_QNAME));
         artifactTypeDao.save(new ArtifactType("XSLT Stylesheet", "application/xml", XSLT_QNAME));
+        artifactTypeDao.save(new ArtifactType("Other Artifacts", "*/*"));
     }
 
     public void initializeEverytime() throws Exception {

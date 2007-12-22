@@ -24,7 +24,7 @@ public class CustomArtifactTypeView implements ArtifactTypeView {
             }
         }));
         
-        columns.add(new Column("Lifecycle", new ColumnEvaluator() {
+        columns.add(new Column("Phase", new ColumnEvaluator() {
             public Object getValue(Object artifact) {
                 Phase p = ((Artifact) artifact).getPhase();
                 if (p != null)

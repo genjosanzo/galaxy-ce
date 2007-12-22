@@ -72,8 +72,12 @@ public class RegistryPanel extends AbstractMenuPanel {
         addArtifactPanel = new AddArtifactPanel();
         //setRightPanel(addArtifactPanel);
         
-        workspacePanel = new WorkspacePanel();
+        workspacePanel = new WorkspacePanel(this);
         setMain(workspacePanel);
+    }
+
+    public RegistryServiceAsync getRegistryService() {
+        return service;
     }
 
     private void initArtifactTypes() {
