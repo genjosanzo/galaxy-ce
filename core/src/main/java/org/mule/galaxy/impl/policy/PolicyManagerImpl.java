@@ -140,7 +140,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         jcrTemplate.execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 String lifecycle = a.getPhase().getLifecycle().getName();
-                String workspace = a.getWorkspace().getName();
+                String workspace = a.getWorkspace().getId();
                 
                 addPolicies(activePolicies, session, lifecyclesNodeId, lifecycle);
                 addPolicies(activePolicies, session, workspaceLifecyclesNodeId, 
