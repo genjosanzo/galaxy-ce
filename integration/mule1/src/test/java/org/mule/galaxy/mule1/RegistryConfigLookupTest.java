@@ -38,16 +38,16 @@ public class RegistryConfigLookupTest extends AbstractAtomTest {
 
         String url = "http://localhost:9002/api/repository";
         
-        // POST a Mule configuration
-        RequestOptions opts = new RequestOptions();
-        opts.setContentType("application/xml; charset=utf-8");
-        opts.setSlug("hello-config.xml");
-        opts.setHeader("X-Artifact-Version", "0.1");
-        opts.setHeader("X-Workspace", "Default Workspace");
-        opts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
-        ClientResponse res = client.post(url, getClass().getResourceAsStream("/mule/hello-config.xml"), opts);
-        assertEquals(201, res.getStatus());
-        
+//        // POST a Mule configuration
+//        RequestOptions opts = new RequestOptions();
+//        opts.setContentType("application/xml; charset=utf-8");
+//        opts.setSlug("hello-config.xml");
+//        opts.setHeader("X-Artifact-Version", "0.1");
+//        opts.setHeader("X-Workspace", "Default Workspace");
+//        opts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
+//        ClientResponse res = client.post(url, getClass().getResourceAsStream("/mule/hello-config.xml"), opts);
+//        assertEquals(201, res.getStatus());
+//        
         // TODO: this query language will improve in the future, so don't read too much into it yet
         String search = Escaping.encode("select artifact where mule.service = 'GreeterUMO'");
         url = url + "?q=" + search;
@@ -55,7 +55,7 @@ public class RegistryConfigLookupTest extends AbstractAtomTest {
         // GET a Feed with Mule Configurations which match the criteria
         RequestOptions defaultOpts = client.getDefaultRequestOptions();
         defaultOpts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
-        res = client.get(url, defaultOpts);
+        ClientResponse res = client.get(url, defaultOpts);
         assertEquals(200, res.getStatus());
         
         Document<Feed> feedDoc = res.getDocument();
