@@ -54,7 +54,7 @@ public class RegistryServiceImpl implements RegistryService {
     
 
     @SuppressWarnings("unchecked")
-    public Collection getArtifacts(String workspace) {
+    public Collection getArtifacts(String workspace, Set artifactTypes) {
         Query q = new Query(Artifact.class)
             .workspace(workspace)
             .orderBy("artifactType");
@@ -69,6 +69,11 @@ public class RegistryServiceImpl implements RegistryService {
                 Artifact a = (Artifact) o;
                 ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), 
                                                                     a.getDocumentType());
+                
+                // If we want to filter based on the artifact type, filter!
+                if (artifactTypes != null && artifactTypes.size() != 0 && !artifactTypes.contains(type.getId())) {
+                    continue;
+                }
                 
                 ArtifactGroup g = name2group.get(type.getDescription());
                 ArtifactTypeView view = name2view.get(type.getDescription());

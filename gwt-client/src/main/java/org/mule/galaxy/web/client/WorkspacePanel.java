@@ -6,14 +6,16 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 
 public class WorkspacePanel
     extends Composite
 {
+    private RegistryPanel registryPanel;
     private VerticalPanel panel;
 
 
-    public WorkspacePanel(RegistryPanel registryPanel) {
+    public WorkspacePanel(RegistryPanel rp) {
         super();
         
         panel = new VerticalPanel();
@@ -22,7 +24,8 @@ public class WorkspacePanel
         SearchPanel search = new SearchPanel();
         panel.add(search);
 
-        registryPanel.getRegistryService().getArtifacts(null, new AbstractCallback(registryPanel) {
+        registryPanel = rp;
+        registryPanel.getRegistryService().getArtifacts(null, null, new AbstractCallback(registryPanel) {
 
             public void onSuccess(Object o) {
                 initArtifacts((Collection) o);
@@ -31,6 +34,7 @@ public class WorkspacePanel
         });
         initWidget(panel);
     }
+    
     protected void initArtifacts(Collection o) {
         for (Iterator groups = o.iterator(); groups.hasNext();) {
             ArtifactGroup group = (ArtifactGroup) groups.next();
@@ -41,5 +45,16 @@ public class WorkspacePanel
             panel.add(label);
             panel.add(list);
         }
+    }
+    
+    public void reloadArtifacts(String workspace, Set artifactTypes) {
+        panel.clear();
+        
+        registryPanel.getRegistryService().getArtifacts(workspace, artifactTypes, new AbstractCallback(registryPanel) {
+            public void onSuccess(Object o) {
+                initArtifacts((Collection) o);
+            }
+            
+        });
     }
 }

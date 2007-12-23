@@ -2,8 +2,10 @@ package org.mule.galaxy.web.client;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -20,7 +22,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class RegistryPanel extends AbstractMenuPanel {
 
-    private List artifactTypes;
+    private Set artifactTypes;
     private String currentWorkspace;
     private VerticalPanel artifactTypesPanel;
     private String workspaceId;
@@ -81,6 +83,8 @@ public class RegistryPanel extends AbstractMenuPanel {
     }
 
     private void initArtifactTypes() {
+        artifactTypes = new HashSet();
+        
         // Load the workspaces into a tree on the left
         service.getArtifactTypes(new AbstractCallback(this) {
 
@@ -127,10 +131,14 @@ public class RegistryPanel extends AbstractMenuPanel {
     
     public void addArtifactTypeFilter(String id) {
         setMessage(new Label("Artifact filter " + id));
+        artifactTypes.add(id);
+        workspacePanel.reloadArtifacts(null, artifactTypes);
     }
 
     public void removeArtifactTypeFilter(String id) {
         setMessage(new Label("Removed artifact filter " + id));
+        artifactTypes.remove(id);
+        workspacePanel.reloadArtifacts(null, artifactTypes);
     }
 
     public void setActiveWorkspace(String userObject) {
