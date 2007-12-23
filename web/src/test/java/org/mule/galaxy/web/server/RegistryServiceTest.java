@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.web.client.ArtifactGroup;
+import org.mule.galaxy.web.client.BasicArtifactInfo;
 import org.mule.galaxy.web.client.RegistryService;
 
 public class RegistryServiceTest extends AbstractGalaxyTest {
@@ -39,5 +40,9 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         List rows = g1.getRows();
         assertEquals(1, rows.size());
+        
+        BasicArtifactInfo a = (BasicArtifactInfo) g1.getRows().get(0);
+        Collection deps = gwtRegistry.getDependencyInfo(a.getId());
+        assertEquals(0, deps.size());
     }
 }

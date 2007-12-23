@@ -11,7 +11,6 @@ import javax.activation.MimeTypeParseException;
 import javax.xml.namespace.QName;
 
 import org.mule.galaxy.Index.Language;
-import org.mule.galaxy.policy.Approval;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.security.User;
@@ -120,4 +119,6 @@ public interface Registry {
     void addDependencies(ArtifactVersion artifactVersion, Artifact... artifacts) throws RegistryException;
 
     void removeDependencies(ArtifactVersion artifactVersion, Artifact... artifact) throws RegistryException;
+    
+    Set<Dependency> getDependedOnBy(Artifact a) throws RegistryException;
 }

@@ -55,6 +55,7 @@ import org.mule.galaxy.Comment;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
 import org.mule.galaxy.Dao;
+import org.mule.galaxy.Dependency;
 import org.mule.galaxy.Index;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
@@ -833,9 +834,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 String workspace = query.getWorkspace();
                 if (workspace != null) {
-                    qstr.append("//")
-                        .append(escapeNodeName(workspace))
-                        .append("[@jcr:primaryType=\"galaxy:workspace\"]/")
+                    qstr.append("//*[@jcr:uuid='")
+                        .append(workspace)
+                        .append("'][@jcr:primaryType=\"galaxy:workspace\"]/")
                         .append(ARTIFACT_NODE_NAME);
                 } else {
                     qstr.append("//")
@@ -931,6 +932,59 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         });
     }
 
+
+
+    @SuppressWarnings("unchecked")
+    public Set<Dependency> getDependedOnBy(final Artifact artifact) 
+        throws RegistryException, QueryException {
+        final JcrRegistryImpl registry = this;
+        
+        return (Set<Dependency>) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                        
+                QueryManager qm = getQueryManager(session);
+                
+                StringBuilder qstr = new StringBuilder();
+                qstr.append("//")
+                    .append(ARTIFACT_NODE_NAME)
+                    .append("/version/")
+                    .append(JcrVersion.DEPENDENCIES)
+                    .append("/")
+                    .append(ISO9075.encode(artifact.getId()))
+                    .append("");
+                
+                Set<Dependency> artifacts = new HashSet<Dependency>();
+                
+                Query query = qm.createQuery(qstr.toString(), Query.XPATH);
+                
+                QueryResult result = query.execute();
+                
+                for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
+                    final Node depNode = nodes.nextNode();
+                    
+                    final Node node = depNode.getParent().getParent().getParent();
+                    
+                    JcrWorkspace workspace = new JcrWorkspace(node.getParent());
+                    final JcrArtifact artDep = new JcrArtifact(workspace, node, registry);
+                    
+                    Dependency dependency = new Dependency() {
+
+                        public Artifact getArtifact() {
+                            return artDep;
+                        }
+
+                        public boolean isUserSpecified() {
+                            return JcrUtil.getBooleanOrNull(depNode, JcrVersion.USER_SPECIFIED);
+                        }
+                        
+                    };
+                    artifacts.add(dependency);
+                }
+                return artifacts;
+            }
+
+        });
+    }
 
     protected String escapeNodeName(String right) {
         return ISO9075.encode(right);

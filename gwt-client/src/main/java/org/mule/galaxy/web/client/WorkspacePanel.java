@@ -13,6 +13,7 @@ public class WorkspacePanel
 {
     private RegistryPanel registryPanel;
     private VerticalPanel panel;
+    private VerticalPanel artifactPanel;
 
 
     public WorkspacePanel(RegistryPanel rp) {
@@ -23,6 +24,9 @@ public class WorkspacePanel
         
         SearchPanel search = new SearchPanel();
         panel.add(search);
+
+        artifactPanel = new VerticalPanel();
+        panel.add(artifactPanel);
 
         registryPanel = rp;
         registryPanel.getRegistryService().getArtifacts(null, null, new AbstractCallback(registryPanel) {
@@ -39,16 +43,16 @@ public class WorkspacePanel
         for (Iterator groups = o.iterator(); groups.hasNext();) {
             ArtifactGroup group = (ArtifactGroup) groups.next();
             
-            ArtifactListPanel list = new ArtifactListPanel(group);
+            ArtifactListPanel list = new ArtifactListPanel(registryPanel, group);
             Label label = new Label(list.getTitle());
             label.setStyleName("right-title");
-            panel.add(label);
-            panel.add(list);
+            artifactPanel.add(label);
+            artifactPanel.add(list);
         }
     }
     
     public void reloadArtifacts(String workspace, Set artifactTypes) {
-        panel.clear();
+        artifactPanel.clear();
         
         registryPanel.getRegistryService().getArtifacts(workspace, artifactTypes, new AbstractCallback(registryPanel) {
             public void onSuccess(Object o) {

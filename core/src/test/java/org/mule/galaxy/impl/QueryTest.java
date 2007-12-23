@@ -41,12 +41,12 @@ public class QueryTest extends AbstractGalaxyTest {
         Workspace workspace = muleArtifact.getWorkspace();
         
         // Try out search!
-        Set results = registry.search(new Query(Artifact.class).workspace(workspace.getName()));
+        Set results = registry.search(new Query(Artifact.class).workspace(workspace.getId()));
         
         assertEquals(2, results.size());
         
         results = registry.search(new Query(Artifact.class)
-            .workspace("Default Workspace")
+            .workspace(workspace.getId())
                  .add(Restriction.eq("mule.service", "GreeterUMO"))
                  .add(Restriction.eq("documentType", Constants.MULE_QNAME)));
         assertEquals(1, results.size());

@@ -10,6 +10,9 @@ import java.util.Set;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.ArtifactTypeDao;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Dependency;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
@@ -19,6 +22,7 @@ import org.mule.galaxy.view.ArtifactTypeView;
 import org.mule.galaxy.view.ViewManager;
 import org.mule.galaxy.web.client.ArtifactGroup;
 import org.mule.galaxy.web.client.BasicArtifactInfo;
+import org.mule.galaxy.web.client.DependencyInfo;
 import org.mule.galaxy.web.client.RegistryService;
 import org.mule.galaxy.web.client.WArtifactType;
 import org.mule.galaxy.web.client.WWorkspace;
@@ -28,6 +32,7 @@ public class RegistryServiceImpl implements RegistryService {
     private ArtifactTypeDao artifactTypeDao;
     private ViewManager viewManager;
     
+    @SuppressWarnings("unchecked")
     public Collection getWorkspaces() {
         try {
              Collection<Workspace> workspaces = registry.getWorkspaces();
@@ -42,6 +47,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public Collection getArtifactTypes() {
         Collection<ArtifactType> artifactTypes = artifactTypeDao.listAll();
         List atis = new ArrayList();
@@ -54,9 +60,9 @@ public class RegistryServiceImpl implements RegistryService {
     
 
     @SuppressWarnings("unchecked")
-    public Collection getArtifacts(String workspace, Set artifactTypes) {
+    public Collection getArtifacts(String workspaceId, Set artifactTypes) {
         Query q = new Query(Artifact.class)
-            .workspace(workspace)
+            .workspace(workspaceId)
             .orderBy("artifactType");
         
         try {
@@ -94,6 +100,7 @@ public class RegistryServiceImpl implements RegistryService {
                 }
                 
                 BasicArtifactInfo info = new BasicArtifactInfo();
+                info.setId(a.getId());
                 for (int i = 0; i < view.getColumnNames().length; i++) {
                     info.setColumn(i, view.getColumnValue(a, i));
                 }
@@ -109,6 +116,36 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public Collection getDependencyInfo(String artifactId) throws Exception {
+        try {
+            Artifact artifact = registry.getArtifact(artifactId);
+            List deps = new ArrayList();
+            ArtifactVersion latest = artifact.getLatestVersion();
+            for (Dependency d : latest.getDependencies()) {
+                Artifact depArt = d.getArtifact();
+                deps.add(new DependencyInfo(d.isUserSpecified(), 
+                                            true,
+                                            depArt.getName(),
+                                            depArt.getId()));
+            }
+            
+            for (Dependency d : registry.getDependedOnBy(artifact)) {
+                Artifact depArt = d.getArtifact();
+                deps.add(new DependencyInfo(d.isUserSpecified(), 
+                                            false,
+                                            depArt.getName(),
+                                            depArt.getId()));
+            }
+            
+            return deps;
+        } catch (Exception e) {
+            throw new Exception("Could not find artifact " + artifactId);
+        }
+        
+        
     }
 
     public void setRegistry(Registry registry) {

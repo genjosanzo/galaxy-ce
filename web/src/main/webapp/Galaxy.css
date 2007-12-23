@@ -74,6 +74,21 @@ a:visited {
   width: 100%;
 }
 
+
+.dependencyPanelHeader {
+  font-weight: bold;
+  background-color: #C3D9FF;
+  border-bottom: 1px black solid;
+  padding: 2px;
+  width: 100%;
+}
+
+.dependencyPanel {
+	border: solid #c3d9ff 2px;
+	width: 100%;
+	margin: 10px;
+}
+
 .workspaces {
 	margin-bottom: 1em;
 }

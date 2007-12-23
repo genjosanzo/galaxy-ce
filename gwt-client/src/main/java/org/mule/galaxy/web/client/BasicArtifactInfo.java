@@ -7,7 +7,16 @@ import java.util.Map;
 
 public class BasicArtifactInfo implements IsSerializable {
     private Map col2Value = new HashMap();
+    private String id;
     
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public void setColumn(int col, String value) {
         col2Value.put(new Integer(col), value);
     }

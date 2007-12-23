@@ -19,15 +19,8 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
     }
 
     public String getId() {
-        // this will need to be redone when we support multiple workspaces
-        String id = getName();
         try {
-            int idx = node.getIndex();
-            
-            if (idx > 1) {
-                id = id + "[" + idx + "]";
-            }
-            return id;
+            return node.getUUID();
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }

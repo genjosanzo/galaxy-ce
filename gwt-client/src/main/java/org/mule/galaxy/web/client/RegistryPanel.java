@@ -132,19 +132,19 @@ public class RegistryPanel extends AbstractMenuPanel {
     public void addArtifactTypeFilter(String id) {
         setMessage(new Label("Artifact filter " + id));
         artifactTypes.add(id);
-        workspacePanel.reloadArtifacts(null, artifactTypes);
+        workspacePanel.reloadArtifacts(workspaceId, artifactTypes);
     }
 
     public void removeArtifactTypeFilter(String id) {
         setMessage(new Label("Removed artifact filter " + id));
         artifactTypes.remove(id);
-        workspacePanel.reloadArtifacts(null, artifactTypes);
+        workspacePanel.reloadArtifacts(workspaceId, artifactTypes);
     }
 
-    public void setActiveWorkspace(String userObject) {
-        this.workspaceId = userObject;
-        refresh();
-        setMessage(new Label("Active workspace set to " + userObject));
+    public void setActiveWorkspace(String workspaceId) {
+        this.workspaceId = workspaceId;
+        setMain(workspacePanel);
+        workspacePanel.reloadArtifacts(workspaceId, artifactTypes);
     }
 
     public void refresh() {
