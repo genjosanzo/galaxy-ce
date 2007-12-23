@@ -62,6 +62,7 @@ public class Main {
         opts.setHeader("X-Workspace", "Default Workspace");
         opts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
         ClientResponse res = client.post(url, Main.class.getResourceAsStream(resource), opts);
+        res.release();
     }
 
 }

@@ -85,10 +85,15 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         Feed feed = feedDoc.getRoot();
         
         List<Entry> entries = feed.getEntries();
-        assertEquals(1, entries.size());
+        assertEquals(5, entries.size());
         
-        Entry e = entries.get(0);
-        assertEquals("hello_world.wsdl", e.getTitle());
+        Entry e = null;
+        for (Entry e2 : entries) {
+            if (e2.getTitle().equals("hello_world.wsdl")) {
+                e = e2;
+            }
+        }
+        assertNotNull(e);
         
         res = client.get(e.getContentSrc().toString(), defaultOpts);
         assertEquals(200, res.getStatus());
@@ -98,8 +103,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         
     }
-
-
+    
     private InputStream getWsdl() {
         return getClass().getResourceAsStream("/wsdl/hello.wsdl");
     }

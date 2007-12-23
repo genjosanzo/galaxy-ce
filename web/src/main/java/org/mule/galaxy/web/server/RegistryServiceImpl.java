@@ -61,7 +61,6 @@ public class RegistryServiceImpl implements RegistryService {
         
         try {
             Set results = registry.search(q);
-            System.out.println("Found " + results.size());
             Map<String, ArtifactGroup> name2group = new HashMap<String, ArtifactGroup>();
             Map<String, ArtifactTypeView> name2view = new HashMap<String, ArtifactTypeView>();
             

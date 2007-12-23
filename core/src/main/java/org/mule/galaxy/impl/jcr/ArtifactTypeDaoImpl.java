@@ -52,9 +52,13 @@ public class ArtifactTypeDaoImpl extends AbstractReflectionDao<ArtifactType>
                 QueryResult qr = q.execute();
 
                 NodeIterator nodes = qr.getNodes();
-                if (!nodes.hasNext() && documentType != null) {
-                    // fall back to content type
-                    return getArtifactType(contentType, null);
+                if (!nodes.hasNext()) {
+                    if (documentType != null) {
+                        // fall back to content type
+                        return getArtifactType(contentType, null);
+                    } else {
+                        return getDefaultArtifactType();
+                    }
                 }
 
                 Node node = nodes.nextNode();

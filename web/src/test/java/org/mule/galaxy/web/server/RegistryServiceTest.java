@@ -17,20 +17,19 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
                               "/META-INF/applicationContext-web.xml" };
         
     }
+    
     public void testWorkspaces() throws Exception {
         Collection workspaces = gwtRegistry.getWorkspaces();
         assertEquals(1, workspaces.size());
         
         Collection artifactTypes = gwtRegistry.getArtifactTypes();
         assertTrue(artifactTypes.size() > 0);
+
+        applicationContext.getBean("pluginRunner");
         
+        Collection artifacts = gwtRegistry.getArtifacts(null, null);
         
-        importHelloMule();
-        importHelloWsdl();
-        
-        Collection artifacts = gwtRegistry.getArtifacts(null);
-        
-        assertEquals(2, artifacts.size());
+        assertEquals(3, artifacts.size());
         
         ArtifactGroup g1 = (ArtifactGroup) artifacts.iterator().next();
         assertEquals("Mule Configuration", g1.getName());

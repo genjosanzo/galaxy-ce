@@ -48,7 +48,6 @@ import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
 import org.apache.jackrabbit.core.nodetype.xml.NodeTypeReader;
 import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPlugin;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
@@ -78,19 +77,14 @@ import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.QNameUtil;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
-import org.springmodules.jcr.jackrabbit.support.UserTxSessionHolder;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 
-public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistry, ApplicationContextAware {
+public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistry {
 
     public static final String ARTIFACT_NODE_NAME = "__artifact";
     public static final String LATEST = "latest";
@@ -117,7 +111,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private String indexesId;
 
     private String artifactTypesId;
-    private ApplicationContext context;
     
     
     public JcrRegistryImpl() {
@@ -388,8 +381,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     jcrVersion.addDependencies(dependencies, false);
                     
                     Lifecycle lifecycle = lifecycleManager.getLifecycle(workspace);
-                    artifact.setPhase(lifecycle.getInitialPhase());
-                    
+                    artifact.setPhase(lifecycle.getInitialPhase());                    
                     
                     Set<ArtifactVersion> versions = new HashSet<ArtifactVersion>();
                     versions.add(jcrVersion);
@@ -1071,9 +1063,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public void initialize() throws Exception {
         Session session = getSessionFactory().getSession();
-        UserTxSessionHolder sessionHolder = new UserTxSessionHolder(session);
-        TransactionSynchronizationManager.bindResource(getSessionFactory(), 
-                                                       sessionHolder);
         Node root = session.getRootNode();
         
         // UGH, Jackrabbit specific code
@@ -1108,14 +1097,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         indexesId = JcrUtil.getOrCreate(root, "indexes").getUUID();
         artifactTypesId = JcrUtil.getOrCreate(root, "artifactTypes").getUUID();
 
-        String[] beans = context.getBeanNamesForType(ArtifactPlugin.class);
-        
-        for (String s : beans) {
-            ArtifactPlugin ap = (ArtifactPlugin) context.getBean(s);
-            ap.setRegistry(this);
-            ap.initializeEverytime();
-        }
-        
         NodeIterator nodes = workspaces.getNodes();
         // ignore the system node
         if (nodes.getSize() == 0) {
@@ -1125,11 +1106,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
             JcrWorkspace w = new JcrWorkspace(node);
             w.setName(settings.getDefaultWorkspaceName());
-            
-            for (String s : beans) {
-                Object o = context.getBean(s);
-                ((ArtifactPlugin) o).initializeOnce();
-            }
+
+            System.setProperty("initializeOnce", "true");
         } 
 
         session.save();
@@ -1141,8 +1119,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         for (ArtifactPolicy a : policyManager.getPolicies()) {
             a.setRegistry(this);
         }
+        
 //        session.logout();
-        TransactionSynchronizationManager.unbindResource(getSessionFactory());
     }
 
     public void addComment(Comment c) {
@@ -1200,10 +1178,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
     
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.context = applicationContext;        
-    }
-
     public void setSettings(Settings settings) {
         this.settings = settings;
     }
