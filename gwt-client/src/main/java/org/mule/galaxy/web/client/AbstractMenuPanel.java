@@ -16,7 +16,7 @@ public abstract class AbstractMenuPanel extends Composite {
     private Widget mainWidget;
     private FlowPanel errorPanel;
     
-    public AbstractMenuPanel() {
+    public AbstractMenuPanel(Galaxy galaxy) {
         super();
         
         panel = new DockPanel();
@@ -37,6 +37,7 @@ public abstract class AbstractMenuPanel extends Composite {
         
         initWidget(panel);
     }
+
 
     public void addMenuItem(Widget widget) {
         leftMenu.add(widget);

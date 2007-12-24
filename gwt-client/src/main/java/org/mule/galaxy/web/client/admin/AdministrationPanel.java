@@ -7,22 +7,20 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Widget;
 import org.mule.galaxy.web.client.AbstractMenuPanel;
+import org.mule.galaxy.web.client.Galaxy;
 
 public class AdministrationPanel extends AbstractMenuPanel {
 
     private UserServiceAsync userService;
     private Hyperlink add;
     
-    public AdministrationPanel() {
-        super();
+    public AdministrationPanel(Galaxy galaxy) {
+        super(galaxy);
         
         userService = (UserServiceAsync) GWT.create(UserService.class);
         
         ServiceDefTarget target = (ServiceDefTarget) userService;
         target.setServiceEntryPoint("/handler/userService.rpc");
-        
-        final AdministrationPanel adminPanel = this;
-        
         
         Hyperlink link = new Hyperlink("Lifecycles", "");
         link.addClickListener(new ClickListener() {

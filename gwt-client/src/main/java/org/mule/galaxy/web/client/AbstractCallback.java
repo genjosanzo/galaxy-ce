@@ -13,7 +13,7 @@ public abstract class AbstractCallback implements AsyncCallback{
     public void onFailure(Throwable caught) {
         String msg = caught.getMessage();
         
-        if (msg != null) {
+        if (msg != null || !"".equals(msg)) {
             panel.setMessage("Error communicating with server: " + caught.getMessage() + ". Please try again.");
         } else {
             panel.setMessage("There was an error communicating with the server. Please try again." + caught.getMessage());

@@ -99,11 +99,7 @@ public class RegistryServiceImpl implements RegistryService {
                     }
                 }
                 
-                BasicArtifactInfo info = new BasicArtifactInfo();
-                info.setId(a.getId());
-                for (int i = 0; i < view.getColumnNames().length; i++) {
-                    info.setColumn(i, view.getColumnValue(a, i));
-                }
+                BasicArtifactInfo info = createBasicArtifactInfo(a, view);
                 
                 g.getRows().add(info);
             }
@@ -116,6 +112,15 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private BasicArtifactInfo createBasicArtifactInfo(Artifact a, ArtifactTypeView view) {
+        BasicArtifactInfo info = new BasicArtifactInfo();
+        info.setId(a.getId());
+        for (int i = 0; i < view.getColumnNames().length; i++) {
+            info.setColumn(i, view.getColumnValue(a, i));
+        }
+        return info;
     }
 
     @SuppressWarnings("unchecked")
@@ -146,6 +151,32 @@ public class RegistryServiceImpl implements RegistryService {
         }
         
         
+    }
+    
+
+    @SuppressWarnings("unchecked")
+    public ArtifactGroup getArtifact(String artifactId) throws Exception {
+        Artifact a = registry.getArtifact(artifactId);
+        ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), 
+                                                            a.getDocumentType());
+        
+        ArtifactGroup g = new ArtifactGroup();
+        g.setName(type.getDescription());
+        ArtifactTypeView  view = viewManager.getArtifactTypeView(a.getDocumentType());
+        if (view == null) {
+            view = viewManager.getArtifactTypeView(a.getContentType().toString());
+        }
+        
+        for (String col : view.getColumnNames()) {
+            g.getColumns().add(col);
+        }
+        
+        
+        BasicArtifactInfo info = createBasicArtifactInfo(a, view);
+        
+        g.getRows().add(info);
+        
+        return g;
     }
 
     public void setRegistry(Registry registry) {

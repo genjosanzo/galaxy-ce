@@ -1,24 +1,20 @@
 package org.mule.galaxy.web.client;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 public class RegistryPanel extends AbstractMenuPanel {
 
@@ -30,9 +26,12 @@ public class RegistryPanel extends AbstractMenuPanel {
     private RegistryServiceAsync service;
     private WorkspacePanel workspacePanel;
     
-    public RegistryPanel(RegistryServiceAsync service) {
-        super();
-        this.service = service;
+    public RegistryPanel(Galaxy galaxy) {
+        super(galaxy);
+        this.service = (RegistryServiceAsync) GWT.create(RegistryService.class);
+        
+        ServiceDefTarget target = (ServiceDefTarget) service;
+        target.setServiceEntryPoint("/handler/registry.rpc");
         
         
         final Tree workspaceTree = new Tree();

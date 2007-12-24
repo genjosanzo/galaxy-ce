@@ -2,6 +2,8 @@ package org.mule.galaxy.web.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -26,19 +28,16 @@ import org.mule.galaxy.web.client.admin.AdministrationPanel;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class Galaxy implements EntryPoint {
+public class Galaxy implements EntryPoint, HistoryListener {
 
     RegistryServiceAsync service;
-    
+    private RegistryPanel registryPanel;
     
     /**
      * This is the entry point method.
      */
     public void onModuleLoad() {
-        service = (RegistryServiceAsync) GWT.create(RegistryService.class);
-        
-        ServiceDefTarget target = (ServiceDefTarget) service;
-        target.setServiceEntryPoint("/handler/registry.rpc");
+        History.addHistoryListener(this);
         
         VerticalPanel base = new VerticalPanel();
         base.setStyleName("base");
@@ -51,11 +50,20 @@ public class Galaxy implements EntryPoint {
         TabPanel tabPanel = new TabPanel();
         base.add(tabPanel);
         
-        tabPanel.add(new RegistryPanel(service), "Registry");
+        registryPanel = new RegistryPanel(this);
+        tabPanel.add(registryPanel, "Registry");
         tabPanel.selectTab(0);
-        tabPanel.add(new AdministrationPanel(), "Administration");
+        tabPanel.add(new AdministrationPanel(this), "Administration");
         
         RootPanel.get().add(base);
+    }
+
+    public void show(HistoryWidget w) {
+        
+    }
+
+    public void onHistoryChanged(String token) {
+        // registryPanel.setMessage(token);
     }
 
 }

@@ -26,6 +26,7 @@ public class WorkspacePanel
         panel.add(search);
 
         artifactPanel = new VerticalPanel();
+        artifactPanel.setWidth("100%");
         panel.add(artifactPanel);
 
         registryPanel = rp;

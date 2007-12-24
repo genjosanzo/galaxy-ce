@@ -2,6 +2,7 @@ package org.mule.galaxy.web.client.artifact;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TabPanel;
+import org.mule.galaxy.web.client.AbstractCallback;
 import org.mule.galaxy.web.client.ArtifactGroup;
 import org.mule.galaxy.web.client.BasicArtifactInfo;
 import org.mule.galaxy.web.client.RegistryPanel;
@@ -19,22 +20,47 @@ import org.mule.galaxy.web.client.RegistryPanel;
 public class ArtifactPanel extends Composite {
 
     private RegistryPanel registryPanel;
+    private TabPanel artifactTabs;
+    private BasicArtifactInfo info;
+    private ArtifactGroup group;
 
     public ArtifactPanel(RegistryPanel registryPanel, 
                          ArtifactGroup group,
                          BasicArtifactInfo info) {
-        super();
+        this(registryPanel);
+        this.info = info;
+        this.group = group;
+        
+        init();
+    }
+
+    protected ArtifactPanel(RegistryPanel registryPanel) {
         this.registryPanel = registryPanel;
         
-        TabPanel artifactTabs = new TabPanel();
+        artifactTabs = new TabPanel();
         
+        initWidget(artifactTabs);
+    }
+    
+    private void init() {
         artifactTabs.add(new ArtifactInfoPanel(registryPanel, group, info), "Info");
         artifactTabs.selectTab(0);
         
         artifactTabs.add(new ArtifactInfoPanel(registryPanel, group, info), "Governance");
         artifactTabs.add(new ArtifactInfoPanel(registryPanel, group, info), "History");
-        
-        initWidget(artifactTabs);
     }
-    
+
+    public ArtifactPanel(RegistryPanel registryPanel, String artifactId) {
+        this(registryPanel);
+        
+        registryPanel.getRegistryService().getArtifact(artifactId, new AbstractCallback(registryPanel) { 
+            public void onSuccess(Object o) {
+                group = (ArtifactGroup) o;
+                info = (BasicArtifactInfo) group.getRows().get(0);
+                
+                init();
+            }
+        });
+    }
+
 }

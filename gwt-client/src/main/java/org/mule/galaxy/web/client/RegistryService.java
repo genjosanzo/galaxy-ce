@@ -11,20 +11,20 @@ public interface RegistryService extends RemoteService {
      * @gwt typeArgs org.mule.galaxy.web.client.WorkspaceInfo
      * @return
      */
-    public Collection getWorkspaces();
+    Collection getWorkspaces();
     
     /**
      * @gwt typeArgs org.mule.galaxy.web.client.ArtifactTypeInfo
      * @return
      */
-    public Collection getArtifactTypes();
+    Collection getArtifactTypes();
 
     
     /**
      * @gwt typeArgs org.mule.galaxy.web.client.ArtifactGroup
      * @return
      */
-    public Collection getArtifacts(String workspace, Set artifactTypes);
+    Collection getArtifacts(String workspace, Set artifactTypes);
 
     
     /**
@@ -32,5 +32,7 @@ public interface RegistryService extends RemoteService {
      * @return
      * @throws Exception 
      */
-    public Collection getDependencyInfo(String artifactId) throws Exception;
+    Collection getDependencyInfo(String artifactId) throws Exception;
+    
+    ArtifactGroup getArtifact(String artifactId) throws Exception;
 }
