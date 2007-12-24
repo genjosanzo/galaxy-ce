@@ -267,8 +267,10 @@ public class JcrUtil {
                 n.setProperty(name, (String) null);
             } else if (value instanceof Identifiable) {
                 n.setProperty(name, ((Identifiable) value).getId());
+            } else if (value == null) {
+                n.setProperty(name, (String) null);
             } else {
-                throw new UnsupportedOperationException("Unsupported type " + value.getClass());
+                n.setProperty(name, value.toString());
             }
         }
     }

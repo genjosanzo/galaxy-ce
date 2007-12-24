@@ -102,7 +102,7 @@ public interface Registry {
 
     Set search(Query query) throws RegistryException, QueryException;
 
-    Set<Index> getIndices();
+    Set<Index> getIndexes();
     
     Set<Index> getIndices(QName documentType) throws RegistryException;
 

@@ -601,14 +601,14 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
     
     @SuppressWarnings("unchecked")
-    public Set<Index> getIndices() {
+    public Set<Index> getIndexes() {
         return (Set<Index>) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Set<Index> indices = new HashSet<Index>();
                 for (NodeIterator nodes = getIndexNode().getNodes(); nodes.hasNext();) {
                     Node node = nodes.nextNode();
                     
-                    indices.add(createIndexFromNode(node.getParent()));
+                    indices.add(createIndexFromNode(node));
                 }
                 return indices;
             }
@@ -620,28 +620,32 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return (Set<Index>) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 QueryManager qm = getQueryManager(session);
-                Query query = qm.createQuery("//indexes/*/documentType[@value='" + documentType.toString() + "']", 
+                Query query = qm.createQuery("//indexes/*[@documentType=" 
+                                                 + JcrUtil.stringToXPathLiteral(documentType.toString()) + "]", 
                                              Query.XPATH);
-                
+                System.out.println(query.getStatement());
                 QueryResult result = query.execute();
                 
                 Set<Index> indices = new HashSet<Index>();
                 for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
                     Node node = nodes.nextNode();
                     
-                    indices.add(createIndexFromNode(node.getParent()));
+                    indices.add(createIndexFromNode(node));
                 }
                 return indices;
             }
         });
     }
 
+    @SuppressWarnings("unchecked")
     private Index createIndexFromNode(Node node) throws RepositoryException {
         IndexImpl idx = new IndexImpl();
-        
+        JcrUtil.dump(node);
         idx.setId(JcrUtil.getStringOrNull(node, IndexImpl.ID));
         idx.setExpression(JcrUtil.getStringOrNull(node, IndexImpl.EXPRESSION));
-        idx.setLanguage(Language.valueOf(JcrUtil.getStringOrNull(node, IndexImpl.LANGUAGE)));
+        String lang = JcrUtil.getStringOrNull(node, IndexImpl.LANGUAGE);
+        System.out.println(lang);
+        idx.setLanguage(Language.valueOf(lang));
         idx.setName(JcrUtil.getStringOrNull(node, IndexImpl.NAME));
         
         String qt = JcrUtil.getStringOrNull(node, IndexImpl.QUERY_TYPE);
@@ -651,18 +655,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             // not gonna happen
             throw new RuntimeException(e);
         }
-        
-        HashSet<QName> docTypes = new HashSet<QName>();
-        for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
-            Node child = nodes.nextNode();
-            
-            if (child.getName().equals(IndexImpl.DOCUMENT_TYPE)) {
-                String value = JcrUtil.getStringOrNull(child, IndexImpl.DOCUMENT_TYPE_VALUE);
-                
-                docTypes.add(QNameUtil.fromString(value));
-            }
-        }
-        idx.setDocumentTypes(docTypes);
+        idx.setDocumentTypes((Set<QName>)JcrUtil.getProperty(IndexImpl.DOCUMENT_TYPE, node));
         
         return idx;
     }
@@ -690,15 +683,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 idxNode.setProperty(IndexImpl.QUERY_TYPE, searchType.getName());
                 idxNode.setProperty(IndexImpl.LANGUAGE, language.toString());
                 
-                String name = IndexImpl.DOCUMENT_TYPE;
-                JcrUtil.removeChildren(idxNode, name);
-                
                 Set<QName> typeSet = new HashSet<QName>();
                 for (QName q : documentTypes) {
                     typeSet.add(q);
-                    Node typeNode = idxNode.addNode(name);
-                    typeNode.setProperty(IndexImpl.DOCUMENT_TYPE_VALUE, q.toString());
                 }
+                JcrUtil.setProperty(IndexImpl.DOCUMENT_TYPE, typeSet, idxNode);
                 
                 session.save();
                 

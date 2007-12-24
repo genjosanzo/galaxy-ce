@@ -29,6 +29,7 @@ public class ArtifactInfoPanel extends Composite {
         this.registryPanel = registryPanel;
         VerticalPanel panel = new VerticalPanel();
         
+        
         topPanel = new HorizontalPanel();
         
         FlexTable table = new FlexTable();

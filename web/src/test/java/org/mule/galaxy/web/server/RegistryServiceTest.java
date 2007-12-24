@@ -2,6 +2,7 @@ package org.mule.galaxy.web.server;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.web.client.ArtifactGroup;
@@ -55,5 +56,12 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         rows = g1.getRows();
         assertEquals(1, rows.size());
+    }
+    
+    public void testIndexes() throws Exception {
+        Map indexes = gwtRegistry.getIndexes();
+        
+        assertTrue(indexes.size() > 0);
+        
     }
 }

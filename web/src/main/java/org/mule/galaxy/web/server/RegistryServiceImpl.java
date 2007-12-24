@@ -126,10 +126,10 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     @SuppressWarnings("unchecked")
-    public Map getArtifactIndices() {
+    public Map getIndexes() {
         Map map = new Hashtable();
         
-        Set<Index> indices = registry.getIndices();
+        Set<Index> indices = registry.getIndexes();
         for (Index idx : indices) {
             map.put(idx.getName(), idx.getId());
         }
