@@ -640,11 +640,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     @SuppressWarnings("unchecked")
     private Index createIndexFromNode(Node node) throws RepositoryException {
         IndexImpl idx = new IndexImpl();
-        JcrUtil.dump(node);
+        
         idx.setId(JcrUtil.getStringOrNull(node, IndexImpl.ID));
         idx.setExpression(JcrUtil.getStringOrNull(node, IndexImpl.EXPRESSION));
         String lang = JcrUtil.getStringOrNull(node, IndexImpl.LANGUAGE);
-        System.out.println(lang);
+        
         idx.setLanguage(Language.valueOf(lang));
         idx.setName(JcrUtil.getStringOrNull(node, IndexImpl.NAME));
         
