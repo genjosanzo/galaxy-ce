@@ -1055,7 +1055,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             
             List<Object> results = new ArrayList<Object>();
             
-            boolean locked = true;
             boolean visible = true;
             
             if (result.next()) {
@@ -1065,10 +1064,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 // check locking & visibility
                 NamedNodeMap atts = values.getAttributes();
-                org.w3c.dom.Node lockedNode = atts.getNamedItem("locked");
-                if (lockedNode != null) {
-                    locked = BooleanUtils.toBoolean(lockedNode.getNodeValue());
-                }
                 org.w3c.dom.Node visibleNode = atts.getNamedItem("visible");
                 if (visibleNode != null) {
                     visible = BooleanUtils.toBoolean(visibleNode.getNodeValue());
@@ -1092,7 +1087,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
             
             jcrVersion.setProperty(idx.getId(), results);
-            jcrVersion.setLocked(idx.getId(), locked);
+            jcrVersion.setLocked(idx.getId(), true);
             jcrVersion.setVisible(idx.getId(), visible);
         } catch (Exception e) {
             // TODO: better error handling for frontends

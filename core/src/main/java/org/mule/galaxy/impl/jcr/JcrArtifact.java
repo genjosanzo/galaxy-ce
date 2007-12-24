@@ -2,6 +2,7 @@ package org.mule.galaxy.impl.jcr;
 
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.activation.MimeType;
@@ -14,6 +15,7 @@ import javax.xml.namespace.QName;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.Phase;
@@ -224,6 +226,27 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
         getLatestVersion().setProperty(name, value);
     }
     
+    @Override
+    public Iterator<PropertyInfo> getProperties() {
+        return getLatestVersion().getProperties();
+    }
+
+    @Override
+    public PropertyInfo getPropertyInfo(String name) {
+        return getLatestVersion().getPropertyInfo(name);
+    }
+
+    @Override
+    public void setLocked(String name, boolean locked) {
+        getLatestVersion().setLocked(name, locked);
+    }
+
+
+    @Override
+    public void setVisible(String name, boolean visible) {
+        getLatestVersion().setVisible(name, visible);
+    }
+
     public JcrRegistryImpl getRegistry() {
         return registry;
     }

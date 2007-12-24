@@ -11,11 +11,12 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.mule.galaxy.web.client.AbstractCallback;
 import org.mule.galaxy.web.client.ArtifactGroup;
-import org.mule.galaxy.web.client.BasicArtifactInfo;
 import org.mule.galaxy.web.client.DependencyInfo;
+import org.mule.galaxy.web.client.ExtendedArtifactInfo;
 import org.mule.galaxy.web.client.RegistryPanel;
 
 public class ArtifactInfoPanel extends Composite {
@@ -25,13 +26,16 @@ public class ArtifactInfoPanel extends Composite {
 
     public ArtifactInfoPanel(RegistryPanel registryPanel, 
                              ArtifactGroup group,
-                             BasicArtifactInfo info) {
+                             ExtendedArtifactInfo info) {
         this.registryPanel = registryPanel;
         VerticalPanel panel = new VerticalPanel();
-        
+        Label label = new Label(info.getValue(0));
+        label.setStyleName("right-title");
+        panel.add(label);
         
         topPanel = new HorizontalPanel();
-        
+        panel.add(topPanel);
+
         FlexTable table = new FlexTable();
         table.setStyleName("gwt-FlexTable");
         table.setCellSpacing(5);
@@ -56,7 +60,28 @@ public class ArtifactInfoPanel extends Composite {
             
         });
         
-        panel.add(topPanel);
+        table = new FlexTable();
+        table.setStyleName("gwt-FlexTable");
+        table.setCellSpacing(5);
+        table.setCellPadding(0);
+        table.setWidth("100%");
+        
+        int i = 0;
+        for (Iterator itr = info.getProperties().entrySet().iterator(); itr.hasNext();) {
+            Map.Entry e = (Map.Entry) itr.next();
+            
+            table.setText(i, 0, (String) e.getKey());
+            table.setText(i, 1, (String) e.getValue());
+            
+            i++;
+        }
+        
+        label = new Label("Metadata");
+        label.setStyleName("right-title");
+
+        panel.add(label);
+        panel.add(table);
+        
         initWidget(panel);
     }
     

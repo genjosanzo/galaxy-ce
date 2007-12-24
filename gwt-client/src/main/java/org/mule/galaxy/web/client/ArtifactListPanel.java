@@ -36,7 +36,7 @@ public class ArtifactListPanel
                     hl.addClickListener(new ClickListener() {
 
                         public void onClick(Widget arg0) {
-                            registryPanel.setMain(new ArtifactPanel(registryPanel, group, info));
+                            registryPanel.setMain(new ArtifactPanel(registryPanel, info.getId()));
                         }
                         
                     });

@@ -3,7 +3,7 @@ package org.mule.galaxy.web.server;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,7 +14,7 @@ import org.mule.galaxy.ArtifactTypeDao;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Dependency;
 import org.mule.galaxy.Index;
-import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
@@ -25,6 +25,8 @@ import org.mule.galaxy.view.ViewManager;
 import org.mule.galaxy.web.client.ArtifactGroup;
 import org.mule.galaxy.web.client.BasicArtifactInfo;
 import org.mule.galaxy.web.client.DependencyInfo;
+import org.mule.galaxy.web.client.ExtendedArtifactInfo;
+import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.client.RegistryService;
 import org.mule.galaxy.web.client.WArtifactType;
 import org.mule.galaxy.web.client.WWorkspace;
@@ -118,6 +120,11 @@ public class RegistryServiceImpl implements RegistryService {
 
     private BasicArtifactInfo createBasicArtifactInfo(Artifact a, ArtifactTypeView view) {
         BasicArtifactInfo info = new BasicArtifactInfo();
+        return createBasicArtifactInfo(a, view, info);
+    }
+
+    private BasicArtifactInfo createBasicArtifactInfo(Artifact a, ArtifactTypeView view,
+                                                      BasicArtifactInfo info) {
         info.setId(a.getId());
         for (int i = 0; i < view.getColumnNames().length; i++) {
             info.setColumn(i, view.getColumnValue(a, i));
@@ -127,7 +134,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     @SuppressWarnings("unchecked")
     public Map getIndexes() {
-        Map map = new Hashtable();
+        Map map = new HashMap();
         
         Set<Index> indices = registry.getIndexes();
         for (Index idx : indices) {
@@ -138,7 +145,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     @SuppressWarnings("unchecked")
-    public Collection getDependencyInfo(String artifactId) throws Exception {
+    public Collection getDependencyInfo(String artifactId) throws RPCException {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
             List deps = new ArrayList();
@@ -161,7 +168,8 @@ public class RegistryServiceImpl implements RegistryService {
             
             return deps;
         } catch (Exception e) {
-            throw new Exception("Could not find artifact " + artifactId);
+            e.printStackTrace();
+            throw new RPCException("Could not find artifact " + artifactId);
         }
         
         
@@ -169,28 +177,48 @@ public class RegistryServiceImpl implements RegistryService {
     
 
     @SuppressWarnings("unchecked")
-    public ArtifactGroup getArtifact(String artifactId) throws Exception {
-        Artifact a = registry.getArtifact(artifactId);
-        ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), 
-                                                            a.getDocumentType());
-        
-        ArtifactGroup g = new ArtifactGroup();
-        g.setName(type.getDescription());
-        ArtifactTypeView  view = viewManager.getArtifactTypeView(a.getDocumentType());
-        if (view == null) {
-            view = viewManager.getArtifactTypeView(a.getContentType().toString());
+    public ArtifactGroup getArtifact(String artifactId) throws RPCException {
+        try {
+            Artifact a = registry.getArtifact(artifactId);
+            ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), 
+                                                                a.getDocumentType());
+            
+            ArtifactGroup g = new ArtifactGroup();
+            g.setName(type.getDescription());
+            ArtifactTypeView  view = viewManager.getArtifactTypeView(a.getDocumentType());
+            if (view == null) {
+                view = viewManager.getArtifactTypeView(a.getContentType().toString());
+            }
+            
+            for (String col : view.getColumnNames()) {
+                g.getColumns().add(col);
+            }
+            
+            
+            ExtendedArtifactInfo info = new ExtendedArtifactInfo();
+            createBasicArtifactInfo(a, view, info);
+            
+            for (Iterator<PropertyInfo> props = a.getProperties(); props.hasNext();) {
+                PropertyInfo p = props.next();
+                
+                Object val = p.getValue();
+                if (val instanceof Collection) {
+                    String s = val.toString();
+                    val = s.substring(1, s.length()-1);
+                } else if (val != null) {
+                    val = val.toString();
+                } else {
+                    val = "";
+                }
+                info.getProperties().put(p.getName(), val);
+            }
+            g.getRows().add(info);
+            
+            return g;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RPCException("Could not find artifact " + artifactId);
         }
-        
-        for (String col : view.getColumnNames()) {
-            g.getColumns().add(col);
-        }
-        
-        
-        BasicArtifactInfo info = createBasicArtifactInfo(a, view);
-        
-        g.getRows().add(info);
-        
-        return g;
     }
 
     public void setRegistry(Registry registry) {

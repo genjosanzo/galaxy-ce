@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.TabPanel;
 import org.mule.galaxy.web.client.AbstractCallback;
 import org.mule.galaxy.web.client.ArtifactGroup;
 import org.mule.galaxy.web.client.BasicArtifactInfo;
+import org.mule.galaxy.web.client.ExtendedArtifactInfo;
 import org.mule.galaxy.web.client.RegistryPanel;
 
 /**
@@ -21,18 +22,8 @@ public class ArtifactPanel extends Composite {
 
     private RegistryPanel registryPanel;
     private TabPanel artifactTabs;
-    private BasicArtifactInfo info;
+    private ExtendedArtifactInfo info;
     private ArtifactGroup group;
-
-    public ArtifactPanel(RegistryPanel registryPanel, 
-                         ArtifactGroup group,
-                         BasicArtifactInfo info) {
-        this(registryPanel);
-        this.info = info;
-        this.group = group;
-        
-        init();
-    }
 
     protected ArtifactPanel(RegistryPanel registryPanel) {
         this.registryPanel = registryPanel;
@@ -56,7 +47,7 @@ public class ArtifactPanel extends Composite {
         registryPanel.getRegistryService().getArtifact(artifactId, new AbstractCallback(registryPanel) { 
             public void onSuccess(Object o) {
                 group = (ArtifactGroup) o;
-                info = (BasicArtifactInfo) group.getRows().get(0);
+                info = (ExtendedArtifactInfo) group.getRows().get(0);
                 
                 init();
             }

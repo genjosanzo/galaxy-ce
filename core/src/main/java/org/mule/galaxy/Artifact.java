@@ -2,6 +2,7 @@ package org.mule.galaxy;
 
 
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.activation.MimeType;
@@ -49,4 +50,12 @@ public interface Artifact  {
     Object getProperty(String name);
     
     public Phase getPhase();
+
+    Iterator<PropertyInfo> getProperties();
+    
+    PropertyInfo getPropertyInfo(String name);
+
+    void setLocked(String name, boolean locked);
+
+    void setVisible(String property, boolean visible);
 }

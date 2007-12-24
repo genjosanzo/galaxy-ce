@@ -27,7 +27,7 @@ public class SearchPanel
         panel.setWidth("100%");
         panel.setStyleName("search-panel");
         
-        registryPanel.getRegistryService().getArtifactIndices(new AbstractCallback(registryPanel) {
+        registryPanel.getRegistryService().getIndexes(new AbstractCallback(registryPanel) {
 
             public void onSuccess(Object o) {
                 initArtifactIndices((Map) o);

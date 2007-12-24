@@ -35,7 +35,7 @@ public interface RegistryService extends RemoteService {
      * @return
      * @throws Exception 
      */
-    Collection getDependencyInfo(String artifactId) throws Exception;
+    Collection getDependencyInfo(String artifactId) throws RPCException;
     
-    ArtifactGroup getArtifact(String artifactId) throws Exception;
+    ArtifactGroup getArtifact(String artifactId) throws RPCException;
 }
