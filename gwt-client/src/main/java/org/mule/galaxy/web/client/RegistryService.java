@@ -3,6 +3,7 @@ package org.mule.galaxy.web.client;
 import com.google.gwt.user.client.rpc.RemoteService;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 public interface RegistryService extends RemoteService {
@@ -25,7 +26,9 @@ public interface RegistryService extends RemoteService {
      * @return
      */
     Collection getArtifacts(String workspace, Set artifactTypes);
-
+    
+    
+    public Map getArtifactIndices();
     
     /**
      * @gwt typeArgs org.mule.galaxy.web.client.DependencyInfo

@@ -3,6 +3,7 @@ package org.mule.galaxy.web.server;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +13,7 @@ import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.ArtifactTypeDao;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Dependency;
+import org.mule.galaxy.Index;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
@@ -121,6 +123,18 @@ public class RegistryServiceImpl implements RegistryService {
             info.setColumn(i, view.getColumnValue(a, i));
         }
         return info;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map getArtifactIndices() {
+        Map map = new Hashtable();
+        
+        Set<Index> indices = registry.getIndices();
+        for (Index idx : indices) {
+            map.put(idx.getName(), idx.getId());
+        }
+        
+        return map;
     }
 
     @SuppressWarnings("unchecked")

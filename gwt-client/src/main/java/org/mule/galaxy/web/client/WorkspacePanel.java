@@ -22,7 +22,7 @@ public class WorkspacePanel
         panel = new VerticalPanel();
         panel.setWidth("100%");
         
-        SearchPanel search = new SearchPanel();
+        SearchPanel search = new SearchPanel(rp);
         panel.add(search);
 
         artifactPanel = new VerticalPanel();

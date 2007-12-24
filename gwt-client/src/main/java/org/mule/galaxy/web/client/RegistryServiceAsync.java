@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.client;
 
+import java.util.Map;
 import java.util.Set;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -11,6 +12,8 @@ public interface RegistryServiceAsync extends RemoteService {
     void getArtifactTypes(AsyncCallback callback);
     
     void getArtifacts(String workspace, Set artifactTypes, AsyncCallback callback);
+    
+    void getArtifactIndices(AsyncCallback callback);
     
     void getDependencyInfo(String artifactId, AsyncCallback callback);
 

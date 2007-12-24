@@ -1,5 +1,9 @@
 package org.mule.galaxy.web.client;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -14,7 +18,7 @@ public class SearchPredicate
     extends Composite
 {
     private SearchPanel searchPanel;
-    private ListBox     listBox;
+    private ListBox     attributeList;
     private HorizontalPanel contents;
     
     public SearchPredicate(SearchPanel sp) {
@@ -26,16 +30,15 @@ public class SearchPredicate
         dock.setStylePrimaryName("search-predicate");
         dock.setWidth("100%");
         
-        listBox = new ListBox();
-        listBox.setWidth("100px");
-        listBox.addItem("Name");
-        listBox.addItem("Other");
-        listBox.addChangeListener(new ChangeListener() {
+        attributeList = new ListBox();
+        attributeList.setWidth("100px");
+        attributeList.addItem("Name");
+        attributeList.addChangeListener(new ChangeListener() {
            public void onChange(Widget sender) {
                processTypeChange();
            }
         });
-        dock.add(listBox, DockPanel.WEST);
+        dock.add(attributeList, DockPanel.WEST);
         
         contents = new HorizontalPanel();
         contents.setWidth("100%");
@@ -64,6 +67,16 @@ public class SearchPredicate
         initWidget(dock);
     }
     
+    public void setAttributeList(Map nameIdMap) {
+        Set names = nameIdMap.keySet();
+        for (Iterator itr = names.iterator(); itr.hasNext();) {
+            String name = (String) itr.next();
+            String id   = (String) nameIdMap.get(name);
+            
+            attributeList.addItem(name, id);
+        }
+    }
+    
     //
     // When the user selects a different type of search.
     // (From the first listbox)
@@ -80,7 +93,7 @@ public class SearchPredicate
         contents.add(lb);
         
         TextBox tb = new TextBox();
-        tb.setText(listBox.getItemText(listBox.getSelectedIndex()));
+        tb.setText(attributeList.getItemText(attributeList.getSelectedIndex()));
         contents.add(tb);
         contents.setCellWidth(tb, "100%");
     }
