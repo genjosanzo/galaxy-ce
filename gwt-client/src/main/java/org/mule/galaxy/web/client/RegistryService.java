@@ -48,5 +48,7 @@ public interface RegistryService extends RemoteService {
                      String propertyValue) throws RPCException;
     
     WComment addComment(String artifactId, String parentCommentId, String text) throws RPCException;
+    
+    void setDescription(String artifactId, String description) throws RPCException;
 
 }

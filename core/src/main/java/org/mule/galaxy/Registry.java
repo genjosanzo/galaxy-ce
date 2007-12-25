@@ -91,6 +91,8 @@ public interface Registry {
     
     void delete(Artifact artifact) throws RegistryException;
 
+    void save(Artifact artifact) throws RegistryException;
+
     Set search(String queryString) throws RegistryException, QueryException;
 
     Set search(Query query) throws RegistryException, QueryException;

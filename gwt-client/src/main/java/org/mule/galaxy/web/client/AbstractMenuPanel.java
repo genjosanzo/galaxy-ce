@@ -1,10 +1,11 @@
 package org.mule.galaxy.web.client;
 
+import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -23,7 +24,7 @@ public abstract class AbstractMenuPanel extends Composite {
         
         leftMenu = new VerticalPanel();
         leftMenu.setStyleName("left-menu");
-        
+        leftMenu.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
         panel.add(leftMenu, DockPanel.WEST);
         
         mainPanel = new VerticalPanel();

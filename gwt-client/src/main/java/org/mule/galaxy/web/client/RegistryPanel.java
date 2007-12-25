@@ -36,14 +36,7 @@ public class RegistryPanel extends AbstractMenuPanel {
         
         final Tree workspaceTree = new Tree();
         workspaceTree.setStyleName("workspaces");
-        workspaceTree.addTreeListener(new TreeListener() {
-            public void onTreeItemSelected(TreeItem ti) {
-                setActiveWorkspace((String) ti.getUserObject());
-            }
-
-            public void onTreeItemStateChanged(TreeItem ti) {
-            }
-        });
+        
         
         addMenuItem(workspaceTree);
 
@@ -54,12 +47,22 @@ public class RegistryPanel extends AbstractMenuPanel {
                 Collection workspaces = (Collection) o;
                 
                 TreeItem treeItem = workspaceTree.addItem("Workspaces");
+                workspaceTree.setSelectedItem(treeItem);
                 initWorkspaces(treeItem, workspaces);
                 
                 treeItem.setState(true);
             }
         });
+        
+        workspaceTree.addTreeListener(new TreeListener() {
+            public void onTreeItemSelected(TreeItem ti) {
+                setActiveWorkspace((String) ti.getUserObject());
+            }
 
+            public void onTreeItemStateChanged(TreeItem ti) {
+            }
+        });
+        
         artifactTypesPanel = new VerticalPanel();
         addMenuItem(artifactTypesPanel);
         

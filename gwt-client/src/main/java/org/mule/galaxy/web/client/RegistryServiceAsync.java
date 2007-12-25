@@ -32,4 +32,5 @@ public interface RegistryServiceAsync extends RemoteService {
     
     void addComment(String artifactId, String parentCommentId, String text, AsyncCallback callback);
     
+    void setDescription(String artifactId, String description, AsyncCallback callback);
 }

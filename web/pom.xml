@@ -42,7 +42,6 @@
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-testutils</artifactId>
       <version>${version}</version>
-      <scope>test</scope>
     </dependency>
 
     <dependency>

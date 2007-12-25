@@ -599,6 +599,16 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return approvals;
     }
 
+    public void save(Artifact artifact) throws RegistryException {
+        execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                // TODO: Fix artifact saving!!!
+                session.save();
+                return null;
+            }
+        });
+    }
+
     public void delete(Artifact artifact) {
         throw new UnsupportedOperationException();
     }

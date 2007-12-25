@@ -9,6 +9,7 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.InvalidQueryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
@@ -200,8 +201,13 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
 
     @Override
     protected List<T> doFind(String property, String value, Session session) throws RepositoryException {
+        String stmt = "/*/" + rootNode + "/*[@" + property + "='" + value + "']";
+        return query(stmt, session);
+    }
+
+    protected List<T> query(String stmt, Session session) throws RepositoryException, InvalidQueryException {
         QueryManager qm = getQueryManager(session);
-        Query q = qm.createQuery("/*/" + rootNode + "/*[@" + property + "='" + value + "']", Query.XPATH);
+        Query q = qm.createQuery(stmt, Query.XPATH);
         
         QueryResult qr = q.execute();
         

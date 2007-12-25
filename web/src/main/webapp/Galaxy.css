@@ -37,14 +37,14 @@ a:visited {
 	color: darkblue;
 	background-color: white;
 	margin-top: 1px;
-	padding: 2px;
+	padding: 3px;
 }
 	
 .selected-link {
 	color: darkblue;
-	background-color: #C3D9FF;
+	background-color: #e8eef7;
 	margin-top: 1px;
-	padding: 2px;
+	padding: 3px;
 	
 	font-weight: bold;
 }
@@ -61,8 +61,8 @@ a:visited {
  **/
 
 .left-menu {
-	background-color: white;
-	padding: 10px;
+	background-color: #eeeeee;
+	padding: 4px;
 	width: 200px;
 }
 
@@ -70,12 +70,14 @@ a:visited {
   font-weight: bold;
   background-color: #C3D9FF;
   border-bottom: 1px black solid;
-  padding: 2px;
+  padding: 4px;
   width: 100%;
 }
 
 .workspaces {
 	margin-bottom: 1em;
+	background-color: white;
+	border: 1px #bbb solid;
 }
 
 .workspaces .gwt-TreeItem {
@@ -89,11 +91,15 @@ a:visited {
 
 .right-title {
 	font-weight: bold;
-	padding: 10px;
+	padding: 6px;
+	margin-bottom: 4px;
+	margin-top: 4px;
 	font-size: 1.5em;
+	border-bottom: 1px black solid;
 }
 
 .artifactTypesPanel {
+	background-color: white;
 	border: solid #c3d9ff 2px;
 	width: 100%;
 }
@@ -131,7 +137,18 @@ a:visited {
  ** Artifact Panel
  **
  **/
+ 
+.artifact-title {
+	font-weight: bold;
+	padding: 6px;
+	margin-bottom: 4px;
+	margin-top: 4px;
+	font-size: 1.5em;
+}
 
+.artifactTopPanel {
+	width: 100%;
+}
 .dependencyPanelHeader {
   font-weight: bold;
   background-color: #C3D9FF;
@@ -161,12 +178,25 @@ a:visited {
 	width: 100%;
 	padding: 0px;
 	margin: 0px;
-	background-color: #C3D9FF;
+}
+
+.commentPanelTitle {
+	width: 100%;	
+}
+
+.addCommentLink {
+	margin: 2px;
+}
+	
+.addComment {
+	background-color: #e8eef7;
+	border: 1px black solid;
 }
 
 .commentTitle {
+	font-weight: bold;
 	padding: 6px;
-	font-style: bold;
+	background-color: #87B3FF;
 }
 
 .commentText {
@@ -175,12 +205,31 @@ a:visited {
 }
 
 .nestedComment {
-	margin-left: 10px;
-	background-color: red;
+	padding-left: 20px;
 }
 
 .addComment {
 	padding: 10px;
+}
+
+.artifactDescriptionLabel {
+	font-weight: bold;
+}
+
+.artifactTableHeader {
+	font-weight: bold;
+	padding: 4px;
+	background-color: #c0c0c0;
+	
+}
+
+.artifactTableEntry {
+	background-color: #e8e8e8;
+	padding: 4px;
+}
+
+.artifactTable {
+	background: white;
 }
 /**
  **
@@ -189,7 +238,7 @@ a:visited {
  **/
 
 .search-panel {
-	background: white;
+	background: #c3d9ff;
 	padding: 3px;
 	padding-bottom: 0;
 }
@@ -218,7 +267,6 @@ a:visited {
   border-top:1px solid #ddd;
   border-left:1px solid #ddd;
   padding: 2px;
-  width: 12em;
 }
 
 .gwt-Button:active {
@@ -315,7 +363,7 @@ a:visited {
 }
 
 .gwt-TabPanelBottom {
-  background-color: #E8EEF7;
+  background-color: white;
   width: 100%;
 }
 
@@ -336,7 +384,7 @@ a:visited {
   cursor: pointer;
   cursor: hand;
 
-  background-color: #e8eef7;
+  background-color: #white;
   border-bottom: 2px solid white;
   margin-right: 2px;
 }

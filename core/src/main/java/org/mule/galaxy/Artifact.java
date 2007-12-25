@@ -31,7 +31,7 @@ public interface Artifact  {
     
     String getDescription();
     
-    void setDescription(String name);
+    void setDescription(String description);
     
     MimeType getContentType();
     

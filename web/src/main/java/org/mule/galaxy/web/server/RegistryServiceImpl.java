@@ -217,6 +217,8 @@ public class RegistryServiceImpl implements RegistryService {
             ExtendedArtifactInfo info = new ExtendedArtifactInfo();
             createBasicArtifactInfo(a, view, info);
             
+            info.setDescription(a.getDescription());
+            
             for (Iterator<PropertyInfo> props = a.getProperties(); props.hasNext();) {
                 PropertyInfo p = props.next();
                 
@@ -280,7 +282,6 @@ public class RegistryServiceImpl implements RegistryService {
             Artifact artifact = registry.getArtifact(artifactId);
           
             Comment comment = new Comment();
-            comment.setArtifact(artifact);
             comment.setText(text);
             
             Calendar cal = Calendar.getInstance();
@@ -301,6 +302,8 @@ public class RegistryServiceImpl implements RegistryService {
                     throw new RPCException("Invalid parent comment");
                 }
                 comment.setParent(c);
+            } else {
+                comment.setArtifact(artifact);
             }
             registry.addComment(comment);
             
@@ -315,13 +318,13 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     @SuppressWarnings("unchecked")
-    private void addComments(WComment wc, Set<Comment> comments) {
+    private void addComments(WComment parent, Set<Comment> comments) {
         for (Comment c : comments) {
             WComment child = new WComment(c.getId(),
                                           c.getUser().getUsername(),
                                           dateFormat.format(c.getDate().getTime()),
                                           c.getText());
-            wc.getComments().add(wc);
+            parent.getComments().add(child);
             
             Set<Comment> children = c.getComments();
             if (children != null && children.size() > 0) {
@@ -359,6 +362,19 @@ public class RegistryServiceImpl implements RegistryService {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
         }
+    }
+
+    public void setDescription(String artifactId, String description) throws RPCException {
+        try {
+            Artifact artifact = registry.getArtifact(artifactId);
+          
+            artifact.setDescription(description);
+            
+            registry.save(artifact);
+        } catch (RegistryException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } 
     }
 
     public void setRegistry(Registry registry) {

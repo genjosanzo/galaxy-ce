@@ -18,15 +18,16 @@ public class ArtifactListPanel
         this.group = group;
         
         FlexTable table = new FlexTable();
-        table.setStyleName("gwt-FlexTable");
-        table.setCellSpacing(0);
+        table.setStyleName("artifactTable");
+        table.setCellSpacing(1);
         table.setCellPadding(0);
         table.setWidth("100%");
         
         for (int i = 0; i < group.getColumns().size(); i++) {
             table.setText(0, i, (String) group.getColumns().get(i));
         }
-        table.getRowFormatter().setStyleName(0, "gwt-FlexTable-header");
+        
+        table.getRowFormatter().setStyleName(0, "artifactTableHeader");
         
         for (int i = 0; i < group.getRows().size(); i++) {
             final BasicArtifactInfo info = (BasicArtifactInfo) group.getRows().get(i);
@@ -44,6 +45,7 @@ public class ArtifactListPanel
                 } else {
                     table.setText(i+1, c, info.getValue(c));
                 }
+                table.getRowFormatter().setStyleName(i+1, "artifactTableEntry");
             }
         }
         

@@ -79,6 +79,9 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         WComment wc = gwtRegistry.addComment(a.getId(), null, "Hello World");
         assertNotNull(wc);
         
+        WComment wc2 = gwtRegistry.addComment(a.getId(), wc.getId(), "Hello World");
+        assertNotNull(wc);
+        
         // get the extended artifact info again
         g1 = gwtRegistry.getArtifact(a.getId());
         
@@ -87,7 +90,14 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         List comments = ext.getComments();
         assertEquals(1, comments.size());
+        
+        WComment wc3 = (WComment) comments.get(0);
+        assertEquals(1, wc3.getComments().size());
+        
+        // test desc
+        gwtRegistry.setDescription(a.getId(), "test desc");
     }
+    
     
     private static void createSecureContext(final ApplicationContext ctx, final String username, final String password) {
         AuthenticationProvider provider = (AuthenticationProvider) ctx.getBean("daoAuthenticationProvider");

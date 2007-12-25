@@ -9,6 +9,8 @@ import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.artifact.AbstractArtifactPlugin;
+import org.mule.galaxy.impl.jcr.JcrRegistryImpl;
+import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 
@@ -27,6 +29,8 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
         add(w, user, "hello.xsd", "/wsdl/imports/hello.xsd");
         add(w, user, "hello-portType.wsdl", "/wsdl/imports/hello-portType.wsdl");
         add(w, user, "hello.wsdl", "/wsdl/imports/hello.wsdl");   
+        
+        JcrUtil.dump(((JcrRegistryImpl) registry).getRootNode());
     }
 
     private void add(Workspace w, User user, String name, String resource) 
