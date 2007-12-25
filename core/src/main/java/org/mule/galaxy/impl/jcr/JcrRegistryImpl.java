@@ -58,6 +58,8 @@ import org.mule.galaxy.Dao;
 import org.mule.galaxy.Dependency;
 import org.mule.galaxy.Index;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyDescriptor;
+import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
@@ -107,12 +109,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     private Dao<Comment> commentDao;
     
+    private Dao<PropertyDescriptor> propertyDescriptorDao;
+    
     private String workspacesId;
 
     private String indexesId;
 
     private String artifactTypesId;
-    
     
     public JcrRegistryImpl() {
         super();
@@ -329,7 +332,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return (ArtifactResult) executeAndDewrap(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node workspaceNode = ((JcrWorkspace)workspace).getNode();
-                Node artifactNode = workspaceNode.addNode(ARTIFACT_NODE_NAME);
+                Node artifactNode = workspaceNode.addNode(ARTIFACT_NODE_NAME, "galaxy:artifact");
                 artifactNode.addMixin("mix:referenceable");
                 Node versionNode = artifactNode.addNode("version");
                 if (is != null) {
@@ -623,7 +626,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 Query query = qm.createQuery("//indexes/*[@documentType=" 
                                                  + JcrUtil.stringToXPathLiteral(documentType.toString()) + "]", 
                                              Query.XPATH);
-                System.out.println(query.getStatement());
+                
                 QueryResult result = query.execute();
                 
                 Set<Index> indices = new HashSet<Index>();
@@ -975,6 +978,62 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         });
     }
 
+    public Index getIndex(final String idxName) {
+        return (Index) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node idxs = getIndexNode();
+                
+                try {
+                    Node idxNode = idxs.getNode(idxName);
+                    
+                    return createIndexFromNode(idxNode);
+                } catch (PathNotFoundException e) {
+                    return null;
+                }
+            }
+        });
+    }
+    
+    @SuppressWarnings("unchecked")
+    public Object getPropertyDescriptorOrIndex(final String propertyName) {
+        
+        return execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                        
+                Object idx = getIndex(propertyName);
+                
+                if (idx == null) {
+                    return getPropertyDescriptor(propertyName);
+                }
+                
+                return idx;
+            }
+
+
+        });
+    }
+
+    public PropertyDescriptor getPropertyDescriptor(final String propertyName) {
+        List<PropertyDescriptor> results = propertyDescriptorDao.find("name", propertyName);
+        
+        if (results.size() == 0) {
+            return null;
+        }
+        
+        return results.get(0);
+    }
+    
+    public Collection<PropertyDescriptor> getPropertyDescriptors() throws RegistryException {
+        return propertyDescriptorDao.listAll();
+    }
+
+    public void savePropertyDescriptor(PropertyDescriptor pd) throws RegistryException {
+        propertyDescriptorDao.save(pd);
+    }
+    
+    public void deletePropertyDescriptor(String id) throws RegistryException {
+        propertyDescriptorDao.delete(id);
+    }
     protected String escapeNodeName(String right) {
         return ISO9075.encode(right);
     }
@@ -1035,6 +1094,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         } catch (IOException e) {
             throw new RegistryException(e);
         } catch (XPathExpressionException e) {
+            throw new RegistryException(e);
+        } catch (PropertyException e) {
             throw new RegistryException(e);
         }
         
@@ -1165,6 +1226,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         commentDao.save(c);
     }
 
+    public Comment getComment(String commentId) throws NotFoundException {
+        return commentDao.get(commentId);
+    }
+
     @SuppressWarnings("unchecked")
     public List<Comment> getComments(final Artifact a) {
         return (List) execute(new JcrCallback() {
@@ -1252,4 +1317,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return userManager;
     }
 
+    public void setPropertyDescriptorDao(Dao<PropertyDescriptor> propertyDescriptorDao) {
+        this.propertyDescriptorDao = propertyDescriptorDao;
+    }
+
+    
 }

@@ -91,6 +91,18 @@ public interface Registry {
     
     void delete(Artifact artifact) throws RegistryException;
 
+    Set search(String queryString) throws RegistryException, QueryException;
+
+    Set search(Query query) throws RegistryException, QueryException;
+
+    void removeWorkspace(Workspace newWork) throws RegistryException;
+
+    Artifact getArtifact(Workspace w, String name) throws NotFoundException;
+
+    Artifact resolve(Workspace w, String location);
+    
+    /* Index related methods */
+    
     Index registerIndex(String indexId, 
                         String displayName, 
                         Language language,
@@ -98,27 +110,38 @@ public interface Registry {
                         String indexExpression, 
                         QName... documentTypes) throws RegistryException;
 
-    Set search(String queryString) throws RegistryException, QueryException;
-
-    Set search(Query query) throws RegistryException, QueryException;
+    Index getIndex(String idxName);
 
     Set<Index> getIndexes();
     
     Set<Index> getIndices(QName documentType) throws RegistryException;
 
-    void removeWorkspace(Workspace newWork) throws RegistryException;
+    /* Property related methods */
+     
+    Collection<PropertyDescriptor> getPropertyDescriptors() throws RegistryException;
 
-    List<Comment> getComments(Artifact a);
+    PropertyDescriptor getPropertyDescriptor(String propertyName) throws RegistryException;
 
-    void addComment(Comment c);
+    void savePropertyDescriptor(PropertyDescriptor pd) throws RegistryException;
+    
+    void deletePropertyDescriptor(String id) throws RegistryException;
+    
+    Object getPropertyDescriptorOrIndex(final String propertyName);
+    
 
-    Artifact getArtifact(Workspace w, String name) throws NotFoundException;
-
-    Artifact resolve(Workspace w, String location);
-
+    /* Dependency related operations */
+    
     void addDependencies(ArtifactVersion artifactVersion, Artifact... artifacts) throws RegistryException;
 
     void removeDependencies(ArtifactVersion artifactVersion, Artifact... artifact) throws RegistryException;
     
     Set<Dependency> getDependedOnBy(Artifact a) throws RegistryException;
+
+    /* Comment related operations */
+    
+    Comment getComment(String commentId) throws NotFoundException;
+
+    List<Comment> getComments(Artifact a);
+
+    void addComment(Comment c);
 }

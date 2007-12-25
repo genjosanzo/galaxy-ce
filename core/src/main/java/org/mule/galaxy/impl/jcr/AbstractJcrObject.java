@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
@@ -12,7 +13,11 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
 import org.apache.jackrabbit.value.StringValue;
+import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.util.BundleUtils;
+import org.mule.galaxy.util.Message;
 
 
 public class AbstractJcrObject {
@@ -21,9 +26,11 @@ public class AbstractJcrObject {
     public static final String LOCKED = ".locked";
     public static final String VISIBLE = ".visible";
     protected Node node;
+    private Registry registry;
 
-    public AbstractJcrObject(Node node) throws RepositoryException {
+    public AbstractJcrObject(Node node, Registry registry) throws RepositoryException {
         this.node = node;
+        this.registry = registry;
     }
 
     public Node getNode() {
@@ -49,8 +56,12 @@ public class AbstractJcrObject {
             throw new RuntimeException(e);
         }
     }
-    public void setProperty(String name, Object value) {
+    public void setProperty(String name, Object value) throws PropertyException {
         try {
+            if (name.contains(" ")) {
+                throw new PropertyException(new Message("SPACE_NOT_ALLOWED", getBundle()));
+            }
+            
             JcrUtil.setProperty(name, value, node);
             
             node.setProperty(name + VISIBLE, true);
@@ -60,6 +71,10 @@ public class AbstractJcrObject {
         }
     }
 
+
+    private ResourceBundle getBundle() {
+        return BundleUtils.getBundle(AbstractJcrObject.class);
+    }
 
     private void ensureProperty(String name) throws RepositoryException {
         Property p = null;
@@ -126,7 +141,7 @@ public class AbstractJcrObject {
                 public PropertyInfo next() {
                     i++;
                     try {
-                        return new PropertyInfoImpl(values[i-1].getString(), node);
+                        return new PropertyInfoImpl(values[i-1].getString(), node, registry);
                     } catch (RepositoryException e) {
                         throw new RuntimeException(e);
                     }
@@ -143,7 +158,7 @@ public class AbstractJcrObject {
     }
 
     public PropertyInfo getPropertyInfo(String name) {
-        return new PropertyInfoImpl(name, node);
+        return new PropertyInfoImpl(name, node, registry);
     }
 
     public void setLocked(String name, boolean locked) {

@@ -45,7 +45,7 @@ public interface Artifact  {
 
     ArtifactVersion getLatestVersion();
     
-    public void setProperty(String name, Object value);
+    public void setProperty(String name, Object value) throws PropertyException;
     
     Object getProperty(String name);
     

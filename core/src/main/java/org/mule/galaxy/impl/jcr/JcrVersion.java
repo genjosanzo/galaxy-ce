@@ -41,7 +41,7 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     
     public JcrVersion(JcrArtifact parent, 
                       Node v) throws RepositoryException  {
-        super(v);
+        super(v, parent.getRegistry());
         this.parent = parent;
     }
 
@@ -110,7 +110,11 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
             String authId = getStringOrNull(AUTHOR_ID);
             
             if (authId != null) {
-                author = parent.getRegistry().getUserManager().get(authId);
+                try {
+                    author = parent.getRegistry().getUserManager().get(authId);
+                } catch (NotFoundException e) {
+                    // TODO
+                }
             }
         }
         return author;

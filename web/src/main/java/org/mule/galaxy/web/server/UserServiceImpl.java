@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserExistsException;
 import org.mule.galaxy.security.UserManager;
@@ -41,21 +42,25 @@ public class UserServiceImpl implements UserService {
 
     public void updateUser(WUser user, String oldPass, String password, String confirm) 
         throws ItemNotFoundException, PasswordChangeException {
-        User u = userManager.get(user.getId());
-        
-        if (u == null) {
+        try {
+            User u = userManager.get(user.getId());
+            
+            if (u == null) {
+                throw new ItemNotFoundException();
+            }
+            
+            u.setName(user.getName());
+            
+            if (password != null && password.equals(confirm) && !password.equals("")) {
+                if (!userManager.setPassword(user.getUsername(), oldPass, password)) {
+                    throw new PasswordChangeException();
+                }
+            }
+            
+            userManager.save(u);
+        } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         }
-        
-        u.setName(user.getName());
-        
-        if (password != null && password.equals(confirm) && !password.equals("")) {
-            if (!userManager.setPassword(user.getUsername(), oldPass, password)) {
-                throw new PasswordChangeException();
-            }
-        }
-        
-        userManager.save(u);
     }
 
     public void setUserManager(UserManager userManager) {

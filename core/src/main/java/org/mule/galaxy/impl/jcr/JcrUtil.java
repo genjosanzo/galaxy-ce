@@ -267,8 +267,12 @@ public class JcrUtil {
                 n.setProperty(name, (String) null);
             } else if (value instanceof Identifiable) {
                 n.setProperty(name, ((Identifiable) value).getId());
-            } else if (value == null) {
-                n.setProperty(name, (String) null);
+            } else if (value instanceof Boolean) {
+                n.setProperty(name, (Boolean) value);
+            } else if (value instanceof Double) {
+                n.setProperty(name, (Double) value);
+            } else if (value instanceof Long) {
+                n.setProperty(name, (Long) value);
             } else {
                 n.setProperty(name, value.toString());
             }

@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface Dao<T extends Identifiable> {
     
-    T get(String id);
+    T get(String id) throws NotFoundException;
     
     void save(T t);
     

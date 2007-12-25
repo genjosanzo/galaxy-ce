@@ -74,21 +74,6 @@ a:visited {
   width: 100%;
 }
 
-
-.dependencyPanelHeader {
-  font-weight: bold;
-  background-color: #C3D9FF;
-  border-bottom: 1px black solid;
-  padding: 2px;
-  width: 100%;
-}
-
-.dependencyPanel {
-	border: solid #c3d9ff 2px;
-	width: 100%;
-	margin: 10px;
-}
-
 .workspaces {
 	margin-bottom: 1em;
 }
@@ -141,7 +126,62 @@ a:visited {
 	text-align: center;
 }
 
+/**
+ **
+ ** Artifact Panel
+ **
+ **/
 
+.dependencyPanelHeader {
+  font-weight: bold;
+  background-color: #C3D9FF;
+  border-bottom: 1px black solid;
+  padding: 2px;
+  width: 100%;
+}
+
+.dependencyPanel {
+	border: solid #c3d9ff 2px;
+	width: 100%;
+}
+
+.editPropertyLink {
+	padding-left: 5px;
+}
+
+.artifactInfoRightGroup {
+	margin-left: 10px;	
+}
+
+.comments {
+	width: 100%;
+}
+
+.comment {
+	width: 100%;
+	padding: 0px;
+	margin: 0px;
+	background-color: #C3D9FF;
+}
+
+.commentTitle {
+	padding: 6px;
+	font-style: bold;
+}
+
+.commentText {
+	background-color: white;
+	padding: 6px;
+}
+
+.nestedComment {
+	margin-left: 10px;
+	background-color: red;
+}
+
+.addComment {
+	padding: 10px;
+}
 /**
  **
  ** Search Panel

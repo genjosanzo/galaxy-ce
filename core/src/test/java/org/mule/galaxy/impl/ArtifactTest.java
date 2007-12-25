@@ -73,6 +73,10 @@ public class ArtifactTest extends AbstractGalaxyTest {
                 assertNotNull(next.getValue());
                 assertFalse(next.isLocked());
                 assertTrue(next.isVisible());
+                
+                assertEquals("WSDL Target Namespace", next.getDescription());
+                assertTrue(next.isIndex());
+                
                 testedTNS = true;
             }
         }

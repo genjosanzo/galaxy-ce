@@ -61,6 +61,7 @@
     <property name="settings" ref="settings" />
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="commentDao" ref="commentDao" />
+    <property name="propertyDescriptorDao" ref="propertyDescriptorDao" />
     <property name="lifecycleManager" ref="lifecycleManager" />
     <property name="policyManager" ref="policyManager" />
   </bean>
@@ -93,6 +94,18 @@
   </bean>
   
   <bean id="commentDaoTarget" class="org.mule.galaxy.impl.jcr.CommentDaoImpl"
+        init-method="initialize" >
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="persisterManager" ref="persisterManager" />
+  </bean>
+  
+  
+  <bean id="propertyDescriptorDao" parent="txProxyTemplate">
+    <property name="target" ref="propertyDescriptorDaoTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="propertyDescriptorDaoTarget" class="org.mule.galaxy.impl.jcr.PropertyDescriptorDaoImpl"
         init-method="initialize" >
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />

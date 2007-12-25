@@ -15,6 +15,7 @@ import javax.xml.namespace.QName;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.lifecycle.Lifecycle;
@@ -38,7 +39,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     
     public JcrArtifact(Workspace w, Node node, JcrRegistryImpl registry) 
         throws RepositoryException {
-        super(node);
+        super(node, registry);
         this.workspace = w;
         this.registry = registry;
         
@@ -222,7 +223,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     }
 
     @Override
-    public void setProperty(String name, Object value) {
+    public void setProperty(String name, Object value) throws PropertyException {
         getLatestVersion().setProperty(name, value);
     }
     

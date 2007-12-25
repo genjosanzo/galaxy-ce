@@ -38,4 +38,15 @@ public interface RegistryService extends RemoteService {
     Collection getDependencyInfo(String artifactId) throws RPCException;
     
     ArtifactGroup getArtifact(String artifactId) throws RPCException;
+    
+    void newPropertyDescriptor(String name, 
+                               String description, 
+                               boolean multivalued) throws RPCException;
+    
+    void setProperty(String artifactId, 
+                     String propertyName, 
+                     String propertyValue) throws RPCException;
+    
+    WComment addComment(String artifactId, String parentCommentId, String text) throws RPCException;
+
 }

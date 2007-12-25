@@ -15,7 +15,7 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
     private Collection<Workspace> workspaces;
     
     public JcrWorkspace(Node node) throws RepositoryException  {
-        super(node);
+        super(node, null);
     }
 
     public String getId() {

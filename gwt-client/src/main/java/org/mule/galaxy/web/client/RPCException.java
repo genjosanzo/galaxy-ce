@@ -4,6 +4,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class RPCException extends Exception implements IsSerializable {
 
+    public RPCException() {
+        super();
+    }
+
     public RPCException(String message) {
         super(message);
         // TODO Auto-generated constructor stub

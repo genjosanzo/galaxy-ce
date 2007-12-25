@@ -146,6 +146,12 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
             t.setId(id);
         } else {
             node = findNode(id, session);
+            
+            // the user supplied a new ID
+            if (node == null && !useNodeId) {
+                node = getObjectsNode().addNode(getObjectNodeName(t));
+                node.addMixin("mix:referenceable");
+            }
         }
         
         if (node == null) throw new NotFoundException(t.getId());

@@ -5,6 +5,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +89,9 @@ public class ClassPersister {
             FieldPersister persister = persisterManager.getPersister(fd.getType());
             Object value = persister.build(n, fd, session);
             
-            fd.getWriteMethod().invoke(o, value);
+            if (value != null) {
+                fd.getWriteMethod().invoke(o, value);
+            }
         }
         
         return o;

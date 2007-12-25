@@ -15,6 +15,7 @@ import javax.xml.transform.Source;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
 
@@ -40,7 +41,12 @@ public abstract class AbstractContentHandler implements ContentHandler {
     }
 
     public void addMetadata(ArtifactVersion v) {
-        v.setProperty(DESCRIPTION, describe(v));
+        try {
+            v.setProperty(DESCRIPTION, describe(v));
+        } catch (PropertyException e) {
+            // this won't happen as description doesn't have a space in it
+            throw new RuntimeException(e);
+        }
     }
 
     public String describe(ArtifactVersion v) {

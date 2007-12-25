@@ -35,7 +35,7 @@ public interface ArtifactVersion {
 
     ArtifactVersion getPrevious();
     
-    void setProperty(String name, Object value);
+    void setProperty(String name, Object value) throws PropertyException;
     
     Object getProperty(String name);
 

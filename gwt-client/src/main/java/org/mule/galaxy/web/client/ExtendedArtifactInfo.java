@@ -1,14 +1,18 @@
 package org.mule.galaxy.web.client;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExtendedArtifactInfo extends BasicArtifactInfo{
-    private Map properties = new HashMap();
-
-    public Map getProperties() {
+    private List properties = new ArrayList();
+    private List comments = new ArrayList();
+    
+    public List getProperties() {
         return properties;
     }
-    
+
+    public List getComments() {
+        return comments;
+    }
     
 }

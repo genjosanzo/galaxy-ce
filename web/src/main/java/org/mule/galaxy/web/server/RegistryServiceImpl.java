@@ -1,25 +1,38 @@
 package org.mule.galaxy.web.server;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.acegisecurity.context.SecurityContextHolder;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.ArtifactTypeDao;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Comment;
 import org.mule.galaxy.Dependency;
 import org.mule.galaxy.Index;
+import org.mule.galaxy.PropertyDescriptor;
+import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.view.ArtifactTypeView;
 import org.mule.galaxy.view.ViewManager;
 import org.mule.galaxy.web.client.ArtifactGroup;
@@ -29,12 +42,18 @@ import org.mule.galaxy.web.client.ExtendedArtifactInfo;
 import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.client.RegistryService;
 import org.mule.galaxy.web.client.WArtifactType;
+import org.mule.galaxy.web.client.WComment;
+import org.mule.galaxy.web.client.WProperty;
 import org.mule.galaxy.web.client.WWorkspace;
 
 public class RegistryServiceImpl implements RegistryService {
+    private Logger LOGGER = LogUtils.getL7dLogger(RegistryServiceImpl.class);
+
     private Registry registry;
     private ArtifactTypeDao artifactTypeDao;
     private ViewManager viewManager;
+    
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a, MMMM d, yyyy");
     
     @SuppressWarnings("unchecked")
     public Collection getWorkspaces() {
@@ -210,14 +229,135 @@ public class RegistryServiceImpl implements RegistryService {
                 } else {
                     val = "";
                 }
-                info.getProperties().put(p.getName(), val);
+                
+                String desc = p.getDescription();
+                if (desc == null) {
+                    desc = p.getName();
+                }
+                info.getProperties().add(new WProperty(p.getName(),
+                                                       desc,
+                                                       val.toString(),
+                                                       p.isLocked()));
             }
+            
+            Collections.sort(info.getProperties(), new Comparator() {
+
+                public int compare(Object o1, Object o2) {
+                    return ((WProperty) o1).getDescription().compareTo(
+                               ((WProperty) o2).getDescription());
+                }
+                
+            });
+            
+            List wcs = info.getComments();
+            
+            List<Comment> comments = registry.getComments(a);
+            for (Comment c : comments) {
+                WComment wc = new WComment(c.getId(),
+                                           c.getUser().getUsername(),
+                                           dateFormat.format(c.getDate().getTime()),
+                                           c.getText());
+                wcs.add(wc);
+                
+                Set<Comment> children = c.getComments();
+                if (children != null && children.size() > 0) {
+                    addComments(wc, children);
+                }
+            }
+            
             g.getRows().add(info);
             
             return g;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RPCException("Could not find artifact " + artifactId);
+        } catch (RegistryException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    
+    public WComment addComment(String artifactId, String parentComment, String text) throws RPCException {
+        try {
+            Artifact artifact = registry.getArtifact(artifactId);
+          
+            Comment comment = new Comment();
+            comment.setArtifact(artifact);
+            comment.setText(text);
+            
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(new Date());
+            comment.setDate(cal);
+            
+
+            UserDetailsWrapper wrapper = 
+                (UserDetailsWrapper) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (wrapper == null) {
+                throw new RPCException("No user is logged in!");
+            }
+            comment.setUser(wrapper.getUser());
+            
+            if (parentComment != null) {
+                Comment c = registry.getComment(parentComment);
+                if (c == null) {
+                    throw new RPCException("Invalid parent comment");
+                }
+                comment.setParent(c);
+            }
+            registry.addComment(comment);
+            
+            return new WComment(comment.getId(),
+                                comment.getUser().getUsername(),
+                                dateFormat.format(comment.getDate().getTime()),
+                                comment.getText());
+        } catch (RegistryException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void addComments(WComment wc, Set<Comment> comments) {
+        for (Comment c : comments) {
+            WComment child = new WComment(c.getId(),
+                                          c.getUser().getUsername(),
+                                          dateFormat.format(c.getDate().getTime()),
+                                          c.getText());
+            wc.getComments().add(wc);
+            
+            Set<Comment> children = c.getComments();
+            if (children != null && children.size() > 0) {
+                addComments(child, children);
+            }
+        }
+    }
+
+    public void newPropertyDescriptor(String name, String description, boolean multivalued)
+        throws RPCException {
+        if (name.contains(" ")) {
+            throw new RPCException("The property name cannot contain a space.");
+        }
+        
+        PropertyDescriptor pd = new PropertyDescriptor(name, description, multivalued);
+        
+        try {
+            registry.savePropertyDescriptor(pd);
+        } catch (RegistryException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    public void setProperty(String artifactId, String propertyName, String propertyValue) throws RPCException {
+        try {
+            Artifact artifact = registry.getArtifact(artifactId);
+          
+            artifact.setProperty(propertyName, propertyValue);
+        } catch (RegistryException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (PropertyException e) {
+            // occurs if property name is formatted wrong
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
         }
     }
 

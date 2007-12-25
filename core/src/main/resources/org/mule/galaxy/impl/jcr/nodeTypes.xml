@@ -15,4 +15,15 @@
     
   </nodeType>
 
+  <nodeType name="galaxy:artifact" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="" 
+    allowSameNameSiblings="true">
+    
+    <supertypes>
+      <supertype>nt:unstructured</supertype>
+    </supertypes>
+    
+  </nodeType>
 </nodeTypes>

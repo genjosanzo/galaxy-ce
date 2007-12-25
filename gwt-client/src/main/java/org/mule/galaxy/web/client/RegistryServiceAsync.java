@@ -18,4 +18,18 @@ public interface RegistryServiceAsync extends RemoteService {
     void getDependencyInfo(String artifactId, AsyncCallback callback);
 
     void getArtifact(String artifactId, AsyncCallback callback);
+    
+
+    void newPropertyDescriptor(String name, 
+                               String description, 
+                               boolean multivalued, 
+                               AsyncCallback callback);
+    
+    void setProperty(String artifactId, 
+                     String propertyName, 
+                     String propertyValue,
+                     AsyncCallback callback);
+    
+    void addComment(String artifactId, String parentCommentId, String text, AsyncCallback callback);
+    
 }
