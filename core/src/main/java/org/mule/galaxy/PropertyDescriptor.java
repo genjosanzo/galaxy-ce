@@ -2,13 +2,13 @@ package org.mule.galaxy;
 
 public class PropertyDescriptor implements Identifiable {
     private String property;
-    private String name;
+    private String description;
     private boolean multivalued;
     
     public PropertyDescriptor(String property, String name, boolean multivalued) {
         super();
         this.property = property;
-        this.name = name;
+        this.description = name;
         this.multivalued = multivalued;
     }
     public PropertyDescriptor() {
@@ -28,11 +28,11 @@ public class PropertyDescriptor implements Identifiable {
     public void setProperty(String property) {
         this.property = property;
     }
-    public String getName() {
-        return name;
+    public String getDescription() {
+        return description;
     }
-    public void setName(String name) {
-        this.name = name;
+    public void setDescription(String name) {
+        this.description = name;
     }
     public boolean isMultivalued() {
         return multivalued;

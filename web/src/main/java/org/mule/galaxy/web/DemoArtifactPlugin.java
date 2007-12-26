@@ -6,6 +6,7 @@ import javax.activation.MimeTypeParseException;
 
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.artifact.AbstractArtifactPlugin;
@@ -29,6 +30,9 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
         add(w, user, "hello.xsd", "/wsdl/imports/hello.xsd");
         add(w, user, "hello-portType.wsdl", "/wsdl/imports/hello-portType.wsdl");
         add(w, user, "hello.wsdl", "/wsdl/imports/hello.wsdl");   
+        
+        PropertyDescriptor pd = new PropertyDescriptor("location", "Location", false);
+        registry.savePropertyDescriptor(pd);
         
         JcrUtil.dump(((JcrRegistryImpl) registry).getRootNode());
     }

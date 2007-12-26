@@ -27,7 +27,6 @@ public interface RegistryService extends RemoteService {
      */
     Collection getArtifacts(String workspace, Set artifactTypes);
     
-    
     public Map getIndexes();
     
     /**
@@ -47,6 +46,13 @@ public interface RegistryService extends RemoteService {
                      String propertyName, 
                      String propertyValue) throws RPCException;
     
+    /**
+     * @gwt typeArgs java.lang.String
+     * @return
+     * @throws Exception 
+     */
+    Map getProperties() throws RPCException;
+
     WComment addComment(String artifactId, String parentCommentId, String text) throws RPCException;
     
     void setDescription(String artifactId, String description) throws RPCException;

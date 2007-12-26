@@ -36,21 +36,19 @@ a:visited {
 .unselected-link {
 	color: darkblue;
 	background-color: white;
-	margin-top: 1px;
-	padding: 3px;
+	padding: 2px;
 }
 	
 .selected-link {
 	color: darkblue;
 	background-color: #e8eef7;
-	margin-top: 1px;
-	padding: 3px;
-	
+	padding: 2px;
 	font-weight: bold;
 }
 
 .selected-link a, a:visited {
 	color: darkblue;
+	padding: 2px;
 }
 
 
@@ -61,23 +59,14 @@ a:visited {
  **/
 
 .left-menu {
-	background-color: #eeeeee;
+	border-right: 1px #d0d0d0 solid ;
 	padding: 4px;
 	width: 200px;
 }
 
-.left-menu-header {
-  font-weight: bold;
-  background-color: #C3D9FF;
-  border-bottom: 1px black solid;
-  padding: 4px;
-  width: 100%;
-}
-
 .workspaces {
-	margin-bottom: 1em;
+	padding: 2px 0px 2px 0px; 
 	background-color: white;
-	border: 1px #bbb solid;
 }
 
 .workspaces .gwt-TreeItem {
@@ -89,20 +78,54 @@ a:visited {
 	font-weight: bold;
 }
 
-.right-title {
+
+/**
+ **
+ ** Generic right side styles
+ **
+ **/
+.title {
 	font-weight: bold;
 	padding: 6px;
 	margin-bottom: 4px;
 	margin-top: 4px;
 	font-size: 1.5em;
+}
+
+.right-title {
+	font-weight: bold;	
+	margin-bottom: 6px;
+	margin-top: 6px;
+	padding: 4px;
+
+	font-size: 1.5em;
 	border-bottom: 1px black solid;
 }
 
-.artifactTypesPanel {
-	background-color: white;
-	border: solid #c3d9ff 2px;
+/* A different right title which allows a link */
+.rightlinked-title-panel {
 	width: 100%;
+	margin-bottom: 6px;
+	margin-top: 6px;
+	padding: 4px;
+	border-bottom: 1px black solid;	
+	display: inline;
 }
+
+.rightlinked-title {
+	font-weight: bold;
+	font-size: 1.5em;
+	width:80%;
+}
+
+.rightlinked-title-link {
+	width: 20%;
+	text-align: right;
+	position: relative;
+}
+
+
+
 .base {
 	width: 100%;
 	margin: 0px;
@@ -111,6 +134,55 @@ a:visited {
 .header {
 	font-size: 2em;
 	padding: .5em;
+}
+
+
+/**
+ **
+ ** Toolboxes
+ **
+ **/
+
+.toolbox {
+	width: 100%;
+	background-color: #eeeeee;
+	margin-bottom: 4px;
+}
+
+.toolbox-body {
+	background-color: white;
+	border-right: solid #c3d9ff 2px;
+	border-left: solid #c3d9ff 2px;
+	border-bottom: solid #c3d9ff 2px;
+	width: 100%;
+	padding: 3px;
+}
+
+.toolbox-items {
+	width: 100%;
+}
+
+.toolbox-buttons {
+    display: inline;
+    white-space: nowrap;
+}
+.toolbox-title {
+    display: inline;
+    white-space: nowrap;
+    padding-right: 5px;
+}
+	
+.toolbox-title-label {
+	display: inline;
+}
+.toolbox-header {
+  font-weight: bold;
+  background-color: #C3D9FF;
+  border-bottom: 1px black solid;
+  padding: 4px;
+  padding-left: 6px;
+  background-image: url("images/nw_maj_rond.gif");
+  background-repeat: no-repeat;
 }
 
 
@@ -130,6 +202,15 @@ a:visited {
 	padding: 5px;
 	
 	text-align: center;
+}
+
+.footer {
+	font-size: .8em;
+	font-weight: bold;
+	width: 100%;
+	border-top: 1px solid #d0d0d0;
+	padding: 6px;
+	margin-top: 6px;
 }
 
 /**
@@ -174,19 +255,12 @@ a:visited {
 	width: 100%;
 }
 
+
 .comment {
 	width: 100%;
-	padding: 0px;
 	margin: 0px;
 }
 
-.commentPanelTitle {
-	width: 100%;	
-}
-
-.addCommentLink {
-	margin: 2px;
-}
 	
 .addComment {
 	background-color: #e8eef7;
@@ -194,14 +268,28 @@ a:visited {
 }
 
 .commentTitle {
+    background-image: url("images/nw_maj_rond.gif");
+    background-repeat: no-repeat;
 	font-weight: bold;
 	padding: 6px;
 	background-color: #87B3FF;
+	
+}
+
+.commentTitle .gwt-Label {
+    width: 80%;
+}
+
+.commentTitle .gwt-Hyperlink {
+	width: 20%;
+	text-align: right;
 }
 
 .commentText {
-	background-color: white;
+	background-color: #e8eef7;
 	padding: 6px;
+	border: 0px 2px 2px 2px #87B3FF solid;
+	margin-bottom: 2px;
 }
 
 .nestedComment {
@@ -230,6 +318,13 @@ a:visited {
 
 .artifactTable {
 	background: white;
+}
+
+
+.add-property-panel {
+	background-color: #e8e8e8;
+	padding: 2px;
+	margin: 2px;
 }
 /**
  **
@@ -397,6 +492,8 @@ a:visited {
   background-color: #87b3ff;
   border-bottom: 2px solid #87b3ff;
   margin-right: 2px;
+  background-image: url("images/nw_maj_rond.gif");
+  background-repeat: no-repeat;
 }
 
 .gwt-TextArea {

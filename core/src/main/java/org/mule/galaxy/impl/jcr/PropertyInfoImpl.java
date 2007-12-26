@@ -53,7 +53,7 @@ public class PropertyInfoImpl implements PropertyInfo {
             index = true;
             description = ((Index) desc).getName();
         } else if (desc != null) {
-            description = ((PropertyDescriptor) desc).getName();
+            description = ((PropertyDescriptor) desc).getDescription();
         }
         loadedDescriptor = true;
     }

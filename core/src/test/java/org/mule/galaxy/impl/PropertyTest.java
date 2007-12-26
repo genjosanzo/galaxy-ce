@@ -15,7 +15,7 @@ import org.mule.galaxy.test.AbstractGalaxyTest;
 public class PropertyTest extends AbstractGalaxyTest {
     protected Dao<PropertyDescriptor> propertyDescriptorDao;
     
-    public void testAddWsdl() throws Exception {
+    public void testProperties() throws Exception {
        Artifact a = importHelloWsdl();
        
        PropertyDescriptor pd = new PropertyDescriptor("location", 
@@ -23,15 +23,16 @@ public class PropertyTest extends AbstractGalaxyTest {
                                                       false);
        
        registry.savePropertyDescriptor(pd);
+       assertEquals("location", pd.getProperty());
        
-       PropertyDescriptor pd2 = registry.getPropertyDescriptor(pd.getName());
+       PropertyDescriptor pd2 = registry.getPropertyDescriptor(pd.getProperty());
        assertNotNull(pd2);
-       assertEquals(pd.getName(), pd2.getName());
+       assertEquals(pd.getDescription(), pd2.getDescription());
        
        Collection<PropertyDescriptor> pds = registry.getPropertyDescriptors();
        assertEquals(1, pds.size());
        
-       Object pd3 = registry.getPropertyDescriptorOrIndex(pd.getName());
+       Object pd3 = registry.getPropertyDescriptorOrIndex(pd.getProperty());
        assertTrue(pd3 instanceof PropertyDescriptor);
     }
     

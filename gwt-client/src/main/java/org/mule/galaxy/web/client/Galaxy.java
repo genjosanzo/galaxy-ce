@@ -1,28 +1,14 @@
 package org.mule.galaxy.web.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.HistoryListener;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DockPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.Tree;
-import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.TreeListener;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
+import org.mule.galaxy.web.client.artifact.ArtifactPanel;
 
 
 /**
@@ -39,7 +25,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     public void onModuleLoad() {
         History.addHistoryListener(this);
         
-        VerticalPanel base = new VerticalPanel();
+        FlowPanel base = new FlowPanel();
         base.setStyleName("base");
         base.setWidth("100%");
         
@@ -55,6 +41,9 @@ public class Galaxy implements EntryPoint, HistoryListener {
         tabPanel.selectTab(0);
         tabPanel.add(new AdministrationPanel(this), "Administration");
         
+        Label footer = new Label("Mule Galaxy, Copyright 2008 MuleSource, Inc.");
+        footer.setStyleName("footer");
+        base.add(footer);
         RootPanel.get().add(base);
     }
 
@@ -64,6 +53,11 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
     public void onHistoryChanged(String token) {
         // registryPanel.setMessage(token);
+        
+        if (token.startsWith("artifact-")) {
+            registryPanel.setMessage("Found token");
+            registryPanel.setMain(new ArtifactPanel(registryPanel, token.substring(9)));
+        }
     }
 
 }

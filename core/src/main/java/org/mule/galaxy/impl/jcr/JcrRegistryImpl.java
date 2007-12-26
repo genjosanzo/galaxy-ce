@@ -1024,7 +1024,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     public PropertyDescriptor getPropertyDescriptor(final String propertyName) {
-        List<PropertyDescriptor> results = propertyDescriptorDao.find("name", propertyName);
+        List<PropertyDescriptor> results = propertyDescriptorDao.find("property", propertyName);
         
         if (results.size() == 0) {
             return null;

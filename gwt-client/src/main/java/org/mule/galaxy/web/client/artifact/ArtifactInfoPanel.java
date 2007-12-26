@@ -1,10 +1,10 @@
 package org.mule.galaxy.web.client.artifact;
 
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -26,6 +26,8 @@ import org.mule.galaxy.web.client.ExtendedArtifactInfo;
 import org.mule.galaxy.web.client.RegistryPanel;
 import org.mule.galaxy.web.client.WComment;
 import org.mule.galaxy.web.client.WProperty;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.Toolbox;
 
 public class ArtifactInfoPanel extends Composite {
 
@@ -34,8 +36,9 @@ public class ArtifactInfoPanel extends Composite {
     private RegistryPanel registryPanel;
     private VerticalPanel rightGroup;
     private VerticalPanel panel;
-    private VerticalPanel commentsPanel;
+    private FlowPanel commentsPanel;
     private ExtendedArtifactInfo info;
+    private FlowPanel metadata;
 
     public ArtifactInfoPanel(final RegistryPanel registryPanel, 
                              ArtifactGroup group,
@@ -99,7 +102,7 @@ public class ArtifactInfoPanel extends Composite {
     private void initDescription(FlexTable table, int c) {
         final SimplePanel descPanel = new SimplePanel();
         
-        HorizontalPanel descLabelPanel = new HorizontalPanel();
+        InlineFlowPanel descLabelPanel = new InlineFlowPanel();
         descLabelPanel.setStyleName("artifactDescriptionPanel");
         descLabelPanel.add(new Label("Description ["));
         Hyperlink hl = new Hyperlink("Edit", "");
@@ -119,12 +122,25 @@ public class ArtifactInfoPanel extends Composite {
     }
 
     private void initMetadata() {
-        Label label = new Label("Metadata");
-        label.setStyleName("right-title");
-
-        panel.add(label);
+        metadata = new FlowPanel();
+        final FlexTable table = new FlexTable();
         
-        FlexTable table = new FlexTable();
+        Hyperlink addMetadata = new Hyperlink("Add", "add-metadata");
+        addMetadata.addClickListener(new ClickListener() {
+
+            public void onClick(Widget arg0) {
+                PropertyEditPanel edit = new PropertyEditPanel(registryPanel, 
+                                                               info.getId(),
+                                                               metadata,
+                                                               table);
+                metadata.add(edit);   
+            }
+            
+        });
+        
+        InlineFlowPanel metadataTitle = createTitleWithLink("Metadata", addMetadata);
+        metadata.add(metadataTitle);
+        
         table.setStyleName("artifactTable");
         table.setCellSpacing(1);
         table.setCellPadding(0);
@@ -167,22 +183,20 @@ public class ArtifactInfoPanel extends Composite {
             
             i++;
         }
-        panel.add(table);
+        metadata.add(table);
+        panel.add(metadata);
     }
 
     private void initComments() {
-        commentsPanel = new VerticalPanel();
+        commentsPanel = new FlowPanel();
         commentsPanel.setStyleName("comments");
-
-        Label label = new Label("Comments");
-        label.setStyleName("right-title");
-        panel.add(label);
         
         Hyperlink addComment = new Hyperlink("Add", "add-comment");
         addComment.addClickListener(new AddCommentClickListener(commentsPanel, null));
-        addComment.setStyleName("addCommentLink");
-        panel.add(addComment);
         
+        InlineFlowPanel commentTitlePanel = createTitleWithLink("Comments", addComment);
+        
+        panel.add(commentTitlePanel);
         panel.add(commentsPanel);
         
         for (Iterator itr = info.getComments().iterator(); itr.hasNext();) {
@@ -190,26 +204,33 @@ public class ArtifactInfoPanel extends Composite {
         }
     }
 
+    private InlineFlowPanel createTitleWithLink(String name, Hyperlink addComment) {
+        InlineFlowPanel commentTitlePanel = new InlineFlowPanel();
+        commentTitlePanel.setStyleName("rightlinked-title-panel");
+        
+        Label label = new Label(name);
+        label.setStyleName("rightlinked-title");
+        commentTitlePanel.add(label);
+        
+        addComment.setStyleName("rightlinked-title-link");
+        commentTitlePanel.add(addComment);
+        return commentTitlePanel;
+    }
+
     private Widget createCommentPanel(WComment c) {
-        final VerticalPanel commentPanel = new VerticalPanel();
+        final FlowPanel commentPanel = new FlowPanel();
         commentPanel.setStyleName("comment");
         
-        HorizontalPanel title = new HorizontalPanel();
-        
+        InlineFlowPanel title = new InlineFlowPanel();
+        title.setStyleName("commentTitle");
         Label userDateLabel = new Label(c.getUser() + " on " + c.getDate());
         
         Hyperlink replyLink = new Hyperlink("Reply", "reply-" + c.getId());
         replyLink.addClickListener(new AddCommentClickListener(commentPanel, c.getId()));
         title.add(userDateLabel);
         title.add(replyLink);
-//        title.setCellHorizontalAlignment(replyLink, HasHorizontalAlignment.ALIGN_RIGHT);
-//        title.setWidth("100%");
         
-        SimplePanel titlePanel = new SimplePanel();
-        titlePanel.setStyleName("commentTitle");
-        titlePanel.add(title);
-        
-        commentPanel.add(titlePanel);
+        commentPanel.add(title);
         
         Label commentBody = new Label(c.getText(), true);
         commentBody.setStyleName("commentText");
@@ -233,9 +254,10 @@ public class ArtifactInfoPanel extends Composite {
     protected void showAddComment(final Panel commentPanel, 
                                   final String parentId,
                                   final AddCommentClickListener replyClickListener) {
-        if (replyClickListener.isShowingComment())
+        if (replyClickListener.isShowingComment()) {
             return;
-        
+
+        }
         replyClickListener.setShowingComment(true);
         final VerticalPanel addCommentPanel = new VerticalPanel();
         addCommentPanel.setStyleName("addComment");
@@ -273,12 +295,21 @@ public class ArtifactInfoPanel extends Composite {
         buttons.add(addButton);
         addCommentPanel.add(buttons);
         addCommentPanel.setCellHorizontalAlignment(buttons, HasHorizontalAlignment.ALIGN_RIGHT);
+
+        addCommentPanel.setVisible(true);
         
-        commentPanel.add(addCommentPanel);
+        if (!commentPanel.equals(commentsPanel)) {
+            SimplePanel nested = new SimplePanel();
+            nested.setStyleName("nestedComment");
+            nested.add(addCommentPanel);
+            commentPanel.add(addCommentPanel);
+        } else {
+            commentPanel.add(addCommentPanel);
+        }
     }
 
     protected void addComment(final Panel parent,
-                              final VerticalPanel addCommentPanel, 
+                              final Panel addCommentPanel, 
                               final TextArea text, 
                               final Button cancelButton, 
                               final Button addButton, 
@@ -318,7 +349,7 @@ public class ArtifactInfoPanel extends Composite {
     }
 
     private void addArtifactLinks(final RegistryPanel registryPanel) {
-        Hyperlink hl = new Hyperlink("View", "view-artifact");
+        Hyperlink hl = new Hyperlink("View", "http://host/com");
         hl.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
@@ -341,18 +372,11 @@ public class ArtifactInfoPanel extends Composite {
     }
     
     protected void initDependencies(Collection o) {
-        VerticalPanel depPanel = new VerticalPanel();
+        Toolbox depPanel = new Toolbox();
+        depPanel.setTitle("Dependencies");
         
-        Label label = new Label("Dependencies");
-        label.setStyleName("dependencyPanelHeader");
-        depPanel.add(label);
-        depPanel.setStyleName("dependencyPanel");
-        
-        VerticalPanel depOnPanel = new VerticalPanel();
-        label = new Label("Depended On By");
-        label.setStyleName("dependencyPanelHeader");
-        depOnPanel.add(label);
-        depOnPanel.setStyleName("dependencyPanel");
+        Toolbox depOnPanel = new Toolbox();
+        depOnPanel.setTitle("Depended On By");
         
         boolean addedDeps = false;
         boolean addedDependedOn = false;
@@ -450,11 +474,11 @@ public class ArtifactInfoPanel extends Composite {
           
     }
     private final class AddCommentClickListener implements ClickListener {
-        private final VerticalPanel commentPanel;
+        private final Panel commentPanel;
         private boolean showingComment;
         private String parentId;
         
-        private AddCommentClickListener(VerticalPanel commentPanel, String parentId) {
+        private AddCommentClickListener(Panel commentPanel, String parentId) {
             this.commentPanel = commentPanel;
             this.parentId = parentId;
         }
