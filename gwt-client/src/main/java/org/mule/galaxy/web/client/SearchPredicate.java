@@ -31,7 +31,7 @@ public class SearchPredicate
         dock.setWidth("100%");
         
         attributeList = new ListBox();
-        attributeList.setWidth("100px");
+        attributeList.setWidth("175px");
         attributeList.addItem("Name");
         attributeList.addChangeListener(new ChangeListener() {
            public void onChange(Widget sender) {
@@ -93,7 +93,7 @@ public class SearchPredicate
         contents.add(lb);
         
         TextBox tb = new TextBox();
-        tb.setText(attributeList.getItemText(attributeList.getSelectedIndex()));
+        tb.setWidth("98%");
         contents.add(tb);
         contents.setCellWidth(tb, "100%");
     }
