@@ -20,7 +20,14 @@ public interface Registry {
 
     Workspace createWorkspace(Workspace parent, String name) throws RegistryException;
     
+    void deleteWorkspace(String id) throws RegistryException, NotFoundException;
+    
     Workspace getWorkspace(String id) throws RegistryException, NotFoundException;
+    
+    Workspace getWorkspaceByPath(String path) throws RegistryException, NotFoundException;
+    
+    void updateWorkspace(Workspace w, String name, String parentId)
+        throws RegistryException, NotFoundException;
     
     Collection<Workspace> getWorkspaces() throws RegistryException;
     
@@ -96,8 +103,6 @@ public interface Registry {
     Set search(String queryString) throws RegistryException, QueryException;
 
     Set search(Query query) throws RegistryException, QueryException;
-
-    void removeWorkspace(Workspace newWork) throws RegistryException;
 
     Artifact getArtifact(Workspace w, String name) throws NotFoundException;
 

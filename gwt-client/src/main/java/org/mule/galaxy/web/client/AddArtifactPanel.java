@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class AddArtifactPanel extends Composite implements Navigation {
+public class AddArtifactPanel extends AbstractTitledComposite {
     private TextBox nameBox;
     private Grid grid;
     private FormPanel form;
@@ -19,7 +19,6 @@ public class AddArtifactPanel extends Composite implements Navigation {
 
     public AddArtifactPanel() {
         super();
-        
         form = new FormPanel();
         form.setAction("/handler/registry.rpc");
         form.setEncoding(FormPanel.ENCODING_MULTIPART);
@@ -55,10 +54,8 @@ public class AddArtifactPanel extends Composite implements Navigation {
         }));
 
         initWidget(form);
-    }
 
-    public String getNavigationTitle() {
-        return "Add Artifact";
+        setTitle("Add Artifact");
     }
     
     

@@ -18,7 +18,7 @@ import org.xml.sax.InputSource;
 public class MuleArtifactPlugin extends AbstractArtifactPlugin {
 
     public void initializeOnce() throws Exception {
-        artifactTypeDao.save(new ArtifactType("Mule Configuration", 
+        artifactTypeDao.save(new ArtifactType("Mule Configurations", 
                                               "application/mule+xml", 
                                               Constants.MULE_QNAME));
         
@@ -33,7 +33,7 @@ public class MuleArtifactPlugin extends AbstractArtifactPlugin {
             "} </values>";
        
         registry.registerIndex("mule.service", // index field name
-                               "Mule Service", // Display Name
+                               "Mule Services", // Display Name
                                Index.Language.XQUERY,
                                String.class, // search input type
                                exp, // the xquery expression

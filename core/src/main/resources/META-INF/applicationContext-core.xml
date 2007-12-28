@@ -56,7 +56,7 @@
   </bean>
   
   <bean id="registryTarget" class="org.mule.galaxy.impl.jcr.JcrRegistryImpl"
-        init-method="initialize">
+        init-method="initialize" destroy-method="destroy">
     <property name="contentService" ref="contentService" />
     <property name="settings" ref="settings" />
     <property name="sessionFactory" ref="sessionFactory" />

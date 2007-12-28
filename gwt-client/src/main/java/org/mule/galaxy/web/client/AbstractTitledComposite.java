@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * A Panel which puts a title up top with the "title" style.
  */
-public class TitledComposite extends Composite {
+public abstract class AbstractTitledComposite extends Composite {
 
     protected Label title;
     

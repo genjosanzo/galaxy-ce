@@ -29,7 +29,7 @@ public class IndexTest extends AbstractGalaxyTest {
     public void testWsdlIndex() throws Exception {
         Set<Index> indices = registry.getIndices(Constants.WSDL_DEFINITION_QNAME);
         assertNotNull(indices);
-        assertEquals(3, indices.size());
+        assertEquals(5, indices.size());
         
         Index idx = null;
         Index tnsIdx = null;
@@ -39,13 +39,13 @@ public class IndexTest extends AbstractGalaxyTest {
                 idx = i;
             } else if (i.getId().equals("wsdl.endpoint")) {
                 epIdx = i;
-            } else {
+            } else if (i.getId().equals("wsdl.targetNamespace")) {
                 tnsIdx = i;
             }
         }
         
         assertEquals("wsdl.service", idx.getId());
-        assertEquals("WSDL Service", idx.getName());
+        assertEquals("WSDL Services", idx.getName());
         assertEquals(Index.Language.XQUERY, idx.getLanguage());
         assertEquals(QName.class, idx.getQueryType());
         assertNotNull(idx.getExpression());
@@ -123,7 +123,7 @@ public class IndexTest extends AbstractGalaxyTest {
         
         Index idx = indices.iterator().next();
         assertEquals("mule.service", idx.getId());
-        assertEquals("Mule Service", idx.getName());
+        assertEquals("Mule Services", idx.getName());
         assertEquals(Index.Language.XQUERY, idx.getLanguage());
         assertEquals(String.class, idx.getQueryType());
         assertNotNull(idx.getExpression());

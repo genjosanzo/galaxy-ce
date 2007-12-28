@@ -22,10 +22,11 @@ public class RegistryPanel extends AbstractMenuPanel {
     private Set artifactTypes;
     private Toolbox artifactTypesBox;
     private String workspaceId;
-    private String workspaceName;
+    private Collection workspaces;
     private RegistryServiceAsync service;
     private WorkspacePanel workspacePanel;
     private Toolbox workspaceBox;
+    private Tree workspaceTree;
     
     public RegistryPanel(Galaxy galaxy) {
         super(galaxy);
@@ -45,40 +46,46 @@ public class RegistryPanel extends AbstractMenuPanel {
         });
         workspaceBox.addButton(addImg);
         
+        final RegistryPanel registryPanel = this;
         Image addWkspcImg = new Image("images/adddir_wiz.png");
-        addImg.addClickListener(new ClickListener() {
+        addWkspcImg.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
-                setMain(new AddWorkspacePanel(workspaceId, workspaceName));
+                setMain(new EditWorkspacePanel(registryPanel, 
+                                               workspaces,
+                                               workspaceId));
             }
             
         });
-        
         workspaceBox.addButton(addWkspcImg);
         
-        final Tree workspaceTree = new Tree();
+        Image editWkspcImg = new Image("images/editor_area.gif");
+        editWkspcImg.addClickListener(new ClickListener() {
+            public void onClick(Widget w) {
+                TreeItem item = workspaceTree.getSelectedItem();
+                TreeItem parent = item.getParentItem();
+                String parentId = null;
+                if (parent != null) {
+                    parentId = (String) parent.getUserObject();
+                }
+                setMain(new EditWorkspacePanel(registryPanel, 
+                                               workspaces,
+                                               parentId,
+                                               workspaceId,
+                                               item.getText()));
+            }
+            
+        });
+        workspaceBox.addButton(editWkspcImg);
+        this.workspaceTree = new Tree();
         workspaceTree.setStyleName("workspaces");
-        final TreeItem treeItem = workspaceTree.addItem("All");
-        workspaceTree.setSelectedItem(treeItem);
-        
         workspaceBox.add(workspaceTree);
         
         addMenuItem(workspaceBox);
 
-        // Load the workspaces into a tree on the left
-        service.getWorkspaces(new AbstractCallback(this) {
-
-            public void onSuccess(Object o) {
-                Collection workspaces = (Collection) o;
-                
-                initWorkspaces(treeItem, workspaces);
-                
-                treeItem.setState(true);
-            }
-        });
+        refreshWorkspaces();
         
         workspaceTree.addTreeListener(new TreeListener() {
             public void onTreeItemSelected(TreeItem ti) {
-                workspaceName = ti.getText();
                 setActiveWorkspace((String) ti.getUserObject());
             }
 
@@ -94,6 +101,28 @@ public class RegistryPanel extends AbstractMenuPanel {
         
         workspacePanel = new WorkspacePanel(this);
         setMain(workspacePanel);
+    }
+
+    public void refreshWorkspaces() {
+        if (workspaceTree.getItemCount() > 0) {
+            workspaceTree.clear();
+        }
+        
+        final TreeItem treeItem = workspaceTree.addItem("All");
+        treeItem.setState(true);
+        
+        // Load the workspaces into a tree on the left
+        service.getWorkspaces(new AbstractCallback(this) {
+
+            public void onSuccess(Object o) {
+                workspaces = (Collection) o;
+                
+                initWorkspaces(treeItem, workspaces);
+            }
+        });
+        // this crashes the gwt shell on winblows....
+//        workspaceTree.setSelectedItem(treeItem);
+        
     }
 
     public RegistryServiceAsync getRegistryService() {
@@ -149,22 +178,25 @@ public class RegistryPanel extends AbstractMenuPanel {
     
     public void addArtifactTypeFilter(String id) {
         artifactTypes.add(id);
-        workspacePanel.reloadArtifacts(workspaceId, artifactTypes);
+        setMain(new WorkspacePanel(this));
     }
 
     public void removeArtifactTypeFilter(String id) {
         artifactTypes.remove(id);
-        workspacePanel.reloadArtifacts(workspaceId, artifactTypes);
+        setMain(new WorkspacePanel(this));
     }
 
     public void setActiveWorkspace(String workspaceId) {
         this.workspaceId = workspaceId;
-        setMain(workspacePanel);
-        workspacePanel.reloadArtifacts(workspaceId, artifactTypes);
+        
+        setMain(new WorkspacePanel(this));
     }
 
-    public void refresh() {
-        // TODO Auto-generated method stub
-        
+    public Set getArtifactTypes() {
+        return artifactTypes;
+    }
+
+    public String getWorkspaceId() {
+        return workspaceId;
     }
 }

@@ -11,8 +11,15 @@ public interface RegistryService extends RemoteService {
     /**
      * @gwt typeArgs org.mule.galaxy.web.client.WorkspaceInfo
      * @return
+     * @throws RPCException 
      */
-    Collection getWorkspaces();
+    Collection getWorkspaces() throws RPCException;
+    
+    void addWorkspace(String parentWorkspaceId, String workspaceName) throws RPCException;
+
+    void updateWorkspace(String workspaceId, String parentWorkspaceId, String workspaceName) throws RPCException;
+    void deleteWorkspace(String workspaceId) throws RPCException;
+    
     
     /**
      * @gwt typeArgs org.mule.galaxy.web.client.ArtifactTypeInfo
@@ -45,6 +52,10 @@ public interface RegistryService extends RemoteService {
     void setProperty(String artifactId, 
                      String propertyName, 
                      String propertyValue) throws RPCException;
+    
+
+    void deleteProperty(String artifactId, 
+                        String propertyName) throws RPCException;
     
     /**
      * @gwt typeArgs java.lang.String

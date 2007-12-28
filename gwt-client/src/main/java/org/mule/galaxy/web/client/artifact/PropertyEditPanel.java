@@ -30,22 +30,23 @@ public class PropertyEditPanel extends Composite {
     private FlexTable newPropertyTable;
     private RegistryPanel registryPanel;
     private String artifactId;
-    private Panel metadataPanel;
+    private ArtifactMetadataPanel metadataPanel;
     private RegistryServiceAsync svc;
     private TextBox idTextBox;
     private TextBox descTextBox;
     private CheckBox mvCheckBox;
-    private FlexTable propertyTable;
+    private Panel propertiesPanel;
 
     public PropertyEditPanel(final RegistryPanel registryPanel, 
                              final String artifactId,
-                             final Panel metadataPanel,
+                             final Panel propertiesPanel,
+                             final ArtifactMetadataPanel metadataPanel,
                              final FlexTable table) {
         this.registryPanel = registryPanel;
         this.artifactId = artifactId;
+        this.propertiesPanel = propertiesPanel; 
         this.metadataPanel = metadataPanel;
         this.svc = registryPanel.getRegistryService();
-        this.propertyTable = table;
         
         HorizontalPanel panel = new HorizontalPanel();
         panel.setStyleName("add-property-panel");
@@ -93,7 +94,7 @@ public class PropertyEditPanel extends Composite {
         Button cancelButton = new Button("Cancel");
         cancelButton.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
-                metadataPanel.remove(editPanel);
+                propertiesPanel.remove(editPanel);
                 newPropertyTable = null;
             }
         });
@@ -137,11 +138,9 @@ public class PropertyEditPanel extends Composite {
     }
 
     protected void clearPanelAndAddProperty(String propertyName, String propertyDesc, String propertyValue) {
-        metadataPanel.remove(this);
+        propertiesPanel.remove(this);
         
-        int rows = propertyTable.getRowCount();
-        propertyTable.setText(rows, 0, propertyDesc);
-        propertyTable.setText(rows, 1, valueTextBox.getText());
+        metadataPanel.addProperty(propertyName, propertyDesc, valueTextBox.getText());
     }
 
     private void createPropertyAndSave() {

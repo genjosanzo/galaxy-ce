@@ -8,13 +8,22 @@ public class WWorkspace implements IsSerializable {
     private String id;
     private String name;
     private Collection workspaces;
+    private String path;
     
     public WWorkspace() {
         super();
     }
-    public WWorkspace(String id2, String name2) {
+    public WWorkspace(String id2, String name2, String path) {
         this.id = id2;
         this.name = name2;
+        this.path = path;
+    }
+    
+    public String getPath() {
+        return path;
+    }
+    public void setPath(String path) {
+        this.path = path;
     }
     public String getId() {
         return id;

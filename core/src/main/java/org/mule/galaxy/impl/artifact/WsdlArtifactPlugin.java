@@ -40,7 +40,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
             "} </values>";
        
         registry.registerIndex("wsdl.service", // index field name
-                               "WSDL Service", // Display Name
+                               "WSDL Services", // Display Name
                                Index.Language.XQUERY,
                                QName.class, // search input type
                                exp, // the xquery expression
@@ -57,7 +57,43 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
             "} </values>";
        
         registry.registerIndex("wsdl.endpoint", // index field name
-                               "WSDL Endpoint", // Display Name
+                               "WSDL Endpoints", // Display Name
+                               Index.Language.XQUERY,
+                               QName.class, // search input type
+                               exp, // the xquery expression
+                               Constants.WSDL_DEFINITION_QNAME); // document QName which this applies to
+       
+        exp = 
+            "" +
+            "declare namespace wsdl=\"http://schemas.xmlsoap.org/wsdl/\";\n" +
+            "declare variable $document external;\n" +
+            "" +
+            "<values visible=\"false\"> {\n" +
+            "for $b in $document//wsdl:bindingt\n" +
+            "let $ns := $document/wsdl:definition/@targetNamespace\n" +
+            "    return <value>{data($b/@name)}</value>\n" +
+            "} </values>";
+       
+        registry.registerIndex("wsdl.binding", // index field name
+                               "WSDL Bindings", // Display Name
+                               Index.Language.XQUERY,
+                               QName.class, // search input type
+                               exp, // the xquery expression
+                               Constants.WSDL_DEFINITION_QNAME); // document QName which this applies to
+       
+        exp = 
+            "" +
+            "declare namespace wsdl=\"http://schemas.xmlsoap.org/wsdl/\";\n" +
+            "declare variable $document external;\n" +
+            "" +
+            "<values visible=\"false\"> {\n" +
+            "for $pt in $document//wsdl:portType\n" +
+            "let $ns := $document/wsdl:definition/@targetNamespace\n" +
+            "    return <value>{data($pt/@name)}</value>\n" +
+            "} </values>";
+       
+        registry.registerIndex("wsdl.portType", // index field name
+                               "WSDL PortTypes", // Display Name
                                Index.Language.XQUERY,
                                QName.class, // search input type
                                exp, // the xquery expression
@@ -77,6 +113,27 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
     public void initializeEverytime() throws Exception {
         
         CustomArtifactTypeView view = new CustomArtifactTypeView();
+        view.getColumns().add(new Column("Port Types", new ColumnEvaluator() {
+            public Object getValue(Object artifact) {
+                Object o = ((Artifact)artifact).getLatestVersion().getProperty("wsdl.portType");
+                
+                if (o != null) {
+                    return ((Collection) o).size();
+                }
+                return 0;
+            }
+        }));
+
+        view.getColumns().add(new Column("Bindings", new ColumnEvaluator() {
+            public Object getValue(Object artifact) {
+                Object o = ((Artifact)artifact).getLatestVersion().getProperty("wsdl.binding");
+                
+                if (o != null) {
+                    return ((Collection) o).size();
+                }
+                return 0;
+            }
+        }));
         view.getColumns().add(new Column("Services", new ColumnEvaluator() {
             public Object getValue(Object artifact) {
                 Object o = ((Artifact)artifact).getLatestVersion().getProperty("wsdl.service");
@@ -87,7 +144,6 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
                 return 0;
             }
         }));
-        
         view.getColumns().add(1, new Column("Namespace", new ColumnEvaluator() {
             public Object getValue(Object artifact) {
                 return ((Artifact)artifact).getLatestVersion().getProperty("wsdl.targetNamespace");

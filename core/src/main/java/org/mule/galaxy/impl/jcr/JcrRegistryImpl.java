@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.NamespaceException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -80,6 +82,7 @@ import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.QNameUtil;
+import org.springframework.dao.DataAccessException;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
@@ -116,16 +119,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private String indexesId;
 
     private String artifactTypesId;
+    private Session openSession;
     
     public JcrRegistryImpl() {
         super();
     }
 
     public Workspace getWorkspace(String id) throws RegistryException {
-        // TODO: implement a query
-        // TODO: possibility for injenction in the id here?
         try {
-            Node node = getWorkspacesNode().getNode(id);
+            Node node = getNodeByUUID(id);
 
             return new JcrWorkspace(node);
         } catch (RepositoryException e) {
@@ -133,48 +135,132 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
 
+
+    public Workspace getWorkspaceByPath(String path) throws RegistryException, NotFoundException {
+        try {
+            Node node = getWorkspacesNode().getNode(path);
+
+            return new JcrWorkspace(node);
+        } catch (PathNotFoundException e) {
+            throw new NotFoundException(e);
+        } catch (RepositoryException e) {
+            throw new RegistryException(e);
+        }
+    }
     
     public Workspace createWorkspace(String name) throws RegistryException {
-        try {
-            // we should throw an error, but lets be defensive for now
-            name = JcrUtil.escape(name);
-            
-            Node node = getWorkspacesNode().addNode(name, "galaxy:workspace");
-            node.addMixin("mix:referenceable");
-
-            JcrWorkspace workspace = new JcrWorkspace(node);
-            workspace.setName(name);
-            return workspace;
-        } catch (RepositoryException e) {
-            throw new RegistryException(e);
-        }
-    }
+        // we should throw an error, but lets be defensive for now
+        final String escapedName = JcrUtil.escape(name);
+        
+        return (Workspace) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                
+                Node node = getWorkspacesNode().addNode(escapedName, "galaxy:workspace");
+                node.addMixin("mix:referenceable");
     
+                JcrWorkspace workspace = new JcrWorkspace(node);
+                workspace.setName(escapedName);
 
-    public Workspace createWorkspace(Workspace parent, String name) throws RegistryException {
-        try {
-            Collection<Workspace> workspaces = parent.getWorkspaces();
-            
-            Node parentNode = ((JcrWorkspace) parent).getNode();
-            Node node = parentNode.addNode(name);
-            node.addMixin("mix:referenceable");
-
-            JcrWorkspace workspace = new JcrWorkspace(node);
-            workspace.setName(name);
-            workspaces.add(workspace);
-            return workspace;
-        } catch (RepositoryException e) {
-            throw new RegistryException(e);
-        }
-    
+                session.save();
+                
+                return workspace;
+            }
+        });
     }
 
-    public void removeWorkspace(Workspace w) throws RegistryException {
-        try {
-            ((JcrWorkspace) w).getNode().remove();
-        } catch (RepositoryException e) {
-            throw new RegistryException(e);
+    public void updateWorkspace(final Workspace w, 
+                                String name, 
+                                final String parentId) 
+        throws RegistryException, NotFoundException {
+        
+        if (name == null) {
+            name = w.getName();
         }
+        
+        name = JcrUtil.escape(name);
+        
+        final String newName = name;
+        
+        executeWithNotFound(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                
+                
+                    Node node = ((JcrWorkspace) w).getNode();
+                    node.setProperty(JcrWorkspace.NAME, newName);
+                    Node parentNode = null;
+                    if (parentId != null) {
+                        try {
+                            parentNode = getNodeByUUID(parentId);
+                        } catch (DataAccessException e) {
+                            throw new RuntimeException(new NotFoundException(parentId));
+                        }
+                    } else {
+                        parentNode = node.getParent();
+                    }
+
+                    Node checked = parentNode;
+                    while (checked != null && checked.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
+                        if (checked.equals(node)) {
+                            throw new RuntimeException(new RegistryException(new Message("MOVE_ONTO_CHILD", LOGGER)));
+                        }
+                        
+                        checked = checked.getParent();
+                    }
+                    session.save();
+                    
+                    String dest = parentNode.getPath() + "/" + newName;
+                    System.out.println("moving " + node.getPath() + " to " + dest);
+                    session.getWorkspace().move(node.getPath(), dest);
+                
+                session.save();
+                
+                return null;
+            }
+        });
+    }
+
+    public void deleteWorkspace(final String id) throws RegistryException, NotFoundException {
+        executeWithNotFound(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                
+                try {
+                    Node node = getNodeByUUID(id);
+                    
+                    node.remove();
+                    
+                    session.save();
+                } catch (ItemNotFoundException e) {
+                    throw new RuntimeException(new NotFoundException(id));
+                }
+                session.save();
+                
+                return null;
+            }
+        });
+    }
+
+    public Workspace createWorkspace(final Workspace parent, 
+                                     final String name) throws RegistryException {
+        // we should throw an error, but lets be defensive for now
+        final String escapedName = JcrUtil.escape(name);
+        
+        return (Workspace) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Collection<Workspace> workspaces = parent.getWorkspaces();
+                
+                Node parentNode = ((JcrWorkspace) parent).getNode();
+                Node node = parentNode.addNode(escapedName, "galaxy:workspace");
+                node.addMixin("mix:referenceable");
+    
+                JcrWorkspace workspace = new JcrWorkspace(node);
+                workspace.setName(escapedName);
+                workspaces.add(workspace);
+                
+                session.save();
+                
+                return workspace;
+            }
+        });
     }
 
     public Artifact resolve(Workspace w, String location) {
@@ -212,13 +298,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     public Collection<Workspace> getWorkspaces() throws RegistryException {
         try {
-            Collection<Workspace> workspaceCol = new ArrayList<Workspace>();
+            List<Workspace> workspaceCol = new ArrayList<Workspace>();
             for (NodeIterator itr = getWorkspacesNode().getNodes(); itr.hasNext();) {
                 Node n = itr.nextNode();
 
                 if (!n.getName().equals("jcr:system")) {
                     workspaceCol.add(new JcrWorkspace(n));
                 }
+                
+                Collections.sort(workspaceCol, new WorkspaceComparator());
             }
             return workspaceCol;
         } catch (RepositoryException e) {
@@ -413,6 +501,22 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 throw (RegistryException) cause;
             } else if (cause instanceof ArtifactPolicyException) {
                 throw (ArtifactPolicyException) cause;
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    private ArtifactResult executeWithNotFound(JcrCallback jcrCallback) 
+        throws RegistryException, NotFoundException {
+        try {
+            return (ArtifactResult) execute(jcrCallback);
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RegistryException) {
+                throw (RegistryException) cause;
+            } else if (cause instanceof NotFoundException) {
+                throw (NotFoundException) cause;
             } else {
                 throw e;
             }
@@ -1100,6 +1204,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             
             if (result instanceof String) {
                 jcrVersion.setProperty(idx.getId(), result);
+                jcrVersion.setLocked(idx.getId(), true);
             }
         } catch (IOException e) {
             throw new RegistryException(e);
@@ -1171,6 +1276,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     public void initialize() throws Exception {
+        // Keep a session open so the transient repository doesn't shutdown
+        openSession = getSessionFactory().getSession();
+        
         Session session = getSessionFactory().getSession();
         Node root = session.getRootNode();
         
@@ -1229,7 +1337,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             a.setRegistry(this);
         }
         
-//        session.logout();
+        session.logout();
+    }
+    
+    public void destroy() throws Exception {
+        openSession.logout();
     }
 
     public void addComment(Comment c) {

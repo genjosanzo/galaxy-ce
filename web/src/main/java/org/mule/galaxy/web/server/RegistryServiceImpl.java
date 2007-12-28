@@ -56,19 +56,84 @@ public class RegistryServiceImpl implements RegistryService {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a, MMMM d, yyyy");
     
     @SuppressWarnings("unchecked")
-    public Collection getWorkspaces() {
+    public Collection getWorkspaces() throws RPCException {
         try {
              Collection<Workspace> workspaces = registry.getWorkspaces();
              List wis = new ArrayList();
              
              for (Workspace w : workspaces) {
-                 wis.add(new WWorkspace(w.getId(), w.getName()));
+                 WWorkspace ww = new WWorkspace(w.getId(), w.getName(), w.getPath());
+                 wis.add(ww);
+                 
+                 Collection<Workspace> children = w.getWorkspaces();
+                 if (children != null && children.size() > 0) {
+                     ww.setWorkspaces(new ArrayList());
+                     addWorkspaces(ww, children);
+                 }
              }
              return wis;
         } catch (RegistryException e) {
-            throw new RuntimeException(e);
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
         }
     }
+    
+
+    @SuppressWarnings("unchecked")
+    private void addWorkspaces(WWorkspace parent, Collection<Workspace> workspaces) {
+        for (Workspace w : workspaces) {
+            WWorkspace ww = new WWorkspace(w.getId(), w.getName(), w.getPath());
+            parent.getWorkspaces().add(ww);
+            
+            Collection<Workspace> children = w.getWorkspaces();
+            if (children != null && children.size() > 0) {
+                ww.setWorkspaces(new ArrayList());
+                addWorkspaces(ww, children);
+            }
+        }
+    }
+
+
+    public void addWorkspace(String parentWorkspaceId, String workspaceName) throws RPCException {
+        try {
+            if (parentWorkspaceId == null || "[No parent]".equals(parentWorkspaceId)) {
+                registry.createWorkspace(workspaceName);
+            } else {
+                Workspace parent = registry.getWorkspace(parentWorkspaceId);
+                registry.createWorkspace(parent, workspaceName);
+            }
+       } catch (RegistryException e) {
+           LOGGER.log(Level.WARNING, e.getMessage(), e);
+           throw new RPCException(e.getMessage());
+       }
+    }
+
+    
+
+    public void updateWorkspace(String workspaceId, String parentWorkspaceId, String workspaceName)
+        throws RPCException {
+        try {
+            if (parentWorkspaceId == null || "[No parent]".equals(parentWorkspaceId)) {
+                parentWorkspaceId = null;
+            } 
+
+            registry.updateWorkspace(registry.getWorkspace(workspaceId), workspaceName, parentWorkspaceId);
+       } catch (RegistryException e) {
+           LOGGER.log(Level.WARNING, e.getMessage(), e);
+           throw new RPCException(e.getMessage());
+       }
+    }
+
+
+    public void deleteWorkspace(String workspaceId) throws RPCException {
+        try {
+            registry.deleteWorkspace(workspaceId);
+       } catch (RegistryException e) {
+           LOGGER.log(Level.WARNING, e.getMessage(), e);
+           throw new RPCException(e.getMessage());
+       }
+    }
+
 
     @SuppressWarnings("unchecked")
     public Collection getArtifactTypes() {
@@ -269,6 +334,9 @@ public class RegistryServiceImpl implements RegistryService {
             
             g.getRows().add(info);
             
+            info.setArtifactLink(getLink("/api/repository/", a));
+            info.setCommentsFeedLink(getLink("/api/comments/", a));
+            
             return g;
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
@@ -277,6 +345,22 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     
+    private String getLink(String base, Artifact a) {
+        StringBuilder sb = new StringBuilder();
+        Workspace w = a.getWorkspace();
+        
+        while (w != null) {
+            sb.insert(0, '/')
+              .insert(0, w.getName());
+            
+            w = w.getParent();
+        }
+        
+        sb.insert(0, base);
+        sb.append(a.getName());
+        return sb.toString();
+    }
+
     public WComment addComment(String artifactId, String parentComment, String text) throws RPCException {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
@@ -355,6 +439,22 @@ public class RegistryServiceImpl implements RegistryService {
           
             
             artifact.setProperty(propertyName, propertyValue);
+            registry.save(artifact);
+        } catch (RegistryException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (PropertyException e) {
+            // occurs if property name is formatted wrong
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
+    }
+    
+
+    public void deleteProperty(String artifactId, String propertyName) throws RPCException {
+        try {
+            Artifact artifact = registry.getArtifact(artifactId);
+            artifact.setProperty(propertyName, null);
             registry.save(artifact);
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);

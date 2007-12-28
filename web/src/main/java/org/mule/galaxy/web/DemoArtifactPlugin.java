@@ -5,13 +5,10 @@ import java.io.IOException;
 import javax.activation.MimeTypeParseException;
 
 import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.artifact.AbstractArtifactPlugin;
-import org.mule.galaxy.impl.jcr.JcrRegistryImpl;
-import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 
@@ -33,8 +30,6 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
         
         PropertyDescriptor pd = new PropertyDescriptor("location", "Location", false);
         registry.savePropertyDescriptor(pd);
-        
-        JcrUtil.dump(((JcrRegistryImpl) registry).getRootNode());
     }
 
     private void add(Workspace w, User user, String name, String resource) 

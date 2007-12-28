@@ -196,7 +196,7 @@ public class ArtifactCollectionProvider extends AbstractCollectionProvider<Artif
             UserDetailsWrapper wrapper = 
                 (UserDetailsWrapper) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             
-            Workspace workspace = registry.getWorkspace(workspaceId);
+            Workspace workspace = registry.getWorkspaceByPath(workspaceId);
             
             if (workspace == null) {
                 EmptyResponseContext ctx = new EmptyResponseContext(500);

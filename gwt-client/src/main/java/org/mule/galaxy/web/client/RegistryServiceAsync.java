@@ -9,6 +9,18 @@ import com.google.gwt.user.client.rpc.RemoteService;
 public interface RegistryServiceAsync extends RemoteService {
     void getWorkspaces(AsyncCallback callback);
     
+    void addWorkspace(String parentWorkspaceId, 
+                      String workspaceName,
+                      AsyncCallback callback);
+    
+    void updateWorkspace(String workspaceId, 
+                         String parentWorkspaceId, 
+                         String workspaceName,
+                         AsyncCallback callback);
+
+    void deleteWorkspace(String workspaceId,
+                         AsyncCallback callback);
+    
     void getArtifactTypes(AsyncCallback callback);
     
     void getArtifacts(String workspace, Set artifactTypes, AsyncCallback callback);
@@ -29,6 +41,10 @@ public interface RegistryServiceAsync extends RemoteService {
                      String propertyName, 
                      String propertyValue,
                      AsyncCallback callback);
+    
+    void deleteProperty(String artifactId, 
+                        String propertyName, 
+                        AsyncCallback callback);
     
     void addComment(String artifactId, String parentCommentId, String text, AsyncCallback callback);
     

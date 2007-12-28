@@ -23,14 +23,14 @@ public class ArtifactViewTest extends AbstractGalaxyTest {
         
         CustomArtifactTypeView view = (CustomArtifactTypeView) viewManager.getArtifactTypeView(Constants.WSDL_DEFINITION_QNAME);
         
-        assertEquals(5, view.getColumns().size());
+        assertEquals(7, view.getColumns().size());
         
         // Import a document which should now be indexed
         Artifact artifact = importHelloWsdl();
         
         // Check and see if our view works
         String[] columns = view.getColumnNames();
-        assertEquals(5, columns.length);
+        assertEquals(7, columns.length);
         
         String name = artifact.getName();
         assertEquals(name, view.getColumnValue(artifact, 0));

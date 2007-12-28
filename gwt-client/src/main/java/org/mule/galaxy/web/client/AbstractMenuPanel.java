@@ -51,7 +51,6 @@ public abstract class AbstractMenuPanel extends Composite {
         
         this.mainWidget = widget;
         mainPanel.add(widget);
-        
     }
     
 
@@ -64,6 +63,4 @@ public abstract class AbstractMenuPanel extends Composite {
     public void setMessage(String string) {
         setMessage(new Label(string));
     }
-    
-    
 }

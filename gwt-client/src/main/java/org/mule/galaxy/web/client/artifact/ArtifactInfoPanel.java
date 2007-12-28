@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.client.artifact;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -25,7 +26,6 @@ import org.mule.galaxy.web.client.DependencyInfo;
 import org.mule.galaxy.web.client.ExtendedArtifactInfo;
 import org.mule.galaxy.web.client.RegistryPanel;
 import org.mule.galaxy.web.client.WComment;
-import org.mule.galaxy.web.client.WProperty;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
 
@@ -38,7 +38,6 @@ public class ArtifactInfoPanel extends Composite {
     private VerticalPanel panel;
     private FlowPanel commentsPanel;
     private ExtendedArtifactInfo info;
-    private FlowPanel metadata;
 
     public ArtifactInfoPanel(final RegistryPanel registryPanel, 
                              ArtifactGroup group,
@@ -91,9 +90,8 @@ public class ArtifactInfoPanel extends Composite {
             
         });
         
+        panel.add(new ArtifactMetadataPanel(registryPanel, info));
         
-        
-        initMetadata();
         initComments();
         
         initWidget(panel);
@@ -119,72 +117,6 @@ public class ArtifactInfoPanel extends Composite {
         table.setWidget(c, 0, descLabelPanel);
         descPanel.add(new Label(info.getDescription()));
         table.setWidget(c, 1, descPanel);
-    }
-
-    private void initMetadata() {
-        metadata = new FlowPanel();
-        final FlexTable table = new FlexTable();
-        
-        Hyperlink addMetadata = new Hyperlink("Add", "add-metadata");
-        addMetadata.addClickListener(new ClickListener() {
-
-            public void onClick(Widget arg0) {
-                PropertyEditPanel edit = new PropertyEditPanel(registryPanel, 
-                                                               info.getId(),
-                                                               metadata,
-                                                               table);
-                metadata.add(edit);   
-            }
-            
-        });
-        
-        InlineFlowPanel metadataTitle = createTitleWithLink("Metadata", addMetadata);
-        metadata.add(metadataTitle);
-        
-        table.setStyleName("artifactTable");
-        table.setCellSpacing(1);
-        table.setCellPadding(0);
-        table.setWidth("100%");
-        table.getColumnFormatter().setStyleName(0, "artifactTableHeader");
-        table.getColumnFormatter().setStyleName(1, "artifactTableEntry");
-        
-        int i = 0;
-        for (Iterator itr = info.getProperties().iterator(); itr.hasNext();) {
-            WProperty p = (WProperty) itr.next();
-            
-            table.setText(i, 0, p.getDescription());
-            String txt = p.getValue();
-            Widget w = null;
-            if (p.isLocked()) {
-                if ("".equals(txt) || txt == null) {
-                    txt = "[no value]";
-                }
-                txt += " [Locked]";
-                w = new Label(txt);
-            } else {
-                txt += " ";
-                Hyperlink hl = new Hyperlink("Edit", "edit-property");
-                hl.setStyleName("editPropertyLink");
-                hl.addClickListener(new ClickListener() {
-
-                    public void onClick(Widget w) {
-                        // TODO Auto-generated method stub
-                        
-                    }
-                    
-                });
-                HorizontalPanel value = new HorizontalPanel();
-                value.add(new Label(txt));
-                value.add(hl);
-                w = value;
-            }
-            
-            table.setWidget(i, 1, w);
-            
-            i++;
-        }
-        metadata.add(table);
-        panel.add(metadata);
     }
 
     private void initComments() {
@@ -349,18 +281,17 @@ public class ArtifactInfoPanel extends Composite {
     }
 
     private void addArtifactLinks(final RegistryPanel registryPanel) {
-        Hyperlink hl = new Hyperlink("View", "http://host/com");
+        Hyperlink hl = new Hyperlink("View", "view-artifact");
         hl.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
-                // TODO Auto-generated method stub
-                
+                Window.open(".." + info.getArtifactLink(), null, null);
             }
             
         });
         
         rightGroup.add(hl);
-        hl = new Hyperlink("New Version", "view-artifact");
+        hl = new Hyperlink("New Version", "new-artifact-version");
         hl.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {

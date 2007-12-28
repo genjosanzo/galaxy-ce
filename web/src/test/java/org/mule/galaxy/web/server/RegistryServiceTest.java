@@ -15,6 +15,7 @@ import org.mule.galaxy.web.client.BasicArtifactInfo;
 import org.mule.galaxy.web.client.ExtendedArtifactInfo;
 import org.mule.galaxy.web.client.RegistryService;
 import org.mule.galaxy.web.client.WComment;
+import org.mule.galaxy.web.client.WWorkspace;
 import org.springframework.context.ApplicationContext;
 
 public class RegistryServiceTest extends AbstractGalaxyTest {
@@ -41,7 +42,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals(3, artifacts.size());
         
         ArtifactGroup g1 = (ArtifactGroup) artifacts.iterator().next();
-        assertEquals("Mule Configuration", g1.getName());
+        assertEquals("Mule Configurations", g1.getName());
         
         List columns = g1.getColumns();
         assertEquals(4, columns.size());
@@ -56,7 +57,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         // Test reretrieving the artifact
         g1 = gwtRegistry.getArtifact(a.getId());
         g1 = (ArtifactGroup) artifacts.iterator().next();
-        assertEquals("Mule Configuration", g1.getName());
+        assertEquals("Mule Configurations", g1.getName());
         
         columns = g1.getColumns();
         assertEquals(4, columns.size());
@@ -94,6 +95,9 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         WComment wc3 = (WComment) comments.get(0);
         assertEquals(1, wc3.getComments().size());
         
+        assertEquals("/api/repository/Default Workspace/hello-config.xml", ext.getArtifactLink());
+        assertEquals("/api/comments/Default Workspace/hello-config.xml", ext.getCommentsFeedLink());
+        
         // test desc
         gwtRegistry.setDescription(a.getId(), "test desc");
     }
@@ -103,6 +107,24 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         AuthenticationProvider provider = (AuthenticationProvider) ctx.getBean("daoAuthenticationProvider");
         Authentication auth = provider.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+    
+    public void testWorkspaces() throws Exception {
+        Collection workspaces = gwtRegistry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        
+        WWorkspace w = (WWorkspace) workspaces.iterator().next();
+        
+        gwtRegistry.addWorkspace(w.getId(), "Foo");
+        
+        workspaces = gwtRegistry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        
+        w = (WWorkspace) workspaces.iterator().next();
+        assertNotNull(w.getWorkspaces());
+        assertEquals(1, w.getWorkspaces().size());
+        
+        assertNotNull(w.getPath());
     }
     
     public void testIndexes() throws Exception {

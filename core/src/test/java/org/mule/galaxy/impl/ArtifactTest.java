@@ -36,9 +36,21 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         assertEquals(1, newWork.getWorkspaces().size());
         
-        registry.removeWorkspace(newWork);
+        registry.deleteWorkspace(newWork.getId());
         
         assertEquals(1, registry.getWorkspaces().size());
+        
+        Workspace root = workspaces.iterator().next();
+        child = registry.createWorkspace(root, "child");
+        
+        Workspace newRoot = registry.createWorkspace("newroot");
+        registry.updateWorkspace(child, "child", newRoot.getId());
+        
+        Collection<Workspace> children = newRoot.getWorkspaces();
+        assertEquals(1, children.size());
+        
+        child = children.iterator().next();
+        assertNotNull(child.getParent());
     }
     
     public void testAddWsdl() throws Exception {
@@ -71,7 +83,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
             if (next.getName().equals("wsdl.targetNamespace")) {
                 assertEquals("wsdl.targetNamespace", next.getName());
                 assertNotNull(next.getValue());
-                assertFalse(next.isLocked());
+                assertTrue(next.isLocked());
                 assertTrue(next.isVisible());
                 
                 assertEquals("WSDL Target Namespace", next.getDescription());

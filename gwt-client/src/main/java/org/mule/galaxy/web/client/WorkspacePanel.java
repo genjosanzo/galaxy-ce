@@ -30,7 +30,9 @@ public class WorkspacePanel
         panel.add(artifactPanel);
 
         registryPanel = rp;
-        registryPanel.getRegistryService().getArtifacts(null, null, new AbstractCallback(registryPanel) {
+        registryPanel.getRegistryService().getArtifacts(rp.getWorkspaceId(), 
+                                                        rp.getArtifactTypes(), 
+                                                        new AbstractCallback(registryPanel) {
 
             public void onSuccess(Object o) {
                 initArtifacts((Collection) o);
@@ -50,16 +52,5 @@ public class WorkspacePanel
             artifactPanel.add(label);
             artifactPanel.add(list);
         }
-    }
-    
-    public void reloadArtifacts(String workspace, Set artifactTypes) {
-        artifactPanel.clear();
-        
-        registryPanel.getRegistryService().getArtifacts(workspace, artifactTypes, new AbstractCallback(registryPanel) {
-            public void onSuccess(Object o) {
-                initArtifacts((Collection) o);
-            }
-            
-        });
     }
 }

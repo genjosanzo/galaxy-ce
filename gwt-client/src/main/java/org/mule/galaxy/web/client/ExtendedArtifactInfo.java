@@ -7,7 +7,25 @@ public class ExtendedArtifactInfo extends BasicArtifactInfo{
     private List properties = new ArrayList();
     private List comments = new ArrayList();
     private String description;
+    private String commentsFeedLink;
+    private String artifactLink;
     
+    public String getCommentsFeedLink() {
+        return commentsFeedLink;
+    }
+
+    public void setCommentsFeedLink(String commentsFeedLink) {
+        this.commentsFeedLink = commentsFeedLink;
+    }
+
+    public String getArtifactLink() {
+        return artifactLink;
+    }
+
+    public void setArtifactLink(String artifactLink) {
+        this.artifactLink = artifactLink;
+    }
+
     public String getDescription() {
         return description;
     }

@@ -65,12 +65,36 @@ public class AbstractJcrObject {
             JcrUtil.setProperty(name, value, node);
             
             node.setProperty(name + VISIBLE, true);
-            ensureProperty(name);
+            if (value == null) {
+                deleteProperty(name);
+            } else {
+                ensureProperty(name);
+            }
+            
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
     }
 
+
+    private void deleteProperty(String name) throws RepositoryException {
+        Property p = null;
+        try {
+            p = node.getProperty(PROPERTIES);
+            
+            List<Value> values = new ArrayList<Value>();
+            for (Value v : p.getValues()) {
+                if (!v.getString().equals(name)) {
+                    values.add(v);
+                }
+            }
+            
+            p.setValue(values.toArray(new Value[values.size()]));
+            
+        } catch (PathNotFoundException e) {
+            return;
+        }
+    }
 
     private ResourceBundle getBundle() {
         return BundleUtils.getBundle(AbstractJcrObject.class);
