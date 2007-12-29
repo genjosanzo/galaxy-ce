@@ -2,7 +2,10 @@
 
 	<!-- Inherit the core Web Toolkit stuff.                  -->
 	<inherits name='com.google.gwt.user.User'/>
-
+    
+    <source path="rpc"/>
+    <source path="client"/>
+    
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.mule.galaxy.web.client.Galaxy'/>
 

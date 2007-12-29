@@ -19,15 +19,15 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.mule.galaxy.web.client.AbstractCallback;
 import org.mule.galaxy.web.client.AddArtifactPanel;
-import org.mule.galaxy.web.client.ArtifactGroup;
-import org.mule.galaxy.web.client.DependencyInfo;
-import org.mule.galaxy.web.client.ExtendedArtifactInfo;
 import org.mule.galaxy.web.client.RegistryPanel;
-import org.mule.galaxy.web.client.WComment;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.DependencyInfo;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.WComment;
 
 public class ArtifactInfoPanel extends Composite {
 

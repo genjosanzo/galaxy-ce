@@ -6,6 +6,8 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Widget;
 import org.mule.galaxy.web.client.artifact.ArtifactPanel;
+import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.BasicArtifactInfo;
 
 public class ArtifactListPanel
     extends Composite

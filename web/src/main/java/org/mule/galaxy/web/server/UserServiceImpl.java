@@ -8,10 +8,10 @@ import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserExistsException;
 import org.mule.galaxy.security.UserManager;
-import org.mule.galaxy.web.client.ItemNotFoundException;
 import org.mule.galaxy.web.client.admin.PasswordChangeException;
-import org.mule.galaxy.web.client.admin.UserService;
-import org.mule.galaxy.web.client.admin.WUser;
+import org.mule.galaxy.web.rpc.ItemNotFoundException;
+import org.mule.galaxy.web.rpc.UserService;
+import org.mule.galaxy.web.rpc.WUser;
 
 public class UserServiceImpl implements UserService {
 

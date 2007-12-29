@@ -8,6 +8,8 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Widget;
 import org.mule.galaxy.web.client.AbstractMenuPanel;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.rpc.UserService;
+import org.mule.galaxy.web.rpc.UserServiceAsync;
 
 public class AdministrationPanel extends AbstractMenuPanel {
 

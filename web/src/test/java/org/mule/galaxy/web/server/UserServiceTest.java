@@ -3,7 +3,7 @@ package org.mule.galaxy.web.server;
 import java.util.Collection;
 
 import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.web.client.admin.UserService;
+import org.mule.galaxy.web.rpc.UserService;
 
 public class UserServiceTest extends AbstractGalaxyTest {
     protected UserService gwtUserService;

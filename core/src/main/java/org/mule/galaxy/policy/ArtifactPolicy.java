@@ -1,5 +1,7 @@
 package org.mule.galaxy.policy;
 
+import java.util.Collection;
+
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
@@ -17,7 +19,7 @@ public interface ArtifactPolicy {
     
     String getDescription();
     
-    Approval isApproved(Artifact a, ArtifactVersion previous, ArtifactVersion next);
+    Collection<ApprovalMessage> isApproved(Artifact a, ArtifactVersion previous, ArtifactVersion next);
     
     void setRegistry(Registry registry);
 }

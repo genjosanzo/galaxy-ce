@@ -2,24 +2,24 @@ package org.mule.galaxy;
 
 import java.util.Collection;
 
-import org.mule.galaxy.policy.Approval;
+import org.mule.galaxy.policy.ApprovalMessage;
 
 public class ArtifactResult {
     private Artifact artifact;
     private ArtifactVersion artifactVersion;
-    private Collection<Approval> approvals;
+    private Collection<ApprovalMessage> approvals;
     private boolean approved = true;
     
     public ArtifactResult(Artifact artifact, 
                           ArtifactVersion artifactVersion, 
-                          Collection<Approval> approvals) {
+                          Collection<ApprovalMessage> approvals) {
         super();
         this.artifact = artifact;
         this.artifactVersion = artifactVersion;
         this.approvals = approvals;
         
-        for (Approval a : approvals) {
-            if (!a.isApproved()) {
+        for (ApprovalMessage a : approvals) {
+            if (!a.isWarning()) {
                 approved = false;
                 break;
             }
@@ -34,7 +34,7 @@ public class ArtifactResult {
         return artifactVersion;
     }
 
-    public Collection<Approval> getApprovals() {
+    public Collection<ApprovalMessage> getApprovals() {
         return approvals;
     }
 

@@ -1,6 +1,7 @@
 package org.mule.galaxy.policy.wsdl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.wsdl.Definition;
@@ -11,7 +12,7 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.impl.RegistryLocator;
-import org.mule.galaxy.policy.Approval;
+import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.wsi.Message;
 import org.mule.galaxy.wsi.WSIRule;
@@ -51,11 +52,10 @@ public class BasicProfilePolicy implements ArtifactPolicy {
         return "WS-I BasicProfile 1.1 WSDL Compliance";
     }
 
-    public Approval isApproved(Artifact a, ArtifactVersion previous, ArtifactVersion next) {
-        Approval approval = new Approval();
+    public Collection<ApprovalMessage> isApproved(Artifact a, ArtifactVersion previous, ArtifactVersion next) {
+        ArrayList<ApprovalMessage> messages = new ArrayList<ApprovalMessage>();
         
         List<ValidationResult> results = new ArrayList<ValidationResult>();
-        boolean failed = false;
         for (WSIRule r : rules) {
             if (r instanceof WsdlRule) {
                 WsdlRule wr = (WsdlRule) r;
@@ -71,14 +71,8 @@ public class BasicProfilePolicy implements ArtifactPolicy {
                 
                 ValidationResult vr = wr.validate(doc, def);
                 results.add(vr);
-                
-                if (!failed && vr.isFailed()) {
-                    failed = true;
-                }
             }
         }
-        
-        approval.setApproved(!failed);
         
         for (ValidationResult vr : results) {
             for (AssertionResult ar : vr.getAssertionResults()) {
@@ -101,10 +95,10 @@ public class BasicProfilePolicy implements ArtifactPolicy {
                     }
                 }
                 
-                approval.getMessages().add(sb.toString());
+                messages.add(new ApprovalMessage(sb.toString(), !vr.isFailed()));
             }
         }
-        return approval;
+        return messages;
     }
 
     public void setRegistry(Registry registry) {

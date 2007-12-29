@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 import org.acegisecurity.context.SecurityContextHolder;
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.ArtifactTypeDao;
 import org.mule.galaxy.ArtifactVersion;
@@ -30,21 +31,31 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.lifecycle.TransitionException;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.PolicyInfo;
+import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.security.User;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.view.ArtifactTypeView;
 import org.mule.galaxy.view.ViewManager;
-import org.mule.galaxy.web.client.ArtifactGroup;
-import org.mule.galaxy.web.client.BasicArtifactInfo;
-import org.mule.galaxy.web.client.DependencyInfo;
-import org.mule.galaxy.web.client.ExtendedArtifactInfo;
 import org.mule.galaxy.web.client.RPCException;
-import org.mule.galaxy.web.client.RegistryService;
-import org.mule.galaxy.web.client.WArtifactType;
-import org.mule.galaxy.web.client.WComment;
-import org.mule.galaxy.web.client.WProperty;
-import org.mule.galaxy.web.client.WWorkspace;
+import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.BasicArtifactInfo;
+import org.mule.galaxy.web.rpc.DependencyInfo;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.RegistryService;
+import org.mule.galaxy.web.rpc.TransitionResponse;
+import org.mule.galaxy.web.rpc.WArtifactType;
+import org.mule.galaxy.web.rpc.WComment;
+import org.mule.galaxy.web.rpc.WGovernanceInfo;
+import org.mule.galaxy.web.rpc.WProperty;
+import org.mule.galaxy.web.rpc.WWorkspace;
 
 public class RegistryServiceImpl implements RegistryService {
     private Logger LOGGER = LogUtils.getL7dLogger(RegistryServiceImpl.class);
@@ -52,6 +63,8 @@ public class RegistryServiceImpl implements RegistryService {
     private Registry registry;
     private ArtifactTypeDao artifactTypeDao;
     private ViewManager viewManager;
+    private PolicyManager policyManager;
+    private LifecycleManager lifecycleManager;
     
     private SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a, MMMM d, yyyy");
     
@@ -372,13 +385,7 @@ public class RegistryServiceImpl implements RegistryService {
             cal.setTime(new Date());
             comment.setDate(cal);
             
-
-            UserDetailsWrapper wrapper = 
-                (UserDetailsWrapper) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if (wrapper == null) {
-                throw new RPCException("No user is logged in!");
-            }
-            comment.setUser(wrapper.getUser());
+            comment.setUser(getCurrentUser());
             
             if (parentComment != null) {
                 Comment c = registry.getComment(parentComment);
@@ -399,6 +406,17 @@ public class RegistryServiceImpl implements RegistryService {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
         }
+    }
+
+
+    private User getCurrentUser() throws RPCException {
+        UserDetailsWrapper wrapper = 
+            (UserDetailsWrapper) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (wrapper == null) {
+            throw new RPCException("No user is logged in!");
+        }
+        User user = wrapper.getUser();
+        return user;
     }
 
     @SuppressWarnings("unchecked")
@@ -495,13 +513,82 @@ public class RegistryServiceImpl implements RegistryService {
         } 
     }
 
+    
+    public WGovernanceInfo getGovernanceInfo(String artifactId) throws RPCException {
+        try {
+            Artifact artifact = registry.getArtifact(artifactId);
+          
+            WGovernanceInfo gov = new WGovernanceInfo();
+            Phase phase = artifact.getPhase();
+            gov.setCurrentPhase(phase.getName());
+            gov.setLifecycle(phase.getLifecycle().getName());
+            
+            Set<Phase> nextPhases = phase.getNextPhases();
+            ArrayList<String> nextPhaseNames = new ArrayList<String>();
+            for (Phase p : nextPhases) {
+                nextPhaseNames.add(p.getName());
+            }
+            gov.setNextPhases(nextPhaseNames);
+            
+            Collection<PolicyInfo> policies = policyManager.getActivePolicies(artifact, false);
+            
+            
+            return gov;
+        } catch (RegistryException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } 
+    }
+
+
+    public TransitionResponse transition(String artifactId, String nextPhaseName) throws RPCException {
+        try {
+            Artifact artifact = registry.getArtifact(artifactId);
+          
+            Lifecycle lifecycle = artifact.getPhase().getLifecycle();
+            Phase nextPhase = lifecycle.getPhase(nextPhaseName);
+            
+            TransitionResponse tr = new TransitionResponse();
+            
+            try {
+                lifecycleManager.transition(artifact, nextPhase, getCurrentUser());
+                
+                tr.setSuccess(true);
+            } catch (TransitionException e) {
+                tr.setSuccess(false);
+                tr.addMessage("Phase " + nextPhaseName + " isn't a valid next phase!", false);
+            } catch (ArtifactPolicyException e) {
+                tr.setSuccess(false);
+                for (ApprovalMessage app : e.getApprovals()) {
+                    tr.addMessage(app.getMessage(), app.isWarning());
+                }
+            }
+            
+            return tr;
+        } catch (RegistryException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } 
+    }
+
+
     public void setRegistry(Registry registry) {
         this.registry = registry;
     }
 
+    public void setLifecycleManager(LifecycleManager lifecycleManager) {
+        this.lifecycleManager = lifecycleManager;
+    }
+
+
     public void setArtifactTypeDao(ArtifactTypeDao artifactTypeDao) {
         this.artifactTypeDao = artifactTypeDao;
     }
+
+    public void setPolicyManager(PolicyManager policyManager) {
+        this.policyManager = policyManager;
+    }
+
 
     public void setViewManager(ViewManager viewManager) {
         this.viewManager = viewManager;

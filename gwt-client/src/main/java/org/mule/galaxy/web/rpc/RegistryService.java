@@ -1,10 +1,12 @@
-package org.mule.galaxy.web.client;
+package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+
+import org.mule.galaxy.web.client.RPCException;
 
 public interface RegistryService extends RemoteService {
     
@@ -67,5 +69,9 @@ public interface RegistryService extends RemoteService {
     WComment addComment(String artifactId, String parentCommentId, String text) throws RPCException;
     
     void setDescription(String artifactId, String description) throws RPCException;
+
+    WGovernanceInfo getGovernanceInfo(String artifactId) throws RPCException;
+
+    TransitionResponse transition(String artifactId, String nextPhase) throws RPCException;
 
 }

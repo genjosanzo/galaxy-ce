@@ -1,9 +1,11 @@
 package org.mule.galaxy.policy.wsdl;
 
+import java.util.Collection;
+
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.policy.Approval;
+import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.wsdl.BackwardCompatibilityPolicy;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
@@ -23,11 +25,12 @@ public class WsdlVersioningAssessorTest extends AbstractGalaxyTest {
         ArtifactVersion next = ar.getArtifactVersion();
         
         assertNotNull(next.getData());
-        Approval approval = assessor.isApproved(a1, prev, next);
+        Collection<ApprovalMessage> approvals = assessor.isApproved(a1, prev, next);
+        assertEquals(2, approvals.size());
         
-        assertFalse(approval.isApproved());
-        
-        assertEquals(2, approval.getMessages().size());
+        ApprovalMessage app = approvals.iterator().next();
+        assertFalse(app.isWarning());
+        assertNotNull(app.getMessage());
     }
     
     @Override

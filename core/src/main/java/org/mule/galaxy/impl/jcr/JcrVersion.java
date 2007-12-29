@@ -3,27 +3,21 @@ package org.mule.galaxy.impl.jcr;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
-import javax.jcr.ValueFormatException;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.nodetype.NoSuchNodeTypeException;
-import javax.jcr.version.VersionException;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Dependency;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.security.User;
-import org.mule.galaxy.security.UserManager;
 
 public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     public static final String CREATED = "created";
@@ -101,8 +95,20 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     }
 
     public ArtifactVersion getPrevious() {
-        // TODO Auto-generated method stub
-        return null;
+        Date thisDate = getCreated().getTime();
+        
+        ArtifactVersion prev = null;
+        Date prevDate = null;
+        Set<ArtifactVersion> versions = parent.getVersions();
+        for (ArtifactVersion v : versions) {
+            Date candidateDate = v.getCreated().getTime();
+            if (candidateDate.before(thisDate) 
+                && (prev == null || candidateDate.after(prevDate))) {
+                prev = v;
+                prevDate = candidateDate;
+            }
+        }
+        return prev;
     }
 
     public User getAuthor() {

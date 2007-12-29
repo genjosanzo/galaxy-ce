@@ -4,10 +4,10 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import org.mule.galaxy.web.client.AbstractCallback;
-import org.mule.galaxy.web.client.ArtifactGroup;
-import org.mule.galaxy.web.client.ExtendedArtifactInfo;
 import org.mule.galaxy.web.client.RegistryPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
 
 /**
  * Contains:
@@ -47,7 +47,7 @@ public class ArtifactPanel extends Composite {
         artifactTabs.add(new ArtifactInfoPanel(registryPanel, group, info), "Info");
         artifactTabs.selectTab(0);
         
-        artifactTabs.add(new Label("Foo"), "Governance");
+        artifactTabs.add(new GovernancePanel(registryPanel, info), "Governance");
         artifactTabs.add(new Label("Foo"), "History");
     }
 

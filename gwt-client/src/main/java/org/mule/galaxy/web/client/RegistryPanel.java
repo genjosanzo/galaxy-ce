@@ -16,6 +16,11 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.RegistryService;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.WArtifactType;
+import org.mule.galaxy.web.rpc.WWorkspace;
 
 public class RegistryPanel extends AbstractMenuPanel {
 

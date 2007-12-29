@@ -3,8 +3,8 @@ package org.mule.galaxy.impl.policy;
 import static org.mule.galaxy.impl.jcr.JcrUtil.getOrCreate;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -16,12 +16,23 @@ import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.InvalidQueryException;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
 
+import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyInfo;
 import org.mule.galaxy.policy.PolicyManager;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -31,6 +42,7 @@ import org.springmodules.jcr.JcrTemplate;
 
 public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware {
     private Map<String, ArtifactPolicy> policies = new HashMap<String, ArtifactPolicy>();
+    private LifecycleManager lifecycleManager;
     private JcrTemplate jcrTemplate;
     private String lifecyclesNodeId;
     private String workspaceLifecyclesNodeId;
@@ -62,9 +74,28 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         String[] names = ctx.getBeanNamesForType(ArtifactPolicy.class);
         for (String s : names) {
             ArtifactPolicy p = (ArtifactPolicy) ctx.getBean(s);
-            policies.put(p.getId(), p);
+            addPolicy(p);
         }
     }
+
+    public void addPolicy(ArtifactPolicy p) {
+        policies.put(p.getId(), p);
+    }
+
+    public void setLifecycleManager(LifecycleManager lifecycleManager) {
+        this.lifecycleManager = lifecycleManager;
+    }
+
+    public Collection<ApprovalMessage> approve(ArtifactVersion previous, 
+                                        ArtifactVersion next) {
+        Collection<ArtifactPolicy> policies = getActivePolicies(next.getParent());
+        ArrayList<ApprovalMessage> approvals = new ArrayList<ApprovalMessage>();
+        for (ArtifactPolicy p : policies) {
+            approvals.addAll(p.isApproved(next.getParent(), previous, next));
+        }
+        return approvals;
+    }
+
 
     public ArtifactPolicy getPolicy(String id) {
         return policies.get(id);
@@ -133,6 +164,24 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                 return null;
             }
         });
+    }
+
+    public Collection<PolicyInfo> getActivePolicies(final Artifact a, 
+                                                    final boolean includeInherited) {
+        final Set<PolicyInfo> activePolicies = new HashSet<PolicyInfo>();
+        jcrTemplate.execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                QueryManager qm = session.getWorkspace().getQueryManager();
+                
+                addArtifactPhasePolicies(a, activePolicies, qm);
+                
+                addArtifactLifecyclePolicies(a, activePolicies, qm);
+                
+                return null;
+            }
+
+        });
+        return activePolicies;
     }
 
     public Collection<ArtifactPolicy> getActivePolicies(final Artifact a) {
@@ -259,5 +308,59 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     public void setJcrTemplate(JcrTemplate jcrTemplate) {
         this.jcrTemplate = jcrTemplate;
     }
-    
+
+    private void addArtifactPhasePolicies(final Artifact a, final Set<PolicyInfo> activePolicies,
+                                          QueryManager qm) throws InvalidQueryException, RepositoryException {
+        StringBuilder qstr = new StringBuilder();
+        qstr.append("//*[@jcr:uuid='")
+            .append(artifactsPhasesNodeId)
+            .append("']/")
+            .append(ISO9075.encode(a.getId()))
+            .append("/*");
+        Query query = qm.createQuery(qstr.toString(), Query.XPATH);
+        
+        QueryResult result = query.execute();
+        
+        for (NodeIterator lifecycles = result.getNodes(); lifecycles.hasNext();) {
+            Node lifecycleNode = lifecycles.nextNode();
+            
+            Lifecycle l = lifecycleManager.getLifecycle(lifecycleNode.getName());
+            
+            for (NodeIterator phases = lifecycleNode.getNodes(); phases.hasNext();) {
+                Node phasesNode = phases.nextNode();
+                Phase phase = l.getPhase(phasesNode.getName());
+                
+                for (NodeIterator policiesNodes = phasesNode.getNodes(); policiesNodes.hasNext();) { 
+                    ArtifactPolicy policy = policies.get(policiesNodes.nextNode().getName());
+                    
+                    activePolicies.add(new PolicyInfo(policy, phase));
+                }
+            }
+        }
+    }
+
+    private void addArtifactLifecyclePolicies(final Artifact a, final Set<PolicyInfo> activePolicies,
+                                              QueryManager qm) throws InvalidQueryException, RepositoryException {
+        StringBuilder qstr = new StringBuilder();
+        qstr.append("//*[@jcr:uuid='")
+            .append(artifactsLifecyclesNodeId)
+            .append("']/")
+            .append(ISO9075.encode(a.getId()))
+            .append("/*");
+        Query query = qm.createQuery(qstr.toString(), Query.XPATH);
+        
+        QueryResult result = query.execute();
+        
+        for (NodeIterator lifecycles = result.getNodes(); lifecycles.hasNext();) {
+            Node lifecycleNode = lifecycles.nextNode();
+            
+            Lifecycle l = lifecycleManager.getLifecycle(lifecycleNode.getName());
+            
+            for (NodeIterator policiesNodes = lifecycleNode.getNodes(); policiesNodes.hasNext();) { 
+                ArtifactPolicy policy = policies.get(policiesNodes.nextNode().getName());
+                
+                activePolicies.add(new PolicyInfo(policy, l));
+            }
+        }
+    }
 }

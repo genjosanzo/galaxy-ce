@@ -1,4 +1,4 @@
-package org.mule.galaxy.web.client;
+package org.mule.galaxy.web.rpc;
 
 import java.util.Map;
 import java.util.Set;
@@ -51,4 +51,8 @@ public interface RegistryServiceAsync extends RemoteService {
     void setDescription(String artifactId, String description, AsyncCallback callback);
     
     void getProperties(AsyncCallback c);
+    
+    void getGovernanceInfo(String artifactId, AsyncCallback c);
+    
+    void transition(String artifactId, String nextPhaseName, AsyncCallback c);
 }

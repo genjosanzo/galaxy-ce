@@ -1,4 +1,4 @@
-package org.mule.galaxy.web.client.admin;
+package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 

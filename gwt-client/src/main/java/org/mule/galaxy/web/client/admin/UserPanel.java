@@ -3,8 +3,10 @@ package org.mule.galaxy.web.client.admin;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.mule.galaxy.web.client.AbstractCallback;
-import org.mule.galaxy.web.client.ItemNotFoundException;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemNotFoundException;
+import org.mule.galaxy.web.rpc.UserServiceAsync;
+import org.mule.galaxy.web.rpc.WUser;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;

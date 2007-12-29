@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.server;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -9,19 +10,33 @@ import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.providers.AuthenticationProvider;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.web.client.ArtifactGroup;
-import org.mule.galaxy.web.client.BasicArtifactInfo;
-import org.mule.galaxy.web.client.ExtendedArtifactInfo;
-import org.mule.galaxy.web.client.RegistryService;
-import org.mule.galaxy.web.client.WComment;
-import org.mule.galaxy.web.client.WWorkspace;
+import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.BasicArtifactInfo;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.RegistryService;
+import org.mule.galaxy.web.rpc.TransitionResponse;
+import org.mule.galaxy.web.rpc.WApprovalMessage;
+import org.mule.galaxy.web.rpc.WComment;
+import org.mule.galaxy.web.rpc.WGovernanceInfo;
+import org.mule.galaxy.web.rpc.WWorkspace;
 import org.springframework.context.ApplicationContext;
 
 public class RegistryServiceTest extends AbstractGalaxyTest {
     protected RegistryService gwtRegistry;
     
     
+    @Override
+    protected void onSetUp() throws Exception {
+        super.onSetUp();
+
+        createSecureContext(applicationContext, "admin", "admin");
+    }
+
     @Override
     protected String[] getConfigLocations() {
         return new String[] { "/META-INF/applicationContext-core.xml", 
@@ -71,7 +86,6 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals("Grand Rapids", artifact.getProperty("location"));
         
         // try adding a comment
-        createSecureContext(applicationContext, "admin", "admin");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         assertNotNull(auth);
         Object principal = auth.getPrincipal();
@@ -81,7 +95,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertNotNull(wc);
         
         WComment wc2 = gwtRegistry.addComment(a.getId(), wc.getId(), "Hello World");
-        assertNotNull(wc);
+        assertNotNull(wc2);
         
         // get the extended artifact info again
         g1 = gwtRegistry.getArtifact(a.getId());
@@ -127,10 +141,76 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertNotNull(w.getPath());
     }
     
+    public void testGovernanceOperations() throws Exception {
+        Collection artifacts = gwtRegistry.getArtifacts(null, null);
+        ArtifactGroup g1 = (ArtifactGroup) artifacts.iterator().next();
+        
+        BasicArtifactInfo a = (BasicArtifactInfo) g1.getRows().get(0);
+        
+        WGovernanceInfo gov = gwtRegistry.getGovernanceInfo(a.getId());
+        
+        assertEquals("Created", gov.getCurrentPhase());
+        
+        Collection nextPhases = gov.getNextPhases();
+        assertNotNull(nextPhases);
+        assertEquals(1, nextPhases.size());
+        
+        String next = (String) nextPhases.iterator().next();
+        TransitionResponse res = gwtRegistry.transition(a.getId(), next);
+        
+        assertTrue(res.isSuccess());
+        
+        // activate a policy which will make transitioning fail
+        FauxPolicy policy = new FauxPolicy();
+        policyManager.addPolicy(policy);
+        policyManager.activatePolicy(policy, lifecycleManager.getDefaultLifecycle());
+        
+        // Try transitioning
+        gov = gwtRegistry.getGovernanceInfo(a.getId());
+        
+        nextPhases = gov.getNextPhases();
+        assertNotNull(nextPhases);
+        assertEquals(1, nextPhases.size());
+        
+        next = (String) nextPhases.iterator().next();
+        
+        res = gwtRegistry.transition(a.getId(), next);
+        
+        assertFalse(res.isSuccess());
+        assertEquals(1, res.getMessages().size());
+        
+        WApprovalMessage msg = (WApprovalMessage) res.getMessages().iterator().next();
+        assertEquals("Not approved", msg.getMessage());
+        assertFalse(msg.isWarning());
+    }
+    
     public void testIndexes() throws Exception {
         Map indexes = gwtRegistry.getIndexes();
         
         assertTrue(indexes.size() > 0);
         
     }
+    
+    private final class FauxPolicy implements ArtifactPolicy {
+        public String getDescription() {
+            return "Faux policy description";
+        }
+
+        public String getId() {
+            return "faux";
+        }
+
+        public String getName() {
+            return "Faux policy";
+        }
+
+        public Collection<ApprovalMessage> isApproved(Artifact a, ArtifactVersion previous, ArtifactVersion next) {
+            return Arrays.asList(new ApprovalMessage("Not approved"));
+        }
+
+        public void setRegistry(Registry registry) {
+            
+        }
+    }
+
 }

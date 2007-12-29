@@ -9,7 +9,8 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.mule.galaxy.web.client.AbstractCallback;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WUser;
 
 public class UserListPanel
     extends Composite

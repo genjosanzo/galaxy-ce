@@ -12,11 +12,11 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Iterator;
 
-import org.mule.galaxy.web.client.AbstractCallback;
-import org.mule.galaxy.web.client.ExtendedArtifactInfo;
 import org.mule.galaxy.web.client.RegistryPanel;
-import org.mule.galaxy.web.client.WProperty;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.WProperty;
 
 public class ArtifactMetadataPanel extends Composite {
 

@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.artifact.ArtifactPanel;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 
 
 /**

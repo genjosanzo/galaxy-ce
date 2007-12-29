@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.mule.galaxy.web.rpc.AbstractCallback;
+
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;

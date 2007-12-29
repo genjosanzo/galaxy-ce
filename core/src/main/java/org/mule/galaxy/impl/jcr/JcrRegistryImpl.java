@@ -71,7 +71,7 @@ import org.mule.galaxy.Index.Language;
 import org.mule.galaxy.impl.IndexImpl;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.policy.Approval;
+import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.QueryException;
@@ -528,10 +528,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         throws RegistryException, RepositoryException {
         boolean approved = true;
         
-        Collection<Approval> approvals = approve(previous, next);
-        for (Approval a : approvals) {
-            if (!a.isApproved()) {
+        Collection<ApprovalMessage> approvals = policyManager.approve(previous, next);
+        for (ApprovalMessage a : approvals) {
+            if (!a.isWarning()) {
                 approved = false;
+                break;
             }
         }
         
@@ -685,24 +686,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
         }
     }
-
-    /**
-     * Approve the next artifact version. NOTE: previous may be null here!
-     * @param previous
-     * @param next
-     * @return
-     * @throws RegistryException
-     */
-    public Collection<Approval> approve(ArtifactVersion previous, 
-                                        ArtifactVersion next) throws RegistryException {
-        Collection<ArtifactPolicy> policies = policyManager.getActivePolicies(next.getParent());
-        ArrayList<Approval> approvals = new ArrayList<Approval>();
-        for (ArtifactPolicy p : policies) {
-            approvals.add(p.isApproved(next.getParent(), previous, next));
-        }
-        return approvals;
-    }
-
     public void save(Artifact artifact) throws RegistryException {
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {

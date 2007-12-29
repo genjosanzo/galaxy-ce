@@ -8,6 +8,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ArtifactGroup;
+
 public class WorkspacePanel
     extends Composite
 {

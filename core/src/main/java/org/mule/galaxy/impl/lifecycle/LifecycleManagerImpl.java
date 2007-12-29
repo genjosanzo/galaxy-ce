@@ -1,5 +1,6 @@
 package org.mule.galaxy.impl.lifecycle;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -15,7 +16,12 @@ import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrArtifact;
@@ -24,10 +30,14 @@ import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.lifecycle.PhaseLogEntry;
 import org.mule.galaxy.lifecycle.TransitionException;
+import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.LogUtils;
+import org.springmodules.jcr.JcrCallback;
+import org.springmodules.jcr.JcrTemplate;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -42,6 +52,8 @@ public class LifecycleManagerImpl implements LifecycleManager {
     private Map<String,Lifecycle> lifecycles = new ConcurrentHashMap<String, Lifecycle>();
     private List<ArtifactPolicy> phaseApprovalListeners = new ArrayList<ArtifactPolicy>();
     private Dao<PhaseLogEntry> entryDao;
+    private PolicyManager policyManager;
+    private JcrTemplate jcrTemplate;
     
     public Lifecycle getDefaultLifecycle() {
         return lifecycles.get(DEFAULT_LIFECYCLE);
@@ -152,25 +164,64 @@ public class LifecycleManagerImpl implements LifecycleManager {
         }
     }
     
-    public void transition(Artifact a, Phase p, User user) throws TransitionException {
+    public void transition(final Artifact a, 
+                           final Phase p, 
+                           final User user) throws TransitionException, ArtifactPolicyException {
         if (!isTransitionAllowed(a, p)) {
             throw new TransitionException(p);
         }
         
-        JcrArtifact ja =(JcrArtifact) a;
+        executeWithPolicyException(new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                JcrArtifact ja =(JcrArtifact) a;
+                ja.setPhase(p);
+                
+                ArtifactVersion latest = a.getLatestVersion();
+                ArtifactVersion previous = latest.getPrevious();
+                
+                boolean approved = true;
+                Collection<ApprovalMessage> approvals = policyManager.approve(previous, latest);
+                for (ApprovalMessage app : approvals) {
+                    if (!app.isWarning()) {
+                        approved = false;
+                        break;
+                    }
+                }
+                
+                if (!approved) {
+                    throw new RuntimeException(new ArtifactPolicyException(approvals));
+                }
+                
+                PhaseLogEntry entry = new PhaseLogEntry();
+                entry.setUser(user);
+                entry.setPhase(p);
+                entry.setArtifact(a);
+                
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(new Date());
+                entry.setCalendar(cal);
+                
+                entryDao.save(entry);
+
+                session.save();
+                return null;
+            }
+            
+        });
         
-        ja.setPhase(p);
         
-        PhaseLogEntry entry = new PhaseLogEntry();
-        entry.setUser(user);
-        entry.setPhase(p);
-        entry.setArtifact(a);
-        
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        entry.setCalendar(cal);
-        
-        entryDao.save(entry);
+    }
+
+    private void executeWithPolicyException(JcrCallback jcrCallback) throws ArtifactPolicyException {
+        try {
+            jcrTemplate.execute(jcrCallback);
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof ArtifactPolicyException) {
+                throw (ArtifactPolicyException) e.getCause();
+            }
+            throw e;
+        }
     }
 
     public List<String> getLifecycleDocuments() {
@@ -191,6 +242,14 @@ public class LifecycleManagerImpl implements LifecycleManager {
 
     public void setPhaseLogEntryDao(Dao<PhaseLogEntry> entryDao) {
         this.entryDao = entryDao;
+    }
+
+    public void setPolicyManager(PolicyManager policyManager) {
+        this.policyManager = policyManager;
+    }
+
+    public void setJcrTemplate(JcrTemplate jcrTemplate) {
+        this.jcrTemplate = jcrTemplate;
     }
     
 }

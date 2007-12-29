@@ -15,6 +15,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WWorkspace;
 
 public class EditWorkspacePanel extends AbstractTitledComposite {
 
@@ -48,7 +50,6 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
         this.edit = edit;
         this.registryPanel = registryPanel;
         this.workspaceId = workspaceId;
-        
         
         FlowPanel panel = new FlowPanel();
         FlexTable table = new FlexTable();

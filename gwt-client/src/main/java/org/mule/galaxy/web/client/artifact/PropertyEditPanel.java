@@ -18,9 +18,9 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.mule.galaxy.web.client.AbstractCallback;
 import org.mule.galaxy.web.client.RegistryPanel;
-import org.mule.galaxy.web.client.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 
 public class PropertyEditPanel extends Composite {
 

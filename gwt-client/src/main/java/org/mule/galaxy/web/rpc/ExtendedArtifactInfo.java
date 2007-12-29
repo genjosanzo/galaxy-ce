@@ -1,4 +1,4 @@
-package org.mule.galaxy.web.client;
+package org.mule.galaxy.web.rpc;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -6,7 +6,7 @@ import java.util.Collection;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.policy.Approval;
+import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
@@ -32,20 +32,16 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
                                     getAdmin());
             fail("Expected ArtifactPolicyException");
         } catch (ArtifactPolicyException e) {
-            Collection<Approval> approvals = e.getApprovals();
-            for (Approval a : approvals) {
-                
-                for (String m : a.getMessages()) {
-                    System.out.println(m);
-                }
-                
+            Collection<ApprovalMessage> approvals = e.getApprovals();
+            for (ApprovalMessage a : approvals) {
+                System.out.println(a.getMessage());
             }
+            
             assertEquals(1, approvals.size());
 
-            Approval a = approvals.iterator().next();
-            assertFalse(a.isApproved());
-
-            assertEquals(1, a.getMessages().size());
+            ApprovalMessage a = approvals.iterator().next();
+            assertFalse(a.isWarning());
+            assertNotNull(a.getMessage());
         }
         
         try {
@@ -54,20 +50,13 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
                                     getAdmin());
             fail("Expected ArtifactPolicyException");
         } catch (ArtifactPolicyException e) {
-            Collection<Approval> approvals = e.getApprovals();
-            for (Approval a : approvals) {
-                
-                for (String m : a.getMessages()) {
-                    System.out.println(m);
-                }
-                
-            }
+            Collection<ApprovalMessage> approvals = e.getApprovals();
             assertEquals(1, approvals.size());
 
-            Approval a = approvals.iterator().next();
-            assertFalse(a.isApproved());
+            ApprovalMessage a = approvals.iterator().next();
+            assertFalse(a.isWarning());
 
-            assertEquals(1, a.getMessages().size());
+            assertNotNull(a.getMessage());
         }
     }
 

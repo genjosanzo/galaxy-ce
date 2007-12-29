@@ -13,6 +13,8 @@
       <property name="registry" ref="registry"/>
       <property name="artifactTypeDao" ref="artifactTypeDao"/>
       <property name="viewManager" ref="viewManager"/>
+      <property name="lifecycleManager" ref="lifecycleManager"/>
+      <property name="policyManager" ref="policyManager"/>
     </bean>
       
     <bean id="gwtUserService" class="org.mule.galaxy.web.server.UserServiceImpl">

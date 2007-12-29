@@ -10,6 +10,7 @@ import org.mule.galaxy.Workspace;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyInfo;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class PolicyManagerTest extends AbstractGalaxyTest {
@@ -55,6 +56,12 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         active = policyManager.getActivePolicies(artifact);
         assertNotNull(active);
         assertEquals(1, active.size());
+        
+        Collection<PolicyInfo> policyInfos = policyManager.getActivePolicies(artifact, false);
+        assertEquals(1, policyInfos.size());
+        PolicyInfo policyInfo = policyInfos.iterator().next();
+        assertNotNull(policyInfo.getAppliesTo());
+        assertTrue(policyInfo.getAppliesTo() instanceof Lifecycle);
         
         policyManager.deactivatePolicy(p, artifact, lifecycle);
         
@@ -109,6 +116,12 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         active = policyManager.getActivePolicies(artifact);
         assertNotNull(active);
         assertEquals(1, active.size());
+        
+        policyInfos = policyManager.getActivePolicies(artifact, false);
+        assertEquals(1, policyInfos.size());
+        policyInfo = policyInfos.iterator().next();
+        assertNotNull(policyInfo.getAppliesTo());
+        assertTrue(policyInfo.getAppliesTo() instanceof Phase);
         
         policyManager.deactivatePolicy(p, artifact, phases1);
         active = policyManager.getActivePolicies(artifact);
