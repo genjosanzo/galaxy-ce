@@ -41,7 +41,7 @@ public class CxfPolicyTest extends AbstractAtomTest {
         opts.setHeader("X-Workspace", "Default Workspace");
         opts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
         
-        ClientResponse res = client.post("http://localhost:9002/api/repository", 
+        ClientResponse res = client.post("http://localhost:9002/api/registry", 
                                          getClass().getResourceAsStream("/policies/wsrm-policy.xml"), 
                                          opts);
         assertEquals(201, res.getStatus());
@@ -57,7 +57,7 @@ public class CxfPolicyTest extends AbstractAtomTest {
         feature.setUsername("admin");
         feature.setPassword("admin");
         
-        String url = "http://localhost:9002/api/repository?q=" 
+        String url = "http://localhost:9002/api/registry?q=" 
             + Escaping.encode("select artifact where documentType = " +
             		"{http://www.w3.org/2006/07/ws-policy}Policy");
         

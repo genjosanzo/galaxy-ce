@@ -54,7 +54,7 @@ public class ArtifactMetadataPanel extends Composite {
         metadata.add(metadataTitle);
         
         table.setStyleName("artifactTable");
-        table.setCellSpacing(1);
+        table.setCellSpacing(0);
         table.setCellPadding(0);
         table.setWidth("100%");
         table.getColumnFormatter().setStyleName(0, "artifactTableHeader");

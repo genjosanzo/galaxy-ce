@@ -475,7 +475,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     Lifecycle lifecycle = lifecycleManager.getLifecycle(workspace);
                     artifact.setPhase(lifecycle.getInitialPhase());                    
                     
-                    Set<ArtifactVersion> versions = new HashSet<ArtifactVersion>();
+                    List<ArtifactVersion> versions = new ArrayList<ArtifactVersion>();
                     versions.add(jcrVersion);
                     artifact.setVersions(versions);
                     
@@ -639,7 +639,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     next.setAuthor(user);
                     next.setLatest(true);
                     
-                    jcrArtifact.getVersions().add(next);
+                    ((List<ArtifactVersion>)jcrArtifact.getVersions()).add(0, next);
+                    
                     ch.addMetadata(next);
                     
                     try {
@@ -686,6 +687,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
         }
     }
+    
+    public ArtifactResult rollback(Artifact artifact, String version, User user) throws RegistryException,
+        ArtifactPolicyException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     public void save(Artifact artifact) throws RegistryException {
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {

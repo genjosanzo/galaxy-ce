@@ -3,8 +3,16 @@ package org.mule.galaxy.web.rpc;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mule.galaxy.web.client.RPCException;
+
 public class ExtendedArtifactInfo extends BasicArtifactInfo{
+    /*
+     * @gwt typeArgs org.mule.galaxy.rpc.WProperty
+     */
     private List properties = new ArrayList();
+    /*
+     * @gwt typeArgs org.mule.galaxy.rpc.WComment
+     */
     private List comments = new ArrayList();
     private String description;
     private String commentsFeedLink;
@@ -34,10 +42,16 @@ public class ExtendedArtifactInfo extends BasicArtifactInfo{
         this.description = description;
     }
 
+    /**
+     * @gwt typeArgs org.mule.galaxy.web.rpc.WProperty
+     */
     public List getProperties() {
         return properties;
     }
 
+    /**
+     * @gwt typeArgs org.mule.galaxy.web.rpc.WComment
+     */
     public List getComments() {
         return comments;
     }

@@ -2,7 +2,9 @@ package org.mule.galaxy;
 
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.activation.MimeType;
@@ -39,7 +41,7 @@ public interface Artifact  {
     
     void setDocumentType(QName documentType);
     
-    Set<ArtifactVersion> getVersions();
+    List<ArtifactVersion> getVersions();
 
     ArtifactVersion getVersion(String versionName);
 

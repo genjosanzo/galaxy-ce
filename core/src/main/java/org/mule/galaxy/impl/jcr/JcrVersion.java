@@ -3,8 +3,10 @@ package org.mule.galaxy.impl.jcr;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.jcr.Node;
@@ -95,20 +97,14 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     }
 
     public ArtifactVersion getPrevious() {
-        Date thisDate = getCreated().getTime();
+        List<ArtifactVersion> versions = parent.getVersions();
         
-        ArtifactVersion prev = null;
-        Date prevDate = null;
-        Set<ArtifactVersion> versions = parent.getVersions();
-        for (ArtifactVersion v : versions) {
-            Date candidateDate = v.getCreated().getTime();
-            if (candidateDate.before(thisDate) 
-                && (prev == null || candidateDate.after(prevDate))) {
-                prev = v;
-                prevDate = candidateDate;
-            }
+        int i = versions.indexOf(this);
+        
+        if (i > 0) {
+            return versions.get(i-1);
         }
-        return prev;
+        return null;
     }
 
     public User getAuthor() {

@@ -4,18 +4,21 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.providers.AuthenticationProvider;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
 import org.mule.galaxy.web.rpc.BasicArtifactInfo;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
 import org.mule.galaxy.web.rpc.RegistryService;
@@ -184,6 +187,25 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertFalse(msg.isWarning());
     }
     
+    public void testVersioningOperations() throws Exception {
+        Set result = registry.search("select artifact where wsdl.service = 'HelloWorldService'");
+        
+        Artifact a = (Artifact) result.iterator().next();
+        
+        registry.newVersion(a, getResourceAsStream("/wsdl/imports/hello.wsdl"), "0.2", getAdmin());
+        
+        
+        Collection versions = gwtRegistry.getArtifactVersions(a.getId());
+        assertEquals(2, versions.size());
+        
+        ArtifactVersionInfo info = (ArtifactVersionInfo) versions.iterator().next();
+        assertEquals("0.2", info.getVersionLabel());
+        assertNotNull(info.getLink());
+        assertNotNull(info.getCreated());
+        assertEquals("Administrator", info.getAuthorName());
+        assertEquals("admin", info.getAuthorUsername());
+        
+    }
     public void testIndexes() throws Exception {
         Map indexes = gwtRegistry.getIndexes();
         

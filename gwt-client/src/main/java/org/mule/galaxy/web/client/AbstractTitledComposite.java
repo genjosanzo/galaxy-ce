@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.client;
 
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -8,7 +9,7 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * A Panel which puts a title up top with the "title" style.
  */
-public abstract class AbstractTitledComposite extends Composite {
+public abstract class AbstractTitledComposite extends AbstractComposite {
 
     protected Label title;
     

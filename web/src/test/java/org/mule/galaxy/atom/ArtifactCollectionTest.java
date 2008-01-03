@@ -46,12 +46,11 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals("Mule Galaxy Registry & Repository", workspace.getTitle());
         
         List<Collection> collections = workspace.getCollections();
-        assertEquals(1, collections.size());
         
+        assertEquals(1, collections.size());
         Collection collection = collections.get(0);
         
-        System.out.println(collection.getHref().toString());
-        assertEquals("repository", collection.getHref().toString());
+        assertEquals("registry", collection.getHref().toString());
 
         // Check out the feed, yo
         IRI colUri = new IRI(base).resolve(collection.getHref());

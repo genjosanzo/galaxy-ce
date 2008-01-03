@@ -5,11 +5,17 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mule.galaxy.web.client.RPCException;
+
 public class WComment implements IsSerializable {
     private String id;
     private String user;
     private String date;
     private String text;
+    
+    /*
+     * @gwt typeArgs org.mule.galaxy.web.rpc.WComment
+     */
     private List comments;
 
     public WComment() {

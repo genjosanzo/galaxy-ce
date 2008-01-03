@@ -36,7 +36,7 @@ public class RegistryConfigLookupTest extends AbstractAtomTest {
     public void testMuleLookup() throws Exception {
         AbderaClient client = new AbderaClient(abdera);
 
-        String url = "http://localhost:9002/api/repository";
+        String url = "http://localhost:9002/api/registry";
         
 //        // POST a Mule configuration
 //        RequestOptions opts = new RequestOptions();

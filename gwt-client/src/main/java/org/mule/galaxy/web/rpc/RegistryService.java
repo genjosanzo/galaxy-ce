@@ -11,7 +11,7 @@ import org.mule.galaxy.web.client.RPCException;
 public interface RegistryService extends RemoteService {
     
     /**
-     * @gwt typeArgs org.mule.galaxy.web.client.WorkspaceInfo
+     * @gwt typeArgs org.mule.galaxy.web.rpc.WWorkspace
      * @return
      * @throws RPCException 
      */
@@ -20,11 +20,11 @@ public interface RegistryService extends RemoteService {
     void addWorkspace(String parentWorkspaceId, String workspaceName) throws RPCException;
 
     void updateWorkspace(String workspaceId, String parentWorkspaceId, String workspaceName) throws RPCException;
+    
     void deleteWorkspace(String workspaceId) throws RPCException;
     
-    
     /**
-     * @gwt typeArgs org.mule.galaxy.web.client.ArtifactTypeInfo
+     * @gwt typeArgs org.mule.galaxy.web.rpc.WArtifactType
      * @return
      */
     Collection getArtifactTypes();
@@ -36,10 +36,14 @@ public interface RegistryService extends RemoteService {
      */
     Collection getArtifacts(String workspace, Set artifactTypes);
     
+    /**
+     * @gwt typeArgs java.lang.String,java.lang.String
+     * @return
+     */
     public Map getIndexes();
     
     /**
-     * @gwt typeArgs org.mule.galaxy.web.client.DependencyInfo
+     * @gwt typeArgs org.mule.galaxy.web.rpc.DependencyInfo
      * @return
      * @throws Exception 
      */
@@ -60,7 +64,7 @@ public interface RegistryService extends RemoteService {
                         String propertyName) throws RPCException;
     
     /**
-     * @gwt typeArgs java.lang.String
+     * @gwt typeArgs java.lang.String,java.lang.String
      * @return
      * @throws Exception 
      */
@@ -74,4 +78,10 @@ public interface RegistryService extends RemoteService {
 
     TransitionResponse transition(String artifactId, String nextPhase) throws RPCException;
 
+    /**
+     * @gwt typeArgs java.lang.String,java.lang.String
+     * @return
+     * @throws Exception 
+     */
+    Collection getArtifactVersions(String artifactId) throws RPCException;
 }

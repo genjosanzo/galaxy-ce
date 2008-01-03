@@ -1,9 +1,11 @@
 package org.mule.galaxy.impl.jcr;
 
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
@@ -32,7 +34,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     public static final String LIFECYCLE = "lifecycle";
     public static final String PHASE = "phase";
     
-    private Set<ArtifactVersion> versions;
+    private List<ArtifactVersion> versions;
     private Workspace workspace;
     private JcrRegistryImpl registry;
     private ContentHandler contentHandler;
@@ -142,10 +144,10 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     }
 
 
-    public Set<ArtifactVersion> getVersions() {
+    public List<ArtifactVersion> getVersions() {
         if (versions == null) {
-            versions = new HashSet<ArtifactVersion>();
-
+            versions = new ArrayList<ArtifactVersion>();
+            
             try {
                 for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
                     Node node = itr.nextNode();
@@ -157,6 +159,14 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
             } catch (RepositoryException e) {
                 throw new RuntimeException(e);
             }
+            
+            Collections.sort(versions, new Comparator<ArtifactVersion>() {
+
+                public int compare(ArtifactVersion o1, ArtifactVersion o2) {
+                    return - o1.getCreated().getTime().compareTo(o2.getCreated().getTime());
+                }
+                
+            });
         }
             
         return versions;
@@ -176,15 +186,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     }
 
     public ArtifactVersion getLatestVersion() {
-        ArtifactVersion latest = null;
-        for (ArtifactVersion v : getVersions()) {
-            if (latest == null) {
-                latest = v;
-            } else if (latest.getCreated().before(v.getCreated())) {
-                latest = v;
-            }
-        }
-        return latest;
+        return getVersions().get(0);
     }
     
     public Phase getPhase() {
@@ -212,7 +214,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
         }
     }
     
-    public void setVersions(Set<ArtifactVersion> versions2) {
+    public void setVersions(List<ArtifactVersion> versions2) {
         this.versions = versions2;
     }
     

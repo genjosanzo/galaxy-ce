@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.jcr.Node;
@@ -70,7 +71,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertNotNull(artifact.getDocumentType());
         assertEquals("definitions", artifact.getDocumentType().getLocalPart());
         
-        Set<? extends ArtifactVersion> versions = artifact.getVersions();
+        Collection<? extends ArtifactVersion> versions = artifact.getVersions();
         assertNotNull(versions);
         assertEquals(1, versions.size());
         

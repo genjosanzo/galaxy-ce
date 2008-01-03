@@ -5,6 +5,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import java.util.Collection;
 
 public class WGovernanceInfo implements IsSerializable {
+    /*
+     * @gwt typeArgs java.lang.String
+     */
     private Collection nextPhases;
     private String currentPhase;
     private String lifecycle;
@@ -25,11 +28,6 @@ public class WGovernanceInfo implements IsSerializable {
         this.currentPhase = currentPhase;
     }
 
-    /**
-     * @gwt typeArgs java.lang.String
-     * @return
-     * @throws Exception 
-     */
     public Collection getNextPhases() {
         return nextPhases;
     }

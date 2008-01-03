@@ -39,7 +39,6 @@ public class ArtifactPanel extends Composite {
     }
     
     private void init() {
-
         Label label = new Label(info.getValue(0));
         label.setStyleName("artifact-title");
         panel.insert(label, 0);
@@ -48,7 +47,7 @@ public class ArtifactPanel extends Composite {
         artifactTabs.selectTab(0);
         
         artifactTabs.add(new GovernancePanel(registryPanel, info), "Governance");
-        artifactTabs.add(new Label("Foo"), "History");
+        artifactTabs.add(new HistoryPanel(registryPanel, info), "History");
     }
 
     public ArtifactPanel(RegistryPanel registryPanel, String artifactId) {

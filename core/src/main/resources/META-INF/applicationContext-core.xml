@@ -67,6 +67,7 @@
     <property name="propertyDescriptorDao" ref="propertyDescriptorDao" />
     <property name="lifecycleManager" ref="lifecycleManager" />
     <property name="policyManager" ref="policyManager" />
+    <property name="userManager" ref="userManager" />
   </bean>
   
   <bean id="userManager" parent="txProxyTemplate">

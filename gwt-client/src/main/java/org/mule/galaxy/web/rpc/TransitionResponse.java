@@ -7,6 +7,9 @@ import java.util.Collection;
 
 public class TransitionResponse implements IsSerializable {
     private boolean success;
+    /*
+     * @gwt typeArgs org.mule.galaxy.web.rpc.WApprovalMessage
+     */
     private Collection messages;
     
     public boolean isSuccess() {

@@ -46,6 +46,7 @@ import org.mule.galaxy.view.ArtifactTypeView;
 import org.mule.galaxy.view.ViewManager;
 import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
 import org.mule.galaxy.web.rpc.BasicArtifactInfo;
 import org.mule.galaxy.web.rpc.DependencyInfo;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
@@ -347,8 +348,8 @@ public class RegistryServiceImpl implements RegistryService {
             
             g.getRows().add(info);
             
-            info.setArtifactLink(getLink("/api/repository/", a));
-            info.setCommentsFeedLink(getLink("/api/comments/", a));
+            info.setArtifactLink(getLink("/api/repository", a));
+            info.setCommentsFeedLink(getLink("/api/comments", a));
             
             return g;
         } catch (RegistryException e) {
@@ -362,15 +363,9 @@ public class RegistryServiceImpl implements RegistryService {
         StringBuilder sb = new StringBuilder();
         Workspace w = a.getWorkspace();
         
-        while (w != null) {
-            sb.insert(0, '/')
-              .insert(0, w.getName());
-            
-            w = w.getParent();
-        }
-        
-        sb.insert(0, base);
-        sb.append(a.getName());
+        sb.append(base)
+          .append(w.getPath())
+          .append(a.getName());
         return sb.toString();
     }
 
@@ -569,6 +564,41 @@ public class RegistryServiceImpl implements RegistryService {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
         } 
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public Collection getArtifactVersions(String artifactId) throws RPCException {
+        try {
+            Artifact artifact = registry.getArtifact(artifactId);
+          
+            List versions = new ArrayList();
+            for (ArtifactVersion av : artifact.getVersions()) {
+                versions.add(new ArtifactVersionInfo(av.getVersionLabel(),
+                                                     getVersionLink(av),
+                                                     av.getCreated().getTime(),
+                                                     av.getAuthor().getName(),
+                                                     av.getAuthor().getUsername()));
+            }
+            return versions;
+        } catch (RegistryException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } 
+    }
+
+
+    private String getVersionLink(ArtifactVersion av) {
+        Artifact a = av.getParent();
+        StringBuilder sb = new StringBuilder();
+        Workspace w = a.getWorkspace();
+        
+        sb.insert(0, '/')
+          .insert(0, w.getPath());
+        
+        sb.insert(0, "/api/repository/");
+        sb.append(a.getName());
+        return sb.toString();
     }
 
 

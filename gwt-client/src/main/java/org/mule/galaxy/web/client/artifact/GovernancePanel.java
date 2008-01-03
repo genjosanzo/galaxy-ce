@@ -54,6 +54,11 @@ public class GovernancePanel extends Composite {
         
         messages = new FlowPanel();
         messages.setStyleName("policy-messages");
+        panel.add(messages);
+        
+        panel.add(createTitle("Policy Management"));
+        panel.add(new Label("Coming soon..."));
+        
     }
 
     private InlineFlowPanel createTitle(String title) {
@@ -69,7 +74,7 @@ public class GovernancePanel extends Composite {
     private FlexTable createLifecycleTable(WGovernanceInfo gov) {
         FlexTable table = new FlexTable();
         table.setStyleName("artifactTable");
-        table.setCellSpacing(1);
+        table.setCellSpacing(0);
         table.setCellPadding(0);
         table.getColumnFormatter().setStyleName(0, "artifactTableHeader");
         table.getColumnFormatter().setStyleName(1, "artifactTableEntry");
@@ -81,20 +86,24 @@ public class GovernancePanel extends Composite {
         table.setText(1, 1, gov.getCurrentPhase());
 
         table.setText(2, 0, "Next Phases:");
+        InlineFlowPanel nextPhasesPanel = new InlineFlowPanel();
+        nextPhasesPanel.setStyleName("next-phases-panel");
+        
         final ListBox nextPhasesList = new ListBox();
         for (Iterator itr = gov.getNextPhases().iterator(); itr.hasNext();){
             nextPhasesList.addItem((String) itr.next());
         }
-        table.setWidget(2, 1, nextPhasesList);
-
+        nextPhasesPanel.add(nextPhasesList);
+        
         final Button transition = new Button("Transition");
         transition.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 transition(nextPhasesList, transition);
             }
         });
+        nextPhasesPanel.add(transition);
         
-        table.setWidget(3, 1, transition);
+        table.setWidget(2, 1, nextPhasesPanel);
         
         return table;
     }
