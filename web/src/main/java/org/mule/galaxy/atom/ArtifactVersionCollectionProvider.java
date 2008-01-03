@@ -9,12 +9,11 @@ import java.util.List;
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
-import org.apache.abdera.i18n.iri.Escaping;
+import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.RequestContext.Scope;
-import org.apache.abdera.protocol.server.impl.EmptyResponseContext;
 import org.apache.abdera.protocol.server.impl.ResponseContextException;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
@@ -22,7 +21,6 @@ import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
 import org.mule.galaxy.security.User;
 
 public class ArtifactVersionCollectionProvider extends AbstractArtifactVersionProvider {
@@ -102,7 +100,7 @@ public class ArtifactVersionCollectionProvider extends AbstractArtifactVersionPr
     public String getName(ArtifactVersion version) throws ResponseContextException {
         StringBuilder sb = getBasePath(version.getParent());
         
-        sb.append(Escaping.encode(version.getParent().getName()));
+        sb.append(UrlEncoding.encode(version.getParent().getName()));
         sb.append(".atom")
           .append("?version=")
           .append(version.getVersionLabel());

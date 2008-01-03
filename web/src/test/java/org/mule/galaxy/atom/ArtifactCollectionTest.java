@@ -4,15 +4,10 @@ package org.mule.galaxy.atom;
 import java.io.InputStream;
 import java.util.List;
 
-import org.mule.galaxy.test.AbstractAtomTest;
-import org.mule.galaxy.util.IOUtils;
-
-import org.apache.abdera.i18n.io.CharUtils.Profile;
-import org.apache.abdera.i18n.iri.Escaping;
 import org.apache.abdera.i18n.iri.IRI;
+import org.apache.abdera.i18n.text.UrlEncoding;
+import org.apache.abdera.i18n.text.CharUtils.Profile;
 import org.apache.abdera.model.Collection;
-import org.apache.abdera.model.Document;
-import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Service;
@@ -21,11 +16,11 @@ import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
 import org.apache.axiom.om.util.Base64;
+import org.mule.galaxy.test.AbstractAtomTest;
 
 public class ArtifactCollectionTest extends AbstractAtomTest {
     
     public void testAddWsdl() throws Exception {
-//        Thread.sleep(100000);
         AbderaClient client = new AbderaClient(abdera);
         RequestOptions defaultOpts = client.getDefaultRequestOptions();
         defaultOpts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
@@ -76,7 +71,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         // Check the new feed for our entry
         System.out.println("Grabbing the Feed Again");
-        res = client.get(Escaping.encode(colUri.toString(), Profile.PATH), defaultOpts);
+        res = client.get(UrlEncoding.encode(colUri.toString(), Profile.PATH.filter()), defaultOpts);
         assertEquals(200, res.getStatus());
         prettyPrint(res.getDocument());
         

@@ -10,7 +10,7 @@ import java.util.List;
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
-import org.apache.abdera.i18n.iri.Escaping;
+import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.protocol.server.RequestContext;
@@ -54,7 +54,7 @@ public class ArtifactCollectionProvider extends AbstractArtifactVersionProvider 
         Artifact a = doc.getParent();
         StringBuilder sb = getBasePath(a);
         
-        sb.append(Escaping.encode(a.getName()));
+        sb.append(UrlEncoding.encode(a.getName()));
         sb.append(".atom");
         return sb.toString();
     }
@@ -79,7 +79,7 @@ public class ArtifactCollectionProvider extends AbstractArtifactVersionProvider 
             if (q == null || "".equals(q)) {
                 q = "select artifact";
             } else {
-                q = Escaping.decode(q);
+                q = UrlEncoding.decode(q);
             }
             
             final Iterator results = registry.search(q).iterator();

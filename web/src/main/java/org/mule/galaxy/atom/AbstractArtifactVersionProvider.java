@@ -14,8 +14,8 @@ import javax.xml.namespace.QName;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
-import org.apache.abdera.i18n.iri.Escaping;
 import org.apache.abdera.i18n.iri.IRI;
+import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.model.Collection;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Element;
@@ -118,7 +118,7 @@ public abstract class AbstractArtifactVersionProvider extends AbstractCollection
         Workspace w = a.getWorkspace();
         while (w != null) {
             sb.insert(0, '/');
-            sb.insert(0, Escaping.encode(w.getName()));
+            sb.insert(0, UrlEncoding.encode(w.getName()));
             w = w.getParent();
         }
         return sb;
@@ -185,7 +185,7 @@ public abstract class AbstractArtifactVersionProvider extends AbstractCollection
         Workspace w = null;
         for (int i = 0; i < paths.length-1; i++) {
             try {
-                w = registry.getWorkspace(Escaping.decode(paths[i]));
+                w = registry.getWorkspace(UrlEncoding.decode(paths[i]));
             } catch (NotFoundException e) {
                 throw new ResponseContextException(404);
             } catch (RegistryException e) {
@@ -194,7 +194,7 @@ public abstract class AbstractArtifactVersionProvider extends AbstractCollection
         }
         Artifact a = null;
         try {
-            a = registry.getArtifact(w, Escaping.decode(paths[paths.length-1]));
+            a = registry.getArtifact(w, UrlEncoding.decode(paths[paths.length-1]));
             
         } catch (NotFoundException e) {
             throw new RuntimeException(e);
