@@ -7,7 +7,7 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Endpoint;
 
-import org.apache.abdera.i18n.iri.Escaping;
+import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
@@ -58,7 +58,7 @@ public class CxfPolicyTest extends AbstractAtomTest {
         feature.setPassword("admin");
         
         String url = "http://localhost:9002/api/registry?q=" 
-            + Escaping.encode("select artifact where documentType = " +
+            + UrlEncoding.encode("select artifact where documentType = " +
             		"{http://www.w3.org/2006/07/ws-policy}Policy");
         
         feature.getPolicyQueries().add(url);

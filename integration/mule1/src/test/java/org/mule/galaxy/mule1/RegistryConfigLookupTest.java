@@ -1,34 +1,18 @@
 package org.mule.galaxy.mule1;
 
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Calendar;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
-import javax.activation.MimeTypeParseException;
-import javax.jcr.Node;
-import javax.wsdl.Definition;
-
-import org.apache.abdera.i18n.iri.Escaping;
+import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
-import org.apache.abdera.protocol.util.EncodingUtil;
 import org.apache.axiom.om.util.Base64;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.test.AbstractAtomTest;
-import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.IOUtils;
 
 public class RegistryConfigLookupTest extends AbstractAtomTest {
@@ -49,7 +33,7 @@ public class RegistryConfigLookupTest extends AbstractAtomTest {
 //        assertEquals(201, res.getStatus());
 //        
         // TODO: this query language will improve in the future, so don't read too much into it yet
-        String search = Escaping.encode("select artifact where mule.service = 'GreeterUMO'");
+        String search = UrlEncoding.encode("select artifact where mule.service = 'GreeterUMO'");
         url = url + "?q=" + search;
         
         // GET a Feed with Mule Configurations which match the criteria

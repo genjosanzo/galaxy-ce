@@ -3,7 +3,7 @@ package org.mule.galaxy.atom;
 
 import java.io.InputStream;
 
-import org.apache.abdera.i18n.iri.Escaping;
+import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
@@ -31,7 +31,7 @@ public class ArtifactCollectionQueryTest extends AbstractAtomTest {
         
         opts = new RequestOptions();
         
-        String search = Escaping.encode("select artifact where wsdl.service = 'HelloWorldService'");
+        String search = UrlEncoding.encode("select artifact where wsdl.service = 'HelloWorldService'");
         url = url + "?q=" + search;
         
         RequestOptions opts2 = client.getDefaultRequestOptions();

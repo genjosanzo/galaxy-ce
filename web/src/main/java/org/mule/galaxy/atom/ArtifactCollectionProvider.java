@@ -10,8 +10,12 @@ import java.util.List;
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
+import org.apache.abdera.factory.Factory;
+import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.i18n.text.UrlEncoding;
+import org.apache.abdera.model.Collection;
 import org.apache.abdera.model.Content;
+import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.impl.EmptyResponseContext;
@@ -31,6 +35,21 @@ public class ArtifactCollectionProvider extends AbstractArtifactVersionProvider 
     public ArtifactCollectionProvider(Registry registry) {
         super(registry);
         setBaseMediaIri("");
+    }
+
+    @Override
+    protected void addEntryDetails(RequestContext request, 
+                                   Entry e, 
+                                   IRI entryBaseIri, 
+                                   ArtifactVersion entryObj)
+        throws ResponseContextException {
+        super.addEntryDetails(request, e, entryBaseIri, entryObj);
+        
+        Collection col = factory.newCollection();
+        col.setAttributeValue("id", "versions");
+        col.setHref(getName(entryObj) + "?type=feed");
+        col.setTitle("Artifact Versions");
+        e.addExtension(col);
     }
 
     public String getId() {

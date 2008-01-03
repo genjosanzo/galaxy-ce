@@ -63,14 +63,7 @@ public abstract class AbstractArtifactVersionProvider extends AbstractCollection
                                    ArtifactVersion entryObj)
         throws ResponseContextException {
         super.addEntryDetails(request, e, entryBaseIri, entryObj);
-        
-        Factory factory = request.getAbdera().getFactory();
-        Collection col = factory.newCollection();
-        col.setAttributeValue("id", "versions");
-        col.setHref("feed/versions/" + getId(entryObj));
-        col.setTitle("Artifact Versions");
-        e.addExtension(col);
-        
+
         Element metadata = factory.newElement(new QName(NAMESPACE, "metadata"));
         
         for (Iterator<PropertyInfo> props = entryObj.getProperties(); props.hasNext();) {
