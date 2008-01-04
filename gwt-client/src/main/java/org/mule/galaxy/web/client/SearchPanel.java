@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -20,10 +21,14 @@ public class SearchPanel
     extends Composite
 {
     private VerticalPanel panel;
-    private Set predicates;
+    private Set rows;
+    private Map artifactIndiceMap;
+    private Button searchButton;
+    private RegistryPanel registryPanel;
 
-    public SearchPanel(RegistryPanel registryPanel) {
-        predicates = new HashSet();
+    public SearchPanel(RegistryPanel rp) {
+        registryPanel = rp;
+        rows = new HashSet();
         
         panel = new VerticalPanel();
         panel.setWidth("100%");
@@ -58,6 +63,15 @@ public class SearchPanel
         
         panel.add(titleBar);
         
+        
+        searchButton = new Button("Search", new ClickListener() {
+           public void onClick(Widget sender) {
+               registryPanel.reloadArtifacts();
+           }
+        });
+        panel.add(searchButton);
+        panel.setCellHorizontalAlignment(searchButton, HasAlignment.ALIGN_RIGHT);
+        
         //
         // Add a search predicate
         //
@@ -66,21 +80,24 @@ public class SearchPanel
         initWidget(panel);
     }
     
-    public void initArtifactIndices(Map indiceNameIdMap) {
-        for (Iterator itr = predicates.iterator(); itr.hasNext();) {
-            SearchPredicate pred = (SearchPredicate) itr.next();
-            pred.setAttributeList(indiceNameIdMap);
+    public void initArtifactIndices(Map map) {
+        artifactIndiceMap = map;
+        for (Iterator itr = rows.iterator(); itr.hasNext();) {
+            SearchPanelRow pred = (SearchPanelRow) itr.next();
+            pred.setAttributeList(artifactIndiceMap);
         }
     }
     
     public void addPredicate() {
-        SearchPredicate pred = new SearchPredicate(this);
-        panel.add(pred);
-        predicates.add(pred);
+        SearchPanelRow pred = new SearchPanelRow(this);
+        if (artifactIndiceMap != null)
+            pred.setAttributeList(artifactIndiceMap);
+        panel.insert(pred, panel.getWidgetIndex(searchButton));
+        rows.add(pred);
     }
     
-    public void removePredicate(SearchPredicate pred) {
+    public void removePredicate(SearchPanelRow pred) {
         panel.remove(pred);
-        predicates.remove(pred);
+        rows.remove(pred);
     }
 }

@@ -14,14 +14,14 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SearchPredicate
+public class SearchPanelRow
     extends Composite
 {
     private SearchPanel searchPanel;
     private ListBox     attributeList;
     private HorizontalPanel contents;
     
-    public SearchPredicate(SearchPanel sp) {
+    public SearchPanelRow(SearchPanel sp) {
         super();
         
         searchPanel = sp;
@@ -32,7 +32,7 @@ public class SearchPredicate
         
         attributeList = new ListBox();
         attributeList.setWidth("175px");
-        attributeList.addItem("Name");
+        attributeList.addItem("Name", "name");
         attributeList.addChangeListener(new ChangeListener() {
            public void onChange(Widget sender) {
                processTypeChange();
@@ -47,7 +47,7 @@ public class SearchPredicate
         processTypeChange();
         
         HorizontalPanel buttons = new HorizontalPanel();
-        final SearchPredicate pred = this;
+        final SearchPanelRow pred = this;
         Button del = new Button("-", new ClickListener() {
             public void onClick(Widget sender) {
                 searchPanel.removePredicate(pred);

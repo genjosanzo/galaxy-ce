@@ -183,18 +183,22 @@ public class RegistryPanel extends AbstractMenuPanel {
     
     public void addArtifactTypeFilter(String id) {
         artifactTypes.add(id);
-        setMain(new WorkspacePanel(this));
+        reloadArtifacts();
     }
 
     public void removeArtifactTypeFilter(String id) {
         artifactTypes.remove(id);
-        setMain(new WorkspacePanel(this));
+        reloadArtifacts();
     }
 
     public void setActiveWorkspace(String workspaceId) {
         this.workspaceId = workspaceId;
-        
-        setMain(new WorkspacePanel(this));
+        reloadArtifacts();
+    }
+    
+    public void reloadArtifacts() {
+        setMain(workspacePanel);
+        workspacePanel.reloadArtifacts();
     }
 
     public Set getArtifactTypes() {
