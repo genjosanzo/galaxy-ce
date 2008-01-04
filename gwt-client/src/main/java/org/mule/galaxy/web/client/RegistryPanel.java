@@ -43,15 +43,15 @@ public class RegistryPanel extends AbstractMenuPanel {
         workspaceBox = new Toolbox();
         workspaceBox.setTitle("Workspaces");
         Image addImg = new Image("images/add_obj.gif");
+        final RegistryPanel registryPanel = this;
         addImg.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
-                setMain(new AddArtifactPanel());
+                setMain(new AddArtifactPanel(registryPanel));
             }
             
         });
         workspaceBox.addButton(addImg);
         
-        final RegistryPanel registryPanel = this;
         Image addWkspcImg = new Image("images/adddir_wiz.png");
         addWkspcImg.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
