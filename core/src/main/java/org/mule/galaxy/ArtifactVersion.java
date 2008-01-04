@@ -55,4 +55,6 @@ public interface ArtifactVersion {
     User getAuthor();
     
     Set<Dependency> getDependencies();
+    
+    boolean isActive();
 }

@@ -15,7 +15,7 @@ public class ArtifactCollectionQueryTest extends AbstractAtomTest {
     public void testAddWsdl() throws Exception {
         AbderaClient client = new AbderaClient(abdera);
 
-        String url = "http://localhost:9002/api/repository";
+        String url = "http://localhost:9002/api/registry";
         // Testing of entry creation
         
         RequestOptions opts = new RequestOptions();

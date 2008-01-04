@@ -76,6 +76,8 @@ public interface RegistryService extends RemoteService {
 
     WGovernanceInfo getGovernanceInfo(String artifactId) throws RPCException;
 
+    TransitionResponse setActive(String artifactId, String versionLabel) throws RPCException;
+    
     TransitionResponse transition(String artifactId, String nextPhase) throws RPCException;
 
     /**

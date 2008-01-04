@@ -45,7 +45,12 @@ public interface Artifact  {
 
     ArtifactVersion getVersion(String versionName);
 
-    ArtifactVersion getLatestVersion();
+    /**
+     * Get the active version of this artifact. If this hasn't been specifically set,
+     * its the latest version of the artifact.
+     * @return
+     */
+    ArtifactVersion getActiveVersion();
     
     public void setProperty(String name, Object value) throws PropertyException;
     

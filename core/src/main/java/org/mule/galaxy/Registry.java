@@ -93,10 +93,9 @@ public interface Registry {
         throws RegistryException, ArtifactPolicyException, IOException;
 
     /**
-     * Rolls back a specific version of an artifact. This will create a
-     * new ArtifactVersion which is the same as the referenced one. It may
-     * fail though due to increased policy restrictions which have been enforced
-     * if the lifecycle phase has changed.
+     * Sets the active version of an artifact to the specified one. It may
+     * fail due to increased policy restrictions which have been enforced on 
+     * the artifact.
      * 
      * @param artifact
      * @param version
@@ -105,7 +104,7 @@ public interface Registry {
      * @throws RegistryException
      * @throws ArtifactPolicyException
      */
-    ArtifactResult rollback(Artifact artifact, String version, User user) 
+    void setActiveVersion(Artifact artifact, String version, User user) 
         throws RegistryException, ArtifactPolicyException;
     
     Collection<Artifact> getArtifacts(Workspace workspace) throws RegistryException;

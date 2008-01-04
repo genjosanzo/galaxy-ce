@@ -16,7 +16,7 @@ import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.i18n.text.UrlEncoding;
-import org.apache.abdera.model.Collection;
+import org.apache.abdera.i18n.text.CharUtils.Profile;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
@@ -111,7 +111,7 @@ public abstract class AbstractArtifactVersionProvider extends AbstractCollection
         Workspace w = a.getWorkspace();
         while (w != null) {
             sb.insert(0, '/');
-            sb.insert(0, UrlEncoding.encode(w.getName()));
+            sb.insert(0, UrlEncoding.encode(w.getName(), Profile.PATH.filter()));
             w = w.getParent();
         }
         return sb;

@@ -295,7 +295,7 @@ public class ArtifactInfoPanel extends Composite {
         hl.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
-                registryPanel.setMain(new AddArtifactPanel());
+                registryPanel.setMain(new AddArtifactPanel(registryPanel));
             }
             
         });

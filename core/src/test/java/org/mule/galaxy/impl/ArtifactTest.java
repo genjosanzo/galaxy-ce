@@ -131,6 +131,8 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertTrue(newVersion.isLatest());
         assertFalse(version.isLatest());
         
+        assertSame(newVersion, ar.getArtifact().getActiveVersion());
+        
         versions = artifact.getVersions();
         assertEquals(2, versions.size());
         
@@ -149,10 +151,13 @@ public class ArtifactTest extends AbstractGalaxyTest {
         Artifact a2 = registry.getArtifact(workspace, artifact.getName());
         assertNotNull(a2);
         
-//        ArtifactResult rollback = registry.rollback(a2, "0.2", getAdmin());
-//        Artifact a3 = rollback.getArtifact();
-//        
-//        assertEquals(3, a3.getVersions().size());
+        registry.setActiveVersion(a2, "0.1", getAdmin());
+        
+        assertEquals(2, a2.getVersions().size());
+        ArtifactVersion activeVersion = a2.getActiveVersion();
+        assertEquals("0.1", activeVersion.getVersionLabel());
+        
+        
     }
     
     public void testAddNonUnderstood() throws Exception {

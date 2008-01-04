@@ -185,8 +185,13 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
         return node;
     }
 
-    public ArtifactVersion getLatestVersion() {
-        return getVersions().get(0);
+    public ArtifactVersion getActiveVersion() {
+        for (ArtifactVersion v : getVersions()) {
+            if (((JcrVersion)v).isActive()) {
+                return v;
+            }
+        }
+        return null;
     }
     
     public Phase getPhase() {
@@ -221,33 +226,33 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
 
     @Override
     public Object getProperty(String name) {
-        return getLatestVersion().getProperty(name);
+        return getActiveVersion().getProperty(name);
     }
 
     @Override
     public void setProperty(String name, Object value) throws PropertyException {
-        getLatestVersion().setProperty(name, value);
+        getActiveVersion().setProperty(name, value);
     }
     
     @Override
     public Iterator<PropertyInfo> getProperties() {
-        return getLatestVersion().getProperties();
+        return getActiveVersion().getProperties();
     }
 
     @Override
     public PropertyInfo getPropertyInfo(String name) {
-        return getLatestVersion().getPropertyInfo(name);
+        return getActiveVersion().getPropertyInfo(name);
     }
 
     @Override
     public void setLocked(String name, boolean locked) {
-        getLatestVersion().setLocked(name, locked);
+        getActiveVersion().setLocked(name, locked);
     }
 
 
     @Override
     public void setVisible(String name, boolean visible) {
-        getLatestVersion().setVisible(name, visible);
+        getActiveVersion().setVisible(name, visible);
     }
 
     public JcrRegistryImpl getRegistry() {

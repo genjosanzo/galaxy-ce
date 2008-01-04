@@ -465,6 +465,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 jcrVersion.setVersionLabel(versionLabel);
                 jcrVersion.setAuthor(user);
                 jcrVersion.setLatest(true);
+                jcrVersion.setActive(true);
                 
                 try {
                     index(jcrVersion);
@@ -602,9 +603,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 JcrArtifact jcrArtifact = (JcrArtifact) artifact;
                 Node artifactNode = jcrArtifact.getNode();
                 artifactNode.refresh(false);
-                JcrVersion previousLatest = ((JcrVersion)jcrArtifact.getLatestVersion());
+                JcrVersion previousLatest = ((JcrVersion)jcrArtifact.getActiveVersion());
                 Node previousNode = previousLatest.getNode();
-                previousNode.setProperty(JcrVersion.LATEST, (String) null);
+                
+                previousLatest.setActive(false);
                 previousLatest.setLatest(false);
 
                 ContentHandler ch = contentService.getContentHandler(jcrArtifact.getContentType());
@@ -615,12 +617,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 Calendar now = Calendar.getInstance();
                 now.setTime(new Date());
                 versionNode.setProperty(JcrVersion.CREATED, now);
-
-                versionNode.setProperty(JcrVersion.LATEST, true);
-                
                 
                 
                 JcrVersion next = new JcrVersion(jcrArtifact, versionNode);
+                next.setActive(true);
+                next.setLatest(true);
                 
                 try {
                     // Store the data
@@ -688,16 +689,29 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
     
-    public ArtifactResult rollback(Artifact artifact, String version, User user) throws RegistryException,
+    public void setActiveVersion(final Artifact artifact, 
+                                 final String version, 
+                                 final User user) throws RegistryException,
         ArtifactPolicyException {
-        // TODO Auto-generated method stub
-        return null;
+        execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                ArtifactVersion av = artifact.getActiveVersion();
+                ArtifactVersion newAV = artifact.getVersion(version);
+                
+                ((JcrVersion) av).setActive(false);
+                ((JcrVersion) newAV).setActive(true);
+                
+                session.save();
+                return null;
+            }
+        });
+        
     }
 
     public void save(Artifact artifact) throws RegistryException {
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                // TODO: Fix artifact saving!!!
+                // TODO: Fix artifact saving, we should have to call artifact.save().
                 session.save();
                 return null;
             }

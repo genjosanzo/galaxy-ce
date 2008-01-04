@@ -20,7 +20,7 @@ public class CustomArtifactTypeView implements ArtifactTypeView {
         
         columns.add(new Column("Version", new ColumnEvaluator() {
             public Object getValue(Object artifact) {
-                return ((Artifact) artifact).getLatestVersion().getVersionLabel();
+                return ((Artifact) artifact).getActiveVersion().getVersionLabel();
             }
         }));
         

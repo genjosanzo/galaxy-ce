@@ -56,6 +56,11 @@
     <servlet-name>Abdera</servlet-name>  
     <servlet-class>org.apache.abdera.spring.SpringAbderaServlet</servlet-class>
   </servlet>
+  
+  <servlet>
+    <servlet-name>ArtifactUploadServlet</servlet-name>  
+    <servlet-class>org.mule.galaxy.web.ArtifactUploadServlet</servlet-class>
+  </servlet>
 
   <servlet>
     <servlet-name>handler</servlet-name>
@@ -73,6 +78,11 @@
   <servlet-mapping id="abdera-mapping">
     <servlet-name>Abdera</servlet-name>
     <url-pattern>/api/*</url-pattern>
+  </servlet-mapping>
+    
+  <servlet-mapping>
+    <servlet-name>ArtifactUploadServlet</servlet-name>
+    <url-pattern>/artifactUpload</url-pattern>
   </servlet-mapping>
   
   <error-page>

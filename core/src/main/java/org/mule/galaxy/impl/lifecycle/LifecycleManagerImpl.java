@@ -177,7 +177,7 @@ public class LifecycleManagerImpl implements LifecycleManager {
                 JcrArtifact ja =(JcrArtifact) a;
                 ja.setPhase(p);
                 
-                ArtifactVersion latest = a.getLatestVersion();
+                ArtifactVersion latest = a.getActiveVersion();
                 ArtifactVersion previous = latest.getPrevious();
                 
                 boolean approved = true;

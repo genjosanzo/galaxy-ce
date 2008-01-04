@@ -247,7 +247,7 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
             List deps = new ArrayList();
-            ArtifactVersion latest = artifact.getLatestVersion();
+            ArtifactVersion latest = artifact.getActiveVersion();
             for (Dependency d : latest.getDependencies()) {
                 Artifact depArt = d.getArtifact();
                 deps.add(new DependencyInfo(d.isUserSpecified(), 
@@ -348,7 +348,7 @@ public class RegistryServiceImpl implements RegistryService {
             
             g.getRows().add(info);
             
-            info.setArtifactLink(getLink("/api/repository", a));
+            info.setArtifactLink(getLink("/api/registry", a));
             info.setCommentsFeedLink(getLink("/api/comments", a));
             
             return g;
@@ -567,6 +567,12 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
 
+    public TransitionResponse setActive(String artifactId, String versionLabel) throws RPCException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
     @SuppressWarnings("unchecked")
     public Collection getArtifactVersions(String artifactId) throws RPCException {
         try {
@@ -577,6 +583,7 @@ public class RegistryServiceImpl implements RegistryService {
                 versions.add(new ArtifactVersionInfo(av.getVersionLabel(),
                                                      getVersionLink(av),
                                                      av.getCreated().getTime(),
+                                                     av.isActive(),
                                                      av.getAuthor().getName(),
                                                      av.getAuthor().getUsername()));
             }
@@ -593,7 +600,7 @@ public class RegistryServiceImpl implements RegistryService {
         StringBuilder sb = new StringBuilder();
         Workspace w = a.getWorkspace();
 
-        sb.append("/api/repository")
+        sb.append("/api/registry")
           .append(w.getPath())
           .append(a.getName())
           .append("?version=")

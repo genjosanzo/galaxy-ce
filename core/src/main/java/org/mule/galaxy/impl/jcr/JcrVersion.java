@@ -3,8 +3,6 @@ package org.mule.galaxy.impl.jcr;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +24,7 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     public static final String DATA = "data";
     public static final String LABEL = "label";
     public static final String LATEST = "latest";
+    public static final String ACTIVE = "active";
     public static final String AUTHOR_ID = "authorId";
     public static final String DEPENDENCIES = "dependencies";
     public static final String USER_SPECIFIED = "userSpecified";
@@ -33,7 +32,6 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     private JcrArtifact parent;
     private Object data;
     private User author;
-    private boolean latest;
     
     public JcrVersion(JcrArtifact parent, 
                       Node v) throws RepositoryException  {
@@ -42,11 +40,31 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     }
 
     public boolean isLatest() {
-        return latest;
+        return JcrUtil.getBooleanOrNull(node, LATEST);
     }
 
     public void setLatest(boolean latest) {
-        this.latest = latest;
+        try {
+            if (!latest) {
+                JcrUtil.setProperty(JcrVersion.LATEST, null, node);
+            } else {
+                JcrUtil.setProperty(JcrVersion.LATEST, Boolean.TRUE, node);
+            }
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean isActive() {
+        return JcrUtil.getBooleanOrNull(node, ACTIVE);
+    }
+
+    public void setActive(boolean active) {
+        try {
+            JcrUtil.setProperty(ACTIVE, active, node);
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Object getData() {

@@ -8,5 +8,4 @@
     
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.mule.galaxy.web.client.Galaxy'/>
-
 </module>

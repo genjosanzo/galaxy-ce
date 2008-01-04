@@ -109,7 +109,7 @@ public class ArtifactCollectionProvider extends AbstractArtifactVersionProvider 
                             if (next instanceof ArtifactVersion) {
                                 return (ArtifactVersion) next;
                             } else {
-                                return ((Artifact) next).getLatestVersion();
+                                return ((Artifact) next).getActiveVersion();
                             }
                         }
 
@@ -137,7 +137,7 @@ public class ArtifactCollectionProvider extends AbstractArtifactVersionProvider 
                 throw new ResponseContextException(res);
             }
         }
-        return next.getLatestVersion();
+        return next.getActiveVersion();
     }
 
     @Override

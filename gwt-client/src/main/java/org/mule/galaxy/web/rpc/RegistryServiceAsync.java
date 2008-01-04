@@ -3,6 +3,8 @@ package org.mule.galaxy.web.rpc;
 import java.util.Map;
 import java.util.Set;
 
+import org.mule.galaxy.web.client.RPCException;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 
@@ -55,6 +57,8 @@ public interface RegistryServiceAsync extends RemoteService {
     void getGovernanceInfo(String artifactId, AsyncCallback c);
     
     void transition(String artifactId, String nextPhaseName, AsyncCallback c);
+
+    void setActive(String artifactId, String versionLabel, AsyncCallback c);
     
     void getArtifactVersions(String artifactId, AsyncCallback c);
 }

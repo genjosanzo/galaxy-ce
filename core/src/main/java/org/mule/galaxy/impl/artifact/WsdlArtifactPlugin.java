@@ -115,7 +115,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
         CustomArtifactTypeView view = new CustomArtifactTypeView();
         view.getColumns().add(new Column("Port Types", new ColumnEvaluator() {
             public Object getValue(Object artifact) {
-                Object o = ((Artifact)artifact).getLatestVersion().getProperty("wsdl.portType");
+                Object o = ((Artifact)artifact).getActiveVersion().getProperty("wsdl.portType");
                 
                 if (o != null) {
                     return ((Collection) o).size();
@@ -126,7 +126,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
 
         view.getColumns().add(new Column("Bindings", new ColumnEvaluator() {
             public Object getValue(Object artifact) {
-                Object o = ((Artifact)artifact).getLatestVersion().getProperty("wsdl.binding");
+                Object o = ((Artifact)artifact).getActiveVersion().getProperty("wsdl.binding");
                 
                 if (o != null) {
                     return ((Collection) o).size();
@@ -136,7 +136,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
         }));
         view.getColumns().add(new Column("Services", new ColumnEvaluator() {
             public Object getValue(Object artifact) {
-                Object o = ((Artifact)artifact).getLatestVersion().getProperty("wsdl.service");
+                Object o = ((Artifact)artifact).getActiveVersion().getProperty("wsdl.service");
                 
                 if (o != null) {
                     return ((Collection) o).size();
@@ -146,7 +146,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
         }));
         view.getColumns().add(1, new Column("Namespace", new ColumnEvaluator() {
             public Object getValue(Object artifact) {
-                return ((Artifact)artifact).getLatestVersion().getProperty("wsdl.targetNamespace");
+                return ((Artifact)artifact).getActiveVersion().getProperty("wsdl.targetNamespace");
             }
         }));
         viewManager.addView(view, Constants.WSDL_DEFINITION_QNAME);

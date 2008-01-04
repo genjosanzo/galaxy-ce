@@ -90,7 +90,7 @@ public class ArtifactVersionCollectionProvider extends AbstractArtifactVersionPr
         String versionLabel = request.getHeader("version");
         
         if (versionLabel == null || "".equals(versionLabel)) {
-            return getArtifact(request).getLatestVersion();
+            return getArtifact(request).getActiveVersion();
         }
         
         return getArtifact(request).getVersion(versionLabel);

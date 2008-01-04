@@ -78,10 +78,12 @@ public class HistoryPanel extends AbstractComposite {
             });
             links.add(viewLink);
             
-            links.add(new Label(" | "));
-            
-            Hyperlink rollbackLink = new Hyperlink("Rollback", "rollback-version");
-            links.add(rollbackLink);
+            if (!av.isActive()) {
+                links.add(new Label(" | "));
+                
+                Hyperlink rollbackLink = new Hyperlink("Set Active", "rollback-version");
+                links.add(rollbackLink);
+            }
             
             panel.add(avPanel);
         }

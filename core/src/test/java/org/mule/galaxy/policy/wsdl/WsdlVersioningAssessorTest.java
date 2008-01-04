@@ -13,9 +13,9 @@ public class WsdlVersioningAssessorTest extends AbstractGalaxyTest {
     
     public void testVersioning() throws Exception {
         Artifact a1 = importHelloWsdl();
-        ArtifactVersion prev = a1.getLatestVersion();
+        ArtifactVersion prev = a1.getActiveVersion();
         
-        assertNotNull(a1.getLatestVersion().getData());
+        assertNotNull(a1.getActiveVersion().getData());
         BackwardCompatibilityPolicy assessor = new BackwardCompatibilityPolicy();
 
         ArtifactResult ar = registry.newVersion(a1, 

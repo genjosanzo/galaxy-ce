@@ -17,7 +17,7 @@ public class DefaultArtifactTypeView implements ArtifactTypeView {
         case 0:
             return row.getName();
         case 1:
-            return row.getLatestVersion().getVersionLabel();
+            return row.getActiveVersion().getVersionLabel();
         case 2:
             return row.getPhase().getName();
         }

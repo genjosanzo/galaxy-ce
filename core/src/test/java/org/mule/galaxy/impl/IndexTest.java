@@ -60,7 +60,7 @@ public class IndexTest extends AbstractGalaxyTest {
         // Import a document which should now be indexed
         Artifact artifact = importHelloWsdl();
 
-        ArtifactVersion version = artifact.getLatestVersion();
+        ArtifactVersion version = artifact.getActiveVersion();
         Object property = version.getProperty("wsdl.service");
         assertNotNull(property);
         assertTrue(property instanceof Collection);
@@ -141,7 +141,7 @@ public class IndexTest extends AbstractGalaxyTest {
                                                     "0.1", helloWsdl, getAdmin());
         Artifact artifact = ar.getArtifact();
         
-        JcrVersion version = (JcrVersion) artifact.getLatestVersion();
+        JcrVersion version = (JcrVersion) artifact.getActiveVersion();
         Object property = version.getProperty("mule.service");
         assertNotNull(property);
         assertTrue(property instanceof Collection);

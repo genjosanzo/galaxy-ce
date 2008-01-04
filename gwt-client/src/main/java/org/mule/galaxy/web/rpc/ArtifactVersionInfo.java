@@ -10,12 +10,14 @@ public class ArtifactVersionInfo implements IsSerializable {
     private Date created;
     private String authorName;
     private String authorUsername;
+    private boolean active;
     
-    public ArtifactVersionInfo(String versionLabel, String link, Date created, String authorName,
+    public ArtifactVersionInfo(String versionLabel, String link, Date created, boolean active, String authorName,
                                String authorUsername) {
         super();
         this.versionLabel = versionLabel;
         this.link = link;
+        this.active = active;
         this.created = created;
         this.authorName = authorName;
         this.authorUsername = authorUsername;
@@ -24,6 +26,14 @@ public class ArtifactVersionInfo implements IsSerializable {
     public ArtifactVersionInfo() {
         super();
         // TODO Auto-generated constructor stub
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public String getAuthorUsername() {
