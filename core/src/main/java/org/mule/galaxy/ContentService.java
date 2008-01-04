@@ -16,6 +16,8 @@ public interface ContentService {
     ContentHandler getContentHandler(MimeType contentType);
 
     ContentHandler getContentHandler(QName documentType);
+
+    ContentHandler getContentHandler(String extension);
     
     ContentHandler getContentHandler(Class<?> c);
     

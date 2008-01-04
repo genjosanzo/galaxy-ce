@@ -51,6 +51,7 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
     
     public XmlDocumentContentHandler() throws MimeTypeParseException {
         this(true);
+        supportedFileExtensions.add("xml");
     }
 
     protected XmlDocumentContentHandler(boolean init) throws MimeTypeParseException {

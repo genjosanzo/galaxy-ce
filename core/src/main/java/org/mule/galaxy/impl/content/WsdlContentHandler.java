@@ -53,6 +53,9 @@ public class WsdlContentHandler extends XmlDocumentContentHandler implements Xml
         namespaces.put("wsdl", Constants.WSDL_DEFINITION_QNAME.getNamespaceURI());
         imports.add(xpath.compile("//wsdl:import/@location"));
         imports.add(xpath.compile("//xsd:import/@schemaLocation"));
+        
+        supportedFileExtensions.clear();
+        supportedFileExtensions.add("wsdl");
     }
 
     public String getName(Object o) {

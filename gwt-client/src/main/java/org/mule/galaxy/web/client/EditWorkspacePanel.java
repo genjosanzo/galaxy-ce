@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.WorkspacesListBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WWorkspace;
 
@@ -59,15 +60,8 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
         table.getColumnFormatter().setStyleName(0, "artifactTableHeader");
         table.getColumnFormatter().setStyleName(1, "artifactTableEntry");
         
-        
-        final ListBox workspacesLB = new ListBox();
-        workspacesLB.addItem("[No parent]");
-        
-        addWorkspaces(workspaces, workspacesLB, parentWorkspaceId, workspaceId);
-        
-        if ("".equals(parentWorkspaceId) || parentWorkspaceId == null) {
-            workspacesLB.setSelectedIndex(0);
-        }
+        final WorkspacesListBox workspacesLB = 
+            new WorkspacesListBox(workspaces, workspaceId, parentWorkspaceId, true);
         
         table.setText(0, 0, "Parent Workspace:");
         table.setWidget(0, 1, workspacesLB);
@@ -83,13 +77,12 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
         
         panel.add(table);
         
-        
         InlineFlowPanel buttonPanel = new InlineFlowPanel();
         Button saveButton = new Button("Save");
         saveButton.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
-                save(workspacesLB.getValue(workspacesLB.getSelectedIndex()), 
+                save(workspacesLB.getSelectedValue(), 
                      workspaceTextBox.getText());
                 
             }
@@ -128,28 +121,6 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
                 popup.setPopupPosition(left, top);
             }
         });
-    }
-
-    private void addWorkspaces(final Collection workspaces, 
-                               ListBox workspacesLB, 
-                               String workspaceId,
-                               String childId) {
-        for (Iterator itr = workspaces.iterator(); itr.hasNext();) {
-            WWorkspace w = (WWorkspace) itr.next();
-            
-            if (childId == null || !childId.equals(w.getId())) {
-                workspacesLB.addItem(w.getPath(), w.getId());
-                
-                if (w.getId().equals(workspaceId)) {
-                    workspacesLB.setSelectedIndex(workspacesLB.getItemCount() - 1);
-                }
-                
-                Collection children = w.getWorkspaces();
-                if (children != null && children.size() > 0) {
-                    addWorkspaces(children, workspacesLB, workspaceId, childId);
-                }
-            }
-        }
     }
 
     protected void save(String parentWorkspaceId, final String text) {

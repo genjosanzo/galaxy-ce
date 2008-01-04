@@ -25,6 +25,7 @@ public abstract class AbstractContentHandler implements ContentHandler {
     
     protected Set<MimeType> supportedContentTypes = new HashSet<MimeType>();
     protected Set<Class<?>> supportedTypes = new HashSet<Class<?>>();
+    protected Set<String> supportedFileExtensions = new HashSet<String>();
 
     protected Registry registry;
     
@@ -36,17 +37,16 @@ public abstract class AbstractContentHandler implements ContentHandler {
         return supportedContentTypes;
     }
     
+    public Set<String> getSupportedFileExtensions() {
+        return supportedFileExtensions;
+    }
+
     public Object read(Source source, Workspace workspace) throws Exception {
         throw new UnsupportedOperationException();
     }
 
     public void addMetadata(ArtifactVersion v) {
-        try {
-            v.setProperty(DESCRIPTION, describe(v));
-        } catch (PropertyException e) {
-            // this won't happen as description doesn't have a space in it
-            throw new RuntimeException(e);
-        }
+
     }
 
     public String describe(ArtifactVersion v) {

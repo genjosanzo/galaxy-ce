@@ -46,9 +46,20 @@
     <url-pattern>/api/*</url-pattern>
   </filter-mapping>
   
+  <filter-mapping>
+    <filter-name>jcr</filter-name>
+    <url-pattern>/artifactUpload</url-pattern>
+  </filter-mapping>
+  
+  
   <listener>
     <listener-class>
       org.springframework.web.context.ContextLoaderListener
+    </listener-class>
+  </listener>
+  <listener>
+    <listener-class>
+      org.apache.commons.fileupload.servlet.FileCleanerCleanup
     </listener-class>
   </listener>
   

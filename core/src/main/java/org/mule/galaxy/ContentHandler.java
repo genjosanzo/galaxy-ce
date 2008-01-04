@@ -13,6 +13,8 @@ public interface ContentHandler {
     
     Set<MimeType> getSupportedContentTypes();
     
+    Set<String> getSupportedFileExtensions();
+    
     Set<Class<?>> getSupportedTypes();
     
     String getName(Object o);

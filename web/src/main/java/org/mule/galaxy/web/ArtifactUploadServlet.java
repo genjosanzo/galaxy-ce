@@ -1,9 +1,12 @@
 package org.mule.galaxy.web;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
+import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -17,7 +20,10 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.ContentService;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
@@ -31,37 +37,95 @@ public class ArtifactUploadServlet extends HttpServlet {
 
     private WebApplicationContext context;
     private Registry registry;
-
+    private ContentService contentService;
+    
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
         IOException {
-        String artifactId = req.getParameter("artifactId");
+        String artifactId = null;
+        String wkspcId = null;
+        String name = null;
+        String versionLabel = null;
+        FileItem uploadItem = null;
+        
+        resp.setContentType("text/plain");
+
+        PrintWriter writer = resp.getWriter();
         
         try {
-            Workspace wkspc = registry.getWorkspace(req.getParameter("workspaceId"));
-            String name = req.getParameter("name");
-            String versionLabel = req.getParameter("versionLabel");
-    
+            FileItemFactory factory = new DiskFileItemFactory();
+            ServletFileUpload upload = new ServletFileUpload(factory);
+            
+            try {
+                List items = upload.parseRequest(req);
+                Iterator it = items.iterator();
+                while (it.hasNext()) {
+                    FileItem item = (FileItem)it.next();
+                    
+                    String f = item.getFieldName();
+
+                    if ("artifactFile".equals(f)) {
+                        uploadItem = item;
+                    } else if ("workspaceId".equals(f)) {
+                        wkspcId = item.getString();
+                    } else if ("name".equals(f)) {
+                        name = item.getString();
+                    } else if ("versionLabel".equals(f)) {
+                        versionLabel = item.getString();
+                    } else if ("artifactId".equals(f)) {
+                        artifactId = item.getString();
+                    }
+                }
+            } catch (FileUploadException e) {
+                throw new ServletException(e);
+            }
+            
+            if (uploadItem == null) {
+                writer.write("No file was specified.");
+                return;
+            }
+
+            if (versionLabel == null) {
+                writer.write("No version label was specified.");
+                return;
+            }
+
             UserDetailsWrapper wrapper = (UserDetailsWrapper)SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
             User user = wrapper.getUser();
-    
-            FileItem uploadItem = getFileItem(req);
-            if (uploadItem == null) {
-                resp.getWriter().write("NO-SCRIPT-DATA");
-                return;
-            }
             
-            if (artifactId == null) {
-                registry.createArtifact(wkspc, req.getContentType(), name, 
-                                        versionLabel, req.getInputStream(), user);
+            
+            if (artifactId == null) {            
+                if (wkspcId == null) {
+                    writer.write("No workspace was specified.");
+                    return;
+                }
+                
+                Workspace wkspc = registry.getWorkspace(wkspcId);
+                
+                if (name == null) {
+                    writer.write("No name was specified.");
+                    return;
+                }
+                
+                ContentHandler ch = contentService.getContentHandler(getExtension(uploadItem.getName()));
+                
+                Set<MimeType> types = ch.getSupportedContentTypes();
+                String ct = uploadItem.getContentType();
+                if (types.size() > 0) {
+                    ct = types.iterator().next().toString();
+                }
+                
+                registry.createArtifact(wkspc, ct, name, versionLabel, uploadItem.getInputStream(), user);
+            } else {
+                Artifact a = registry.getArtifact(artifactId);
+                
+                registry.newVersion(a, uploadItem.getInputStream(), versionLabel, user);
             }
         } catch (NotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            writer.write("Workspace could not be found.");
         } catch (RegistryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            writer.write("No version label was specified.");
         } catch (ArtifactPolicyException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -70,28 +134,17 @@ public class ArtifactUploadServlet extends HttpServlet {
             e.printStackTrace();
         }
         
-        resp.setContentType("text/plain");
-
-        resp.getWriter().write(new String("OK"));
+        
+        writer.write(new String("OK"));
     }
 
-    private FileItem getFileItem(HttpServletRequest request) {
-        FileItemFactory factory = new DiskFileItemFactory();
-        ServletFileUpload upload = new ServletFileUpload(factory);
-
-        try {
-            List items = upload.parseRequest(request);
-            Iterator it = items.iterator();
-            while (it.hasNext()) {
-                FileItem item = (FileItem)it.next();
-                if (!item.isFormField() && "artifactFile".equals(item.getFieldName())) {
-                    return item;
-                }
-            }
-        } catch (FileUploadException e) {
-            return null;
+    private String getExtension(String name) {
+        int idx = name.lastIndexOf('.');
+        if (idx > 0) {
+            return name.substring(idx+1);
         }
-        return null;
+        
+        return "";
     }
 
     @Override
@@ -101,6 +154,7 @@ public class ArtifactUploadServlet extends HttpServlet {
         context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 
         registry = (Registry)context.getBean("registry");
+        contentService = (ContentService)context.getBean("contentService");
     }
 
 }

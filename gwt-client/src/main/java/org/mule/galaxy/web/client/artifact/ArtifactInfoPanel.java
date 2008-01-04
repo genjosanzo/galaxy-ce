@@ -19,7 +19,7 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.mule.galaxy.web.client.AddArtifactPanel;
+import org.mule.galaxy.web.client.ArtifactForm;
 import org.mule.galaxy.web.client.RegistryPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
@@ -295,7 +295,7 @@ public class ArtifactInfoPanel extends Composite {
         hl.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
-                registryPanel.setMain(new AddArtifactPanel(registryPanel));
+                registryPanel.setMain(new ArtifactForm(registryPanel, info.getId()));
             }
             
         });

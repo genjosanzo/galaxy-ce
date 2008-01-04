@@ -1,6 +1,7 @@
 package org.mule.galaxy.web.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -42,11 +43,12 @@ public class RegistryPanel extends AbstractMenuPanel {
         
         workspaceBox = new Toolbox();
         workspaceBox.setTitle("Workspaces");
+        
         Image addImg = new Image("images/add_obj.gif");
         final RegistryPanel registryPanel = this;
         addImg.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
-                setMain(new AddArtifactPanel(registryPanel));
+                setMain(new ArtifactForm(registryPanel));
             }
             
         });
@@ -207,5 +209,9 @@ public class RegistryPanel extends AbstractMenuPanel {
 
     public String getWorkspaceId() {
         return workspaceId;
+    }
+
+    public Collection getWorkspaces() {
+        return workspaces;
     }
 }

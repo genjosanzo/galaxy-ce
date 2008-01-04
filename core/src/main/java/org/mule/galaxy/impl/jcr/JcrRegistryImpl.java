@@ -127,6 +127,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public Workspace getWorkspace(String id) throws RegistryException {
         try {
+            if (id == null) {
+                throw new NullPointerException("Workspace ID cannot be null.");
+            }
+            
             Node node = getNodeByUUID(id);
 
             return new JcrWorkspace(node);
