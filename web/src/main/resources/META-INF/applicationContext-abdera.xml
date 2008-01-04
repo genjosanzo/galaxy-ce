@@ -23,8 +23,15 @@
     
   </a:serviceContext>
 
-  <bean id="provider" class="org.apache.abdera.protocol.server.impl.ServiceProvider">
+  <bean id="provider" class="org.mule.galaxy.atom.RegistryServiceProvider">
     <property name="servicesPath" value="/api/"/>
+    
+    <property name="artifactVersionProvider">
+      <bean class="org.mule.galaxy.atom.ArtifactVersionCollectionProvider">
+        <constructor-arg ref="registry"/>
+      </bean> 
+    </property>
+    
     <property name="workspaces">
       <list>
         <bean class="org.mule.galaxy.atom.ArtifactWorkspaceInfo" init-method="initialize">

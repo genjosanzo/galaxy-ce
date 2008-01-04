@@ -592,12 +592,12 @@ public class RegistryServiceImpl implements RegistryService {
         Artifact a = av.getParent();
         StringBuilder sb = new StringBuilder();
         Workspace w = a.getWorkspace();
-        
-        sb.insert(0, '/')
-          .insert(0, w.getPath());
-        
-        sb.insert(0, "/api/repository/");
-        sb.append(a.getName());
+
+        sb.append("/api/repository")
+          .append(w.getPath())
+          .append(a.getName())
+          .append("?version=")
+          .append(av.getVersionLabel());
         return sb.toString();
     }
 

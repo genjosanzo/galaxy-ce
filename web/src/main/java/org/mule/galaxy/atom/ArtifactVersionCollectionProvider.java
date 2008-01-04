@@ -29,18 +29,34 @@ public class ArtifactVersionCollectionProvider extends AbstractArtifactVersionPr
     
     public ArtifactVersionCollectionProvider(Registry registry) {
         super(registry);
+        setBaseMediaIri("");
     }
 
     @Override
     public void begin(RequestContext request) throws ResponseContextException {
         String target = request.getTargetPath();
-        System.out.println("TARGET " + target);
+        int idx = target.indexOf("/registry/");
+        int qIdx = target.lastIndexOf('?');
+        if (qIdx == -1) {
+            qIdx = target.length();
+        }
+        
+        target = target.substring(idx + 10, qIdx);
         
         Artifact a = findArtifact(target);
-        request.setAttribute(Scope.SESSION, ARTIFACT_KEY, a);
-        System.out.println("artifact " + a);
+        request.setAttribute(Scope.REQUEST, ARTIFACT_KEY, a);
         
         super.begin(request);
+    }
+
+    @Override
+    public String getMediaName(ArtifactVersion version) {
+        // TODO: Hmm this seems quite ugly. Need to revisit Abdera's code here.
+        return new StringBuilder()
+          .append("../")
+          .append(UrlEncoding.encode(version.getParent().getName()))
+          .append("?version=")
+          .append(version.getVersionLabel()).toString();
     }
 
     @Override
@@ -56,7 +72,7 @@ public class ArtifactVersionCollectionProvider extends AbstractArtifactVersionPr
     }
 
     private Artifact getArtifact(RequestContext ctx) {
-        return (Artifact) ctx.getAttribute(Scope.SESSION, ARTIFACT_KEY);
+        return (Artifact) ctx.getAttribute(Scope.REQUEST, ARTIFACT_KEY);
     }
 
     @Override
@@ -81,14 +97,8 @@ public class ArtifactVersionCollectionProvider extends AbstractArtifactVersionPr
     }
 
     @Override
-    public ArtifactVersion getEntryFromId(String arg0, RequestContext request) throws ResponseContextException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public String getId() {
-        return "tag:mule.org/galaxy,2007:registry:history:feed";
+        return "tag:galaxy.mulesource.com,2008:registry:history:feed";
     }
 
     @Override
@@ -100,8 +110,9 @@ public class ArtifactVersionCollectionProvider extends AbstractArtifactVersionPr
     public String getName(ArtifactVersion version) throws ResponseContextException {
         StringBuilder sb = getBasePath(version.getParent());
         
-        sb.append(UrlEncoding.encode(version.getParent().getName()));
-        sb.append(".atom")
+        sb.append("../")
+          .append(UrlEncoding.encode(version.getParent().getName()))
+          .append(".atom")
           .append("?version=")
           .append(version.getVersionLabel());
         

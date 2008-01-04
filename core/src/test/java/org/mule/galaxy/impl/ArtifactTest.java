@@ -148,6 +148,11 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         Artifact a2 = registry.getArtifact(workspace, artifact.getName());
         assertNotNull(a2);
+        
+        ArtifactResult rollback = registry.rollback(a2, "0.2", getAdmin());
+        Artifact a3 = rollback.getArtifact();
+        
+        assertEquals(3, a3.getVersions().size());
     }
     
     public void testAddNonUnderstood() throws Exception {

@@ -10,12 +10,14 @@ import java.util.List;
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
-import org.apache.abdera.factory.Factory;
+import org.apache.abdera.Abdera;
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.i18n.text.UrlEncoding;
+import org.apache.abdera.i18n.text.CharUtils.Profile;
 import org.apache.abdera.model.Collection;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Entry;
+import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.impl.EmptyResponseContext;
@@ -53,17 +55,8 @@ public class ArtifactCollectionProvider extends AbstractArtifactVersionProvider 
     }
 
     public String getId() {
-        return "tag:mule.org/galaxy,2007:registry:feed";
+        return "tag:galaxy.mulesource.com,2008:registry:feed";
     }
-    @Override
-    public String getMediaName(ArtifactVersion entry) {
-        Artifact a = entry.getParent();
-        StringBuilder path = getBasePath(a);
-        
-        path.append(entry.getParent().getName());
-        return path.toString();
-    }
-
 
     public String getId(ArtifactVersion doc) {
         return ID_PREFIX + doc.getParent().getId();
@@ -73,7 +66,7 @@ public class ArtifactCollectionProvider extends AbstractArtifactVersionProvider 
         Artifact a = doc.getParent();
         StringBuilder sb = getBasePath(a);
         
-        sb.append(UrlEncoding.encode(a.getName()));
+        sb.append(UrlEncoding.encode(a.getName(), Profile.PATH.filter()));
         sb.append(".atom");
         return sb.toString();
     }
@@ -134,7 +127,16 @@ public class ArtifactCollectionProvider extends AbstractArtifactVersionProvider 
         }
     }
 
-    protected ArtifactVersion selectVersion(Artifact next) {
+    protected ArtifactVersion selectVersion(Artifact next, String version) throws ResponseContextException {
+        if (version != null) {
+            ArtifactVersion v = next.getVersion(version);
+            
+            if (v == null || "".equals(version)) {
+                EmptyResponseContext res = new EmptyResponseContext(404);
+                res.setStatusText("Version " + version + " was not found.");
+                throw new ResponseContextException(res);
+            }
+        }
         return next.getLatestVersion();
     }
 
@@ -194,19 +196,13 @@ public class ArtifactCollectionProvider extends AbstractArtifactVersionProvider 
         artifact.setName(title);
     }
 
-    public ArtifactVersion getEntryFromId(String id, RequestContext request) {
-        id = id.substring(ID_PREFIX.length());
-        
-        try {
-            return selectVersion(registry.getArtifact(id));
-        } catch (NotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public ArtifactVersion getEntry(String name, RequestContext request) throws ResponseContextException {
+        if (name.endsWith(".atom")) {
+            name = name.substring(0, name.length() - 5);
+        }
         Artifact a = findArtifact(name);
-        return selectVersion(a);
+        return selectVersion(a, request.getParameter("version"));
     }
 
 

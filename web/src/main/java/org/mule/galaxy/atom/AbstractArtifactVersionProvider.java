@@ -171,6 +171,15 @@ public abstract class AbstractArtifactVersionProvider extends AbstractCollection
         author.setName("Galaxy");
         return Arrays.asList(author);
     }
+    
+    @Override
+    public String getMediaName(ArtifactVersion entry) {
+        Artifact a = entry.getParent();
+        StringBuilder path = getBasePath(a);
+        
+        path.append(entry.getParent().getName());
+        return path.toString();
+    }
 
     protected Artifact findArtifact(String name) throws ResponseContextException {
         String[] paths = name.split("/");
@@ -178,7 +187,7 @@ public abstract class AbstractArtifactVersionProvider extends AbstractCollection
         Workspace w = null;
         for (int i = 0; i < paths.length-1; i++) {
             try {
-                w = registry.getWorkspace(UrlEncoding.decode(paths[i]));
+                w = registry.getWorkspaceByPath(UrlEncoding.decode(paths[i]));
             } catch (NotFoundException e) {
                 throw new ResponseContextException(404);
             } catch (RegistryException e) {

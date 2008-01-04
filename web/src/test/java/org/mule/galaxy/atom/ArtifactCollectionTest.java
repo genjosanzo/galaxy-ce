@@ -8,6 +8,7 @@ import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.i18n.text.CharUtils.Profile;
 import org.apache.abdera.model.Collection;
+import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Service;
@@ -46,13 +47,15 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         Collection collection = collections.get(0);
         
         assertEquals("registry", collection.getHref().toString());
-
+        res.release();
+        
         // Check out the feed, yo
         IRI colUri = new IRI(base).resolve(collection.getHref());
         System.out.println("Grabbing the Feed " + colUri.toString());
         res = client.get(colUri.toString(), defaultOpts);
         assertEquals(200, res.getStatus());
         prettyPrint(res.getDocument());
+        res.release();
         
         // Testing of entry creation
         System.out.println("Creating Entry from a WSDL");
@@ -68,6 +71,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals(201, res.getStatus());
         
         prettyPrint(res.getDocument());
+        res.release();
         
         // Check the new feed for our entry
         System.out.println("Grabbing the Feed Again");
@@ -88,13 +92,52 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
             }
         }
         assertNotNull(e);
+        res.release();
         
+        // get the individual entry
+        res = client.get(e.getEditLinkResolvedHref().toString(), defaultOpts);
+        org.apache.abdera.model.Document<Entry> entryDoc = res.getDocument();
+        Entry entry = entryDoc.getRoot();
+        
+        Collection versionCollection = null;
+        List<Element> elements = entry.getElements();
+        for (Element el : elements) {
+            if (el instanceof Collection) {
+                versionCollection = (Collection) el;
+            }
+        }
+        assertNotNull(versionCollection);
+        res.release();
+        
+        // try getting the version history
+        res = client.get(e.getContentSrc().toString() + "?view=history", defaultOpts);
+        prettyPrint(res.getDocument());
+        feedDoc = res.getDocument();
+        feed = feedDoc.getRoot();
+        
+        entries = feed.getEntries();
+        assertEquals(1, entries.size());
+        
+        Entry historyEntry = entries.get(0);
+        assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl?version=0.1",
+                     historyEntry.getContentSrc().toString());
+        res.release();
+        
+        // Get the raw content
         res = client.get(e.getContentSrc().toString(), defaultOpts);
         assertEquals(200, res.getStatus());
         
         InputStream is = res.getInputStream();
         while (is.read() != -1);
+        res.release();
         
+        // Try the history entry
+        res = client.get(historyEntry.getContentSrc().toString(), defaultOpts);
+        assertEquals(200, res.getStatus());
+        
+        is = res.getInputStream();
+        while (is.read() != -1);
+        res.release();
         
     }
     
