@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.mule.galaxy.web.rpc.SearchPredicate;
+
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -20,6 +22,8 @@ public class SearchPanelRow
     private SearchPanel searchPanel;
     private ListBox     attributeList;
     private HorizontalPanel contents;
+    private ListBox matchTypeList;
+    private TextBox valueTextBox;
     
     public SearchPanelRow(SearchPanel sp) {
         super();
@@ -84,17 +88,31 @@ public class SearchPanelRow
     public void processTypeChange() {
         contents.clear();
         
-        ListBox lb = new ListBox();
-        lb.addItem("matches");
-        lb.addItem("contains");
-        lb.addItem("begins with");
-        lb.addItem("ends with");
-        lb.addItem("is");
-        contents.add(lb);
+        matchTypeList = new ListBox();
+        matchTypeList.addItem("matches",       String.valueOf(SearchPredicate.MATCHES));
+        matchTypeList.addItem("contains",      String.valueOf(SearchPredicate.CONTAINS));
+        matchTypeList.addItem("begins with",   String.valueOf(SearchPredicate.BEGINS_WITH));
+        matchTypeList.addItem("ends with",     String.valueOf(SearchPredicate.ENDS_WITH));
+        matchTypeList.addItem("is",            String.valueOf(SearchPredicate.IS));
+        contents.add(matchTypeList);
         
-        TextBox tb = new TextBox();
-        tb.setWidth("98%");
-        contents.add(tb);
-        contents.setCellWidth(tb, "100%");
+        valueTextBox = new TextBox();
+        valueTextBox.setWidth("98%");
+        contents.add(valueTextBox);
+        contents.setCellWidth(valueTextBox, "100%");
+    }
+
+    public Object getPredicate()
+    {
+        try {
+            String fieldName = attributeList.getValue(attributeList.getSelectedIndex());
+            int matchType = Integer.parseInt(matchTypeList.getValue(matchTypeList.getSelectedIndex()));
+            String value = valueTextBox.getText();
+            
+            return new SearchPredicate(fieldName, matchType, value);
+        }
+        catch (NumberFormatException e) {
+            return null;
+        }
     }
 }

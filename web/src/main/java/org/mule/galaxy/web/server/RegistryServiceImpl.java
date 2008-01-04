@@ -51,6 +51,7 @@ import org.mule.galaxy.web.rpc.BasicArtifactInfo;
 import org.mule.galaxy.web.rpc.DependencyInfo;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
 import org.mule.galaxy.web.rpc.RegistryService;
+import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.TransitionResponse;
 import org.mule.galaxy.web.rpc.WArtifactType;
 import org.mule.galaxy.web.rpc.WComment;
@@ -162,7 +163,7 @@ public class RegistryServiceImpl implements RegistryService {
     
 
     @SuppressWarnings("unchecked")
-    public Collection getArtifacts(String workspaceId, Set artifactTypes) {
+    public Collection getArtifacts(String workspaceId, Set artifactTypes, Set searchPredicates) {
         Query q = new Query(Artifact.class)
             .workspace(workspaceId)
             .orderBy("artifactType");
@@ -181,6 +182,18 @@ public class RegistryServiceImpl implements RegistryService {
                 if (artifactTypes != null && artifactTypes.size() != 0 && !artifactTypes.contains(type.getId())) {
                     continue;
                 }
+                
+                // Filter based on our search terms
+                boolean passed = true;
+                for (Object predObj : searchPredicates) {
+                    SearchPredicate pred = (SearchPredicate) predObj;
+                    if (!pred.matches(a)) {
+                        passed = false;
+                        break;
+                    }
+                }
+                if (!passed)
+                    continue;
                 
                 ArtifactGroup g = name2group.get(type.getDescription());
                 ArtifactTypeView view = name2view.get(type.getDescription());

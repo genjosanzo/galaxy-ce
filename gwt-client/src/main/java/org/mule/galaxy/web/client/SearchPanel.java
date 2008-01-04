@@ -83,8 +83,8 @@ public class SearchPanel
     public void initArtifactIndices(Map map) {
         artifactIndiceMap = map;
         for (Iterator itr = rows.iterator(); itr.hasNext();) {
-            SearchPanelRow pred = (SearchPanelRow) itr.next();
-            pred.setAttributeList(artifactIndiceMap);
+            SearchPanelRow row = (SearchPanelRow) itr.next();
+            row.setAttributeList(artifactIndiceMap);
         }
     }
     
@@ -99,5 +99,17 @@ public class SearchPanel
     public void removePredicate(SearchPanelRow pred) {
         panel.remove(pred);
         rows.remove(pred);
+    }
+
+    public Set getPredicates()
+    {
+        Set predicates = new HashSet();
+        
+        for (Iterator itr = rows.iterator(); itr.hasNext();) {
+            SearchPanelRow row = (SearchPanelRow) itr.next();
+            predicates.add(row.getPredicate());
+        }
+        
+        return predicates;
     }
 }

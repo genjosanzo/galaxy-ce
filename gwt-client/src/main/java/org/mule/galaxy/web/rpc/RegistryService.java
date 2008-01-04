@@ -34,7 +34,7 @@ public interface RegistryService extends RemoteService {
      * @gwt typeArgs org.mule.galaxy.web.client.ArtifactGroup
      * @return
      */
-    Collection getArtifacts(String workspace, Set artifactTypes);
+    Collection getArtifacts(String workspace, Set artifactTypes, Set searchPredicates);
     
     /**
      * @gwt typeArgs java.lang.String,java.lang.String

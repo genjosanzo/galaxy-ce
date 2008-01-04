@@ -2,6 +2,7 @@ package org.mule.galaxy.web.server;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,7 +56,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         Collection artifactTypes = gwtRegistry.getArtifactTypes();
         assertTrue(artifactTypes.size() > 0);
         
-        Collection artifacts = gwtRegistry.getArtifacts(null, null);
+        Collection artifacts = gwtRegistry.getArtifacts(null, null, new HashSet());
         
         assertEquals(3, artifacts.size());
         
@@ -145,7 +146,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     }
     
     public void testGovernanceOperations() throws Exception {
-        Collection artifacts = gwtRegistry.getArtifacts(null, null);
+        Collection artifacts = gwtRegistry.getArtifacts(null, null, new HashSet());
         ArtifactGroup g1 = (ArtifactGroup) artifacts.iterator().next();
         
         BasicArtifactInfo a = (BasicArtifactInfo) g1.getRows().get(0);

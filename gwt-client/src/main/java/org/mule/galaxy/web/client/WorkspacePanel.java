@@ -17,6 +17,7 @@ public class WorkspacePanel
     private RegistryPanel registryPanel;
     private VerticalPanel panel;
     private VerticalPanel artifactPanel;
+    private SearchPanel searchPanel;
 
 
     public WorkspacePanel(RegistryPanel rp) {
@@ -25,8 +26,8 @@ public class WorkspacePanel
         panel = new VerticalPanel();
         panel.setWidth("100%");
         
-        SearchPanel search = new SearchPanel(rp);
-        panel.add(search);
+        searchPanel = new SearchPanel(rp);
+        panel.add(searchPanel);
 
         artifactPanel = new VerticalPanel();
         artifactPanel.setWidth("100%");
@@ -54,8 +55,8 @@ public class WorkspacePanel
         
         String workspaceId   = registryPanel.getWorkspaceId();
         Set    artifactTypes = registryPanel.getArtifactTypes();
-        registryPanel.getRegistryService().getArtifacts(workspaceId, 
-                                                        artifactTypes, 
+        Set    predicates    = searchPanel.getPredicates();
+        registryPanel.getRegistryService().getArtifacts(workspaceId, artifactTypes, predicates,
                                                         new AbstractCallback(registryPanel) {
 
             public void onSuccess(Object o) {
