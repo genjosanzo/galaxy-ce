@@ -22,6 +22,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
 import org.mule.galaxy.NotFoundException;
@@ -94,7 +95,7 @@ public class ArtifactUploadServlet extends HttpServlet {
                 .getAuthentication().getPrincipal();
             User user = wrapper.getUser();
             
-            
+            ArtifactResult result = null;
             if (artifactId == null) {            
                 if (wkspcId == null) {
                     writer.write("No workspace was specified.");
@@ -103,9 +104,15 @@ public class ArtifactUploadServlet extends HttpServlet {
                 
                 Workspace wkspc = registry.getWorkspace(wkspcId);
                 
-                if (name == null) {
-                    writer.write("No name was specified.");
-                    return;
+                // pull out the original file name
+                if (name == null || "".equals(name)) {
+                    name = uploadItem.getName();
+                    
+                    int idx = name.lastIndexOf('/');
+                    if (idx == -1) {
+                        idx = name.lastIndexOf('\\');
+                    }
+                    name = name.substring(idx+1);
                 }
                 
                 ContentHandler ch = contentService.getContentHandler(getExtension(uploadItem.getName()));
@@ -116,12 +123,14 @@ public class ArtifactUploadServlet extends HttpServlet {
                     ct = types.iterator().next().toString();
                 }
                 
-                registry.createArtifact(wkspc, ct, name, versionLabel, uploadItem.getInputStream(), user);
+                result = registry.createArtifact(wkspc, ct, name, versionLabel, uploadItem.getInputStream(), user);
             } else {
                 Artifact a = registry.getArtifact(artifactId);
                 
-                registry.newVersion(a, uploadItem.getInputStream(), versionLabel, user);
+                result = registry.newVersion(a, uploadItem.getInputStream(), versionLabel, user);
             }
+            
+            writer.write(new String("OK ") + result.getArtifact().getId());
         } catch (NotFoundException e) {
             writer.write("Workspace could not be found.");
         } catch (RegistryException e) {
@@ -130,12 +139,8 @@ public class ArtifactUploadServlet extends HttpServlet {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (MimeTypeParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            writer.write("Invalid mime type.");
         }
-        
-        
-        writer.write(new String("OK"));
     }
 
     private String getExtension(String name) {

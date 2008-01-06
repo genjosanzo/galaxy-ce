@@ -11,7 +11,16 @@ public class BasicArtifactInfo implements IsSerializable {
      */
     private Map col2Value = new HashMap();
     private String id;
+    private String workspaceId;
     
+    public String getWorkspaceId() {
+        return workspaceId;
+    }
+
+    public void setWorkspaceId(String workspaceId) {
+        this.workspaceId = workspaceId;
+    }
+
     public String getId() {
         return id;
     }

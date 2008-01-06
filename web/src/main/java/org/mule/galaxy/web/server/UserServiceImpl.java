@@ -9,6 +9,7 @@ import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserExistsException;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.web.client.admin.PasswordChangeException;
+import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
 import org.mule.galaxy.web.rpc.UserService;
 import org.mule.galaxy.web.rpc.WUser;
@@ -17,30 +18,45 @@ public class UserServiceImpl implements UserService {
 
     private UserManager userManager;
     
-    public String addUser(String username, String fullname, String password) {
+    public String addUser(WUser user, String password) throws ItemExistsException {
         try {
-            return userManager.create(username, password, fullname).getId();
+            User u = createUser(user);
+            userManager.create(u, password);
+            return u.getId();
         } catch (UserExistsException e) {
-            return null;
+            throw new ItemExistsException();
         }
     }
     
+    private User createUser(WUser user) {
+        User u = new User();
+        u.setName(user.getName());
+        u.setEmail(user.getEmail());
+        u.setUsername(user.getUsername());
+        return u;
+    }
+
     public Collection getUsers() {
         List<User> users = userManager.listAll();
         
         ArrayList<WUser> webUsers = new ArrayList<WUser>();
         for (User user : users) {
-            WUser w = new WUser();
-            w.setName(user.getName());
-            w.setId(user.getId());
-            w.setUsername(user.getUsername());
-            w.setEmail(user.getEmail());
+            WUser w = createWUser(user);
             webUsers.add(w);
         }
         return webUsers;
     }
 
-    public void updateUser(WUser user, String oldPass, String password, String confirm) 
+    private WUser createWUser(User user) {
+        WUser w = new WUser();
+        w.setName(user.getName());
+        w.setId(user.getId());
+        w.setUsername(user.getUsername());
+        w.setEmail(user.getEmail());
+        return w;
+    }
+
+    public void updateUser(WUser user, String password, String confirm) 
         throws ItemNotFoundException, PasswordChangeException {
         try {
             User u = userManager.get(user.getId());
@@ -50,11 +66,10 @@ public class UserServiceImpl implements UserService {
             }
             
             u.setName(user.getName());
+            u.setEmail(user.getEmail());
             
             if (password != null && password.equals(confirm) && !password.equals("")) {
-                if (!userManager.setPassword(user.getUsername(), oldPass, password)) {
-                    throw new PasswordChangeException();
-                }
+                userManager.setPassword(u, password);
             }
             
             userManager.save(u);

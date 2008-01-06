@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import org.mule.galaxy.web.client.artifact.ArtifactPanel;
 import org.mule.galaxy.web.client.util.WorkspacesListBox;
 
 public class ArtifactForm extends AbstractTitledComposite {
@@ -32,7 +33,9 @@ public class ArtifactForm extends AbstractTitledComposite {
         this(registryPanel, artifactId, false);
     }
     
-    protected ArtifactForm(final RegistryPanel registryPanel, String artifactId, boolean add) {
+    protected ArtifactForm(final RegistryPanel registryPanel, 
+                           final String artifactId, 
+                           final boolean add) {
         super();
         form = new FormPanel();
         form.setAction("/artifactUpload");
@@ -65,15 +68,25 @@ public class ArtifactForm extends AbstractTitledComposite {
         form.addFormHandler(new FormHandler() {
             public void onSubmit(FormSubmitEvent event) {
                 if (artifactUpload.getFilename().length() == 0) {
-                    Window.alert("You did not specify a script filename!");
+                    Window.alert("You did not specify a filename!");
+                    event.setCancelled(true);
+                }
+                
+                String version = versionBox.getText();
+                if (version == null || "".equals(version)) {
+                    registryPanel.setMessage("You must specify a version label.");
                     event.setCancelled(true);
                 }
             }
 
             public void onSubmitComplete(FormSubmitCompleteEvent event) {
                 String msg = event.getResults();
-                if ("OK".equals(msg)) {
-                    registryPanel.setMain(new WorkspacePanel(registryPanel));
+                registryPanel.setMessage(msg);
+                if (msg.startsWith("<PRE>OK ")) {
+                    int last = msg.indexOf("</PRE>");
+                    if (last == -1) last = msg.length();
+                    
+                    registryPanel.setMain(new ArtifactPanel(registryPanel, msg.substring(8, last)));
                 } else {
                     registryPanel.setMessage(msg);
                 }

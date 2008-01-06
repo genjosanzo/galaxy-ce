@@ -19,10 +19,23 @@ import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrVersion;
+import org.mule.galaxy.query.Query;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.IOUtils;
 
 public class ArtifactTest extends AbstractGalaxyTest {
+    public void testMove() throws Exception {
+        Artifact a = importHelloWsdl();
+        
+        Workspace w = registry.createWorkspace("test");
+        
+        registry.move(a, w.getId());
+        
+        Set results = registry.search(new Query(Artifact.class).workspace(w.getId()));
+        
+        assertEquals(1, results.size());
+    }
+    
     public void testWorkspaces() throws Exception {
         Collection<Workspace> workspaces = registry.getWorkspaces();
         assertEquals(1, workspaces.size());

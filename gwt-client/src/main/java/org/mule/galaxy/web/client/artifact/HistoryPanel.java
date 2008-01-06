@@ -17,6 +17,7 @@ import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.TransitionResponse;
 
 public class HistoryPanel extends AbstractComposite {
 
@@ -35,6 +36,16 @@ public class HistoryPanel extends AbstractComposite {
         
         panel = new FlowPanel();
         
+        refresh();
+        
+        initWidget(panel);
+        
+        setTitle("Artifact History");
+    }
+
+    private void refresh() {
+        panel.clear();
+        
         registryService.getArtifactVersions(info.getId(), new AbstractCallback(registryPanel) {
 
             public void onSuccess(Object o) {
@@ -42,9 +53,6 @@ public class HistoryPanel extends AbstractComposite {
             } 
             
         });
-        initWidget(panel);
-        
-        setTitle("Artifact History");
     }
 
     protected void initializePanel(Collection avs) {
@@ -82,11 +90,38 @@ public class HistoryPanel extends AbstractComposite {
                 links.add(new Label(" | "));
                 
                 Hyperlink rollbackLink = new Hyperlink("Set Active", "rollback-version");
+                rollbackLink.addClickListener(new ClickListener() {
+
+                    public void onClick(Widget w) {
+                        setActive(av.getVersionLabel());
+                    }
+                    
+                });
                 links.add(rollbackLink);
             }
             
             panel.add(avPanel);
         }
+    }
+
+    protected void setActive(String versionLabel) {
+        registryService.setActive(info.getId(), versionLabel, new AbstractCallback(registryPanel) {
+
+            public void onSuccess(Object o) {
+                TransitionResponse tr = (TransitionResponse) o;
+                
+                if (tr.isSuccess()) {
+                    registryPanel.setMain(new ArtifactPanel(registryPanel, info.getId(), 2));
+                } else {
+                    displayMessages(tr);
+                }
+            }
+
+        });
+    }
+
+    protected void displayMessages(TransitionResponse tr) {
+        registryPanel.setMessage("Policies were not met!");
     }
 
     

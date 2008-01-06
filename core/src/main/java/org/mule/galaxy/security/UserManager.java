@@ -7,7 +7,9 @@ import org.mule.galaxy.Dao;
 public interface UserManager extends Dao<User> {
     User authenticate(String username, String password);
     
-    User create(String username, String password, String name) throws UserExistsException;
+    void create(User user, String password) throws UserExistsException;
     
     boolean setPassword(String username, String oldPassword, String newPassword);
+
+    void setPassword(User user, String password);
 }

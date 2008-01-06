@@ -9,7 +9,7 @@ import java.util.Collection;
 public interface UserServiceAsync extends RemoteService {
     void getUsers(AsyncCallback callback);
     
-    void addUser(String username, String fullname, String password, AsyncCallback callback);
+    void addUser(WUser user, String password, AsyncCallback callback);
     
-    void updateUser(WUser user, String oldPassword, String password, String confirm, AsyncCallback callback);
+    void updateUser(WUser user, String password, String confirm, AsyncCallback callback);
 }

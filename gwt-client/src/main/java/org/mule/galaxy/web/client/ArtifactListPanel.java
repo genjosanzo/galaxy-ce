@@ -1,7 +1,6 @@
 package org.mule.galaxy.web.client;
 
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Widget;
@@ -10,7 +9,7 @@ import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.BasicArtifactInfo;
 
 public class ArtifactListPanel
-    extends Composite
+    extends AbstractComposite
 {
     private ArtifactGroup group;
 
@@ -19,17 +18,12 @@ public class ArtifactListPanel
         super();
         this.group = group;
         
-        FlexTable table = new FlexTable();
-        table.setStyleName("artifactTable");
-        table.setCellSpacing(0);
-        table.setCellPadding(0);
-        table.setWidth("100%");
+        FlexTable table = createRowTable();
         
         for (int i = 0; i < group.getColumns().size(); i++) {
             table.setText(0, i, (String) group.getColumns().get(i));
         }
         
-        table.getRowFormatter().setStyleName(0, "artifactTableHeader");
         
         for (int i = 0; i < group.getRows().size(); i++) {
             final BasicArtifactInfo info = (BasicArtifactInfo) group.getRows().get(i);

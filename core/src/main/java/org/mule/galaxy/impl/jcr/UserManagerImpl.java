@@ -34,6 +34,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     private static final String USER = "user";
     private static final String NAME = "name";
     private static final String CREATED = "created";
+    private static final String EMAIL = "email";
     protected static final String ENABLED = "enabled";
 
     public UserManagerImpl() throws Exception {
@@ -60,9 +61,39 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         });
     }
 
-    public boolean setPassword(String username, String oldPassword, String newPassword) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean setPassword(final String username, final String oldPassword, final String newPassword) {
+        return (Boolean) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node node = findUser(username, session);
+                if (node == null) {
+                    return null;
+                }
+                
+                String pass = JcrUtil.getStringOrNull(node, PASSWORD);
+                
+                if (oldPassword != null && oldPassword.equals(pass)) {
+                    node.setProperty(PASSWORD, newPassword);
+                } else {
+                    return false;
+                }
+                
+                return true;
+            }
+        });
+    }
+
+    public void setPassword(final User user, final String password) {
+        execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node node = findUser(user.getUsername(), session);
+                if (node == null) {
+                    return null;
+                }
+                
+                node.setProperty(PASSWORD, password);
+                return null;
+            }
+        });
     }
 
     public User authenticate(final String username, final String password) {
@@ -104,8 +135,8 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         return nodes.nextNode();
     }
 
-    public User create(final String username, final String password, final String name) throws UserExistsException {
-        return (User) execute(new JcrCallback() {
+    public void create(final User user, final String password) throws UserExistsException {
+        execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node users = getObjectsNode();
                 
@@ -114,9 +145,6 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
                 node.setProperty(PASSWORD, password);
                 node.setProperty(ENABLED, true);
                 
-                User user = new User();
-                user.setUsername(username);
-                user.setName(name);
                 user.setId(node.getUUID());
                 
                 Calendar cal = Calendar.getInstance();
@@ -132,7 +160,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
                     throw new RuntimeException(e);
                 }
                 session.save();
-                return user;
+                return null;
             }
         });
     }
@@ -187,6 +215,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
             
             JcrUtil.setProperty(USERNAME, "admin", node);
             JcrUtil.setProperty(NAME, "Administrator", node);
+            JcrUtil.setProperty(EMAIL, "", node);
             
             Calendar cal = Calendar.getInstance();
             cal.setTime(new Date());

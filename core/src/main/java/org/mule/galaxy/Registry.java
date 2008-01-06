@@ -106,6 +106,8 @@ public interface Registry {
      */
     void setActiveVersion(Artifact artifact, String version, User user) 
         throws RegistryException, ArtifactPolicyException;
+
+    void move(Artifact artifact, String workspaceId) throws RegistryException;
     
     Collection<Artifact> getArtifacts(Workspace workspace) throws RegistryException;
     

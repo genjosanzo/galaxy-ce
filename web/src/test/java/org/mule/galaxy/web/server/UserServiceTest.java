@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.web.rpc.UserService;
+import org.mule.galaxy.web.rpc.WUser;
 
 public class UserServiceTest extends AbstractGalaxyTest {
     protected UserService gwtUserService;
@@ -19,8 +20,10 @@ public class UserServiceTest extends AbstractGalaxyTest {
         Collection users = gwtUserService.getUsers();
         
         assertEquals(1, users.size());
-        
-        String id = gwtUserService.addUser("dandiep", "Dan Diephouse", "foo");
+        WUser user = new WUser();
+        user.setUsername("dandiep");
+        user.setName("Dan Diephouse");
+        String id = gwtUserService.addUser(user, "foo");
         
         assertNotNull(id);
     }

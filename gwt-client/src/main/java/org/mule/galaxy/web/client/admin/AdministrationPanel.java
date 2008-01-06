@@ -20,6 +20,7 @@ public class AdministrationPanel extends AbstractMenuPanel {
         super(galaxy);
         
         userService = (UserServiceAsync) GWT.create(UserService.class);
+        final AdministrationPanel adminPanel = this;
         
         ServiceDefTarget target = (ServiceDefTarget) userService;
         target.setServiceEntryPoint("/handler/userService.rpc");
@@ -58,7 +59,7 @@ public class AdministrationPanel extends AbstractMenuPanel {
         add = new Hyperlink("[Add]","");
         add.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
-                addUser();
+                setMain(new UserForm(adminPanel));
             }
         });
         HorizontalPanel item = new HorizontalPanel();

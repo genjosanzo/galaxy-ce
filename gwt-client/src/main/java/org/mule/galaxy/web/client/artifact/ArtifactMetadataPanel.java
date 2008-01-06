@@ -2,7 +2,6 @@ package org.mule.galaxy.web.client.artifact;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -12,13 +11,14 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Iterator;
 
+import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.RegistryPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
 import org.mule.galaxy.web.rpc.WProperty;
 
-public class ArtifactMetadataPanel extends Composite {
+public class ArtifactMetadataPanel extends AbstractComposite {
 
     private FlowPanel metadata;
     private RegistryPanel registryPanel;
@@ -33,7 +33,7 @@ public class ArtifactMetadataPanel extends Composite {
         
         metadata = new FlowPanel();
         
-        table = new FlexTable();
+        table = createColumnTable();
         
         Hyperlink addMetadata = new Hyperlink("Add", "add-metadata");
         final ArtifactMetadataPanel amPanel = this;
@@ -52,13 +52,7 @@ public class ArtifactMetadataPanel extends Composite {
         
         InlineFlowPanel metadataTitle = createTitleWithLink("Metadata", addMetadata);
         metadata.add(metadataTitle);
-        
-        table.setStyleName("artifactTable");
-        table.setCellSpacing(0);
-        table.setCellPadding(0);
-        table.setWidth("100%");
-        table.getColumnFormatter().setStyleName(0, "artifactTableHeader");
-        table.getColumnFormatter().setStyleName(1, "artifactTableEntry");
+
         
         int i = 0;
         for (Iterator itr = info.getProperties().iterator(); itr.hasNext();) {

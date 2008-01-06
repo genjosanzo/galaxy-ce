@@ -15,8 +15,8 @@ public interface UserService extends RemoteService {
      */
     Collection getUsers();
     
-    String addUser(String username, String fullname, String password);
+    String addUser(WUser user, String password) throws ItemExistsException;
     
-    void updateUser(WUser user, String oldPassword, String password, String confirm) 
+    void updateUser(WUser user, String password, String confirm) 
         throws PasswordChangeException, ItemNotFoundException;
 }

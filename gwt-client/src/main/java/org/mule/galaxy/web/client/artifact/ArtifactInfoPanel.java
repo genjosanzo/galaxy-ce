@@ -60,12 +60,31 @@ public class ArtifactInfoPanel extends Composite {
         table.getColumnFormatter().setStyleName(0, "artifactTableHeader");
         table.getColumnFormatter().setStyleName(1, "artifactTableEntry");
         
-        for (int i = 0; i < group.getColumns().size(); i++) {
+        final NameEditPanel nep = new NameEditPanel(registryPanel, info.getId(), 
+                                                    (String) info.getValue(0),
+                                                    info.getWorkspaceId());
+        
+        InlineFlowPanel nameLabelPanel = new InlineFlowPanel();
+        nameLabelPanel.add(new Label("Name ["));
+        Hyperlink editHL = new Hyperlink("Edit", "edit-property");
+        editHL.addClickListener(new ClickListener() {
+
+            public void onClick(Widget arg0) {
+                nep.showEditPanel();
+            }
+            
+        });
+        nameLabelPanel.add(editHL);
+        nameLabelPanel.add(new Label("]"));
+        table.setWidget(0, 0, nameLabelPanel);
+        table.setWidget(0, 1, nep);
+        
+        for (int i = 1; i < group.getColumns().size(); i++) {
             table.setText(i, 0, (String) group.getColumns().get(i));
             
         }
         
-        int c = 0;
+        int c = 1;
         for (; c < group.getColumns().size(); c++) {
             table.setText(c, 1, info.getValue(c));
         }

@@ -19,8 +19,13 @@ public class UserManagerTest extends AbstractGalaxyTest {
         assertNotNull(u.getCreated());
         assertNotNull(u.getId());
         
-        User user = userManager.create("dan", "dan", "Dan Diephouse");
+        User user = new User();
+        user.setUsername("dan");
+        user.setName("Dan Diephouse");
+        
+        userManager.create(user, "dan");
         assertNotNull(user);
+        assertNotNull(user.getId());
         assertEquals("dan", user.getUsername());
         assertEquals("Dan Diephouse", user.getName());
         assertNotNull(user.getCreated());
@@ -41,8 +46,11 @@ public class UserManagerTest extends AbstractGalaxyTest {
         assertNotNull(user);
         
         // make sure we can add another one with the same name as was deleted
-        user = userManager.create("dan", "dan", "Dan Diephouse");
-        assertNotNull(user);
+        user = new User();
+        user.setUsername("dan");
+        user.setName("Dan Diephouse");
+        userManager.create(user, "dan");
+        assertNotNull(user.getId());
         assertEquals("dan", user.getUsername());
         assertEquals("Dan Diephouse", user.getName());
         assertNotNull(user.getCreated());

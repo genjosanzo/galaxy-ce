@@ -26,9 +26,12 @@ public class ArtifactPanel extends Composite {
     private ExtendedArtifactInfo info;
     private ArtifactGroup group;
     private VerticalPanel panel;
+    private int selectedTab;
 
-    protected ArtifactPanel(RegistryPanel registryPanel) {
+    protected ArtifactPanel(RegistryPanel registryPanel, int selectedTab) {
         this.registryPanel = registryPanel;
+        this.selectedTab = selectedTab;
+        
         panel = new VerticalPanel();
         panel.setWidth("100%");
         
@@ -44,14 +47,22 @@ public class ArtifactPanel extends Composite {
         panel.insert(label, 0);
         
         artifactTabs.add(new ArtifactInfoPanel(registryPanel, group, info), "Info");
-        artifactTabs.selectTab(0);
-        
         artifactTabs.add(new GovernancePanel(registryPanel, info), "Governance");
         artifactTabs.add(new HistoryPanel(registryPanel, info), "History");
+        
+        if (selectedTab > -1) {
+            artifactTabs.selectTab(selectedTab);
+        } else {
+            artifactTabs.selectTab(0);
+        }
     }
 
     public ArtifactPanel(RegistryPanel registryPanel, String artifactId) {
-        this(registryPanel);
+        this(registryPanel, artifactId, -1);
+    }
+    
+    public ArtifactPanel(RegistryPanel registryPanel, String artifactId, int selectedTab) {
+        this(registryPanel, selectedTab);
         
         registryPanel.getRegistryService().getArtifact(artifactId, new AbstractCallback(registryPanel) { 
             public void onSuccess(Object o) {

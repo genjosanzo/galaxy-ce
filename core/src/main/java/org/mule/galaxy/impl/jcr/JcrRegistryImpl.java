@@ -665,6 +665,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     } catch (PathNotFoundException e) {
                     }
                     
+                    index(next);
+                    
                     return approve(session, artifact, previousLatest, next);
                 } catch (RegistryException e) {
                     // this will get dewrapped
@@ -716,6 +718,22 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 // TODO: Fix artifact saving, we should have to call artifact.save().
+                session.save();
+                return null;
+            }
+        });
+    }
+
+    public void move(final Artifact artifact, final String workspaceId) throws RegistryException {
+        final Workspace workspace = getWorkspace(workspaceId);
+        
+        execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                
+                Node aNode = ((JcrArtifact) artifact).getNode();
+                Node wNode = ((JcrWorkspace) workspace).getNode();
+                
+                session.move(aNode.getPath(), wNode.getPath() + "/" + ARTIFACT_NODE_NAME);
                 session.save();
                 return null;
             }

@@ -206,7 +206,10 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals("Administrator", info.getAuthorName());
         assertEquals("admin", info.getAuthorUsername());
         
+        TransitionResponse res = gwtRegistry.setActive(a.getId(), "0.1");
+        assertTrue(res.isSuccess());
     }
+    
     public void testIndexes() throws Exception {
         Map indexes = gwtRegistry.getIndexes();
         

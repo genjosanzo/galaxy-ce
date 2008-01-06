@@ -237,6 +237,7 @@ public class RegistryServiceImpl implements RegistryService {
     private BasicArtifactInfo createBasicArtifactInfo(Artifact a, ArtifactTypeView view,
                                                       BasicArtifactInfo info) {
         info.setId(a.getId());
+        info.setWorkspaceId(a.getWorkspace().getId());
         for (int i = 0; i < view.getColumnNames().length; i++) {
             info.setColumn(i, view.getColumnValue(a, i));
         }
@@ -522,6 +523,21 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     
+    public void move(String artifactId, String workspaceId, String name) throws RPCException {
+        try {
+            Artifact artifact = registry.getArtifact(artifactId);
+          
+            artifact.setName(name);
+            registry.save(artifact);
+            
+            registry.move(artifact, workspaceId);
+        } catch (RegistryException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } 
+    }
+
+
     public WGovernanceInfo getGovernanceInfo(String artifactId) throws RPCException {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
@@ -581,8 +597,27 @@ public class RegistryServiceImpl implements RegistryService {
 
 
     public TransitionResponse setActive(String artifactId, String versionLabel) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            Artifact artifact = registry.getArtifact(artifactId);
+          
+            TransitionResponse tr = new TransitionResponse();
+            
+            try {
+                registry.setActiveVersion(artifact, versionLabel, getCurrentUser());
+                
+                tr.setSuccess(true);
+            } catch (ArtifactPolicyException e) {
+                tr.setSuccess(false);
+                for (ApprovalMessage app : e.getApprovals()) {
+                    tr.addMessage(app.getMessage(), app.isWarning());
+                }
+            }
+            
+            return tr;
+        } catch (RegistryException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } 
     }
 
 

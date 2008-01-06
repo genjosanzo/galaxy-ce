@@ -61,4 +61,6 @@ public interface RegistryServiceAsync extends RemoteService {
     void setActive(String artifactId, String versionLabel, AsyncCallback c);
     
     void getArtifactVersions(String artifactId, AsyncCallback c);
+
+    void move(String artifactId, String workspaceId, String name, AsyncCallback c);
 }

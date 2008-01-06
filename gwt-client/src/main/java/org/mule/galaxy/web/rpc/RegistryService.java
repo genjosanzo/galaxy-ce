@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.rpc;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 
 import java.util.Collection;
@@ -62,6 +63,8 @@ public interface RegistryService extends RemoteService {
 
     void deleteProperty(String artifactId, 
                         String propertyName) throws RPCException;
+    
+    void move(String artifactId, String workspaceId, String name) throws RPCException;
     
     /**
      * @gwt typeArgs java.lang.String,java.lang.String
