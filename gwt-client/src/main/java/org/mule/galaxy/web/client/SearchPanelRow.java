@@ -20,7 +20,7 @@ public class SearchPanelRow
     extends Composite
 {
     private SearchPanel searchPanel;
-    private ListBox     attributeList;
+    private ListBox     propertyList;
     private HorizontalPanel contents;
     private ListBox matchTypeList;
     private TextBox valueTextBox;
@@ -34,15 +34,15 @@ public class SearchPanelRow
         dock.setStylePrimaryName("search-predicate");
         dock.setWidth("100%");
         
-        attributeList = new ListBox();
-        attributeList.setWidth("175px");
-        attributeList.addItem("Name", "name");
-        attributeList.addChangeListener(new ChangeListener() {
+        propertyList = new ListBox();
+        propertyList.setWidth("175px");
+        propertyList.addItem("Name", "name");
+        propertyList.addChangeListener(new ChangeListener() {
            public void onChange(Widget sender) {
                processTypeChange();
            }
         });
-        dock.add(attributeList, DockPanel.WEST);
+        dock.add(propertyList, DockPanel.WEST);
         
         contents = new HorizontalPanel();
         contents.setWidth("100%");
@@ -77,7 +77,7 @@ public class SearchPanelRow
             String name = (String) itr.next();
             String id   = (String) nameIdMap.get(name);
             
-            attributeList.addItem(name, id);
+            propertyList.addItem(name, id);
         }
     }
     
@@ -89,11 +89,9 @@ public class SearchPanelRow
         contents.clear();
         
         matchTypeList = new ListBox();
-        matchTypeList.addItem("matches",       String.valueOf(SearchPredicate.MATCHES));
-        matchTypeList.addItem("contains",      String.valueOf(SearchPredicate.CONTAINS));
-        matchTypeList.addItem("begins with",   String.valueOf(SearchPredicate.BEGINS_WITH));
-        matchTypeList.addItem("ends with",     String.valueOf(SearchPredicate.ENDS_WITH));
-        matchTypeList.addItem("is",            String.valueOf(SearchPredicate.IS));
+        matchTypeList.addItem("has value",          String.valueOf(SearchPredicate.HAS_VALUE));
+        matchTypeList.addItem("like",               String.valueOf(SearchPredicate.LIKE));
+        matchTypeList.addItem("doesn't have value", String.valueOf(SearchPredicate.DOES_NOT_HAVE_VALUE));
         contents.add(matchTypeList);
         
         valueTextBox = new TextBox();
@@ -105,11 +103,11 @@ public class SearchPanelRow
     public Object getPredicate()
     {
         try {
-            String fieldName = attributeList.getValue(attributeList.getSelectedIndex());
+            String property = propertyList.getValue(propertyList.getSelectedIndex());
             int matchType = Integer.parseInt(matchTypeList.getValue(matchTypeList.getSelectedIndex()));
             String value = valueTextBox.getText();
             
-            return new SearchPredicate(fieldName, matchType, value);
+            return new SearchPredicate(property, matchType, value);
         }
         catch (NumberFormatException e) {
             return null;

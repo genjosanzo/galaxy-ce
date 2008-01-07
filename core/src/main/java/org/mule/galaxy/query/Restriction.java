@@ -43,5 +43,11 @@ public class Restriction {
     public static Restriction not(Restriction restriction) {
         return new Restriction(Operator.NOT, restriction);
     }
+
+    public static Restriction like(String property, Object value)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
 

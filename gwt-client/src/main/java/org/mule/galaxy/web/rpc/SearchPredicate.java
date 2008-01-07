@@ -3,38 +3,44 @@ package org.mule.galaxy.web.rpc;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class SearchPredicate implements IsSerializable {
-    public static final int MATCHES       = 0;
-    public static final int CONTAINS      = 1;
-    public static final int BEGINS_WITH   = 2;
-    public static final int ENDS_WITH     = 3;
-    public static final int IS            = 4;
+    public static final int HAS_VALUE           = 0;
+    public static final int LIKE                = 1;
+    public static final int DOES_NOT_HAVE_VALUE = 2;
     
-    private String fieldName;
+    private String property;
     private int matchType;
-    private String queryValue;
+    private String value;
     
     public SearchPredicate() {
     }
     
-    public SearchPredicate(String fieldName, int matchType, String queryValue) {
-        this.fieldName  = fieldName;
+    public SearchPredicate(String property, int matchType, String value) {
+        this.property   = property;
         this.matchType  = matchType;
-        this.queryValue = queryValue.toLowerCase();
+        this.value      = value.toLowerCase();
     }
     
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
+    public String getProperty() {
+        return property;
+    }
+    
+    public void setProperty(String property) {
+        this.property = property;
+    }
+    
+    public int getMatchType() {
+        return matchType;
     }
     
     public void setMatchType(int matchType) {
         this.matchType = matchType;
     }
     
-    public void setQueryValue(String queryValue) {
-        this.queryValue = queryValue;
+    public String getValue() {
+        return value;
     }
     
-    public boolean matches(Object object) {
-        return true;
+    public void setValue(String value) {
+        this.value = value;
     }
 }

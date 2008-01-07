@@ -69,13 +69,6 @@ public class SearchPanel
                registryPanel.reloadArtifacts();
            }
         });
-        panel.add(searchButton);
-        panel.setCellHorizontalAlignment(searchButton, HasAlignment.ALIGN_RIGHT);
-        
-        //
-        // Add a search predicate
-        //
-        this.addPredicate();
         
         initWidget(panel);
     }
@@ -92,6 +85,13 @@ public class SearchPanel
         SearchPanelRow pred = new SearchPanelRow(this);
         if (artifactIndiceMap != null)
             pred.setAttributeList(artifactIndiceMap);
+        
+        // Add the search button if we're adding our first row
+        if (rows.size() == 0) {
+            panel.add(searchButton);
+            panel.setCellHorizontalAlignment(searchButton, HasAlignment.ALIGN_RIGHT);
+        }
+        
         panel.insert(pred, panel.getWidgetIndex(searchButton));
         rows.add(pred);
     }
@@ -99,6 +99,12 @@ public class SearchPanel
     public void removePredicate(SearchPanelRow pred) {
         panel.remove(pred);
         rows.remove(pred);
+        
+        // Remove the search button if we're removing our last row
+        if (rows.size() == 0) {
+            searchButton.click();
+            panel.remove(searchButton);
+        }
     }
 
     public Set getPredicates()

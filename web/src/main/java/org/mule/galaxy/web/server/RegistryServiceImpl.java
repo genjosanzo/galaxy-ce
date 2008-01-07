@@ -40,6 +40,7 @@ import org.mule.galaxy.policy.PolicyInfo;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.view.ArtifactTypeView;
@@ -161,12 +162,32 @@ public class RegistryServiceImpl implements RegistryService {
         return atis;
     }
     
+    private Restriction getRestrictionForPredicate(SearchPredicate pred) {
+        String property = pred.getProperty();
+        String value    = pred.getValue();
+        switch (pred.getMatchType()) {
+            case SearchPredicate.HAS_VALUE:
+                return Restriction.eq(property, value);
+            case SearchPredicate.LIKE:
+                return Restriction.like(property, value);
+            case SearchPredicate.DOES_NOT_HAVE_VALUE:
+                return Restriction.not(Restriction.eq(property, value));
+            default:
+                return null;
+        }
+    }
 
     @SuppressWarnings("unchecked")
     public Collection getArtifacts(String workspaceId, Set artifactTypes, Set searchPredicates) {
         Query q = new Query(Artifact.class)
             .workspace(workspaceId)
             .orderBy("artifactType");
+        
+        // Filter based on our search terms
+        for (Object predObj : searchPredicates) {
+            SearchPredicate pred = (SearchPredicate) predObj;
+            q.add(getRestrictionForPredicate(pred));
+        }
         
         try {
             Set results = registry.search(q);
@@ -183,17 +204,6 @@ public class RegistryServiceImpl implements RegistryService {
                     continue;
                 }
                 
-                // Filter based on our search terms
-                boolean passed = true;
-                for (Object predObj : searchPredicates) {
-                    SearchPredicate pred = (SearchPredicate) predObj;
-                    if (!pred.matches(a)) {
-                        passed = false;
-                        break;
-                    }
-                }
-                if (!passed)
-                    continue;
                 
                 ArtifactGroup g = name2group.get(type.getDescription());
                 ArtifactTypeView view = name2view.get(type.getDescription());
