@@ -76,6 +76,7 @@ import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.query.Restriction.Operator;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.util.DOMUtils;
@@ -94,6 +95,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public static final String ARTIFACT_NODE_NAME = "__artifact";
     public static final String LATEST = "latest";
+    private static final String REPOSITORY_LAYOUT_VERSION = "version";
     private static final String NAMESPACE = "http://galaxy.mule.org";
 
     private Logger LOGGER = LogUtils.getL7dLogger(JcrRegistryImpl.class);
@@ -1025,14 +1027,23 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
                     // TODO: NOT, LIKE, OR, etc
                     String property = (String) r.getLeft();
+                    boolean not = false;
+                    Operator operator = r.getOperator();
+                    
+                    if (operator.equals(Operator.NOT)) {
+                        not = true;
+                        r = (Restriction) r.getRight();
+                        operator = r.getOperator();
+                        property = r.getLeft().toString();
+                    }
+                    
                     String right = r.getRight().toString();
 
-                    if (property.equals(JcrArtifact.PHASE)) {
-                        createPropertySearch(qstr, right, JcrArtifact.PHASE);
-                    } else if (property.equals(JcrArtifact.DOCUMENT_TYPE)) {
-                        createPropertySearch(qstr, right, JcrArtifact.DOCUMENT_TYPE);
-                    } else if (property.equals(JcrArtifact.CONTENT_TYPE)) {
-                        createPropertySearch(qstr, right, JcrArtifact.CONTENT_TYPE);
+                    if (property.equals(JcrArtifact.PHASE)
+                        || property.equals(JcrArtifact.DOCUMENT_TYPE)
+                        || property.equals(JcrArtifact.CONTENT_TYPE)
+                        || property.equals(JcrArtifact.NAME)) {
+                        createPropertySearch(qstr, right, property, operator, not, true);
                     } else {
                         if (first) {
                             first = false;
@@ -1041,11 +1052,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                             propStr.append(" and ");
                         }
                         
-                        propStr.append("@")
-                            .append(property)
-                            .append("='")
-                            .append(right)
-                            .append("'");
+                        createPropertySearch(propStr, right, property, operator, not, false);
                     }
                 }
                 
@@ -1203,12 +1210,38 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return ISO9075.encode(right);
     }
 
-    private void createPropertySearch(StringBuilder qstr, String right, String property) {
-        qstr.append("[@")
+    private void createPropertySearch(StringBuilder qstr, String right, 
+                                      String property, Operator operator, 
+                                      boolean not, boolean appendBrackets) {
+        if (appendBrackets) {
+            qstr.append("[");
+        }
+        
+        if (not) {
+            qstr.append("not(");
+        }
+        
+        if (operator.equals(Operator.LIKE)) {
+            qstr.append("jcr:like(@")
             .append(property)
-            .append("='")
+            .append(", '%")
             .append(right)
-            .append("']");
+            .append("%')");
+        } else {
+            qstr.append("@")
+                .append(property)
+                .append("='")
+                .append(right)
+                .append("'");
+        }
+        
+        if (not) {
+            qstr.append(")");
+        }
+        
+        if (appendBrackets) {
+            qstr.append("]");
+        }
     }
 
     private String trimContentType(String contentType) {
@@ -1376,8 +1409,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             w.setName(settings.getDefaultWorkspaceName());
 
             System.setProperty("initializeOnce", "true");
+            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "1");
         } 
-
+        
         session.save();
         
         for (ContentHandler ch : contentService.getContentHandlers()) {

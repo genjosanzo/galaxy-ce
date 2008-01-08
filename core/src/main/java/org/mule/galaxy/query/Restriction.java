@@ -46,8 +46,7 @@ public class Restriction {
 
     public static Restriction like(String property, Object value)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return new Restriction(Operator.LIKE, property, value);
     }
 }
 

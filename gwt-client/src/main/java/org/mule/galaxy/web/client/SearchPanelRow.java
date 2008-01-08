@@ -93,7 +93,7 @@ public class SearchPanelRow
         
         matchTypeList = new ListBox();
         matchTypeList.addItem("has value",          String.valueOf(SearchPredicate.HAS_VALUE));
-        matchTypeList.addItem("like",               String.valueOf(SearchPredicate.LIKE));
+        matchTypeList.addItem("has value like",     String.valueOf(SearchPredicate.LIKE));
         matchTypeList.addItem("doesn't have value", String.valueOf(SearchPredicate.DOES_NOT_HAVE_VALUE));
         contents.add(matchTypeList);
         
