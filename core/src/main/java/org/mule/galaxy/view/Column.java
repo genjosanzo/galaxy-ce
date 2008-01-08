@@ -4,6 +4,7 @@ public class Column {
 
     private String name;
     private ColumnEvaluator evaluator;
+    private boolean summaryOnly;
     
     public Column() {
         super();
@@ -12,6 +13,12 @@ public class Column {
     public Column(String name, ColumnEvaluator evaluator) {
         this.name = name;
         this.evaluator = evaluator;
+    }
+
+    public Column(String name, boolean summaryOnly, ColumnEvaluator evaluator) {
+        this.name = name;
+        this.evaluator = evaluator;
+        this.summaryOnly = summaryOnly;
     }
 
     public Column(String name, ViewLink link, ColumnEvaluator evaluator) {
@@ -33,6 +40,14 @@ public class Column {
 
     public void setEvaluator(ColumnEvaluator evaluator) {
         this.evaluator = evaluator;
+    }
+
+    public boolean isSummaryOnly() {
+        return summaryOnly;
+    }
+
+    public void setSummaryOnly(boolean summaryOnly) {
+        this.summaryOnly = summaryOnly;
     }
 
 }

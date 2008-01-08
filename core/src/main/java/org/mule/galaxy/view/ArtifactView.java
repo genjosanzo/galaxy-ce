@@ -17,5 +17,4 @@ public interface ArtifactView<T> {
     String getColumnValue(T row, int column);
 
     ViewLink getLink(T row, int column);
-    
 }

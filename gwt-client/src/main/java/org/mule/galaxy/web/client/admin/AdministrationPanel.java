@@ -42,6 +42,14 @@ public class AdministrationPanel extends AbstractMenuPanel {
             }
         });
         manageBox.add(link);
+
+        link = new Hyperlink("Indexes", "");
+        link.addClickListener(new ClickListener() {
+            public void onClick(Widget w) {
+                showUsers();
+            }
+        });
+        manageBox.add(link);
         
         link = new Hyperlink("Policies", "");
         link.addClickListener(new ClickListener() {
@@ -51,13 +59,6 @@ public class AdministrationPanel extends AbstractMenuPanel {
         });
         manageBox.add(link);
         
-        link = new Hyperlink("Queries", "");
-        link.addClickListener(new ClickListener() {
-            public void onClick(Widget w) {
-                showUsers();
-            }
-        });
-        manageBox.add(link);
         
         link = new Hyperlink("Users", "");
         link.addClickListener(new ClickListener() {

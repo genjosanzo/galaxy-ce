@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -84,8 +85,11 @@ public class ArtifactMetadataPanel extends AbstractComposite {
             if ("".equals(txt) || txt == null) {
                 txt = "[no value]";
             }
-            txt += " [Locked]";
-            w = new Label(txt);
+            txt += " ";
+            InlineFlowPanel panel = new InlineFlowPanel();
+            panel.add(new Label(txt));
+            panel.add(new Image("./images/lockedstate.gif"));
+            w = panel;
         } else {
             txt += " ";
             Hyperlink editHL = new Hyperlink("Edit", "edit-property");

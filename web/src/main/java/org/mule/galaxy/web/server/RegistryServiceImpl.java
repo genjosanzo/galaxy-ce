@@ -246,15 +246,19 @@ public class RegistryServiceImpl implements RegistryService {
 
     private BasicArtifactInfo createBasicArtifactInfo(Artifact a, ArtifactTypeView view) {
         BasicArtifactInfo info = new BasicArtifactInfo();
-        return createBasicArtifactInfo(a, view, info);
+        return createBasicArtifactInfo(a, view, info, false);
     }
 
-    private BasicArtifactInfo createBasicArtifactInfo(Artifact a, ArtifactTypeView view,
-                                                      BasicArtifactInfo info) {
+    private BasicArtifactInfo createBasicArtifactInfo(Artifact a, 
+                                                      ArtifactTypeView view,
+                                                      BasicArtifactInfo info,
+                                                      boolean extended) {
         info.setId(a.getId());
         info.setWorkspaceId(a.getWorkspace().getId());
         for (int i = 0; i < view.getColumnNames().length; i++) {
-            info.setColumn(i, view.getColumnValue(a, i));
+            if (!extended || !view.isSummaryOnly(i)) {
+                info.setColumn(i, view.getColumnValue(a, i));
+            }
         }
         return info;
     }
@@ -317,13 +321,15 @@ public class RegistryServiceImpl implements RegistryService {
                 view = viewManager.getArtifactTypeView(a.getContentType().toString());
             }
             
-            for (String col : view.getColumnNames()) {
-                g.getColumns().add(col);
+            for (int i = 0; i < view.getColumnNames().length; i++) {
+                if (view.isSummaryOnly(i)) {
+                    g.getColumns().add(view.getColumnNames()[i]);
+                }
             }
             
             
             ExtendedArtifactInfo info = new ExtendedArtifactInfo();
-            createBasicArtifactInfo(a, view, info);
+            createBasicArtifactInfo(a, view, info, true);
             
             info.setDescription(a.getDescription());
             
@@ -597,7 +603,7 @@ public class RegistryServiceImpl implements RegistryService {
             }
             gov.setNextPhases(nextPhaseNames);
             
-            Collection<PolicyInfo> policies = policyManager.getActivePolicies(artifact, false);
+//            Collection<PolicyInfo> policies = policyManager.getActivePolicies(artifact, false);
             
             
             return gov;

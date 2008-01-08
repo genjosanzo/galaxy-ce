@@ -9,7 +9,6 @@ import org.mule.galaxy.lifecycle.Phase;
 public class CustomArtifactTypeView implements ArtifactTypeView {
     private List<Column> columns = new ArrayList<Column>();
 
-    
     public CustomArtifactTypeView() {
         super();
         columns.add(new Column("Name", new ColumnEvaluator() {
@@ -67,6 +66,12 @@ public class CustomArtifactTypeView implements ArtifactTypeView {
 
     public ViewLink getLink(Artifact row, int column) {
         return null;
+    }
+
+    public boolean isSummaryOnly(int column) {
+        Column col = columns.get(column);
+        
+        return col.isSummaryOnly();
     }
     
 }

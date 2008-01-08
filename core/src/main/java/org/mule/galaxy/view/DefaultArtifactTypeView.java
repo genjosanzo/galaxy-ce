@@ -28,4 +28,8 @@ public class DefaultArtifactTypeView implements ArtifactTypeView {
     public ViewLink getLink(Artifact row, int i) {
         return null;
     }
+
+    public boolean isSummaryOnly(int column) {
+        return false;
+    }
 }
