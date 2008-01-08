@@ -1,4 +1,4 @@
-package org.mule.galaxy.web.client;
+package org.mule.galaxy.web.client.workspace;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -14,6 +14,9 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.mule.galaxy.web.client.AbstractTitledComposite;
+import org.mule.galaxy.web.client.RegistryPanel;
+import org.mule.galaxy.web.client.WorkspacePanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.WorkspacesListBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;

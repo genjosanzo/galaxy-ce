@@ -121,14 +121,9 @@ public interface RegistryService extends RemoteService {
      * @throws RPCException 
      */
     Collection getActivePoliciesForPhase(String lifecycle, String phase) throws RPCException;
-    
+
     /**
      * @gwt.typeArgs ids <java.lang.String>
      */
-    void setActivePoliciesForLifecycle(String lifecycle, Collection ids) throws RPCException;
-    
-    /**
-     * @gwt.typeArgs ids <java.lang.String>
-     */
-    void setActivePoliciesForPhase(String lifecycle, String phase, Collection ids) throws RPCException;
+    void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids) throws RPCException;
 }

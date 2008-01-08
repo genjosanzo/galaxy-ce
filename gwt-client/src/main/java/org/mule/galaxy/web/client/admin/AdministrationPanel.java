@@ -46,7 +46,7 @@ public class AdministrationPanel extends AbstractMenuPanel {
         link = new Hyperlink("Policies", "");
         link.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
-                setMain(new PolicyPanel(adminPanel));
+                setMain(new PolicyPanel(adminPanel, registryService));
             }
         });
         manageBox.add(link);

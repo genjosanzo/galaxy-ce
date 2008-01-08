@@ -1,8 +1,5 @@
 package org.mule.galaxy.web.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
@@ -17,8 +14,9 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.client.workspace.EditWorkspacePanel;
+import org.mule.galaxy.web.client.workspace.WorkspaceViewPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WArtifactType;
 import org.mule.galaxy.web.rpc.WWorkspace;
@@ -71,7 +69,7 @@ public class RegistryPanel extends AbstractMenuPanel {
                 if (parent != null) {
                     parentId = (String) parent.getUserObject();
                 }
-                setMain(new EditWorkspacePanel(registryPanel, 
+                setMain(new WorkspaceViewPanel(registryPanel, 
                                                workspaces,
                                                parentId,
                                                workspaceId,

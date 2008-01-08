@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -14,6 +15,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.AbstractMenuPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LifecycleSelectionPanel;
 import org.mule.galaxy.web.client.util.PolicySelectionPanel;
@@ -26,20 +28,27 @@ public class PolicyPanel extends AbstractComposite {
     private RegistryServiceAsync svc;
     private LifecycleSelectionPanel lsPanel;
     private SimplePanel psPanelContainer;
-    private final AdministrationPanel adminPanel;
+    private final AbstractMenuPanel adminPanel;
 
     private Map lifecycle2Phase2Panel = new HashMap();
     private PolicySelectionPanel currentPsPanel;
     private Button saveButton;
     private boolean finishedSave;
     private int saveCount;
+    private String workspaceId;
     
-    public PolicyPanel(AdministrationPanel adminPanel) {
+    public PolicyPanel(AbstractMenuPanel adminPanel, RegistryServiceAsync svc) {
+        this(adminPanel, svc, null);
+    }
+    
+    public PolicyPanel(AbstractMenuPanel adminPanel, RegistryServiceAsync svc, String workspaceId) {
         super();
         this.adminPanel = adminPanel;
+        this.workspaceId = workspaceId;
+        this.svc = svc;
+
         panel = new InlineFlowPanel();
         
-        svc = adminPanel.getRegistryService();
         lsPanel = new LifecycleSelectionPanel(adminPanel, svc);
         
         psPanelContainer = new SimplePanel();
@@ -50,7 +59,6 @@ public class PolicyPanel extends AbstractComposite {
         
         table.setWidget(0, 0, lsPanel);
         table.setWidget(0, 1, psPanelContainer);
-        
         lsPanel.addPhaseChangeListener(new ChangeListener() {
 
             public void onChange(Widget arg0) {
@@ -69,7 +77,8 @@ public class PolicyPanel extends AbstractComposite {
             }
             
         });
-        panel.add(saveButton);
+        table.setWidget(1, 0, saveButton);
+        table.getCellFormatter().setHorizontalAlignment(1, 0, HasHorizontalAlignment.ALIGN_LEFT);
         
         initWidget(panel);
         
@@ -123,9 +132,9 @@ public class PolicyPanel extends AbstractComposite {
                 Collection active = ((PolicySelectionPanel) phaseEntry.getValue()).getSelectedPolicyIds();
                 
                 if ("_all".equals(phase)) {
-                    svc.setActivePoliciesForLifecycle(lifecycle, active, callback);
+                    svc.setActivePolicies(workspaceId, lifecycle, null, active, callback);
                 } else {
-                    svc.setActivePoliciesForPhase(lifecycle, phase, active, callback);
+                    svc.setActivePolicies(workspaceId, lifecycle, phase, active, callback);
                 }
                 
                 saveCount++;

@@ -669,20 +669,52 @@ public class RegistryServiceImpl implements RegistryService {
 
     public Collection getActivePoliciesForLifecycle(String lifecycle) throws RPCException {
         Collection<ArtifactPolicy> pols = policyManager.getActivePolicies(lifecycleManager.getLifecycle(lifecycle));
-        return getPolicyNames(pols);
+        return getArtifactPolicyIds(pols);
     }
 
 
     public Collection getActivePoliciesForPhase(String lifecycle, String phase) throws RPCException {
         Collection<ArtifactPolicy> pols = policyManager.getActivePolicies(
                           lifecycleManager.getLifecycle(lifecycle).getPhase(phase));
-        return getPolicyNames(pols);
+        return getArtifactPolicyIds(pols);
+    }
+
+    public void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids) throws RPCException {
+        Lifecycle l = lifecycleManager.getLifecycle(lifecycle);
+        List<ArtifactPolicy> policies = getArtifactPolicies(ids);
+        
+        try {
+            if (phase != null) {
+                Phase p = l.getPhase(phase);
+                
+                if (p == null) { 
+                    throw new RPCException("Invalid phase: " + phase);
+                }
+                
+                List<Phase> phases = Arrays.asList(p);
+    
+                if (workspace != null) {
+                    policyManager.setActivePolicies(phases, policies.toArray(new ArtifactPolicy[0]));
+                } else {
+                    Workspace w = registry.getWorkspace(workspace);
+                    policyManager.setActivePolicies(w, phases, policies.toArray(new ArtifactPolicy[0]));
+                }
+            } else {
+                if (workspace != null) {
+                    policyManager.setActivePolicies(l, policies.toArray(new ArtifactPolicy[0]));
+                } else {
+                    Workspace w = registry.getWorkspace(workspace);
+                    policyManager.setActivePolicies(w, l, policies.toArray(new ArtifactPolicy[0]));
+                }
+            }
+        } catch (RegistryException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
     }
 
 
-    public void setActivePoliciesForLifecycle(String lifecycle, Collection ids) throws RPCException {
-        Lifecycle l = lifecycleManager.getLifecycle(lifecycle);
-        
+    private List<ArtifactPolicy> getArtifactPolicies(Collection ids) {
         List<ArtifactPolicy> policies = new ArrayList<ArtifactPolicy>();
         for (Iterator itr = ids.iterator(); itr.hasNext();) {
             String id = (String)itr.next();
@@ -690,34 +722,10 @@ public class RegistryServiceImpl implements RegistryService {
             ArtifactPolicy policy = policyManager.getPolicy(id);
             policies.add(policy);
         }
-        
-        policyManager.setActivePolicies(l, policies.toArray(new ArtifactPolicy[0]));
+        return policies;
     }
 
-
-    public void setActivePoliciesForPhase(String lifecycle, String phase, Collection ids) throws RPCException {
-        Lifecycle l = lifecycleManager.getLifecycle(lifecycle);
-        Phase p = l.getPhase(phase);
-        
-        if (p == null) { 
-            throw new RPCException("Invalid phase: " + phase);
-        }
-        
-        List<Phase> phases = Arrays.asList(p);
-        
-        List<ArtifactPolicy> policies = new ArrayList<ArtifactPolicy>();
-        for (Iterator itr = ids.iterator(); itr.hasNext();) {
-            String id = (String)itr.next();
-            
-            ArtifactPolicy policy = policyManager.getPolicy(id);
-            policies.add(policy);
-        }
-        
-        policyManager.setActivePolicies(phases, policies.toArray(new ArtifactPolicy[0]));
-    }
-
-
-    private Collection getPolicyNames(Collection<ArtifactPolicy> pols) {
+    private Collection getArtifactPolicyIds(Collection<ArtifactPolicy> pols) {
         ArrayList<String> polNames = new ArrayList<String>();
         for (ArtifactPolicy ap : pols) {
             polNames.add(ap.getId());
