@@ -66,6 +66,8 @@ public interface RegistryService extends RemoteService {
     
     void move(String artifactId, String workspaceId, String name) throws RPCException;
     
+    Map getPropertyList() throws RPCException;
+    
     /**
      * @gwt typeArgs java.lang.String,java.lang.String
      * @return

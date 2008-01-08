@@ -23,6 +23,7 @@ public class SearchPanel
     private VerticalPanel panel;
     private Set rows;
     private Map artifactIndiceMap;
+    private Map artifactPropertyMap;
     private Button searchButton;
     private RegistryPanel registryPanel;
 
@@ -40,6 +41,12 @@ public class SearchPanel
                 initArtifactIndices((Map) o);
             }
             
+        });
+        registryPanel.getRegistryService().getPropertyList(new AbstractCallback(registryPanel) {
+            
+            public void onSuccess(Object o) {
+                initArtifactProperties((Map) o);
+            }
         });
 
         
@@ -77,14 +84,24 @@ public class SearchPanel
         artifactIndiceMap = map;
         for (Iterator itr = rows.iterator(); itr.hasNext();) {
             SearchPanelRow row = (SearchPanelRow) itr.next();
-            row.setAttributeList(artifactIndiceMap);
+            row.addProperties(artifactIndiceMap);
+        }
+    }
+    
+    public void initArtifactProperties(Map map) {
+        artifactPropertyMap = map;
+        for (Iterator itr = rows.iterator(); itr.hasNext();) {
+            SearchPanelRow row = (SearchPanelRow) itr.next();
+            row.addProperties(artifactPropertyMap);
         }
     }
     
     public void addPredicate() {
         SearchPanelRow pred = new SearchPanelRow(this);
         if (artifactIndiceMap != null)
-            pred.setAttributeList(artifactIndiceMap);
+            pred.addProperties(artifactIndiceMap);
+        if (artifactPropertyMap != null)
+            pred.addProperties(artifactPropertyMap);
         
         // Add the search button if we're adding our first row
         if (rows.size() == 0) {

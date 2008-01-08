@@ -52,6 +52,8 @@ public interface RegistryServiceAsync extends RemoteService {
     
     void setDescription(String artifactId, String description, AsyncCallback callback);
     
+    void getPropertyList(AsyncCallback c);
+    
     void getProperties(AsyncCallback c);
     
     void getGovernanceInfo(String artifactId, AsyncCallback c);

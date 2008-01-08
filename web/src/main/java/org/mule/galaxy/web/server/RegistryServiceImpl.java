@@ -502,6 +502,22 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         }
     }
+    
+    public Map getPropertyList() throws RPCException {
+        try {
+            Collection<PropertyDescriptor> pds = registry.getPropertyDescriptors();
+            
+            HashMap<Object, Object> props = new HashMap<Object, Object>();
+            for (PropertyDescriptor pd : pds) {
+                props.put(pd.getProperty(), pd.getId());
+            }
+            
+            return props;
+        } catch (RegistryException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
+    }
 
     public Map getProperties() throws RPCException {
         try {

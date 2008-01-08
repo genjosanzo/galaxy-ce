@@ -37,6 +37,9 @@ public class SearchPanelRow
         propertyList = new ListBox();
         propertyList.setWidth("175px");
         propertyList.addItem("Name", "name");
+        propertyList.addItem("Document Type", "documentType");
+        propertyList.addItem("Phase", "phase");
+        propertyList.addItem("Content Type", "contentType");
         propertyList.addChangeListener(new ChangeListener() {
            public void onChange(Widget sender) {
                processTypeChange();
@@ -71,7 +74,7 @@ public class SearchPanelRow
         initWidget(dock);
     }
     
-    public void setAttributeList(Map nameIdMap) {
+    public void addProperties(Map nameIdMap) {
         Set names = nameIdMap.keySet();
         for (Iterator itr = names.iterator(); itr.hasNext();) {
             String name = (String) itr.next();
