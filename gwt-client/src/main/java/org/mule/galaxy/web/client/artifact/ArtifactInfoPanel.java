@@ -21,6 +21,7 @@ import java.util.Iterator;
 
 import org.mule.galaxy.web.client.ArtifactForm;
 import org.mule.galaxy.web.client.RegistryPanel;
+import org.mule.galaxy.web.client.WorkspacePanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -319,8 +320,31 @@ public class ArtifactInfoPanel extends Composite {
             
         });
         rightGroup.add(hl);
+        
+        hl = new Hyperlink("Delete", "delete-artifact");
+        hl.addClickListener(new ClickListener() {
+
+            public void onClick(Widget arg0) {
+                warnDelete();
+            }
+            
+        });
+        rightGroup.add(hl);
     }
     
+    protected void warnDelete() {
+        if (Window.confirm("Are you sure you want to delete this artifact")) {
+            registryPanel.getRegistryService().delete(info.getId(), new AbstractCallback(registryPanel) {
+
+                public void onSuccess(Object arg0) {
+                    registryPanel.setMain(new WorkspacePanel(registryPanel));
+                    registryPanel.setMessage("Artifact was deleted.");
+                }
+                
+            });
+        }
+    }
+
     protected void initDependencies(Collection o) {
         Toolbox depPanel = new Toolbox();
         depPanel.setTitle("Dependencies");

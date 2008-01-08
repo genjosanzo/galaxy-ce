@@ -2,6 +2,9 @@ package org.mule.galaxy.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +33,7 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
+import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.security.User;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -130,14 +134,32 @@ public class ArtifactUploadServlet extends HttpServlet {
                 result = registry.newVersion(a, uploadItem.getInputStream(), versionLabel, user);
             }
             
-            writer.write(new String("OK ") + result.getArtifact().getId());
+            writer.write("OK " + result.getArtifact().getId());
         } catch (NotFoundException e) {
             writer.write("Workspace could not be found.");
         } catch (RegistryException e) {
             writer.write("No version label was specified.");
         } catch (ArtifactPolicyException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            writer.write("ArtifactPolicyException\n");
+            
+            List<ApprovalMessage> approvals = e.getApprovals();
+            for (ApprovalMessage a : approvals) {
+                if (a.isWarning()) {
+                    writer.write("WARNING: ");
+                } else {
+                    writer.write("FAILURE: ");
+                }
+                writer.write(a.getMessage());
+                writer.write("\n");
+            }
+            
+            Collections.sort(approvals, new Comparator<ApprovalMessage>() {
+
+                public int compare(ApprovalMessage o1, ApprovalMessage o2) {
+                    return o1.getMessage().compareTo(o2.getMessage());
+                }
+                
+            });
         } catch (MimeTypeParseException e) {
             writer.write("Invalid mime type.");
         }

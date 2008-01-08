@@ -12,7 +12,7 @@ import org.mule.galaxy.web.client.RPCException;
 public interface RegistryService extends RemoteService {
     
     /**
-     * @gwt typeArgs org.mule.galaxy.web.rpc.WWorkspace
+     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WWorkspace>
      * @return
      * @throws RPCException 
      */
@@ -25,26 +25,27 @@ public interface RegistryService extends RemoteService {
     void deleteWorkspace(String workspaceId) throws RPCException;
     
     /**
-     * @gwt typeArgs org.mule.galaxy.web.rpc.WArtifactType
+     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WArtifactType>
      * @return
      */
     Collection getArtifactTypes();
 
     
     /**
-     * @gwt typeArgs org.mule.galaxy.web.client.ArtifactGroup
+     * @gwt.typeArgs searchPredicates <org.mule.galaxy.web.rpc.SearchPredicate>
+     * @gwt.typeArgs <org.mule.galaxy.web.rpc.ArtifactGroup>
      * @return
      */
     Collection getArtifacts(String workspace, Set artifactTypes, Set searchPredicates);
     
     /**
-     * @gwt typeArgs java.lang.String,java.lang.String
+     * @gwt.typeArgs <java.lang.String,java.lang.String>
      * @return
      */
     public Map getIndexes();
     
     /**
-     * @gwt typeArgs org.mule.galaxy.web.rpc.DependencyInfo
+     * @gwt.typeArgs <org.mule.galaxy.web.rpc.DependencyInfo>
      * @return
      * @throws Exception 
      */
@@ -66,10 +67,11 @@ public interface RegistryService extends RemoteService {
     
     void move(String artifactId, String workspaceId, String name) throws RPCException;
     
-    Map getPropertyList() throws RPCException;
+    void delete(String artifactId) throws RPCException;
     
+    Map getPropertyList() throws RPCException;
     /**
-     * @gwt typeArgs java.lang.String,java.lang.String
+     * @gwt.typeArgs <java.lang.String,java.lang.String>
      * @return
      * @throws Exception 
      */
@@ -86,9 +88,47 @@ public interface RegistryService extends RemoteService {
     TransitionResponse transition(String artifactId, String nextPhase) throws RPCException;
 
     /**
-     * @gwt typeArgs java.lang.String,java.lang.String
+     * @gwt.typeArgs <java.lang.String,java.lang.String>
      * @return
      * @throws Exception 
      */
     Collection getArtifactVersions(String artifactId) throws RPCException;
+    
+    /**
+     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WArtifactPolicy>
+     * @return
+     * @throws Exception 
+     */
+    Collection getPolicies() throws RPCException;
+    
+    /**
+     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WArtifactPolicy>
+     * @return
+     * @throws Exception 
+     */
+    Collection getLifecycles() throws RPCException;
+    
+    /**
+     * @gwt.typeArgs <java.lang.String>
+     * @return
+     * @throws RPCException 
+     */
+    Collection getActivePoliciesForLifecycle(String lifecycle) throws RPCException;
+    
+    /**
+     * @gwt.typeArgs <java.lang.String>
+     * @return
+     * @throws RPCException 
+     */
+    Collection getActivePoliciesForPhase(String lifecycle, String phase) throws RPCException;
+    
+    /**
+     * @gwt.typeArgs ids <java.lang.String>
+     */
+    void setActivePoliciesForLifecycle(String lifecycle, Collection ids) throws RPCException;
+    
+    /**
+     * @gwt.typeArgs ids <java.lang.String>
+     */
+    void setActivePoliciesForPhase(String lifecycle, String phase, Collection ids) throws RPCException;
 }

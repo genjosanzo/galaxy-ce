@@ -1,9 +1,7 @@
 package org.mule.galaxy.web.client;
 
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -11,13 +9,12 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public abstract class AbstractTitledComposite extends AbstractComposite {
 
-    protected Label title;
+    protected SimplePanel title;
     
     protected void initWidget(Widget widget) {
         FlowPanel titlePanel = new FlowPanel();
         
-        title = new Label();
-        title.setStyleName("title");
+        title = new SimplePanel();
         titlePanel.add(title);
         
         titlePanel.add(widget);
@@ -26,7 +23,8 @@ public abstract class AbstractTitledComposite extends AbstractComposite {
     }
 
     public void setTitle(String titleText) {
-        title.setText(titleText);
+        title.clear();
+        title.add(createTitle(titleText));
         
         super.setTitle(titleText);
     }

@@ -78,7 +78,8 @@ public class BasicProfilePolicy implements ArtifactPolicy {
             for (AssertionResult ar : vr.getAssertionResults()) {
                 StringBuilder sb = new StringBuilder();
             
-                sb.append(ar.getName())
+                sb.append("WS-I BasicProfile 1.1 Assertion ")
+                  .append(ar.getName())
                   .append(": ")
                   .append(wsiManager.getDescription(ar.getName()));
                 

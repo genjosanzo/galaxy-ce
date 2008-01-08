@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.rpc;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -65,4 +66,18 @@ public interface RegistryServiceAsync extends RemoteService {
     void getArtifactVersions(String artifactId, AsyncCallback c);
 
     void move(String artifactId, String workspaceId, String name, AsyncCallback c);
+    
+    void delete(String artifactId, AsyncCallback c);
+    
+    void getPolicies(AsyncCallback c);
+
+    void getLifecycles(AsyncCallback c);
+
+    void getActivePoliciesForLifecycle(String name, AsyncCallback c);
+    
+    void getActivePoliciesForPhase(String lifecycle, String phase, AsyncCallback c);
+    
+    void setActivePoliciesForLifecycle(String lifecycle, Collection ids, AsyncCallback c);
+    
+    void setActivePoliciesForPhase(String lifecycle, String phase, Collection ids, AsyncCallback c);
 }

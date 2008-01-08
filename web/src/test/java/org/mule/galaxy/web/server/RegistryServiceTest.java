@@ -167,7 +167,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         // activate a policy which will make transitioning fail
         FauxPolicy policy = new FauxPolicy();
         policyManager.addPolicy(policy);
-        policyManager.activatePolicy(policy, lifecycleManager.getDefaultLifecycle());
+        policyManager.setActivePolicies(lifecycleManager.getDefaultLifecycle(), policy);
         
         // Try transitioning
         gov = gwtRegistry.getGovernanceInfo(a.getId());

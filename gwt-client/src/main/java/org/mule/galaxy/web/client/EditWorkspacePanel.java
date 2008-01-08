@@ -53,12 +53,8 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
         this.workspaceId = workspaceId;
         
         FlowPanel panel = new FlowPanel();
-        FlexTable table = new FlexTable();
-        table.setStyleName("artifactTable");
+        FlexTable table = createColumnTable();
         table.setCellSpacing(1);
-        table.setCellPadding(0);
-        table.getColumnFormatter().setStyleName(0, "artifactTableHeader");
-        table.getColumnFormatter().setStyleName(1, "artifactTableEntry");
         
         final WorkspacesListBox workspacesLB = 
             new WorkspacesListBox(workspaces, workspaceId, parentWorkspaceId, true);

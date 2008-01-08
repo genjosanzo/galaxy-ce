@@ -5,9 +5,12 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import org.mule.galaxy.web.client.AbstractMenuPanel;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.UserService;
 import org.mule.galaxy.web.rpc.UserServiceAsync;
 
@@ -15,11 +18,18 @@ public class AdministrationPanel extends AbstractMenuPanel {
 
     private UserServiceAsync userService;
     private Hyperlink add;
+    private RegistryServiceAsync registryService;
     
     public AdministrationPanel(Galaxy galaxy) {
         super(galaxy);
         
         userService = (UserServiceAsync) GWT.create(UserService.class);
+        this.registryService = galaxy.getRegistryService();
+        
+        Toolbox manageBox = new Toolbox();
+        manageBox.setTitle("Manage");
+        addMenuItem(manageBox);
+        
         final AdministrationPanel adminPanel = this;
         
         ServiceDefTarget target = (ServiceDefTarget) userService;
@@ -31,15 +41,15 @@ public class AdministrationPanel extends AbstractMenuPanel {
                 showUsers();
             }
         });
-        addMenuItem(link);
+        manageBox.add(link);
         
         link = new Hyperlink("Policies", "");
         link.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
-                showUsers();
+                setMain(new PolicyPanel(adminPanel));
             }
         });
-        addMenuItem(link);
+        manageBox.add(link);
         
         link = new Hyperlink("Queries", "");
         link.addClickListener(new ClickListener() {
@@ -47,7 +57,7 @@ public class AdministrationPanel extends AbstractMenuPanel {
                 showUsers();
             }
         });
-        addMenuItem(link);
+        manageBox.add(link);
         
         link = new Hyperlink("Users", "");
         link.addClickListener(new ClickListener() {
@@ -56,18 +66,19 @@ public class AdministrationPanel extends AbstractMenuPanel {
             }
         });
         
-        add = new Hyperlink("[Add]","");
+        add = new Hyperlink("Add","");
         add.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
                 setMain(new UserForm(adminPanel));
             }
         });
         HorizontalPanel item = new HorizontalPanel();
-        item.setSpacing(10);
         item.add(link);
+        item.add(new Label(" ["));
         item.add(add);
+        item.add(new Label("]"));
         
-        addMenuItem(item);
+        manageBox.add(item);
     }
 
 
@@ -83,5 +94,10 @@ public class AdministrationPanel extends AbstractMenuPanel {
 
     public UserServiceAsync getUserService() {
         return userService;
+    }
+
+
+    public RegistryServiceAsync getRegistryService() {
+        return registryService;
     }
 }

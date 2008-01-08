@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,7 +25,6 @@ import javax.jcr.query.QueryResult;
 import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.lifecycle.Lifecycle;
@@ -86,10 +86,10 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         this.lifecycleManager = lifecycleManager;
     }
 
-    public Collection<ApprovalMessage> approve(ArtifactVersion previous, 
+    public List<ApprovalMessage> approve(ArtifactVersion previous, 
                                         ArtifactVersion next) {
         Collection<ArtifactPolicy> policies = getActivePolicies(next.getParent());
-        ArrayList<ApprovalMessage> approvals = new ArrayList<ApprovalMessage>();
+        List<ApprovalMessage> approvals = new ArrayList<ApprovalMessage>();
         for (ArtifactPolicy p : policies) {
             approvals.addAll(p.isApproved(next.getParent(), previous, next));
         }
@@ -105,14 +105,39 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         return policies.values();
     }
 
-    public void activatePolicy(ArtifactPolicy p, Artifact a, Collection<Phase> phases) {
-        activatePolicy(artifactsPhasesNodeId, phases, p.getId(), a.getId());
+    
+    public void setActivePolicies(Artifact a, Collection<Phase> phases, ArtifactPolicy... policies) {
+        activatePolicy(artifactsPhasesNodeId, phases, policies, a.getId());
+    }
+
+    public void setActivePolicies(Artifact a, Lifecycle lifecycle, ArtifactPolicy... policies) {
+        activatePolicy(artifactsLifecyclesNodeId, policies, a.getId(), lifecycle.getName());
+    }
+
+    public void setActivePolicies(Collection<Phase> phases, ArtifactPolicy... policies) {
+        activatePolicy(phasesNodeId, phases, policies);
+    }
+
+    public void setActivePolicies(Lifecycle lifecycle, ArtifactPolicy... policies) {
+        activatePolicy(lifecyclesNodeId, policies, lifecycle.getName());
+    }
+
+    public void setActivePolicies(Workspace w, Collection<Phase> phases, ArtifactPolicy... policies) {
+        activatePolicy(workspacesPhasesNodeId, phases, policies, w.getId());
+    }
+
+    public void setActivePolicies(Workspace w, Lifecycle lifecycle, ArtifactPolicy... policies) {
+        activatePolicy(workspaceLifecyclesNodeId, policies, w.getId(), lifecycle.getName());
     }
     
     private void activatePolicy(final String nodeId, 
                                 final Collection<Phase> phases,
-                                final String policyId,
+                                final ArtifactPolicy[] policies,
                                 final String... nodes) {
+        if (phases.size() == 0) {
+            return;
+        }
+        
         jcrTemplate.execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node node = session.getNodeByUUID(nodeId);
@@ -123,7 +148,12 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                 for (Phase p : phases) {
                     Node lNode = getOrCreate(node, p.getLifecycle().getName());
                     Node pNode = getOrCreate(lNode, p.getName());
-                    getOrCreate(pNode, policyId);
+                    
+                    JcrUtil.removeChildren(pNode);
+                    
+                    for (ArtifactPolicy policy : policies) {
+                        getOrCreate(pNode, policy.getId());
+                    }
                 }
                 
                 session.save();
@@ -131,33 +161,21 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
             }
         });
     }
-    public void activatePolicy(ArtifactPolicy p, Artifact a, Lifecycle lifecycle) {
-        activatePolicy(artifactsLifecyclesNodeId, a.getId(), lifecycle.getName(), p.getId());
-    }
-
-    public void activatePolicy(ArtifactPolicy p, Collection<Phase> phases) {
-        activatePolicy(phasesNodeId, phases, p.getId());
-    }
-
-    public void activatePolicy(final ArtifactPolicy p, final Lifecycle lifecycle) {
-        activatePolicy(lifecyclesNodeId, lifecycle.getName(), p.getId());
-    }
-
-    public void activatePolicy(ArtifactPolicy p, Workspace w, Collection<Phase> phases) {
-        activatePolicy(workspacesPhasesNodeId, phases, p.getId(), w.getId());
-    }
-
-    public void activatePolicy(final ArtifactPolicy p, final Workspace w, final Lifecycle lifecycle) {
-        activatePolicy(workspaceLifecyclesNodeId, w.getId(), lifecycle.getName(), p.getId());
-    }
-
-    private void activatePolicy(final String nodeId, final String... nodes) {
+    private void activatePolicy(final String nodeId, 
+                                final ArtifactPolicy[] policies, 
+                                final String... nodes) {
         jcrTemplate.execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node node = session.getNodeByUUID(nodeId);
                 
                 for (String name : nodes) {
                     node = getOrCreate(node, name);
+                }
+                
+                JcrUtil.removeChildren(node);
+                
+                for (ArtifactPolicy policy : policies) {
+                    getOrCreate(node, policy.getId());
                 }
                 
                 session.save();
@@ -176,6 +194,51 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                 addArtifactPhasePolicies(a, activePolicies, qm);
                 
                 addArtifactLifecyclePolicies(a, activePolicies, qm);
+                
+                return null;
+            }
+
+        });
+        return activePolicies;
+    }
+
+    public Collection<ArtifactPolicy> getActivePolicies(final Lifecycle l) {
+        final Set<ArtifactPolicy> activePolicies = new HashSet<ArtifactPolicy>();
+        jcrTemplate.execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node node = session.getNodeByUUID(lifecyclesNodeId);
+                try {
+
+                    node = node.getNode(l.getName());
+                    
+                    for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
+                        activePolicies.add(getPolicy(nodes.nextNode().getName()));
+                    }
+                } catch (PathNotFoundException e) {
+                }
+                
+                return null;
+            }
+
+        });
+        return activePolicies;
+    }
+
+    public Collection<ArtifactPolicy> getActivePolicies(final Phase p) {
+        final Set<ArtifactPolicy> activePolicies = new HashSet<ArtifactPolicy>();
+        jcrTemplate.execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node node = session.getNodeByUUID(phasesNodeId);
+                try {
+
+                    node = node.getNode(p.getLifecycle().getName());
+                    node = node.getNode(p.getName());
+                    
+                    for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
+                        activePolicies.add(getPolicy(nodes.nextNode().getName()));
+                    }
+                } catch (PathNotFoundException e) {
+                }
                 
                 return null;
             }
@@ -229,80 +292,6 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         } catch (PathNotFoundException e){
             
         }
-    }
-    
-    public void deactivatePolicy(ArtifactPolicy p, Artifact a, Collection<Phase> phases) {
-        deactivatePolicy(artifactsPhasesNodeId, phases, p.getId(), a.getId());
-    }
-    
-    public void deactivatePolicy(ArtifactPolicy p, Artifact a, Lifecycle lifecycle) {
-        deactivatePolicy(artifactsLifecyclesNodeId, a.getId(), lifecycle.getName(), p.getId());
-    }
-
-    public void deactivatePolicy(ArtifactPolicy p, Collection<Phase> phases) {
-        deactivatePolicy(phasesNodeId, phases, p.getId());
-    }
-    
-    private void deactivatePolicy(final String nodeId, 
-                                  final Collection<Phase> phases,
-                                  final String policyId,
-                                  final String... nodes) {
-        jcrTemplate.execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node node = session.getNodeByUUID(nodeId);
-                
-                try {
-                    for (String name : nodes) {
-                        node = node.getNode(name);
-                    }
-                } catch (PathNotFoundException e) {
-                    return null;
-                }
-            
-                for (Phase p : phases) {
-                    try {
-                        Node lNode = node.getNode(p.getLifecycle().getName());
-                        Node pNode = lNode.getNode(p.getName());
-                        pNode.getNode(policyId).remove();
-                    } catch (PathNotFoundException e) {
-                    }
-                }
-                
-                session.save();
-                return null;
-            }
-        });
-    }
-    public void deactivatePolicy(ArtifactPolicy p, Lifecycle lifecycle) {
-        deactivatePolicy(lifecyclesNodeId, lifecycle.getName(), p.getId());
-    }
-
-    private void deactivatePolicy(final String nodeId, final String... nodes) {
-        jcrTemplate.execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node node = session.getNodeByUUID(nodeId);
-                try {
-                    for (String name : nodes) {
-                        node = getOrCreate(node, name);
-                    }
-                    
-                    node.remove();
-                } catch (PathNotFoundException e) {
-                    
-                }
-                
-                session.save();
-                return null;
-            }
-        });
-    }
-    
-    public void deactivatePolicy(ArtifactPolicy p, Workspace w, Collection<Phase> phases) {
-        deactivatePolicy(workspacesPhasesNodeId, phases, p.getId(), w.getId());
-    }
-
-    public void deactivatePolicy(ArtifactPolicy p, Workspace w, Lifecycle lifecycle) {
-        deactivatePolicy(workspaceLifecyclesNodeId, w.getId(), lifecycle.getName(), p.getId());
     }
     
     public void setJcrTemplate(JcrTemplate jcrTemplate) {

@@ -181,7 +181,7 @@ public class LifecycleManagerImpl implements LifecycleManager {
                 ArtifactVersion previous = latest.getPrevious();
                 
                 boolean approved = true;
-                Collection<ApprovalMessage> approvals = policyManager.approve(previous, latest);
+                List<ApprovalMessage> approvals = policyManager.approve(previous, latest);
                 for (ApprovalMessage app : approvals) {
                     if (!app.isWarning()) {
                         approved = false;

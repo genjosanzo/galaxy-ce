@@ -7,7 +7,11 @@ import java.util.List;
 
 public class ArtifactGroup implements IsSerializable {
     private String name;
+    /**
+     * @gwt.typeArgs <java.lang.String>
+     */
     private List columns = new ArrayList();
+    
     private List rows = new ArrayList();
     public String getName() {
         return name;

@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BasicArtifactInfo implements IsSerializable {
-    /*
-     * @gwt typeArgs java.lang.Integer,java.lang.String
+    /**
+     * @gwt.typeArgs <java.lang.Integer,java.lang.String>
      */
     private Map col2Value = new HashMap();
     private String id;

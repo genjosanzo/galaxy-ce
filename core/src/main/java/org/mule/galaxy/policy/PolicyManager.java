@@ -1,6 +1,7 @@
 package org.mule.galaxy.policy;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
@@ -17,38 +18,31 @@ public interface PolicyManager {
      * @return
      * @throws RegistryException
      */
-    public Collection<ApprovalMessage> approve(ArtifactVersion previous, 
-                                        ArtifactVersion next);
+    public List<ApprovalMessage> approve(ArtifactVersion previous, ArtifactVersion next);
     
     Collection<ArtifactPolicy> getPolicies();
     
     Collection<ArtifactPolicy> getActivePolicies(Artifact a);
 
     Collection<PolicyInfo> getActivePolicies(Artifact a, boolean includeInherited);
-    
-    void activatePolicy(ArtifactPolicy p, Workspace w, Collection<Phase> phases);
-    
-    void activatePolicy(ArtifactPolicy p, Artifact a, Collection<Phase> phases);
 
-    void activatePolicy(ArtifactPolicy p, Collection<Phase> phases);
-    
-    void activatePolicy(ArtifactPolicy p, Workspace w, Lifecycle lifecycle);
-    
-    void activatePolicy(ArtifactPolicy p, Artifact a, Lifecycle lifecycle);
+    Collection<ArtifactPolicy> getActivePolicies(Phase p);
 
-    void activatePolicy(ArtifactPolicy p, Lifecycle lifecycle);
+    Collection<ArtifactPolicy> getActivePolicies(Lifecycle p);
     
-    void deactivatePolicy(ArtifactPolicy p, Workspace w, Collection<Phase> phases);
     
-    void deactivatePolicy(ArtifactPolicy p, Artifact a, Collection<Phase> phases);
+    void setActivePolicies(Workspace w, Collection<Phase> phases, ArtifactPolicy... policies);
+    
+    void setActivePolicies(Artifact a, Collection<Phase> phases, ArtifactPolicy... policies);
 
-    void deactivatePolicy(ArtifactPolicy p, Collection<Phase> phases);
+    void setActivePolicies(Collection<Phase> phases, ArtifactPolicy... policies);
     
-    void deactivatePolicy(ArtifactPolicy p, Workspace w, Lifecycle lifecycle);
+    void setActivePolicies(Workspace w, Lifecycle lifecycle, ArtifactPolicy... policies);
     
-    void deactivatePolicy(ArtifactPolicy p, Artifact a, Lifecycle lifecycle);
+    void setActivePolicies(Artifact a, Lifecycle lifecycle, ArtifactPolicy... policies);
 
-    void deactivatePolicy(ArtifactPolicy p, Lifecycle lifecycle);
+    void setActivePolicies(Lifecycle lifecycle, ArtifactPolicy... policies);
+    
 
     ArtifactPolicy getPolicy(String id);
 

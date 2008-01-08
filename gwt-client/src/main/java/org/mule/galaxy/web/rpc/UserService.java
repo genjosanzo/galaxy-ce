@@ -10,7 +10,7 @@ import org.mule.galaxy.web.client.admin.PasswordChangeException;
 public interface UserService extends RemoteService {
     
     /**
-     * @gwt typeArgs org.mule.galaxy.web.rpc.WUser
+     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WUser>
      * @return
      */
     Collection getUsers();

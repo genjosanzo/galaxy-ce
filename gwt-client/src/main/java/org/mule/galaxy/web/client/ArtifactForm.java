@@ -14,7 +14,12 @@ import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mule.galaxy.web.client.artifact.ArtifactPanel;
+import org.mule.galaxy.web.client.artifact.ArtifactPolicyResultsPanel;
 import org.mule.galaxy.web.client.util.WorkspacesListBox;
 
 public class ArtifactForm extends AbstractTitledComposite {
@@ -24,6 +29,7 @@ public class ArtifactForm extends AbstractTitledComposite {
     private FileUpload artifactUpload;
     private TextBox versionBox;
     private WorkspacesListBox workspacesLB;
+    private final RegistryPanel registryPanel;
 
     public ArtifactForm(final RegistryPanel registryPanel) {
         this(registryPanel, null, true);
@@ -37,6 +43,7 @@ public class ArtifactForm extends AbstractTitledComposite {
                            final String artifactId, 
                            final boolean add) {
         super();
+        this.registryPanel = registryPanel;
         form = new FormPanel();
         form.setAction("/artifactUpload");
         form.setEncoding(FormPanel.ENCODING_MULTIPART);
@@ -87,6 +94,8 @@ public class ArtifactForm extends AbstractTitledComposite {
                     if (last == -1) last = msg.length();
                     
                     registryPanel.setMain(new ArtifactPanel(registryPanel, msg.substring(8, last)));
+                } else if (msg.startsWith("<PRE>ArtifactPolicyException")) {
+                    parseAndShowPolicyMessages(msg);
                 } else {
                     registryPanel.setMessage(msg);
                 }
@@ -100,6 +109,33 @@ public class ArtifactForm extends AbstractTitledComposite {
         } else {
             setTitle("Add New Artifact Version");
         }
+    }
+
+    protected void parseAndShowPolicyMessages(String msg) {
+        String[] split = msg.split("\n");
+        
+        List warnings = new ArrayList();
+        List failures = new ArrayList();
+        for (int i = 1; i < split.length; i++) {
+            String s = split[i];
+            
+            if (s.startsWith("WARNING: ")) {
+                warnings.add(getMessage(s));
+            } else if (s.startsWith("FAILURE: ")) {
+                failures.add(getMessage(s));
+            }
+        }
+        
+        registryPanel.setMain(new ArtifactPolicyResultsPanel(warnings, failures));
+        registryPanel.setMessage("The artifact did not meet all the necessary policies!");
+    }
+
+    private String getMessage(String s) {
+        s = s.substring(9);
+        if (s.endsWith("</PRE>")) {
+            s = s.substring(0, s.length() - 6);
+        }
+        return s;
     }
 
     private int setupAddForm(final RegistryPanel registryPanel) {

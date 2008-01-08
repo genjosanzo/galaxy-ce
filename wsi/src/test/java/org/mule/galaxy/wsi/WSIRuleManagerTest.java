@@ -15,5 +15,9 @@ public class WSIRuleManagerTest extends TestCase {
         
         assertNotNull(rules);
         assertTrue(rules.size() > 0);
+        
+        String desc = manager.getDescription("R2803");
+        assertNotNull(desc);
+        assertTrue(desc.startsWith("In a DESCRIPTION"));
     }
 }

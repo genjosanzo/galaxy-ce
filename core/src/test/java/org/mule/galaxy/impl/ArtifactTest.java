@@ -170,7 +170,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         ArtifactVersion activeVersion = a2.getActiveVersion();
         assertEquals("0.1", activeVersion.getVersionLabel());
         
-        
+        registry.delete(a2);
     }
     
     public void testAddNonUnderstood() throws Exception {

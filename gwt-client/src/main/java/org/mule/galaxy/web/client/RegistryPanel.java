@@ -36,10 +36,7 @@ public class RegistryPanel extends AbstractMenuPanel {
     
     public RegistryPanel(Galaxy galaxy) {
         super(galaxy);
-        this.service = (RegistryServiceAsync) GWT.create(RegistryService.class);
-        
-        ServiceDefTarget target = (ServiceDefTarget) service;
-        target.setServiceEntryPoint("/handler/registry.rpc");
+        this.service = galaxy.getRegistryService();
         
         workspaceBox = new Toolbox();
         workspaceBox.setTitle("Workspaces");
@@ -54,7 +51,7 @@ public class RegistryPanel extends AbstractMenuPanel {
         });
         workspaceBox.addButton(addImg);
         
-        Image addWkspcImg = new Image("images/adddir_wiz.png");
+        Image addWkspcImg = new Image("images/fldr_obj.gif");
         addWkspcImg.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 setMain(new EditWorkspacePanel(registryPanel, 

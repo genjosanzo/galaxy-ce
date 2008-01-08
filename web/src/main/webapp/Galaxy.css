@@ -386,6 +386,17 @@ a:visited {
 .search-predicate {
 }
 
+                   
+/**
+ **
+ ** Administration
+ **
+ **/
+.lifecycle-phases-label {
+	font-size: 1.1em;
+	font-weight: bold;
+	padding-top: 10px;
+}
 
 /**
  **

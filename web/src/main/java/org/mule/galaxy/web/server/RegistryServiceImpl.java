@@ -2,6 +2,7 @@ package org.mule.galaxy.web.server;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,6 +37,7 @@ import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.lifecycle.TransitionException;
 import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyInfo;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.Query;
@@ -54,9 +56,12 @@ import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.TransitionResponse;
+import org.mule.galaxy.web.rpc.WArtifactPolicy;
 import org.mule.galaxy.web.rpc.WArtifactType;
 import org.mule.galaxy.web.rpc.WComment;
 import org.mule.galaxy.web.rpc.WGovernanceInfo;
+import org.mule.galaxy.web.rpc.WLifecycle;
+import org.mule.galaxy.web.rpc.WPhase;
 import org.mule.galaxy.web.rpc.WProperty;
 import org.mule.galaxy.web.rpc.WWorkspace;
 
@@ -564,6 +569,18 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
 
+    public void delete(String artifactId) throws RPCException {
+        try {
+            Artifact artifact = registry.getArtifact(artifactId);
+          
+            registry.delete(artifact);
+        } catch (RegistryException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } 
+    }
+
+
     public WGovernanceInfo getGovernanceInfo(String artifactId) throws RPCException {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
@@ -622,6 +639,93 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
 
+    public Collection getLifecycles() throws RPCException {
+        Collection<Lifecycle> lifecycles = lifecycleManager.getLifecycles();
+        ArrayList<WLifecycle> wls = new ArrayList<WLifecycle>();
+        for (Lifecycle l : lifecycles) {
+            WLifecycle lifecycle = new WLifecycle(l.getName());
+            
+            wls.add(lifecycle);
+            
+            List<WPhase> wphases = new ArrayList<WPhase>();
+            
+            for (Phase p : l.getPhases().values()) {
+                wphases.add(new WPhase(p.getName()));
+            }
+            
+            Collections.sort(wphases, new Comparator<WPhase>() {
+
+                public int compare(WPhase o1, WPhase o2) {
+                    return o1.getName().compareTo(o2.getName());
+                }
+                
+            });
+            lifecycle.setPhases(wphases);
+        }
+        
+        return wls;
+    }
+
+
+    public Collection getActivePoliciesForLifecycle(String lifecycle) throws RPCException {
+        Collection<ArtifactPolicy> pols = policyManager.getActivePolicies(lifecycleManager.getLifecycle(lifecycle));
+        return getPolicyNames(pols);
+    }
+
+
+    public Collection getActivePoliciesForPhase(String lifecycle, String phase) throws RPCException {
+        Collection<ArtifactPolicy> pols = policyManager.getActivePolicies(
+                          lifecycleManager.getLifecycle(lifecycle).getPhase(phase));
+        return getPolicyNames(pols);
+    }
+
+
+    public void setActivePoliciesForLifecycle(String lifecycle, Collection ids) throws RPCException {
+        Lifecycle l = lifecycleManager.getLifecycle(lifecycle);
+        
+        List<ArtifactPolicy> policies = new ArrayList<ArtifactPolicy>();
+        for (Iterator itr = ids.iterator(); itr.hasNext();) {
+            String id = (String)itr.next();
+            
+            ArtifactPolicy policy = policyManager.getPolicy(id);
+            policies.add(policy);
+        }
+        
+        policyManager.setActivePolicies(l, policies.toArray(new ArtifactPolicy[0]));
+    }
+
+
+    public void setActivePoliciesForPhase(String lifecycle, String phase, Collection ids) throws RPCException {
+        Lifecycle l = lifecycleManager.getLifecycle(lifecycle);
+        Phase p = l.getPhase(phase);
+        
+        if (p == null) { 
+            throw new RPCException("Invalid phase: " + phase);
+        }
+        
+        List<Phase> phases = Arrays.asList(p);
+        
+        List<ArtifactPolicy> policies = new ArrayList<ArtifactPolicy>();
+        for (Iterator itr = ids.iterator(); itr.hasNext();) {
+            String id = (String)itr.next();
+            
+            ArtifactPolicy policy = policyManager.getPolicy(id);
+            policies.add(policy);
+        }
+        
+        policyManager.setActivePolicies(phases, policies.toArray(new ArtifactPolicy[0]));
+    }
+
+
+    private Collection getPolicyNames(Collection<ArtifactPolicy> pols) {
+        ArrayList<String> polNames = new ArrayList<String>();
+        for (ArtifactPolicy ap : pols) {
+            polNames.add(ap.getId());
+        }
+        return polNames;
+    }
+
+
     public TransitionResponse setActive(String artifactId, String versionLabel) throws RPCException {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
@@ -666,6 +770,26 @@ public class RegistryServiceImpl implements RegistryService {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
         } 
+    }
+
+
+    public Collection getPolicies() throws RPCException {
+        Collection<ArtifactPolicy> policies = policyManager.getPolicies();
+        Collection<WArtifactPolicy> gwtPolicies = new ArrayList<WArtifactPolicy>();
+        for (ArtifactPolicy p : policies) {
+            gwtPolicies.add(createPolicyInfo(p));
+        }
+        return gwtPolicies;
+    }
+
+
+    private WArtifactPolicy createPolicyInfo(ArtifactPolicy p) {
+        WArtifactPolicy wap = new WArtifactPolicy();
+        wap.setId(p.getId());
+        wap.setDescription(p.getDescription());
+        wap.setName(p.getName());
+        
+        return wap;
     }
 
 

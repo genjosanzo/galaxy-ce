@@ -527,13 +527,27 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
         }
     }
+    
+    private ArtifactResult executeWithRegistryException(JcrCallback jcrCallback) 
+        throws RegistryException {
+        try {
+            return (ArtifactResult) execute(jcrCallback);
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RegistryException) {
+                throw (RegistryException) cause;
+            } else {
+                throw e;
+            }
+        }
+    }
 
     private ArtifactResult approve(Session session, Artifact artifact, 
                                    JcrVersion previous, JcrVersion next)
         throws RegistryException, RepositoryException {
         boolean approved = true;
         
-        Collection<ApprovalMessage> approvals = policyManager.approve(previous, next);
+        List<ApprovalMessage> approvals = policyManager.approve(previous, next);
         for (ApprovalMessage a : approvals) {
             if (!a.isWarning()) {
                 approved = false;
@@ -740,8 +754,28 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         });
     }
 
-    public void delete(Artifact artifact) {
-        throw new UnsupportedOperationException();
+    public void delete(final Artifact artifact) throws RegistryException {
+        executeWithRegistryException(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Set<Dependency> deps;
+                try {
+                    deps = getDependedOnBy(artifact);
+                } catch (QueryException e) {
+                    throw new RuntimeException(e);
+                } catch (RegistryException e) {
+                    throw new RuntimeException(e);
+                }
+                
+                for (Dependency d : deps) {
+                    ((JcrDependency) d).getDependencyNode().remove();
+                }
+                
+                ((JcrArtifact) artifact).getNode().remove();
+                
+                session.save();
+                return null;
+            }
+        });
     }
     
     @SuppressWarnings("unchecked")
@@ -1100,17 +1134,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     JcrWorkspace workspace = new JcrWorkspace(node.getParent());
                     final JcrArtifact artDep = new JcrArtifact(workspace, node, registry);
                     
-                    Dependency dependency = new Dependency() {
-
-                        public Artifact getArtifact() {
-                            return artDep;
-                        }
-
-                        public boolean isUserSpecified() {
-                            return JcrUtil.getBooleanOrNull(depNode, JcrVersion.USER_SPECIFIED);
-                        }
-                        
-                    };
+                    Dependency dependency = new JcrDependency(artDep, depNode);
                     artifacts.add(dependency);
                 }
                 return artifacts;
