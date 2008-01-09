@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 public class FieldDescriptor {
     private String name;
     private boolean id;
-    private Class type;
+    private Class<?> type;
     private OneToMany oneToMany;
     private Method readMethod;
     private Method writeMethod;
@@ -30,10 +30,10 @@ public class FieldDescriptor {
     public void setId(boolean id) {
         this.id = id;
     }
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
-    public void setType(Class type) {
+    public void setType(Class<?> type) {
         this.type = type;
     }
     public OneToMany getOneToMany() {

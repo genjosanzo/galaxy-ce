@@ -14,15 +14,22 @@ public class PersisterManager {
     private Map<String, FieldPersister> persisters = new HashMap<String, FieldPersister>();
     private Map<String, ClassPersister> classPersisters = new HashMap<String, ClassPersister>();
     private FieldPersister defaultPersister = new DefaultPersister();
+    private EnumPersister enumPersister = new EnumPersister();
     
     public PersisterManager() {
         super();
         
         persisters.put(Set.class.getName(), new CollectionPersister(HashSet.class, this));
+        persisters.put(Class.class.getName(), new ClassFieldPersister());
     }
 
-    public FieldPersister getPersister(Class c) {
+    public FieldPersister getPersister(Class<?> c) {
         FieldPersister p = persisters.get(c.getName());
+        if (p == null) {
+            if (Enum.class.isAssignableFrom(c)) {
+                p = persisters.put(c.getName(), enumPersister);
+            }
+        }
         if (p == null) {
             return defaultPersister;
         }

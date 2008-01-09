@@ -39,12 +39,12 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
             "    return <value>{data($svc/@name)}</value>\n" +
             "} </values>";
        
-        registry.registerIndex("wsdl.service", // index field name
+        indexManager.save(new Index("wsdl.service", // index field name
                                "WSDL Services", // Display Name
                                Index.Language.XQUERY,
                                QName.class, // search input type
                                exp, // the xquery expression
-                               Constants.WSDL_DEFINITION_QNAME); // document QName which this applies to
+                               Constants.WSDL_DEFINITION_QNAME)); // document QName which this applies to
         exp = 
             "" +
             "declare namespace wsdl=\"http://schemas.xmlsoap.org/wsdl/\";\n" +
@@ -56,12 +56,12 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
             "    return <value>{data($ep/@name)}</value>\n" +
             "} </values>";
        
-        registry.registerIndex("wsdl.endpoint", // index field name
-                               "WSDL Endpoints", // Display Name
-                               Index.Language.XQUERY,
-                               QName.class, // search input type
-                               exp, // the xquery expression
-                               Constants.WSDL_DEFINITION_QNAME); // document QName which this applies to
+        indexManager.save(new Index("wsdl.endpoint", // index field name
+                                    "WSDL Endpoints", // Display Name
+                                    Index.Language.XQUERY,
+                                    QName.class, // search input type
+                                    exp, // the xquery expression
+                                    Constants.WSDL_DEFINITION_QNAME)); // document QName which this applies to
        
         exp = 
             "" +
@@ -74,12 +74,12 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
             "    return <value>{data($b/@name)}</value>\n" +
             "} </values>";
        
-        registry.registerIndex("wsdl.binding", // index field name
+        indexManager.save(new Index("wsdl.binding", // index field name
                                "WSDL Bindings", // Display Name
                                Index.Language.XQUERY,
                                QName.class, // search input type
                                exp, // the xquery expression
-                               Constants.WSDL_DEFINITION_QNAME); // document QName which this applies to
+                               Constants.WSDL_DEFINITION_QNAME)); // document QName which this applies to
        
         exp = 
             "" +
@@ -92,20 +92,20 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
             "    return <value>{data($pt/@name)}</value>\n" +
             "} </values>";
        
-        registry.registerIndex("wsdl.portType", // index field name
+        indexManager.save(new Index("wsdl.portType", // index field name
                                "WSDL PortTypes", // Display Name
                                Index.Language.XQUERY,
                                QName.class, // search input type
                                exp, // the xquery expression
-                               Constants.WSDL_DEFINITION_QNAME); // document QName which this applies to
+                               Constants.WSDL_DEFINITION_QNAME)); // document QName which this applies to
        
         // Index the target namespace
-        registry.registerIndex("wsdl.targetNamespace", // index field name
+        indexManager.save(new Index("wsdl.targetNamespace", // index field name
                                "WSDL Target Namespace", // Display Name
                                Index.Language.XPATH,
                                String.class, // search input type
                                "/*/@targetNamespace", // the xquery expression
-                               Constants.WSDL_DEFINITION_QNAME); // document QName which this applies to
+                               Constants.WSDL_DEFINITION_QNAME)); // document QName which this applies to
                  
 
     }

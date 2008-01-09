@@ -37,6 +37,18 @@
     <property name="configuration" value="classpath:/META-INF/jackrabbit-repo.xml"/>
     <property name="homeDir" value="file:./jackrabbit"/>
   </bean>
+        
+  <bean id="indexManager" parent="txProxyTemplate">
+    <property name="target" ref="indexManagerTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="indexManagerTarget"  class="org.mule.galaxy.impl.IndexManagerImpl"
+        init-method="initialize">
+    <property name="contentService" ref="contentService"/>
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="persisterManager" ref="persisterManager" />
+  </bean>
   
   <bean id="policyManager" parent="txProxyTemplate">
     <property name="target" ref="policyManagerTarget"/>
@@ -66,6 +78,7 @@
     <property name="commentDao" ref="commentDao" />
     <property name="propertyDescriptorDao" ref="propertyDescriptorDao" />
     <property name="lifecycleManager" ref="lifecycleManager" />
+    <property name="indexManager" ref="indexManager" />
     <property name="policyManager" ref="policyManager" />
     <property name="userManager" ref="userManager" />
   </bean>
@@ -102,6 +115,7 @@
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
   </bean>
+
   
   
   <bean id="propertyDescriptorDao" parent="txProxyTemplate">
@@ -182,6 +196,7 @@
   <bean id="abstractArtifactPlugin" abstract="true">
     <property name="artifactTypeDao" ref="artifactTypeDao"/>
     <property name="viewManager" ref="viewManager"/>
+    <property name="indexManager" ref="indexManager"/>
     <property name="registry" ref="registry"/>
   </bean>
   

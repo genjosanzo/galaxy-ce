@@ -124,21 +124,6 @@ public interface Registry {
     Artifact getArtifact(Workspace w, String name) throws NotFoundException;
 
     Artifact resolve(Workspace w, String location);
-    
-    /* Index related methods */
-    
-    Index registerIndex(String indexId, 
-                        String displayName, 
-                        Language language,
-                        Class<?> resultType, 
-                        String indexExpression, 
-                        QName... documentTypes) throws RegistryException;
-
-    Index getIndex(String idxName);
-
-    Set<Index> getIndexes();
-    
-    Set<Index> getIndices(QName documentType) throws RegistryException;
 
     /* Property related methods */
      

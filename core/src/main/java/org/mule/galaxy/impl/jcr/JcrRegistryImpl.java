@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.activation.MimeType;
@@ -30,20 +29,7 @@ import javax.jcr.Value;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.xml.namespace.QName;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
-import net.sf.saxon.javax.xml.xquery.XQConnection;
-import net.sf.saxon.javax.xml.xquery.XQDataSource;
-import net.sf.saxon.javax.xml.xquery.XQItem;
-import net.sf.saxon.javax.xml.xquery.XQPreparedExpression;
-import net.sf.saxon.javax.xml.xquery.XQResultSequence;
-import net.sf.saxon.xqj.SaxonXQDataSource;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.jackrabbit.core.nodetype.NodeTypeDef;
 import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
 import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
@@ -58,17 +44,15 @@ import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Dependency;
-import org.mule.galaxy.Index;
+import org.mule.galaxy.GalaxyException;
+import org.mule.galaxy.IndexManager;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyDescriptor;
-import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.XmlContentHandler;
-import org.mule.galaxy.Index.Language;
-import org.mule.galaxy.impl.IndexImpl;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.ApprovalMessage;
@@ -79,17 +63,11 @@ import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.query.Restriction.Operator;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
-import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.util.Message;
-import org.mule.galaxy.util.QNameUtil;
 import org.springframework.dao.DataAccessException;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 
 public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistry {
 
@@ -99,8 +77,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private static final String NAMESPACE = "http://galaxy.mule.org";
 
     private Logger LOGGER = LogUtils.getL7dLogger(JcrRegistryImpl.class);
-
-    private XPathFactory factory = XPathFactory.newInstance();
     
     private Settings settings;
     
@@ -112,6 +88,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     private UserManager userManager;
 
+    private IndexManager indexManager;
+    
     private Dao<Comment> commentDao;
     
     private Dao<PropertyDescriptor> propertyDescriptorDao;
@@ -474,7 +452,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 jcrVersion.setActive(true);
                 
                 try {
-                    index(jcrVersion);
+                    indexManager.index(jcrVersion);
                 
                     Set<Artifact> dependencies = ch.detectDependencies(loadedData, workspace);
                     jcrVersion.addDependencies(dependencies, false);
@@ -681,7 +659,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     } catch (PathNotFoundException e) {
                     }
                     
-                    index(next);
+                    indexManager.index(next);
                     
                     return approve(session, artifact, previousLatest, next);
                 } catch (RegistryException e) {
@@ -780,108 +758,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         });
     }
     
-    @SuppressWarnings("unchecked")
-    public Set<Index> getIndexes() {
-        return (Set<Index>) execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Set<Index> indices = new HashSet<Index>();
-                for (NodeIterator nodes = getIndexNode().getNodes(); nodes.hasNext();) {
-                    Node node = nodes.nextNode();
-                    
-                    indices.add(createIndexFromNode(node));
-                }
-                return indices;
-            }
-        });
-    }
-
-    @SuppressWarnings("unchecked")
-    public Set<Index> getIndices(final QName documentType) throws RegistryException {
-        return (Set<Index>) execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                QueryManager qm = getQueryManager(session);
-                Query query = qm.createQuery("//indexes/*[@documentType=" 
-                                                 + JcrUtil.stringToXPathLiteral(documentType.toString()) + "]", 
-                                             Query.XPATH);
-                
-                QueryResult result = query.execute();
-                
-                Set<Index> indices = new HashSet<Index>();
-                for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
-                    Node node = nodes.nextNode();
-                    
-                    indices.add(createIndexFromNode(node));
-                }
-                return indices;
-            }
-        });
-    }
-
-    @SuppressWarnings("unchecked")
-    private Index createIndexFromNode(Node node) throws RepositoryException {
-        IndexImpl idx = new IndexImpl();
-        
-        idx.setId(JcrUtil.getStringOrNull(node, IndexImpl.ID));
-        idx.setExpression(JcrUtil.getStringOrNull(node, IndexImpl.EXPRESSION));
-        String lang = JcrUtil.getStringOrNull(node, IndexImpl.LANGUAGE);
-        
-        idx.setLanguage(Language.valueOf(lang));
-        idx.setName(JcrUtil.getStringOrNull(node, IndexImpl.NAME));
-        
-        String qt = JcrUtil.getStringOrNull(node, IndexImpl.QUERY_TYPE);
-        try {
-            idx.setQueryType(getClass().getClassLoader().loadClass(qt));
-        } catch (ClassNotFoundException e) {
-            // not gonna happen
-            throw new RuntimeException(e);
-        }
-        idx.setDocumentTypes((Set<QName>)JcrUtil.getProperty(IndexImpl.DOCUMENT_TYPE, node));
-        
-        return idx;
-    }
-
     private QueryManager getQueryManager(Session session) throws RepositoryException {
         return session.getWorkspace().getQueryManager();
-    }
-
-    public Index registerIndex(final String indexId, 
-                               final String displayName, 
-                               final Index.Language language,
-                               final Class<?> searchType,
-                               final String expression, 
-                               final QName... documentTypes) throws RegistryException {
-        // TODO: check if index name already exists.
-        
-        return (Index) execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                
-                Node idxNode = JcrUtil.getOrCreate(getIndexNode(), indexId);
-                
-                idxNode.setProperty(IndexImpl.ID, indexId);
-                idxNode.setProperty(IndexImpl.EXPRESSION, expression);
-                idxNode.setProperty(IndexImpl.NAME, displayName);
-                idxNode.setProperty(IndexImpl.QUERY_TYPE, searchType.getName());
-                idxNode.setProperty(IndexImpl.LANGUAGE, language.toString());
-                
-                Set<QName> typeSet = new HashSet<QName>();
-                for (QName q : documentTypes) {
-                    typeSet.add(q);
-                }
-                JcrUtil.setProperty(IndexImpl.DOCUMENT_TYPE, typeSet, idxNode);
-                
-                session.save();
-                
-                IndexImpl idx = new IndexImpl();
-                idx.setId(indexId);
-                idx.setName(displayName);
-                idx.setLanguage(language);
-                idx.setQueryType(searchType);
-                idx.setExpression(expression);
-                idx.setDocumentTypes(typeSet);
-                
-                return idx;
-            }
-        });
     }
 
     public Set search(String queryString) throws RegistryException, QueryException {
@@ -1150,35 +1028,16 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         });
     }
 
-    public Index getIndex(final String idxName) {
-        return (Index) execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node idxs = getIndexNode();
-                
-                try {
-                    Node idxNode = idxs.getNode(idxName);
-                    
-                    return createIndexFromNode(idxNode);
-                } catch (PathNotFoundException e) {
-                    return null;
-                }
-            }
-        });
-    }
-    
     @SuppressWarnings("unchecked")
     public Object getPropertyDescriptorOrIndex(final String propertyName) {
         
         return execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                        
-                Object idx = getIndex(propertyName);
-                
-                if (idx == null) {
+                try {
+                    return indexManager.getIndex(propertyName);
+                } catch (NotFoundException e) {
                     return getPropertyDescriptor(propertyName);
                 }
-                
-                return idx;
             }
 
 
@@ -1250,113 +1109,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             contentType = contentType.substring(0, comma);
         }
         return contentType;
-    }
-
-    private void index(JcrVersion jcrVersion) throws RegistryException {
-        QName dt = jcrVersion.getParent().getDocumentType();
-        if (dt == null) return;
-        
-        Set<Index> indices = getIndices(dt);
-        
-        for (Index idx : indices) {
-            try {
-                switch (idx.getLanguage()) {
-                case XQUERY:
-                    indexWithXQuery(jcrVersion, idx);
-                    break;
-                case XPATH:
-                    indexWithXPath(jcrVersion, idx);
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-                }
-            } catch (Throwable t) {
-                LOGGER.log(Level.SEVERE, "Could not process index " + idx.getId(), t);
-            }
-        }
-    }
-
-    private void indexWithXPath(JcrVersion jcrVersion, Index idx) throws RegistryException {
-        XmlContentHandler ch = (XmlContentHandler) contentService.getContentHandler(jcrVersion.getParent().getContentType());
-        try {
-            Document document = ch.getDocument(jcrVersion.getData());
-            
-            XPath xpath = factory.newXPath();
-            XPathExpression expr = xpath.compile(idx.getExpression());
-
-            Object result = expr.evaluate(document, XPathConstants.STRING);
-            
-            if (result instanceof String) {
-                jcrVersion.setProperty(idx.getId(), result);
-                jcrVersion.setLocked(idx.getId(), true);
-            }
-        } catch (IOException e) {
-            throw new RegistryException(e);
-        } catch (XPathExpressionException e) {
-            throw new RegistryException(e);
-        } catch (PropertyException e) {
-            throw new RegistryException(e);
-        }
-        
-    }
-
-    private void indexWithXQuery(JcrVersion jcrVersion, Index idx) throws RegistryException {
-        XQDataSource ds = new SaxonXQDataSource();
-        
-        try {
-            XQConnection conn = ds.getConnection();
-            
-            XQPreparedExpression ex = conn.prepareExpression(idx.getExpression());
-            XmlContentHandler ch = (XmlContentHandler) contentService.getContentHandler(jcrVersion.getParent().getContentType());
-            
-            ex.bindNode(new QName("document"), ch.getDocument(jcrVersion.getData()), null);
-            
-            XQResultSequence result = ex.executeQuery();
-            
-            List<Object> results = new ArrayList<Object>();
-            
-            boolean visible = true;
-            
-            if (result.next()) {
-                XQItem item = result.getItem();
-
-                org.w3c.dom.Node values = item.getNode();
-                
-                // check locking & visibility
-                NamedNodeMap atts = values.getAttributes();
-                org.w3c.dom.Node visibleNode = atts.getNamedItem("visible");
-                if (visibleNode != null) {
-                    visible = BooleanUtils.toBoolean(visibleNode.getNodeValue());
-                }
-                
-                // loop through the values
-                Element value = DOMUtils.getFirstElement(values);
-                while (value != null) {
-                    Object content = DOMUtils.getContent(value);
-                    
-                    LOGGER.info("Adding value " + content + " to index " + idx.getId());
-    
-                    if (idx.getQueryType().equals(QName.class)) {
-                        results.add(QNameUtil.fromString(content.toString())); 
-                    } else {
-                        results.add(content);
-                    }
-                    
-                    value = (Element) DOMUtils.getNext(value, "value", org.w3c.dom.Node.ELEMENT_NODE);
-                }
-            }
-            
-            jcrVersion.setProperty(idx.getId(), results);
-            jcrVersion.setLocked(idx.getId(), true);
-            jcrVersion.setVisible(idx.getId(), visible);
-        } catch (Exception e) {
-            // TODO: better error handling for frontends
-            // We should log this and make the logs retrievable
-            // We should also prepare the expressions when the expression is created
-            // or on startup
-            throw new RegistryException(e);
-        }
-        
     }
 
     public void initialize() throws Exception {
@@ -1502,6 +1254,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public void setUserManager(UserManager userManager) {
         this.userManager = userManager;
+    }
+
+    public void setIndexManager(IndexManager indexManager) {
+        this.indexManager = indexManager;
     }
 
     public void setPolicyManager(PolicyManager policyManager) {

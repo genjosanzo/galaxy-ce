@@ -18,6 +18,7 @@ import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.IndexManager;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
@@ -45,7 +46,8 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
     protected UserManager userManager;
     protected Session session;
     protected PolicyManager policyManager;
-
+    protected IndexManager indexManager;
+    
     public AbstractGalaxyTest() {
         super();
         setPopulateProtectedVariables(true);
@@ -100,7 +102,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
             Session session = repository.login(new SimpleCredentials("username", "password".toCharArray()));
 
             Node node = session.getRootNode();
-//            JcrUtil.dump(node.getNode("workspaces"));
+//            JcrUtil.dump(node.getNode("indexes"));
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
                 Node child = itr.nextNode();
                 if (!child.getName().equals("jcr:system")) {

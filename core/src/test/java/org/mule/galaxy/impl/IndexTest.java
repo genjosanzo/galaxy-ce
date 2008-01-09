@@ -27,7 +27,7 @@ public class IndexTest extends AbstractGalaxyTest {
         
     }
     public void testWsdlIndex() throws Exception {
-        Set<Index> indices = registry.getIndices(Constants.WSDL_DEFINITION_QNAME);
+        Collection<Index> indices = indexManager.getIndices(Constants.WSDL_DEFINITION_QNAME);
         assertNotNull(indices);
         assertEquals(5, indices.size());
         
@@ -117,7 +117,7 @@ public class IndexTest extends AbstractGalaxyTest {
     }
     
     public void testMuleIndex() throws Exception {
-        Set<Index> indices = registry.getIndices(Constants.MULE_QNAME);
+        Collection<Index> indices = indexManager.getIndices(Constants.MULE_QNAME);
         assertNotNull(indices);
         assertEquals(1, indices.size());
         

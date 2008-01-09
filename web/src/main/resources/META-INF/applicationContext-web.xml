@@ -12,6 +12,7 @@
     <bean id="gwtRegistry" class="org.mule.galaxy.web.server.RegistryServiceImpl">
       <property name="registry" ref="registry"/>
       <property name="artifactTypeDao" ref="artifactTypeDao"/>
+      <property name="indexManager" ref="indexManager"/>
       <property name="viewManager" ref="viewManager"/>
       <property name="lifecycleManager" ref="lifecycleManager"/>
       <property name="policyManager" ref="policyManager"/>

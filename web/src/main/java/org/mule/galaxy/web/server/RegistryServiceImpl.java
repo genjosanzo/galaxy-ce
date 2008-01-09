@@ -25,6 +25,7 @@ import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Comment;
 import org.mule.galaxy.Dependency;
 import org.mule.galaxy.Index;
+import org.mule.galaxy.IndexManager;
 import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
@@ -38,7 +39,6 @@ import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.lifecycle.TransitionException;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
-import org.mule.galaxy.policy.PolicyInfo;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
@@ -73,7 +73,7 @@ public class RegistryServiceImpl implements RegistryService {
     private ViewManager viewManager;
     private PolicyManager policyManager;
     private LifecycleManager lifecycleManager;
-    
+    private IndexManager indexManager;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a, MMMM d, yyyy");
     
     @SuppressWarnings("unchecked")
@@ -267,7 +267,7 @@ public class RegistryServiceImpl implements RegistryService {
     public Map getIndexes() {
         Map map = new HashMap();
         
-        Set<Index> indices = registry.getIndexes();
+        Collection<Index> indices = indexManager.getIndexes();
         for (Index idx : indices) {
             map.put(idx.getName(), idx.getId());
         }
@@ -841,6 +841,11 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void setViewManager(ViewManager viewManager) {
         this.viewManager = viewManager;
+    }
+
+
+    public void setIndexManager(IndexManager indexManager) {
+        this.indexManager = indexManager;
     }
     
 }

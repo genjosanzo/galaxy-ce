@@ -1,0 +1,24 @@
+package org.mule.galaxy.impl.jcr.onm;
+
+import javax.jcr.Node;
+import javax.jcr.Session;
+
+import org.mule.galaxy.impl.jcr.JcrUtil;
+
+public class ClassFieldPersister implements FieldPersister {
+
+    public Object build(Node node, FieldDescriptor fd, Session session) throws Exception {
+        String value = (String) JcrUtil.getProperty(fd.getName(), node);
+        
+        if (value == null) {
+            return null;
+        }
+        
+        return getClass().getClassLoader().loadClass(value);
+    }
+
+    public void persist(Object o, Node n, FieldDescriptor fd, Session session) throws Exception {
+        JcrUtil.setProperty(fd.getName(), ((Class) o).getName(), n);
+    }
+    
+}

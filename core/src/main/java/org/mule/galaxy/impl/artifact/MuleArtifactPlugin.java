@@ -32,13 +32,13 @@ public class MuleArtifactPlugin extends AbstractArtifactPlugin {
             "    return <value>{data($svc/@name)}</value>\n" +
             "} </values>";
        
-        registry.registerIndex("mule.service", // index field name
-                               "Mule Services", // Display Name
-                               Index.Language.XQUERY,
-                               String.class, // search input type
-                               exp, // the xquery expression
-                               Constants.MULE_QNAME); // document QName which this applies to
-        
+        indexManager.save(new Index("mule.service", // index field name
+                                    "Mule Services", // Display Name
+                                    Index.Language.XQUERY,
+                                    String.class, // search input type
+                                    exp, // the xquery expression
+                                    Constants.MULE_QNAME)); // document QName which this applies to
+            
     }
 
     public void initializeEverytime() throws Exception {

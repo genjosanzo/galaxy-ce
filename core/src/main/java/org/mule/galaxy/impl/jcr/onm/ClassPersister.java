@@ -5,15 +5,12 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.Session;
-
-import org.mule.galaxy.impl.jcr.JcrUtil;
 
 /**
  * A simple way to persist/build objects to and from JCR nodes. Only works for a 
