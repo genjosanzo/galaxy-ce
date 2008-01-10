@@ -171,7 +171,8 @@ a:visited {
 }
 
 .toolbox-body {
-    background-color: #ccc;
+	color: black;
+    background-color: white;
     border: solid black 2px;
     border-top: 0;
 }
