@@ -117,6 +117,7 @@
         <configuration>
           <scanIntervalSeconds>5</scanIntervalSeconds>
           <contextPath>/</contextPath>
+          <webDefaultXml>${basedir}/webdefault.xml</webDefaultXml>
         </configuration>
       </plugin>
       <plugin>

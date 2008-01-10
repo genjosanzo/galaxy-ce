@@ -25,6 +25,7 @@ public abstract class AbstractComposite extends Composite {
     protected FlexTable createRowTable() {
         FlexTable table = createTable();
 
+        table.setStyleName("artifactTableFull");
         table.setWidth("100%");
         table.getRowFormatter().setStyleName(0, "artifactTableHeader");
         

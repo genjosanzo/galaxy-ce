@@ -6,14 +6,21 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.jcr.Credentials;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.Workspace;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
@@ -33,20 +40,22 @@ import net.sf.saxon.xqj.SaxonXQDataSource;
 import org.apache.commons.lang.BooleanUtils;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentService;
-import org.mule.galaxy.Dao;
 import org.mule.galaxy.GalaxyException;
 import org.mule.galaxy.Index;
 import org.mule.galaxy.IndexManager;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.XmlContentHandler;
+import org.mule.galaxy.impl.jcr.JcrArtifact;
 import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.util.QNameUtil;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springmodules.jcr.JcrCallback;
+import org.springmodules.jcr.jackrabbit.support.UserTxSessionHolder;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -59,6 +68,12 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index> implements In
 
     private XPathFactory factory = XPathFactory.newInstance();
 
+    private Executor executor = new ThreadPoolExecutor(1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+
+    private Repository repository;
+
+    protected Credentials credentials;
+    
     public IndexManagerImpl() throws Exception {
         super(Index.class, "indexes", false);
     }
@@ -122,7 +137,44 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index> implements In
         return i;
     }
 
-    public void index(ArtifactVersion version) {
+
+    public void indexAsynchronous(final ArtifactVersion version) {
+        
+        Runnable runnable = new Runnable() {
+
+            public void run() {
+                Session session = null;
+                try {
+                    session = repository.login(credentials);
+                    
+                    UserTxSessionHolder sessionHolder = new UserTxSessionHolder(session);
+                    TransactionSynchronizationManager.bindResource(getSessionFactory(), sessionHolder);
+                    
+                    
+                    
+                } catch (RepositoryException e) {
+                    handleIndexingException(e);
+                } finally {
+                    TransactionSynchronizationManager.unbindResource(getSessionFactory());
+                    
+                    if (session != null)  {
+                        session.logout();
+                    }
+                }
+            }
+        };
+        executor.execute(runnable);
+    }
+
+    protected void handleIndexingException(Throwable t) {
+        LOGGER.log(Level.SEVERE, "Could not index documents.", t);
+    }
+
+    private void handleIndexingException(Index idx, Throwable t) {
+        LOGGER.log(Level.SEVERE, "Could not process index " + idx.getId(), t);
+    }
+    
+    public void index(final ArtifactVersion version) {
         QName dt = version.getParent().getDocumentType();
         if (dt == null) return;
         
@@ -141,10 +193,11 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index> implements In
                     throw new UnsupportedOperationException();
                 }
             } catch (Throwable t) {
-                LOGGER.log(Level.SEVERE, "Could not process index " + idx.getId(), t);
+                handleIndexingException(idx, t);
             }
         }
     }
+
 
     private void indexWithXPath(ArtifactVersion jcrVersion, Index idx) throws GalaxyException {
         XmlContentHandler ch = (XmlContentHandler) contentService.getContentHandler(jcrVersion.getParent().getContentType());
@@ -171,9 +224,11 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index> implements In
     }
 
     private void indexWithXQuery(ArtifactVersion jcrVersion, Index idx) throws GalaxyException {
+        
         XQDataSource ds = new SaxonXQDataSource();
         
         try {
+            
             XQConnection conn = ds.getConnection();
             
             XQPreparedExpression ex = conn.prepareExpression(idx.getExpression());
@@ -231,6 +286,14 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index> implements In
 
     public void setContentService(ContentService contentService) {
         this.contentService = contentService;
+    }
+
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    public void setCredentials(Credentials credentials) {
+        this.credentials = credentials;
     }
 
 }

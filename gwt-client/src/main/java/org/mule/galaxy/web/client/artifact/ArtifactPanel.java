@@ -36,6 +36,9 @@ public class ArtifactPanel extends Composite {
         panel.setWidth("100%");
         
         artifactTabs = new TabPanel();
+        artifactTabs.setStyleName("artifactTabPanel");
+        artifactTabs.getDeckPanel().setStyleName("artifactTabDeckPanel");
+        
         panel.add(artifactTabs);
         
         initWidget(panel);

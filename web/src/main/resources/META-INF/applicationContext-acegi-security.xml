@@ -162,6 +162,8 @@
 			    /switchuser.jsp=ROLE_SUPERVISOR
 			    /j_acegi_switch_user=ROLE_SUPERVISOR
 			    /login.jsp*=ROLE_ANONYMOUS,ROLE_USER
+                /login.css*=ROLE_ANONYMOUS,ROLE_USER
+                /images/*=ROLE_ANONYMOUS,ROLE_USER
 				/**=ROLE_USER
          ]]></value>
       </property>

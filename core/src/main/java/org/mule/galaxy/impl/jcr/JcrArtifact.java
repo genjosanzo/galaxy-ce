@@ -90,6 +90,10 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     public MimeType getContentType() {
         String ct = getStringOrNull(CONTENT_TYPE);
         
+        if (ct == null) {
+            return null;
+        }
+        
         try {
             return new MimeType(ct);
         } catch (MimeTypeParseException e) {

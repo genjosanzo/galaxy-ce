@@ -48,6 +48,14 @@
     <property name="contentService" ref="contentService"/>
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
+    <property name="repository" ref="repository"/>
+    <property name="credentials">
+     <bean class="javax.jcr.SimpleCredentials">
+      <constructor-arg value="username"/>
+      <!-- create the credentials using a bean factory -->
+      <constructor-arg><value type="char[]">password</value></constructor-arg>
+     </bean>
+    </property>
   </bean>
   
   <bean id="policyManager" parent="txProxyTemplate">

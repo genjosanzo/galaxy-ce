@@ -3,12 +3,12 @@ package org.mule.galaxy.web.client.admin;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import org.mule.galaxy.web.client.AbstractMenuPanel;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.UserService;
@@ -73,7 +73,7 @@ public class AdministrationPanel extends AbstractMenuPanel {
                 setMain(new UserForm(adminPanel));
             }
         });
-        HorizontalPanel item = new HorizontalPanel();
+        InlineFlowPanel item = new InlineFlowPanel();
         item.add(link);
         item.add(new Label(" ["));
         item.add(add);

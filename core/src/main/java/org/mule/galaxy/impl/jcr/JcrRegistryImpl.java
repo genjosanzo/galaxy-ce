@@ -407,6 +407,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 Node artifactNode = workspaceNode.addNode(ARTIFACT_NODE_NAME, "galaxy:artifact");
                 artifactNode.addMixin("mix:referenceable");
                 Node versionNode = artifactNode.addNode("version");
+                versionNode.addMixin("mix:referenceable");
                 if (is != null) {
                     versionNode.setProperty(JcrVersion.DATA, is);
                 }
@@ -452,8 +453,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 jcrVersion.setActive(true);
                 
                 try {
-                    indexManager.index(jcrVersion);
-                
                     Set<Artifact> dependencies = ch.detectDependencies(loadedData, workspace);
                     jcrVersion.addDependencies(dependencies, false);
                     
@@ -538,9 +537,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         if (!approved) {
             throw new RuntimeException(new ArtifactPolicyException(approvals));
         }
+
+        indexManager.index(next);
         
         session.save();
-
+        
         return new ArtifactResult(artifact, next, approvals);
     }
     
@@ -611,6 +612,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 // create a new version node
                 Node versionNode = artifactNode.addNode("version");
+                versionNode.addMixin("mix:referenceable");
                 
                 Calendar now = Calendar.getInstance();
                 now.setTime(new Date());
@@ -658,9 +660,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         versionNode.setProperty(pNames.getName(), pNames.getValues());
                     } catch (PathNotFoundException e) {
                     }
-                    
-                    indexManager.index(next);
-                    
                     return approve(session, artifact, previousLatest, next);
                 } catch (RegistryException e) {
                     // this will get dewrapped

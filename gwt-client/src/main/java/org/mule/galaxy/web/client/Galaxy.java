@@ -47,7 +47,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
         
         registryPanel = new RegistryPanel(this);
         tabPanel.add(registryPanel, "Registry");
+        tabPanel.setStyleName("headerTabPanel");
+        tabPanel.getDeckPanel().setStyleName("headerTabDeckPanel");
         tabPanel.selectTab(0);
+        tabPanel.add(new Label("Coming soon."), "Activity");
         tabPanel.add(new AdministrationPanel(this), "Administration");
         
         Label footer = new Label("Mule Galaxy, Copyright 2008 MuleSource, Inc.");

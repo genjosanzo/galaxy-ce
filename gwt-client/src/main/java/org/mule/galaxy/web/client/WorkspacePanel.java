@@ -1,8 +1,9 @@
 package org.mule.galaxy.web.client;
 
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -15,23 +16,28 @@ public class WorkspacePanel
     extends Composite
 {
     private RegistryPanel registryPanel;
-    private VerticalPanel panel;
-    private VerticalPanel artifactPanel;
+    private FlowPanel panel;
+    private FlowPanel artifactPanel;
     private SearchPanel searchPanel;
 
 
     public WorkspacePanel(RegistryPanel rp) {
         super();
         
-        panel = new VerticalPanel();
-        panel.setWidth("100%");
+        panel = new FlowPanel();
         
         searchPanel = new SearchPanel(rp);
+        searchPanel.setStyleName("search-panel");
         panel.add(searchPanel);
 
-        artifactPanel = new VerticalPanel();
-        artifactPanel.setWidth("100%");
-        panel.add(artifactPanel);
+
+        SimplePanel artifactPanelBase = new SimplePanel();
+        artifactPanelBase.setStyleName("artifact-panel-base");
+        panel.add(artifactPanelBase);
+        
+        artifactPanel = new FlowPanel();
+        artifactPanel.setStyleName("artifact-panel");
+        artifactPanelBase.add(artifactPanel);
 
         registryPanel = rp;
         reloadArtifacts();
@@ -43,10 +49,20 @@ public class WorkspacePanel
             ArtifactGroup group = (ArtifactGroup) groups.next();
             
             ArtifactListPanel list = new ArtifactListPanel(registryPanel, group);
+            
+            SimplePanel rightTitlePanel = new SimplePanel();
+            rightTitlePanel.setStyleName("right-title-panel");
+            artifactPanel.add(rightTitlePanel);
+
             Label label = new Label(list.getTitle());
             label.setStyleName("right-title");
-            artifactPanel.add(label);
-            artifactPanel.add(list);
+            rightTitlePanel.add(label);
+            
+            SimplePanel listContainer = new SimplePanel();
+            listContainer.setStyleName("artifact-list-container");
+            listContainer.add(list);
+            
+            artifactPanel.add(listContainer);
         }
     }
     

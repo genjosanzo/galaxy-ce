@@ -1,4 +1,3 @@
-
 /**
  **
  ** Global Defaults
@@ -6,12 +5,30 @@
  **/
 
 body {
-  background-color: white;
   color: black;
   font-family: Helvetica, Arial, sans-serif;
   font-size: 10pt;
-  margin: 0px;
+  margin: 0;
+  padding: 0;
+  background-color: #656565;
 }
+
+.header {
+    background-image: url("images/img_banner.jpg");
+    font-size: 2em;
+    padding: .5em;
+    color: white;
+}
+
+
+.headerTabPanel {
+  margin-top: 0px;
+  margin-left: 0px;
+  width: 100%;
+  color: white;
+}
+
+
 
 h2 {
   font-weight: normal;
@@ -34,21 +51,20 @@ a:visited {
 }
 
 .unselected-link {
-	color: darkblue;
-	background-color: white;
-	padding: 2px;
+    color: black;
+    background-color: white;
+    padding: 2px;
 }
-	
+    
 .selected-link {
-	color: darkblue;
-	background-color: #e8eef7;
-	padding: 2px;
-	font-weight: bold;
+    color: white;
+    background-color: #656565;
+    padding: 2px;
+    font-weight: bold;
 }
 
-.selected-link a, a:visited {
-	color: darkblue;
-	padding: 2px;
+.selected-link a, .selected-link a:visited {
+    color: white;
 }
 
 
@@ -59,23 +75,29 @@ a:visited {
  **/
 
 .left-menu {
-	border-right: 1px #d0d0d0 solid ;
-	padding: 4px;
-	width: 200px;
+    /* border-right: 1px #d0d0d0 solid ; */
+    width: 200px;
+    overflow: auto;
+    background-color: #ddd;
+    overflow: auto;
+}
+
+.left-menu-container {
+    padding: 4px;
 }
 
 .workspaces {
-	padding: 2px 0px 2px 0px; 
-	background-color: white;
+    padding: 2px 0px 2px 0px; 
+    background-color: white;
 }
 
 .workspaces .gwt-TreeItem {
-	padding: 2px;
+    padding: 2px;
 }
 
 .workspaces .gwt-TreeItem-selected {
-	background-color: #e8eef7;
-	font-weight: bold;
+    background-color: #e8eef7;
+    font-weight: bold;
 }
 
 
@@ -85,54 +107,54 @@ a:visited {
  **
  **/
 .title {
-	font-weight: bold;
-	padding: 6px;
-	margin-top: 4px;
-	font-size: 1.5em;
+    font-weight: bold;
+    padding: 6px;
+    margin-top: 4px;
+    font-size: 1.5em;
+}
+
+.right-title-panel {
+    margin-top: 8px;
+    background-image: url("images/nw_maj_rond.gif");
+    background-repeat: no-repeat;
+    background-color: #4c0000;    
 }
 
 .right-title {
-	font-weight: bold;	
-	margin-top: 8px;
-	padding: 4px;
-	padding-left: 6px;
-	font-size: 1.3em;
-	background-image: url("images/nw_maj_rond.gif");
-    background-repeat: no-repeat;
-	background-color: #87B3FF;
+    font-weight: bold; 
+    
+    padding: 4px 0px 2px 8px;
+    
+    font-size: 1.3em;
+    color: white;
 }
 
 /* A different right title which allows a link */
 .rightlinked-title-panel {
-	width: 100%;
-	margin-top: 6px;
-	padding: 4px;
-	border-bottom: 1px black solid;	
-	display: inline;
+    width: 100%;
+    margin-top: 6px;
+    padding: 4px 0px 2px 8px;
+    border-bottom: 1px black solid; 
+    display: inline;
 }
 
 .rightlinked-title {
-	font-weight: bold;
-	font-size: 1.5em;
-	width:80%;
+    font-weight: bold;
+    font-size: 1.5em;
+    width:80%;
 }
 
 .rightlinked-title-link {
-	width: 20%;
-	text-align: right;
-	position: relative;
+    width: 20%;
+    text-align: right;
+    position: relative;
 }
 
 
 
 .base {
-	width: 100%;
-	margin: 0px;
-}
-
-.header {
-	font-size: 2em;
-	padding: .5em;
+    width: 100%;
+    margin: 0px;
 }
 
 
@@ -143,19 +165,19 @@ a:visited {
  **/
 
 .toolbox {
-	width: 100%;
-	background-color: #eeeeee;
-	margin-bottom: 4px;
+    width: 100%;
+    color: white;
+    margin-bottom: 4px;
 }
 
 .toolbox-body {
-	background-color: white;
-	border: solid #c3d9ff 2px;
-	border-top: 0;
+    background-color: #ccc;
+    border: solid black 2px;
+    border-top: 0;
 }
 
 .toolbox-items {
-	width: 100%;
+    width: 100%;
 }
 
 .toolbox-buttons {
@@ -167,17 +189,17 @@ a:visited {
     white-space: nowrap;
     padding-right: 5px;
 }
-	
+    
 .toolbox-title-label {
-	display: inline;
+    display: inline;
 }
 .toolbox-header {
   font-weight: bold;
-  background-color: #C3D9FF;
+  background-color: black;
   border-bottom: 1px black solid;
   padding: 4px;
   padding-left: 6px;
-  background-image: url("images/nw_maj_rond.gif");
+  background-image: url("images/nw_maj_rond_gray.gif");
   background-repeat: no-repeat;
 }
 
@@ -189,24 +211,25 @@ a:visited {
  **/
 
 .main-panel {
-	padding: 0.3em;
+    background-color: white;
 }
-
+    
 .error-panel {
-	background: #F5B800;
-	margin: 10px;
-	padding: 5px;
-	
-	text-align: center;
+    background: #F5B800;
+    margin: 10px;
+    padding: 5px;
+    
+    text-align: center;
 }
 
 .footer {
-	font-size: .8em;
-	font-weight: bold;
-	width: 100%;
-	border-top: 1px solid #d0d0d0;
-	padding: 6px;
-	margin-top: 6px;
+    border-top: 1px solid #656565;
+    background-color: #330000;
+    text-align: right;
+    color: white;
+    font-family: verdana;
+    font-size: .7em;
+    padding: 1em;
 }
 
 /**
@@ -216,15 +239,22 @@ a:visited {
  **/
  
 .artifact-title {
-	font-weight: bold;
-	padding: 6px;
-	margin-bottom: 4px;
-	margin-top: 4px;
-	font-size: 1.5em;
+    font-weight: bold;
+    padding: 6px;
+    margin-bottom: 4px;
+    margin-top: 4px;
+    font-size: 1.5em;
+}
+
+.artifact-panel {
+}
+
+.artifact-panel-base {
+    margin: 0.4em;
 }
 
 .artifactTopPanel {
-	width: 100%;
+    width: 100%;
 }
 .dependencyPanelHeader {
   font-weight: bold;
@@ -235,41 +265,41 @@ a:visited {
 }
 
 .dependencyPanel {
-	border: solid #c3d9ff 2px;
-	width: 100%;
+    border: solid #c3d9ff 2px;
+    width: 100%;
 }
 
 .propertyLink {
-	padding-left: 5px;
+    padding-left: 5px;
 }
 
 .artifactInfoRightGroup {
-	margin-left: 10px;	
+    margin-left: 10px;  
 }
 
 .comments {
-	width: 100%;
+    width: 100%;
 }
 
 
 .comment {
-	width: 100%;
-	margin: 0px;
+    width: 100%;
+    margin: 0px;
 }
 
-	
+    
 .addComment {
-	background-color: #e8eef7;
-	border: 1px black solid;
+    background-color: #e8eef7;
+    border: 1px black solid;
 }
 
 .commentTitle {
     background-image: url("images/nw_maj_rond.gif");
     background-repeat: no-repeat;
-	font-weight: bold;
-	padding: 6px;
-	background-color: #87B3FF;
-	
+    font-weight: bold;
+    padding: 6px;
+    background-color: #87B3FF;
+    
 }
 
 .commentTitle .gwt-Label {
@@ -277,53 +307,60 @@ a:visited {
 }
 
 .commentTitle .gwt-Hyperlink {
-	width: 20%;
-	text-align: right;
+    width: 20%;
+    text-align: right;
 }
 
 .commentText {
-	background-color: #e8eef7;
-	padding: 6px;
-	border: 0px 2px 2px 2px #87B3FF solid;
-	margin-bottom: 2px;
+    background-color: #e8eef7;
+    padding: 6px;
+    border: 0px 2px 2px 2px #87B3FF solid;
+    margin-bottom: 2px;
 }
 
 .nestedComment {
-	padding-left: 20px;
+    padding-left: 20px;
 }
 
 .addComment {
-	padding: 10px;
+    padding: 10px;
 }
 
 .artifactDescriptionLabel {
-	font-weight: bold;
+    font-weight: bold;
 }
 
-.artifactTableHeader {
-	font-weight: bold;
-	padding: 4px;
-	background-color: #c0c0c0;
-	
+.artifactTableHeader td {
+    font-weight: bold;
+    padding: 4px;
+    background-color: #c0c0c0;
+    border-top: 1px #fff solid;
 }
 
-.artifactTableEntry {
-	background-color: #e8e8e8;
-	padding: 4px;
-	border-left: 1px #fff solid;
-	border-top: 1px #fff solid;
+.artifactTableEntry td {
+    background-color: #e8e8e8;
+    padding: 4px;
+    border-top: 1px #fff solid;
 }
 
 .artifactTable {
-	background: white;
-	margin-bottom: 10px;
+    background: white;
+    margin-bottom: 10px;
 }
 
+.artifactTableFull {
+    background: white;
+    margin-bottom: 10px;
+}
+
+.artifact-list-container {
+	width: 100%;
+}
 
 .add-property-panel {
-	background-color: #e8e8e8;
-	padding: 2px;
-	margin: 2px;
+    background-color: #e8e8e8;
+    padding: 2px;
+    margin: 2px;
 }
  
 /**
@@ -333,8 +370,8 @@ a:visited {
  **/
 
 .artifact-version-title {
-	font-weight: bold;
-	font-size: 1.1em;
+    font-weight: bold;
+    font-size: 1.1em;
     background-image: url("images/nw_maj_rond.gif");
     background-repeat: no-repeat;
     padding: 6px;
@@ -342,14 +379,14 @@ a:visited {
 }
 
 .artifact-version-panel {
-	margin: 4px;
+    margin: 4px;
 }
 
 .artifact-version-bottom-panel {
-	padding: 4px;
-	border-right: 1px #c0c0c0 solid;
-	border-left: 1px #c0c0c0 solid;
-	border-bottom: 1px #c0c0c0 solid;
+    padding: 4px;
+    border-right: 1px #c0c0c0 solid;
+    border-left: 1px #c0c0c0 solid;
+    border-bottom: 1px #c0c0c0 solid;
 }
                   
 /**
@@ -359,11 +396,11 @@ a:visited {
  **/
  
 .next-phases-panel .gwt-Button {
-	padding: 4px;
+    padding: 4px;
 }
 
 .next-phases-panel .gwt-ListBox {
-	padding: 4px;
+    padding: 4px;
 }
                    
 /**
@@ -373,14 +410,17 @@ a:visited {
  **/
 
 .search-panel {
-	background: #c3d9ff;
-	padding: 3px;
-	padding-bottom: 0;
+    background: #ddd;
+    padding: 0.3em;
 }
 
-.search-panel .gwt-Label {
-	font-size: 1.1em;
-	font-weight: bold;
+.search-panel .gwt-Hyperlink {
+    text-align: right;
+}
+
+.search-button-panel {
+    text-align: right;
+    padding: 0.3em;
 }
 
 .search-predicate {
@@ -393,9 +433,9 @@ a:visited {
  **
  **/
 .lifecycle-phases-label {
-	font-size: 1.1em;
-	font-weight: bold;
-	padding-top: 10px;
+    font-size: 1.1em;
+    font-weight: bold;
+    padding-top: 10px;
 }
 
 /**
@@ -449,18 +489,18 @@ a:visited {
 }
 
 .bordered {
-	border: solid red 2px;
+    border: solid red 2px;
 }
 
 .gwt-FileUpload {
 }
 
 .gwt-FlexTable {
-	background: white;
+    background: white;
 }
 
 .gwt-FlexTable-header {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 .gwt-Frame {
@@ -747,117 +787,88 @@ a:visited {
   padding: 2px;
 }
 
-/* -------------------------------------------------------------------------- */
-.ks-Sink {
-  width: 100%;
-  height: 24em;
-}
-
-.ks-Info {
-  color: white;
-  padding: 20px 10px 20px 40px;
-  margin-bottom: 10px;
-}
-
-.ks-List {
-}
-
-.ks-List .gwt-Image {
-  position: relative;
-  top: 8px;
-}
-
-.ks-List .ks-SinkItem a {
-  text-decoration: none;
-  color: white;
-}
-
-.ks-List .ks-SinkItem-selected a {
-  text-decoration: none;
-  color: white;
-}
-
-.ks-List .ks-FirstSinkItem a {
-  text-decoration: none;
-  color: white;
-}
-
-.ks-List .ks-FirstSinkItem-selected a {
-  text-decoration: none;
-  color: white;
-}
-
-.ks-List .ks-SinkItem {
-  background: #c6cab7;
-  padding: 4px;
-  padding-left: 16px;
-  padding-right: 16px;
-  margin-right: 3px;
-  border-bottom: 3px solid white;
-  cursor: pointer;
-  cursor: hand;
-}
-
-.ks-List .ks-SinkItem-selected {
-  background: #c6cab7;
-  padding: 4px;
-  padding-left: 16px;
-  padding-right: 16px;
-  margin-right: 3px;
-  padding-bottom: 7px;
-}
-
-.ks-List .ks-FirstSinkItem {
-  background: #c6cab7 url(images/corner.gif) no-repeat top left;
-  padding: 4px;
-  padding-left: 16px;
-  padding-right: 16px;
-  margin-right: 3px;
-  border-bottom: 3px solid white;
-  cursor: pointer;
-  cursor: hand;
-}
-
-.ks-List .ks-FirstSinkItem-selected {
-  background: #c3d9ff url(images/corner.gif) no-repeat top left;
-  padding: 4px;
-  padding-left: 16px;
-  padding-right: 16px;
-  margin-right: 3px;
-  padding-bottom: 7px;
-}
-
-.ks-images-Image {
-  margin: 8px;
-}
-
-.ks-images-Button {
-  margin: 8px;
-  cursor: pointer;
-  cursor: hand;
-}
-
-.ks-layouts {
-  margin: 8px;
-}
-
-.ks-layouts-Label {
-  background-color: #C3D9FF;
-  font-weight: bold;
-  margin-top: 1em;
-  padding: 2px 0px 2px 0px;
-  width: 100%;
-}
-
-.ks-layouts-Scroller {
-  height: 128px;
-  border: 2px solid #C3D9FF;
-  padding: 8px;
-  margin: 8px;
-}
-
-.ks-popups-Popup {
+/**
+ * Navigation stuff
+ */
+.headerTabPanelBottom {
   background-color: white;
-  border: 1px solid #87B3FF;
-  padding: 4px;
+  width: 100%;
+}
+.headerTabPanel .gwt-TabBar {
+  background-color: black;
+  padding-top: 3px;
+  border-bottom: 4px solid #656565;
+}
+
+.headerTabPanel .gwt-TabBar .gwt-TabBarItem {
+  
+  padding: 5px 10px 5px 10px;
+  cursor: pointer;
+  cursor: hand;
+
+  color: white;
+  background-color: black;
+  border-bottom: 2px solid black;
+  margin-right: 2px;
+}
+
+.headerTabPanel .gwt-TabBar .gwt-TabBarItem-selected {
+  padding: 5px 10px 5px 10px;
+  font-weight: bold;
+  cursor: default;
+  color: white;
+  
+  background-color: #656565;
+  border-bottom: 2px solid #656565;
+  margin-right: 2px;
+  background-image: url("images/nw_maj_rond_black.gif");
+  background-repeat: no-repeat;
+}
+
+.headerTabDeckPanel {
+    background-color: white;
+}
+
+
+/**
+ * ARtifact tabs
+ */
+.artifactTabPanelBottom {
+  background-color: white;
+  width: 100%;
+}
+
+.artifactTabPanel .gwt-TabBar {
+  background-color: white;
+  padding-top: 3px;
+  border-bottom: 4px solid #656565;
+}
+
+.artifactTabPanel .gwt-TabBar .gwt-TabBarItem {
+  
+  padding: 5px 10px 5px 10px;
+  cursor: pointer;
+  cursor: hand;
+
+  color: black;
+  background-color: white;
+  border-bottom: 2px solid white;
+  margin-right: 2px;
+}
+
+.artifactTabPanel .gwt-TabBar .gwt-TabBarItem-selected {
+  padding: 5px 10px 5px 10px;
+  font-weight: bold;
+  cursor: default;
+  color: white;
+  
+  background-color: #656565;
+  border-bottom: 2px solid #656565;
+  margin-right: 2px;
+  background-image: url("images/nw_maj_rond.gif");
+  background-repeat: no-repeat;
+}
+
+.artifactTabDeckPanel {
+    background-color: white;
 }

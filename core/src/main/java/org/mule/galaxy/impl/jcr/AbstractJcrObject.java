@@ -37,6 +37,10 @@ public class AbstractJcrObject {
         return node;
     }
 
+    public void setNode(Node node) {
+        this.node = node;
+    }
+
     protected String getStringOrNull(String propName) {
         return JcrUtil.getStringOrNull(node, propName);
     }
