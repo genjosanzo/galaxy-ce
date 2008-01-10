@@ -33,6 +33,7 @@ public class ArtifactMetadataPanel extends AbstractComposite {
         this.registryPanel = registryPanel;
         
         metadata = new FlowPanel();
+        metadata.setStyleName("metadata-panel");
         
         table = createColumnTable();
         

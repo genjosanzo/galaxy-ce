@@ -1,0 +1,102 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0    http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.mule.galaxy</groupId>
+    <artifactId>galaxy-parent</artifactId>
+    <version>1.0-M1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.mule.galaxy</groupId>
+  <artifactId>galaxy-web-standalone</artifactId>
+  <name>Galaxy Web Application Standalone</name>
+  <packaging>war</packaging>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.mule.galaxy</groupId>
+      <artifactId>galaxy-web</artifactId>
+      <version>${version}</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-el</groupId>
+      <artifactId>commons-el</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>tomcat</groupId>
+      <artifactId>jasper-compiler</artifactId>
+      <version>5.5.15</version>
+    </dependency>
+
+    <dependency>
+      <groupId>tomcat</groupId>
+      <artifactId>jasper-runtime</artifactId>
+      <version>5.5.15</version>
+    </dependency>
+
+    <dependency>
+      <groupId>tomcat</groupId>
+      <artifactId>jasper-compiler-jdt</artifactId>
+      <version>5.5.15</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.jdt</groupId>
+      <artifactId>core</artifactId>
+      <version>3.1.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sourceforge.winstone</groupId>
+      <artifactId>winstone</artifactId>
+      <version>0.9.6</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.13</version>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.0</version>
+        <configuration>
+          <webXml>target/web.xml</webXml>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <appendAssemblyId>false</appendAssemblyId>
+          <descriptors>
+            <descriptor>src/assembly/winstone-assembly.xml</descriptor>
+          </descriptors>
+          <archive>
+            <manifest>
+              <mainClass>winstone.Launcher</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- append to the packaging phase. -->
+            <goals>
+              <goal>attached</goal> <!-- goals == mojos -->
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

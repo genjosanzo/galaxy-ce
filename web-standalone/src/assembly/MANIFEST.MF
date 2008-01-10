@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.5.3 
+Created-By: Apache Maven
+Built-By: rickk
+Build-Jdk: 1.5.0_02
+Specification-Title: 
+Specification-Vendor: 
+Implementation-Title: winstone
+Implementation-Vendor: 
+Implementation-Version: 0.9.6
+Main-Class: winstone.Launcher
+

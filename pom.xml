@@ -15,6 +15,7 @@
 		<module>wsi</module>
 		<module>testutils</module>
 		<module>web</module>
+                <module>web-standalone</module>
 		<module>gwt-client</module>
 		<module>integration/mule1</module>
 		<module>integration/cxf</module>
@@ -37,6 +38,13 @@
   </dependencyManagement>
   
 	<build>
+                   <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -76,7 +84,21 @@
 	</build>
 
 
-
+  
+  <distributionManagement>
+    <repository>
+      <id>muleforge.webdav.releases</id>
+      <url>dav:https://dav.muleforge.org/repository/registry/</url>
+    </repository>
+    <snapshotRepository>
+      <id>muleforge.webdav.snapshots</id>
+      <url>dav:https://dav.muleforge.org/snapshots.repository/registry/</url>
+    </snapshotRepository>
+    <site>
+      <id>muleforge.webdav.sites</id>
+      <url>dav:https://dav.muleforge.org/${artifactId}/</url>
+    </site>
+  </distributionManagement>
 	<scm>
 		<connection>
 			scm:svn:https://svn.muleforge.org/registry/trunk

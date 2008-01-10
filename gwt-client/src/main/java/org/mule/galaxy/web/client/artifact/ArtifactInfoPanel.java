@@ -19,6 +19,7 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.ArtifactForm;
 import org.mule.galaxy.web.client.RegistryPanel;
 import org.mule.galaxy.web.client.WorkspacePanel;
@@ -30,7 +31,7 @@ import org.mule.galaxy.web.rpc.DependencyInfo;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
 import org.mule.galaxy.web.rpc.WComment;
 
-public class ArtifactInfoPanel extends Composite {
+public class ArtifactInfoPanel extends AbstractComposite {
 
 
     private HorizontalPanel topPanel;
@@ -53,13 +54,7 @@ public class ArtifactInfoPanel extends Composite {
         
         panel.add(topPanel);
 
-        FlexTable table = new FlexTable();
-        table.setStyleName("artifactTable");
-        table.setCellSpacing(0);
-        table.setCellPadding(0);
-        table.setWidth("100%");
-        table.getColumnFormatter().setStyleName(0, "artifactTableHeader");
-        table.getColumnFormatter().setStyleName(1, "artifactTableEntry");
+        FlexTable table = createColumnTable();
         
         final NameEditPanel nep = new NameEditPanel(registryPanel, info.getId(), 
                                                     (String) info.getValue(0),

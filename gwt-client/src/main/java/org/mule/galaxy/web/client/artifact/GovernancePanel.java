@@ -56,8 +56,7 @@ public class GovernancePanel extends Composite {
         messages.setStyleName("policy-messages");
         panel.add(messages);
         
-        panel.add(createTitle("Policy Management"));
-        panel.add(new Label("Coming soon..."));
+//        panel.add(createTitle("Policy Management"));
         
     }
 

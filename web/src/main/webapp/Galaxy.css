@@ -171,7 +171,7 @@ a:visited {
 }
 
 .toolbox-body {
-	color: black;
+    color: black;
     background-color: white;
     border: solid black 2px;
     border-top: 0;
@@ -213,11 +213,16 @@ a:visited {
 
 .main-panel {
     background-color: white;
+    border-left: 1px solid #aaa;
 }
     
 .error-panel {
+    background: #ddd;
+    padding: 10px;
+}
+   
+.error-panel .gwt-Label {
     background: #F5B800;
-    margin: 10px;
     padding: 5px;
     
     text-align: center;
@@ -244,7 +249,7 @@ a:visited {
     padding: 6px;
     margin-bottom: 4px;
     margin-top: 4px;
-    font-size: 1.5em;
+    font-size: 1.3em;
 }
 
 .artifact-panel {
@@ -331,6 +336,19 @@ a:visited {
     font-weight: bold;
 }
 
+.artifactTableHeader {
+    font-weight: bold;
+    padding: 4px;
+    background-color: #c0c0c0;
+    border-top: 1px #fff solid;
+}
+
+.artifactTableEntry {
+    background-color: #e8e8e8;
+    padding: 4px;
+    border-top: 1px #fff solid;
+}
+
 .artifactTableHeader td {
     font-weight: bold;
     padding: 4px;
@@ -344,6 +362,7 @@ a:visited {
     border-top: 1px #fff solid;
 }
 
+
 .artifactTable {
     background: white;
     margin-bottom: 10px;
@@ -355,7 +374,7 @@ a:visited {
 }
 
 .artifact-list-container {
-	width: 100%;
+    width: 100%;
 }
 
 .add-property-panel {
@@ -363,7 +382,11 @@ a:visited {
     padding: 2px;
     margin: 2px;
 }
- 
+
+.metadata-panel table {
+	width: 100%;
+}
+
 /**
  **
  ** History Panel
@@ -839,6 +862,10 @@ a:visited {
   width: 100%;
 }
 
+.artifactTabPanel {
+    width: 100%;
+}
+
 .artifactTabPanel .gwt-TabBar {
   background-color: white;
   padding-top: 3px;
@@ -846,7 +873,6 @@ a:visited {
 }
 
 .artifactTabPanel .gwt-TabBar .gwt-TabBarItem {
-  
   padding: 5px 10px 5px 10px;
   cursor: pointer;
   cursor: hand;

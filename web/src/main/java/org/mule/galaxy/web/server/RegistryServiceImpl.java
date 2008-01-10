@@ -322,7 +322,7 @@ public class RegistryServiceImpl implements RegistryService {
             }
             
             for (int i = 0; i < view.getColumnNames().length; i++) {
-                if (view.isSummaryOnly(i)) {
+                if (!view.isSummaryOnly(i)) {
                     g.getColumns().add(view.getColumnNames()[i]);
                 }
             }
