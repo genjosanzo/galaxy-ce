@@ -16,6 +16,7 @@ import java.util.Set;
 
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.SearchPredicate;
 
 public class SearchPanel
     extends Composite
@@ -85,7 +86,7 @@ public class SearchPanel
         artifactIndiceMap = map;
         for (Iterator itr = rows.iterator(); itr.hasNext();) {
             SearchPanelRow row = (SearchPanelRow) itr.next();
-            row.addProperties(artifactIndiceMap);
+            row.addPropertySet("Indexes", artifactIndiceMap);
         }
     }
     
@@ -93,16 +94,16 @@ public class SearchPanel
         artifactPropertyMap = map;
         for (Iterator itr = rows.iterator(); itr.hasNext();) {
             SearchPanelRow row = (SearchPanelRow) itr.next();
-            row.addProperties(artifactPropertyMap);
+            row.addPropertySet("Properties", artifactPropertyMap);
         }
     }
     
     public void addPredicate() {
         SearchPanelRow pred = new SearchPanelRow(this);
         if (artifactIndiceMap != null)
-            pred.addProperties(artifactIndiceMap);
+            pred.addPropertySet("Indexes", artifactIndiceMap);
         if (artifactPropertyMap != null)
-            pred.addProperties(artifactPropertyMap);
+            pred.addPropertySet("Properties", artifactPropertyMap);
         
         // Add the search button if we're adding our first row
         if (rows.size() == 0) {
@@ -134,7 +135,9 @@ public class SearchPanel
         
         for (Iterator itr = rows.iterator(); itr.hasNext();) {
             SearchPanelRow row = (SearchPanelRow) itr.next();
-            predicates.add(row.getPredicate());
+            SearchPredicate pred = row.getPredicate();
+            if (pred != null)
+                predicates.add(pred);
         }
         
         return predicates;

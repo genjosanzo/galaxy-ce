@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.client;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -36,10 +37,10 @@ public class SearchPanelRow
         
         propertyList = new ListBox();
         propertyList.setWidth("175px");
-        propertyList.addItem("Name", "name");
-        propertyList.addItem("Document Type", "documentType");
-        propertyList.addItem("Phase", "phase");
         propertyList.addItem("Content Type", "contentType");
+        propertyList.addItem("Document Type", "documentType");
+        propertyList.addItem("Name", "name");
+        propertyList.addItem("Phase", "phase");
         propertyList.addChangeListener(new ChangeListener() {
            public void onChange(Widget sender) {
                processTypeChange();
@@ -74,13 +75,17 @@ public class SearchPanelRow
         initWidget(dock);
     }
     
-    public void addProperties(Map nameIdMap) {
-        Set names = nameIdMap.keySet();
-        for (Iterator itr = names.iterator(); itr.hasNext();) {
-            String name = (String) itr.next();
+    public void addPropertySet(String setName, Map nameIdMap) {
+        Object[] names = nameIdMap.keySet().toArray();
+        Arrays.sort(names);
+        
+        propertyList.addItem("", "");
+        propertyList.addItem(setName + ":", "");
+        for (int i=0; i<names.length; i++) {
+            String name = (String) names[i];
             String id   = (String) nameIdMap.get(name);
             
-            propertyList.addItem(name, id);
+            propertyList.addItem("- " + name, id);
         }
     }
     
@@ -103,12 +108,15 @@ public class SearchPanelRow
         contents.setCellWidth(valueTextBox, "100%");
     }
 
-    public Object getPredicate()
+    public SearchPredicate getPredicate()
     {
         try {
             String property = propertyList.getValue(propertyList.getSelectedIndex());
             int matchType = Integer.parseInt(matchTypeList.getValue(matchTypeList.getSelectedIndex()));
             String value = valueTextBox.getText();
+            
+            if (property.equals("") || value.equals(""))
+                return null;
             
             return new SearchPredicate(property, matchType, value);
         }
