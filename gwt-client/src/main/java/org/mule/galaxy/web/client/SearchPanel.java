@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.HashSet;
@@ -30,6 +31,8 @@ public class SearchPanel
     private Hyperlink searchLink;
     private Button clearButton;
     private InlineFlowPanel buttonPanel;
+    private Hyperlink freeformQueryLink;
+    private TextArea freeformQueryArea;
 
     public SearchPanel(RegistryPanel rp) {
         registryPanel = rp;
@@ -52,6 +55,15 @@ public class SearchPanel
             }
         });
 
+        freeformQueryArea = new TextArea();
+        freeformQueryArea.setCharacterWidth(80);
+        freeformQueryArea.setVisibleLines(7);
+        freeformQueryLink = new Hyperlink("Freeform >>", "customQuery");
+        freeformQueryLink.addClickListener(new ClickListener() {
+            public void onClick(Widget sender) {
+                showHideFreeformQuery();
+            }
+        });
         
         searchLink = new Hyperlink("Search", "search");
         searchLink.addClickListener(new ClickListener() {
@@ -107,6 +119,8 @@ public class SearchPanel
         
         // Add the search button if we're adding our first row
         if (rows.size() == 0) {
+            panel.add(freeformQueryLink);
+            
             buttonPanel = new InlineFlowPanel();
             buttonPanel.setStyleName("search-button-panel");
             buttonPanel.add(searchButton);
@@ -124,8 +138,25 @@ public class SearchPanel
         
         // Remove the search button if we're removing our last row
         if (rows.size() == 0) {
+            panel.remove(freeformQueryLink);
+            panel.remove(freeformQueryArea);
             searchButton.click();
             panel.remove(buttonPanel);
+            panel.insert(searchLink, 0);
+        }
+    }
+    
+    public void showHideFreeformQuery() {
+        if (panel.getWidget(1) == freeformQueryArea) {
+            panel.remove(freeformQueryArea);
+            freeformQueryArea.setText("");
+            freeformQueryLink.setText("Freeform >>");
+        }
+        else {
+            panel.insert(freeformQueryArea, 1);
+            freeformQueryArea.setText("Add a custom query...");
+            freeformQueryArea.selectAll();
+            freeformQueryLink.setText("Freeform <<");
         }
     }
 
