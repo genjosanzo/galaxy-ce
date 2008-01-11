@@ -1,11 +1,12 @@
 package org.mule.galaxy.query;
 
+import java.util.Collection;
+
 public class Restriction {
     public enum Operator {
         EQUALS,
         NOT,
-        GT,
-        LT,
+        IN,
         LIKE
     }
 
@@ -47,6 +48,10 @@ public class Restriction {
     public static Restriction like(String property, Object value)
     {
         return new Restriction(Operator.LIKE, property, value);
+    }
+
+    public static Restriction in(String property, Collection<?> values) {
+        return new Restriction(Operator.IN, property, values);
     }
 }
 

@@ -1,6 +1,7 @@
 package org.mule.galaxy.impl;
 
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
@@ -26,6 +27,23 @@ public class IndexTest extends AbstractGalaxyTest {
                               "/META-INF/applicationContext-test.xml" };
         
     }
+    
+    public void testReindex() throws Exception {
+        Artifact artifact = importHelloWsdl();
+        
+        Index i = indexManager.getIndex("wsdl.targetNamespace");
+        
+        i.setExpression("concat('foo', 'bar')");
+        
+        indexManager.save(i);
+        
+        Thread.sleep(2000);
+        
+        artifact = registry.getArtifact(artifact.getId());
+        Object value = artifact.getProperty("wsdl.targetNamespace");
+        assertEquals("foobar", value);
+    }
+    
     public void testWsdlIndex() throws Exception {
         Collection<Index> indices = indexManager.getIndices(Constants.WSDL_DEFINITION_QNAME);
         assertNotNull(indices);
@@ -114,6 +132,12 @@ public class IndexTest extends AbstractGalaxyTest {
                                             Restriction.eq("contentType", "application/xml")));
     
         assertEquals(1, results.size());
+        
+
+        results = registry.search(new Query(ArtifactVersion.class, 
+                                            Restriction.in("contentType", Arrays.asList("application/xml"))));
+    
+        assertEquals(1, results.size());
     }
     
     public void testMuleIndex() throws Exception {
@@ -148,7 +172,7 @@ public class IndexTest extends AbstractGalaxyTest {
         Collection services = (Collection) property;
         
         PropertyInfo pi = version.getPropertyInfo("mule.service");
-        assertFalse(pi.isVisible());
+        assertTrue(pi.isVisible());
         assertTrue(pi.isLocked());
         
         assertTrue(services.contains("GreeterUMO"));

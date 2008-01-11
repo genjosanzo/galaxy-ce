@@ -29,6 +29,10 @@ public interface RegistryServiceAsync extends RemoteService {
     void getArtifacts(String workspace, Set artifactTypes, Set searchPredicates, AsyncCallback callback);
     
     void getIndexes(AsyncCallback callback);
+
+    void getIndex(String id, AsyncCallback c);
+    
+    void saveIndex(WIndex index, AsyncCallback callback);
     
     void getDependencyInfo(String artifactId, AsyncCallback callback);
 

@@ -34,7 +34,7 @@
         <include>commons-logging:commons-logging</include>
         <include>tomcat:jasper-runtime</include>
         <include>tomcat:jasper-compiler</include>
-        <include>tomcat:jasper-compiler-jdtcd </include>
+        <include>tomcat:jasper-compiler-jdt</include>
         <include>commons-el:commons-el</include>
         <include>org.eclipse.jdt:core</include>
         <include>javax.servlet:jsp-api</include>

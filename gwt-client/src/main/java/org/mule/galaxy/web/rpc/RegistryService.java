@@ -1,6 +1,5 @@
 package org.mule.galaxy.web.rpc;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 
 import java.util.Collection;
@@ -39,10 +38,14 @@ public interface RegistryService extends RemoteService {
     Collection getArtifacts(String workspace, Set artifactTypes, Set searchPredicates);
     
     /**
-     * @gwt.typeArgs <java.lang.String,java.lang.String>
+     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WIndex>
      * @return
      */
-    public Map getIndexes();
+    public Collection getIndexes();
+    
+    public WIndex getIndex(String id) throws RPCException;
+    
+    public void saveIndex(WIndex index) throws RPCException;
     
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.DependencyInfo>

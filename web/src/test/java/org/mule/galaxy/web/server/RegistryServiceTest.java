@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.acegisecurity.Authentication;
@@ -12,7 +11,6 @@ import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.providers.AuthenticationProvider;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.policy.ApprovalMessage;
@@ -27,6 +25,7 @@ import org.mule.galaxy.web.rpc.TransitionResponse;
 import org.mule.galaxy.web.rpc.WApprovalMessage;
 import org.mule.galaxy.web.rpc.WComment;
 import org.mule.galaxy.web.rpc.WGovernanceInfo;
+import org.mule.galaxy.web.rpc.WIndex;
 import org.mule.galaxy.web.rpc.WWorkspace;
 import org.springframework.context.ApplicationContext;
 
@@ -211,10 +210,13 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     }
     
     public void testIndexes() throws Exception {
-        Map indexes = gwtRegistry.getIndexes();
+        Collection indexes = gwtRegistry.getIndexes();
         
         assertTrue(indexes.size() > 0);
         
+        WIndex idx = gwtRegistry.getIndex("wsdl.service");
+        assertNotNull(idx);
+        assertNotNull(idx.getResultType());
     }
     
     private final class FauxPolicy implements ArtifactPolicy {

@@ -3,13 +3,12 @@ package org.mule.galaxy.web.client;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -24,7 +23,7 @@ public class SearchPanel
 {
     private FlowPanel panel;
     private Set rows;
-    private Map artifactIndiceMap;
+    private Collection artifactIndexes;
     private Map artifactPropertyMap;
     private Button searchButton;
     private RegistryPanel registryPanel;
@@ -44,7 +43,7 @@ public class SearchPanel
         registryPanel.getRegistryService().getIndexes(new AbstractCallback(registryPanel) {
 
             public void onSuccess(Object o) {
-                initArtifactIndices((Map) o);
+                initArtifactIndices((Collection) o);
             }
             
         });
@@ -94,11 +93,11 @@ public class SearchPanel
         initWidget(panel);
     }
     
-    public void initArtifactIndices(Map map) {
-        artifactIndiceMap = map;
+    public void initArtifactIndices(Collection c) {
+        artifactIndexes = c;
         for (Iterator itr = rows.iterator(); itr.hasNext();) {
             SearchPanelRow row = (SearchPanelRow) itr.next();
-            row.addPropertySet("Indexes", artifactIndiceMap);
+            row.addPropertySet("Indexes", artifactIndexes);
         }
     }
     
@@ -106,14 +105,14 @@ public class SearchPanel
         artifactPropertyMap = map;
         for (Iterator itr = rows.iterator(); itr.hasNext();) {
             SearchPanelRow row = (SearchPanelRow) itr.next();
-            row.addPropertySet("Properties", artifactPropertyMap);
+            row.addPropertySet("Properties", artifactIndexes);
         }
     }
     
     public void addPredicate() {
         SearchPanelRow pred = new SearchPanelRow(this);
-        if (artifactIndiceMap != null)
-            pred.addPropertySet("Indexes", artifactIndiceMap);
+        if (artifactIndexes != null)
+            pred.addPropertySet("Indexes", artifactIndexes);
         if (artifactPropertyMap != null)
             pred.addPropertySet("Properties", artifactPropertyMap);
         

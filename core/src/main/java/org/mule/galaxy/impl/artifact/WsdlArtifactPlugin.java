@@ -33,7 +33,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
             "declare namespace wsdl=\"http://schemas.xmlsoap.org/wsdl/\";\n" +
             "declare variable $document external;\n" +
             "" +
-            "<values visible=\"false\"> {\n" +
+            "<values> {\n" +
             "for $svc in $document//wsdl:service\n" +
             "let $ns := $document/wsdl:definition/@targetNamespace\n" +
             "    return <value>{data($svc/@name)}</value>\n" +
@@ -50,7 +50,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
             "declare namespace wsdl=\"http://schemas.xmlsoap.org/wsdl/\";\n" +
             "declare variable $document external;\n" +
             "" +
-            "<values visible=\"false\"> {\n" +
+            "<values> {\n" +
             "for $ep in $document//wsdl:service/wsdl:port\n" +
             "let $ns := $document/wsdl:definition/@targetNamespace\n" +
             "    return <value>{data($ep/@name)}</value>\n" +
@@ -68,7 +68,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
             "declare namespace wsdl=\"http://schemas.xmlsoap.org/wsdl/\";\n" +
             "declare variable $document external;\n" +
             "" +
-            "<values visible=\"false\"> {\n" +
+            "<values> {\n" +
             "for $b in $document//wsdl:bindingt\n" +
             "let $ns := $document/wsdl:definition/@targetNamespace\n" +
             "    return <value>{data($b/@name)}</value>\n" +
@@ -86,7 +86,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
             "declare namespace wsdl=\"http://schemas.xmlsoap.org/wsdl/\";\n" +
             "declare variable $document external;\n" +
             "" +
-            "<values visible=\"false\"> {\n" +
+            "<values> {\n" +
             "for $pt in $document//wsdl:portType\n" +
             "let $ns := $document/wsdl:definition/@targetNamespace\n" +
             "    return <value>{data($pt/@name)}</value>\n" +

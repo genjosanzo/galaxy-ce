@@ -37,7 +37,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
         FlowPanel base = new FlowPanel();
         base.setStyleName("base");
         base.setWidth("100%");
-        
+
+//        SimplePanel header = new SimplePanel();
+//        header.setStyleName("header");
+//        header.add(new Image("images/logo_mule_galaxy_KO.gif"));
         Label header = new Label("Mule Galaxy");
         header.setStyleName("header");
         base.add(header);

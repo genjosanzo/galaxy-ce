@@ -125,6 +125,7 @@ a:visited {
     
     padding: 4px 0px 2px 8px;
     
+    border-bottom: 1px #fff solid;
     font-size: 1.3em;
     color: white;
 }
@@ -148,6 +149,7 @@ a:visited {
     width: 20%;
     text-align: right;
     position: relative;
+    padding: 6px;
 }
 
 
@@ -353,7 +355,6 @@ a:visited {
     font-weight: bold;
     padding: 4px;
     background-color: #c0c0c0;
-    border-top: 1px #fff solid;
 }
 
 .artifactTableEntry td {

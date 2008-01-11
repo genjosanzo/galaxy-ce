@@ -1,12 +1,5 @@
 package org.mule.galaxy.web.client;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import org.mule.galaxy.web.rpc.SearchPredicate;
-
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -16,6 +9,14 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.mule.galaxy.web.rpc.SearchPredicate;
+import org.mule.galaxy.web.rpc.WIndex;
 
 public class SearchPanelRow
     extends Composite
@@ -84,6 +85,18 @@ public class SearchPanelRow
         for (int i=0; i<names.length; i++) {
             String name = (String) names[i];
             String id   = (String) nameIdMap.get(name);
+            
+            propertyList.addItem("- " + name, id);
+        }
+    }
+
+    public void addPropertySet(String setName, Collection indexes) {
+        propertyList.addItem("", "");
+        propertyList.addItem(setName + ":", "");
+        for (Iterator itr = indexes.iterator(); itr.hasNext();) {
+            WIndex wi = (WIndex)itr.next();
+            String name = (String) wi.getName();
+            String id   = (String) wi.getId();
             
             propertyList.addItem("- " + name, id);
         }

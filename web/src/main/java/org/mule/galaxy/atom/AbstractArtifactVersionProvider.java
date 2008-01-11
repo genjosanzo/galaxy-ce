@@ -72,7 +72,11 @@ public abstract class AbstractArtifactVersionProvider extends AbstractCollection
                 Element prop = factory.newElement(new QName(NAMESPACE, "property"), metadata);
                 prop.setAttributeValue("name", p.getName());
                 prop.setAttributeValue("locked", new Boolean(p.isLocked()).toString());
-                prop.setAttributeValue("value", p.getValue().toString());
+                Object value = p.getValue();
+                if (value == null) {
+                    value = "";
+                } 
+                prop.setAttributeValue("value", value.toString());
             }
         }
         

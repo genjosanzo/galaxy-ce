@@ -9,12 +9,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.xml.namespace.QName;
 
 import org.acegisecurity.context.SecurityContextHolder;
 import org.mule.galaxy.Artifact;
@@ -32,6 +35,7 @@ import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.Index.Language;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
@@ -60,6 +64,7 @@ import org.mule.galaxy.web.rpc.WArtifactPolicy;
 import org.mule.galaxy.web.rpc.WArtifactType;
 import org.mule.galaxy.web.rpc.WComment;
 import org.mule.galaxy.web.rpc.WGovernanceInfo;
+import org.mule.galaxy.web.rpc.WIndex;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WPhase;
 import org.mule.galaxy.web.rpc.WProperty;
@@ -264,16 +269,91 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     @SuppressWarnings("unchecked")
-    public Map getIndexes() {
-        Map map = new HashMap();
+    public Collection getIndexes() {
+        ArrayList<WIndex> windexes = new ArrayList<WIndex>();
         
         Collection<Index> indices = indexManager.getIndexes();
         for (Index idx : indices) {
-            map.put(idx.getName(), idx.getId());
+            windexes.add(createWIndex(idx));
         }
         
-        return map;
+        return windexes;
     }
+
+    private WIndex createWIndex(Index idx) {
+        
+        ArrayList<String> docTypes = new ArrayList<String>();
+        if (idx.getDocumentTypes() != null) {
+            for (QName q : idx.getDocumentTypes()) {
+                docTypes.add(q.toString());
+            }
+        }
+        String qt;
+        if (String.class.equals(idx.getQueryType())) {
+            qt = "String";
+        } else {
+            qt = "QName";
+        }
+        
+        return new WIndex(idx.getId(),
+                          idx.getName(),
+                          idx.getExpression(),
+                          idx.getLanguage().toString(),
+                          qt, 
+                          docTypes);
+    }
+
+
+    public WIndex getIndex(String id) throws RPCException {
+        try {
+            Index idx = indexManager.getIndex(id);
+            if (idx == null) {
+                return null;
+            }
+            return createWIndex(idx);
+        } catch (Exception e) {
+            throw new RPCException("Could not find index " + id);
+        }
+    }
+
+
+    public void saveIndex(WIndex wi) throws RPCException {
+        try {
+            Index idx = buildIndex(wi);
+            
+            indexManager.save(idx);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException("Could save index.");
+        }
+    }
+
+
+    private Index buildIndex(WIndex wi) throws RPCException {
+        Index idx = new Index();
+        idx.setId(wi.getId());
+        idx.setExpression(wi.getExpression());
+        idx.setLanguage(Language.valueOf(wi.getLanguage()));
+        idx.setName(wi.getName());
+        
+        if (wi.getResultType().equals("String")) {
+            idx.setQueryType(String.class);
+        } else {
+            idx.setQueryType(QName.class);
+        }
+        
+        HashSet<QName> docTypes = new HashSet<QName>();
+        for (Object o : wi.getDocumentTypes()) {
+            try {
+                docTypes.add(QName.valueOf(o.toString()));
+            } catch (IllegalArgumentException e) {
+                throw new RPCException("QName was formatted incorrectly: " + o.toString());
+            }
+        }
+        idx.setDocumentTypes(docTypes);
+        return idx;
+    }
+
 
     @SuppressWarnings("unchecked")
     public Collection getDependencyInfo(String artifactId) throws RPCException {
@@ -299,7 +379,7 @@ public class RegistryServiceImpl implements RegistryService {
             
             return deps;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException("Could not find artifact " + artifactId);
         }
         

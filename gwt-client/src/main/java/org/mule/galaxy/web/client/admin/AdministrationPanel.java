@@ -38,7 +38,7 @@ public class AdministrationPanel extends AbstractMenuPanel {
         Hyperlink link = new Hyperlink("Lifecycles", "");
         link.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
-                showUsers();
+                setMain(new LifecyclePanel(adminPanel));
             }
         });
         manageBox.add(link);
@@ -46,10 +46,24 @@ public class AdministrationPanel extends AbstractMenuPanel {
         link = new Hyperlink("Indexes", "");
         link.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
-                showUsers();
+                setMain(new IndexListPanel(adminPanel));
             }
         });
-        manageBox.add(link);
+
+        add = new Hyperlink("Add","");
+        add.addClickListener(new ClickListener() {
+            public void onClick(Widget w) {
+                setMain(new IndexForm(adminPanel));
+            }
+        });
+        
+        InlineFlowPanel item = new InlineFlowPanel();
+        item.add(link);
+        item.add(new Label(" ["));
+        item.add(add);
+        item.add(new Label("]"));
+        
+        manageBox.add(item);
         
         link = new Hyperlink("Policies", "");
         link.addClickListener(new ClickListener() {
@@ -73,7 +87,7 @@ public class AdministrationPanel extends AbstractMenuPanel {
                 setMain(new UserForm(adminPanel));
             }
         });
-        InlineFlowPanel item = new InlineFlowPanel();
+        item = new InlineFlowPanel();
         item.add(link);
         item.add(new Label(" ["));
         item.add(add);

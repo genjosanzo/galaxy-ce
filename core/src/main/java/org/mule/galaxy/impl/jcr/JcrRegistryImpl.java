@@ -193,7 +193,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     session.save();
                     
                     String dest = parentNode.getPath() + "/" + newName;
-                    System.out.println("moving " + node.getPath() + " to " + dest);
                     session.getWorkspace().move(node.getPath(), dest);
                 
                 session.save();
@@ -325,14 +324,23 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 Node wNode = node.getParent();
                 JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(wNode), 
                                                        node, registry);
-                
-                artifact.setContentHandler(contentService.getContentHandler(artifact.getContentType()));
+
+                setupContentHandler(artifact);
 
                 return artifact;
             }
         });
     }
-
+    
+    protected void setupContentHandler(JcrArtifact artifact) {
+        ContentHandler ch = null;
+        if (artifact.getDocumentType() != null) {
+            ch = contentService.getContentHandler(artifact.getDocumentType());
+        } else {
+            ch = contentService.getContentHandler(artifact.getContentType());
+        }
+        artifact.setContentHandler(ch);
+    }
     
     public Artifact getArtifact(final Workspace w, final  String name) throws NotFoundException {
         final JcrRegistryImpl registry = this;
@@ -914,22 +922,17 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         property = r.getLeft().toString();
                     }
                     
-                    String right = r.getRight().toString();
-
-                    if (property.equals(JcrArtifact.PHASE)
-                        || property.equals(JcrArtifact.DOCUMENT_TYPE)
-                        || property.equals(JcrArtifact.CONTENT_TYPE)
-                        || property.equals(JcrArtifact.NAME)) {
-                        createPropertySearch(qstr, right, property, operator, not, true);
-                    } else {
-                        if (first) {
-                            first = false;
-                            propStr.append("[");
-                        } else {
-                            propStr.append(" and ");
+                    if (operator.equals(Operator.IN)) {
+                        Collection<?> right = (Collection<?>) r.getRight();
+                        for (Object o : right) {
+                            first = appendPropertySearech(qstr, propStr, first, 
+                                                          o.toString(), property, not, Operator.EQUALS);
                         }
+                    } else {
+                        String right = r.getRight().toString();
                         
-                        createPropertySearch(propStr, right, property, operator, not, false);
+                        first = appendPropertySearech(qstr, propStr, first, right, 
+                                                      property, not, operator);
                     }
                 }
                 
@@ -964,20 +967,48 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(artifactNode.getParent()), 
                                                                artifactNode, 
                                                                registry);
+                        setupContentHandler(artifact);
                         artifacts.add(new JcrVersion(artifact, node));
                     } else {
                         while (!node.getName().equals(ARTIFACT_NODE_NAME)) {
                             node = node.getParent();
                         }
-                        artifacts.add(new JcrArtifact(new JcrWorkspace(node.getParent()), 
-                                                      node, 
-                                                      registry));
+                        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(node.getParent()), node,
+                                                               registry);
+                        setupContentHandler(artifact);
+                        artifacts.add(artifact);
                     }
                     
                     
                 }                                                   
                 
                 return artifacts;
+            }
+
+            private boolean appendPropertySearech(StringBuilder qstr, 
+                                                  StringBuilder propStr, 
+                                                  boolean first,
+                                                  String right, 
+                                                  String property, 
+                                                  boolean not,
+                                                  Operator operator) {
+                
+                if (property.equals(JcrArtifact.PHASE)
+                    || property.equals(JcrArtifact.DOCUMENT_TYPE)
+                    || property.equals(JcrArtifact.CONTENT_TYPE)
+                    || property.equals(JcrArtifact.NAME)) {
+                    createPropertySearch(qstr, right, property, operator, not, true);
+                } else {
+                    if (first) {
+                        first = false;
+                        propStr.append("[");
+                    } else {
+                        propStr.append(" and ");
+                    }
+                    
+                    createPropertySearch(propStr, right, property, operator, not, false);
+                }
+                return first;
             }
 
         });

@@ -100,6 +100,7 @@ public class UserForm extends AbstractComposite {
         if (p != null && !p.equals(c)){
             adminPanel.setMessage("The confirmation password does not match.");
             reenable();
+            return;
         }
     
         if (usernameTB != null) {

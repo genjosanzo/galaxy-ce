@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
@@ -20,7 +21,6 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.Workspace;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
@@ -38,6 +38,7 @@ import net.sf.saxon.javax.xml.xquery.XQPreparedExpression;
 import net.sf.saxon.javax.xml.xquery.XQResultSequence;
 import net.sf.saxon.xqj.SaxonXQDataSource;
 import org.apache.commons.lang.BooleanUtils;
+import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentService;
 import org.mule.galaxy.GalaxyException;
@@ -45,14 +46,19 @@ import org.mule.galaxy.Index;
 import org.mule.galaxy.IndexManager;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.XmlContentHandler;
-import org.mule.galaxy.impl.jcr.JcrArtifact;
 import org.mule.galaxy.impl.jcr.JcrUtil;
-import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.util.QNameUtil;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.jackrabbit.support.UserTxSessionHolder;
@@ -61,7 +67,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 
-public class IndexManagerImpl extends AbstractReflectionDao<Index> implements IndexManager {
+public class IndexManagerImpl extends AbstractReflectionDao<Index> 
+    implements IndexManager, ApplicationContextAware {
     private Logger LOGGER = LogUtils.getL7dLogger(IndexManagerImpl.class);
 
     private ContentService contentService;
@@ -72,10 +79,21 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index> implements In
 
     private Repository repository;
 
+    private Registry registry;
+    
     protected Credentials credentials;
+
+    private ApplicationContext context;
     
     public IndexManagerImpl() throws Exception {
         super(Index.class, "indexes", false);
+    }
+
+    @Override
+    public void save(Index t) {
+        super.save(t);
+        
+        reindex(t);
     }
 
     @SuppressWarnings("unchecked")
@@ -138,8 +156,8 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index> implements In
     }
 
 
-    public void indexAsynchronous(final ArtifactVersion version) {
-        
+
+    private void reindex(final Index idx) {
         Runnable runnable = new Runnable() {
 
             public void run() {
@@ -150,8 +168,9 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index> implements In
                     UserTxSessionHolder sessionHolder = new UserTxSessionHolder(session);
                     TransactionSynchronizationManager.bindResource(getSessionFactory(), sessionHolder);
                     
+                    findAndReindex(idx);
                     
-                    
+                    session.save();
                 } catch (RepositoryException e) {
                     handleIndexingException(e);
                 } finally {
@@ -164,6 +183,28 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index> implements In
             }
         };
         executor.execute(runnable);
+    }
+
+    protected void findAndReindex(Index idx) {
+        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(Artifact.class)
+            .add(Restriction.in("documentType", idx.getDocumentTypes()));
+        
+        try {
+            Set results = getRegistry().search(q);
+            LOGGER.info("Reindexing " + idx.getId() + " on " + results.size() + " artifacts.");
+            for (Object o : results) {
+                Artifact a = (Artifact) o;
+                
+                for (ArtifactVersion v : a.getVersions()) {
+                    index(v, idx);
+                }
+            }
+        } catch (QueryException e) {
+            LOGGER.log(Level.SEVERE, "Could not reindex documents for index " + idx.getId(), e);
+        } catch (RegistryException e) {
+            LOGGER.log(Level.SEVERE, "Could not reindex documents for index " + idx.getId(), e);
+        }
+        
     }
 
     protected void handleIndexingException(Throwable t) {
@@ -181,20 +222,24 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index> implements In
         Collection<Index> indices = getIndices(dt);
         
         for (Index idx : indices) {
-            try {
-                switch (idx.getLanguage()) {
-                case XQUERY:
-                    indexWithXQuery(version, idx);
-                    break;
-                case XPATH:
-                    indexWithXPath(version, idx);
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-                }
-            } catch (Throwable t) {
-                handleIndexingException(idx, t);
+            index(version, idx);
+        }
+    }
+
+    private void index(final ArtifactVersion version, Index idx) {
+        try {
+            switch (idx.getLanguage()) {
+            case XQUERY:
+                indexWithXQuery(version, idx);
+                break;
+            case XPATH:
+                indexWithXPath(version, idx);
+                break;
+            default:
+                throw new UnsupportedOperationException();
             }
+        } catch (Throwable t) {
+            handleIndexingException(idx, t);
         }
     }
 
@@ -295,5 +340,17 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index> implements In
     public void setCredentials(Credentials credentials) {
         this.credentials = credentials;
     }
+
+    private synchronized Registry getRegistry() {
+        if (registry == null) {
+            registry = (Registry) context.getBean("registry");
+        }
+        return registry;
+    }
+    
+    public void setApplicationContext(ApplicationContext ctx) throws BeansException {
+        this.context = ctx;
+    }
+
 
 }
