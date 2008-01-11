@@ -24,16 +24,43 @@ public class MuleArtifactPlugin extends AbstractArtifactPlugin {
         
         // Read <mule:service> elements
         String exp = 
-            "declare namespace mule=\"http://www.mulesource.org/schema/mule/core/2.0\";\n" +
             "declare variable $document external;\n" +
             "" +
             "<values> {\n" +
-            "for $svc in $document//mule:service\n" +
-            "    return <value>{data($svc/@name)}</value>\n" +
+            "for $e in $document//mule-descriptor\n" +
+            "    return <value>{data($e/@name)}</value>\n" +
             "} </values>";
        
-        indexManager.save(new Index("mule.service", // index field name
-                                    "Mule Services", // Display Name
+        indexManager.save(new Index("mule.descriptor", // index field name
+                                    "Mule Descriptors", // Display Name
+                                    Index.Language.XQUERY,
+                                    String.class, // search input type
+                                    exp, // the xquery expression
+                                    Constants.MULE_QNAME)); // document QName which this applies to
+        exp = 
+            "declare variable $document external;\n" +
+            "" +
+            "<values> {\n" +
+            "for $e in $document//model\n" +
+            "    return <value>{data($e/@name)}</value>\n" +
+            "} </values>";
+       
+        indexManager.save(new Index("mule.model", // index field name
+                                    "Mule Models", // Display Name
+                                    Index.Language.XQUERY,
+                                    String.class, // search input type
+                                    exp, // the xquery expression
+                                    Constants.MULE_QNAME)); // document QName which this applies to
+        exp = 
+            "declare variable $document external;\n" +
+            "" +
+            "<values> {\n" +
+            "for $e in $document//transformers/transformer\n" +
+            "    return <value>{data($e/@name)}</value>\n" +
+            "} </values>";
+       
+        indexManager.save(new Index("mule.transformer", // index field name
+                                    "Mule Transformers", // Display Name
                                     Index.Language.XQUERY,
                                     String.class, // search input type
                                     exp, // the xquery expression

@@ -6,7 +6,9 @@ public interface Constants {
     QName WSDL_DEFINITION_QNAME = new QName("http://schemas.xmlsoap.org/wsdl/", 
                                       "definitions");
 
-    QName MULE_QNAME = new QName("http://www.mulesource.org/schema/mule/core/2.0", "mule");
+    QName MULE_QNAME = new QName("mule-configuration");
+
+    QName MULE2_QNAME = new QName("http://www.mulesource.org/schema/mule/core/2.0", "mule");
     
     QName SCHEMA_QNAME = new QName("http://www.w3.org/2001/XMLSchema", "schema");
     

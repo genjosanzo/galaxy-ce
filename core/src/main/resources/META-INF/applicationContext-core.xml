@@ -213,6 +213,7 @@
   </bean>
   
   <bean class="org.mule.galaxy.impl.artifact.MuleArtifactPlugin" parent="abstractArtifactPlugin"/>
+  <bean class="org.mule.galaxy.impl.artifact.Mule2ArtifactPlugin" parent="abstractArtifactPlugin"/>
   <bean class="org.mule.galaxy.impl.artifact.WsdlArtifactPlugin" parent="abstractArtifactPlugin"/>
   <bean class="org.mule.galaxy.impl.artifact.OtherArtifactPlugin" parent="abstractArtifactPlugin"/>
   

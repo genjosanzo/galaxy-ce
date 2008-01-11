@@ -84,7 +84,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
 
     protected Artifact importHelloMule() throws RegistryException, ArtifactPolicyException, IOException,
         MimeTypeParseException {
-        InputStream helloWsdl = getResourceAsStream("/mule/hello-config.xml");
+        InputStream helloWsdl = getResourceAsStream("/mule2/hello-config.xml");
         
         Collection<Workspace> workspaces = registry.getWorkspaces();
         assertEquals(1, workspaces.size());

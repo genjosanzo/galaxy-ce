@@ -141,20 +141,20 @@ public class IndexTest extends AbstractGalaxyTest {
     }
     
     public void testMuleIndex() throws Exception {
-        Collection<Index> indices = indexManager.getIndices(Constants.MULE_QNAME);
+        Collection<Index> indices = indexManager.getIndices(Constants.MULE2_QNAME);
         assertNotNull(indices);
         assertEquals(1, indices.size());
         
         Index idx = indices.iterator().next();
-        assertEquals("mule.service", idx.getId());
-        assertEquals("Mule Services", idx.getName());
+        assertEquals("mule2.service", idx.getId());
+        assertEquals("Mule 2 Services", idx.getName());
         assertEquals(Index.Language.XQUERY, idx.getLanguage());
         assertEquals(String.class, idx.getQueryType());
         assertNotNull(idx.getExpression());
         assertEquals(1, idx.getDocumentTypes().size());
         
         // Import a document which should now be indexed
-        InputStream helloWsdl = getResourceAsStream("/mule/hello-config.xml");
+        InputStream helloWsdl = getResourceAsStream("/mule2/hello-config.xml");
         
         Collection<Workspace> workspaces = registry.getWorkspaces();
         assertEquals(1, workspaces.size());
@@ -166,12 +166,12 @@ public class IndexTest extends AbstractGalaxyTest {
         Artifact artifact = ar.getArtifact();
         
         JcrVersion version = (JcrVersion) artifact.getActiveVersion();
-        Object property = version.getProperty("mule.service");
+        Object property = version.getProperty("mule2.service");
         assertNotNull(property);
         assertTrue(property instanceof Collection);
         Collection services = (Collection) property;
         
-        PropertyInfo pi = version.getPropertyInfo("mule.service");
+        PropertyInfo pi = version.getPropertyInfo("mule2.service");
         assertTrue(pi.isVisible());
         assertTrue(pi.isLocked());
         
@@ -179,7 +179,7 @@ public class IndexTest extends AbstractGalaxyTest {
         
         // Try out search!
         Set results = registry.search(new Query(Artifact.class, 
-                                                Restriction.eq("mule.service", "GreeterUMO")));
+                                                Restriction.eq("mule2.service", "GreeterUMO")));
         
         assertEquals(1, results.size());
         
@@ -187,7 +187,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, next.getVersions().size());
         
         results = registry.search(new Query(ArtifactVersion.class, 
-                                            Restriction.eq("mule.service", "GreeterUMO")));
+                                            Restriction.eq("mule2.service", "GreeterUMO")));
     
         assertEquals(1, results.size());
         

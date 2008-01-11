@@ -6,8 +6,10 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.artifact.ArtifactPanel;
@@ -38,11 +40,11 @@ public class Galaxy implements EntryPoint, HistoryListener {
         base.setStyleName("base");
         base.setWidth("100%");
 
-//        SimplePanel header = new SimplePanel();
-//        header.setStyleName("header");
-//        header.add(new Image("images/logo_mule_galaxy_KO.gif"));
-        Label header = new Label("Mule Galaxy");
+        SimplePanel header = new SimplePanel();
         header.setStyleName("header");
+        header.add(new Image("images/logo_mule_galaxy_KO_58px.gif"));
+//        Label header = new Label("Mule Galaxy");
+//        header.setStyleName("header");
         base.add(header);
         
         TabPanel tabPanel = new TabPanel();
