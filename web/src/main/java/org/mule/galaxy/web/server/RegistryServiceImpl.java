@@ -188,7 +188,8 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     @SuppressWarnings("unchecked")
-    public Collection getArtifacts(String workspaceId, Set artifactTypes, Set searchPredicates) {
+    public Collection getArtifacts(String workspaceId, Set artifactTypes, Set searchPredicates, String freeformQuery)
+    throws RPCException {
         Query q = new Query(Artifact.class)
             .workspace(workspaceId)
             .orderBy("artifactType");
@@ -200,7 +201,12 @@ public class RegistryServiceImpl implements RegistryService {
         }
         
         try {
-            Set results = registry.search(q);
+            Set results;
+            if (freeformQuery != null && !freeformQuery.equals(""))
+                results = registry.search(freeformQuery);
+            else
+                results = registry.search(q);
+            
             Map<String, ArtifactGroup> name2group = new HashMap<String, ArtifactGroup>();
             Map<String, ArtifactTypeView> name2view = new HashMap<String, ArtifactTypeView>();
             
@@ -243,7 +249,7 @@ public class RegistryServiceImpl implements RegistryService {
             values.addAll(name2group.values());
             return values;
         } catch (QueryException e) {
-            throw new RuntimeException(e);
+            throw new RPCException(e.getMessage());
         } catch (RegistryException e) {
             throw new RuntimeException(e);
         }

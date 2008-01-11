@@ -33,9 +33,10 @@ public interface RegistryService extends RemoteService {
     /**
      * @gwt.typeArgs searchPredicates <org.mule.galaxy.web.rpc.SearchPredicate>
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.ArtifactGroup>
-     * @return
+     * @return 
+     * @throws RPCException 
      */
-    Collection getArtifacts(String workspace, Set artifactTypes, Set searchPredicates);
+    Collection getArtifacts(String workspace, Set artifactTypes, Set searchPredicates, String freeformQuery) throws RPCException;
     
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WIndex>

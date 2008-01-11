@@ -83,6 +83,7 @@ public class SearchPanel
             public void onClick(Widget sender) {
                 rows.clear();
                 panel.clear();
+                freeformQueryArea.setText("");
                 
                 panel.insert(searchLink, 0);
                 
@@ -179,5 +180,10 @@ public class SearchPanel
         }
         
         return predicates;
+    }
+
+    public String getFreeformQuery()
+    {
+        return freeformQueryArea.getText();
     }
 }

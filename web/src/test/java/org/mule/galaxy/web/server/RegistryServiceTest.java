@@ -55,7 +55,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         Collection artifactTypes = gwtRegistry.getArtifactTypes();
         assertTrue(artifactTypes.size() > 0);
         
-        Collection artifacts = gwtRegistry.getArtifacts(null, null, new HashSet());
+        Collection artifacts = gwtRegistry.getArtifacts(null, null, new HashSet(), null);
         
         assertEquals(3, artifacts.size());
         
@@ -145,7 +145,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     }
     
     public void testGovernanceOperations() throws Exception {
-        Collection artifacts = gwtRegistry.getArtifacts(null, null, new HashSet());
+        Collection artifacts = gwtRegistry.getArtifacts(null, null, new HashSet(), null);
         ArtifactGroup g1 = (ArtifactGroup) artifacts.iterator().next();
         
         BasicArtifactInfo a = (BasicArtifactInfo) g1.getRows().get(0);

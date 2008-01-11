@@ -72,13 +72,16 @@ public class WorkspacePanel
         String workspaceId   = registryPanel.getWorkspaceId();
         Set    artifactTypes = registryPanel.getArtifactTypes();
         Set    predicates    = searchPanel.getPredicates();
-        registryPanel.getRegistryService().getArtifacts(workspaceId, artifactTypes, predicates,
+        String freeformQuery = searchPanel.getFreeformQuery();
+        registryPanel.getRegistryService().getArtifacts(workspaceId, artifactTypes, predicates, freeformQuery,
                                                         new AbstractCallback(registryPanel) {
 
             public void onSuccess(Object o) {
                 initArtifacts((Collection) o);
             }
-            
+            public void onFailure(Throwable caught) {
+                registryPanel.setMessage(caught.getMessage());
+            }
         });
     }
 }
