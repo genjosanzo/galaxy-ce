@@ -66,6 +66,13 @@ public class MuleArtifactPlugin extends AbstractArtifactPlugin {
                                     exp, // the xquery expression
                                     Constants.MULE_QNAME)); // document QName which this applies to
             
+        indexManager.save(new Index("mule.description", // index field name
+                                    "Mule Description", // Display Name
+                                    Index.Language.XPATH,
+                                    String.class, // search input type
+                                    "/mule-configuration/description", // the xquery expression
+                                    Constants.MULE_QNAME)); // document QName which this applies to
+            
     }
 
     public void initializeEverytime() throws Exception {
