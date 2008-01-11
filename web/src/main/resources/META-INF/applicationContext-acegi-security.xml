@@ -156,15 +156,16 @@
          <value><![CDATA[
 			    CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
 			    PATTERN_TYPE_APACHE_ANTauthenticationProvider
-			    /index.jsp=ROLE_ANONYMOUS,ROLE_USER
-			    /repository/=ROLE_USER
+			    /index.html=ROLE_USER
+                /api/*=ROLE_USER
+			    /handler/*=ROLE_USER
 			    /logoff.jsp=ROLE_ANONYMOUS,ROLE_USER
 			    /switchuser.jsp=ROLE_SUPERVISOR
 			    /j_acegi_switch_user=ROLE_SUPERVISOR
 			    /login.jsp*=ROLE_ANONYMOUS,ROLE_USER
                 /login.css*=ROLE_ANONYMOUS,ROLE_USER
                 /images/*=ROLE_ANONYMOUS,ROLE_USER
-				/**=ROLE_USER
+                /=ROLE_USER
          ]]></value>
       </property>
    </bean>
@@ -176,7 +177,7 @@
       <property name="userDetailsService" ref="userManager" />
 	  <property name="switchUserUrl"><value>/j_acegi_switch_user</value></property>
 	  <property name="exitUserUrl"><value>/j_acegi_exit_user</value></property>
-	  <property name="targetUrl"><value>/acegi-security-sample-contacts-filter/secure/index.htm</value></property>
+	  <property name="targetUrl"><value>/index.html</value></property>
    </bean>
 
 </beans>

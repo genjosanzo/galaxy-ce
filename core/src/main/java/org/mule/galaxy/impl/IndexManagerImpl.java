@@ -163,7 +163,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
             public void run() {
                 Session session = null;
                 try {
-                    session = repository.login(credentials);
+                    session = getSessionFactory().getSession();
                     
                     UserTxSessionHolder sessionHolder = new UserTxSessionHolder(session);
                     TransactionSynchronizationManager.bindResource(getSessionFactory(), sessionHolder);

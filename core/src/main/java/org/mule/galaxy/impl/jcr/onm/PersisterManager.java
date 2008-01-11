@@ -27,7 +27,8 @@ public class PersisterManager {
         FieldPersister p = persisters.get(c.getName());
         if (p == null) {
             if (Enum.class.isAssignableFrom(c)) {
-                p = persisters.put(c.getName(), enumPersister);
+                persisters.put(c.getName(), enumPersister);
+                return enumPersister;
             }
         }
         if (p == null) {

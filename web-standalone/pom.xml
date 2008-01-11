@@ -10,7 +10,7 @@
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-web-standalone</artifactId>
   <name>Galaxy Web Application Standalone</name>
-  <packaging>war</packaging>
+  <packaging>pom</packaging>
 
   <dependencies>
 
@@ -67,14 +67,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>2.0</version>
-        <configuration>
-          <webXml>target/web.xml</webXml>
-        </configuration>
-      </plugin>
-      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <appendAssemblyId>false</appendAssemblyId>
@@ -86,6 +78,7 @@
               <mainClass>winstone.Launcher</mainClass>
             </manifest>
           </archive>
+          
         </configuration>
         <executions>
           <execution>

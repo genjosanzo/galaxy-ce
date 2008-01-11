@@ -87,7 +87,13 @@ public class ClassPersister {
             Object value = persister.build(n, fd, session);
             
             if (value != null) {
-                fd.getWriteMethod().invoke(o, value);
+                try {
+                    fd.getWriteMethod().invoke(o, value);
+                } catch(IllegalArgumentException e) {
+                    System.out.println("Writing " + value + " with type " + value.getClass().getName() + " to" + fd.getName());
+                    e.printStackTrace();
+                }
+                
             }
         }
         

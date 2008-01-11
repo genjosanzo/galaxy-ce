@@ -149,6 +149,7 @@ public class IndexForm extends AbstractComposite {
         
         InlineFlowPanel addPanel = new InlineFlowPanel();
         final TextBox addDocTypeTB = new TextBox();
+        addDocTypeTB.setVisibleLength(60);
         addPanel.add(addDocTypeTB);
         addDocTypeButton = new Button("Add");
         addDocTypeButton.addClickListener(new ClickListener() {

@@ -1,7 +1,6 @@
 <assembly>
   <id>winstone</id>
   <formats>
-    <format>dir</format>
     <format>jar</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
@@ -16,11 +15,6 @@
   </fileSets>
   <files>
     <file>
-      <source>target/galaxy-web-standalone-${version}.war</source>
-      <outputDirectory></outputDirectory>
-      <destName>embedded.war</destName>
-    </file>
-    <file>
       <source>../LICENSE.txt</source>
       <outputDirectory></outputDirectory>
       <destName>galaxy-LICENSE.txt</destName>
@@ -28,7 +22,9 @@
   </files>
   <dependencySets>
     <dependencySet>
-      <outputDirectory>lib/</outputDirectory>
+      <outputDirectory></outputDirectory>
+      <unpack>true</unpack>
+      <outputFileNameMapping></outputFileNameMapping>
       <includes>
         <include>log4j:log4j</include>
         <include>commons-logging:commons-logging</include>
@@ -46,6 +42,13 @@
       <outputFileNameMapping></outputFileNameMapping>
       <includes>
         <include>net.sourceforge.winstone:winstone</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory></outputDirectory>
+      <outputFileNameMapping>embedded.war</outputFileNameMapping>
+      <includes>
+        <include>org.mule.galaxy:galaxy-web</include>
       </includes>
     </dependencySet>
   </dependencySets>
