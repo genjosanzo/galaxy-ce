@@ -33,7 +33,7 @@ public class RegistryConfigLookupTest extends AbstractAtomTest {
 //        assertEquals(201, res.getStatus());
 //        
         // TODO: this query language will improve in the future, so don't read too much into it yet
-        String search = UrlEncoding.encode("select artifact where mule2.service = 'GreeterUMO'");
+        String search = UrlEncoding.encode("select artifact where mule.descriptor = 'GreeterUMO'");
         url = url + "?q=" + search;
         
         // GET a Feed with Mule Configurations which match the criteria
