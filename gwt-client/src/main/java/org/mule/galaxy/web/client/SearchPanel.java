@@ -105,7 +105,7 @@ public class SearchPanel
         artifactPropertyMap = map;
         for (Iterator itr = rows.iterator(); itr.hasNext();) {
             SearchPanelRow row = (SearchPanelRow) itr.next();
-            row.addPropertySet("Properties", artifactIndexes);
+            row.addPropertySet("Properties", artifactPropertyMap);
         }
     }
     
@@ -146,16 +146,24 @@ public class SearchPanel
     }
     
     public void showHideFreeformQuery() {
-        if (panel.getWidget(1) == freeformQueryArea) {
-            panel.remove(freeformQueryArea);
+        if (panel.remove(freeformQueryArea)) {
             freeformQueryArea.setText("");
             freeformQueryLink.setText("Freeform >>");
+            
+            // Clear the panel because addPredicate will add everything back
+            panel.clear();
+            addPredicate();
         }
         else {
             panel.insert(freeformQueryArea, 1);
             freeformQueryArea.setText("Add a custom query...");
             freeformQueryArea.selectAll();
-            freeformQueryLink.setText("Freeform <<");
+            freeformQueryLink.setText("Structured >>");
+            
+            // Remove all the structured query rows
+            for (Iterator iter=rows.iterator(); iter.hasNext();)
+                panel.remove((Widget) iter.next());
+            rows.clear();
         }
     }
 

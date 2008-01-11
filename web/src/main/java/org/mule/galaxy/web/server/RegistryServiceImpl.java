@@ -600,7 +600,7 @@ public class RegistryServiceImpl implements RegistryService {
             
             HashMap<Object, Object> props = new HashMap<Object, Object>();
             for (PropertyDescriptor pd : pds) {
-                props.put(pd.getProperty(), pd.getId());
+                props.put(pd.getDescription(), pd.getId());
             }
             
             return props;
