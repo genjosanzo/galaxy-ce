@@ -144,9 +144,13 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
         String month = new Integer(t.getDate().get(Calendar.MONTH)).toString();
         String day = new Integer(t.getDate().get(Calendar.DAY_OF_MONTH)).toString();
         
+        parent.refresh(true);
         parent = JcrUtil.getOrCreate(parent, year);
+        parent.refresh(true);
         parent = JcrUtil.getOrCreate(parent, month);
+        parent.refresh(true);
         parent = JcrUtil.getOrCreate(parent, day);
+        parent.refresh(true);
         
         return parent;
     }

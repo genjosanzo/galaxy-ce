@@ -225,7 +225,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 }
             }
         };
-        //executor.execute(runnable);
+//        executor.execute(runnable);
     }
 
     protected void findAndReindex(Index idx) {

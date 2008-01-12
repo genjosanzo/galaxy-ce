@@ -63,7 +63,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals("Mule Configurations", g1.getName());
         
         List columns = g1.getColumns();
-        assertEquals(4, columns.size());
+        assertEquals(6, columns.size());
         
         List rows = g1.getRows();
         assertEquals(1, rows.size());
@@ -78,7 +78,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals("Mule Configurations", g1.getName());
         
         columns = g1.getColumns();
-        assertEquals(4, columns.size());
+        assertEquals(6, columns.size());
         
         rows = g1.getRows();
         assertEquals(1, rows.size());
