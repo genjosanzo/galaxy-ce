@@ -117,8 +117,6 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
         errorPanel = new FlowPanel();
         errorPanel.setStyleName("error-panel");
         
-        refresh();
-        
         initWidget(base);
     }
 

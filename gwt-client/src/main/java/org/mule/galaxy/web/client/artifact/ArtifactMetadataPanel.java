@@ -122,6 +122,8 @@ public class ArtifactMetadataPanel extends AbstractComposite {
         }
         
         table.setWidget(row, 1, w);
+        table.getCellFormatter().setStyleName(row, 1, "artifactTableHeader");
+        table.getCellFormatter().setStyleName(row, 1, "artifactTableEntry");
     }
 
 

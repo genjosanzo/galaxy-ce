@@ -10,10 +10,11 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 import org.mule.galaxy.web.client.activity.ActivityPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.client.artifact.ArtifactPanel;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.UserService;
@@ -63,9 +64,23 @@ public class Galaxy implements EntryPoint, HistoryListener {
         tabPanel.setStyleName("headerTabPanel");
         tabPanel.getDeckPanel().setStyleName("headerTabDeckPanel");
         tabPanel.selectTab(0);
-        tabPanel.add(new ActivityPanel(this), "Activity");
+        final ActivityPanel activityPanel = new ActivityPanel(this);
+        tabPanel.add(activityPanel, "Activity");
         tabPanel.add(new AdministrationPanel(this), "Administration");
         
+        tabPanel.addTabListener(new TabListener() {
+
+            public boolean onBeforeTabSelected(SourcesTabEvents arg0, int arg1) {
+                return false;
+            }
+
+            public void onTabSelected(SourcesTabEvents arg0, int tab) {
+                if (tab == 1) {
+                    activityPanel.refresh();
+                }
+            }
+            
+        });
         Label footer = new Label("Mule Galaxy, Copyright 2008 MuleSource, Inc.");
         footer.setStyleName("footer");
         base.add(footer);

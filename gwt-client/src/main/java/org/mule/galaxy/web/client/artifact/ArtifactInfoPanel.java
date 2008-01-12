@@ -384,7 +384,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
         
         VerticalPanel form = new VerticalPanel();
         final TextArea text = new TextArea();
-        text.setCharacterWidth(40);
+        text.setCharacterWidth(60);
         text.setVisibleLines(8);
         text.setText(info.getDescription());
         form.add(text);
@@ -421,7 +421,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
                                    final Button cancelButton, final Button addButton) {
         cancelButton.setEnabled(false);
         addButton.setEnabled(false);
-
+       
         AbstractCallback callback = new AbstractCallback(registryPanel) {
 
             public void onFailure(Throwable caught) {
@@ -433,6 +433,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
             public void onSuccess(Object arg0) {
                 descPanel.clear();
                 descPanel.add(new Label(text.getText()));
+                info.setDescription(text.getText());
             }
 
         };

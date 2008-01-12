@@ -9,7 +9,7 @@
 
      <form action="./j_acegi_security_check" method="post">
         <div class="loginBox">
-                <div class="loginTop"></div>
+                <div class="loginTop"><img src="images/galaxy_small_logo.png" style="float: right; margin-top: 1px; " border="0"/></div>
                 
                 <div class="loginLeft"></div>
                   

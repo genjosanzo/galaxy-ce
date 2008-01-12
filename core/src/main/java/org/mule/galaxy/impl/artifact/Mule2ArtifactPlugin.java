@@ -55,7 +55,7 @@ public class Mule2ArtifactPlugin extends AbstractArtifactPlugin {
                 return 0;
             }
         }));
-        viewManager.addView(view, Constants.MULE_QNAME);
+        viewManager.addView(view, Constants.MULE2_QNAME);
     }
 
 

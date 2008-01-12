@@ -317,18 +317,19 @@ a:visited {
 
 .comments {
     width: 100%;
+    padding: 10px;
 }
 
 
 .comment {
     width: 100%;
-    margin: 0px;
+    margin-bottom: 10px;
 }
 
     
 .addComment {
     background-color: #ddd;
-    border: 1px black solid;
+    border: 1px solid #333;
 }
 
 .commentTitle {
@@ -336,7 +337,8 @@ a:visited {
     background-repeat: no-repeat;
     font-weight: bold;
     padding: 6px;
-    background-color: #87B3FF;
+    color: white;
+    background-color: #4c0000;
     
 }
 
@@ -348,8 +350,12 @@ a:visited {
     float:right;
 }
 
+.commentTitle a, .commentTitle a:visited {
+    color: white;
+}
+
 .commentText {
-    background-color: #4c0000;
+    background-color: white;
     padding: 6px;
     border: 0px 2px 2px 2px #ddd solid;
     margin-bottom: 2px;
@@ -473,11 +479,11 @@ a:visited {
 }
 
 .activity-search-panel .gwt-Button {
-    padding-left: 8px;
+    margin-left: 8px;
 }
 
 .activity-search-panel .gwt-Button:active {
-    padding-left: 8px;
+    margin-left: 8px;
 }
 
 .activity-search-panel-container {
