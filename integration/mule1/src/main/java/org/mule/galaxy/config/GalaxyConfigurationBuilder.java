@@ -63,12 +63,12 @@ public class GalaxyConfigurationBuilder implements ConfigurationBuilder
                 properties.load(ClassUtils.getResource(props, getClass()).openStream());
             }
             ConfigurationSupport configSupport = new ConfigurationSupport();
-            InputStream[] is = configSupport.getArtifacts(url, properties);
+            Resource[] is = configSupport.getArtifacts(url, properties);
 
             ReaderResource[] resources = new ReaderResource[is.length];
             for (int i = 0; i < is.length; i++)
             {
-                resources[i] = new ReaderResource(url, new InputStreamReader(is[i]));
+                resources[i] = new ReaderResource(is[i].getName(), new InputStreamReader(is[i].getInputStream()));
             }
             MuleXmlConfigurationBuilder builder = new MuleXmlConfigurationBuilder();
             return builder.configure(resources, properties);

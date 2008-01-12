@@ -47,12 +47,12 @@ public class ConfigurationSupport
 
     AbderaClient client = new AbderaClient(new Abdera());
 
-    public InputStream[] getArtifacts(String url) throws IOException
+    public Resource[] getArtifacts(String url) throws IOException
     {
         return getArtifacts(url, new Properties());
     }
 
-    public InputStream[] getArtifacts(String url, Properties properties) throws IOException
+    public Resource[] getArtifacts(String url, Properties properties) throws IOException
     {
         URL regUrl;
         RequestOptions opts = client.getDefaultRequestOptions();
@@ -79,7 +79,7 @@ public class ConfigurationSupport
                 throw new IOException("No entries found for request: " + url);
             }
 
-            InputStream[] artifacts = new InputStream[entries.size()];
+            Resource[] artifacts = new Resource[entries.size()];
             int i=0;
             for (Iterator<Entry> entryIterator = entries.iterator(); entryIterator.hasNext();i++)
             {
@@ -89,7 +89,7 @@ public class ConfigurationSupport
                 res = client.get(artifactUrlLink, opts);
                 if (res.getStatus() == 200)
                 {
-                    artifacts[i] = res.getInputStream();
+                    artifacts[i] = new Resource(res.getInputStream(), artifactUrlLink);
                 }
                 else
                 {
