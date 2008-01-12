@@ -21,9 +21,41 @@ public class MuleArtifactPlugin extends AbstractArtifactPlugin {
         artifactTypeDao.save(new ArtifactType("Mule Configurations", 
                                               "application/mule+xml", 
                                               Constants.MULE_QNAME));
-        
-        // Read <mule:service> elements
-        String exp = 
+
+        // Read <mule-configuration id=> attributes
+        String exp =
+            "declare variable $document external;\n" +
+            "" +
+            "<values> {\n" +
+            "for $e in $document/mule-configuration\n" +
+            "    return <value>{data($e/@id)}</value>\n" +
+            "} </values>";
+
+        indexManager.save(new Index("mule.id", // index field name
+                                    "Mule Id", // Display Name
+                                    Index.Language.XQUERY,
+                                    String.class, // search input type
+                                    exp, // the xquery expression
+                                    Constants.MULE_QNAME)); // document QName which this applies to
+
+        // Read <mule-configuration version=> attributes
+        exp =
+            "declare variable $document external;\n" +
+            "" +
+            "<values> {\n" +
+            "for $e in $document/mule-configuration\n" +
+            "    return <value>{data($e/@version)}</value>\n" +
+            "} </values>";
+
+        indexManager.save(new Index("mule.version", // index field name
+                                    "Mule Version", // Display Name
+                                    Index.Language.XQUERY,
+                                    String.class, // search input type
+                                    exp, // the xquery expression
+                                    Constants.MULE_QNAME)); // document QName which this applies to
+
+        // Read <mule-discriptor> elements
+        exp =
             "declare variable $document external;\n" +
             "" +
             "<values> {\n" +
@@ -71,6 +103,13 @@ public class MuleArtifactPlugin extends AbstractArtifactPlugin {
                                     Index.Language.XPATH,
                                     String.class, // search input type
                                     "/mule-configuration/description", // the xquery expression
+                                    Constants.MULE_QNAME)); // document QName which this applies to
+
+        indexManager.save(new Index("mule.descriptor.description", // index field name
+                                    "Mule Descriptor Description", // Display Name
+                                    Index.Language.XPATH,
+                                    String.class, // search input type
+                                    "//mule-descriptor/description", // the xquery expression
                                     Constants.MULE_QNAME)); // document QName which this applies to
             
     }
