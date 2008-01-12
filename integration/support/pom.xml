@@ -8,13 +8,9 @@
   </parent>  
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
-  <artifactId>galaxy-integration-mule1</artifactId>
+  <artifactId>galaxy-integration-support</artifactId>
   <packaging>jar</packaging>
-  <name>Galaxy Mule 1 Integration</name>
-
-  <properties>
-      <muleVersion>1.4.4-SNAPSHOT</muleVersion>
-  </properties>
+  <name>Galaxy Integration Support Classes</name>
 
   <dependencies>
 
@@ -28,45 +24,6 @@
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-core</artifactId>
       <version>${version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mule.galaxy</groupId>
-      <artifactId>galaxy-integration-support</artifactId>
-      <version>${version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mule</groupId>
-      <artifactId>mule-core</artifactId>
-      <version>${muleVersion}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mule.modules</groupId>
-      <artifactId>mule-module-builders</artifactId>
-      <version>${muleVersion}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mule.examples</groupId>
-      <artifactId>mule-example-hello</artifactId>
-      <version>${muleVersion}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mule.transports</groupId>
-      <artifactId>mule-transport-vm</artifactId>
-      <version>${muleVersion}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mule.transports</groupId>
-      <artifactId>mule-transport-stream</artifactId>
-      <version>${muleVersion}</version>
       <scope>test</scope>
     </dependency>
 

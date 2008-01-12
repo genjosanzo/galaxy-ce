@@ -17,7 +17,9 @@
 		<module>web</module>
                 <module>web-standalone</module>
 		<module>gwt-client</module>
+		<module>integration/support</module>
 		<module>integration/mule1</module>
+		<!--<module>integration/mule2</module>-->
 		<module>integration/cxf</module>
 	</modules>
 

@@ -43,7 +43,7 @@ public class RegistryConfigLookupTest extends AbstractAtomTest {
         assertEquals(200, res.getStatus());
         
         Document<Feed> feedDoc = res.getDocument();
-        // prettyPrint(feedDoc);
+        prettyPrint(feedDoc);
         List<Entry> entries = feedDoc.getRoot().getEntries();
         assertEquals(1, entries.size());
         Entry entry = entries.get(0);
@@ -60,6 +60,6 @@ public class RegistryConfigLookupTest extends AbstractAtomTest {
     }
     
     protected String getWebappDirectory() {
-        return "../../web/src/main/webapp";
+        return "./web/src/main/webapp";
     }
 }

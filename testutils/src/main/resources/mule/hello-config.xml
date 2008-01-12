@@ -15,6 +15,8 @@
     an error message to the end user. System error handling logs errors.
     </description>
 
+    <mule-environment-properties serverUrl=""/>
+    
     <!--
         The system stream connector is used to send and receive information via the
         System.in and System.out. Note this connector is only really useful for testing
@@ -58,7 +60,7 @@
     <!--
         The Mule model initialises and manages your UMO components
     -->
-    <model name="helloSample">
+    <model name="main">
         <!--
             A Mule descriptor defines all the necessary information about how your components will
             interact with the framework, other components in the system and external sources.
