@@ -58,13 +58,13 @@
     <dependency>
       <groupId>org.apache.abdera</groupId>
       <artifactId>abdera-spring</artifactId>
-      <version>0.4.0-incubating-SNAPSHOT</version>
+      <version>0.4.0-incubating-20080112-MuleSource</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.abdera</groupId>
       <artifactId>abdera-client</artifactId>
-      <version>0.4.0-incubating-SNAPSHOT</version>
+      <version>0.4.0-incubating-20080112-MuleSource</version>
     </dependency>
 
     <dependency>
@@ -202,7 +202,11 @@
         <enabled>false</enabled>
       </releases>
     </repository>
-
+    <repository>
+      <id>mule-dependencies</id>
+      <name>Mule Dependencies</name>
+      <url>http://dist.codehaus.org/mule/dependencies/maven2/</url>
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>

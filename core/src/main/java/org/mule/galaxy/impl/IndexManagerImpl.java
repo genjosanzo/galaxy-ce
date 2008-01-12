@@ -170,7 +170,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
 
     public synchronized void destroy() throws Exception {
-        LOGGER.info("Destryoing IndexManager.");
+        LOGGER.info("Destroying IndexManager.");
         if (destroyed) return;
         
         destroyed = true;
@@ -225,7 +225,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 }
             }
         };
-        // executor.execute(runnable);
+        //executor.execute(runnable);
     }
 
     protected void findAndReindex(Index idx) {

@@ -212,7 +212,6 @@
       <url>file://${basedir}/mvn-repo/</url>
     </repository>
    
-    
     <repository>
       <id>jackrabbit</id>
       <name>Jackrabbit RC1 Repo</name>
