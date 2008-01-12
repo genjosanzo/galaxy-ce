@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Iterator;
 
+import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.RegistryPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -20,7 +21,7 @@ import org.mule.galaxy.web.rpc.TransitionResponse;
 import org.mule.galaxy.web.rpc.WApprovalMessage;
 import org.mule.galaxy.web.rpc.WGovernanceInfo;
 
-public class GovernancePanel extends Composite {
+public class GovernancePanel extends AbstractComposite {
 
     private RegistryPanel registryPanel;
     private RegistryServiceAsync registryService;
@@ -60,23 +61,11 @@ public class GovernancePanel extends Composite {
         
     }
 
-    private InlineFlowPanel createTitle(String title) {
-        InlineFlowPanel titlePanel = new InlineFlowPanel();
-        titlePanel.setStyleName("rightlinked-title-panel");
-        
-        Label label = new Label(title);
-        label.setStyleName("rightlinked-title");
-        titlePanel.add(label);
-        return titlePanel;
-    }
-
     private FlexTable createLifecycleTable(WGovernanceInfo gov) {
         FlexTable table = new FlexTable();
         table.setStyleName("artifactTable");
         table.setCellSpacing(0);
         table.setCellPadding(0);
-        table.getColumnFormatter().setStyleName(0, "artifactTableHeader");
-        table.getColumnFormatter().setStyleName(1, "artifactTableEntry");
         
         table.setText(0, 0, "Lifecycle:");
         table.setText(0, 1, gov.getLifecycle());
@@ -103,7 +92,7 @@ public class GovernancePanel extends Composite {
         nextPhasesPanel.add(transition);
         
         table.setWidget(2, 1, nextPhasesPanel);
-        
+        styleHeaderColumn(table);
         return table;
     }
 

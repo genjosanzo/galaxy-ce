@@ -14,6 +14,7 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.impl.RegistryLocator;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.util.Constants;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.wsdl.diff.DifferenceEvent;
 import org.mule.galaxy.wsdl.diff.DifferenceListener;
@@ -28,6 +29,10 @@ public abstract class AbstractWsdlVersioningPolicy implements ArtifactPolicy {
     private Logger LOGGER = LogUtils.getL7dLogger(AbstractWsdlVersioningPolicy.class);
     private Registry registry;
     
+    public boolean applies(Artifact a) {
+        return Constants.WSDL_DEFINITION_QNAME.equals(a.getDocumentType());
+    }
+
     @SuppressWarnings("unchecked")
     public Collection<ApprovalMessage> isApproved(final Artifact a, ArtifactVersion previous, final ArtifactVersion next) {
         if (previous == null) {

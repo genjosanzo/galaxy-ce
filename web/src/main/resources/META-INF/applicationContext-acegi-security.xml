@@ -99,7 +99,7 @@
    </bean>
 
    <bean id="logoutFilter" class="org.acegisecurity.ui.logout.LogoutFilter">
-      <constructor-arg value="/index.jsp"/> <!-- URL redirected to after logout -->
+      <constructor-arg value="/index.html"/> <!-- URL redirected to after logout -->
       <constructor-arg>
          <list>
               <ref bean="rememberMeServices"/>

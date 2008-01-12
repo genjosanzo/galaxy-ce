@@ -28,7 +28,7 @@ public class IndexTest extends AbstractGalaxyTest {
         
     }
     
-    public void testReindex() throws Exception {
+    public void xtestReindex() throws Exception {
         Artifact artifact = importHelloWsdl();
         
         Index i = indexManager.getIndex("wsdl.targetNamespace");

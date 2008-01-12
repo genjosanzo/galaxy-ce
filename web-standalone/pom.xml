@@ -18,6 +18,7 @@
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-web</artifactId>
       <version>${version}</version>
+      <classifier>embed</classifier>
       <type>war</type>
     </dependency>
 

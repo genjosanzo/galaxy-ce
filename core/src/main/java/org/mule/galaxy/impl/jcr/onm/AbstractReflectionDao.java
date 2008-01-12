@@ -106,7 +106,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
     @Override
     protected List<T> doListAll(Session session) throws RepositoryException {
         ArrayList<T> objs = new ArrayList<T>();
-        for (NodeIterator nodes = getObjectsNode().getNodes(); nodes.hasNext();) {
+        for (NodeIterator nodes = findAllNodes(session); nodes.hasNext();) {
             Node node = nodes.nextNode();
             
             try {
@@ -122,6 +122,10 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
             }
         }
         return objs;
+    }
+
+    protected NodeIterator findAllNodes(Session session) throws RepositoryException {
+        return getObjectsNode().getNodes();
     }
 
     protected Node getObjectsNode() {
@@ -141,7 +145,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         Node node = null;
         
         if (id == null) {
-            node = getObjectsNode().addNode(getObjectNodeName(t));
+            node = getNodeForObject(getObjectsNode(), t).addNode(getObjectNodeName(t), getNodeType());
             node.addMixin("mix:referenceable");
             id = getId(t, node, session);
             t.setId(id);
@@ -150,7 +154,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
             
             // the user supplied a new ID
             if (node == null && !useNodeId) {
-                node = getObjectsNode().addNode(getObjectNodeName(t));
+                node = getNodeForObject(getObjectsNode(), t).addNode(getObjectNodeName(t), getNodeType());
                 node.addMixin("mix:referenceable");
             }
         }
@@ -167,6 +171,21 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
             }
             throw new RuntimeException(e);
         }
+    }
+
+    protected String getNodeType() {
+        return "nt:unstructured";
+    }
+
+    /**
+     * Allow implementations to segment nodes so that performance doesn't suffer.
+     * @param node 
+     * @param t
+     * @return
+     * @throws RepositoryException 
+     */
+    protected Node getNodeForObject(Node node, T t) throws RepositoryException {
+        return node;
     }
 
     protected String getId(T t, Node node, Session session) throws RepositoryException {

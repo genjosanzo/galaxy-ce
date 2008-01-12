@@ -15,6 +15,7 @@ import javax.jcr.SimpleCredentials;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.mule.galaxy.ActivityManager;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
@@ -23,11 +24,13 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.IndexManagerImpl;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
+import org.omg.CORBA.CTX_RESTRICT_SCOPE;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springmodules.jcr.SessionFactory;
@@ -47,6 +50,9 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
     protected Session session;
     protected PolicyManager policyManager;
     protected IndexManager indexManager;
+    protected ActivityManager activityManager;
+
+    private boolean participate;
     
     public AbstractGalaxyTest() {
         super();
@@ -102,7 +108,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
             Session session = repository.login(new SimpleCredentials("username", "password".toCharArray()));
 
             Node node = session.getRootNode();
-//            JcrUtil.dump(node.getNode("indexes"));
+//            JcrUtil.dump(node.getNode("activities"));
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
                 Node child = itr.nextNode();
                 if (!child.getName().equals("jcr:system")) {
@@ -131,19 +137,34 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
         
         super.onSetUp();
         
-        session = SessionFactoryUtils.getSession(sessionFactory, true);
-        TransactionSynchronizationManager.bindResource(sessionFactory, new UserTxSessionHolder(session));
+        Session session = null;
+        participate = false;
+        if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
+            // Do not modify the Session: just set the participate
+            // flag.
+            participate = true;
+        } else {
+            logger.debug("Opening reeindexing session");
+            session = SessionFactoryUtils.getSession(sessionFactory, true);
+            TransactionSynchronizationManager.bindResource(sessionFactory, sessionFactory.getSessionHolder(session));
+        }
+
     }
 
     @Override
     protected void onTearDown() throws Exception {
+        ((IndexManagerImpl) applicationContext.getBean("indexManagerTarget")).destroy();
+
         if (repository != null) {
             clearJcrRepository();
             setDirty();
         }
 
-        TransactionSynchronizationManager.unbindResource(sessionFactory);
-        SessionFactoryUtils.releaseSession(session, sessionFactory);
+        if (!participate) {
+            TransactionSynchronizationManager.unbindResource(sessionFactory);
+            logger.debug("Closing reindexing session");
+            SessionFactoryUtils.releaseSession(session, sessionFactory);
+        }
         super.onTearDown();
     }
 

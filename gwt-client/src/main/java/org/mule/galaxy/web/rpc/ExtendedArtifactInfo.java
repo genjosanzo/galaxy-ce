@@ -17,7 +17,16 @@ public class ExtendedArtifactInfo extends BasicArtifactInfo{
     private String description;
     private String commentsFeedLink;
     private String artifactLink;
+    private String artifactFeedLink;
     
+    public String getArtifactFeedLink() {
+        return artifactFeedLink;
+    }
+
+    public void setArtifactFeedLink(String artifactFeedLink) {
+        this.artifactFeedLink = artifactFeedLink;
+    }
+
     public String getCommentsFeedLink() {
         return commentsFeedLink;
     }

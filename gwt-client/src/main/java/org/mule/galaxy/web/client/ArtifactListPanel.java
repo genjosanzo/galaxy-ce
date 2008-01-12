@@ -24,7 +24,6 @@ public class ArtifactListPanel
             table.setText(0, i, (String) group.getColumns().get(i));
         }
         
-        
         for (int i = 0; i < group.getRows().size(); i++) {
             final BasicArtifactInfo info = (BasicArtifactInfo) group.getRows().get(i);
             for (int c = 0; c < group.getColumns().size(); c++) {

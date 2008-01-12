@@ -1,6 +1,9 @@
 package org.mule.galaxy.policy;
 
 import java.util.Collection;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
@@ -18,6 +21,8 @@ public interface ArtifactPolicy {
     String getName();
     
     String getDescription();
+    
+    boolean applies(Artifact a);
     
     Collection<ApprovalMessage> isApproved(Artifact a, ArtifactVersion previous, ArtifactVersion next);
     

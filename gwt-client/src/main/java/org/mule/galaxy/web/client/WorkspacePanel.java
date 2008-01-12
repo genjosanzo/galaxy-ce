@@ -19,8 +19,7 @@ public class WorkspacePanel
     private FlowPanel panel;
     private FlowPanel artifactPanel;
     private SearchPanel searchPanel;
-
-
+    
     public WorkspacePanel(RegistryPanel rp) {
         super();
         
@@ -28,8 +27,7 @@ public class WorkspacePanel
         
         searchPanel = new SearchPanel(rp);
         searchPanel.setStyleName("search-panel");
-        panel.add(searchPanel);
-
+        panel.insert(searchPanel, 0);
 
         SimplePanel artifactPanelBase = new SimplePanel();
         artifactPanelBase.setStyleName("artifact-panel-base");

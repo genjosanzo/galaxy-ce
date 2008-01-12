@@ -1,12 +1,12 @@
 package org.mule.galaxy.web.rpc;
 
-import org.mule.galaxy.web.client.AbstractMenuPanel;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import org.mule.galaxy.web.client.ErrorPanel;
 
 public abstract class AbstractCallback implements AsyncCallback{
-    public AbstractMenuPanel menuPanel;
+    public ErrorPanel menuPanel;
 
-    public AbstractCallback(AbstractMenuPanel panel) {
+    public AbstractCallback(ErrorPanel panel) {
         super();
         this.menuPanel = panel;
     }

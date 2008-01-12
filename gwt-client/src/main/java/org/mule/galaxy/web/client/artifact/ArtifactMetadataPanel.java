@@ -64,6 +64,7 @@ public class ArtifactMetadataPanel extends AbstractComposite {
             
             i++;
         }
+        styleHeaderColumn(table);
         metadata.add(table);
         initWidget(metadata);
     }
@@ -187,19 +188,6 @@ public class ArtifactMetadataPanel extends AbstractComposite {
             }
             
         });
-    }
-    
-    private InlineFlowPanel createTitleWithLink(String name, Hyperlink addComment) {
-        InlineFlowPanel commentTitlePanel = new InlineFlowPanel();
-        commentTitlePanel.setStyleName("rightlinked-title-panel");
-        
-        Label label = new Label(name);
-        label.setStyleName("rightlinked-title");
-        commentTitlePanel.add(label);
-        
-        addComment.setStyleName("rightlinked-title-link");
-        commentTitlePanel.add(addComment);
-        return commentTitlePanel;
     }
 
     public void addProperty(String name, String desc, String value) {

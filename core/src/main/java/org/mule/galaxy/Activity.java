@@ -1,17 +1,19 @@
 package org.mule.galaxy;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 import org.mule.galaxy.ActivityManager.EventType;
+import org.mule.galaxy.security.User;
 
-public class Activity implements Identifiable {
+public class Activity implements Identifiable, Serializable {
     private String id;
-    private String user;
+    private User user;
     private EventType eventType;
     private Calendar date;
     private String message;
     
-    public Activity(String user, EventType eventType, Calendar date, String message) {
+    public Activity(User user, EventType eventType, Calendar date, String message) {
         super();
         this.user = user;
         this.eventType = eventType;
@@ -28,10 +30,10 @@ public class Activity implements Identifiable {
     public void setId(String id) {
         this.id = id;
     }
-    public String getUser() {
+    public User getUser() {
         return user;
     }
-    public void setUser(String user) {
+    public void setUser(User user) {
         this.user = user;
     }
     public EventType getEventType() {

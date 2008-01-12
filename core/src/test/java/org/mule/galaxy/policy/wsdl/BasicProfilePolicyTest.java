@@ -15,6 +15,7 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
     public void testVersioning() throws Exception {
     
     }
+    // disabled due to problems with xerces
     public void xtestVersioning() throws Exception {
         
         InputStream helloWsdl = getResourceAsStream("/wsdl/hello-invalid.wsdl");

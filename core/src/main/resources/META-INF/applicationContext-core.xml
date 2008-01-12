@@ -28,6 +28,7 @@
     <property name="jcrTemplate" ref="jcrTemplate"/>
   </bean>
 
+  <bean class="org.mule.galaxy.policy.mule.RequireSslPolicy"/>
   <bean class="org.mule.galaxy.policy.wsdl.BackwardCompatibilityPolicy"/>
   <bean class="org.mule.galaxy.policy.wsdl.ForwardCompatibilityPolicy"/>
   <bean class="org.mule.galaxy.policy.wsdl.BasicProfilePolicy"/>
@@ -44,18 +45,11 @@
   </bean>
   
   <bean id="indexManagerTarget"  class="org.mule.galaxy.impl.IndexManagerImpl"
-        init-method="initialize">
+        init-method="initialize" destroy-method="destroy">
+    <property name="activityManager" ref="activityManager" />
     <property name="contentService" ref="contentService"/>
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
-    <property name="repository" ref="repository"/>
-    <property name="credentials">
-     <bean class="javax.jcr.SimpleCredentials">
-      <constructor-arg value="username"/>
-      <!-- create the credentials using a bean factory -->
-      <constructor-arg><value type="char[]">password</value></constructor-arg>
-     </bean>
-    </property>
   </bean>
   
   <bean id="policyManager" parent="txProxyTemplate">
@@ -80,6 +74,7 @@
   
   <bean id="registryTarget" class="org.mule.galaxy.impl.jcr.JcrRegistryImpl"
         init-method="initialize" destroy-method="destroy">
+    <property name="activityManager" ref="activityManager" />
     <property name="contentService" ref="contentService" />
     <property name="settings" ref="settings" />
     <property name="sessionFactory" ref="sessionFactory" />
@@ -112,7 +107,18 @@
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
   </bean>
-      
+          
+  <bean id="activityManager" parent="txProxyTemplate">
+    <property name="target" ref="activityManagerTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="activityManagerTarget" class="org.mule.galaxy.impl.jcr.ActivityManagerImpl"
+        init-method="initialize">
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="persisterManager" ref="persisterManager" />
+  </bean>
+  
   <bean id="commentDao" parent="txProxyTemplate">
     <property name="target" ref="commentDaoTarget"/>
     <property name="proxyTargetClass" value="true"/>
@@ -123,8 +129,6 @@
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
   </bean>
-
-  
   
   <bean id="propertyDescriptorDao" parent="txProxyTemplate">
     <property name="target" ref="propertyDescriptorDaoTarget"/>

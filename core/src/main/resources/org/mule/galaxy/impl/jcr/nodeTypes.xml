@@ -7,7 +7,7 @@
     isMixin="false" 
     hasOrderableChildNodes="false"
     primaryItemName="" 
-    allowSameNameSiblings="true">
+    allowSameNameSiblings="false">
     
     <supertypes>
       <supertype>nt:unstructured</supertype>
@@ -16,6 +16,18 @@
   </nodeType>
 
   <nodeType name="galaxy:artifact" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="" 
+    allowSameNameSiblings="false">
+    
+    <supertypes>
+      <supertype>nt:unstructured</supertype>
+    </supertypes>
+    
+  </nodeType>
+  
+  <nodeType name="galaxy:activity" 
     isMixin="false" 
     hasOrderableChildNodes="false"
     primaryItemName="" 

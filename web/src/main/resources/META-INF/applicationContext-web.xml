@@ -16,6 +16,7 @@
       <property name="viewManager" ref="viewManager"/>
       <property name="lifecycleManager" ref="lifecycleManager"/>
       <property name="policyManager" ref="policyManager"/>
+      <property name="activityManager" ref="activityManager"/>
     </bean>
       
     <bean id="gwtUserService" class="org.mule.galaxy.web.server.UserServiceImpl">

@@ -127,9 +127,21 @@
     </dependency>
 
     <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-api</artifactId>
+      <version>1.3.1</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>javax.jcr</groupId>
+      <artifactId>jcr</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.acegisecurity</groupId>
       <artifactId>acegi-security</artifactId>
-      <version>1.0.5</version>
+      <version>1.0.6</version>
       <exclusions>
         <exclusion>
           <groupId>org.springframework</groupId>
@@ -198,6 +210,13 @@
       <id>local</id>
       <name>Local Repository</name>
       <url>file://${basedir}/mvn-repo/</url>
+    </repository>
+   
+    
+    <repository>
+      <id>jackrabbit</id>
+      <name>Jackrabbit RC1 Repo</name>
+      <url>http://people.apache.org/~jukka/jackrabbit/1.4-rc1/repository/</url>
     </repository>
   </repositories>
 

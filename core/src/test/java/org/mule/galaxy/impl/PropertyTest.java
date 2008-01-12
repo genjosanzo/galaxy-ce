@@ -16,7 +16,7 @@ public class PropertyTest extends AbstractGalaxyTest {
     protected Dao<PropertyDescriptor> propertyDescriptorDao;
     
     public void testProperties() throws Exception {
-       Artifact a = importHelloWsdl();
+       importHelloWsdl();
        
        PropertyDescriptor pd = new PropertyDescriptor("location", 
                                                       "Geographic Location",

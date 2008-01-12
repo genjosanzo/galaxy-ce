@@ -7,7 +7,7 @@
     <div id="body">
 
 
-     <form action="/j_acegi_security_check" method="post">
+     <form action="./j_acegi_security_check" method="post">
         <div class="loginBox">
                 <div class="loginTop"></div>
                 

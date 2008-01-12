@@ -26,7 +26,7 @@ public class BackwardCompatibilityPolicy extends AbstractWsdlVersioningPolicy {
     }
 
     public String getName() {
-        return "WSDL Backward Compatability";
+        return "WSDL: Backward Compatability";
     }
 
     protected void check(Collection<ApprovalMessage> messages, DifferenceEvent event) {

@@ -35,6 +35,7 @@ import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
 import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
 import org.apache.jackrabbit.core.nodetype.xml.NodeTypeReader;
 import org.apache.jackrabbit.util.ISO9075;
+import org.mule.galaxy.ActivityManager;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
@@ -44,7 +45,6 @@ import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Dependency;
-import org.mule.galaxy.GalaxyException;
 import org.mule.galaxy.IndexManager;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyDescriptor;
@@ -53,6 +53,7 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.XmlContentHandler;
+import org.mule.galaxy.ActivityManager.EventType;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.ApprovalMessage;
@@ -99,7 +100,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private String indexesId;
 
     private String artifactTypesId;
+    
     private Session openSession;
+    
+    private ActivityManager activityManager;
     
     public JcrRegistryImpl() {
         super();
@@ -472,8 +476,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     artifact.setVersions(versions);
                     
                     LOGGER.info("Created artifact " + artifact.getId());
-    
-                    return approve(session, artifact, null, jcrVersion);
+                    return approve(session, artifact, null, jcrVersion, user);
                 } catch (RegistryException e) {
                     // gets unwrapped by executeAndDewrap
                     throw new RuntimeException(e);
@@ -530,7 +533,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     private ArtifactResult approve(Session session, Artifact artifact, 
-                                   JcrVersion previous, JcrVersion next)
+                                   JcrVersion previous, 
+                                   JcrVersion next,
+                                   User user)
         throws RegistryException, RepositoryException {
         boolean approved = true;
         
@@ -549,6 +554,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         indexManager.index(next);
         
         session.save();
+        
+        if (previous == null) {
+            activityManager.logActivity(user, "Artifact " + artifact.getName() + " was created in workspace "
+                                              + artifact.getWorkspace().getPath() + ".", EventType.INFO);
+        } else {
+            activityManager.logActivity(user, "Version " + next.getVersionLabel() 
+                                        + " of artifact " + artifact.getPath() + " was created.", EventType.INFO);
+        }
+        
         
         return new ArtifactResult(artifact, next, approvals);
     }
@@ -668,7 +682,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         versionNode.setProperty(pNames.getName(), pNames.getValues());
                     } catch (PathNotFoundException e) {
                     }
-                    return approve(session, artifact, previousLatest, next);
+                    return approve(session, artifact, previousLatest, next, user);
                 } catch (RegistryException e) {
                     // this will get dewrapped
                     throw new RuntimeException(e);
@@ -1270,6 +1284,14 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
     
+    public ActivityManager getActivityManager() {
+        return activityManager;
+    }
+
+    public void setActivityManager(ActivityManager activityManager) {
+        this.activityManager = activityManager;
+    }
+
     public void setSettings(Settings settings) {
         this.settings = settings;
     }

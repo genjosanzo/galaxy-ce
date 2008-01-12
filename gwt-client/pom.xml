@@ -25,6 +25,12 @@
       <artifactId>gwt-servlet</artifactId>
       <version>1.4.60</version>
     </dependency>
+
+    <dependency>
+      <groupId>net.sf.gwt-widget</groupId>
+      <artifactId>gwt-widgets</artifactId>
+      <version>0.1.5</version>
+    </dependency>
     
     <dependency>
       <groupId>com.google.gwt</groupId>
@@ -66,5 +72,11 @@
     </resources>
   </build>
 
-
+  <repositories>
+    <repository>
+      <id>local</id>
+      <name>Local Repository</name>
+      <url>file://${basedir}/../core/mvn-repo/</url>
+    </repository>
+  </repositories>
 </project>

@@ -254,16 +254,16 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                 String lifecycle = a.getPhase().getLifecycle().getName();
                 String workspace = a.getWorkspace().getId();
                 
-                addPolicies(activePolicies, session, lifecyclesNodeId, lifecycle);
-                addPolicies(activePolicies, session, workspaceLifecyclesNodeId, 
+                addPolicies(activePolicies, a, session, lifecyclesNodeId, lifecycle);
+                addPolicies(activePolicies, a, session, workspaceLifecyclesNodeId, 
                             workspace, lifecycle);
-                addPolicies(activePolicies, session, artifactsLifecyclesNodeId, 
+                addPolicies(activePolicies, a, session, artifactsLifecyclesNodeId, 
                             a.getId(), lifecycle);
-                addPolicies(activePolicies, session, phasesNodeId, 
+                addPolicies(activePolicies, a, session, phasesNodeId, 
                             lifecycle, a.getPhase().getName());
-                addPolicies(activePolicies, session, workspacesPhasesNodeId, 
+                addPolicies(activePolicies, a, session, workspacesPhasesNodeId, 
                             workspace, lifecycle, a.getPhase().getName());
-                addPolicies(activePolicies, session, artifactsPhasesNodeId, 
+                addPolicies(activePolicies, a, session, artifactsPhasesNodeId, 
                             a.getId(), lifecycle, a.getPhase().getName());
                 
                 return null;
@@ -274,6 +274,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     }
     
     private void addPolicies(final Set<ArtifactPolicy> activePolicies,
+                             final Artifact artifact,
                              final Session session,
                              final String rootNodeId,
                              String... nodeIds) throws ItemNotFoundException, RepositoryException {
@@ -285,7 +286,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
             
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
                 ArtifactPolicy p = policies.get(itr.nextNode().getName());
-                if (p != null) {
+                if (p != null && p.applies(artifact)) {
                     activePolicies.add(p);
                 }
             }

@@ -26,7 +26,6 @@ public class IndexForm extends AbstractComposite {
 
     private AdministrationPanel adminPanel;
     private WIndex index;
-    private PasswordTextBox confirmTB;
     private Button save;
     private TextBox nameTB;
     private TextArea xqueryExpressionTA;
@@ -194,8 +193,11 @@ public class IndexForm extends AbstractComposite {
             
         });
         
+        styleHeaderColumn(table);
+        
         initWidget(panel);
     }
+
 
     protected void save() {
         save.setEnabled(false);

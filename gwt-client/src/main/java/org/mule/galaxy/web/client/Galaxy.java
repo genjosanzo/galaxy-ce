@@ -11,10 +11,13 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TabPanel;
+import org.mule.galaxy.web.client.activity.ActivityPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.artifact.ArtifactPanel;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.UserService;
+import org.mule.galaxy.web.rpc.UserServiceAsync;
 
 
 /**
@@ -24,6 +27,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
     private RegistryPanel registryPanel;
     private RegistryServiceAsync registryService;
+    private UserServiceAsync userService;
     
     /**
      * This is the entry point method.
@@ -34,7 +38,12 @@ public class Galaxy implements EntryPoint, HistoryListener {
         this.registryService = (RegistryServiceAsync) GWT.create(RegistryService.class);
         
         ServiceDefTarget target = (ServiceDefTarget) registryService;
-        target.setServiceEntryPoint("/handler/registry.rpc");
+        target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/registry.rpc");
+        
+        this.userService = (UserServiceAsync) GWT.create(UserService.class);
+        
+        target = (ServiceDefTarget) userService;
+        target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/userService.rpc");
         
         FlowPanel base = new FlowPanel();
         base.setStyleName("base");
@@ -42,9 +51,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
         SimplePanel header = new SimplePanel();
         header.setStyleName("header");
-        header.add(new Image("images/logo_mule_galaxy_KO_58px.gif"));
-//        Label header = new Label("Mule Galaxy");
-//        header.setStyleName("header");
+        header.add(new Image("images/galaxy_small_logo.png"));
+
         base.add(header);
         
         TabPanel tabPanel = new TabPanel();
@@ -55,7 +63,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         tabPanel.setStyleName("headerTabPanel");
         tabPanel.getDeckPanel().setStyleName("headerTabDeckPanel");
         tabPanel.selectTab(0);
-        tabPanel.add(new Label("Coming soon."), "Activity");
+        tabPanel.add(new ActivityPanel(this), "Activity");
         tabPanel.add(new AdministrationPanel(this), "Administration");
         
         Label footer = new Label("Mule Galaxy, Copyright 2008 MuleSource, Inc.");
@@ -71,14 +79,17 @@ public class Galaxy implements EntryPoint, HistoryListener {
     public void onHistoryChanged(String token) {
         // registryPanel.setMessage(token);
         
-        if (token.startsWith("artifact-")) {
-            registryPanel.setMessage("Found token");
-            registryPanel.setMain(new ArtifactPanel(registryPanel, token.substring(9)));
-        }
+//        if (token.startsWith("artifact-")) {
+//            registryPanel.setMain(new ArtifactPanel(registryPanel, token.substring(9)));
+//        }
     }
 
     public RegistryServiceAsync getRegistryService() {
         return registryService;
+    }
+
+    public UserServiceAsync getUserService() {
+        return userService;
     }
     
     

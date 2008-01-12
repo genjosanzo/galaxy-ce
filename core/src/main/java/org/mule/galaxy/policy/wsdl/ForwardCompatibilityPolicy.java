@@ -16,7 +16,7 @@ public class ForwardCompatibilityPolicy extends AbstractWsdlVersioningPolicy {
     }
 
     public String getName() {
-        return "WSDL Forward Compatability";
+        return "WSDL: Forward Compatability";
     }
 
     protected void check(Collection<ApprovalMessage> messages, DifferenceEvent event) {

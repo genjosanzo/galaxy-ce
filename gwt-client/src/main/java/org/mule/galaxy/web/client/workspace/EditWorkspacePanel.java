@@ -109,6 +109,8 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
         } else {
             setTitle("Add Workspace");
         }
+        
+        styleHeaderColumn(table);
     }
 
     protected void showDeleteDialog(String workspaceId) {

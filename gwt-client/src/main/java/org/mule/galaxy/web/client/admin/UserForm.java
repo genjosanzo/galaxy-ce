@@ -85,6 +85,7 @@ public class UserForm extends AbstractComposite {
             
         });
         
+        styleHeaderColumn(table);
         initWidget(panel);
     }
 

@@ -14,6 +14,7 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.impl.RegistryLocator;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.util.Constants;
 import org.mule.galaxy.wsi.Message;
 import org.mule.galaxy.wsi.WSIRule;
 import org.mule.galaxy.wsi.WSIRuleManager;
@@ -43,13 +44,17 @@ public class BasicProfilePolicy implements ArtifactPolicy {
         rules = wsiManager.getRules(WSIRuleManager.WSI_BP_1_1);
         wsdlReader = WSDLFactory.newInstance().newWSDLReader();
     }
+    
+    public boolean applies(Artifact a) {
+        return Constants.WSDL_DEFINITION_QNAME.equals(a.getDocumentType());
+    }
 
     public String getDescription() {
         return "Ensures that WSDLs meet the criteria outlined by the WS-I BasicProfile.";
     }
 
     public String getName() {
-        return "WS-I BasicProfile 1.1 WSDL Compliance";
+        return "WSDL: WS-I BasicProfile 1.1 Compliance";
     }
 
     public Collection<ApprovalMessage> isApproved(Artifact a, ArtifactVersion previous, ArtifactVersion next) {

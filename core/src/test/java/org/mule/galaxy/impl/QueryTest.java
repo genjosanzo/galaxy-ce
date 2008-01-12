@@ -33,7 +33,7 @@ public class QueryTest extends AbstractGalaxyTest {
     
     public void testQueries() throws Exception {
         // Import a document which should now be indexed
-        Artifact wsdlArtifact = importHelloWsdl();
+        importHelloWsdl();
         
         // Import a document which should now be indexed
         Artifact muleArtifact = importHelloMule();

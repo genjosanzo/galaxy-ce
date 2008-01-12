@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -77,7 +78,6 @@ public class ArtifactInfoPanel extends AbstractComposite {
         
         for (int i = 1; i < group.getColumns().size(); i++) {
             table.setText(i, 0, (String) group.getColumns().get(i));
-            
         }
         
         int c = 1;
@@ -86,7 +86,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
         }
         
         initDescription(table, c);
-        
+        styleHeaderColumn(table);
         topPanel.add(table);
         
         rightGroup = new VerticalPanel();
@@ -142,6 +142,16 @@ public class ArtifactInfoPanel extends AbstractComposite {
         addComment.addClickListener(new AddCommentClickListener(commentsPanel, null));
         
         InlineFlowPanel commentTitlePanel = createTitleWithLink("Comments", addComment);
+        Image img = new Image("images/feed-icon-14x14.png");
+        img.addClickListener(new ClickListener() {
+
+            public void onClick(Widget sender) {
+                Window.open(info.getCommentsFeedLink(), null, null);
+            }
+            
+        });
+        img.setStyleName("feed-icon");
+        commentTitlePanel.add(img);
         
         panel.add(commentTitlePanel);
         panel.add(commentsPanel);
@@ -149,19 +159,6 @@ public class ArtifactInfoPanel extends AbstractComposite {
         for (Iterator itr = info.getComments().iterator(); itr.hasNext();) {
             commentsPanel.add(createCommentPanel((WComment) itr.next()));
         }
-    }
-
-    private InlineFlowPanel createTitleWithLink(String name, Hyperlink addComment) {
-        InlineFlowPanel commentTitlePanel = new InlineFlowPanel();
-        commentTitlePanel.setStyleName("rightlinked-title-panel");
-        
-        Label label = new Label(name);
-        label.setStyleName("rightlinked-title");
-        commentTitlePanel.add(label);
-        
-        addComment.setStyleName("rightlinked-title-link");
-        commentTitlePanel.add(addComment);
-        return commentTitlePanel;
     }
 
     private Widget createCommentPanel(WComment c) {
@@ -174,8 +171,8 @@ public class ArtifactInfoPanel extends AbstractComposite {
         
         Hyperlink replyLink = new Hyperlink("Reply", "reply-" + c.getId());
         replyLink.addClickListener(new AddCommentClickListener(commentPanel, c.getId()));
-        title.add(userDateLabel);
         title.add(replyLink);
+        title.add(userDateLabel);
         
         commentPanel.add(title);
         
@@ -341,10 +338,10 @@ public class ArtifactInfoPanel extends AbstractComposite {
     }
 
     protected void initDependencies(Collection o) {
-        Toolbox depPanel = new Toolbox();
+        Toolbox depPanel = new Toolbox(true);
         depPanel.setTitle("Dependencies");
         
-        Toolbox depOnPanel = new Toolbox();
+        Toolbox depOnPanel = new Toolbox(true);
         depOnPanel.setTitle("Depended On By");
         
         boolean addedDeps = false;

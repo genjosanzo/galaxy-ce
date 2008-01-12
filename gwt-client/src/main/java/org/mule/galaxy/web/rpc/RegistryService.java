@@ -3,6 +3,7 @@ package org.mule.galaxy.web.rpc;
 import com.google.gwt.user.client.rpc.RemoteService;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -130,4 +131,9 @@ public interface RegistryService extends RemoteService {
      * @gwt.typeArgs ids <java.lang.String>
      */
     void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids) throws RPCException;
+
+    /**
+     * @gwt.typeArgs ids <org.mule.galaxy.web.rpc.WActivity>
+     */
+    Collection getActivities(Date from, Date to, String user, String eventType, int start, int results, boolean ascending) throws RPCException;
 }

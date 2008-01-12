@@ -20,6 +20,8 @@ import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 
 import org.acegisecurity.context.SecurityContextHolder;
+import org.mule.galaxy.Activity;
+import org.mule.galaxy.ActivityManager;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactType;
@@ -60,6 +62,7 @@ import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.TransitionResponse;
+import org.mule.galaxy.web.rpc.WActivity;
 import org.mule.galaxy.web.rpc.WArtifactPolicy;
 import org.mule.galaxy.web.rpc.WArtifactType;
 import org.mule.galaxy.web.rpc.WComment;
@@ -79,6 +82,8 @@ public class RegistryServiceImpl implements RegistryService {
     private PolicyManager policyManager;
     private LifecycleManager lifecycleManager;
     private IndexManager indexManager;
+    private ActivityManager activityManager;
+    
     private SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a, MMMM d, yyyy");
     
     @SuppressWarnings("unchecked")
@@ -470,6 +475,7 @@ public class RegistryServiceImpl implements RegistryService {
             g.getRows().add(info);
             
             info.setArtifactLink(getLink("/api/registry", a));
+            info.setArtifactFeedLink(getLink("/api/registry", a) + "?view=history");
             info.setCommentsFeedLink(getLink("/api/comments", a));
             
             return g;
@@ -907,6 +913,41 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
 
+    public Collection getActivities(Date from, Date to, String user, 
+                                    String eventType, int start,
+                                    int results, boolean ascending) throws RPCException {
+        
+        if ("All".equals(user)) {
+            user = null;
+        } else if ("System".equals(user)) {
+            
+        }
+        
+        Collection<Activity> activities = activityManager.getActivities(null, null, user, null, start,
+                                                                        results, ascending);
+        
+        ArrayList<WActivity> wactivities = new ArrayList<WActivity>();
+
+        for (Activity a : activities) {
+            wactivities.add(createWActivity(a));
+        }
+        return wactivities;
+    }
+
+    protected WActivity createWActivity(Activity a) {
+        WActivity wa = new WActivity();
+        wa.setId(a.getId());
+        wa.setEventType(a.getEventType().getText());
+        if (a.getUser() != null) {
+            wa.setUsername(a.getUser().getUsername());
+            wa.setName(a.getUser().getName());
+        }
+        wa.setMessage(a.getMessage());
+        wa.setDate(dateFormat.format(a.getDate().getTime()));
+        return wa;
+    }
+
+
     public void setRegistry(Registry registry) {
         this.registry = registry;
     }
@@ -927,6 +968,10 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void setViewManager(ViewManager viewManager) {
         this.viewManager = viewManager;
+    }
+
+    public void setActivityManager(ActivityManager activityManager) {
+        this.activityManager = activityManager;
     }
 
 

@@ -22,18 +22,14 @@ public class AdministrationPanel extends AbstractMenuPanel {
     
     public AdministrationPanel(Galaxy galaxy) {
         super(galaxy);
-        
-        userService = (UserServiceAsync) GWT.create(UserService.class);
         this.registryService = galaxy.getRegistryService();
+        this.userService = galaxy.getUserService();
         
-        Toolbox manageBox = new Toolbox();
+        Toolbox manageBox = new Toolbox(false);
         manageBox.setTitle("Manage");
         addMenuItem(manageBox);
         
         final AdministrationPanel adminPanel = this;
-        
-        ServiceDefTarget target = (ServiceDefTarget) userService;
-        target.setServiceEntryPoint("/handler/userService.rpc");
         
         Hyperlink link = new Hyperlink("Lifecycles", "");
         link.addClickListener(new ClickListener() {
@@ -94,12 +90,6 @@ public class AdministrationPanel extends AbstractMenuPanel {
         item.add(new Label("]"));
         
         manageBox.add(item);
-    }
-
-
-    protected void addUser() {
-        // TODO Auto-generated method stub
-        
     }
 
 

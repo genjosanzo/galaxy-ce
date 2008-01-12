@@ -19,11 +19,13 @@ import java.util.logging.Logger;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.mule.galaxy.ActivityManager;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.ActivityManager.EventType;
 import org.mule.galaxy.impl.jcr.JcrArtifact;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
@@ -36,6 +38,9 @@ import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.LogUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
@@ -43,7 +48,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public class LifecycleManagerImpl implements LifecycleManager {
+public class LifecycleManagerImpl implements LifecycleManager, ApplicationContextAware {
 
     private static final String DEFAULT_LIFECYCLE = "Default";
     private static final Logger LOGGER = LogUtils.getL7dLogger(LifecycleManagerImpl.class);
@@ -54,6 +59,8 @@ public class LifecycleManagerImpl implements LifecycleManager {
     private Dao<PhaseLogEntry> entryDao;
     private PolicyManager policyManager;
     private JcrTemplate jcrTemplate;
+    private ApplicationContext context;
+    private ActivityManager activityManager;
     
     public Lifecycle getDefaultLifecycle() {
         return lifecycles.get(DEFAULT_LIFECYCLE);
@@ -204,6 +211,11 @@ public class LifecycleManagerImpl implements LifecycleManager {
                 
                 entryDao.save(entry);
 
+                getActivityManager().logActivity(user,
+                                                 "Artifact " + ja.getPath() + " was transitioned to phase "
+                                                     + p.getName() + " in lifecycle "
+                                                     + p.getLifecycle().getName(), EventType.INFO);
+                                            
                 session.save();
                 return null;
             }
@@ -240,6 +252,14 @@ public class LifecycleManagerImpl implements LifecycleManager {
         this.phaseApprovalListeners = phaseApprovalListeners;
     }
 
+    public ActivityManager getActivityManager() {
+        if (activityManager == null) {
+            // workaround because spring sucks at circular dependencies
+            activityManager = (ActivityManager) context.getBean("activityManager");
+        }
+        return activityManager;
+    }
+
     public void setPhaseLogEntryDao(Dao<PhaseLogEntry> entryDao) {
         this.entryDao = entryDao;
     }
@@ -250,6 +270,10 @@ public class LifecycleManagerImpl implements LifecycleManager {
 
     public void setJcrTemplate(JcrTemplate jcrTemplate) {
         this.jcrTemplate = jcrTemplate;
+    }
+
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.context = applicationContext;
     }
     
 }

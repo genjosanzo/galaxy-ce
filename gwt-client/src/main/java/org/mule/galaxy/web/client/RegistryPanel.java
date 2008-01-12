@@ -31,12 +31,13 @@ public class RegistryPanel extends AbstractMenuPanel {
     private WorkspacePanel workspacePanel;
     private Toolbox workspaceBox;
     private Tree workspaceTree;
+    private int errorPosition = 1;
     
     public RegistryPanel(Galaxy galaxy) {
         super(galaxy);
         this.service = galaxy.getRegistryService();
         
-        workspaceBox = new Toolbox();
+        workspaceBox = new Toolbox(false);
         workspaceBox.setTitle("Workspaces");
         
         Image addImg = new Image("images/add_obj.gif");
@@ -44,6 +45,7 @@ public class RegistryPanel extends AbstractMenuPanel {
         addImg.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
                 setMain(new ArtifactForm(registryPanel));
+                errorPosition = 0;
             }
             
         });
@@ -55,6 +57,7 @@ public class RegistryPanel extends AbstractMenuPanel {
                 setMain(new EditWorkspacePanel(registryPanel, 
                                                workspaces,
                                                workspaceId));
+                errorPosition = 0;
             }
             
         });
@@ -74,6 +77,7 @@ public class RegistryPanel extends AbstractMenuPanel {
                                                parentId,
                                                workspaceId,
                                                item.getText()));
+                errorPosition = 0;
             }
             
         });
@@ -95,14 +99,11 @@ public class RegistryPanel extends AbstractMenuPanel {
             }
         });
         
-        artifactTypesBox = new Toolbox();
+        artifactTypesBox = new Toolbox(false);
         artifactTypesBox.setTitle("Artifact Types");
         addMenuItem(artifactTypesBox);
         
         initArtifactTypes();
-        
-        workspacePanel = new WorkspacePanel(this);
-        setMain(workspacePanel);
     }
 
     public void refreshWorkspaces() {
@@ -122,9 +123,6 @@ public class RegistryPanel extends AbstractMenuPanel {
                 initWorkspaces(treeItem, workspaces);
             }
         });
-        // this crashes the gwt shell on winblows....
-//        workspaceTree.setSelectedItem(treeItem);
-        
     }
 
     public RegistryServiceAsync getRegistryService() {
@@ -158,7 +156,7 @@ public class RegistryPanel extends AbstractMenuPanel {
                         }
                     });
                     hl.setStyleName("unselected-link");
-                    artifactTypesBox.add(hl);
+                    artifactTypesBox.add(hl, false);
                 }
             }
         });
@@ -176,6 +174,15 @@ public class RegistryPanel extends AbstractMenuPanel {
                 initWorkspaces(treeItem, workspaces2);
             }
         }
+        
+        ti.setState(true);
+        TreeItem child = ti.getChild(0);
+        workspaceTree.setSelectedItem(child, false);
+        
+        workspaceId = (String) child.getUserObject();
+        
+        workspacePanel = new WorkspacePanel(this);
+        setMain(workspacePanel);
     }
     
     public void addArtifactTypeFilter(String id) {
@@ -195,6 +202,7 @@ public class RegistryPanel extends AbstractMenuPanel {
     
     public void reloadArtifacts() {
         setMain(workspacePanel);
+        errorPosition = 1;
         workspacePanel.reloadArtifacts();
     }
 
@@ -208,5 +216,10 @@ public class RegistryPanel extends AbstractMenuPanel {
 
     public Collection getWorkspaces() {
         return workspaces;
+    }
+
+
+    protected int getErrorPanelPosition() {
+        return errorPosition;
     }
 }

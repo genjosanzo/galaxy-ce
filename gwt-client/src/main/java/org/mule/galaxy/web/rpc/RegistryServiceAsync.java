@@ -1,6 +1,7 @@
 package org.mule.galaxy.web.rpc;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -82,4 +83,6 @@ public interface RegistryServiceAsync extends RemoteService {
     void getActivePoliciesForPhase(String lifecycle, String phase, AsyncCallback c);
 
     void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids, AsyncCallback c);
+    
+    void getActivities(Date from, Date to, String user, String eventType, int start, int results, boolean ascending, AsyncCallback c);
 }

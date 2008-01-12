@@ -1,10 +1,15 @@
 package org.mule.galaxy.web.client.artifact;
 
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import org.mule.galaxy.web.client.RegistryPanel;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
@@ -45,9 +50,23 @@ public class ArtifactPanel extends Composite {
     }
     
     private void init() {
-        Label label = new Label(info.getValue(0));
-        label.setStyleName("artifact-title");
-        panel.insert(label, 0);
+        InlineFlowPanel artifactTitle = new InlineFlowPanel();
+        artifactTitle.add(new Label(info.getValue(0)));
+        artifactTitle.setStyleName("artifact-title");
+        
+        Image img = new Image("images/feed-icon-14x14.png");
+        img.addClickListener(new ClickListener() {
+
+            public void onClick(Widget sender) {
+                Window.open(info.getArtifactFeedLink(), null, null);
+            }
+            
+        });
+        img.setStyleName("feed-icon");
+        
+        artifactTitle.add(img);
+        
+        panel.insert(artifactTitle, 0);
         
         artifactTabs.add(new ArtifactInfoPanel(registryPanel, group, info), "Info");
         artifactTabs.add(new GovernancePanel(registryPanel, info), "Governance");

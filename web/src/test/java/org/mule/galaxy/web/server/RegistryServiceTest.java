@@ -224,6 +224,10 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
             return "Faux policy description";
         }
 
+        public boolean applies(Artifact a) {
+            return true;
+        }
+
         public String getId() {
             return "faux";
         }

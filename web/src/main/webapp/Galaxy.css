@@ -15,9 +15,8 @@ body {
 
 .header {
     background-image: url("images/img_banner.jpg");
-    font-size: 2em;
-    padding: .5em;
     color: white;
+    padding-top: 1px;
 }
 
 
@@ -59,8 +58,8 @@ a:visited {
 .selected-link {
     color: white;
     background-color: #656565;
-    padding: 2px;
     font-weight: bold;
+    padding: 2px;
 }
 
 .selected-link a, .selected-link a:visited {
@@ -77,13 +76,19 @@ a:visited {
 .left-menu {
     /* border-right: 1px #d0d0d0 solid ; */
     width: 200px;
-    overflow: auto;
     background-color: #ddd;
-    overflow: auto;
+}
+
+.clearit {
+    clear: both;
+    height: 0;
+    line-height: 0;
+    font-size: px; /*for IE*/
 }
 
 .left-menu-container {
-    padding: 4px;
+    padding: 6px;
+    background-color: #ddd;
 }
 
 .workspaces {
@@ -93,10 +98,11 @@ a:visited {
 
 .workspaces .gwt-TreeItem {
     padding: 2px;
+    cursor: pointer;
 }
 
 .workspaces .gwt-TreeItem-selected {
-    background-color: #e8eef7;
+    background-color: #ddd;
     font-weight: bold;
 }
 
@@ -134,22 +140,23 @@ a:visited {
 .rightlinked-title-panel {
     width: 100%;
     margin-top: 6px;
-    padding: 4px 0px 2px 8px;
     border-bottom: 1px black solid; 
-    display: inline;
 }
 
 .rightlinked-title {
     font-weight: bold;
     font-size: 1.5em;
-    width:80%;
+    padding-left: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 .rightlinked-title-link {
-    width: 20%;
-    text-align: right;
-    position: relative;
+    float: right;
     padding: 6px;
+    padding-right: 8px;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 
@@ -175,12 +182,16 @@ a:visited {
 .toolbox-body {
     color: black;
     background-color: white;
-    border: solid black 2px;
+    border: solid #333 2px;
     border-top: 0;
 }
 
 .toolbox-items {
     width: 100%;
+}
+
+.toolbox-item-entry {
+    padding: 2px 4px 2px 4px;
 }
 
 .toolbox-buttons {
@@ -198,11 +209,20 @@ a:visited {
 }
 .toolbox-header {
   font-weight: bold;
-  background-color: black;
-  border-bottom: 1px black solid;
+  background-color: #333;
+  border-bottom: 1px #333 solid;
   padding: 4px;
   padding-left: 6px;
   background-image: url("images/nw_maj_rond_gray.gif");
+  background-repeat: no-repeat;
+}
+.toolbox-header-onwhite {
+  font-weight: bold;
+  background-color: #333;
+  border-bottom: 1px #333 solid;
+  padding: 4px;
+  padding-left: 6px;
+  background-image: url("images/nw_maj_rond.gif");
   background-repeat: no-repeat;
 }
 
@@ -219,7 +239,7 @@ a:visited {
 }
     
 .error-panel {
-    background: #ddd;
+    background: white;
     padding: 10px;
 }
    
@@ -227,7 +247,14 @@ a:visited {
     background: #F5B800;
     padding: 5px;
     
+    border-right: #FFD820;
+    border-bottom: #FFD820;
+    border-top: #D59800;
+    border-right: #D59800;
+        
     text-align: center;
+    background-image: url("images/nw_maj_rond.gif");
+    background-repeat: no-repeat;
 }
 
 .footer {
@@ -246,6 +273,9 @@ a:visited {
  **
  **/
  
+.feed-icon {
+	margin-left: 6px;
+}
 .artifact-title {
     font-weight: bold;
     padding: 6px;
@@ -297,7 +327,7 @@ a:visited {
 
     
 .addComment {
-    background-color: #e8eef7;
+    background-color: #ddd;
     border: 1px black solid;
 }
 
@@ -311,18 +341,17 @@ a:visited {
 }
 
 .commentTitle .gwt-Label {
-    width: 80%;
 }
 
 .commentTitle .gwt-Hyperlink {
-    width: 20%;
     text-align: right;
+    float:right;
 }
 
 .commentText {
-    background-color: #e8eef7;
+    background-color: #4c0000;
     padding: 6px;
-    border: 0px 2px 2px 2px #87B3FF solid;
+    border: 0px 2px 2px 2px #ddd solid;
     margin-bottom: 2px;
 }
 
@@ -338,31 +367,28 @@ a:visited {
     font-weight: bold;
 }
 
+.artifactTableFull td {
+    background-color: #e8e8e8;
+    border-top: 1px #fff solid;
+}
+
 .artifactTableHeader {
     font-weight: bold;
-    padding: 4px;
+    padding: 6px;
     background-color: #c0c0c0;
-    border-top: 1px #fff solid;
 }
 
 .artifactTableEntry {
     background-color: #e8e8e8;
     padding: 4px;
-    border-top: 1px #fff solid;
 }
 
 .artifactTableHeader td {
     font-weight: bold;
-    padding: 4px;
+    padding: 6px;
     background-color: #c0c0c0;
+    border-top: 0px;
 }
-
-.artifactTableEntry td {
-    background-color: #e8e8e8;
-    padding: 4px;
-    border-top: 1px #fff solid;
-}
-
 
 .artifactTable {
     background: white;
@@ -372,6 +398,9 @@ a:visited {
 .artifactTableFull {
     background: white;
     margin-bottom: 10px;
+}
+.artifactTableFull td {
+    padding: 4px;
 }
 
 .artifact-list-container {
@@ -385,7 +414,7 @@ a:visited {
 }
 
 .metadata-panel table {
-	width: 100%;
+    width: 100%;
 }
 
 /**
@@ -400,7 +429,8 @@ a:visited {
     background-image: url("images/nw_maj_rond.gif");
     background-repeat: no-repeat;
     padding: 6px;
-    background-color: #C3D9FF;
+    color: white;
+    background-color: #333;
 }
 
 .artifact-version-panel {
@@ -427,7 +457,44 @@ a:visited {
 .next-phases-panel .gwt-ListBox {
     padding: 4px;
 }
-                   
+/**
+ ** Activity Panel
+ **/
+.activity-base-panel {
+    background-color: white;
+    color: black;
+    padding: 10px;
+}
+
+.activity-search-panel .gwt-Label {
+    padding-right: 6px;
+    padding-left: 10px;
+    text-align: center;
+}
+
+.activity-search-panel .gwt-Button {
+    padding-left: 8px;
+}
+
+.activity-search-panel .gwt-Button:active {
+    padding-left: 8px;
+}
+
+.activity-search-panel-container {
+    padding: 6px;
+    background-color: #ccc;
+    font-weight: bold;
+  background-image: url("images/nw_maj_rond.gif");
+  background-repeat: no-repeat;
+}
+
+
+.GWTCDatePicker, .GWTCDatePickerCheckout, .GWTCDatePickerCheckin {
+  border: 6px solid #4c0000;
+  background: white;
+  cursor: hand;
+}
+
 /**
  **
  ** Search Panel
@@ -627,10 +694,11 @@ a:visited {
 }
 
 .gwt-Tree .gwt-TreeItem {
+    cursor: pointer;
 }
 
 .gwt-Tree .gwt-TreeItem-selected {
-  background-color: #C3D9FF;
+  background-color: #ddd;
 }
 
 .gwt-StackPanel {
@@ -870,7 +938,7 @@ a:visited {
 .artifactTabPanel .gwt-TabBar {
   background-color: white;
   padding-top: 3px;
-  border-bottom: 4px solid #656565;
+  border-bottom: 4px solid #333;
 }
 
 .artifactTabPanel .gwt-TabBar .gwt-TabBarItem {
@@ -890,8 +958,8 @@ a:visited {
   cursor: default;
   color: white;
   
-  background-color: #656565;
-  border-bottom: 2px solid #656565;
+  background-color: #333;
+  border-bottom: 2px solid #333;
   margin-right: 2px;
   background-image: url("images/nw_maj_rond.gif");
   background-repeat: no-repeat;

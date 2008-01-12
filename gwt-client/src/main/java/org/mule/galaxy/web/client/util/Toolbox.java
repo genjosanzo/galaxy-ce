@@ -13,14 +13,18 @@ public class Toolbox extends Composite {
     private FlowPanel buttonPanel;
     private SimplePanel titleHolder;
     
-    public Toolbox() {
+    public Toolbox(boolean onwhite) {
         super();
 
         FlowPanel base = new FlowPanel();
         base.setStyleName("toolbox");
         
         header = new FlowPanel();
-        header.setStyleName("toolbox-header");
+        if (onwhite) {
+            header.setStyleName("toolbox-header-onwhite");
+        } else {
+            header.setStyleName("toolbox-header");
+        }
         titleHolder = new SimplePanel();
         titleHolder.setStyleName("toolbox-title");
         header.add(titleHolder);
@@ -55,6 +59,17 @@ public class Toolbox extends Composite {
     }
 
     public void add(Widget w) {
-        panel.add(w);
+        add(w, true);
+    }
+
+    public void add(Widget w, boolean pad) {
+        if (pad) {
+            SimplePanel itemEntry = new SimplePanel();
+            itemEntry.setStylePrimaryName("toolbox-item-entry");
+            itemEntry.add(w);
+            panel.add(itemEntry);
+        } else {
+            panel.add(w);
+        }
     }
 }
