@@ -165,6 +165,7 @@
 			    /login.jsp*=ROLE_ANONYMOUS,ROLE_USER
                 /login.css*=ROLE_ANONYMOUS,ROLE_USER
                 /images/*=ROLE_ANONYMOUS,ROLE_USER
+                /favicon.ico*=ROLE_ANONYMOUS,ROLE_USER
                 /=ROLE_USER
          ]]></value>
       </property>

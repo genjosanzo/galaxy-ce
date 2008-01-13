@@ -17,7 +17,7 @@ public class SearchPredicate implements IsSerializable {
     public SearchPredicate(String property, int matchType, String value) {
         this.property   = property;
         this.matchType  = matchType;
-        this.value      = value.toLowerCase();
+        this.value      = value;
     }
     
     public String getProperty() {
