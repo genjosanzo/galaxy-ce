@@ -63,8 +63,8 @@
           <artifactId>xmlParserAPIs</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>jaxen</groupId>
-          <artifactId>jaxen</artifactId>
+          <groupId>xom</groupId>
+          <artifactId>xom</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -83,8 +83,8 @@
           <artifactId>xmlParserAPIs</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>jaxen</groupId>
-          <artifactId>jaxen</artifactId>
+          <groupId>xom</groupId>
+          <artifactId>xom</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
