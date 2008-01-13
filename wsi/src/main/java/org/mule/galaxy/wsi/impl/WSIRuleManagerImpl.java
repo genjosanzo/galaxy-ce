@@ -13,6 +13,8 @@ import org.mule.galaxy.wsi.WSIRule;
 import org.mule.galaxy.wsi.WSIRuleManager;
 import org.mule.galaxy.wsi.wsdl.ImportUriRule;
 import org.mule.galaxy.wsi.wsdl.NonEmptyWsdlLocationImportRule;
+import org.mule.galaxy.wsi.wsdl.WsdlSchemaValidationRule;
+import org.mule.galaxy.wsi.wsdl.WsdlSoapSchemaValidationRule;
 import org.mule.galaxy.wsi.wsdl.soap.EmptySoapBindingTransportAttributeRule;
 import org.mule.galaxy.wsi.wsdl.soap.NoEncodingRule;
 import org.mule.galaxy.wsi.wsdl.soap.OperationSignatureRule;
@@ -28,8 +30,8 @@ public class WSIRuleManagerImpl implements WSIRuleManager {
     public WSIRuleManagerImpl() throws Exception {
         super();
 
-//        wsi11Rules.add(new WsdlSchemaValidationRule());
-//        wsi11Rules.add(new WsdlSoapSchemaValidationRule());
+        wsi11Rules.add(new WsdlSchemaValidationRule());
+        wsi11Rules.add(new WsdlSoapSchemaValidationRule());
         wsi11Rules.add(new ImportUriRule());
         wsi11Rules.add(new NonEmptyWsdlLocationImportRule());
         
