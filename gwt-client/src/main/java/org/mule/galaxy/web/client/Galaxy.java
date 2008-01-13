@@ -71,7 +71,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         tabPanel.addTabListener(new TabListener() {
 
             public boolean onBeforeTabSelected(SourcesTabEvents arg0, int arg1) {
-                return false;
+                return true;
             }
 
             public void onTabSelected(SourcesTabEvents arg0, int tab) {

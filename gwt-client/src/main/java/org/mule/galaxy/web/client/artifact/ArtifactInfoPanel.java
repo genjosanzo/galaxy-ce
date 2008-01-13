@@ -3,7 +3,6 @@ package org.mule.galaxy.web.client.artifact;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -135,8 +134,12 @@ public class ArtifactInfoPanel extends AbstractComposite {
     }
 
     private void initComments() {
+        SimplePanel commentsBase = new SimplePanel();
+        commentsBase.setStyleName("comments-base");
+        
         commentsPanel = new FlowPanel();
         commentsPanel.setStyleName("comments");
+        commentsBase.add(commentsPanel);
         
         Hyperlink addComment = new Hyperlink("Add", "add-comment");
         addComment.addClickListener(new AddCommentClickListener(commentsPanel, null));
@@ -154,7 +157,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
         commentTitlePanel.add(img);
         
         panel.add(commentTitlePanel);
-        panel.add(commentsPanel);
+        panel.add(commentsBase);
         
         for (Iterator itr = info.getComments().iterator(); itr.hasNext();) {
             commentsPanel.add(createCommentPanel((WComment) itr.next()));
@@ -200,8 +203,8 @@ public class ArtifactInfoPanel extends AbstractComposite {
                                   final AddCommentClickListener replyClickListener) {
         if (replyClickListener.isShowingComment()) {
             return;
-
         }
+        
         replyClickListener.setShowingComment(true);
         final VerticalPanel addCommentPanel = new VerticalPanel();
         addCommentPanel.setStyleName("addComment");

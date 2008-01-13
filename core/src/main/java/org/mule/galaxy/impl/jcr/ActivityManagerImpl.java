@@ -64,7 +64,11 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
                 }
 
                 if (user != null) {
-                    append(qstr, "user", "=", user, first, true);
+                    if (ActivityManager.SYSTEM.equals(user)) {
+                        append(qstr, "user", "=", user, first, true);
+                    } else {
+                        append(qstr, "user", "=", "''", first, true);
+                    }
                     first = false;
                 }
 

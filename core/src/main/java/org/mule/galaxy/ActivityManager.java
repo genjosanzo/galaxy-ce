@@ -24,6 +24,8 @@ public interface ActivityManager {
         }
         
     }
+
+    String SYSTEM = "system";
     
     /**
      * Log a system activity.

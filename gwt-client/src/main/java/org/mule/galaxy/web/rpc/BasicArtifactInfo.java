@@ -12,7 +12,17 @@ public class BasicArtifactInfo implements IsSerializable {
     private Map col2Value = new HashMap();
     private String id;
     private String workspaceId;
+    private String path;
     
+    
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     public String getWorkspaceId() {
         return workspaceId;
     }

@@ -42,8 +42,12 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
         super();
         this.galaxy = galaxy;
 
+        SimplePanel mainPanel = new SimplePanel();
+        mainPanel.setStyleName("main-panel");
+        
         FlowPanel base = new FlowPanel();
         base.setStyleName("activity-base-panel");
+        mainPanel.add(base);
         
         panel = new FlowPanel();
         panel.setStyleName("activity-panel");
@@ -69,7 +73,7 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
         searchPanel.add(new Label("User:"));
         userLB = new ListBox();
         userLB.addItem("All");
-        userLB.addItem("System");
+        userLB.addItem("System", "system");
         userLB.setSelectedIndex(0);
         searchPanel.add(userLB);
         galaxy.getUserService().getUsers(new AbstractCallback(this) {
@@ -117,7 +121,7 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
         errorPanel = new FlowPanel();
         errorPanel.setStyleName("error-panel");
         
-        initWidget(base);
+        initWidget(mainPanel);
     }
 
     protected void initUsers(Collection result) {

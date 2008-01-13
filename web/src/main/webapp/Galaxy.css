@@ -274,7 +274,7 @@ a:visited {
  **/
  
 .feed-icon {
-	margin-left: 6px;
+    margin-left: 6px;
 }
 .artifact-title {
     font-weight: bold;
@@ -316,14 +316,14 @@ a:visited {
 }
 
 .comments {
-    width: 100%;
+    width:100%;
+}
+
+.comments-base {
     padding: 10px;
 }
 
-
 .comment {
-    width: 100%;
-    margin-bottom: 10px;
 }
 
     
@@ -358,7 +358,7 @@ a:visited {
     background-color: white;
     padding: 6px;
     border: 0px 2px 2px 2px #ddd solid;
-    margin-bottom: 2px;
+    margin-bottom: 10px;
 }
 
 .nestedComment {

@@ -10,7 +10,7 @@ public interface Constants {
 
     QName MULE2_QNAME = new QName("http://www.mulesource.org/schema/mule/core/2.0", "mule");
     
-    QName SPRING_QNAME = new QName("http://www.springframework.org/schema/beans", "spring");
+    QName SPRING_QNAME = new QName("http://www.springframework.org/schema/beans", "beans");
 
     QName SCHEMA_QNAME = new QName("http://www.w3.org/2001/XMLSchema", "schema");
 

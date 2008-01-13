@@ -51,7 +51,7 @@ public class ArtifactPanel extends Composite {
     
     private void init() {
         InlineFlowPanel artifactTitle = new InlineFlowPanel();
-        artifactTitle.add(new Label(info.getValue(0)));
+        artifactTitle.add(new Label(info.getPath()));
         artifactTitle.setStyleName("artifact-title");
         
         Image img = new Image("images/feed-icon-14x14.png");

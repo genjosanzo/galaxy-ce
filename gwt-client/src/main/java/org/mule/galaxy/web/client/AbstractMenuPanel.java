@@ -30,9 +30,6 @@ public abstract class AbstractMenuPanel extends Composite implements ErrorPanel 
 
                 Element br = DOM.createElement("br");
                 DOM.setElementAttribute(br, "clear", "all");
-
-//                DOM.setElementAttribute(br, "class", "clearit");
-//                Window.alert("Parent " + DOM.getParent(leftMenu.getElement()).toString());
                 DOM.appendChild(DOM.getParent(leftMenu.getElement()), br);
             }
             
@@ -44,6 +41,11 @@ public abstract class AbstractMenuPanel extends Composite implements ErrorPanel 
         leftMenuContainer = new FlowPanel();
         leftMenuContainer.setStyleName("left-menu-container");
         
+        Element br = DOM.createElement("br");
+        DOM.setElementAttribute(br, "clear", "all");
+        DOM.appendChild(leftMenuContainer.getElement(), br);
+
+        
         leftMenu.add(leftMenuContainer);
 
         
@@ -53,10 +55,8 @@ public abstract class AbstractMenuPanel extends Composite implements ErrorPanel 
         panel.setCellWidth(mainPanel, "100%");
         
 
-        Element br = DOM.createElement("br");
+        br = DOM.createElement("br");
         DOM.setElementAttribute(br, "clear", "all");
-
-//        DOM.setElementAttribute(br, "class", "clearit");
         DOM.appendChild(DOM.getParent(mainPanel.getElement()), br);
         
         errorPanel = new FlowPanel();

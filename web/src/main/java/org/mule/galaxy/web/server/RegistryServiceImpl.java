@@ -271,6 +271,7 @@ public class RegistryServiceImpl implements RegistryService {
                                                       boolean extended) {
         info.setId(a.getId());
         info.setWorkspaceId(a.getWorkspace().getId());
+        info.setPath(a.getPath());
         for (int i = 0; i < view.getColumnNames().length; i++) {
             if (!extended || !view.isSummaryOnly(i)) {
                 info.setColumn(i, view.getColumnValue(a, i));
@@ -919,11 +920,10 @@ public class RegistryServiceImpl implements RegistryService {
         
         if ("All".equals(user)) {
             user = null;
-        } else if ("System".equals(user)) {
-            
         }
         
-        Collection<Activity> activities = activityManager.getActivities(null, null, user, null, start,
+        Collection<Activity> activities = activityManager.getActivities(null, null, 
+                                                                        user, null, start,
                                                                         results, ascending);
         
         ArrayList<WActivity> wactivities = new ArrayList<WActivity>();

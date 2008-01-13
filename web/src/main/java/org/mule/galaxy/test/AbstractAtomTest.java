@@ -106,7 +106,7 @@ public class AbstractAtomTest extends TestCase {
             f = new File("./web/src/main/webapp");
             if(!f.exists())
             {
-                f = new File("../../src/main/webapp");
+                f = new File("../../web/src/main/webapp");
             }
         }
         return f.getAbsolutePath();
