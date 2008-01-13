@@ -45,6 +45,10 @@
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
                     <artifactId>jcl104-over-slf4j</artifactId>
                 </exclusion>
             </exclusions>
@@ -56,6 +60,10 @@
             <version>${muleVersion}</version>
             <!-- we can remove these exclusions when we can upgrade to Mule 1.4.4 -->
             <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>jcl104-over-slf4j</artifactId>
@@ -72,6 +80,10 @@
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
                     <artifactId>jcl104-over-slf4j</artifactId>
                 </exclusion>
             </exclusions>
@@ -86,6 +98,10 @@
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
                     <artifactId>jcl104-over-slf4j</artifactId>
                 </exclusion>
             </exclusions>
@@ -98,6 +114,10 @@
             <scope>test</scope>
             <!-- we can remove these exclusions when we can upgrade to Mule 1.4.4 -->
             <exclusions>
+                <!--<exclusion>-->
+                    <!--<groupId>org.slf4j</groupId>-->
+                    <!--<artifactId>slf4j-jdk14</artifactId>-->
+                <!--</exclusion>-->
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>jcl104-over-slf4j</artifactId>
