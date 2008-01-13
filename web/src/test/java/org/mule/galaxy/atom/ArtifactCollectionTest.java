@@ -83,7 +83,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         Feed feed = feedDoc.getRoot();
         
         List<Entry> entries = feed.getEntries();
-        assertEquals(5, entries.size());
+        assertEquals(6, entries.size());
         
         Entry e = null;
         for (Entry e2 : entries) {

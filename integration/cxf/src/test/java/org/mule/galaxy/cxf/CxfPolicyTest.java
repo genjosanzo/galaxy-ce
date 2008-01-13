@@ -93,9 +93,4 @@ public class CxfPolicyTest extends AbstractAtomTest {
 //        String sayHi = greeter.sayHi();
 //        System.out.println(sayHi);
     }
-    
-    @Override
-    protected String getWebappDirectory() {
-        return "../../web/src/main/webapp";
-    }
 }

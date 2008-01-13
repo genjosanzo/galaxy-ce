@@ -1,6 +1,9 @@
 package org.mule.galaxy.test;
 
 
+import org.mule.galaxy.Registry;
+
+import java.io.File;
 import java.io.IOException;
 
 import javax.jcr.Node;
@@ -9,27 +12,18 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.Repository;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
-import javax.servlet.http.HttpServletRequest;
 
 import junit.framework.TestCase;
-
 import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Base;
 import org.apache.abdera.protocol.server.ServiceContext;
-import org.apache.abdera.spring.SpringAbderaServlet;
 import org.apache.abdera.writer.Writer;
 import org.apache.abdera.writer.WriterFactory;
 import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.FilterHolder;
-import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.webapp.WebAppContext;
-import org.mule.galaxy.Registry;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springmodules.jcr.SessionFactory;
-import org.springmodules.jcr.support.OpenSessionInViewFilter;
 
 public class AbstractAtomTest extends TestCase {
     
@@ -91,6 +85,7 @@ public class AbstractAtomTest extends TestCase {
         
         context = new WebAppContext();
         context.setContextPath("/");
+
         context.setWar(getWebappDirectory());
         server.setHandler(context);
         server.setStopAtShutdown(true);
@@ -98,8 +93,23 @@ public class AbstractAtomTest extends TestCase {
         server.start();
     }
 
-    protected String getWebappDirectory() {
-        return "./src/main/webapp";
+    /**
+     * The webapp relative directory varies depending on run from Maven, Eclipse and IDEA
+     * this will check each possiblilty to return an existing location
+     * @return
+     */
+    protected final String getWebappDirectory() 
+    {
+        File f = new File("./src/main/webapp");
+        if(!f.exists())
+        {
+            f = new File("./web/src/main/webapp");
+            if(!f.exists())
+            {
+                f = new File("../../src/main/webapp");
+            }
+        }
+        return f.getAbsolutePath();
     }
     
 }

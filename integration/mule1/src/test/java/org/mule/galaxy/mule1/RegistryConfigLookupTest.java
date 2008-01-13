@@ -58,8 +58,5 @@ public class RegistryConfigLookupTest extends AbstractAtomTest {
         InputStream is = res.getInputStream();
         IOUtils.copy(is, System.out);
     }
-    
-    protected String getWebappDirectory() {
-        return "../web/src/main/webapp";
-    }
+  
 }

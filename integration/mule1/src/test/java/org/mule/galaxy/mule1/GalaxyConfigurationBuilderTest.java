@@ -43,9 +43,4 @@ public class GalaxyConfigurationBuilderTest extends AbstractAtomTest
             super.tearDown();
         }
     }
-
-    protected String getWebappDirectory()
-    {
-        return "../../web/src/main/webapp";
-    }
 }

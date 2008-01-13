@@ -83,6 +83,15 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         // Test reretrieving the artifact
         g1 = gwtRegistry.getArtifact(a.getId());
         g1 = (ArtifactGroup) artifacts.iterator().next();
+
+        for (Iterator itr = artifacts.iterator(); itr.hasNext();) {
+            ArtifactGroup group = (ArtifactGroup)itr.next();
+
+            if ("Mule Configurations".equals(group.getName())) {
+                g1 = group;
+            }
+        }
+        assertNotNull(g1);
         assertEquals("Mule Configurations", g1.getName());
         
         columns = g1.getColumns();
