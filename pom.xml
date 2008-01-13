@@ -21,6 +21,7 @@
 		<module>integration/mule1</module>
 		<!--<module>integration/mule2</module>-->
 		<module>integration/cxf</module>
+                <module>integration/spring</module>
 	</modules>
 
 	<dependencyManagement>
