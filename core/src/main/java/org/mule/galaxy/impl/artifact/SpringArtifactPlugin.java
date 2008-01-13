@@ -47,13 +47,13 @@ public class SpringArtifactPlugin extends AbstractArtifactPlugin {
                                     String.class, // search input type
                                     "/beans/description", // the xquery expression
                                     Constants.SPRING_QNAME)); // document QName which this applies to
-
-        indexManager.save(new Index("spring.bean.description", // index field name
-                                    "Mule Bean Descriptions", // Display Name
-                                    Index.Language.XPATH,
-                                    String.class, // search input type
-                                    "/beans/bean/description", // the xquery expression
-                                    Constants.SPRING_QNAME)); // document QName which this applies to
+//
+//        indexManager.save(new Index("spring.bean.description", // index field name
+//                                    "Spring Bean Descriptions", // Display Name
+//                                    Index.Language.XPATH,
+//                                    String.class, // search input type
+//                                    "/beans/bean/description", // the xquery expression
+//                                    Constants.SPRING_QNAME)); // document QName which this applies to
 
     }
 
