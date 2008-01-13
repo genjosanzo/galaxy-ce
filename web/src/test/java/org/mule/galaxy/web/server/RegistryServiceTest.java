@@ -3,6 +3,7 @@ package org.mule.galaxy.web.server;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -59,8 +60,15 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         assertTrue(artifacts.size() > 0);
         
-        ArtifactGroup g1 = (ArtifactGroup) artifacts.iterator().next();
-        assertEquals("Mule Configurations", g1.getName());
+        ArtifactGroup g1 = null;
+        for (Iterator itr = artifacts.iterator(); itr.hasNext();) {
+            ArtifactGroup group = (ArtifactGroup)itr.next();
+            
+            if ("Mule Configurations".equals(group.getName())) {
+                g1 = group;
+            }
+        }
+        assertNotNull(g1);
         
         List columns = g1.getColumns();
         assertEquals(6, columns.size());
