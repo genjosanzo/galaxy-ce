@@ -23,34 +23,24 @@ public class SpringArtifactPlugin extends AbstractArtifactPlugin {
                                               Constants.SPRING_QNAME));
 
 
-        String exp = "declare namespace spring=\"http://www.springframework.org/schema/beans\";\n" +
+        String exp = "declare default element namespace \"http://www.springframework.org/schema/beans\";\n" +
+                "declare variable $document external;\n" +
                 "<values> \n" +
                 "{\n" +
-                "for $e in $document//spring:bean\n" +
-                "  return <value>{data($e/@id)</value>\n" +
-                "}\n" +
-                "</values>";
-
-        indexManager.save(new Index("spring.bean.id", // index field name
-                                    "Spring Beans", // Display Name
-                                    Index.Language.XQUERY,
-                                    String.class, // search input type
-                                    exp, // the xquery expression
-                                    Constants.SPRING_QNAME)); // document QName which this applies to
-        exp = "<values> \n" +
-                "{\n" +
                 "for $e in $document//bean\n" +
-                "  return <value>{data($e/@name)</value>\n" +
+                "  return if ($e/@name) \n" +
+                "then <value>{data($e/@name)}</value> \n" +
+                "else <value>{data($e/@id)}</value>\n" +
                 "}\n" +
                 "</values>";
 
-        indexManager.save(new Index("spring.bean.name", // index field name
+        indexManager.save(new Index("spring.bean", // index field name
                                     "Spring Beans", // Display Name
                                     Index.Language.XQUERY,
                                     String.class, // search input type
                                     exp, // the xquery expression
                                     Constants.SPRING_QNAME)); // document QName which this applies to
-
+       
         indexManager.save(new Index("spring.description", // index field name
                                     "Spring Description", // Display Name
                                     Index.Language.XPATH,

@@ -10,6 +10,7 @@
 package org.mule.galaxy.spring.config;
 
 import org.mule.galaxy.config.ConfigurationSupport;
+import org.mule.galaxy.util.IOUtils;
 
 import java.io.IOException;
 import java.net.URL;
@@ -19,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractXmlApplicationContext;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
 /**
@@ -63,10 +64,13 @@ public class GalaxyApplicationContext extends AbstractXmlApplicationContext
             ConfigurationSupport configSupport = new ConfigurationSupport();
             org.mule.galaxy.config.Resource[] resources = configSupport.getArtifacts(configURL.toString(), null);
 
-            InputStreamResource[] springResources = new InputStreamResource[resources.length];
+
+            ByteArrayResource[] springResources = new ByteArrayResource[resources.length];
             for (int i = 0; i < resources.length; i++)
             {
-                springResources[i] = new InputStreamResource(resources[i].getInputStream(), resources[i].getName());
+
+                springResources[i] = new ByteArrayResource(IOUtils.readBytesFromStream(resources[i].getInputStream())
+                        , resources[i].getName());
             }
             return springResources;
         }
