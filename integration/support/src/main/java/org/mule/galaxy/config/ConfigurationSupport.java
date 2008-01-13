@@ -110,7 +110,10 @@ public class ConfigurationSupport
     protected RequestOptions getRequestOptionsFromProperties(Properties properties, RequestOptions opts)
     {
         String authority = null;
-
+        if(properties==null)
+        {
+            return opts;
+        }
         String user = getOptionalProperty(properties, OPTION_USERNAME, null);
         String pass = getOptionalProperty(properties, OPTION_PASSWORD, null);
         if (user != null && pass != null)
