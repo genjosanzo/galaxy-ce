@@ -13,7 +13,7 @@ public class GalaxyConfigurationBuilderTest extends AbstractAtomTest
     public void testMuleConfig() throws Exception
     {
 
-        String configURL = "http://admin:admin@localhost:9002/api/registry?q=select artifact where mule.id = 'Hello_Sample'";
+        String configURL = "http://admin:admin@localhost:9002/api/registry?q=select artifact where mule.server.id = 'hello-server'";
 
         GalaxyConfigurationBuilder builder = new GalaxyConfigurationBuilder();
 

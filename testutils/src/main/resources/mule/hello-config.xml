@@ -3,7 +3,7 @@
 <!DOCTYPE mule-configuration PUBLIC "-//MuleSource //DTD mule-configuration XML V1.0//EN"
                                 "http://mule.mulesource.org/dtds/mule-configuration.dtd">
 
-<mule-configuration id="Hello_Sample" version="1.0">
+<mule-configuration id="hello-server" version="1.0">
 
     <description>
 The hello sample application has two components -
@@ -47,6 +47,9 @@ an error message to the end user. System error handling logs errors.
         <transformer name="ExceptionToString" className="org.mule.samples.hello.ExceptionToString"/>
     </transformers>
 
+    <global-endpoints>
+        <endpoint name="Greeter.in" address="stream://System.in"/>
+    </global-endpoints>
     <!--
         An interceptor is a piece of code that can be configued to execute
         before and/or after an event is received for a component.
@@ -68,7 +71,7 @@ an error message to the end user. System error handling logs errors.
         -->
         <mule-descriptor name="GreeterUMO" implementation="org.mule.samples.hello.Greeter">
             <inbound-router>
-                <endpoint address="stream://System.in" transformers="StdinToNameString"/>
+                <global-endpoint name="Greeter.in" transformers="StdinToNameString"/>
             </inbound-router>
             
             <outbound-router>

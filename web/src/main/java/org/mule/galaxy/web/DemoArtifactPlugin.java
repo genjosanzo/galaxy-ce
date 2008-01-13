@@ -24,6 +24,7 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
         User user = userManager.find("username", "admin").iterator().next();
         
         add(w, user, "hello-config.xml", "/mule/hello-config.xml");
+        add(w, user, "hello-config.xml", "/mule2/hello-config.xml");
         add(w, user, "test-applicationContext.xml", "/spring/test-applicationContext.xml");
         add(w, user, "hello.xsd", "/wsdl/imports/hello.xsd");
         add(w, user, "hello-portType.wsdl", "/wsdl/imports/hello-portType.wsdl");

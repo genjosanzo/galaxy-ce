@@ -14,7 +14,7 @@ import org.mule.galaxy.test.AbstractAtomTest;
 import java.net.URL;
 
 /**
- * TODO
+ * Test lookup of a spring beans configuration using a bean name
  */
 public class GalaxyApplicationContextTest extends AbstractAtomTest
 {

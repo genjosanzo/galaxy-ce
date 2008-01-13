@@ -23,7 +23,7 @@ public class SpringArtifactPlugin extends AbstractArtifactPlugin {
                                               Constants.SPRING_QNAME));
 
 
-        String exp = "declare default element namespace \"http://www.springframework.org/schema/beans\";\n" +
+        String exp = "declare default element namespace \"" + Constants.SPRING_QNAME.getNamespaceURI() + "\";\n" +
                 "declare variable $document external;\n" +
                 "<values> \n" +
                 "{\n" +

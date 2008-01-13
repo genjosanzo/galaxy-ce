@@ -24,11 +24,11 @@ public class Mule2ArtifactPlugin extends AbstractArtifactPlugin {
         
         // Read <mule:service> elements
         String exp = 
-            "declare namespace mule=\"http://www.mulesource.org/schema/mule/core/2.0\";\n" +
+            "declare default element namespace \"" + Constants.MULE2_QNAME.getNamespaceURI() + "\";\n" +
             "declare variable $document external;\n" +
             "" +
             "<values> {\n" +
-            "for $svc in $document//mule:service\n" +
+            "for $svc in $document//service\n" +
             "    return <value>{data($svc/@name)}</value>\n" +
             "} </values>";
        
@@ -38,7 +38,81 @@ public class Mule2ArtifactPlugin extends AbstractArtifactPlugin {
                                     String.class, // search input type
                                     exp, // the xquery expression
                                     Constants.MULE2_QNAME)); // document QName which this applies to
-            
+
+        exp =
+            "declare default element namespace \"" + Constants.MULE2_QNAME.getNamespaceURI() + "\";\n" +
+            "declare variable $document external;\n" +
+            "" +
+            "<values> {\n" +
+            "for $svc in $document/mule/model\n" +
+            "    return <value>{data($svc/@name)}</value>\n" +
+            "} </values>";
+
+        indexManager.save(new Index("mule2.model", // index field name
+                                    "Mule 2 Models", // Display Name
+                                    Index.Language.XQUERY,
+                                    String.class, // search input type
+                                    exp, // the xquery expression
+                                    Constants.MULE2_QNAME)); // document QName which this applies to
+
+        exp =
+            "declare default element namespace \"" + Constants.MULE2_QNAME.getNamespaceURI() + "\";\n" +
+            "declare variable $document external;\n" +
+            "" +
+            "<values> {\n" +
+            "for $svc in $document/mule/endpoint\n" +
+            "    return <value>{data($svc/@name)}</value>\n" +
+            "} </values>";
+
+        indexManager.save(new Index("mule2.endpoint", // index field name
+                                    "Mule 2 Endpoints", // Display Name
+                                    Index.Language.XQUERY,
+                                    String.class, // search input type
+                                    exp, // the xquery expression
+                                    Constants.MULE2_QNAME)); // document QName which this applies to
+
+        indexManager.save(new Index("mule2.server.id", // index field name
+                                    "Mule 2 Server ID", // Display Name
+                                    Index.Language.XPATH,
+                                    String.class, // search input type
+                                    "/*[local-name()='mule' and namespace-uri()='" + Constants.MULE2_QNAME.getNamespaceURI() + "']/*[local-name()='configuration']/@serverId",
+                                    Constants.MULE2_QNAME)); // document QName which this applies to
+
+        indexManager.save(new Index("mule2.cluster.id", // index field name
+                                    "Mule 2 Cluster ID", // Display Name
+                                    Index.Language.XPATH,
+                                    String.class, // search input type
+                                    "/*[local-name()='mule' and namespace-uri()='" + Constants.MULE2_QNAME.getNamespaceURI() + "']/*[local-name()='configuration']/@clusterId",
+                                    Constants.MULE2_QNAME)); // document QName which this applies to
+
+        indexManager.save(new Index("mule2.domain.id", // index field name
+                                    "Mule 2 Domain ID", // Display Name
+                                    Index.Language.XPATH,
+                                    String.class, // search input type
+                                    "/*[local-name()='mule' and namespace-uri()='" + Constants.MULE2_QNAME.getNamespaceURI() + "']/*[local-name()='configuration']/@domainId", // the xquery expression
+                                    Constants.MULE2_QNAME)); // document QName which this applies to
+
+        indexManager.save(new Index("mule2.description", // index field name
+                                    "Mule 2 Description", // Display Name
+                                    Index.Language.XPATH,
+                                    String.class, // search input type
+                                    "/*[local-name()='mule' and namespace-uri()='" + Constants.MULE2_QNAME.getNamespaceURI() + "']/*[local-name()='description']", // the xquery expression
+                                    Constants.MULE2_QNAME)); // document QName which this applies to
+
+//        indexManager.save(new Index("mule2.model.description", // index field name
+//                                    "Mule 2 Model Description", // Display Name
+//                                    Index.Language.XPATH,
+//                                    String.class, // search input type
+//                                    "/mule/model/description", // the xquery expression
+//                                    Constants.MULE2_QNAME)); // document QName which this applies to
+//
+//        indexManager.save(new Index("mule2.service.description", // index field name
+//                                    "Mule 2 Service Description", // Display Name
+//                                    Index.Language.XPATH,
+//                                    String.class, // search input type
+//                                    "//service/description", // the xquery expression
+//                                    Constants.MULE2_QNAME)); // document QName which this applies to
+
     }
 
     public void initializeEverytime() throws Exception {

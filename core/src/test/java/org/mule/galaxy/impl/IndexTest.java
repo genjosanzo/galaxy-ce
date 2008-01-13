@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
+import java.util.Iterator;
 
 import javax.xml.namespace.QName;
 
@@ -143,9 +144,17 @@ public class IndexTest extends AbstractGalaxyTest {
     public void testMule2Index() throws Exception {
         Collection<Index> indices = indexManager.getIndices(Constants.MULE2_QNAME);
         assertNotNull(indices);
-        assertEquals(1, indices.size());
-        
-        Index idx = indices.iterator().next();
+        assertEquals(7, indices.size());
+        Index idx = null;
+        for (Iterator<Index> iterator = indices.iterator(); iterator.hasNext();)
+        {
+            idx = iterator.next();
+            if("mule2.service".equals(idx.getId()))
+            {
+                break;
+            }
+        }
+        assertNotNull(idx);
         assertEquals("mule2.service", idx.getId());
         assertEquals("Mule 2 Services", idx.getName());
         assertEquals(Index.Language.XQUERY, idx.getLanguage());
