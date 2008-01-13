@@ -45,7 +45,7 @@ public class Mule2ArtifactPlugin extends AbstractArtifactPlugin {
 
         // Create a custom view
         CustomArtifactTypeView view = new CustomArtifactTypeView();
-        view.getColumns().add(new Column("Services", true, new ColumnEvaluator() {
+        view.getColumns().add(new Column("Services", true, false, new ColumnEvaluator() {
             public Object getValue(Object artifact) {
                 Object o = ((Artifact)artifact).getActiveVersion().getProperty("mule2.service");
                 

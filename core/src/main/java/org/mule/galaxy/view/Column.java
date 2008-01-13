@@ -4,7 +4,8 @@ public class Column {
 
     private String name;
     private ColumnEvaluator evaluator;
-    private boolean summaryOnly;
+    private boolean summary = true;
+    private boolean detail = true;
     
     public Column() {
         super();
@@ -15,10 +16,11 @@ public class Column {
         this.evaluator = evaluator;
     }
 
-    public Column(String name, boolean summaryOnly, ColumnEvaluator evaluator) {
+    public Column(String name, boolean summary, boolean detail, ColumnEvaluator evaluator) {
         this.name = name;
         this.evaluator = evaluator;
-        this.summaryOnly = summaryOnly;
+        this.summary = summary;
+        this.detail = detail;
     }
 
     public Column(String name, ViewLink link, ColumnEvaluator evaluator) {
@@ -42,12 +44,20 @@ public class Column {
         this.evaluator = evaluator;
     }
 
-    public boolean isSummaryOnly() {
-        return summaryOnly;
+    public boolean isSummary() {
+        return summary;
     }
 
-    public void setSummaryOnly(boolean summaryOnly) {
-        this.summaryOnly = summaryOnly;
+    public void setSummary(boolean summaryOnly) {
+        this.summary = summaryOnly;
+    }
+
+    public boolean isDetail() {
+        return detail;
+    }
+
+    public void setDetail(boolean detailOnly) {
+        this.detail = detailOnly;
     }
 
 }

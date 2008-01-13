@@ -57,7 +57,6 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
         
         FlowPanel panel = new FlowPanel();
         FlexTable table = createColumnTable();
-        table.setCellSpacing(1);
         
         final WorkspacesListBox workspacesLB = 
             new WorkspacesListBox(workspaces, workspaceId, parentWorkspaceId, true);

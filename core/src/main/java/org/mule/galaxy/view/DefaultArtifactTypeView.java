@@ -7,6 +7,7 @@ public class DefaultArtifactTypeView implements ArtifactTypeView {
     public String[] getColumnNames() {
         return new String [] {
           "Name",
+          "Workspace",
           "Version",
           "Phase"
         };
@@ -17,8 +18,10 @@ public class DefaultArtifactTypeView implements ArtifactTypeView {
         case 0:
             return row.getName();
         case 1:
-            return row.getActiveVersion().getVersionLabel();
+            return row.getWorkspace().getPath();
         case 2:
+            return row.getActiveVersion().getVersionLabel();
+        case 3:
             return row.getPhase().getName();
         }
         
@@ -29,7 +32,12 @@ public class DefaultArtifactTypeView implements ArtifactTypeView {
         return null;
     }
 
-    public boolean isSummaryOnly(int column) {
-        return false;
+    public boolean isSummary(int column) {
+        return column != 1;
     }
+
+    public boolean isDetail(int column) {
+        return true;
+    }
+    
 }

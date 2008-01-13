@@ -118,7 +118,7 @@ public class MuleArtifactPlugin extends AbstractArtifactPlugin {
 
         // Create a custom view
         CustomArtifactTypeView view = new CustomArtifactTypeView();
-        view.getColumns().add(new Column("Descriptors", true, new ColumnEvaluator() {
+        view.getColumns().add(new Column("Descriptors", true, false, new ColumnEvaluator() {
             public Object getValue(Object artifact) {
                 Object o = ((Artifact)artifact).getActiveVersion().getProperty("mule.descriptor");
                 
@@ -128,7 +128,7 @@ public class MuleArtifactPlugin extends AbstractArtifactPlugin {
                 return 0;
             }
         }));
-        view.getColumns().add(new Column("Transformers", true, new ColumnEvaluator() {
+        view.getColumns().add(new Column("Transformers", true, false, new ColumnEvaluator() {
             public Object getValue(Object artifact) {
                 Object o = ((Artifact)artifact).getActiveVersion().getProperty("mule.transformer");
                 
@@ -138,7 +138,7 @@ public class MuleArtifactPlugin extends AbstractArtifactPlugin {
                 return 0;
             }
         }));
-        view.getColumns().add(new Column("Models", true, new ColumnEvaluator() {
+        view.getColumns().add(new Column("Models", true, false, new ColumnEvaluator() {
             public Object getValue(Object artifact) {
                 Object o = ((Artifact)artifact).getActiveVersion().getProperty("mule.model");
                 

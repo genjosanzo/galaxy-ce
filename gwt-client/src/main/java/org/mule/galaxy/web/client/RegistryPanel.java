@@ -218,8 +218,8 @@ public class RegistryPanel extends AbstractMenuPanel {
         return workspaces;
     }
 
-
+    // TODO
     protected int getErrorPanelPosition() {
-        return errorPosition;
+        return 0;
     }
 }

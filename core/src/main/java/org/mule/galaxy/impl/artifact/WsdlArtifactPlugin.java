@@ -113,7 +113,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
     public void initializeEverytime() throws Exception {
         
         CustomArtifactTypeView view = new CustomArtifactTypeView();
-        view.getColumns().add(new Column("Port Types", true, new ColumnEvaluator() {
+        view.getColumns().add(new Column("Port Types", true, false, new ColumnEvaluator() {
             public Object getValue(Object artifact) {
                 Object o = ((Artifact)artifact).getActiveVersion().getProperty("wsdl.portType");
                 
@@ -124,7 +124,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
             }
         }));
 
-        view.getColumns().add(new Column("Bindings", true, new ColumnEvaluator() {
+        view.getColumns().add(new Column("Bindings", true, false, new ColumnEvaluator() {
             public Object getValue(Object artifact) {
                 Object o = ((Artifact)artifact).getActiveVersion().getProperty("wsdl.binding");
                 
@@ -134,7 +134,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
                 return 0;
             }
         }));
-        view.getColumns().add(new Column("Services", true, new ColumnEvaluator() {
+        view.getColumns().add(new Column("Services", true, false, new ColumnEvaluator() {
             public Object getValue(Object artifact) {
                 Object o = ((Artifact)artifact).getActiveVersion().getProperty("wsdl.service");
                 
@@ -144,7 +144,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
                 return 0;
             }
         }));
-        view.getColumns().add(1, new Column("Namespace", true, new ColumnEvaluator() {
+        view.getColumns().add(3, new Column("Namespace", true, false, new ColumnEvaluator() {
             public Object getValue(Object artifact) {
                 return ((Artifact)artifact).getActiveVersion().getProperty("wsdl.targetNamespace");
             }

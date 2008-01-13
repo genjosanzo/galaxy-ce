@@ -17,6 +17,17 @@ public class CustomArtifactTypeView implements ArtifactTypeView {
             }
         }));
         
+        columns.add(new Column("Workspace", false, true, new ColumnEvaluator() {
+            public Object getValue(Object artifact) {
+                return ((Artifact) artifact).getWorkspace().getPath();
+            }
+        }));
+
+        columns.add(new Column("Media Type", false, true, new ColumnEvaluator() {
+            public Object getValue(Object artifact) {
+                return ((Artifact) artifact).getContentType();
+            }
+        }));
         columns.add(new Column("Version", new ColumnEvaluator() {
             public Object getValue(Object artifact) {
                 return ((Artifact) artifact).getActiveVersion().getVersionLabel();
@@ -68,10 +79,16 @@ public class CustomArtifactTypeView implements ArtifactTypeView {
         return null;
     }
 
-    public boolean isSummaryOnly(int column) {
+    public boolean isSummary(int column) {
         Column col = columns.get(column);
         
-        return col.isSummaryOnly();
+        return col.isSummary();
+    }
+
+    public boolean isDetail(int column) {
+        Column col = columns.get(column);
+        
+        return col.isDetail();
     }
     
 }

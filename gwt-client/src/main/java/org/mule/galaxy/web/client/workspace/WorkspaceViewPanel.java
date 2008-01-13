@@ -17,6 +17,9 @@ public class WorkspaceViewPanel extends AbstractComposite {
         super();
 
         TabPanel tabs = new TabPanel();
+
+        tabs.setStyleName("artifactTabPanel");
+        tabs.getDeckPanel().setStyleName("artifactTabDeckPanel");
         
         tabs.add(new EditWorkspacePanel(registryPanel, workspaces, parentWorkspaceId, workspaceId, workspaceName), "Info");
         tabs.add(new PolicyPanel(registryPanel, registryPanel.getRegistryService(), workspaceId), "Governance");

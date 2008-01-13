@@ -15,7 +15,9 @@ public interface ArtifactTypeView {
 
     ViewLink getLink(Artifact row, int column);
     
-    boolean isSummaryOnly(int column);
+    boolean isSummary(int column);
+    
+    boolean isDetail(int column);
     
     // Collection<Artifact> sort(Collection<Artifact> artifacts, int column)
 }

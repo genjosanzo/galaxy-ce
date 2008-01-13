@@ -6,13 +6,13 @@
 <mule-configuration id="Hello_Sample" version="1.0">
 
     <description>
-    The hello sample application has two components -
-    1. The Greeter component that adds a greeting to the event it receives
-    2. The ChitChater component that adds some additional conversation to the event it receives
-    An event is triggered by input through the system console and the outbound event is
-    aslo written out through the system console.
-    This configuration also demonstrates user and system error handling. User error handling returns
-    an error message to the end user. System error handling logs errors.
+The hello sample application has two components -
+1. The Greeter component that adds a greeting to the event it receives
+2. The ChitChater component that adds some additional conversation to the event it receives
+An event is triggered by input through the system console and the outbound event is
+also written out through the system console.
+This configuration also demonstrates user and system error handling. User error handling returns
+an error message to the end user. System error handling logs errors.
     </description>
 
     <mule-environment-properties serverUrl=""/>

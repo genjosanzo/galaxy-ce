@@ -240,8 +240,12 @@ public class RegistryServiceImpl implements RegistryService {
                     }
                     name2view.put(type.getDescription(), view);
                     
+                    int i = 0;
                     for (String col : view.getColumnNames()) {
-                        g.getColumns().add(col);
+                        if (view.isSummary(i)) {
+                            g.getColumns().add(col);
+                        }
+                        i++;
                     }
                 }
                 
@@ -251,7 +255,13 @@ public class RegistryServiceImpl implements RegistryService {
             }
             
             ArrayList values = new ArrayList();
-            values.addAll(name2group.values());
+            ArrayList<String> keys = new ArrayList<String>();
+            keys.addAll(name2group.keySet());
+            Collections.sort(keys);
+            
+            for (String key : keys) {
+                values.add(name2group.get(key));
+            }
             return values;
         } catch (QueryException e) {
             throw new RPCException(e.getMessage());
@@ -272,9 +282,14 @@ public class RegistryServiceImpl implements RegistryService {
         info.setId(a.getId());
         info.setWorkspaceId(a.getWorkspace().getId());
         info.setPath(a.getPath());
+        int column = 0;
         for (int i = 0; i < view.getColumnNames().length; i++) {
-            if (!extended || !view.isSummaryOnly(i)) {
-                info.setColumn(i, view.getColumnValue(a, i));
+            if (!extended && view.isSummary(i)) {
+                info.setColumn(column, view.getColumnValue(a, i));
+                column++;
+            } else if (extended && view.isDetail(i)) {
+                info.setColumn(column, view.getColumnValue(a, i));
+                column++;
             }
         }
         return info;
@@ -414,11 +429,10 @@ public class RegistryServiceImpl implements RegistryService {
             }
             
             for (int i = 0; i < view.getColumnNames().length; i++) {
-                if (!view.isSummaryOnly(i)) {
+                if (view.isDetail(i)) {
                     g.getColumns().add(view.getColumnNames()[i]);
                 }
             }
-            
             
             ExtendedArtifactInfo info = new ExtendedArtifactInfo();
             createBasicArtifactInfo(a, view, info, true);

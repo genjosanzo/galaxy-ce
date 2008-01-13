@@ -47,6 +47,8 @@ public class SpringArtifactPlugin extends AbstractArtifactPlugin {
                                     String.class, // search input type
                                     "/beans/description", // the xquery expression
                                     Constants.SPRING_QNAME)); // document QName which this applies to
+        
+        // TODO: reenable this once we can make xpath queries non visible on the artifact page
 //
 //        indexManager.save(new Index("spring.bean.description", // index field name
 //                                    "Spring Bean Descriptions", // Display Name
@@ -61,7 +63,7 @@ public class SpringArtifactPlugin extends AbstractArtifactPlugin {
 
         // Create a custom view
         CustomArtifactTypeView view = new CustomArtifactTypeView();
-        view.getColumns().add(new Column("Beans", true, new ColumnEvaluator() {
+        view.getColumns().add(new Column("Beans", true, false, new ColumnEvaluator() {
             public Object getValue(Object artifact) {
                 Object o = ((Artifact)artifact).getActiveVersion().getProperty("spring.bean");
 
