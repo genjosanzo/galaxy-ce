@@ -8,6 +8,7 @@
 	<packaging>pom</packaging>
 	<version>1.0-M1-SNAPSHOT</version>
 	<name>Galaxy</name>
+
   <licenses>
     <license>
       <name>GPL v2</name>
