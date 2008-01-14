@@ -8,8 +8,9 @@ public class Query {
     boolean searchLatestVersionOnly = true;
     Class<?> selectType;
     private String groupBy;
-    private String workspace;
+    private String workspaceId;
     private boolean workspaceChildren;
+    private String workspacePath;
     
     public Query(Class selectType, Restriction restriction) {
         this.selectType = selectType;
@@ -42,14 +43,25 @@ public class Query {
         return this;
     }
     
-    public Query workspace(String workspace, boolean searchWorkspaceChildren) {
-        this.workspace = workspace;
+    public Query workspaceId(String workspace, boolean searchWorkspaceChildren) {
+        this.workspaceId = workspace;
         this.workspaceChildren = searchWorkspaceChildren;
         return this;
     }
     
-    public Query workspace(String workspace) {
-        this.workspace = workspace;
+    public Query workspaceId(String workspace) {
+        this.workspaceId = workspace;
+        return this;
+    }
+    
+    public Query workspacePath(String workspace, boolean searchWorkspaceChildren) {
+        this.workspacePath = workspace;
+        this.workspaceChildren = searchWorkspaceChildren;
+        return this;
+    }
+    
+    public Query workspacePath(String workspace) {
+        this.workspacePath = workspace;
         return this;
     }
 
@@ -57,8 +69,12 @@ public class Query {
         return groupBy;
     }
 
-    public String getWorkspace() {
-        return workspace;
+    public String getWorkspaceId() {
+        return workspaceId;
+    }
+
+    public String getWorkspacePath() {
+        return workspacePath;
     }
 
     public boolean isSearchWorkspaceChildren() {

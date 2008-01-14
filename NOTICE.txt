@@ -1,0 +1,5 @@
+This product includes/uses software(s) developed by 'The Apache Software Foundation' (http://www.apache.org/)
+
+This product includes/uses software(s) developed by 'Sun Microsystems' (http://www.sun.com/)
+
+This product includes/uses software(s) developed by 'The Eclipse Software Foundation' (http://www.eclipse.org/)

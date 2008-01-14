@@ -840,11 +840,26 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         
         if (!itr.hasNext()){
             return search(new org.mule.galaxy.query.Query(selectTypeCls));
-        } else if  (!itr.next().toLowerCase().equals("where")) {
-            throw new QueryException(new Message("EXPECTED_WHERE", LOGGER));
+        }
+        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(selectTypeCls);
+        
+        String next = itr.next();
+        if ("from".equals(next.toLowerCase())) {
+            if (!itr.hasNext()) throw new QueryException(new Message("EXPECTED_FROM", LOGGER));
+            
+            q.workspacePath(dequote(itr.next(), itr));
+            
+            if (!itr.hasNext()) {
+                throw new QueryException(new Message("EXPECTED_WHERE", LOGGER));
+            }
+            
+            next = itr.next();
         }
         
-        org.mule.galaxy.query.Query q = null;
+        if (!next.toLowerCase().equals("where")) {
+            throw new QueryException(new Message("EXPECTED_WHERE_BUT_FOUND", LOGGER, next));
+        }
+        
         while (itr.hasNext()) {
             String left = itr.next();
             if (!itr.hasNext()) {
@@ -857,60 +872,87 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 throw new QueryException(new Message("EXPECTED_RIGHT", LOGGER));
             }
             
-            String right = itr.next();
-            
-            if (right.startsWith("'") && right.endsWith("'")) {
-                right = right.substring(1, right.length()-1);
-            }
-            
             Restriction r = null;
             if (compare.equals("=")) {
-                r = Restriction.eq(left, right);
+                r = Restriction.eq(left, dequote(itr.next(), itr));
             } else if (compare.equals("like")) {
-                r = Restriction.like(left, right);
+                r = Restriction.like(left, dequote(itr.next(), itr));
             } else if (compare.equals("!=")) {
-                r = Restriction.not(Restriction.eq(left, right));
+                r = Restriction.not(Restriction.eq(left, dequote(itr.next(), itr)));
             } else if (compare.equals("in")) {
                 if (!itr.hasNext()) {
                     throw new QueryException(new Message("EXPECTED_IN_TOKEN", LOGGER));
                 }
+                
                 ArrayList<String> in = new ArrayList<String>();
                 String first = itr.next();
+                boolean end = false;
                 if (first.startsWith("(")) {
-                    first = first.substring(1);
+                    if (first.endsWith(")")) {
+                        end = true;
+                        first = first.substring(1, first.length() - 1);
+                    } else {
+                        first = first.substring(1);
+                    }
+                        
                     if (first.endsWith(",")) {
                         first = first.substring(0, first.length() - 1);
                     }
-                    
+                    in.add(dequote(first, itr));
                 } else {
-                    throw new QueryException(new Message("EXPECTED_IN_RIGHT_PARENS", LOGGER));
+                    throw new QueryException(new Message("EXPECTED_IN_LEFT_PARENS", LOGGER, first));
                 }
                 
-                while (itr.hasNext()) {
-                    String next = itr.next();
-                    if (next.endsWith(")")) {
-                        next = next.substring(0, next.length()-1);
-                        in.add(next);
+                while (!end && itr.hasNext()) {
+                    String nextIn = itr.next();
+                    if (nextIn.endsWith(")")) {
+                        in.add(dequote(nextIn.substring(0, nextIn.length()-1), itr));
                         break;
                     } else {
-                        
+                        in.add(dequote(nextIn, itr));
                     }
                 }
                 r = Restriction.in(left, in);
             } else {
-                new QueryException(new Message("UNKNOWN_COMPARATOR", LOGGER));
+                new QueryException(new Message("UNKNOWN_COMPARATOR", LOGGER, left));
             }
             
-            if (q == null) {
-                q = new org.mule.galaxy.query.Query(selectTypeCls, r);
-            } else {
-                q.add(r);
-            }
+            q.add(r);
         }
         
         return search(q);
     }
 
+
+    private String dequote(String s, Iterator itr) {
+        if (s.startsWith("'")) {
+            s = dequote2(s, "'", itr);
+        } else if (s.startsWith("\"")) {
+            s = dequote2(s, "\"", itr);
+        }
+        return s;
+    }
+
+    private String dequote2(String s, String quote, Iterator itr) {
+        if (!s.endsWith(quote)) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(s.substring(1));
+            while (itr.hasNext()) {
+                sb.append(" ");
+                String next = (String) itr.next();
+                
+                if (next.endsWith(quote)) {
+                    sb.append(next.substring(0, next.length()-1));
+                    break;
+                } else {
+                    sb.append(next);
+                }
+            }
+            return sb.toString();
+        } else {
+            return s.substring(1, s.length()-1);
+        }
+    }
 
     public Set search(final org.mule.galaxy.query.Query query) 
         throws RegistryException, QueryException {
@@ -931,12 +973,26 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     throw new RuntimeException(new QueryException(new Message("INVALID_SELECT_TYPE", LOGGER, selectType.getName())));
                 }
                 
-                String workspace = query.getWorkspace();
-                if (workspace != null) {
+                if (query.getWorkspaceId() != null) {
                     qstr.append("//*[@jcr:uuid='")
-                        .append(workspace)
+                        .append(query.getWorkspaceId())
                         .append("'][@jcr:primaryType=\"galaxy:workspace\"]/")
                         .append(ARTIFACT_NODE_NAME);
+                } else if (query.getWorkspacePath() != null) {
+                    String path = query.getWorkspacePath();
+
+                    if (path.startsWith("/")) {
+                        path = path.substring(1);
+                    }
+                    
+                    if (path.endsWith("/")) {
+                        path = path.substring(0, path.length() - 1);
+                    }
+                    
+                    qstr.append("//")
+                    .append(ISO9075.encode(path))
+                    .append("[@jcr:primaryType=\"galaxy:workspace\"]/")
+                    .append(ARTIFACT_NODE_NAME);
                 } else {
                     qstr.append("//")
                         .append(ARTIFACT_NODE_NAME);
@@ -970,14 +1026,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     if (operator.equals(Operator.IN)) {
                         Collection<?> right = (Collection<?>) r.getRight();
                         for (Object o : right) {
-                            first = appendPropertySearech(qstr, propStr, first, 
-                                                          o.toString(), property, not, Operator.EQUALS);
+                            first = appendPropertySearch(qstr, propStr, first, 
+                                                          o.toString(), property, 
+                                                          not, false, Operator.EQUALS);
                         }
                     } else {
                         String right = r.getRight().toString();
                         
-                        first = appendPropertySearech(qstr, propStr, first, right, 
-                                                      property, not, operator);
+                        first = appendPropertySearch(qstr, propStr, first, right, 
+                                                      property, not, true, operator);
                     }
                 }
                 
@@ -1030,12 +1087,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 return artifacts;
             }
 
-            private boolean appendPropertySearech(StringBuilder qstr, 
+            private boolean appendPropertySearch(StringBuilder qstr, 
                                                   StringBuilder propStr, 
                                                   boolean first,
                                                   String right, 
                                                   String property, 
                                                   boolean not,
+                                                  boolean and,
                                                   Operator operator) {
                 
                 if (property.equals(JcrArtifact.PHASE)
@@ -1043,12 +1101,16 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     || property.equals(JcrArtifact.CONTENT_TYPE)
                     || property.equals(JcrArtifact.NAME)) {
                     createPropertySearch(qstr, right, property, operator, not, true);
+                } else if (property.equals("workspace")) {
+                    
                 } else {
                     if (first) {
                         first = false;
                         propStr.append("[");
-                    } else {
+                    } else if (and) {
                         propStr.append(" and ");
+                    } else {
+                        propStr.append(" or ");
                     }
                     
                     createPropertySearch(propStr, right, property, operator, not, false);

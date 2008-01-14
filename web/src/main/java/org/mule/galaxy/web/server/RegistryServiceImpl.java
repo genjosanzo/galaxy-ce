@@ -196,7 +196,7 @@ public class RegistryServiceImpl implements RegistryService {
     public Collection getArtifacts(String workspaceId, Set artifactTypes, Set searchPredicates, String freeformQuery)
     throws RPCException {
         Query q = new Query(Artifact.class)
-            .workspace(workspaceId)
+            .workspaceId(workspaceId)
             .orderBy("artifactType");
         
         // Filter based on our search terms

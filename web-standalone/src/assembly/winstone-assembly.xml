@@ -19,6 +19,11 @@
       <outputDirectory></outputDirectory>
       <destName>galaxy-LICENSE.txt</destName>
     </file>
+    <file>
+      <source>../NOTICE.txt</source>
+      <outputDirectory></outputDirectory>
+      <destName>galaxy-NOTICE.txt</destName>
+    </file>
   </files>
   <dependencySets>
     <dependencySet>

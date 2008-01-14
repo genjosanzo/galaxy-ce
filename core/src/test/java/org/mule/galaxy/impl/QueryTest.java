@@ -41,23 +41,44 @@ public class QueryTest extends AbstractGalaxyTest {
         Workspace workspace = muleArtifact.getWorkspace();
         
         // Try out search!
-        Set results = registry.search(new Query(Artifact.class).workspace(workspace.getId()));
+        Set results = registry.search(new Query(Artifact.class).workspaceId(workspace.getId()));
         
         assertEquals(2, results.size());
         
         results = registry.search(new Query(Artifact.class)
-            .workspace(workspace.getId())
+            .workspaceId(workspace.getId())
                  .add(Restriction.eq("mule2.service", "GreeterUMO"))
                  .add(Restriction.eq("documentType", Constants.MULE2_QNAME)));
         assertEquals(1, results.size());
         
         results = registry.search(new Query(Artifact.class)
-            .workspace(workspace.getId())
+            .workspacePath(workspace.getPath())
+                 .add(Restriction.like("mule2.service", "Greeter")));
+        assertEquals(1, results.size());
+
+        results = registry.search("select artifact where mule2.service in ('GreeterUMO', 'FooUMO')");
+        assertEquals(1, results.size());
+
+        results = registry.search("select artifact where mule2.service in ('GreeterUMO')");
+        assertEquals(1, results.size());
+        
+        results = registry.search("select artifact where mule2.service in ('Bleh')");
+        assertEquals(0, results.size());
+        
+        results = registry.search("select artifact from '/Default Workspace' where mule2.service in ('GreeterUMO', 'FooUMO')");
+        assertEquals(1, results.size());
+
+        results = registry.search("select artifact from '/Foo' where mule2.service in ('GreeterUMO', 'FooUMO')");
+        assertEquals(0, results.size());
+
+        
+        results = registry.search(new Query(Artifact.class)
+            .workspaceId(workspace.getId())
                  .add(Restriction.not(Restriction.eq("documentType", Constants.MULE2_QNAME))));
         assertEquals(1, results.size());
         
         results = registry.search(new Query(Artifact.class)
-            .workspace(workspace.getId())
+            .workspaceId(workspace.getId())
                  .add(Restriction.like("mule2.service", "Greeter")));
         assertEquals(1, results.size());
         

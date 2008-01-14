@@ -30,6 +30,7 @@ public class ArtifactForm extends AbstractTitledComposite {
     private TextBox versionBox;
     private WorkspacesListBox workspacesLB;
     private final RegistryPanel registryPanel;
+    private final String artifactId;
 
     public ArtifactForm(final RegistryPanel registryPanel) {
         this(registryPanel, null, true);
@@ -44,6 +45,7 @@ public class ArtifactForm extends AbstractTitledComposite {
                            final boolean add) {
         super();
         this.registryPanel = registryPanel;
+        this.artifactId = artifactId;
         form = new FormPanel();
         form.setAction("/artifactUpload");
         form.setEncoding(FormPanel.ENCODING_MULTIPART);
@@ -59,7 +61,7 @@ public class ArtifactForm extends AbstractTitledComposite {
         if (add) {
             row = setupAddForm(registryPanel);
         } else {
-            row = setupAddVersionForm(registryPanel, panel, artifactId);
+            row = setupAddVersionForm(registryPanel, panel);
         }
 
         artifactUpload = new FileUpload();
@@ -93,7 +95,11 @@ public class ArtifactForm extends AbstractTitledComposite {
                     int last = msg.indexOf("</PRE>");
                     if (last == -1) last = msg.length();
                     
-                    registryPanel.setMain(new ArtifactPanel(registryPanel, msg.substring(8, last)));
+                    if (add) {
+                        registryPanel.setMain(new ArtifactPanel(registryPanel, msg.substring(8, last)));
+                    } else {
+                        registryPanel.setMain(new ArtifactPanel(registryPanel, artifactId));
+                    }
                 } else if (msg.startsWith("<PRE>ArtifactPolicyException")) {
                     parseAndShowPolicyMessages(msg);
                 } else {
@@ -170,7 +176,7 @@ public class ArtifactForm extends AbstractTitledComposite {
         return 3;
     }
 
-    private int setupAddVersionForm(final RegistryPanel registryPanel, FlowPanel panel, String artifactId) {
+    private int setupAddVersionForm(final RegistryPanel registryPanel, FlowPanel panel) {
         Label versionLabel = new Label("Version Label");
         table.setWidget(0, 0, versionLabel);
 

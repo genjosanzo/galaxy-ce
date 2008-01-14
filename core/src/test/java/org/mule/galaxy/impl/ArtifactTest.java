@@ -31,7 +31,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         registry.move(a, w.getId());
         
-        Set results = registry.search(new Query(Artifact.class).workspace(w.getId()));
+        Set results = registry.search(new Query(Artifact.class).workspaceId(w.getId()));
         
         assertEquals(1, results.size());
     }
