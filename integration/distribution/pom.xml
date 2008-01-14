@@ -2,12 +2,12 @@
   <parent>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-parent</artifactId>
-    <version>1.0-beta-1</version>
+    <version>1.0-beta-2-SNAPSHOT</version>
   </parent>  
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-integration-distribution</artifactId>
-  <version>1.0-beta-1</version>
+  <version>1.0-beta-2-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Galaxy Integration Distribution</name>
   <dependencies>
@@ -15,12 +15,12 @@
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-integration-cxf</artifactId>
-      <version>1.0-beta-1</version>
+      <version>1.0-beta-2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-integration-mule1</artifactId>
-      <version>1.0-beta-1</version>
+      <version>1.0-beta-2-SNAPSHOT</version>
     </dependency>
     <!-- dependency>
       <groupId>org.mule.galaxy</groupId>
@@ -30,7 +30,7 @@
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-integration-spring</artifactId>
-      <version>1.0-beta-1</version>
+      <version>1.0-beta-2-SNAPSHOT</version>
     </dependency>
   </dependencies>
   
