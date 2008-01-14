@@ -15,6 +15,7 @@
       <url>http://www.mulesource.org/display/GALAXY/GPLv2+License</url>
     </license>
   </licenses>
+
 	<modules>
 		<module>core</module>
 		<module>wsdldiff</module>
