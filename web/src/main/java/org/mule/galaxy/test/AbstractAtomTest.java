@@ -99,7 +99,6 @@ public class AbstractAtomTest extends TestCase {
         context.setContextPath("/");
 
         context.setWar(getWebappDirectory());
-        System.out.println("Webapp dir " + getWebappDirectory());
         server.setHandler(context);
         server.setStopAtShutdown(true);
         

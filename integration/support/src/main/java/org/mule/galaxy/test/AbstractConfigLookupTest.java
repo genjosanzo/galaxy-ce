@@ -64,9 +64,6 @@ public abstract class AbstractConfigLookupTest extends AbstractAtomTest
 //            IOUtils.copy(is, System.out);
             while (is.read() != -1);
             res.release();
-            
         }
-
-
     }
 }

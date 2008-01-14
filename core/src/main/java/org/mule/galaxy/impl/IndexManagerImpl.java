@@ -100,7 +100,6 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
     @Override
     public void save(Index t) {
-        System.out.println("Saving index " + t.getId() + " with name " + t.getName());
         save(t, false);
     }
 
@@ -148,7 +147,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         return (Set<Index>) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 QueryManager qm = getQueryManager(session);
-                Query query = qm.createQuery("element(*, galaxy:index)[@documentTypes=" 
+                Query query = qm.createQuery("//element(*, galaxy:index)[@documentTypes=" 
                                                  + JcrUtil.stringToXPathLiteral(documentType.toString()) + "]", 
                                              Query.XPATH);
                 
@@ -157,7 +156,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 Set<Index> indices = new HashSet<Index>();
                 for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
                     Node node = nodes.nextNode();
-                    
+//                    JcrUtil.dump(node);
                     try {
                         indices.add(build(node, session));
                     } catch (Exception e) {
@@ -193,22 +192,12 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         executor.shutdown();
         destroyed = true;
 
-        int time = 0;
-        while (executor.isTerminating() || executor.getQueue().size() > 0) {
-            Thread.sleep(50);
-            time += 50;
-            
-            if (time >= 10000) {
-                break;
-            }
-        }
+        executor.awaitTermination(10, TimeUnit.SECONDS);
         
-        LOGGER.info("Shutting down IndexManager with " + executor.getQueue().size() + " indexing jobs left");
         // TODO finish reindexing on startup?
-        executor.shutdownNow();
+        List<Runnable> tasks = executor.shutdownNow();
         
-        
-        if (executor.getQueue().size() > 0) {
+        if (tasks.size() > 0) {
             LOGGER.warning("Could not shut down indexer! Indexing was still going.");
         }
     }
