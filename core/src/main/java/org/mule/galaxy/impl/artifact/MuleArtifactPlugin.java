@@ -42,15 +42,6 @@ public class MuleArtifactPlugin extends AbstractArtifactPlugin {
                                     exp, // the xquery expression
                                     Constants.MULE_QNAME)); // document QName which this applies to
 
-        // Read <mule-configuration version=> attributes
-        exp =
-            "declare variable $document external;\n" +
-            "" +
-            "<values> {\n" +
-            "for $e in $document/mule-configuration\n" +
-            "    return <value>{data($e/@version)}</value>\n" +
-            "} </values>";
-
         // Read <mule-discriptor> elements
         exp =
             "declare variable $document external;\n" +
