@@ -150,13 +150,13 @@
 		<repository>
 			<id>muleforge.webdav.releases</id>
 			<url>
-				dav:https://dav.muleforge.org/repository/registry/
+				dav:https://dav.muleforge.org/repository/galaxy/
 			</url>
 		</repository>
 		<snapshotRepository>
 			<id>muleforge.webdav.snapshots</id>
 			<url>
-				dav:https://dav.muleforge.org/snapshots.repository/registry/
+				dav:https://dav.muleforge.org/snapshots.repository/galaxy/
 			</url>
 		</snapshotRepository>
 		<site>
@@ -166,12 +166,12 @@
 	</distributionManagement>
 	<scm>
 		<connection>
-			scm:svn:https://svn.muleforge.org/registry/trunk
+			scm:svn:https://svn.muleforge.org/galaxy/trunk
 		</connection>
 		<developerConnection>
-			scm:svn:https://svn.muleforge.org/registry/trunk
+			scm:svn:https://svn.muleforge.org/galaxy/trunk
 		</developerConnection>
-		<url>http://svn.registry.muleforge.org/</url>
+		<url>http://svn.galaxy.muleforge.org/</url>
 	</scm>
 
 </project>
