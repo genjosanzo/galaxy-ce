@@ -24,14 +24,14 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-core</artifactId>
-            <version>${version}</version>
+            <version>1.0-beta-1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-integration-support</artifactId>
-            <version>${version}</version>
+            <version>1.0-beta-1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -152,14 +152,14 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-testutils</artifactId>
-            <version>${version}</version>
+            <version>1.0-beta-1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-web</artifactId>
-            <version>${version}</version>
+            <version>1.0-beta-1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 

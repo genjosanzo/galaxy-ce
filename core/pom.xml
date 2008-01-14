@@ -136,19 +136,19 @@
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-wsdldiff</artifactId>
-      <version>${version}</version>
+      <version>1.0-beta-1-SNAPSHOT</version>
     </dependency>
 
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-wsi</artifactId>
-      <version>${version}</version>
+      <version>1.0-beta-1-SNAPSHOT</version>
     </dependency>
 
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-testutils</artifactId>
-      <version>${version}</version>
+      <version>1.0-beta-1-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
 
