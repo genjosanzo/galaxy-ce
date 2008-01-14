@@ -100,6 +100,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
     @Override
     public void save(Index t) {
+        System.out.println("Saving index " + t.getId() + " with name " + t.getName());
         save(t, false);
     }
 
@@ -137,12 +138,17 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         }
     }
     
+    @Override
+    protected String getNodeType() {
+        return "galaxy:index";
+    }
+
     @SuppressWarnings("unchecked")
     public Set<Index> getIndices(final QName documentType) {
         return (Set<Index>) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 QueryManager qm = getQueryManager(session);
-                Query query = qm.createQuery("//indexes/*[@documentTypes=" 
+                Query query = qm.createQuery("element(*, galaxy:index)[@documentTypes=" 
                                                  + JcrUtil.stringToXPathLiteral(documentType.toString()) + "]", 
                                              Query.XPATH);
                 

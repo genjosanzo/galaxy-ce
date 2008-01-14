@@ -2,6 +2,7 @@ package org.mule.galaxy.test;
 
 
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.impl.IndexManagerImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +47,8 @@ public class AbstractAtomTest extends TestCase {
 
     @Override
     protected void tearDown() throws Exception {
+        ((IndexManagerImpl) getApplicationContext().getBean("indexManagerTarget")).destroy();
+        
         clearJcrRepository();
         try {
             server.stop();
@@ -58,7 +61,7 @@ public class AbstractAtomTest extends TestCase {
     
     private void clearJcrRepository() {
         try {
-            WebApplicationContext wac = WebApplicationContextUtils.getWebApplicationContext(context.getServletContext());
+            WebApplicationContext wac = getApplicationContext();
             Repository repository = (Repository) wac.getBean("repository");
             Session session = repository.login(new SimpleCredentials("username", "password".toCharArray()));
 
@@ -75,6 +78,11 @@ public class AbstractAtomTest extends TestCase {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+    }
+
+    private WebApplicationContext getApplicationContext() {
+        WebApplicationContext wac = WebApplicationContextUtils.getWebApplicationContext(context.getServletContext());
+        return wac;
     }
 
     protected void prettyPrint(Base doc) throws IOException {

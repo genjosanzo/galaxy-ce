@@ -38,4 +38,16 @@
     </supertypes>
     
   </nodeType>
+    
+  <nodeType name="galaxy:index" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="" 
+    allowSameNameSiblings="false">
+    
+    <supertypes>
+      <supertype>nt:unstructured</supertype>
+    </supertypes>
+    
+  </nodeType>
 </nodeTypes>

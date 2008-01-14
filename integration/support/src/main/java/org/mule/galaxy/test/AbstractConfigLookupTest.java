@@ -61,8 +61,10 @@ public abstract class AbstractConfigLookupTest extends AbstractAtomTest
 
             // Use this as your handle to the mule configuration
             InputStream is = res.getInputStream();
-            IOUtils.copy(is, System.out);
-
+//            IOUtils.copy(is, System.out);
+            while (is.read() != -1);
+            res.release();
+            
         }
 
 
