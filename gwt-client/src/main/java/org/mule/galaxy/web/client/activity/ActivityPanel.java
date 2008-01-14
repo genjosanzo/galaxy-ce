@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -231,8 +232,9 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
                 });
                 activityNavPanel.add(hl);
             }
-            
-            activityNavPanel.add(new Label("&nbsp;"));
+            SimplePanel spacer = new SimplePanel();
+            spacer.add(new HTML("&nbsp;"));
+            activityNavPanel.add(spacer);
             
             resultsPanel.insert(activityNavPanel, 0);
         }

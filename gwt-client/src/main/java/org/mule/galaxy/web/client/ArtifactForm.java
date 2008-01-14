@@ -90,9 +90,9 @@ public class ArtifactForm extends AbstractTitledComposite {
 
             public void onSubmitComplete(FormSubmitCompleteEvent event) {
                 String msg = event.getResults();
-                registryPanel.setMessage(msg);
-                if (msg.startsWith("<PRE>OK ")) {
+                if (msg.startsWith("<PRE>OK ") || msg.startsWith("<pre>OK ")) {
                     int last = msg.indexOf("</PRE>");
+                    if (last == -1) last = msg.indexOf("</pre>");
                     if (last == -1) last = msg.length();
                     
                     if (add) {
@@ -100,7 +100,7 @@ public class ArtifactForm extends AbstractTitledComposite {
                     } else {
                         registryPanel.setMain(new ArtifactPanel(registryPanel, artifactId));
                     }
-                } else if (msg.startsWith("<PRE>ArtifactPolicyException")) {
+                } else if (msg.startsWith("<PRE>ArtifactPolicyException") || msg.startsWith("<pre>ArtifactPolicyException")) {
                     parseAndShowPolicyMessages(msg);
                 } else {
                     registryPanel.setMessage(msg);
@@ -140,7 +140,7 @@ public class ArtifactForm extends AbstractTitledComposite {
 
     private String getMessage(String s) {
         s = s.substring(9);
-        if (s.endsWith("</PRE>")) {
+        if (s.endsWith("</PRE>") || s.endsWith("</pre>")) {
             s = s.substring(0, s.length() - 6);
         }
         return s;

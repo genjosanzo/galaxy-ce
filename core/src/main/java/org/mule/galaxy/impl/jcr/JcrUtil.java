@@ -30,7 +30,6 @@ import org.apache.jackrabbit.value.DoubleValue;
 import org.apache.jackrabbit.value.LongValue;
 import org.apache.jackrabbit.value.StringValue;
 import org.mule.galaxy.Identifiable;
-import org.mule.galaxy.util.QNameUtil;
 
 public class JcrUtil {
 
@@ -218,7 +217,7 @@ public class JcrUtil {
             Collection<?> c = (Collection<?>) value;
             if (c.size() == 0) {
                 // clear the property
-                n.setProperty(name, (String)null);
+                n.setProperty(name, (Value[]) null);
                 return;
             }
             

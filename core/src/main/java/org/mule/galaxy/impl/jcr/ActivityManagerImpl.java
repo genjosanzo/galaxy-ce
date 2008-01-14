@@ -60,7 +60,12 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
 
                 if (user != null) {
                     if (ActivityManager.SYSTEM.equals(user)) {
-                        append(qstr, "user", "=", "", first, true);
+                        if (first) {
+                            qstr.append("[not(@user)");
+                            first = false;
+                        } else {
+                            qstr.append(" and not(@user)");
+                        }
                     } else {
                         append(qstr, "user", "=", user, first, true);
                     }
@@ -82,6 +87,7 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
                     qstr.append("descending");
                 }
                 
+//                System.out.println(qstr.toString())
                 Query query = qm.createQuery(qstr.toString(), Query.XPATH);
                 
                 QueryResult result = query.execute();
