@@ -140,7 +140,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     public void create(final User user, final String password) throws UserExistsException {
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node users = getObjectsNode();
+                Node users = getObjectsNode(session);
                 
                 Node node = users.addNode(USER);
                 node.addMixin("mix:referenceable");

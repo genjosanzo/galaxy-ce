@@ -2,9 +2,11 @@ package org.mule.galaxy.impl.jcr.onm;
 
 import static org.mule.galaxy.impl.jcr.JcrUtil.getOrCreate;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -16,6 +18,11 @@ import javax.jcr.query.QueryResult;
 
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springmodules.jcr.JcrCallback;
+import org.springmodules.jcr.SessionFactory;
+import org.springmodules.jcr.SessionFactoryUtils;
 
 public abstract class AbstractReflectionDao<T extends Identifiable> extends AbstractDao<T> {
 
@@ -50,16 +57,24 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         persisterManager.getPersisters().put(type.getName(), new DaoPersister(this));
         this.persister = new ClassPersister(type, rootNode, persisterManager);
         persisterManager.getClassPersisters().put(type.getName(), persister);
-        Session session = getSessionFactory().getSession();
-        Node root = session.getRootNode();
         
-        Node objects = getOrCreate(root, rootNode);
-        objectsNodeId = objects.getUUID();
+        JcrUtil.doInTransaction(getSessionFactory(), new JcrCallback() {
 
-        doCreateInitialNodes(session, objects); 
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node root = session.getRootNode();
+                
+                Node objects = getOrCreate(root, rootNode);
+                objectsNodeId = objects.getUUID();
+
+                doCreateInitialNodes(session, objects); 
+                
+                session.save();
+                return null;
+            }
+            
+        });
         
-        session.save();
-        session.logout(); 
+        
     }
 
     public void setPersisterManager(PersisterManager persisterManager) {
@@ -125,11 +140,11 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
     }
 
     protected NodeIterator findAllNodes(Session session) throws RepositoryException {
-        return getObjectsNode().getNodes();
+        return getObjectsNode(session).getNodes();
     }
 
-    protected Node getObjectsNode() {
-        return getNodeByUUID(objectsNodeId);
+    protected Node getObjectsNode(Session session) throws RepositoryException {
+        return session.getNodeByUUID(objectsNodeId);
     }
     
     protected void doDelete(String id, Session session) throws RepositoryException {
@@ -145,8 +160,9 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         Node node = null;
         
         if (id == null) {
-            node = getNodeForObject(getObjectsNode(), t).addNode(getObjectNodeName(t), getNodeType());
+            node = getNodeForObject(getObjectsNode(session), t).addNode(getObjectNodeName(t), getNodeType());
             node.addMixin("mix:referenceable");
+            
             id = getId(t, node, session);
             t.setId(id);
         } else {
@@ -154,7 +170,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
             
             // the user supplied a new ID
             if (node == null && !useNodeId) {
-                node = getNodeForObject(getObjectsNode(), t).addNode(getObjectNodeName(t), getNodeType());
+                node = getNodeForObject(getObjectsNode(session), t).addNode(getObjectNodeName(t), getNodeType());
                 node.addMixin("mix:referenceable");
             }
         }

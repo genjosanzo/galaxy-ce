@@ -26,6 +26,7 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.IndexManagerImpl;
+import org.mule.galaxy.impl.jcr.PluginRunner;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.security.User;
@@ -50,6 +51,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
     protected IndexManager indexManager;
     protected ActivityManager activityManager;
     protected CommentManager commentManager;
+    protected PluginRunner pluginRunner;
     
     private boolean participate;
     
@@ -110,7 +112,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
 //            JcrUtil.dump(node.getNode("activities"));
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
                 Node child = itr.nextNode();
-                if (!child.getName().equals("jcr:system")) {
+                if (!child.getName().startsWith("jcr:")) {
                     child.remove();
                 }
             }
@@ -131,9 +133,6 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
 
     @Override  
     protected void onSetUp() throws Exception {
-//        System.setProperty("javax.xml.validation.SchemaFactory:http://www.w3.org/2001/XMLSchema",
-//                           "org.apache.xerces.jaxp.validation.XMLSchemaFactory");
-//        
         super.onSetUp();
         
         Session session = null;

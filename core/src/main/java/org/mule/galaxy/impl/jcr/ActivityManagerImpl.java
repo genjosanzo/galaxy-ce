@@ -8,13 +8,20 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
+import javax.jcr.InvalidItemStateException;
+import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
+import javax.jcr.version.VersionException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -146,19 +153,39 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
 
     @Override
     protected Node getNodeForObject(Node parent, Activity t) throws RepositoryException {
-        String year = new Integer(t.getDate().get(Calendar.YEAR)).toString();
-        String month = new Integer(t.getDate().get(Calendar.MONTH)).toString();
-        String day = new Integer(t.getDate().get(Calendar.DAY_OF_MONTH)).toString();
+        Calendar date = t.getDate();
         
-        parent.refresh(true);
-        parent = JcrUtil.getOrCreate(parent, year);
-        parent.refresh(true);
-        parent = JcrUtil.getOrCreate(parent, month);
-        parent.refresh(true);
-        parent = JcrUtil.getOrCreate(parent, day);
-        parent.refresh(true);
+        parent = getDateNode(parent, date);
         
         return parent;
+    }
+
+    private Node getDateNode(Node parent, Calendar date) throws InvalidItemStateException,
+        RepositoryException, ItemExistsException, PathNotFoundException, VersionException,
+        ConstraintViolationException, LockException, NoSuchNodeTypeException {
+//        String year = new Integer(date.get(Calendar.YEAR)).toString();
+//        String month = new Integer(date.get(Calendar.MONTH)).toString();
+//        String day = new Integer(date.get(Calendar.DAY_OF_MONTH)).toString();
+//        
+//        parent = JcrUtil.getOrCreate(parent, year);
+//        parent = JcrUtil.getOrCreate(parent, month);
+//        parent = JcrUtil.getOrCreate(parent, day);
+
+        return parent;
+    }
+
+    @Override
+    protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
+        super.doCreateInitialNodes(session, objects);
+        
+        Node objectsNode = session.getRootNode().getNode("activities");
+        
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        
+        // Create an initial log for activities so that we don't get concurrency
+        // problems when we first start.
+        getDateNode(objectsNode, c);
     }
 
     @Override
@@ -170,7 +197,7 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
         logActivity(null, activity, eventType);
     }
 
-    public void logActivity(User user, String activity, EventType eventType) {
+    public synchronized void logActivity(User user, String activity, EventType eventType) {
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
         save(new Activity(user, eventType, c, activity));

@@ -22,11 +22,11 @@
       <artifactId>galaxy-integration-mule1</artifactId>
       <version>1.0-beta-1-SNAPSHOT</version>
     </dependency>
-    <dependency>
+    <!-- dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-integration-mule2</artifactId>
       <version>1.0-beta-1-SNAPSHOT</version>
-    </dependency>
+    </dependency  -->
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-integration-spring</artifactId>

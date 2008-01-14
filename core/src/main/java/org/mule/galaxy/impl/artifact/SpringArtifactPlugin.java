@@ -39,14 +39,14 @@ public class SpringArtifactPlugin extends AbstractArtifactPlugin {
                                     Index.Language.XQUERY,
                                     String.class, // search input type
                                     exp, // the xquery expression
-                                    Constants.SPRING_QNAME)); // document QName which this applies to
+                                    Constants.SPRING_QNAME), true); // document QName which this applies to
        
         indexManager.save(new Index("spring.description", // index field name
                                     "Spring Description", // Display Name
                                     Index.Language.XPATH,
                                     String.class, // search input type
                                     "/beans/description", // the xquery expression
-                                    Constants.SPRING_QNAME)); // document QName which this applies to
+                                    Constants.SPRING_QNAME), true); // document QName which this applies to
         
         // TODO: reenable this once we can make xpath queries non visible on the artifact page
 //

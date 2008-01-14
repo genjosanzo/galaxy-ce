@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.activation.MimeType;
@@ -478,7 +479,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     versions.add(jcrVersion);
                     artifact.setVersions(versions);
                     
-                    LOGGER.info("Created artifact " + artifact.getId());
+                    LOGGER.log(Level.FINE, "Created artifact " + artifact.getId());
                     return approve(session, artifact, null, jcrVersion, user);
                 } catch (RegistryException e) {
                     // gets unwrapped by executeAndDewrap
@@ -1051,7 +1052,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     qstr.append(propStr);
                 }
                 
-                LOGGER.info("Query: " + qstr.toString());
+                LOGGER.log(Level.FINE, "Query: " + qstr.toString());
                 
                 Query jcrQuery = qm.createQuery(qstr.toString(), Query.XPATH);
                 

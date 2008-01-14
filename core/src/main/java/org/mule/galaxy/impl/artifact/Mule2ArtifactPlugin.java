@@ -37,7 +37,7 @@ public class Mule2ArtifactPlugin extends AbstractArtifactPlugin {
                                     Index.Language.XQUERY,
                                     String.class, // search input type
                                     exp, // the xquery expression
-                                    Constants.MULE2_QNAME)); // document QName which this applies to
+                                    Constants.MULE2_QNAME), true); // document QName which this applies to
 
         exp =
             "declare default element namespace \"" + Constants.MULE2_QNAME.getNamespaceURI() + "\";\n" +
@@ -53,7 +53,7 @@ public class Mule2ArtifactPlugin extends AbstractArtifactPlugin {
                                     Index.Language.XQUERY,
                                     String.class, // search input type
                                     exp, // the xquery expression
-                                    Constants.MULE2_QNAME)); // document QName which this applies to
+                                    Constants.MULE2_QNAME), true); // document QName which this applies to
 
         exp =
             "declare default element namespace \"" + Constants.MULE2_QNAME.getNamespaceURI() + "\";\n" +
@@ -69,35 +69,35 @@ public class Mule2ArtifactPlugin extends AbstractArtifactPlugin {
                                     Index.Language.XQUERY,
                                     String.class, // search input type
                                     exp, // the xquery expression
-                                    Constants.MULE2_QNAME)); // document QName which this applies to
+                                    Constants.MULE2_QNAME), true); // document QName which this applies to
 
         indexManager.save(new Index("mule2.server.id", // index field name
                                     "Mule 2 Server ID", // Display Name
                                     Index.Language.XPATH,
                                     String.class, // search input type
                                     "/*[local-name()='mule' and namespace-uri()='" + Constants.MULE2_QNAME.getNamespaceURI() + "']/*[local-name()='configuration']/@serverId",
-                                    Constants.MULE2_QNAME)); // document QName which this applies to
+                                    Constants.MULE2_QNAME), true); // document QName which this applies to
 
         indexManager.save(new Index("mule2.cluster.id", // index field name
                                     "Mule 2 Cluster ID", // Display Name
                                     Index.Language.XPATH,
                                     String.class, // search input type
                                     "/*[local-name()='mule' and namespace-uri()='" + Constants.MULE2_QNAME.getNamespaceURI() + "']/*[local-name()='configuration']/@clusterId",
-                                    Constants.MULE2_QNAME)); // document QName which this applies to
+                                    Constants.MULE2_QNAME), true); // document QName which this applies to
 
         indexManager.save(new Index("mule2.domain.id", // index field name
                                     "Mule 2 Domain ID", // Display Name
                                     Index.Language.XPATH,
                                     String.class, // search input type
                                     "/*[local-name()='mule' and namespace-uri()='" + Constants.MULE2_QNAME.getNamespaceURI() + "']/*[local-name()='configuration']/@domainId", // the xquery expression
-                                    Constants.MULE2_QNAME)); // document QName which this applies to
+                                    Constants.MULE2_QNAME), true); // document QName which this applies to
 
         indexManager.save(new Index("mule2.description", // index field name
                                     "Mule 2 Description", // Display Name
                                     Index.Language.XPATH,
                                     String.class, // search input type
                                     "/*[local-name()='mule' and namespace-uri()='" + Constants.MULE2_QNAME.getNamespaceURI() + "']/*[local-name()='description']", // the xquery expression
-                                    Constants.MULE2_QNAME)); // document QName which this applies to
+                                    Constants.MULE2_QNAME), true); // document QName which this applies to
 
 //        indexManager.save(new Index("mule2.model.description", // index field name
 //                                    "Mule 2 Model Description", // Display Name

@@ -44,7 +44,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
                                Index.Language.XQUERY,
                                QName.class, // search input type
                                exp, // the xquery expression
-                               Constants.WSDL_DEFINITION_QNAME)); // document QName which this applies to
+                               Constants.WSDL_DEFINITION_QNAME), true); // document QName which this applies to
         exp = 
             "" +
             "declare namespace wsdl=\"http://schemas.xmlsoap.org/wsdl/\";\n" +
@@ -61,7 +61,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
                                     Index.Language.XQUERY,
                                     QName.class, // search input type
                                     exp, // the xquery expression
-                                    Constants.WSDL_DEFINITION_QNAME)); // document QName which this applies to
+                                    Constants.WSDL_DEFINITION_QNAME), true); // document QName which this applies to
        
         exp = 
             "" +
@@ -79,7 +79,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
                                Index.Language.XQUERY,
                                QName.class, // search input type
                                exp, // the xquery expression
-                               Constants.WSDL_DEFINITION_QNAME)); // document QName which this applies to
+                               Constants.WSDL_DEFINITION_QNAME), true); // document QName which this applies to
        
         exp = 
             "" +
@@ -97,7 +97,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
                                Index.Language.XQUERY,
                                QName.class, // search input type
                                exp, // the xquery expression
-                               Constants.WSDL_DEFINITION_QNAME)); // document QName which this applies to
+                               Constants.WSDL_DEFINITION_QNAME), true); // document QName which this applies to
        
         // Index the target namespace
         indexManager.save(new Index("wsdl.targetNamespace", // index field name
@@ -105,7 +105,7 @@ public class WsdlArtifactPlugin extends AbstractArtifactPlugin {
                                Index.Language.XPATH,
                                String.class, // search input type
                                "/*/@targetNamespace", // the xquery expression
-                               Constants.WSDL_DEFINITION_QNAME)); // document QName which this applies to
+                               Constants.WSDL_DEFINITION_QNAME), true); // document QName which this applies to
                  
 
     }

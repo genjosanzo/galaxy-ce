@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -68,7 +69,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.SessionFactory;
 import org.springmodules.jcr.SessionFactoryUtils;
-import org.springmodules.jcr.jackrabbit.support.UserTxSessionHolder;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -82,8 +82,9 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
     private XPathFactory factory = XPathFactory.newInstance();
 
-    private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 1, TimeUnit.SECONDS, 
-                                                                 new LinkedBlockingQueue<Runnable>());
+    private BlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>();
+    
+    private ThreadPoolExecutor executor;
 
     private Registry registry;
 
@@ -95,15 +96,22 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     
     public IndexManagerImpl() throws Exception {
         super(Index.class, "indexes", false);
-        executor.prestartCoreThread();
     }
 
     @Override
     public void save(Index t) {
-        super.save(t);
-        reindex(t);
+        save(t, false);
     }
 
+    public void save(Index t, boolean block) {
+        super.save(t);
+        
+        if (block) {
+            getIndexer(t).run();
+        } else {
+            reindex(t);
+        }
+    }
     @SuppressWarnings("unchecked")
     public Collection<Index> getIndexes() {
         return listAll();
@@ -123,7 +131,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
     protected Node findNode(String id, Session session) throws RepositoryException {
         try {
-            return getObjectsNode().getNode(id);
+            return getObjectsNode(session).getNode(id);
         } catch (PathNotFoundException e) {
             return null;
         }
@@ -167,19 +175,20 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     @Override
     public void initialize() throws Exception {
         super.initialize();
+        
+        executor = new ThreadPoolExecutor(1, 1, 1, TimeUnit.SECONDS, queue);
+        executor.prestartAllCoreThreads();
     }
 
-    public synchronized void destroy() throws Exception {
-        LOGGER.info("Destroying IndexManager.");
+    public void destroy() throws Exception {
+        LOGGER.log(Level.FINE, "Starting IndexManager.destroy() with " + executor.getQueue().size() + " indexing jobs left");
         if (destroyed) return;
         
+        executor.shutdown();
         destroyed = true;
 
-        // TODO finish reindexing on startup?
-        executor.shutdownNow();
-        
         int time = 0;
-        while (executor.getQueue().size() > 0) {
+        while (executor.isTerminating() || executor.getQueue().size() > 0) {
             Thread.sleep(50);
             time += 50;
             
@@ -188,12 +197,23 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
             }
         }
         
+        LOGGER.info("Shutting down IndexManager with " + executor.getQueue().size() + " indexing jobs left");
+        // TODO finish reindexing on startup?
+        executor.shutdownNow();
+        
+        
         if (executor.getQueue().size() > 0) {
             LOGGER.warning("Could not shut down indexer! Indexing was still going.");
         }
     }
 
     private void reindex(final Index idx) {
+        Runnable runnable = getIndexer(idx);
+        
+        if (!queue.add(runnable)) handleIndexingException(new Exception("Could not add indexer to queue."));
+    }
+
+    private Runnable getIndexer(final Index idx) {
         Runnable runnable = new Runnable() {
 
             public void run() {
@@ -211,9 +231,8 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 }
 
                 try {
-                    findAndReindex(idx);
                     
-                    session.save();
+                    findAndReindex(session, idx);
                 } catch (RepositoryException e) {
                     handleIndexingException(e);
                 } finally {
@@ -225,10 +244,10 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 }
             }
         };
-//        executor.execute(runnable);
+        return runnable;
     }
 
-    protected void findAndReindex(Index idx) {
+    protected void findAndReindex(Session session, Index idx) throws RepositoryException {
         org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(Artifact.class)
             .add(Restriction.in("documentType", idx.getDocumentTypes()));
         
@@ -243,6 +262,8 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 for (ArtifactVersion v : a.getVersions()) {
                     index(v, idx);
                 }
+                
+                session.save();
             }
         } catch (QueryException e) {
             logActivity("Could not reindex documents for index " + idx.getId(), e);
@@ -259,7 +280,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
 
     private void logActivity(String activity) {
-        LOGGER.info(activity);
+        LOGGER.log(Level.FINE, activity);
         activityManager.logActivity(activity, EventType.INFO);
     }
 
@@ -361,9 +382,6 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 Element value = DOMUtils.getFirstElement(values);
                 while (value != null) {
                     Object content = DOMUtils.getContent(value);
-                    
-                    LOGGER.info("Adding value " + content + " to index " + idx.getId());
-    
                     if (idx.getQueryType().equals(QName.class)) {
                         results.add(QNameUtil.fromString(content.toString())); 
                     } else {
@@ -373,7 +391,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                     value = (Element) DOMUtils.getNext(value, "value", org.w3c.dom.Node.ELEMENT_NODE);
                 }
             }
-            
+
             jcrVersion.setProperty(idx.getId(), results);
             jcrVersion.setLocked(idx.getId(), true);
             jcrVersion.setVisible(idx.getId(), visible);
@@ -391,7 +409,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         this.contentService = contentService;
     }
 
-    private synchronized Registry getRegistry() {
+    private Registry getRegistry() {
         if (registry == null) {
             registry = (Registry) context.getBean("registry");
         }

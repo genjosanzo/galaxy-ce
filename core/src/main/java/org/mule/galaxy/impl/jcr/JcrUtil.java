@@ -1,5 +1,6 @@
 package org.mule.galaxy.impl.jcr;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -16,6 +17,7 @@ import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
 import javax.jcr.lock.LockException;
@@ -23,6 +25,11 @@ import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
+
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springmodules.jcr.JcrCallback;
+import org.springmodules.jcr.SessionFactory;
+import org.springmodules.jcr.SessionFactoryUtils;
 
 import org.apache.jackrabbit.value.BooleanValue;
 import org.apache.jackrabbit.value.DateValue;
@@ -366,6 +373,29 @@ public class JcrUtil {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static void doInTransaction(SessionFactory sf, JcrCallback jcrCallback) throws IOException, RepositoryException {
+        Session session = null;
+        boolean participate = false;
+        if (TransactionSynchronizationManager.hasResource(sf)) {
+            // Do not modify the Session: just set the participate
+            // flag.
+            participate = true;
+            session = SessionFactoryUtils.getSession(sf, false);
+        } else {
+            session = SessionFactoryUtils.getSession(sf, true);
+            TransactionSynchronizationManager.bindResource(sf, sf.getSessionHolder(session));
+        }
+
+        try {
+            jcrCallback.doInJcr(session);
+        } finally {
+            if (!participate) {
+                TransactionSynchronizationManager.unbindResource(sf);
+                SessionFactoryUtils.releaseSession(session, sf);
+            }
         }
     }
 }

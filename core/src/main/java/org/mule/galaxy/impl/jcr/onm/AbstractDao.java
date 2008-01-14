@@ -3,9 +3,11 @@ package org.mule.galaxy.impl.jcr.onm;
 import java.io.IOException;
 import java.util.List;
 
+import javax.jcr.InvalidItemStateException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.query.QueryManager;
 
 import org.mule.galaxy.Dao;
@@ -36,6 +38,7 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
                     throw new RuntimeException(e);
                 }
                 session.save();
+                
                 return null;
             }
         });
