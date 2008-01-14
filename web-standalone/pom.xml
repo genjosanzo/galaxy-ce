@@ -2,11 +2,12 @@
   <parent>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-parent</artifactId>
-    <version>1.0-beta-1-RC1</version>
+    <version>galaxy-1.0-beta-1-RC1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-web-standalone</artifactId>
+  <version>1.0-beta-1-SNAPSHOT</version>
   <name>Galaxy Web Application Standalone</name>
   <packaging>pom</packaging>
 
@@ -15,7 +16,7 @@
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-web</artifactId>
-      <version>1.0-beta-1-RC1</version>
+      <version>1.0-beta-1-SNAPSHOT</version>
       <classifier>embed</classifier>
       <type>war</type>
     </dependency>

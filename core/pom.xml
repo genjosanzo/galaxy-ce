@@ -2,11 +2,12 @@
   <parent>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-parent</artifactId>
-    <version>1.0-beta-1-RC1</version>
+    <version>galaxy-1.0-beta-1-RC1</version>
   </parent>  
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-core</artifactId>
+  <version>1.0-beta-1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Galaxy Core</name>
 
@@ -136,19 +137,19 @@
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-wsdldiff</artifactId>
-      <version>1.0-beta-1-RC1</version>
+      <version>1.0-beta-1-SNAPSHOT</version>
     </dependency>
 
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-wsi</artifactId>
-      <version>1.0-beta-1-RC1</version>
+      <version>1.0-beta-1-SNAPSHOT</version>
     </dependency>
 
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-testutils</artifactId>
-      <version>1.0-beta-1-RC1</version>
+      <version>1.0-beta-1-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
 
