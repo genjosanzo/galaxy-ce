@@ -8,6 +8,7 @@
     <fileSet>
       <includes>
         <include>../../LICENSE.txt</include>
+        <include>../../NOTICE.txt</include>
       </includes>
     </fileSet>
   </fileSets>
@@ -16,6 +17,7 @@
       <outputDirectory></outputDirectory>
       <useTransitiveFiltering>true</useTransitiveFiltering>
       <excludes>
+        <exclude>org.apache.cxf</exclude>
         <exclude>org.springframework</exclude>
         <exclude>org.mule:mule-core</exclude>
         <exclude>org.mule.modules</exclude>
