@@ -15,6 +15,10 @@ import org.mule.galaxy.view.CustomArtifactTypeView;
 
 import org.xml.sax.InputSource;
 
+/**
+ * Allows Mule 1 cofiguration files to be managed by Galaxy.  Users can register, query and view Mule 1 configuration
+ * files with this plugin.
+ */
 public class MuleArtifactPlugin extends AbstractArtifactPlugin {
 
     public void initializeOnce() throws Exception {

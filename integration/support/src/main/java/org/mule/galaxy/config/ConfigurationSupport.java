@@ -9,10 +9,7 @@
  */
 package org.mule.galaxy.config;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
@@ -35,9 +32,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ConfigurationSupport
 {
-    public static final String OPTION_WORKSPACE = "Workspace";
-    public static final String OPTION_USERNAME = "Username";
-    public static final String OPTION_PASSWORD = "Password";
     public static final String OPTION_BASIC_AUTHORISATION = "Basic";
 
     /**
@@ -58,6 +52,8 @@ public class ConfigurationSupport
         RequestOptions opts = client.getDefaultRequestOptions();
         regUrl = new URL(url);
 
+        if(properties==null) properties = new Properties();
+
         getRequestOptionsFromURL(regUrl, opts);
         getRequestOptionsFromProperties(properties, opts);
 
@@ -65,7 +61,16 @@ public class ConfigurationSupport
         String newUrl = regUrl.getProtocol() + "://" + regUrl.getHost() + ":" + regUrl.getPort() + regUrl.getPath();
         String query = regUrl.getQuery();
 
+        if(query==null)
+        {
+            query = properties.getProperty(GalaxyProperties.PROPERTY_QUERY, null);
+            if(query==null)
+            {
+                throw new IllegalArgumentException("No query was set in the properties or on the server URL");
+            }
+        }
         query = query.replaceAll("q=", "");
+        
         query = UrlEncoding.encode(query);
         newUrl += "?q=" + query;
 
@@ -114,8 +119,8 @@ public class ConfigurationSupport
         {
             return opts;
         }
-        String user = getOptionalProperty(properties, OPTION_USERNAME, null);
-        String pass = getOptionalProperty(properties, OPTION_PASSWORD, null);
+        String user = getOptionalProperty(properties, GalaxyProperties.PROPERTY_USERNAME, null);
+        String pass = getOptionalProperty(properties, GalaxyProperties.PROPERTY_PASSWORD, null);
         if (user != null && pass != null)
         {
             authority = user + ":" + pass;
