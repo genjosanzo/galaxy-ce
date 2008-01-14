@@ -130,7 +130,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals(1, wc3.getComments().size());
         
         assertEquals("/api/registry/Default Workspace/hello-config.xml", ext.getArtifactLink());
-        assertEquals("/api/comments/Default Workspace/hello-config.xml", ext.getCommentsFeedLink());
+        assertEquals("/api/comments", ext.getCommentsFeedLink());
         
         // test desc
         gwtRegistry.setDescription(a.getId(), "test desc");
