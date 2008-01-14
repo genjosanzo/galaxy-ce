@@ -26,7 +26,6 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
         add(w, user, "hello-config.xml", "/mule/hello-config.xml");
         add(w, user, "applicationContext.xml", "/spring/test-applicationContext.xml");
         add(w, user, "hello-config-mule2.xml", "/mule2/hello-config.xml");
-        add(w, user, "test-applicationContext.xml", "/spring/test-applicationContext.xml");
         add(w, user, "hello.xsd", "/wsdl/imports/hello.xsd");
         add(w, user, "hello-portType.wsdl", "/wsdl/imports/hello-portType.wsdl");
         add(w, user, "hello.wsdl", "/wsdl/imports/hello.wsdl");   

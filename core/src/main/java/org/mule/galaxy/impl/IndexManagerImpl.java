@@ -318,26 +318,19 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
 
 
-    private void indexWithXPath(ArtifactVersion jcrVersion, Index idx) throws GalaxyException {
+    private void indexWithXPath(ArtifactVersion jcrVersion, Index idx) throws IOException, XPathExpressionException, PropertyException {
         XmlContentHandler ch = (XmlContentHandler) contentService.getContentHandler(jcrVersion.getParent().getContentType());
-        try {
-            Document document = ch.getDocument(jcrVersion.getData());
-            
-            XPath xpath = factory.newXPath();
-            XPathExpression expr = xpath.compile(idx.getExpression());
+        
+        Document document = ch.getDocument(jcrVersion.getData());
+        
+        XPath xpath = factory.newXPath();
+        XPathExpression expr = xpath.compile(idx.getExpression());
 
-            Object result = expr.evaluate(document, XPathConstants.STRING);
-            
-            if (result instanceof String) {
-                jcrVersion.setProperty(idx.getId(), result);
-                jcrVersion.setLocked(idx.getId(), true);
-            }
-        } catch (IOException e) {
-            throw new GalaxyException(e);
-        } catch (XPathExpressionException e) {
-            throw new GalaxyException(e);
-        } catch (PropertyException e) {
-            throw new GalaxyException(e);
+        Object result = expr.evaluate(document, XPathConstants.STRING);
+        
+        if (result instanceof String) {
+            jcrVersion.setProperty(idx.getId(), result);
+            jcrVersion.setLocked(idx.getId(), true);
         }
         
     }
