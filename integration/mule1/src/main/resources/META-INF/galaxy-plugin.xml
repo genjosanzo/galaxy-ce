@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<galaxy-plugin xmlns="http://www.mulesource.org/schema/galaxy-plugin"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.mulesource.org/schema/galaxy-plugin http://www.mulesource.org/schema/galaxy-plugin/galaxy-plugin-1.0.xsd">
+
+    <name>Mule Configurations</name>
+    <class>org.mule.galaxy.impl.artifact.MuleArtifactPlugin</class>
+    <description>Allows Mule 1 cofiguration files to be managed by Galaxy.  Users can register, query and view Mule 1 configuration files with this plugin.</description>
+    <content-type>application/mule+xml</content-type>
+    <small-icon>META-INF/images/mule1_16x16.png</small-icon>
+    <large-icon>META-INF/images/mule1_32x32.png</large-icon>
+    <namespace>
+        <prefix>mule-configuration</prefix>
+    </namespace>
+    <indexes>
+        <index>
+            <field-name>mule.server.id</field-name>
+            <display-name>Mule Server Id</display-name>
+            <description>Indexes &lt;mule-configuration id&gt; attribute</description>
+            <language>XQUERY</language>
+            <search-input-type>java.lang.String</search-input-type>
+            <expression><![CDATA[
+                declare variable $document external;\n
+                <values> {
+                   for $e in $document/mule-configuration
+                     return <value>{data($e/@id)}</value>
+                   } </values>;
+                   ]]>
+            </expression>
+            <namespace>
+                <prefix>mule-configuration</prefix>
+            </namespace>
+        </index>
+        <index>
+            <field-name>mule.descriptor</field-name>
+            <display-name>Mule Descriptors</display-name>
+            <description>Indexes Mule 1 service descriptors</description>
+            <language>XQUERY</language>
+            <search-input-type>java.lang.String</search-input-type>
+            <expression><![CDATA[
+                declare variable $document external;\n
+                <values> {
+                   for $e in $document//mule-descriptor
+                     return <value>{data($e/@name)}</value>
+                   } </values>;
+                   ]]>
+            </expression>
+            <namespace>
+                <prefix>mule-configuration</prefix>
+                <uri></uri>
+            </namespace>
+        </index>
+    </indexes>
+    <views>
+        <view>
+            <column>
+                <name>Descriptors</name>
+                <index-field>mule.descriptor</index-field>
+            </column>
+        </view>
+    </views>
+    <policies>
+        <policy>
+            <name>Require SSL</name>
+            <class>org.mule.galaxy.policy.mule.RequireSSLPolicy</class>
+            <description>Enforces the use of ssl on http and tcp endpoints</description>
+        </policy>
+    </policies>
+</galaxy-plugin>
