@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-parent</artifactId>
-    <version>galaxy-1.0-beta-1-RC1</version>
+    <version>galaxy-1.0-beta-1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
