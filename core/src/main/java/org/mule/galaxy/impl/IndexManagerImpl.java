@@ -37,6 +37,7 @@ import javax.xml.xpath.XPathFactory;
 
 import net.sf.saxon.javax.xml.xquery.XQConnection;
 import net.sf.saxon.javax.xml.xquery.XQDataSource;
+import net.sf.saxon.javax.xml.xquery.XQException;
 import net.sf.saxon.javax.xml.xquery.XQItem;
 import net.sf.saxon.javax.xml.xquery.XQPreparedExpression;
 import net.sf.saxon.javax.xml.xquery.XQResultSequence;
@@ -335,62 +336,54 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         
     }
 
-    private void indexWithXQuery(ArtifactVersion jcrVersion, Index idx) throws GalaxyException {
+    private void indexWithXQuery(ArtifactVersion jcrVersion, Index idx) throws XQException, IOException {
         
         XQDataSource ds = new SaxonXQDataSource();
         
-        try {
             
-            XQConnection conn = ds.getConnection();
-            
-            XQPreparedExpression ex = conn.prepareExpression(idx.getExpression());
-            XmlContentHandler ch = (XmlContentHandler) contentService.getContentHandler(jcrVersion.getParent().getContentType());
-            
-            ex.bindNode(new QName("document"), ch.getDocument(jcrVersion.getData()), null);
-            
-            XQResultSequence result = ex.executeQuery();
-            
-            List<Object> results = new ArrayList<Object>();
-            
-            boolean visible = true;
-            
-            if (result.next()) {
-                XQItem item = result.getItem();
-
-                org.w3c.dom.Node values = item.getNode();
-                
-                // check locking & visibility
-                NamedNodeMap atts = values.getAttributes();
-                org.w3c.dom.Node visibleNode = atts.getNamedItem("visible");
-                if (visibleNode != null) {
-                    visible = BooleanUtils.toBoolean(visibleNode.getNodeValue());
-                }
-                
-                // loop through the values
-                Element value = DOMUtils.getFirstElement(values);
-                while (value != null) {
-                    Object content = DOMUtils.getContent(value);
-                    if (idx.getQueryType().equals(QName.class)) {
-                        results.add(QNameUtil.fromString(content.toString())); 
-                    } else {
-                        results.add(content);
-                    }
-                    
-                    value = (Element) DOMUtils.getNext(value, "value", org.w3c.dom.Node.ELEMENT_NODE);
-                }
-            }
-
-            jcrVersion.setProperty(idx.getId(), results);
-            jcrVersion.setLocked(idx.getId(), true);
-            jcrVersion.setVisible(idx.getId(), visible);
-        } catch (Exception e) {
-            // TODO: better error handling for frontends
-            // We should log this and make the logs retrievable
-            // We should also prepare the expressions when the expression is created
-            // or on startup
-            throw new GalaxyException(e);
-        }
+        XQConnection conn = ds.getConnection();
         
+        XQPreparedExpression ex = conn.prepareExpression(idx.getExpression());
+        XmlContentHandler ch = (XmlContentHandler) contentService.getContentHandler(jcrVersion.getParent().getContentType());
+        
+        ex.bindNode(new QName("document"), ch.getDocument(jcrVersion.getData()), null);
+        
+        XQResultSequence result = ex.executeQuery();
+        
+        List<Object> results = new ArrayList<Object>();
+        
+        boolean visible = true;
+        
+        if (result.next()) {
+            XQItem item = result.getItem();
+
+            org.w3c.dom.Node values = item.getNode();
+            
+            // check locking & visibility
+            NamedNodeMap atts = values.getAttributes();
+            org.w3c.dom.Node visibleNode = atts.getNamedItem("visible");
+            if (visibleNode != null) {
+                visible = BooleanUtils.toBoolean(visibleNode.getNodeValue());
+            }
+            
+            // loop through the values
+            Element value = DOMUtils.getFirstElement(values);
+            while (value != null) {
+                Object content = DOMUtils.getContent(value);
+                if (idx.getQueryType().equals(QName.class)) {
+                    results.add(QNameUtil.fromString(content.toString())); 
+                } else {
+                    results.add(content);
+                }
+                
+                value = (Element) DOMUtils.getNext(value, "value", org.w3c.dom.Node.ELEMENT_NODE);
+            }
+        }
+
+        jcrVersion.setProperty(idx.getId(), results);
+        jcrVersion.setLocked(idx.getId(), true);
+        jcrVersion.setVisible(idx.getId(), visible);
+    
     }
 
     public void setContentService(ContentService contentService) {
