@@ -9,14 +9,15 @@
  */
 package org.mule.galaxy.spring.config;
 
-import org.mule.galaxy.config.ConfigurationSupport;
-import org.mule.galaxy.util.IOUtils;
-
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.config.ConfigurationSupport;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractXmlApplicationContext;
@@ -35,6 +36,7 @@ import org.springframework.core.io.Resource;
  */
 public class GalaxyApplicationContext extends AbstractXmlApplicationContext
 {
+    private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
     /**
      * logger used by this class
      */
@@ -69,7 +71,7 @@ public class GalaxyApplicationContext extends AbstractXmlApplicationContext
             for (int i = 0; i < resources.length; i++)
             {
 
-                springResources[i] = new ByteArrayResource(IOUtils.readBytesFromStream(resources[i].getInputStream())
+                springResources[i] = new ByteArrayResource(readBytesFromStream(resources[i].getInputStream())
                         , resources[i].getName());
             }
             return springResources;
@@ -79,4 +81,38 @@ public class GalaxyApplicationContext extends AbstractXmlApplicationContext
             throw new BeanCreationException("Failed to get Spring beans from The registry: " + e.getMessage(), e);
         }
     }
+
+    public static byte[] readBytesFromStream(InputStream in) throws IOException {
+        int i = in.available();
+        if (i < DEFAULT_BUFFER_SIZE) {
+            i = DEFAULT_BUFFER_SIZE;
+        }
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(i);
+        copy(in, bos, DEFAULT_BUFFER_SIZE);
+        in.close();
+        return bos.toByteArray();
+    }
+    
+    public static int copy(final InputStream input,
+                           final OutputStream output,
+                           int bufferSize)
+       throws IOException {
+       int avail = input.available();
+       if (avail > 262144) {
+           avail = 262144;
+       }
+       if (avail > bufferSize) {
+           bufferSize = avail;
+       }
+       final byte[] buffer = new byte[bufferSize];
+       int n = 0;
+       n = input.read(buffer);
+       int total = 0;
+       while (-1 != n) {
+           output.write(buffer, 0, n);
+           total += n;
+           n = input.read(buffer);
+       }
+       return total;
+   }
 }
