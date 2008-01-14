@@ -336,7 +336,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         
     }
 
-    private void indexWithXQuery(ArtifactVersion jcrVersion, Index idx) throws XQException, IOException {
+    private void indexWithXQuery(ArtifactVersion jcrVersion, Index idx) throws XQException, IOException, PropertyException {
         
         XQDataSource ds = new SaxonXQDataSource();
         
