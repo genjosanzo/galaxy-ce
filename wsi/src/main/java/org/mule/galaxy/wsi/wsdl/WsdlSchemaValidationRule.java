@@ -3,6 +3,7 @@ package org.mule.galaxy.wsi.wsdl;
 import java.io.IOException;
 
 import javax.wsdl.Definition;
+import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
@@ -29,8 +30,7 @@ public class WsdlSchemaValidationRule extends AbstractWsdlRule {
     public WsdlSchemaValidationRule() throws SAXException {
         super("R2028");
         
-        // Force Xerces!
-        schemaFactory = new XMLSchemaFactory();
+        schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         Source wsdlSchemaSource = new StreamSource(getClass().getResourceAsStream("/org/mule/galaxy/wsi/wsdl/wsdl-2004-08-24.xsd"));
         wsdlSchema = schemaFactory.newSchema(wsdlSchemaSource);
     }

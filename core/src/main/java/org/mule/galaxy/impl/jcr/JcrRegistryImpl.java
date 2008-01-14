@@ -878,6 +878,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 String first = itr.next();
                 if (first.startsWith("(")) {
                     first = first.substring(1);
+                    if (first.endsWith(",")) {
+                        first = first.substring(0, first.length() - 1);
+                    }
+                    
                 } else {
                     throw new QueryException(new Message("EXPECTED_IN_RIGHT_PARENS", LOGGER));
                 }
