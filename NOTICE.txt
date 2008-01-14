@@ -3,3 +3,7 @@ This product includes/uses software(s) developed by 'The Apache Software Foundat
 This product includes/uses software(s) developed by 'Sun Microsystems' (http://www.sun.com/)
 
 This product includes/uses software(s) developed by 'The Eclipse Software Foundation' (http://www.eclipse.org/)
+
+This product includes/uses software(s) developed by 'Google' (http://code.google.com/webtoolkit/terms.html)
+
+This product includes/uses software(s) developed by 'SpringSource' (http://springsource.com)
