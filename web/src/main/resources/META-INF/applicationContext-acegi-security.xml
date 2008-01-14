@@ -99,13 +99,14 @@
    </bean>
 
    <bean id="logoutFilter" class="org.acegisecurity.ui.logout.LogoutFilter">
-      <constructor-arg value="/index.html"/> <!-- URL redirected to after logout -->
+      <constructor-arg value="/login.jsp"/> <!-- URL redirected to after logout -->
       <constructor-arg>
          <list>
               <ref bean="rememberMeServices"/>
               <bean class="org.acegisecurity.ui.logout.SecurityContextLogoutHandler"/>
          </list>
       </constructor-arg>
+      <property name="filterProcessesUrl" value="/j_logout" />
    </bean>
 
    <bean id="securityContextHolderAwareRequestFilter" class="org.acegisecurity.wrapper.SecurityContextHolderAwareRequestFilter"/>
@@ -156,24 +157,25 @@
          <value><![CDATA[
 			    CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
 			    PATTERN_TYPE_APACHE_ANTauthenticationProvider
-			    /index.html=ROLE_USER
-                /api/*=ROLE_USER
-			    /handler/*=ROLE_USER
-			    /logoff.jsp=ROLE_ANONYMOUS,ROLE_USER
+			    /index.html=role_user
+                /api/*=role_user
+                /handler/userservice.rpc*=role_administrator
+			    /handler/*=role_user
+			    /logoff.jsp=ROLE_ANONYMOUS,role_user
 			    /switchuser.jsp=ROLE_SUPERVISOR
 			    /j_acegi_switch_user=ROLE_SUPERVISOR
-			    /login.jsp*=ROLE_ANONYMOUS,ROLE_USER
-                /login.css*=ROLE_ANONYMOUS,ROLE_USER
-                /images/*=ROLE_ANONYMOUS,ROLE_USER
-                /favicon.ico*=ROLE_ANONYMOUS,ROLE_USER
-                /=ROLE_USER
+			    /login.jsp*=ROLE_ANONYMOUS,role_user
+                /login.css*=ROLE_ANONYMOUS,role_user
+                /images/*=ROLE_ANONYMOUS,role_user
+                /favicon.ico*=ROLE_ANONYMOUS
+                /**=role_user
          ]]></value>
       </property>
    </bean>
 
    <!-- Filter used to switch the user context. Note: the switch and exit url must be secured
         based on the role granted the ability to 'switch' to another user -->
-   <!-- In this example 'marissa' has ROLE_SUPERVISOR that can switch to regular ROLE_USER(s) -->
+   <!-- In this example 'marissa' has ROLE_SUPERVISOR that can switch to regular role_user(s) -->
    <bean id="switchUserProcessingFilter" class="org.acegisecurity.ui.switchuser.SwitchUserProcessingFilter">
       <property name="userDetailsService" ref="userManager" />
 	  <property name="switchUserUrl"><value>/j_acegi_switch_user</value></property>

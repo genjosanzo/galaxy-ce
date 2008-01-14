@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -35,7 +36,8 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     private static final String NAME = "name";
     private static final String CREATED = "created";
     private static final String EMAIL = "email";
-    protected static final String ENABLED = "enabled";
+    private static final String ENABLED = "enabled";
+    private static final String ROLES = "roles";
 
     public UserManagerImpl() throws Exception {
         super(User.class, "users", true);
@@ -146,6 +148,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
                 node.setProperty(ENABLED, true);
                 
                 user.setId(node.getUUID());
+                user.getRoles().add(UserManager.ROLE_USER);
                 
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(new Date());
@@ -216,6 +219,10 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
             JcrUtil.setProperty(USERNAME, "admin", node);
             JcrUtil.setProperty(NAME, "Administrator", node);
             JcrUtil.setProperty(EMAIL, "", node);
+            HashSet<String> roles = new HashSet<String>();
+            roles.add(UserManager.ROLE_ADMINISTRATOR);
+            roles.add(UserManager.ROLE_USER);
+            JcrUtil.setProperty(ROLES, roles, node);
             
             Calendar cal = Calendar.getInstance();
             cal.setTime(new Date());

@@ -85,4 +85,6 @@ public interface RegistryServiceAsync extends RemoteService {
     void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids, AsyncCallback c);
     
     void getActivities(Date from, Date to, String user, String eventType, int start, int results, boolean ascending, AsyncCallback c);
+    
+    void getUserInfo(AsyncCallback c);
 }

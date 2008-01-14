@@ -19,7 +19,14 @@ body {
     padding-top: 1px;
 }
 
-
+.header-right {
+	float: right;
+	padding: 10px;
+    text-align: right;
+}
+.header-right a, .header-right a:visited {
+	color: white;
+}
 .headerTabPanel {
   margin-top: 0px;
   margin-left: 0px;

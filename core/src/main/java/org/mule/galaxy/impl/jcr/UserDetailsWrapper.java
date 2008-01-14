@@ -1,5 +1,7 @@
 package org.mule.galaxy.impl.jcr;
 
+import java.util.ArrayList;
+
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.GrantedAuthorityImpl;
 import org.acegisecurity.userdetails.UserDetails;
@@ -20,9 +22,11 @@ public class UserDetailsWrapper implements UserDetails {
     }
 
     public GrantedAuthority[] getAuthorities() {
-        return new GrantedAuthority[] {
-            new GrantedAuthorityImpl("ROLE_USER")
-        };
+        ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        for (String role : user.getRoles()) {
+            authorities.add(new GrantedAuthorityImpl(role));
+        }
+        return authorities.toArray(new GrantedAuthority[authorities.size()]);
     }
 
     public String getPassword() {

@@ -136,4 +136,6 @@ public interface RegistryService extends RemoteService {
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WActivity>
      */
     Collection getActivities(Date from, Date to, String user, String eventType, int start, int results, boolean ascending) throws RPCException;
+    
+    WUser getUserInfo() throws RPCException;
 }

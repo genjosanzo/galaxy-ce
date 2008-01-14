@@ -1,6 +1,7 @@
 package org.mule.galaxy.web.client.admin;
 
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -24,6 +25,7 @@ public class UserForm extends AbstractComposite {
     private TextBox emailTB;
     private final boolean add;
     private TextBox usernameTB;
+    private CheckBox adminCB;
 
     public UserForm(AdministrationPanel adminPanel, WUser u) {
         this (adminPanel, u, false);
@@ -53,6 +55,7 @@ public class UserForm extends AbstractComposite {
         table.setText(2, 0, "Email");
         table.setText(3, 0, "Password");
         table.setText(4, 0, "Confirm Password");
+        table.setText(5, 0, "Administrator");
         
         if (add) {
             usernameTB = new TextBox();
@@ -74,9 +77,17 @@ public class UserForm extends AbstractComposite {
         
         confirmTB = new PasswordTextBox();
         table.setWidget(4, 1, confirmTB);
+
+        adminCB = new CheckBox();
+        adminCB.setChecked(u.isAdmin());
+        if ("admin".equals(u.getUsername())) {
+            adminCB.setEnabled(false);
+        }
+        
+        table.setWidget(5, 1, adminCB);
         
         save = new Button("Save");
-        table.setWidget(5, 1, save);
+        table.setWidget(6, 1, save);
         save.addClickListener(new ClickListener() {
 
             public void onClick(Widget sender) {
@@ -110,6 +121,7 @@ public class UserForm extends AbstractComposite {
         
         user.setEmail(emailTB.getText());
         user.setName(nameTB.getText());
+        user.setAdmin(adminCB.isChecked());
         
         if (add) {
             save(svc, p, c);

@@ -33,6 +33,13 @@ public class UserServiceImpl implements UserService {
         u.setName(user.getName());
         u.setEmail(user.getEmail());
         u.setUsername(user.getUsername());
+        
+        if (user.isAdmin()) {
+            u.getRoles().add(UserManager.ROLE_ADMINISTRATOR);
+        } else {
+            u.getRoles().remove(UserManager.ROLE_ADMINISTRATOR);
+        }
+        
         return u;
     }
 
@@ -47,12 +54,13 @@ public class UserServiceImpl implements UserService {
         return webUsers;
     }
 
-    private WUser createWUser(User user) {
+    public static WUser createWUser(User user) {
         WUser w = new WUser();
         w.setName(user.getName());
         w.setId(user.getId());
         w.setUsername(user.getUsername());
         w.setEmail(user.getEmail());
+        w.setAdmin(user.getRoles().contains(UserManager.ROLE_ADMINISTRATOR));
         return w;
     }
 
@@ -67,6 +75,12 @@ public class UserServiceImpl implements UserService {
             
             u.setName(user.getName());
             u.setEmail(user.getEmail());
+            
+            if (user.isAdmin()) {
+                u.getRoles().add(UserManager.ROLE_ADMINISTRATOR);
+            } else {
+                u.getRoles().remove(UserManager.ROLE_ADMINISTRATOR);
+            }
             
             if (password != null && password.equals(confirm) && !password.equals("")) {
                 userManager.setPassword(u, password);

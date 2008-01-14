@@ -6,6 +6,7 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -15,10 +16,12 @@ import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 import org.mule.galaxy.web.client.activity.ActivityPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.UserService;
 import org.mule.galaxy.web.rpc.UserServiceAsync;
+import org.mule.galaxy.web.rpc.WUser;
 
 
 /**
@@ -29,6 +32,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     private RegistryPanel registryPanel;
     private RegistryServiceAsync registryService;
     private UserServiceAsync userService;
+    private FlowPanel rightPanel;
     
     /**
      * This is the entry point method.
@@ -50,23 +54,42 @@ public class Galaxy implements EntryPoint, HistoryListener {
         base.setStyleName("base");
         base.setWidth("100%");
 
-        SimplePanel header = new SimplePanel();
+        registryPanel = new RegistryPanel(this);
+
+        final TabPanel tabPanel = new TabPanel();
+        
+        rightPanel = new FlowPanel();
+        rightPanel.setStyleName("header-right");
+        
+        final Galaxy galaxy = this;
+        registryService.getUserInfo(new AbstractCallback(registryPanel) {
+            public void onSuccess(Object o) {
+                WUser user = (WUser) o;
+                rightPanel.add(new Label(user.getName()));
+                
+                HTML logout = new HTML("<a href=\"" + GWT.getHostPageBaseURL() + "j_logout\">Logout</a>");
+                rightPanel.add(logout);
+                
+                if (user.isAdmin()) {
+                    tabPanel.add(new AdministrationPanel(galaxy), "Administration");
+                }
+            }
+        });
+        
+        FlowPanel header = new FlowPanel();
         header.setStyleName("header");
+        header.add(rightPanel);
         header.add(new Image("images/galaxy_small_logo.png"));
 
         base.add(header);
-        
-        TabPanel tabPanel = new TabPanel();
         base.add(tabPanel);
         
-        registryPanel = new RegistryPanel(this);
-        tabPanel.add(registryPanel, "Registry");
+        tabPanel.insert(registryPanel, "Registry", 0);
         tabPanel.setStyleName("headerTabPanel");
         tabPanel.getDeckPanel().setStyleName("headerTabDeckPanel");
         tabPanel.selectTab(0);
         final ActivityPanel activityPanel = new ActivityPanel(this);
-        tabPanel.add(activityPanel, "Activity");
-        tabPanel.add(new AdministrationPanel(this), "Administration");
+        tabPanel.insert(activityPanel, "Activity", 1);
         
         tabPanel.addTabListener(new TabListener() {
 

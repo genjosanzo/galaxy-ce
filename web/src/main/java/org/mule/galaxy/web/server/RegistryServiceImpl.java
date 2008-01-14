@@ -71,6 +71,7 @@ import org.mule.galaxy.web.rpc.WIndex;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WPhase;
 import org.mule.galaxy.web.rpc.WProperty;
+import org.mule.galaxy.web.rpc.WUser;
 import org.mule.galaxy.web.rpc.WWorkspace;
 
 public class RegistryServiceImpl implements RegistryService {
@@ -959,6 +960,11 @@ public class RegistryServiceImpl implements RegistryService {
         wa.setMessage(a.getMessage());
         wa.setDate(dateFormat.format(a.getDate().getTime()));
         return wa;
+    }
+
+
+    public WUser getUserInfo() throws RPCException {
+        return UserServiceImpl.createWUser(getCurrentUser());
     }
 
 
