@@ -48,6 +48,10 @@ public class ConfigurationSupport
 
     public Resource[] getArtifacts(String url, Properties properties) throws IOException
     {
+        if(url==null || url.length()==0)
+        {
+            url = getRequiredProperty(properties, GalaxyProperties.PROPERTY_URL);
+        }
         URL regUrl;
         RequestOptions opts = client.getDefaultRequestOptions();
         regUrl = new URL(url);
@@ -63,7 +67,7 @@ public class ConfigurationSupport
 
         if(query==null)
         {
-            query = properties.getProperty(GalaxyProperties.PROPERTY_QUERY, null);
+            query = getRequiredProperty(properties, GalaxyProperties.PROPERTY_QUERY);
             if(query==null)
             {
                 throw new IllegalArgumentException("No query was set in the properties or on the server URL");

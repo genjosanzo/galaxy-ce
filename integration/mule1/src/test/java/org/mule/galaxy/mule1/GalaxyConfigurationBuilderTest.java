@@ -1,12 +1,10 @@
 package org.mule.galaxy.mule1;
 
 
-import org.mule.galaxy.config.GalaxyConfigurationBuilder;
+import org.mule.galaxy.mule1.config.GalaxyConfigurationBuilder;
 import org.mule.galaxy.test.AbstractAtomTest;
 import org.mule.umo.manager.UMOManager;
 import org.mule.umo.model.UMOModel;
-
-import java.util.Properties;
 
 public class GalaxyConfigurationBuilderTest extends AbstractAtomTest
 {
@@ -14,7 +12,6 @@ public class GalaxyConfigurationBuilderTest extends AbstractAtomTest
 
     public void testMuleConfig() throws Exception
     {
-
         String configURL = "http://admin:admin@localhost:9002/api/registry?q=select artifact where mule.server.id = 'hello-server'";
 
         GalaxyConfigurationBuilder builder = new GalaxyConfigurationBuilder();

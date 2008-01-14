@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.galaxy.config;
+package org.mule.galaxy.mule1.config;
 
 import org.mule.config.ConfigurationBuilder;
 import org.mule.config.ConfigurationException;
@@ -15,9 +15,10 @@ import org.mule.config.ReaderResource;
 import org.mule.config.builders.MuleXmlConfigurationBuilder;
 import org.mule.umo.manager.UMOManager;
 import org.mule.util.ClassUtils;
+import org.mule.galaxy.config.ConfigurationSupport;
+import org.mule.galaxy.config.Resource;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
 
@@ -82,6 +83,6 @@ public class GalaxyConfigurationBuilder implements ConfigurationBuilder
 
     public boolean isConfigured()
     {
-        return true;
+        return false;
     }
 }

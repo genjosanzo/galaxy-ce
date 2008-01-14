@@ -18,5 +18,6 @@ public interface GalaxyProperties
     public static final String PROPERTY_WORKSPACE = GALAXY_PREFIX + "workspace";
     public static final String PROPERTY_USERNAME = GALAXY_PREFIX + "username";
     public static final String PROPERTY_PASSWORD = GALAXY_PREFIX + "password";
+    public static final String PROPERTY_URL = GALAXY_PREFIX + "url";
     public static final String PROPERTY_QUERY = GALAXY_PREFIX + "query";
 }
