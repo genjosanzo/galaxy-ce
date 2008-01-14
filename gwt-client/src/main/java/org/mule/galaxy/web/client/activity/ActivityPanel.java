@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -35,41 +36,42 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
     private ListBox resultsLB;
     private final Galaxy galaxy;
     private int resultStart;
-    private SimplePanel resultsPanel;
+    private FlowPanel resultsPanel;
     private FlexTable table;
-    
+    private int maxResults;
+
     public ActivityPanel(final Galaxy galaxy) {
         super();
         this.galaxy = galaxy;
 
         SimplePanel mainPanel = new SimplePanel();
         mainPanel.setStyleName("main-panel");
-        
+
         FlowPanel base = new FlowPanel();
         base.setStyleName("activity-base-panel");
         mainPanel.add(base);
-        
+
         panel = new FlowPanel();
         panel.setStyleName("activity-panel");
         base.add(panel);
-        
+
         SimplePanel searchContainer = new SimplePanel();
         searchContainer.setStyleName("activity-search-panel-container");
         panel.add(searchContainer);
-        
+
         InlineFlowPanel searchPanel = new InlineFlowPanel();
         searchPanel.setStyleName("activity-search-panel");
         searchContainer.add(searchPanel);
-        
+
         fromTB = createDatePicker();
         toTB = createDatePicker();
-        
-        searchPanel.add(new Label("From:"));        
+
+        searchPanel.add(new Label("From:"));
         searchPanel.add(fromTB);
 
-        searchPanel.add(new Label("To:"));       
+        searchPanel.add(new Label("To:"));
         searchPanel.add(toTB);
-        
+
         searchPanel.add(new Label("User:"));
         userLB = new ListBox();
         userLB.addItem("All");
@@ -78,10 +80,10 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
         searchPanel.add(userLB);
         galaxy.getUserService().getUsers(new AbstractCallback(this) {
             public void onSuccess(Object result) {
-                initUsers((Collection) result);
+                initUsers((Collection)result);
             }
         });
-        
+
         searchPanel.add(new Label("EventType:"));
         eventLB = new ListBox();
         eventLB.addItem("All");
@@ -90,8 +92,7 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
         eventLB.addItem("Warning");
         eventLB.setSelectedIndex(0);
         searchPanel.add(eventLB);
-        
-        
+
         searchPanel.add(new Label("Max Results:"));
         resultsLB = new ListBox();
         resultsLB.addItem("10");
@@ -101,75 +102,108 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
         resultsLB.addItem("200");
         resultsLB.setSelectedIndex(2);
         searchPanel.add(resultsLB);
-        
-        
+
         Button search = new Button("Search");
         search.addClickListener(new ClickListener() {
 
             public void onClick(Widget sender) {
                 refresh();
             }
-            
+
         });
         searchPanel.add(search);
-        
-        resultsPanel = new SimplePanel();
+
+        resultsPanel = new FlowPanel();
         panel.add(resultsPanel);
-        
-        
+
         errorPanel = new FlowPanel();
         errorPanel.setStyleName("error-panel");
-        
+
         initWidget(mainPanel);
     }
 
     protected void initUsers(Collection result) {
         for (Iterator itr = result.iterator(); itr.hasNext();) {
             WUser user = (WUser)itr.next();
-            
+
             userLB.addItem(user.getName() + " (" + user.getUsername() + ")", user.getId());
         }
     }
-    
+
     public void refresh() {
         panel.remove(errorPanel);
-        
+
         resultsPanel.clear();
         resultsPanel.add(new Label("Loading..."));
-        
+
         String user = userLB.getValue(userLB.getSelectedIndex());
         String eventType = eventLB.getItemText(eventLB.getSelectedIndex());
-        String resultsStr = resultsLB.getItemText(resultsLB.getSelectedIndex());
-        
+        maxResults = new Integer(resultsLB.getItemText(resultsLB.getSelectedIndex())).intValue();
+
         boolean ascending = false;
         AbstractCallback callback = new AbstractCallback(this) {
 
             public void onSuccess(Object o) {
-                loadResults((Collection) o);
+                loadResults((Collection)o);
             }
-            
+
         };
-        galaxy.getRegistryService().getActivities(null, 
-                                                  null, 
-                                                  user, 
-                                                  eventType, 
-                                                  resultStart, 
-                                                  new Integer(resultsStr).intValue(), 
-                                                  ascending, 
-                                                  callback);
+        galaxy.getRegistryService().getActivities(null, null, user, eventType, resultStart, maxResults,
+                                                  ascending, callback);
     }
 
     protected void loadResults(Collection o) {
         resultsPanel.clear();
 
-        table = createRowTable();
-        resultsPanel.add(table);;
+        if (o.size() == maxResults || resultStart > 0) {
+            FlowPanel activityNavPanel = new FlowPanel();
+            activityNavPanel.setStyleName("activity-nav-panel");
+            Hyperlink hl = null;
+            
+            if (o.size() == maxResults) {
+                hl = new Hyperlink("Next", "next");
+                hl.setStyleName("activity-nav-next");
+                hl.addClickListener(new ClickListener() {
+    
+                    public void onClick(Widget arg0) {
+                        resultStart += maxResults;
+                        
+                        refresh();
+                    }
+                    
+                });
+                activityNavPanel.add(hl);
+            }
+            
+            if (resultStart > 0) {
+                hl = new Hyperlink("Previous", "previous");
+                hl.setStyleName("activity-nav-previous");
+                hl.addClickListener(new ClickListener() {
+    
+                    public void onClick(Widget arg0) {
+                        resultStart = resultStart - maxResults;
+                        if (resultStart < 0) resultStart = 0;
+                        
+                        refresh();
+                    }
+                    
+                });
+                activityNavPanel.add(hl);
+            }
+            
+            activityNavPanel.add(new Label(" "));
+            
+            resultsPanel.insert(activityNavPanel, 0);
+        }
         
+        table = createRowTable();
+        resultsPanel.add(table);
+
         table.setText(0, 0, "Date");
         table.setText(0, 1, "User");
         table.setText(0, 2, "Event Type");
         table.setText(0, 3, "Activity");
-        
+
         int i = 1;
         for (Iterator itr = o.iterator(); itr.hasNext();) {
             WActivity act = (WActivity)itr.next();
@@ -189,7 +223,7 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
     }
 
     private TextBox createDatePicker() {
-        
+
         final TextBox tb = new TextBox();
         tb.setVisibleLength(10);
         panel.add(tb);
@@ -197,7 +231,7 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
         final GWTCDatePicker datePicker = new GWTCDatePicker(true);
         datePicker.setMinimalDate(new Date(0));
         datePicker.setMaximalDate(new Date(Long.MAX_VALUE));
-        
+
         datePicker.addChangeListener(new ChangeListener() {
             public void onChange(Widget sender) {
                 tb.setText(datePicker.getSelectedDateStr("yyyy-MM-dd"));
@@ -214,16 +248,15 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
 
         return tb;
     }
-    
 
     public void setMessage(Label label) {
         errorPanel.clear();
-        
+
         errorPanel.add(label);
-        
+
         panel.insert(errorPanel, 0);
     }
-    
+
     public void setMessage(String string) {
         setMessage(new Label(string));
     }

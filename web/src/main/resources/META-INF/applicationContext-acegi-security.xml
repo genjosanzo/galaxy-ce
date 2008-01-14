@@ -168,7 +168,6 @@
                 /login.css*=ROLE_ANONYMOUS,role_user
                 /images/*=ROLE_ANONYMOUS,role_user
                 /favicon.ico*=ROLE_ANONYMOUS
-                /**=role_user
          ]]></value>
       </property>
    </bean>
