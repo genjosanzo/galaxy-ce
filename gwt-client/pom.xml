@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-parent</artifactId>
-    <version>1.0-beta-1-SNAPSHOT</version>
+    <version>1.0-beta-1-RC1</version>
   </parent>  
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
@@ -15,7 +15,7 @@
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-core</artifactId>
-      <version>1.0-beta-1-SNAPSHOT</version>
+      <version>1.0-beta-1-RC1</version>
     </dependency>
 
     <dependency>
@@ -40,7 +40,7 @@
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-testutils</artifactId>
-      <version>1.0-beta-1-SNAPSHOT</version>
+      <version>1.0-beta-1-RC1</version>
       <scope>test</scope>
     </dependency>
 
