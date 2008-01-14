@@ -81,6 +81,7 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
                 } else {
                     qstr.append("descending");
                 }
+                
                 Query query = qm.createQuery(qstr.toString(), Query.XPATH);
                 
                 QueryResult result = query.execute();

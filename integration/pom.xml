@@ -11,6 +11,12 @@
   <artifactId>galaxy-integration</artifactId>
   <name>Galaxy Integration</name>
   <packaging>pom</packaging>
+  <licenses>
+    <license>
+      <name>CPAL</name>
+      <url>http://mule.mulesource.org/display/MULE/License</url>
+    </license>
+  </licenses>
   <modules>
     <module>support</module>
     <module>mule1</module>

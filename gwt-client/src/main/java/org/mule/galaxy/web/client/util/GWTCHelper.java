@@ -75,7 +75,8 @@ public class GWTCHelper {
                 yDiff = top - scrollTop;
                 if (yDiff > 0) yDiff = 0;
             }
-            scrollTo(scrollLeft + xDiff, scrollTop + yDiff);
+            
+            // scrollTo(scrollLeft + xDiff, scrollTop + yDiff);
         } else {
             // Center the panel into the visible part of the document
             if (visibleW == 0 || visibleH == 0) {

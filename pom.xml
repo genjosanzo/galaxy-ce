@@ -8,7 +8,12 @@
 	<packaging>pom</packaging>
 	<version>1.0-M1-SNAPSHOT</version>
 	<name>Galaxy</name>
-
+  <licenses>
+    <license>
+      <name>GPL v2</name>
+      <url>http://www.mulesource.org/display/GALAXY/GPLv2+License</url>
+    </license>
+  </licenses>
 	<modules>
 		<module>core</module>
 		<module>wsdldiff</module>

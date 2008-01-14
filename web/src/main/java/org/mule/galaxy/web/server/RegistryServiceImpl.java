@@ -38,6 +38,7 @@ import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.ActivityManager.EventType;
 import org.mule.galaxy.Index.Language;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.lifecycle.Lifecycle;
@@ -932,16 +933,44 @@ public class RegistryServiceImpl implements RegistryService {
 
 
     public Collection getActivities(Date from, Date to, String user, 
-                                    String eventType, int start,
+                                    String eventTypeStr, int start,
                                     int results, boolean ascending) throws RPCException {
         
         if ("All".equals(user)) {
             user = null;
         }
         
-        Collection<Activity> activities = activityManager.getActivities(null, null, 
-                                                                        user, null, start,
-                                                                        results, ascending);
+        if (from != null) {
+            Calendar c = Calendar.getInstance();
+            c.setTime(from);
+            c.set(Calendar.HOUR, 0);
+            c.set(Calendar.MINUTE, 0);
+            c.set(Calendar.SECOND, 0);
+            from = c.getTime();
+        }
+        
+        if (to != null) {
+            Calendar c = Calendar.getInstance();
+            c.setTime(to);
+            c.set(Calendar.HOUR, 23);
+            c.set(Calendar.MINUTE, 59);
+            c.set(Calendar.SECOND, 59);
+            to = c.getTime();
+        }
+        
+        EventType eventType = null;
+        if ("Info".equals(eventTypeStr)) {
+            eventType = EventType.INFO;
+        } else if ("Warning".equals(eventTypeStr)) {
+            eventType = EventType.WARNING;
+        } else if ("Error".equals(eventTypeStr)) {
+            eventType = EventType.ERROR;
+        }
+        
+        Collection<Activity> activities = activityManager.getActivities(from, to, 
+                                                                        user, eventType, 
+                                                                        start, results,
+                                                                        ascending);
         
         ArrayList<WActivity> wactivities = new ArrayList<WActivity>();
 

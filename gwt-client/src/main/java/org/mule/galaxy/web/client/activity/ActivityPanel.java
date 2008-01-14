@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.client.activity;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -148,8 +149,48 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
             }
 
         };
-        galaxy.getRegistryService().getActivities(null, null, user, eventType, resultStart, maxResults,
+        String fromStr = fromTB.getText();
+        String toStr = toTB.getText();
+        Date fromDate = null;
+        if (fromStr != null && !"".equals(fromStr)) {
+            try {
+                fromDate = parseDate(fromStr);
+            } catch (DateParseException e) {
+                setMessage("\"From\" date is invalid. It must be in the form of YYYY-MM-DD.");
+                return;
+            }
+        } 
+        
+        Date toDate = null;
+        if (toStr != null && !"".equals(toStr)) {
+            try {
+                toDate = parseDate(toStr);
+            } catch (DateParseException e) {
+                setMessage("\"From\" date is invalid. It must be in the form of YYYY-MM-DD.");
+                return;
+            }
+        }
+        galaxy.getRegistryService().getActivities(fromDate, toDate, user, eventType, resultStart, maxResults,
                                                   ascending, callback);
+    }
+
+    private Date parseDate(String s) throws DateParseException {
+        if (s.length() != 10 || s.charAt(4) != '-' || s.charAt(7) != '-') {
+            throw new DateParseException();
+        }
+        
+        String yearStr = s.substring(0, 4);
+        String monthStr = s.substring(5, 7);
+        String dayStr = s.substring(8, 10);
+        
+        try {
+            int year = new Integer(yearStr).intValue();
+            int month = new Integer(monthStr).intValue();
+            int day = new Integer(dayStr).intValue();
+            return new Date(year-1900, month-1, day);
+        } catch (NumberFormatException e) {
+            throw new DateParseException();
+        }
     }
 
     protected void loadResults(Collection o) {
@@ -191,7 +232,7 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
                 activityNavPanel.add(hl);
             }
             
-            activityNavPanel.add(new Label(" "));
+            activityNavPanel.add(new Label("&nbsp;"));
             
             resultsPanel.insert(activityNavPanel, 0);
         }
@@ -230,12 +271,11 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
 
         final GWTCDatePicker datePicker = new GWTCDatePicker(true);
         datePicker.setMinimalDate(new Date(0));
-        datePicker.setMaximalDate(new Date(Long.MAX_VALUE));
-
+        
         datePicker.addChangeListener(new ChangeListener() {
             public void onChange(Widget sender) {
-                tb.setText(datePicker.getSelectedDateStr("yyyy-MM-dd"));
                 datePicker.hide();
+                tb.setText(datePicker.getSelectedDateStr("yyyy-MM-dd"));
             }
         });
 
