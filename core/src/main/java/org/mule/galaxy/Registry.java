@@ -146,11 +146,4 @@ public interface Registry {
     
     Set<Dependency> getDependedOnBy(Artifact a) throws RegistryException;
 
-    /* Comment related operations */
-    
-    Comment getComment(String commentId) throws NotFoundException;
-
-    List<Comment> getComments(Artifact a);
-
-    void addComment(Comment c);
 }

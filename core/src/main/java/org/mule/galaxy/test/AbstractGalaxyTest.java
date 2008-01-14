@@ -19,23 +19,21 @@ import org.mule.galaxy.ActivityManager;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.CommentManager;
 import org.mule.galaxy.IndexManager;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.IndexManagerImpl;
-import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
-import org.omg.CORBA.CTX_RESTRICT_SCOPE;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springmodules.jcr.SessionFactory;
 import org.springmodules.jcr.SessionFactoryUtils;
-import org.springmodules.jcr.jackrabbit.support.UserTxSessionHolder;
 
 public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContextTests {
 
@@ -51,7 +49,8 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
     protected PolicyManager policyManager;
     protected IndexManager indexManager;
     protected ActivityManager activityManager;
-
+    protected CommentManager commentManager;
+    
     private boolean participate;
     
     public AbstractGalaxyTest() {

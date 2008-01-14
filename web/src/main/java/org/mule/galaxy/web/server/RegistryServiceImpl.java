@@ -28,6 +28,7 @@ import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.ArtifactTypeDao;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Comment;
+import org.mule.galaxy.CommentManager;
 import org.mule.galaxy.Dependency;
 import org.mule.galaxy.Index;
 import org.mule.galaxy.IndexManager;
@@ -84,6 +85,7 @@ public class RegistryServiceImpl implements RegistryService {
     private LifecycleManager lifecycleManager;
     private IndexManager indexManager;
     private ActivityManager activityManager;
+    private CommentManager commentManager;
     
     private SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a, MMMM d, yyyy");
     
@@ -474,7 +476,7 @@ public class RegistryServiceImpl implements RegistryService {
             
             List wcs = info.getComments();
             
-            List<Comment> comments = registry.getComments(a);
+            List<Comment> comments = commentManager.getComments(a.getId());
             for (Comment c : comments) {
                 WComment wc = new WComment(c.getId(),
                                            c.getUser().getUsername(),
@@ -526,7 +528,7 @@ public class RegistryServiceImpl implements RegistryService {
             comment.setUser(getCurrentUser());
             
             if (parentComment != null) {
-                Comment c = registry.getComment(parentComment);
+                Comment c = commentManager.getComment(parentComment);
                 if (c == null) {
                     throw new RPCException("Invalid parent comment");
                 }
@@ -534,7 +536,7 @@ public class RegistryServiceImpl implements RegistryService {
             } else {
                 comment.setArtifact(artifact);
             }
-            registry.addComment(comment);
+            commentManager.addComment(comment);
             
             return new WComment(comment.getId(),
                                 comment.getUser().getUsername(),
@@ -965,6 +967,10 @@ public class RegistryServiceImpl implements RegistryService {
 
     public WUser getUserInfo() throws RPCException {
         return UserServiceImpl.createWUser(getCurrentUser());
+    }
+
+    public void setCommentManager(CommentManager commentManager) {
+        this.commentManager = commentManager;
     }
 
 

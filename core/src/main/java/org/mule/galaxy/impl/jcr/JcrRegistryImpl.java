@@ -91,8 +91,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     private IndexManager indexManager;
     
-    private Dao<Comment> commentDao;
-    
     private Dao<PropertyDescriptor> propertyDescriptorDao;
     
     private String workspacesId;
@@ -1318,23 +1316,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         openSession.logout();
     }
 
-    public void addComment(Comment c) {
-        commentDao.save(c);
-    }
-
-    public Comment getComment(String commentId) throws NotFoundException {
-        return commentDao.get(commentId);
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<Comment> getComments(final Artifact a) {
-        return (List) execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                return commentDao.find("artifact", a.getId());
-            }
-        });
-    }
-
     public void addDependencies(ArtifactVersion artifactVersion, final Artifact... dependencies)
         throws RegistryException {
         final JcrVersion jcrVersion = (JcrVersion) artifactVersion;
@@ -1407,10 +1388,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public void setPolicyManager(PolicyManager policyManager) {
         this.policyManager = policyManager;
-    }
-
-    public void setCommentDao(Dao<Comment> commentDao) {
-        this.commentDao = commentDao;
     }
 
     public LifecycleManager getLifecycleManager() {

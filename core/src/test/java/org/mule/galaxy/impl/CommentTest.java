@@ -23,11 +23,11 @@ public class CommentTest extends AbstractGalaxyTest {
         c.setUser(getAdmin());
         c.setText("Hello.");
         
-        registry.addComment(c);
+        commentManager.addComment(c);
         
         assertNotNull(c.getId());
     
-        List<Comment> comments = registry.getComments(artifact);
+        List<Comment> comments = commentManager.getComments(artifact.getId());
         assertEquals(1, comments.size());
         
         Comment c2 = new Comment();
@@ -39,9 +39,9 @@ public class CommentTest extends AbstractGalaxyTest {
         c2.setUser(getAdmin());
         c2.setText("Hello.");
         
-        registry.addComment(c2);
+        commentManager.addComment(c2);
         
-        comments = registry.getComments(artifact);
+        comments = commentManager.getComments(artifact.getId());
         assertEquals(1, comments.size());
         
         Comment c3 = comments.get(0);
