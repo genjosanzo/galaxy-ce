@@ -10,4 +10,6 @@ public interface CommentManager {
     void addComment(Comment c);
 
     List<Comment> getComments(String artifactId, boolean includeChildren);
+    
+    List<Comment> getRecentComments(int maxResults);
 }

@@ -98,7 +98,7 @@ public class ArtifactVersionCollectionProvider extends AbstractArtifactVersionPr
 
     @Override
     public String getId() {
-        return "tag:galaxy.mulesource.com,2008:registry:history:feed";
+        return "tag:galaxy.mulesource.com,2008:registry:" + registry.getUUID() + ":history:feed";
     }
 
     @Override

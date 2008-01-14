@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.abdera.protocol.server.CollectionProvider;
 import org.apache.abdera.protocol.server.WorkspaceInfo;
+import org.mule.galaxy.CommentManager;
 import org.mule.galaxy.Registry;
 
 /**
@@ -13,6 +14,7 @@ import org.mule.galaxy.Registry;
  */
 public class ArtifactWorkspaceInfo implements WorkspaceInfo {
     private Registry registry;
+    private CommentManager commentManager;
     private Map<String,CollectionProvider> providers;
     
     public ArtifactWorkspaceInfo() {
@@ -22,7 +24,7 @@ public class ArtifactWorkspaceInfo implements WorkspaceInfo {
     public void initialize() {
         providers = new HashMap<String, CollectionProvider>();
         providers.put("registry", new ArtifactCollectionProvider(registry));
-//        providers.put("registry-history", new ArtifactVersionCollectionProvider(registry));
+        providers.put("comments", new CommentCollectionProvider(commentManager, registry));
     }
 
     public CollectionProvider getCollectionProvider(String id) {
@@ -39,5 +41,9 @@ public class ArtifactWorkspaceInfo implements WorkspaceInfo {
 
     public void setRegistry(Registry registry) {
         this.registry = registry;
+    }
+
+    public void setCommentManager(CommentManager commentManager) {
+        this.commentManager = commentManager;
     }
 }

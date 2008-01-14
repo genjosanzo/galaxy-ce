@@ -35,6 +35,7 @@
     <property name="workspaces">
       <list>
         <bean class="org.mule.galaxy.atom.ArtifactWorkspaceInfo" init-method="initialize">
+          <property name="commentManager" ref="commentManager"/>
           <property name="registry" ref="registry"/>
         </bean>
       </list>

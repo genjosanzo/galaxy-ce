@@ -225,6 +225,10 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
     }
 
     protected List<T> query(String stmt, Session session) throws RepositoryException, InvalidQueryException {
+        return query(stmt, session, -1);
+    }
+    
+    protected List<T> query(String stmt, Session session, int maxResults) throws RepositoryException, InvalidQueryException {
         QueryManager qm = getQueryManager(session);
         Query q = qm.createQuery(stmt, Query.XPATH);
         
@@ -232,6 +236,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         
         List<T> values = new ArrayList<T>();
         
+        int i = 0;
         for (NodeIterator nodes = qr.getNodes(); nodes.hasNext();) {
             try {
                 values.add(build(nodes.nextNode(), session));
@@ -243,6 +248,10 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
                 }
                 throw new RuntimeException(e);
             }
+            if (maxResults >= 0 && values.size() == i) {
+                break;
+            }
+            i++;
         }
 
         return values;

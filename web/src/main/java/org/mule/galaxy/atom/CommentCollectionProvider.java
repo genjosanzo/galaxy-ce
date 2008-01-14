@@ -20,55 +20,13 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 
 public class CommentCollectionProvider extends AbstractCollectionProvider<Comment> {
-
-    private static final String ARTIFACT_KEY = "artifact";
     
-    private Registry registry;
     private CommentManager commentManager;
+    private Registry registry;
     
-    public CommentCollectionProvider(Registry registry, CommentManager commentManager) {
-        this.registry = registry;
+    public CommentCollectionProvider(CommentManager commentManager, Registry registry) {
         this.commentManager = commentManager;
-    }
-    
-    @Override
-    public void begin(RequestContext request) throws ResponseContextException {
-        String target = request.getTargetPath();
-        int idx = target.indexOf("/registry/");
-        int qIdx = target.lastIndexOf('?');
-        if (qIdx == -1) {
-            qIdx = target.length();
-        }
-        
-        target = target.substring(idx + 10, qIdx);
-        
-        Artifact a = findArtifact(target);
-        request.setAttribute(Scope.REQUEST, ARTIFACT_KEY, a);
-        
-        super.begin(request);
-    }
-
-    protected Artifact findArtifact(String name) throws ResponseContextException {
-        String[] paths = name.split("/");
-        
-        Workspace w = null;
-        for (int i = 0; i < paths.length-1; i++) {
-            try {
-                w = registry.getWorkspaceByPath(UrlEncoding.decode(paths[i]));
-            } catch (NotFoundException e) {
-                throw new ResponseContextException(404);
-            } catch (RegistryException e) {
-                throw new ResponseContextException(500, e);
-            }
-        }
-        Artifact a = null;
-        try {
-            a = registry.getArtifact(w, UrlEncoding.decode(paths[paths.length-1]));
-            
-        } catch (NotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        return a;
+        this.registry = registry;
     }
     
     @Override
@@ -94,23 +52,26 @@ public class CommentCollectionProvider extends AbstractCollectionProvider<Commen
 
     @Override
     public Iterable<Comment> getEntries(RequestContext request) throws ResponseContextException {
-        return null;
+        return commentManager.getRecentComments(100);
     }
 
     @Override
     public Comment getEntry(String name, RequestContext request) throws ResponseContextException {
-        
-        return null;
+        try {
+            return commentManager.getComment(name);
+        } catch (NotFoundException e) {
+            throw new ResponseContextException(404);
+        }
     }
 
     @Override
     public String getId() {
-        return "tag:galaxy.mulesource.com,2008:registry:feed";
+        return "tag:galaxy.mulesource.com,2008:registry:" + registry.getUUID() + ":comments:feed";
     }
 
     @Override
     public String getId(Comment c) throws ResponseContextException {
-        return "urn:galaxy:comment" + c.getId();
+        return "urn:galaxy:comment:" + c.getId();
     }
 
     @Override
@@ -120,12 +81,12 @@ public class CommentCollectionProvider extends AbstractCollectionProvider<Commen
 
     @Override
     public String getTitle(Comment c) throws ResponseContextException {
-        return "Comment on " + c.getArtifact().getName() + " by " + c.getUser().getName();
+        return "Comment on " + c.getArtifact().getPath() + " by " + c.getUser().getName();
     }
 
     @Override
     public String getTitle(RequestContext arg0) {
-        return "Comments";
+        return "Mule Galaxy Comments";
     }
 
     @Override

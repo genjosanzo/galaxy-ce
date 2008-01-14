@@ -16,6 +16,13 @@ import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.security.User;
 
 public interface Registry {
+    
+    /**
+     * Get a universally unique ID for this registry, which can be used for things such as atom feeds.
+     * @return
+     */
+    String getUUID();
+    
     Workspace createWorkspace(String name) throws RegistryException;
 
     Workspace createWorkspace(Workspace parent, String name) throws RegistryException;

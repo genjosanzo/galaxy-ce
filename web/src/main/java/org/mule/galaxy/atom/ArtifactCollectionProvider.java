@@ -55,7 +55,7 @@ public class ArtifactCollectionProvider extends AbstractArtifactVersionProvider 
     }
 
     public String getId() {
-        return "tag:galaxy.mulesource.com,2008:registry:feed";
+        return "tag:galaxy.mulesource.com,2008:registry:" + registry + ":feed";
     }
 
     public String getId(ArtifactVersion doc) {

@@ -41,6 +41,16 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
             }
         });
     }
+    
+    @SuppressWarnings("unchecked")
+    public List<Comment> getRecentComments(final int maxResults) {
+        return (List<Comment>) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                return query("/jcr:root/comments/* order by @date descending", session, maxResults);
+            }
+        });
+    }
+
     public void addComment(Comment c) {
         save(c);
     }

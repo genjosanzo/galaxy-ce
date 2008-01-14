@@ -43,10 +43,16 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         List<Collection> collections = workspace.getCollections();
         
-        assertEquals(1, collections.size());
-        Collection collection = collections.get(0);
+        assertEquals(2, collections.size());
         
-        assertEquals("registry", collection.getHref().toString());
+        Collection collection = null;
+        for (Collection c : collections) {
+            if ("registry".equals(c.getHref().toString())) {
+                collection = c;
+            }
+        }
+        
+        assertNotNull(collection);
         res.release();
         
         // Check out the feed, yo

@@ -494,7 +494,7 @@ public class RegistryServiceImpl implements RegistryService {
             
             info.setArtifactLink(getLink("/api/registry", a));
             info.setArtifactFeedLink(getLink("/api/registry", a) + "?view=history");
-            info.setCommentsFeedLink(getLink("/api/comments", a));
+            info.setCommentsFeedLink("/api/comments");
             
             return g;
         } catch (RegistryException e) {

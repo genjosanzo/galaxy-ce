@@ -102,9 +102,14 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private Session openSession;
     
     private ActivityManager activityManager;
+    private String id;
     
     public JcrRegistryImpl() {
         super();
+    }
+
+    public String getUUID() {
+        return id;
     }
 
     public Workspace getWorkspace(String id) throws RegistryException {
@@ -1253,6 +1258,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         Session session = getSessionFactory().getSession();
         Node root = session.getRootNode();
         
+        
         // UGH, Jackrabbit specific code
         javax.jcr.Workspace workspace = session.getWorkspace();
         try {
@@ -1298,6 +1304,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             System.setProperty("initializeOnce", "true");
             workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "1");
         } 
+        id = workspaces.getUUID();
         
         session.save();
         
