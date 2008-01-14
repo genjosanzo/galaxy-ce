@@ -21,6 +21,7 @@
         <exclude>org.springframework</exclude>
         <exclude>org.mule:mule-core</exclude>
         <exclude>org.mule.modules</exclude>
+        <exclude>org.apache.geronimo.specs:geronimo-activation_1.0.2_spec</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>
