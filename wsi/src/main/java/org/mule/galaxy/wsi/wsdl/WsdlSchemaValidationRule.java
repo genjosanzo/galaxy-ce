@@ -11,10 +11,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.apache.xerces.jaxp.validation.XMLSchemaFactory;
-
 import org.w3c.dom.Document;
-import org.w3c.dom.views.AbstractView;
 
 import org.xml.sax.SAXException;
 
