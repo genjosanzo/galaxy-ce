@@ -36,8 +36,8 @@ public class AbstractAtomTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        System.setProperty("javax.xml.validation.SchemaFactory:http://www.w3.org/2001/XMLSchema",
-                           "org.apache.xerces.jaxp.validation.XMLSchemaFactory");
+//        System.setProperty("javax.xml.validation.SchemaFactory:http://www.w3.org/2001/XMLSchema",
+//                           "org.apache.xerces.jaxp.validation.XMLSchemaFactory");
 
 
         super.setUp();
@@ -47,7 +47,11 @@ public class AbstractAtomTest extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         clearJcrRepository();
-        server.stop();
+        try {
+            server.stop();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
         
         super.tearDown();
     } 
@@ -87,6 +91,7 @@ public class AbstractAtomTest extends TestCase {
         context.setContextPath("/");
 
         context.setWar(getWebappDirectory());
+        System.out.println("Webapp dir " + getWebappDirectory());
         server.setHandler(context);
         server.setStopAtShutdown(true);
         

@@ -1,14 +1,12 @@
 package org.mule.galaxy.impl.jcr;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -22,12 +20,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.mule.galaxy.Activity;
 import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.Index;
-import org.mule.galaxy.ActivityManager.EventType;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.security.User;
 import org.springmodules.jcr.JcrCallback;
-import sun.util.calendar.Gregorian;
 
 public class ActivityManagerImpl extends AbstractReflectionDao<Activity> implements ActivityManager {
 
@@ -65,7 +60,7 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
 
                 if (user != null) {
                     if (ActivityManager.SYSTEM.equals(user)) {
-                        append(qstr, "user", "=", "''", first, true);
+                        append(qstr, "user", "=", "", first, true);
                     } else {
                         append(qstr, "user", "=", user, first, true);
                     }
@@ -86,16 +81,16 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
                 } else {
                     qstr.append("descending");
                 }
-                
                 Query query = qm.createQuery(qstr.toString(), Query.XPATH);
                 
                 QueryResult result = query.execute();
                 
-                Set<Activity> activities = new HashSet<Activity>();
+                Collection<Activity> activities = new LinkedList<Activity>();
                 int i = 0;
                 NodeIterator nodes = result.getNodes();
                 try {
                     nodes.skip(start);
+                    
                 } catch (NoSuchElementException e) {
                     return activities;
                 }
@@ -121,9 +116,9 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
 
     protected void append(StringBuilder qstr, String property, String operator, String value, boolean first, boolean quote) {
         if (first) {
-            qstr.append("[");
+            qstr.append("[@");
         } else {
-            qstr.append(" and ");
+            qstr.append(" and @");
         }
         qstr.append(property).append(operator);
         if (quote) qstr.append("'");

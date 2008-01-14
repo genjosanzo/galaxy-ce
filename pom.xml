@@ -1,124 +1,177 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0    http://maven.apache.org/maven-v4_0_0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0    http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.mule.galaxy</groupId>
-    <artifactId>galaxy-parent</artifactId>
-    <packaging>pom</packaging>
-    <version>1.0-M1-SNAPSHOT</version>
-    <name>Galaxy</name>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.mule.galaxy</groupId>
+	<artifactId>galaxy-parent</artifactId>
+	<packaging>pom</packaging>
+	<version>1.0-M1-SNAPSHOT</version>
+	<name>Galaxy</name>
 
-    <modules>
-        <module>core</module>
-        <module>wsdldiff</module>
-        <module>wsi</module>
-        <module>testutils</module>
-        <module>web</module>
-        <module>web-standalone</module>
-        <module>gwt-client</module>
-        <module>integration/support</module>
-        <module>integration/mule1</module>
-        <module>integration/mule2</module>
-        <module>integration/cxf</module>
-        <module>integration/spring</module>
-    </modules>
+	<modules>
+		<module>core</module>
+		<module>wsdldiff</module>
+		<module>wsi</module>
+		<module>testutils</module>
+		<module>web</module>
+		<module>web-standalone</module>
+		<module>gwt-client</module>
+		<module>integration</module>
+	</modules>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <scope>test</scope>
-                <version>3.8.1</version>
-            </dependency>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<scope>test</scope>
+				<version>3.8.1</version>
+			</dependency>
+
+<dependency>
+<groupId>xml-apis</groupId>
+<artifactId>xml-apis</artifactId>
+<version>1.3.03</version>
+</dependency>
+			<dependency>
+				<groupId>xerces</groupId>
+				<artifactId>xercesImpl</artifactId>
+                                <version>2.8.1</version>
+                        </dependency>
+			<dependency>
+				<groupId>org.apache.abdera</groupId>
+				<artifactId>abdera-spring</artifactId>
+				<version>0.4.0-incubating-20080112-MuleSource</version>
+				<exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xmlParserAPIs</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>xom</groupId>
+            <artifactId>xom</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>jdom</groupId>
+            <artifactId>dom4j</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+          </exclusion>
+	      </exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.abdera</groupId>
+				<artifactId>abdera-client</artifactId>
+				<version>0.4.0-incubating-20080112-MuleSource</version>
+				<exclusions>
+					<exclusion>
+						<groupId>xml-apis</groupId>
+						<artifactId>xmlParserAPIs</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>xom</groupId>
+						<artifactId>xom</artifactId>
+					</exclusion>
+          <exclusion>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>jdom</groupId>
+            <artifactId>jdom</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+          </exclusion>
+				</exclusions>
+			</dependency>
 
 
-            <dependency>
-                <groupId>xerces</groupId>
-                <artifactId>xercesImpl</artifactId>
-                <version>2.8.1</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>xml-apis</groupId>
-                        <artifactId>xml-apis</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-2</version>
+			</extension>
+		</extensions>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<childDelegation>false</childDelegation>
+				</configuration>
+			</plugin>
+		</plugins>
+
+		<defaultGoal>install</defaultGoal>
+
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.properties</include>
+					<include>**/*.xml</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+		</resources>
+
+	</build>
 
 
-        </dependencies>
-    </dependencyManagement>
-
-    <build>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-webdav</artifactId>
-                <version>1.0-beta-2</version>
-            </extension>
-        </extensions>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <childDelegation>true</childDelegation>
-                </configuration>
-            </plugin>
-        </plugins>
-
-        <defaultGoal>install</defaultGoal>
-
-        <resources>
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                    <include>**/*.xml</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-            </resource>
-        </resources>
-
-    </build>
-
-
-    <distributionManagement>
-        <repository>
-            <id>muleforge.webdav.releases</id>
-            <url>dav:https://dav.muleforge.org/repository/registry/</url>
-        </repository>
-        <snapshotRepository>
-            <id>muleforge.webdav.snapshots</id>
-            <url>dav:https://dav.muleforge.org/snapshots.repository/registry/</url>
-        </snapshotRepository>
-        <site>
-            <id>muleforge.webdav.sites</id>
-            <url>dav:https://dav.muleforge.org/${artifactId}/</url>
-        </site>
-    </distributionManagement>
-    <scm>
-        <connection>
-            scm:svn:https://svn.muleforge.org/registry/trunk
-        </connection>
-        <developerConnection>
-            scm:svn:https://svn.muleforge.org/registry/trunk
-        </developerConnection>
-        <url>http://svn.registry.muleforge.org/</url>
-    </scm>
+	<distributionManagement>
+		<repository>
+			<id>muleforge.webdav.releases</id>
+			<url>
+				dav:https://dav.muleforge.org/repository/registry/
+			</url>
+		</repository>
+		<snapshotRepository>
+			<id>muleforge.webdav.snapshots</id>
+			<url>
+				dav:https://dav.muleforge.org/snapshots.repository/registry/
+			</url>
+		</snapshotRepository>
+		<site>
+			<id>muleforge.webdav.sites</id>
+			<url>dav:https://dav.muleforge.org/${artifactId}/</url>
+		</site>
+	</distributionManagement>
+	<scm>
+		<connection>
+			scm:svn:https://svn.muleforge.org/registry/trunk
+		</connection>
+		<developerConnection>
+			scm:svn:https://svn.muleforge.org/registry/trunk
+		</developerConnection>
+		<url>http://svn.registry.muleforge.org/</url>
+	</scm>
 
 </project>

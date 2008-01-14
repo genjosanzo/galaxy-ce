@@ -116,7 +116,6 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
         resultsPanel = new SimplePanel();
         panel.add(resultsPanel);
         
-        table = createRowTable();
         
         errorPanel = new FlowPanel();
         errorPanel.setStyleName("error-panel");
@@ -138,7 +137,7 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
         resultsPanel.clear();
         resultsPanel.add(new Label("Loading..."));
         
-        String user = userLB.getItemText(userLB.getSelectedIndex());
+        String user = userLB.getValue(userLB.getSelectedIndex());
         String eventType = eventLB.getItemText(eventLB.getSelectedIndex());
         String resultsStr = resultsLB.getItemText(resultsLB.getSelectedIndex());
         
@@ -162,9 +161,9 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
 
     protected void loadResults(Collection o) {
         resultsPanel.clear();
-        resultsPanel.add(table);
 
-        table.clear();
+        table = createRowTable();
+        resultsPanel.add(table);;
         
         table.setText(0, 0, "Date");
         table.setText(0, 1, "User");
@@ -176,6 +175,8 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
             WActivity act = (WActivity)itr.next();
 
             table.setText(i, 0, act.getDate());
+            table.getCellFormatter().setStyleName(i, 0, "activityTableDate");
+
             if (act.getName() == null) {
                 table.setText(i, 1, "System");
             } else {

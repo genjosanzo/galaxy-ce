@@ -112,13 +112,15 @@ public class MuleArtifactPlugin extends AbstractArtifactPlugin {
                                     String.class, // search input type
                                     "/mule-configuration/description", // the xquery expression
                                     Constants.MULE_QNAME)); // document QName which this applies to
-
-        indexManager.save(new Index("mule.descriptor.description", // index field name
-                                    "Mule Descriptor Description", // Display Name
-                                    Index.Language.XPATH,
-                                    String.class, // search input type
-                                    "//mule-descriptor/description", // the xquery expression
-                                    Constants.MULE_QNAME)); // document QName which this applies to
+        
+        // TODO: reenable once we can hide this in the metadata panel
+//
+//        indexManager.save(new Index("mule.descriptor.description", // index field name
+//                                    "Mule Descriptor Description", // Display Name
+//                                    Index.Language.XPATH,
+//                                    String.class, // search input type
+//                                    "//mule-descriptor/description", // the xquery expression
+//                                    Constants.MULE_QNAME)); // document QName which this applies to
             
     }
 

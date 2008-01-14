@@ -132,9 +132,9 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
 
     @Override  
     protected void onSetUp() throws Exception {
-        System.setProperty("javax.xml.validation.SchemaFactory:http://www.w3.org/2001/XMLSchema",
-                           "org.apache.xerces.jaxp.validation.XMLSchemaFactory");
-        
+//        System.setProperty("javax.xml.validation.SchemaFactory:http://www.w3.org/2001/XMLSchema",
+//                           "org.apache.xerces.jaxp.validation.XMLSchemaFactory");
+//        
         super.onSetUp();
         
         Session session = null;

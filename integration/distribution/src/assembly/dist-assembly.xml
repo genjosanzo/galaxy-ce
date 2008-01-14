@@ -1,0 +1,25 @@
+<assembly>
+  <id>dist</id>
+  <formats>
+    <format>dir</format>
+    <format>zip</format>
+  </formats>
+    <fileSets>
+    <fileSet>
+      <includes>
+        <include>../../LICENSE.txt</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory></outputDirectory>
+      <useTransitiveFiltering>true</useTransitiveFiltering>
+      <excludes>
+        <exclude>org.springframework</exclude>
+        <exclude>org.mule:mule-core</exclude>
+        <exclude>org.mule.modules</exclude>
+      </excludes>
+    </dependencySet>
+  </dependencySets>
+</assembly>

@@ -25,6 +25,14 @@ import org.mule.galaxy.test.AbstractAtomTest;
 
 public class CxfPolicyTest extends AbstractAtomTest {
 
+    @Override
+    protected void setUp() throws Exception {
+        System.setProperty("javax.xml.validation.SchemaFactory:http://www.w3.org/2001/XMLSchema",
+        "");
+
+        super.setUp();
+    }
+
     public void testPolicyLoadingWithConfig() throws Exception {
         System.setProperty("cxf.config.file", "cxf-spring.xml");
         

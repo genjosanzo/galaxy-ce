@@ -39,9 +39,13 @@ public class SearchPanelRow
         propertyList = new ListBox();
         propertyList.setWidth("175px");
         propertyList.addItem("Content Type", "contentType");
+        propertyList.addItem("Description", "documentType");
         propertyList.addItem("Document Type", "documentType");
         propertyList.addItem("Name", "name");
         propertyList.addItem("Phase", "phase");
+        propertyList.addItem("Workspace", "workspaceName");
+        
+        propertyList.setSelectedIndex(3);
         propertyList.addChangeListener(new ChangeListener() {
            public void onChange(Widget sender) {
                processTypeChange();

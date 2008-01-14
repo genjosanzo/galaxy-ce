@@ -866,6 +866,33 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             Restriction r = null;
             if (compare.equals("=")) {
                 r = Restriction.eq(left, right);
+            } else if (compare.equals("like")) {
+                r = Restriction.like(left, right);
+            } else if (compare.equals("!=")) {
+                r = Restriction.not(Restriction.eq(left, right));
+            } else if (compare.equals("in")) {
+                if (!itr.hasNext()) {
+                    throw new QueryException(new Message("EXPECTED_IN_TOKEN", LOGGER));
+                }
+                ArrayList<String> in = new ArrayList<String>();
+                String first = itr.next();
+                if (first.startsWith("(")) {
+                    first = first.substring(1);
+                } else {
+                    throw new QueryException(new Message("EXPECTED_IN_RIGHT_PARENS", LOGGER));
+                }
+                
+                while (itr.hasNext()) {
+                    String next = itr.next();
+                    if (next.endsWith(")")) {
+                        next = next.substring(0, next.length()-1);
+                        in.add(next);
+                        break;
+                    } else {
+                        
+                    }
+                }
+                r = Restriction.in(left, in);
             } else {
                 new QueryException(new Message("UNKNOWN_COMPARATOR", LOGGER));
             }

@@ -357,7 +357,9 @@ a:visited {
 .commentText {
     background-color: white;
     padding: 6px;
-    border: 0px 2px 2px 2px #ddd solid;
+    border-left: 2px #4c0000 solid;
+    border-right: 2px #4c0000 solid;
+    border-bottom: 2px #4c0000 solid;
     margin-bottom: 10px;
 }
 
@@ -398,7 +400,6 @@ a:visited {
 
 .artifactTable {
     background: white;
-    margin-bottom: 10px;
 }
 
 .artifactTableFull {
@@ -415,8 +416,7 @@ a:visited {
 
 .add-property-panel {
     background-color: #e8e8e8;
-    padding: 2px;
-    margin: 2px;
+    padding: 4px;
 }
 
 .metadata-panel table {
@@ -456,13 +456,14 @@ a:visited {
  **
  **/
  
-.next-phases-panel .gwt-Button {
-    padding: 4px;
+.next-phases-panel {
+    padding: 2px;
+}
+ 
+.next-phases-panel .gwt-ListBox{
+    margin-right: 2px;
 }
 
-.next-phases-panel .gwt-ListBox {
-    padding: 4px;
-}
 /**
  ** Activity Panel
  **/
@@ -494,6 +495,9 @@ a:visited {
   background-repeat: no-repeat;
 }
 
+.activityTableDate {
+    white-space: nowrap;
+}
 
 .GWTCDatePicker, .GWTCDatePickerCheckout, .GWTCDatePickerCheckin {
   border: 6px solid #4c0000;
@@ -514,6 +518,7 @@ a:visited {
 
 .search-panel .gwt-Hyperlink {
     text-align: right;
+    padding-bottom: 0.2em;
 }
 
 .search-button-panel {
