@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <galaxy-plugin xmlns="http://www.mulesource.org/schema/galaxy-plugin"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
        xsi:schemaLocation="
        http://www.mulesource.org/schema/galaxy-plugin http://www.mulesource.org/schema/galaxy-plugin/galaxy-plugin-1.0.xsd">
 
@@ -11,7 +12,7 @@
     <!--<small-icon>META-INF/images/mule1_16x16.png</small-icon>-->
     <!--<large-icon>META-INF/images/mule1_32x32.png</large-icon>-->
     <namespace>
-        <prefix>mule-configuration</prefix>
+        <local-name>mule-configuration</local-name>
     </namespace>
     <indexes>
         <index>
@@ -24,7 +25,7 @@
                 <![CDATA[/mule-configuration/description]]>
             </expression>
             <namespace>
-                <prefix>mule-configuration</prefix>
+                <local-name>mule-configuration</local-name>
             </namespace>
         </index>
         <index>
@@ -42,7 +43,7 @@
                    ]]>
             </expression>
             <namespace>
-                <prefix>mule-configuration</prefix>
+                <local-name>mule-configuration</local-name>
             </namespace>
         </index>
         <index>
@@ -60,8 +61,7 @@
                    ]]>
             </expression>
             <namespace>
-                <prefix>mule-configuration</prefix>
-                <uri></uri>
+                <local-name>mule-configuration</local-name>
             </namespace>
         </index>
         <index>
@@ -79,8 +79,7 @@
                    ]]>
             </expression>
             <namespace>
-                <prefix>mule-configuration</prefix>
-                <uri></uri>
+                <local-name>mule-configuration</local-name>
             </namespace>
         </index>
         <index>
@@ -98,8 +97,7 @@
                    ]]>
             </expression>
             <namespace>
-                <prefix>mule-configuration</prefix>
-                <uri></uri>
+                <local-name>mule-configuration</local-name>
             </namespace>
         </index>
         <index>
@@ -117,8 +115,7 @@
                    ]]>
             </expression>
             <namespace>
-                <prefix>mule-configuration</prefix>
-                <uri></uri>
+                <local-name>mule-configuration</local-name>
             </namespace>
         </index>
     </indexes>
@@ -127,6 +124,18 @@
             <column>
                 <name>Descriptors</name>
                 <index-field>mule.descriptor</index-field>
+            </column>
+            <column>
+                <name>Transformers</name>
+                <index-field>mule.transformer</index-field>
+            </column>
+            <column>
+                <name>Endpoints</name>
+                <index-field>mule.endpoint</index-field>
+            </column>
+            <column>
+                <name>Models</name>
+                <index-field>mule.model</index-field>
             </column>
         </view>
     </views>

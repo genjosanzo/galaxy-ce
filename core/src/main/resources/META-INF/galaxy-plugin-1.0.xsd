@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
-           xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://www.mulesource.org/schema/galaxy-plugin">
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="unqualified"
+           targetNamespace="http://www.mulesource.org/schema/galaxy-plugin"
+           xmlns="http://www.mulesource.org/schema/galaxy-plugin"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-    <xs:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <!--<xs:import namespace="http://www.w3.org/XML/1998/namespace"/>-->
 
-    <xs:element name="galaxy-plugin" type="galaxyPluginType"/>
+    <xs:element name="galaxy-plugin" type="galaxyPluginType" />
 
     <xs:complexType name="columnType">
         <xs:sequence>
@@ -56,34 +57,35 @@
     </xs:complexType>
 
     <xs:complexType name="policiesType">
-        <xs:sequence>
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
             <xs:element type="policyType" name="policy"/>
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="viewsType">
-        <xs:sequence>
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
             <xs:element type="viewType" name="view"/>
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="namespaceType">
-        <xs:sequence>
-            <xs:element name="prefix" maxOccurs="1" minOccurs="1"/>
-            <xs:element type="xs:string" name="uri"/>
+        <xs:sequence minOccurs="0" maxOccurs="1">
+            <xs:element name="local-name" type="xs:string" maxOccurs="1" minOccurs="0"/>
+            <xs:element name="uri" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="prefix" type="xs:string" maxOccurs="1" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="policyType">
         <xs:sequence>
             <xs:element type="xs:string" name="name"/>
-            <xs:element type="xs:string" name="class"/>
+            <xs:element type="xs:NMTOKEN" name="class"/>
             <xs:element type="xs:string" name="description"/>
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="viewType">
-        <xs:sequence>
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
             <xs:element type="columnType" name="column"/>
         </xs:sequence>
     </xs:complexType>
