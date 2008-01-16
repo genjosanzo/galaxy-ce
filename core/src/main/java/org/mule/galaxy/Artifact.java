@@ -55,6 +55,8 @@ public interface Artifact  {
     public void setProperty(String name, Object value) throws PropertyException;
     
     Object getProperty(String name);
+
+    boolean hasProperty(String name);
     
     public Phase getPhase();
 

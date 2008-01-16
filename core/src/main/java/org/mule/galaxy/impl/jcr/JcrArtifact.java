@@ -255,6 +255,11 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
 
 
     @Override
+    public boolean hasProperty(String name) {
+        return  getActiveVersion().hasProperty(name);
+    }
+
+    @Override
     public void setVisible(String name, boolean visible) {
         getActiveVersion().setVisible(name, visible);
     }

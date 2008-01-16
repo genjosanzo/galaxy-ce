@@ -36,4 +36,11 @@ public class ViewManagerImpl implements ViewManager {
             artifactViews.put(q, view);
         }
     }
+
+    public void addView(ArtifactTypeView view, Collection<QName> documentTypes) {
+        for (QName q : documentTypes) {
+            artifactViews.put(q, view);
+        }
+    }
+    
 }

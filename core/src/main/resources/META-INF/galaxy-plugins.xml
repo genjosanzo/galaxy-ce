@@ -43,12 +43,440 @@
         </namespace>
     </galaxy-plugin>
 
-    <!--<galaxy-plugin>-->
-        <!--<name>Other Artifacts</name>-->
-        <!--<description>Allows any other atrifact to be managed by Galaxy.</description>-->
-        <!--<content-type>*/*</content-type>-->
-        <!--<small-icon>META-INF/images/artifact_16x16.png</small-icon>-->
-        <!--<large-icon>META-INF/images/artfact_32x32.png</large-icon>-->
-        <!--<namespace/>-->
-    <!--</galaxy-plugin>-->
+    <galaxy-plugin>
+        <name>WSDL Documents</name>
+        <description>Allows WSDL Documents to be managed by Galaxy. Users can register, query and view WSDL documents with this plugin.
+        </description>
+        <content-type>application/wsdl+xml</content-type>
+        <!--<small-icon>META-INF/images/wsdl_16x16.png</small-icon>-->
+        <!--<large-icon>META-INF/images/wsdl_32x32.png</large-icon>-->
+        <namespace>
+            <local-name>definitions</local-name>
+            <uri>http://schemas.xmlsoap.org/wsdl/</uri>
+        </namespace>
+        <indexes>
+            <index>
+                <field-name>wsdl.service</field-name>
+                <display-name>WSDL Services</display-name>
+                <description>WSDL Service Definitions</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+declare namespace wsdl="${namespace.uri}";
+declare variable $document external;
+<values> {
+    for $svc in $document//wsdl:service
+    let $ns := $document/wsdl:definition/@targetNamespace
+    return <value>{data($svc/@name)}</value>
+} </values>
+                    ]]>
+                </expression>
+            </index>
+            <index>
+                <field-name>wsdl.endpoint</field-name>
+                <display-name>WSDL Endpoints</display-name>
+                <description>WSDL Endpoint Definitions</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+declare namespace wsdl="${namespace.uri}";
+declare variable $document external;
+<values> {
+    for $ep in $document//wsdl:service/wsdl:port
+    let $ns := $document/wsdl:definition/@targetNamespace
+    return <value>{data($ep/@name)}</value>
+} </values>
+                    ]]>
+                </expression>
+            </index>
+            <index>
+                <field-name>wsdl.binding</field-name>
+                <display-name>WSDL Bindings</display-name>
+                <description>WSDL Binding Definitions</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+declare namespace wsdl="${namespace.uri}";
+declare variable $document external;
+<values> {
+    for $b in $document//wsdl:binding
+    let $ns := $document/wsdl:definition/@targetNamespace
+    return <value>{data($b/@name)}</value>
+} </values>
+                    ]]>
+                </expression>
+            </index>
+            <index>
+                <field-name>wsdl.portType</field-name>
+                <display-name>WSDL PortTypes</display-name>
+                <description>WSDL PortType Definitions</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+declare namespace wsdl="${namespace.uri}";
+declare variable $document external;
+<values> {
+    for $pt in $document//wsdl:portType
+    let $ns := $document/wsdl:definition/@targetNamespace
+    return <value>{data($pt/@name)}</value>
+} </values>
+                    ]]>
+                </expression>
+            </index>
+            <index>
+                <field-name>wsdl.targetNamespace</field-name>
+                <display-name>WSDL Target Namespace</display-name>
+                <description>WSDL Target Namespace Definition</description>
+                <language>XPATH</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[/*/@targetNamespace]]>
+                </expression>
+            </index>
+        </indexes>
+        <views>
+            <view>
+                <column column="3">
+                    <name>Target Namespace</name>
+                    <expression>artifact.getProperty("wsdl.targetNamespace")</expression>
+                </column>
+                <column>
+                    <name>Services</name>
+                    <expression>artifact.hasProperty("wsdl.service") ? artifact.getProperty("wsdl.service").size() : "" ;</expression>
+                </column>
+                <column>
+                    <name>Bindings</name>
+                    <expression>artifact.hasProperty("wsdl.binding") ? artifact.getProperty("wsdl.binding").size() : "" ;</expression>
+                </column>
+                <column>
+                    <name>Port Types</name>
+                    <expression>artifact.hasProperty("wsdl.portType") ? artifact.getProperty("wsdl.portType").size() : "" ;</expression>
+                </column>
+            </view>
+        </views>
+    </galaxy-plugin>
+    
+    <galaxy-plugin>
+        <name>Mule 1 Configurations</name>
+        <description>Allows Mule 1 cofiguration files to be managed by Galaxy. Users can register, query and view Mule 1
+            configuration files with this plugin.
+        </description>
+        <content-type>application/mule+xml</content-type>
+        <!--<small-icon>META-INF/images/mule1_16x16.png</small-icon>-->
+        <!--<large-icon>META-INF/images/mule1_32x32.png</large-icon>-->
+        <namespace>
+            <local-name>mule-configuration</local-name>
+        </namespace>
+        <indexes>
+            <index>
+                <field-name>mule.description</field-name>
+                <display-name>Mule Description</display-name>
+                <description>The description for the Mule configuration</description>
+                <language>XPATH</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[/mule-configuration/description]]></expression>
+                <namespace>
+                    <local-name>mule-configuration</local-name>
+                </namespace>
+            </index>
+            <index>
+                <field-name>mule.server.id</field-name>
+                <display-name>Mule Server Id</display-name>
+                <description>Indexes &lt;mule-configuration id&gt; attribute</description>
+                <language>XPATH</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[/mule-configuration/@id]]>
+                </expression>
+                <namespace>
+                    <local-name>mule-configuration</local-name>
+                </namespace>
+            </index>
+            <index>
+                <field-name>mule.endpoint</field-name>
+                <display-name>Mule Endpoints</display-name>
+                <description>Indexes Mule 1 Global Endpoints</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+declare variable $document external;
+<values> {
+for $e in $document//global-endpoints/endpoint
+    return <value>{data($e/@name)}</value>
+}</values>
+                ]]>
+                </expression>
+                <namespace>
+                    <local-name>mule-configuration</local-name>
+                </namespace>
+            </index>
+            <index>
+                <field-name>mule.transformer</field-name>
+                <display-name>Mule Transformers</display-name>
+                <description>Indexes Mule 1 Transformers</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+declare variable $document external;
+<values> {
+for $e in $document/transformers/transformer
+    return <value>{data($e/@name)}</value>
+} </values>
+                ]]>
+                </expression>
+                <namespace>
+                    <local-name>mule-configuration</local-name>
+                </namespace>
+            </index>
+            <index>
+                <field-name>mule.model</field-name>
+                <display-name>Mule Models</display-name>
+                <description>Indexes Mule 1 Models</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+declare variable $document external;
+<values> {
+   for $e in $document//model
+     return <value>{data($e/@name)}</value>
+   } </values>
+                   ]]>
+                </expression>
+                <namespace>
+                    <local-name>mule-configuration</local-name>
+                </namespace>
+            </index>
+            <index>
+                <field-name>mule.descriptor</field-name>
+                <display-name>Mule Descriptors</display-name>
+                <description>Indexes Mule 1 service descriptors</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+declare variable $document external;
+<values> {
+   for $e in $document//mule-descriptor
+     return <value>{data($e/@name)}</value>
+   } </values>
+                   ]]>
+                </expression>
+                <namespace>
+                    <local-name>mule-configuration</local-name>
+                </namespace>
+            </index>
+        </indexes>
+        <views>
+            <view>
+                <column>
+                    <name>Descriptors</name>
+                    <expression>artifact.hasProperty("mule.descriptor") ? artifact.getProperty("mule.descriptor").size() : "" ;</expression>
+                </column>
+                <column>
+                    <name>Transformers</name>
+                    <expression>artifact.hasProperty("mule.transformer") ? artifact.getProperty("mule.transformer").size() : "" ;</expression>
+                </column>
+                <column>
+                    <name>Endpoints</name>
+                    <expression>artifact.hasProperty("mule.endpoint") ? artifact.getProperty("mule.endpoint").size() : "" ;</expression>
+                </column>
+                <column>
+                    <name>Models</name>
+                    <expression>artifact.hasProperty("mule.model") ? artifact.getProperty("mule.model").size() : "" ;</expression>
+                </column>
+            </view>
+        </views>
+        <policies>
+            <policy>
+                <name>Require SSL</name>
+                <class>org.mule.galaxy.policy.mule.RequireSSLPolicy</class>
+                <description>Enforces the use of ssl on http and tcp endpoints</description>
+            </policy>
+        </policies>
+    </galaxy-plugin>
+    
+    <galaxy-plugin>
+        <name>Mule 2 Configurations</name>
+        <description>Allows Mule 2 cofiguration files to be managed by Galaxy. Users can register, query and view Mule 2
+            configuration files with this plugin.
+        </description>
+        <content-type>application/mule2+xml</content-type>
+        <!--<small-icon>META-INF/images/mule2_16x16.png</small-icon>-->
+        <!--<large-icon>META-INF/images/mule2_32x32.png</large-icon>-->
+        <namespace>
+            <local-name>mule</local-name>
+            <uri>http://www.mulesource.org/schema/mule/core/2.0</uri>
+        </namespace>
+        <indexes>
+            <index>
+                <field-name>mule2.description</field-name>
+                <display-name>Mule 2 Description</display-name>
+                <description>The description for the Mule configuration</description>
+                <language>XPATH</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[/*[local-name()='${namespace.local-name}' and namespace-uri()='${namespace.uri}']/*[local-name()='description']
+                ]]></expression>
+            </index>
+            <!--<index>-->
+                <!--<field-name>mule2.model.description</field-name>-->
+                <!--<display-name>Mule 2 Model Description</display-name>-->
+                <!--<description>The description for a Mule Model in the configuration</description>-->
+                <!--<language>XPATH</language>-->
+                <!--<search-input-type>java.lang.String</search-input-type>-->
+                <!--<expression><![CDATA[/*[local-name()='${namespace.local-name}' and namespace-uri()='${namespace.uri}']/*[local-name()='model/description']-->
+                <!--]]></expression>-->
+            <!--</index>-->
+            <!--<index>-->
+                <!--<field-name>mule2.service.description</field-name>-->
+                <!--<display-name>Mule 2 Service Description</display-name>-->
+                <!--<description>The description for a Mule Service in the configuration</description>-->
+                <!--<language>XPATH</language>-->
+                <!--<search-input-type>java.lang.String</search-input-type>-->
+                <!--<expression><![CDATA[/*[local-name()='${namespace.local-name}' and namespace-uri()='${namespace.uri}']//*[local-name()='service']-->
+                <!--]]></expression>-->
+            <!--</index>-->
+            <index>
+                <field-name>mule2.server.id</field-name>
+                <display-name>Mule 2 Server Id</display-name>
+                <description>Indexes the Mule node serverId</description>
+                <language>XPATH</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[/*[local-name()='${namespace.local-name}' and namespace-uri()='${namespace.uri}']/*[local-name()='configuration/@serverId']
+                ]]>
+                </expression>
+            </index>
+            <index>
+                <field-name>mule2.cluster.id</field-name>
+                <display-name>Mule 2 Cluster Id</display-name>
+                <description>Indexes the Mule node clusterId</description>
+                <language>XPATH</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[/*[local-name()='${namespace.local-name}' and namespace-uri()='${namespace.uri}']/*[local-name()='configuration/@clusterId']
+                ]]>
+                </expression>
+            </index>
+            <index>
+                <field-name>mule2.domain.id</field-name>
+                <display-name>Mule 2 Domain Id</display-name>
+                <description>Indexes the Mule node domainId</description>
+                <language>XPATH</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[/*[local-name()='${namespace.local-name}' and namespace-uri()='${namespace.uri}']/*[local-name()='configuration/@domainId']
+                ]]>
+                </expression>
+            </index>
+            <index>
+                <field-name>mule2.service</field-name>
+                <display-name>Mule 2 Services</display-name>
+                <description>Indexes Mule 2 Service elements</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+declare default element namespace "${namespace.uri}";
+declare variable $document external;
+<values> {
+    for $svc in $document//service
+        return <value>{data($svc/@name)}</value>
+} </values>
+]]>
+                </expression>
+            </index>
+            <index>
+                <field-name>mule2.endpoint</field-name>
+                <display-name>Mule 2 Global Endpoints</display-name>
+                <description>Indexes Mule 2 Global (Top Level) endpoints</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+declare default element namespace "${namespace.uri}";
+declare variable $document external;
+<values> {
+    for $svc in $document/mule/endpoint/service
+        return <value>{data($svc/@name)}</value>
+} </values>
+]]>
+                </expression>
+            </index>
+            <index>
+                <field-name>mule2.model</field-name>
+                <display-name>Mule 2 Models</display-name>
+                <description>Indexes Mule 2 service models</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+declare default element namespace "${namespace.uri}";
+declare variable $document external;
+<values> {
+    for $svc in $document/mule/model
+        return <value>{data($svc/@name)}</value>
+} </values>
+]]>
+                </expression>
+            </index>
+        </indexes>
+        <views>
+            <view>
+                <column>
+                    <name>Services</name>
+                    <expression>artifact.hasProperty("mule2.service") ? artifact.getProperty("mule2.service").size() : "" ;</expression>
+                </column>
+                <column>
+                    <name>Endpoints</name>
+                    <expression>artifact.hasProperty("mule2.endpoint") ? artifact.getProperty("mule2.endpoint").size() : "" ;</expression>
+                </column>
+                <column>
+                    <name>Models</name>
+                    <expression>artifact.hasProperty("mule.model2") ? artifact.getProperty("mule2.model").size() : "" ;</expression>
+                </column>
+            </view>
+        </views>
+    </galaxy-plugin>
+    
+    <galaxy-plugin>
+        <name>Spring Configurations</name>
+        <description>Allows Spring Bean cofiguration files to be managed by Galaxy. Users can register, query and view Spring
+            configuration files with this plugin.
+        </description>
+        <content-type>application/spring+xml</content-type>
+        <!--<small-icon>META-INF/images/spring_16x16.png</small-icon>-->
+        <!--<large-icon>META-INF/images/spring_32x32.png</large-icon>-->
+        <namespace>
+            <local-name>beans</local-name>
+            <uri>http://www.springframework.org/schema/beans</uri>
+        </namespace>
+        <indexes>
+            <index>
+                <field-name>spring.description</field-name>
+                <display-name>Spring Description</display-name>
+                <description>The description for the Spring configuration</description>
+                <language>XPATH</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[/*[local-name()='${namespace.local-name}' and namespace-uri()='${namespace.uri}']/*[local-name()='description']
+                ]]></expression>
+            </index>
+            <index>
+                <field-name>spring.bean</field-name>
+                <display-name>Spring Beans</display-name>
+                <description>Indexes all bean elements in a Spring Configuration. The beans will be indexed by name first, then by id</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+declare default element namespace "http://www.springframework.org/schema/beans";
+declare variable $document external;
+<values> {
+    for $e in $document//bean
+        return if ($e/@name)
+               then <value>{data($e/@name)}</value>
+               else <value>{data($e/@id)}</value>
+   }</values>
+]]>
+                </expression>
+            </index>
+        </indexes>
+        <views>
+            <view>
+                <column>
+                    <name>Beans</name>
+                    <expression>artifact.hasProperty("spring.bean") ? artifact.getProperty("spring.bean").size() : "" ;</expression>
+                </column>
+            </view>
+        </views>
+    </galaxy-plugin>
 </galaxy-plugins>

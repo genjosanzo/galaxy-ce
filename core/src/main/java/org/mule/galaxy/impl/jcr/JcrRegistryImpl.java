@@ -1103,7 +1103,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 if (property.equals(JcrArtifact.PHASE)
                     || property.equals(JcrArtifact.DOCUMENT_TYPE)
                     || property.equals(JcrArtifact.CONTENT_TYPE)
-                    || property.equals(JcrArtifact.NAME)) {
+                    || property.equals(JcrArtifact.NAME)
+                    || property.equals(JcrArtifact.LIFECYCLE)
+                    || property.equals(JcrArtifact.DESCRIPTION)) {
                     createPropertySearch(qstr, right, property, operator, not, true);
                 } else if (property.equals("workspace")) {
                     

@@ -127,7 +127,7 @@ public final class TemplateParser
 //                {
 //                    logger.debug("Value " + propname + " not found in context");
 //                }
-                throw new IllegalArgumentException("No property found for template: " + propname);
+                throw new IllegalArgumentException("No property found for template \"" + propname + "\" in map " + props);
             }
             else
             {

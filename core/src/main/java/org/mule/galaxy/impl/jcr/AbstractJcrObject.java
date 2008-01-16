@@ -83,6 +83,14 @@ public class AbstractJcrObject {
         }
     }
 
+    public boolean hasProperty(String name) {
+        try {
+            return node.hasProperty(name);
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     private void deleteProperty(String name) throws RepositoryException {
         Property p = null;

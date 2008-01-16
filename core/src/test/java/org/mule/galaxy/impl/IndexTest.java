@@ -66,7 +66,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals("wsdl.service", idx.getId());
         assertEquals("WSDL Services", idx.getName());
         assertEquals(Index.Language.XQUERY, idx.getLanguage());
-        assertEquals(QName.class, idx.getQueryType());
+        assertEquals(String.class, idx.getQueryType());
         assertNotNull(idx.getExpression());
         assertEquals(1, idx.getDocumentTypes().size());
         
@@ -85,7 +85,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertTrue(property instanceof Collection);
         Collection services = (Collection) property;
         
-        assertTrue(services.contains(new QName("HelloWorldService")));
+        assertTrue(services.contains("HelloWorldService"));
         
         property = version.getProperty("wsdl.targetNamespace");
         assertNotNull(property);
@@ -95,7 +95,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertNotNull(property);
         assertTrue(property instanceof Collection);
         Collection endpoints = (Collection) property;
-        assertTrue(endpoints.contains(new QName("SoapPort")));
+        assertTrue(endpoints.contains("SoapPort"));
         
         // Try out search!
         Set results = registry.search("select artifact where wsdl.service = 'HelloWorldService'");

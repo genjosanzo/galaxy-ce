@@ -15,8 +15,11 @@
     <xs:complexType name="columnType">
         <xs:sequence>
             <xs:element type="xs:string" name="name"/>
-            <xs:element type="xs:NMTOKEN" name="index-field"/>
+            <xs:element type="xs:string" name="expression"/>
         </xs:sequence>
+        <xs:attribute name="column" type="xs:int"/>
+        <xs:attribute name="summary" type="xs:boolean" default="true"/>
+        <xs:attribute name="detail" type="xs:boolean" default="false"/>
     </xs:complexType>
 
     <xs:simpleType name="languagesType">
