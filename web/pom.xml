@@ -110,7 +110,49 @@
       <version>0.1.5</version>
     </dependency>
   </dependencies>
+  <profiles>
+    <profile>
+      <id>default</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.totsp.gwt</groupId>
+            <artifactId>maven-googlewebtoolkit2-plugin</artifactId>
+            <version>2.0-beta6</version>
+            <configuration>
+              <gwtVersion>1.4.61</gwtVersion>
+              <runTarget>
+                org.mule.galaxy.web.Galaxy/Galaxy.html
+              </runTarget>
+              <style>OBF</style>
+              <compileTargets>
+                <value>org.mule.galaxy.web.Galaxy</value>
+              </compileTargets>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <!-- These two goals enable automatic GWT setup, but are expirimental -->
+                  <goal>setup</goal>
+                  <goal>extractGwt</goal>
 
+                  <!-- Compile GWT stuff -->
+                  <goal>mergewebxml</goal>
+                  <goal>compile</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>nogwt</id>
+    </profile>
+  </profiles>
   <build>
     <plugins>
       <plugin>
@@ -122,32 +164,6 @@
           <contextPath>/</contextPath>
           <webDefaultXml>${basedir}/webdefault.xml</webDefaultXml>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.totsp.gwt</groupId>
-        <artifactId>maven-googlewebtoolkit2-plugin</artifactId>
-        <version>2.0-beta6</version>
-        <configuration>
-          <gwtVersion>1.4.61</gwtVersion>
-          <runTarget>org.mule.galaxy.web.Galaxy/Galaxy.html</runTarget>
-          <style>OBF</style>
-          <compileTargets>
-            <value>org.mule.galaxy.web.Galaxy</value>
-          </compileTargets>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <!-- These two goals enable automatic GWT setup, but are expirimental -->
-              <goal>setup</goal>
-              <goal>extractGwt</goal>
-              
-              <!-- Compile GWT stuff -->
-              <goal>mergewebxml</goal>
-              <goal>compile</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
