@@ -216,4 +216,6 @@
     <property name="jcrTemplate" ref="jcrTemplate"/>
   </bean>
 
+  <bean class="org.mule.galaxy.impl.artifact.OtherArtifactPlugin" parent="abstractArtifactPlugin"/>
+
 </beans>

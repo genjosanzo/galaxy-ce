@@ -15,10 +15,10 @@ import org.mule.galaxy.util.Constants;
 public class OtherArtifactPlugin extends AbstractArtifactPlugin implements Constants {
 
     public void initializeOnce() throws Exception {
-        artifactTypeDao
-            .save(new ArtifactType("WS-Policy Documents", "application/policy+xml", POLICY_QNAME, POLICY_2006_QNAME));
-        artifactTypeDao.save(new ArtifactType("XML Schemas", "application/xmlschema+xml", SCHEMA_QNAME));
-        artifactTypeDao.save(new ArtifactType("XSLT Stylesheets", "application/xslt+xml", XSLT_QNAME));
+//        artifactTypeDao
+//            .save(new ArtifactType("WS-Policy Documents", "application/policy+xml", POLICY_QNAME, POLICY_2006_QNAME));
+//        artifactTypeDao.save(new ArtifactType("XML Schemas", "application/xmlschema+xml", SCHEMA_QNAME));
+//        artifactTypeDao.save(new ArtifactType("XSLT Stylesheets", "application/xslt+xml", XSLT_QNAME));
         artifactTypeDao.save(new ArtifactType("Other Artifacts", "*/*"));
     }
 
