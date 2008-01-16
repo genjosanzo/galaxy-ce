@@ -171,7 +171,6 @@
         <version>2.0</version>
         <configuration>
           <classifier>embed</classifier>
-          <webXml>target/web.xml</webXml>
         </configuration>
         <executions>
           <execution>
