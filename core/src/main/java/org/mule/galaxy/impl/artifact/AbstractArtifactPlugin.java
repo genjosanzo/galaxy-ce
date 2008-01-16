@@ -5,6 +5,7 @@ import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.IndexManager;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.view.ViewManager;
 
 /**
@@ -15,7 +16,7 @@ public abstract class AbstractArtifactPlugin implements ArtifactPlugin {
     protected Dao<ArtifactType> artifactTypeDao;
     protected ViewManager viewManager;
     protected IndexManager indexManager;
-    
+
     public void setRegistry(Registry registry) {
         this.registry = registry;
     }
@@ -31,6 +32,5 @@ public abstract class AbstractArtifactPlugin implements ArtifactPlugin {
     public void setIndexManager(IndexManager indexManager) {
         this.indexManager = indexManager;
     }
-    
     
 }

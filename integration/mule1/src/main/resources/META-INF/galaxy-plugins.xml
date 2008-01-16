@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<galaxy-plugins xmlns="http://www.mulesource.org/schema/galaxy-plugin"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="
+       http://www.mulesource.org/schema/galaxy-plugin http://www.mulesource.org/schema/galaxy-plugin/galaxy-plugin-1.0.xsd">
+
+    <galaxy-plugin>
+        <name>Mule 1 Configurations</name>
+        <description>Allows Mule 1 cofiguration files to be managed by Galaxy. Users can register, query and view Mule 1
+            configuration files with this plugin.
+        </description>
+        <content-type>application/mule+xml</content-type>
+        <!--<small-icon>META-INF/images/mule1_16x16.png</small-icon>-->
+        <!--<large-icon>META-INF/images/mule1_32x32.png</large-icon>-->
+        <namespace>
+            <local-name>mule-configuration</local-name>
+        </namespace>
+        <indexes>
+            <index>
+                <field-name>mule.description</field-name>
+                <display-name>Mule Description</display-name>
+                <description>The description for the Mule configuration</description>
+                <language>XPATH</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[/mule-configuration/description]]></expression>
+                <namespace>
+                    <local-name>mule-configuration</local-name>
+                </namespace>
+            </index>
+            <index>
+                <field-name>mule.server.id</field-name>
+                <display-name>Mule Server Id</display-name>
+                <description>Indexes &lt;mule-configuration id&gt; attribute</description>
+                <language>XPATH</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[/mule-configuration/@id]]>
+                </expression>
+                <namespace>
+                    <local-name>mule-configuration</local-name>
+                </namespace>
+            </index>
+            <index>
+                <field-name>mule.endpoint</field-name>
+                <display-name>Mule Endpoints</display-name>
+                <description>Indexes Mule 1 Global Endpoints</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+                declare variable $document external;
+                <values> {
+                for $e in $document//global-endpoints/endpoint
+                    return <value>{data($e/@name)}</value>
+                }</values>
+                ]]>
+                </expression>
+                <namespace>
+                    <local-name>mule-configuration</local-name>
+                </namespace>
+            </index>
+            <index>
+                <field-name>mule.transformer</field-name>
+                <display-name>Mule Transformers</display-name>
+                <description>Indexes Mule 1 Transformers</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+                declare variable $document external;
+                <values> {
+                for $e in $document/transformers/transformer
+                    return <value>{data($e/@name)}</value>
+                } </values>
+                ]]>
+                </expression>
+                <namespace>
+                    <local-name>mule-configuration</local-name>
+                </namespace>
+            </index>
+            <index>
+                <field-name>mule.model</field-name>
+                <display-name>Mule Models</display-name>
+                <description>Indexes Mule 1 Models</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+                declare variable $document external;
+                <values> {
+                   for $e in $document//model
+                     return <value>{data($e/@name)}</value>
+                   } </values>
+                   ]]>
+                </expression>
+                <namespace>
+                    <local-name>mule-configuration</local-name>
+                </namespace>
+            </index>
+            <index>
+                <field-name>mule.descriptor</field-name>
+                <display-name>Mule Descriptors</display-name>
+                <description>Indexes Mule 1 service descriptors</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+                declare variable $document external;
+                <values> {
+                   for $e in $document//mule-descriptor
+                     return <value>{data($e/@name)}</value>
+                   } </values>
+                   ]]>
+                </expression>
+                <namespace>
+                    <local-name>mule-configuration</local-name>
+                </namespace>
+            </index>
+        </indexes>
+        <views>
+            <view>
+                <column>
+                    <name>Descriptors</name>
+                    <index-field>mule.descriptor</index-field>
+                </column>
+                <column>
+                    <name>Transformers</name>
+                    <index-field>mule.transformer</index-field>
+                </column>
+                <column>
+                    <name>Endpoints</name>
+                    <index-field>mule.endpoint</index-field>
+                </column>
+                <column>
+                    <name>Models</name>
+                    <index-field>mule.model</index-field>
+                </column>
+            </view>
+        </views>
+        <policies>
+            <policy>
+                <name>Require SSL</name>
+                <class>org.mule.galaxy.policy.mule.RequireSSLPolicy</class>
+                <description>Enforces the use of ssl on http and tcp endpoints</description>
+            </policy>
+        </policies>
+    </galaxy-plugin>
+</galaxy-plugins>

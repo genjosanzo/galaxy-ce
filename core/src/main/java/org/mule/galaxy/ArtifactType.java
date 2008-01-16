@@ -1,11 +1,12 @@
 package org.mule.galaxy;
 
+import org.mule.galaxy.impl.jcr.onm.OneToMany;
+
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
-
-import org.mule.galaxy.impl.jcr.onm.OneToMany;
 
 public class ArtifactType implements Identifiable {
     private String id;
@@ -20,6 +21,17 @@ public class ArtifactType implements Identifiable {
         this.description = description;
         this.contentType = contentType;
         
+        if (documentTypes != null) {
+            for (QName d : documentTypes) {
+                addDocumentType(d);
+            }
+        }
+    }
+
+    public ArtifactType(String description, String contentType, List<QName> documentTypes) {
+        this.description = description;
+        this.contentType = contentType;
+
         if (documentTypes != null) {
             for (QName d : documentTypes) {
                 addDocumentType(d);

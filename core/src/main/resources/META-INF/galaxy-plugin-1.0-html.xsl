@@ -3,9 +3,9 @@
     <xsl:output method="html" version="1.0" encoding="UTF-8" indent="yes" omit-xml-declaration="yes"/>
 
     <xsl:template match="g:galaxy-plugin">
-        <h2>
-            <xsl:value-of select="g:name"/>
-        </h2>
+        <h1>
+            <xsl:value-of select="g:name"/> Plugin
+        </h1>
 
         <xsl:value-of select="g:description"/>
 

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<galaxy-plugins xmlns="http://www.mulesource.org/schema/galaxy-plugin"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="
+       http://www.mulesource.org/schema/galaxy-plugin http://www.mulesource.org/schema/galaxy-plugin/galaxy-plugin-1.0.xsd">
+    <galaxy-plugin>
+        <name>WS-Policy Documents</name>
+        <description>Allows WSDL-Policy Documents to be managed by Galaxy.</description>
+        <content-type>application/policy+xml</content-type>
+        <!--<small-icon>META-INF/images/policy_16x16.png</small-icon>-->
+        <!--<large-icon>META-INF/images/policy_32x32.png</large-icon>-->
+        <namespace>
+            <local-name>policy</local-name>
+            <uri>http://schemas.xmlsoap.org/ws/2004/09/policy</uri>
+        </namespace>
+        <namespace>
+            <local-name>policy</local-name>
+            <uri>http://http://www.w3.org/2006/07/ws-policy</uri>
+        </namespace>
+    </galaxy-plugin>
+
+    <galaxy-plugin>
+        <name>Xml Schema Documents</name>
+        <description>Allows Xml Schema Documents to be managed by Galaxy.</description>
+        <content-type>application/xmlschema+xml</content-type>
+        <!--<small-icon>META-INF/images/xmlschema_16x16.png</small-icon>-->
+        <!--<large-icon>META-INF/images/xmlschema_32x32.png</large-icon>-->
+        <namespace>
+            <local-name>schema</local-name>
+            <uri>http://www.w3.org/2001/XMLSchema</uri>
+        </namespace>
+    </galaxy-plugin>
+
+    <galaxy-plugin>
+        <name>Xslt Documents</name>
+        <description>Allows Xslt Documents to be managed by Galaxy.</description>
+        <content-type>application/xslt+xml</content-type>
+        <!--<small-icon>META-INF/images/xslt_16x16.png</small-icon>-->
+        <!--<large-icon>META-INF/images/xslt_32x32.png</large-icon>-->
+        <namespace>
+            <local-name>stylesheet</local-name>
+            <uri>http://www.w3.org/1999/XSL/Transform</uri>
+        </namespace>
+    </galaxy-plugin>
+
+    <!--<galaxy-plugin>-->
+        <!--<name>Other Artifacts</name>-->
+        <!--<description>Allows any other atrifact to be managed by Galaxy.</description>-->
+        <!--<content-type>*/*</content-type>-->
+        <!--<small-icon>META-INF/images/artifact_16x16.png</small-icon>-->
+        <!--<large-icon>META-INF/images/artfact_32x32.png</large-icon>-->
+        <!--<namespace/>-->
+    <!--</galaxy-plugin>-->
+</galaxy-plugins>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<galaxy-plugins xmlns="http://www.mulesource.org/schema/galaxy-plugin"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="
+       http://www.mulesource.org/schema/galaxy-plugin http://www.mulesource.org/schema/galaxy-plugin/galaxy-plugin-1.0.xsd">
+
+    <galaxy-plugin>
+        <name>Spring Configurations</name>
+        <description>Allows Spring Bean cofiguration files to be managed by Galaxy. Users can register, query and view Spring
+            configuration files with this plugin.
+        </description>
+        <content-type>application/spring+xml</content-type>
+        <!--<small-icon>META-INF/images/spring_16x16.png</small-icon>-->
+        <!--<large-icon>META-INF/images/spring_32x32.png</large-icon>-->
+        <namespace>
+            <local-name>beans</local-name>
+            <uri>http://www.springframework.org/schema/beans</uri>
+        </namespace>
+        <indexes>
+            <index>
+                <field-name>spring.description</field-name>
+                <display-name>Spring Description</display-name>
+                <description>The description for the Spring configuration</description>
+                <language>XPATH</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[/*[local-name()='${namespace.local-name}' and namespace-uri()='${namespace.uri}']/*[local-name()='description']
+                ]]></expression>
+            </index>
+            <index>
+                <field-name>spring.bean</field-name>
+                <display-name>Spring Beans</display-name>
+                <description>Indexes all bean elements in a Spring Configuration. The beans will be indexed by name first, then by id</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+                declare default element namespace "http://www.springframework.org/schema/beans";
+                declare variable $document external;
+                <values> {
+                    for $e in $document//bean
+                        return if ($e/@name)
+                               then <value>{data($e/@name)}</value>
+                               else <value>{data($e/@id)}</value>
+                   }</values>
+                ]]>
+                </expression>
+            </index>
+        </indexes>
+        <views>
+            <view>
+                <column>
+                    <name>Beans</name>
+                    <index-field>spring.bean</index-field>
+                </column>
+            </view>
+        </views>
+    </galaxy-plugin>
+</galaxy-plugins>

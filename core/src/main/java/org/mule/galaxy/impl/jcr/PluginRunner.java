@@ -46,7 +46,7 @@ public class PluginRunner implements ApplicationContextAware {
                         ((ArtifactPlugin) o).initializeEverytime();
                     }
                 } catch (RepositoryException e) {
-                    throw (RepositoryException) e;
+                    throw e;
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

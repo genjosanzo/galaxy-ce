@@ -37,7 +37,7 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
     private void add(Workspace w, User user, String name, String resource) 
         throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException {
 
-        registry.createArtifact(w, 
+        registry.createArtifact(w,
                                 "application/xml", 
                                 name, 
                                 "0.1", 

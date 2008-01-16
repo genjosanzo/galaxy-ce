@@ -210,15 +210,10 @@
     <property name="indexManager" ref="indexManager"/>
     <property name="registry" ref="registry"/>
   </bean>
-  
-  <bean id="pluginRunner" class="org.mule.galaxy.impl.jcr.PluginRunner" init-method="initialize">
+
+  <bean id="artfactPluginManager" class="org.mule.galaxy.impl.artifact.ArtifactPluginManagerImpl"
+         parent="abstractArtifactPlugin" init-method="initialize">
     <property name="jcrTemplate" ref="jcrTemplate"/>
   </bean>
-  
-  <bean class="org.mule.galaxy.impl.artifact.MuleArtifactPlugin" parent="abstractArtifactPlugin"/>
-  <bean class="org.mule.galaxy.impl.artifact.Mule2ArtifactPlugin" parent="abstractArtifactPlugin"/>
-  <bean class="org.mule.galaxy.impl.artifact.SpringArtifactPlugin" parent="abstractArtifactPlugin"/>
-  <bean class="org.mule.galaxy.impl.artifact.WsdlArtifactPlugin" parent="abstractArtifactPlugin"/>
-  <bean class="org.mule.galaxy.impl.artifact.OtherArtifactPlugin" parent="abstractArtifactPlugin"/>
-  
+
 </beans>

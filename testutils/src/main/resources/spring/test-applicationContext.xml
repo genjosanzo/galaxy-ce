@@ -4,9 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-    <description>
-        Test Sprng Application Context
-    </description>
+    <description>Test Sprng Application Context</description>
 
    <bean id="TestObject1" class="org.mule.galaxy.spring.config.TestObject">
        <description>This is a test Spring bean</description>

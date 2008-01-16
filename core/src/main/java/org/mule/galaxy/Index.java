@@ -85,5 +85,18 @@ public class Index implements Identifiable {
     public void setQueryType(Class<?> queryType) {
         this.queryType = queryType;
     }
-    
+
+
+    public String toString()
+    {
+        final StringBuffer sb = new StringBuffer();
+        sb.append("Index");
+        sb.append(", id='").append(id).append('\'');
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", language=").append(language);
+        sb.append(", queryType=").append(queryType);
+        sb.append(", expression='").append(expression).append('\'');        
+        sb.append('}');
+        return sb.toString();
+    }
 }
