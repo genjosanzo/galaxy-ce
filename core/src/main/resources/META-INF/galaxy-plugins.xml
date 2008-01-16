@@ -338,9 +338,7 @@ declare variable $document external;
                 <description>Indexes the Mule node serverId</description>
                 <language>XPATH</language>
                 <search-input-type>java.lang.String</search-input-type>
-                <expression><![CDATA[/*[local-name()='${namespace.local-name}' and namespace-uri()='${namespace.uri}']/*[local-name()='configuration/@serverId']
-                ]]>
-                </expression>
+                <expression><![CDATA[/*/*[local-name()='configuration']/@serverId]]></expression>
             </index>
             <index>
                 <field-name>mule2.cluster.id</field-name>
@@ -348,8 +346,7 @@ declare variable $document external;
                 <description>Indexes the Mule node clusterId</description>
                 <language>XPATH</language>
                 <search-input-type>java.lang.String</search-input-type>
-                <expression><![CDATA[/*[local-name()='${namespace.local-name}' and namespace-uri()='${namespace.uri}']/*[local-name()='configuration/@clusterId']
-                ]]>
+                <expression><![CDATA[/*/*[local-name()='configuration']/@clusterId]]>
                 </expression>
             </index>
             <index>
@@ -358,8 +355,7 @@ declare variable $document external;
                 <description>Indexes the Mule node domainId</description>
                 <language>XPATH</language>
                 <search-input-type>java.lang.String</search-input-type>
-                <expression><![CDATA[/*[local-name()='${namespace.local-name}' and namespace-uri()='${namespace.uri}']/*[local-name()='configuration/@domainId']
-                ]]>
+                <expression><![CDATA[/*/*[local-name()='configuration']/@domainId]]>
                 </expression>
             </index>
             <index>
@@ -388,7 +384,7 @@ declare variable $document external;
 declare default element namespace "${namespace.uri}";
 declare variable $document external;
 <values> {
-    for $svc in $document/mule/endpoint/service
+    for $svc in $document/mule/endpoint
         return <value>{data($svc/@name)}</value>
 } </values>
 ]]>
