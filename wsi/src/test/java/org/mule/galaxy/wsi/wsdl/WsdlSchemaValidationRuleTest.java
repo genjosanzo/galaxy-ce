@@ -9,10 +9,7 @@ import org.w3c.dom.Document;
 
 public class WsdlSchemaValidationRuleTest extends AbstractWSITest {
 
-    public void testManager() throws Exception {
-    }
-    
-    public void xtestManager() throws Exception {
+    public void testRule() throws Exception {
         WsdlSchemaValidationRule rule = new WsdlSchemaValidationRule();
         
         Document doc = readXml(getResourceAsStream("/wsdl/hello-invalid.wsdl"));
