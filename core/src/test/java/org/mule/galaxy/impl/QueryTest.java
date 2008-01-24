@@ -1,26 +1,13 @@
 package org.mule.galaxy.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Set;
-
-import javax.activation.MimeTypeParseException;
-import javax.xml.namespace.QName;
-
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Index;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
+
+import java.util.Set;
 
 public class QueryTest extends AbstractGalaxyTest {
     

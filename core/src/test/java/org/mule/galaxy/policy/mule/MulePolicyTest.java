@@ -1,14 +1,13 @@
 package org.mule.galaxy.policy.mule;
 
-import java.io.InputStream;
-import java.util.Collection;
-
 import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.test.AbstractGalaxyTest;
+
+import java.io.InputStream;
+import java.util.Collection;
 
 public class MulePolicyTest extends AbstractGalaxyTest {
 
