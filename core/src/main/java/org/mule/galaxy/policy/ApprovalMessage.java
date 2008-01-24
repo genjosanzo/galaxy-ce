@@ -1,7 +1,7 @@
 package org.mule.galaxy.policy;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 public class ApprovalMessage {
     private boolean warning;
@@ -27,5 +27,12 @@ public class ApprovalMessage {
     }
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    @Override
+    public String toString()
+    {
+        // TODO AP is ApprovalMessage class supposed to be serialized remotely? Reflection helper may not work then
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
 }
