@@ -9,6 +9,8 @@
  */
 package org.mule.galaxy.spring.config;
 
+import org.mule.galaxy.config.ConfigurationSupport;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +19,6 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mule.galaxy.config.ConfigurationSupport;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractXmlApplicationContext;
@@ -78,7 +79,7 @@ public class GalaxyApplicationContext extends AbstractXmlApplicationContext
         }
         catch (IOException e)
         {
-            throw new BeanCreationException("Failed to get Spring beans from The registry: " + e.getMessage(), e);
+            throw new BeanCreationException("Failed to get Spring beans from the registry: " + e.getMessage(), e);
         }
     }
 
