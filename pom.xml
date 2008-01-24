@@ -175,4 +175,64 @@
         <url>http://svn.galaxy.muleforge.org/</url>
     </scm>
 
+    <profiles>
+
+        <!--
+            The maven-enforcer-plugin has an option to skip all checks (-Denforcer.skip=true)
+            but this runs the enforcer plugin anyway with each and every module, sometimes
+            even multiple times.
+
+            So we put it in a profile here to completely disable the enforcer plugin
+            e.g. on the CI server etc.
+        -->
+        <profile>
+            <id>enforcer-plugin</id>
+            <activation>
+                <property>
+                    <!--
+                    This profile is activated if NO system property
+                    'skipEnforcer' is found. Disable this profile
+                    by specifying -DskipEnforcer=true on the commandline
+                    -->
+                    <name>!skipEnforcer</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- Enforce minimum maven version.
+                    This must be done through the maven-enforcer-plugin as per
+                    http://jira.codehaus.org/browse/MNG-2423 the prerequisites are not inherited.
+                    -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <!-- MULE-2070: 1.0-alpha-3 is broke so enforce previous version  -->
+                        <version>1.0-alpha-2</version>
+                        <executions>
+                            <execution>
+                                <id>enforce-maven-version</id>
+                                <goals>
+                                    <goal>enforce-once</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <requireMavenVersion>
+                                            <!-- minimum version is 2.0.6, higher versions allowed -->
+                                            <version>[2.0.6,)</version>
+                                        </requireMavenVersion>
+                                        <requireJavaVersion>
+                                            <!-- minimum version is Java 5, higher allowed -->
+                                            <version>[1.5.0,)</version>
+                                        </requireJavaVersion>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
+
 </project>
