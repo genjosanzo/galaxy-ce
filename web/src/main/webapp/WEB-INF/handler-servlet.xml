@@ -19,17 +19,17 @@
 
 <beans>
 
-	<bean id="urlMapping" class="org.gwtwidgets.server.spring.GWTHandler">
-	<!-- 
-	Supply here mappings between URLs and services. Services must implement the RemoteService interface but
-	are not otherwise restricted.
-	 -->
-		<property name="mappings">
-			<map>
-				<entry key="/registry.rpc" value-ref="gwtRegistry" />
+    <bean id="urlMapping" class="org.gwtwidgets.server.spring.GWTHandler">
+    <!--
+    Supply here mappings between URLs and services. Services must implement the RemoteService interface but
+    are not otherwise restricted.
+     -->
+        <property name="mappings">
+            <map>
+                <entry key="/registry.rpc" value-ref="gwtRegistry" />
                 <entry key="/userService.rpc" value-ref="gwtUserService" />
-			</map>
-		</property>
-	</bean>
+            </map>
+        </property>
+    </bean>
 
 </beans>

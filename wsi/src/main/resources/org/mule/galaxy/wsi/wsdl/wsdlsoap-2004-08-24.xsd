@@ -71,7 +71,7 @@ No other rights are granted by implication, estoppel or otherwise.
 
   <xs:element name="body" type="soap:tBody"/>
   <xs:attributeGroup name="tBodyAttributes">
-    <xs:attribute name="encodingStyle" type="soap:encodingStyle" use="optional"/>	   
+    <xs:attribute name="encodingStyle" type="soap:encodingStyle" use="optional"/>
     <xs:attribute name="use" type="soap:useChoice" use="optional"/>
     <xs:attribute name="namespace" type="xs:anyURI" use="optional"/>
   </xs:attributeGroup>
@@ -102,11 +102,11 @@ No other rights are granted by implication, estoppel or otherwise.
   <xs:complexType name="tFaultRes" abstract="true">
     <xs:complexContent>
       <xs:restriction base="soap:tBody">
-	    <xs:attribute ref="wsdl:required" use="optional"/> 
+        <xs:attribute ref="wsdl:required" use="optional"/>
         <xs:attribute name="parts" type="xs:NMTOKENS" use="prohibited"/>
-		<xs:attributeGroup ref="soap:tBodyAttributes"/>
+        <xs:attributeGroup ref="soap:tBodyAttributes"/>
       </xs:restriction>
-    </xs:complexContent>  	
+    </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="tFault">
     <xs:complexContent>
@@ -131,14 +131,14 @@ No other rights are granted by implication, estoppel or otherwise.
         <xs:sequence>
           <xs:element ref="soap:headerfault" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
-		<xs:attributeGroup ref="soap:tHeaderAttributes"/>
+        <xs:attributeGroup ref="soap:tHeaderAttributes"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
 
   <xs:element name="headerfault" type="soap:tHeaderFault"/>
   <xs:complexType name="tHeaderFault">
-	<xs:attributeGroup ref="soap:tHeaderAttributes"/>
+    <xs:attributeGroup ref="soap:tHeaderAttributes"/>
   </xs:complexType>
 
   <xs:element name="address" type="soap:tAddress"/>

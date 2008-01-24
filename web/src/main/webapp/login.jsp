@@ -16,17 +16,17 @@
                 <div class="loginRight">
                     <div class="loginContent">
                     <%
-					    if (request.getParameter("login_error") != null) {
-					%>
-					
-			        <div class="error">
-			            Your username or password was incorrect!
-			        </div>
-			        
-			        <%
-			        }
-			        %>
-					        
+                        if (request.getParameter("login_error") != null) {
+                    %>
+
+                    <div class="error">
+                        Your username or password was incorrect!
+                    </div>
+
+                    <%
+                    }
+                    %>
+
                     <div class="label">
                         Username:
                         <input name="j_username" value="" />
@@ -41,9 +41,9 @@
                     </div>
                 </div>
                   
-	            <div class="loginBottom">
-	              Powered by MuleSource
-	            </div>
+                <div class="loginBottom">
+                  Powered by MuleSource
+                </div>
         </div>
         
     </form>

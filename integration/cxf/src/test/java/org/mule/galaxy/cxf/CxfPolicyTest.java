@@ -67,7 +67,7 @@ public class CxfPolicyTest extends AbstractAtomTest {
         
         String url = "http://localhost:9002/api/registry?q=" 
             + UrlEncoding.encode("select artifact where documentType = " +
-            		"{http://www.w3.org/2006/07/ws-policy}Policy");
+                    "{http://www.w3.org/2006/07/ws-policy}Policy");
         
         feature.getPolicyQueries().add(url);
         ep.getFeatures().add(feature);

@@ -20,12 +20,12 @@ body {
 }
 
 .header-right {
-	float: right;
-	padding: 10px;
+    float: right;
+    padding: 10px;
     text-align: right;
 }
 .header-right a, .header-right a:visited {
-	color: white;
+    color: white;
 }
 .headerTabPanel {
   margin-top: 0px;
@@ -433,7 +433,7 @@ a:visited {
 }
 
 .failure-panel {
-	padding: 4px;
+    padding: 4px;
 }
 /**
  **
@@ -520,7 +520,7 @@ a:visited {
 }
 
 .activity-nav-next {
-	float: right;
+    float: right;
 }
 
 

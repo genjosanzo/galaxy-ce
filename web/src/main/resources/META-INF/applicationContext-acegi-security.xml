@@ -14,13 +14,13 @@
 
    <!-- ======================== FILTER CHAIN ======================= -->
 
-	<!--  if you wish to use channel security, add "channelProcessingFilter," in front
-	      of "httpSessionContextIntegrationFilter" in the list below -->
-	<bean id="filterChainProxy" class="org.acegisecurity.util.FilterChainProxy">
+    <!--  if you wish to use channel security, add "channelProcessingFilter," in front
+          of "httpSessionContextIntegrationFilter" in the list below -->
+    <bean id="filterChainProxy" class="org.acegisecurity.util.FilterChainProxy">
       <property name="filterInvocationDefinitionSource">
          <value><![CDATA[
-		    CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
-		    PATTERN_TYPE_APACHE_ANT
+            CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
+            PATTERN_TYPE_APACHE_ANT
             /**=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,basicProcessingFilter,securityContextHolderAwareRequestFilter,rememberMeProcessingFilter,anonymousProcessingFilter,switchUserProcessingFilter,exceptionTranslationFilter,filterInvocationInterceptor
          ]]></value>
       </property>
@@ -116,9 +116,9 @@
    <bean id="exceptionTranslationFilter" class="org.acegisecurity.ui.ExceptionTranslationFilter">
       <property name="authenticationEntryPoint"><ref local="authenticationProcessingFilterEntryPoint"/></property>
       <property name="accessDeniedHandler">
-      	<bean class="org.acegisecurity.ui.AccessDeniedHandlerImpl">
-      		<property name="errorPage" value="/login.jsp?accessdenied=true"/>
-      	</bean>
+          <bean class="org.acegisecurity.ui.AccessDeniedHandlerImpl">
+              <property name="errorPage" value="/login.jsp?accessdenied=true"/>
+          </bean>
       </property>
    </bean>
 
@@ -155,16 +155,16 @@
       <property name="accessDecisionManager"><ref local="httpRequestAccessDecisionManager"/></property>
       <property name="objectDefinitionSource">
          <value><![CDATA[
-			    CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
-			    PATTERN_TYPE_APACHE_ANTauthenticationProvider
-			    /index.html=role_user
+                CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
+                PATTERN_TYPE_APACHE_ANTauthenticationProvider
+                /index.html=role_user
                 /api/*=role_user
                 /handler/userservice.rpc*=role_administrator
-			    /handler/*=role_user
-			    /logoff.jsp=ROLE_ANONYMOUS,role_user
-			    /switchuser.jsp=ROLE_SUPERVISOR
-			    /j_acegi_switch_user=ROLE_SUPERVISOR
-			    /login.jsp*=ROLE_ANONYMOUS,role_user
+                /handler/*=role_user
+                /logoff.jsp=ROLE_ANONYMOUS,role_user
+                /switchuser.jsp=ROLE_SUPERVISOR
+                /j_acegi_switch_user=ROLE_SUPERVISOR
+                /login.jsp*=ROLE_ANONYMOUS,role_user
                 /login.css*=ROLE_ANONYMOUS,role_user
                 /images/*=ROLE_ANONYMOUS,role_user
                 /favicon.ico*=ROLE_ANONYMOUS
@@ -177,9 +177,9 @@
    <!-- In this example 'marissa' has ROLE_SUPERVISOR that can switch to regular role_user(s) -->
    <bean id="switchUserProcessingFilter" class="org.acegisecurity.ui.switchuser.SwitchUserProcessingFilter">
       <property name="userDetailsService" ref="userManager" />
-	  <property name="switchUserUrl"><value>/j_acegi_switch_user</value></property>
-	  <property name="exitUserUrl"><value>/j_acegi_exit_user</value></property>
-	  <property name="targetUrl"><value>/index.html</value></property>
+      <property name="switchUserUrl"><value>/j_acegi_switch_user</value></property>
+      <property name="exitUserUrl"><value>/j_acegi_exit_user</value></property>
+      <property name="targetUrl"><value>/index.html</value></property>
    </bean>
 
 </beans>
