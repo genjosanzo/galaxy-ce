@@ -12,7 +12,6 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.w3c.dom.Document;
-
 import org.xml.sax.SAXException;
 
 /**
@@ -26,7 +25,7 @@ public class WsdlSoapSchemaValidationRule extends AbstractWsdlRule {
 
     public WsdlSoapSchemaValidationRule() throws SAXException {
         super("R2029");
-        schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
         Source wsdlSoapSchemaSource = new StreamSource(getClass().getResourceAsStream("/org/mule/galaxy/wsi/wsdl/wsdl-2004-08-24.xsd"));
         wsdlSoapSchema = schemaFactory.newSchema(wsdlSoapSchemaSource);
