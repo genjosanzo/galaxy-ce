@@ -248,7 +248,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
             .add(Restriction.in("documentType", idx.getDocumentTypes()));
         
         try {
-            Set results = getRegistry().search(q);
+            Set results = getRegistry().search(q).getResults();
             
             logActivity("Reindexing " + idx.getId() + " for " + results.size() + " artifacts.");
             

@@ -13,6 +13,7 @@ import javax.xml.namespace.QName;
 import org.mule.galaxy.Index.Language;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.security.User;
 
 public interface Registry {
@@ -124,9 +125,9 @@ public interface Registry {
 
     void save(Artifact artifact) throws RegistryException;
 
-    Set search(String queryString) throws RegistryException, QueryException;
+    SearchResults search(String queryString, int start, int maxResults) throws RegistryException, QueryException;
 
-    Set search(Query query) throws RegistryException, QueryException;
+    SearchResults search(Query query) throws RegistryException, QueryException;
 
     Artifact getArtifact(Workspace w, String name) throws NotFoundException;
 

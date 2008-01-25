@@ -51,6 +51,7 @@ import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.view.ArtifactTypeView;
@@ -73,6 +74,7 @@ import org.mule.galaxy.web.rpc.WIndex;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WPhase;
 import org.mule.galaxy.web.rpc.WProperty;
+import org.mule.galaxy.web.rpc.WSearchResults;
 import org.mule.galaxy.web.rpc.WUser;
 import org.mule.galaxy.web.rpc.WWorkspace;
 
@@ -197,12 +199,14 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     @SuppressWarnings("unchecked")
-    public Collection getArtifacts(String workspaceId, Set artifactTypes, Set searchPredicates, String freeformQuery)
+    public WSearchResults getArtifacts(String workspaceId, Set artifactTypes, 
+                                       Set searchPredicates, String freeformQuery, int start, int maxResults)
     throws RPCException {
         Query q = new Query(Artifact.class)
             .workspaceId(workspaceId)
             .orderBy("artifactType");
-        
+        q.setMaxResults(maxResults);
+        q.setStart(start);
         // Filter based on our search terms
         for (Object predObj : searchPredicates) {
             SearchPredicate pred = (SearchPredicate) predObj;
@@ -210,16 +214,16 @@ public class RegistryServiceImpl implements RegistryService {
         }
         
         try {
-            Set results;
+            SearchResults results;
             if (freeformQuery != null && !freeformQuery.equals(""))
-                results = registry.search(freeformQuery);
+                results = registry.search(freeformQuery, start, maxResults);
             else
                 results = registry.search(q);
             
             Map<String, ArtifactGroup> name2group = new HashMap<String, ArtifactGroup>();
             Map<String, ArtifactTypeView> name2view = new HashMap<String, ArtifactTypeView>();
             
-            for (Object o : results) {
+            for (Object o : results.getResults()) {
                 Artifact a = (Artifact) o;
                 ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), 
                                                                     a.getDocumentType());
@@ -266,7 +270,11 @@ public class RegistryServiceImpl implements RegistryService {
             for (String key : keys) {
                 values.add(name2group.get(key));
             }
-            return values;
+            
+            WSearchResults wsr = new WSearchResults();
+            wsr.setResults(values);
+            wsr.setTotal(results.getTotal());
+            return wsr;
         } catch (QueryException e) {
             throw new RPCException(e.getMessage());
         } catch (RegistryException e) {

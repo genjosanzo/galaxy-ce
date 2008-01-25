@@ -11,7 +11,25 @@ public class Query {
     private String workspaceId;
     private boolean workspaceChildren;
     private String workspacePath;
+    private int start = -1;
+    private int maxResults = Integer.MAX_VALUE;
     
+    public int getStart() {
+        return start;
+    }
+
+    public void setStart(int start) {
+        this.start = start;
+    }
+
+    public int getMaxResults() {
+        return maxResults;
+    }
+
+    public void setMaxResults(int maxResults) {
+        this.maxResults = maxResults;
+    }
+
     public Query(Class selectType, Restriction restriction) {
         this.selectType = selectType;
         restrictions.add(restriction);

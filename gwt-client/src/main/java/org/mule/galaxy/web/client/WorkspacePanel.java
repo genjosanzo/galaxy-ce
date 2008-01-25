@@ -1,9 +1,13 @@
 package org.mule.galaxy.web.client;
 
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -11,6 +15,7 @@ import java.util.Set;
 
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.WSearchResults;
 
 public class WorkspacePanel
     extends Composite
@@ -19,6 +24,8 @@ public class WorkspacePanel
     private FlowPanel panel;
     private FlowPanel artifactPanel;
     private SearchPanel searchPanel;
+    private int resultStart = 0;
+    private int maxResults = 15;
     
     public WorkspacePanel(RegistryPanel rp) {
         super();
@@ -42,8 +49,9 @@ public class WorkspacePanel
         initWidget(panel);
     }
     
-    protected void initArtifacts(Collection o) {
-        for (Iterator groups = o.iterator(); groups.hasNext();) {
+    protected void initArtifacts(WSearchResults o) {
+        createNavigationPanel(o);
+        for (Iterator groups = o.getResults().iterator(); groups.hasNext();) {
             ArtifactGroup group = (ArtifactGroup) groups.next();
             
             ArtifactListPanel list = new ArtifactListPanel(registryPanel, group);
@@ -64,6 +72,57 @@ public class WorkspacePanel
         }
     }
     
+    private void createNavigationPanel(WSearchResults o) {
+        Widget w = panel.getWidget(1);
+        if (w.getStyleName().equals("activity-nav-panel")) {
+            panel.remove(1);
+        }
+        
+        int resultSize = o.getResults().size();
+        if (resultSize == maxResults || resultStart > 0) {
+            FlowPanel activityNavPanel = new FlowPanel();
+            activityNavPanel.setStyleName("activity-nav-panel");
+            Hyperlink hl = null;
+            
+            if (resultSize == maxResults && resultSize < o.getTotal()) {
+                hl = new Hyperlink("Next", "next");
+                hl.setStyleName("activity-nav-next");
+                hl.addClickListener(new ClickListener() {
+    
+                    public void onClick(Widget arg0) {
+                        resultStart += maxResults;
+                        
+                        reloadArtifacts();
+                    }
+                    
+                });
+                activityNavPanel.add(hl);
+            }
+            
+            if (resultStart > 0) {
+                hl = new Hyperlink("Previous", "previous");
+                hl.setStyleName("activity-nav-previous");
+                hl.addClickListener(new ClickListener() {
+    
+                    public void onClick(Widget arg0) {
+                        resultStart = resultStart - maxResults;
+                        if (resultStart < 0) resultStart = 0;
+                        
+                        reloadArtifacts();
+                    }
+                    
+                });
+                activityNavPanel.add(hl);
+            }
+
+            SimplePanel spacer = new SimplePanel();
+            spacer.add(new HTML("&nbsp;"));
+            activityNavPanel.add(spacer);
+            
+            panel.insert(activityNavPanel, 1);
+        }
+    }
+
     public void reloadArtifacts() {
         artifactPanel.clear();
         
@@ -71,11 +130,13 @@ public class WorkspacePanel
         Set    artifactTypes = registryPanel.getArtifactTypes();
         Set    predicates    = searchPanel.getPredicates();
         String freeformQuery = searchPanel.getFreeformQuery();
-        registryPanel.getRegistryService().getArtifacts(workspaceId, artifactTypes, predicates, freeformQuery,
+        registryPanel.getRegistryService().getArtifacts(workspaceId, artifactTypes, 
+                                                        predicates, freeformQuery, 
+                                                        resultStart, maxResults,
                                                         new AbstractCallback(registryPanel) {
 
             public void onSuccess(Object o) {
-                initArtifacts((Collection) o);
+                initArtifacts((WSearchResults) o);
             }
             public void onFailure(Throwable caught) {
                 registryPanel.setMessage(caught.getMessage());

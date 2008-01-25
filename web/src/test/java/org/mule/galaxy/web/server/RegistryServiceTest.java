@@ -56,7 +56,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         Collection artifactTypes = gwtRegistry.getArtifactTypes();
         assertTrue(artifactTypes.size() > 0);
         
-        Collection artifacts = gwtRegistry.getArtifacts(null, null, new HashSet(), null);
+        Collection artifacts = gwtRegistry.getArtifacts(null, null, new HashSet(), null, 0, 20).getResults();
         
         assertTrue(artifacts.size() > 0);
         
@@ -161,7 +161,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     }
     
     public void testGovernanceOperations() throws Exception {
-        Collection artifacts = gwtRegistry.getArtifacts(null, null, new HashSet(), null);
+        Collection artifacts = gwtRegistry.getArtifacts(null, null, new HashSet(), null, 0, 20).getResults();
         ArtifactGroup g1 = (ArtifactGroup) artifacts.iterator().next();
         
         BasicArtifactInfo a = (BasicArtifactInfo) g1.getRows().get(0);
@@ -204,7 +204,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     }
     
     public void testVersioningOperations() throws Exception {
-        Set result = registry.search("select artifact where wsdl.service = 'HelloWorldService'");
+        Set result = registry.search("select artifact where wsdl.service = 'HelloWorldService'", 0, 100).getResults();
         
         Artifact a = (Artifact) result.iterator().next();
         

@@ -141,15 +141,15 @@ declare variable $document external;
                 </column>
                 <column>
                     <name>Services</name>
-                    <expression>artifact.hasProperty("wsdl.service") ? artifact.getProperty("wsdl.service").size() : "" ;</expression>
+                    <expression>artifact.hasProperty("wsdl.service") ? artifact.getProperty("wsdl.service").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Bindings</name>
-                    <expression>artifact.hasProperty("wsdl.binding") ? artifact.getProperty("wsdl.binding").size() : "" ;</expression>
+                    <expression>artifact.hasProperty("wsdl.binding") ? artifact.getProperty("wsdl.binding").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Port Types</name>
-                    <expression>artifact.hasProperty("wsdl.portType") ? artifact.getProperty("wsdl.portType").size() : "" ;</expression>
+                    <expression>artifact.hasProperty("wsdl.portType") ? artifact.getProperty("wsdl.portType").size() : "0" ;</expression>
                 </column>
             </view>
         </views>
@@ -267,19 +267,19 @@ declare variable $document external;
             <view>
                 <column>
                     <name>Descriptors</name>
-                    <expression>artifact.hasProperty("mule.descriptor") ? artifact.getProperty("mule.descriptor").size() : "" ;</expression>
+                    <expression>artifact.hasProperty("mule.descriptor") ? artifact.getProperty("mule.descriptor").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Transformers</name>
-                    <expression>artifact.hasProperty("mule.transformer") ? artifact.getProperty("mule.transformer").size() : "" ;</expression>
+                    <expression>artifact.hasProperty("mule.transformer") ? artifact.getProperty("mule.transformer").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Endpoints</name>
-                    <expression>artifact.hasProperty("mule.endpoint") ? artifact.getProperty("mule.endpoint").size() : "" ;</expression>
+                    <expression>artifact.hasProperty("mule.endpoint") ? artifact.getProperty("mule.endpoint").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Models</name>
-                    <expression>artifact.hasProperty("mule.model") ? artifact.getProperty("mule.model").size() : "" ;</expression>
+                    <expression>artifact.hasProperty("mule.model") ? artifact.getProperty("mule.model").size() : "0" ;</expression>
                 </column>
             </view>
         </views>
@@ -411,15 +411,15 @@ declare variable $document external;
             <view>
                 <column>
                     <name>Services</name>
-                    <expression>artifact.hasProperty("mule2.service") ? artifact.getProperty("mule2.service").size() : "" ;</expression>
+                    <expression>artifact.hasProperty("mule2.service") ? artifact.getProperty("mule2.service").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Endpoints</name>
-                    <expression>artifact.hasProperty("mule2.endpoint") ? artifact.getProperty("mule2.endpoint").size() : "" ;</expression>
+                    <expression>artifact.hasProperty("mule2.endpoint") ? artifact.getProperty("mule2.endpoint").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Models</name>
-                    <expression>artifact.hasProperty("mule.model2") ? artifact.getProperty("mule2.model").size() : "" ;</expression>
+                    <expression>artifact.hasProperty("mule.model2") ? artifact.getProperty("mule2.model").size() : "0" ;</expression>
                 </column>
             </view>
         </views>
@@ -470,7 +470,7 @@ declare variable $document external;
             <view>
                 <column>
                     <name>Beans</name>
-                    <expression>artifact.hasProperty("spring.bean") ? artifact.getProperty("spring.bean").size() : "" ;</expression>
+                    <expression>artifact.hasProperty("spring.bean") ? artifact.getProperty("spring.bean").size() : "0" ;</expression>
                 </column>
             </view>
         </views>

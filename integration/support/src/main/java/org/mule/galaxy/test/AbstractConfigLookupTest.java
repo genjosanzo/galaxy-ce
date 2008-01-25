@@ -55,7 +55,6 @@ public abstract class AbstractConfigLookupTest extends AbstractAtomTest
             Entry entry =  iterator.next();
             // GET the actual mule configuration
             String urlLink = entry.getContentSrc().toString();
-            System.out.println(urlLink);
             res = client.get(urlLink, defaultOpts);
             assertEquals(200, res.getStatus());
 

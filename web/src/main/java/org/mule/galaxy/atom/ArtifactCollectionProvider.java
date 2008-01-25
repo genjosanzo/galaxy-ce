@@ -94,7 +94,7 @@ public class ArtifactCollectionProvider extends AbstractArtifactVersionProvider 
                 q = UrlEncoding.decode(q);
             }
             
-            final Iterator results = registry.search(q).iterator();
+            final Iterator results = registry.search(q, 0, 100).getResults().iterator();
             return new Iterable<ArtifactVersion>() {
 
                 public Iterator<ArtifactVersion> iterator() {

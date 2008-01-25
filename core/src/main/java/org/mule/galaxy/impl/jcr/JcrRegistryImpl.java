@@ -62,6 +62,7 @@ import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.query.Restriction.Operator;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
@@ -787,7 +788,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return session.getWorkspace().getQueryManager();
     }
 
-    public Set search(String queryString) throws RegistryException, QueryException {
+    public SearchResults search(String queryString, int startOfResults, int maxResults) throws RegistryException, QueryException {
         List<String> tokens = new ArrayList<String>();
         int start = 0;
         for (int i = 0; i < queryString.length(); i++) {
@@ -846,6 +847,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             return search(new org.mule.galaxy.query.Query(selectTypeCls));
         }
         org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(selectTypeCls);
+        q.setStart(startOfResults);
+        q.setMaxResults(maxResults);
         
         String next = itr.next();
         if ("from".equals(next.toLowerCase())) {
@@ -958,10 +961,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
 
-    public Set search(final org.mule.galaxy.query.Query query) 
+    public SearchResults search(final org.mule.galaxy.query.Query query) 
         throws RegistryException, QueryException {
         final JcrRegistryImpl registry = this;
-        return (Set) execute(new JcrCallback() {
+        return (SearchResults) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                         
                 QueryManager qm = getQueryManager(session);
@@ -1057,7 +1060,14 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 Query jcrQuery = qm.createQuery(qstr.toString(), Query.XPATH);
                 
                 QueryResult result = jcrQuery.execute();
-                for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
+                NodeIterator nodes = result.getNodes(); 
+                if (query.getStart() != -1) {
+                    nodes.skip(query.getStart());
+                }
+                
+                int max = query.getMaxResults();
+                int count = 0;
+                while (nodes.hasNext()) {
                     Node node = nodes.nextNode();
                     
                     // UGH: jackrabbit does not support parent::* xpath expressions
@@ -1085,10 +1095,14 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         artifacts.add(artifact);
                     }
                     
+                    count++;
                     
+                    if (count == max) {
+                        break;
+                    }
                 }                                                   
                 
-                return artifacts;
+                return new SearchResults(nodes.getSize(), artifacts);
             }
 
             private boolean appendPropertySearch(StringBuilder qstr, 
