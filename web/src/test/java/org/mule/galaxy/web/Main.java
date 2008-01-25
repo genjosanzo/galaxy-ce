@@ -2,10 +2,11 @@ package org.mule.galaxy.web;
 
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
+import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 
 public class Main {
@@ -13,9 +14,9 @@ public class Main {
     public static void main(String[] args) throws Exception {
         
         Server server = new Server();    
-        Connector connector = new SocketConnector();
+        Connector connector = new SelectChannelConnector();
         connector.setPort(9002);
-        connector.setHost("127.0.0.1");
+        connector.setHost("0.0.0.0");
         server.addConnector(connector);
 
         
@@ -24,7 +25,7 @@ public class Main {
 //        wac.setWar("./target/galaxy-web-1.0-M1-SNAPSHOT");
         wac.setWar("./src/main/webapp");
         
-        HashMap params = new HashMap();
+        Map params = new HashMap();
         params.put("useFileMappedBuffer", Boolean.FALSE);
         wac.setInitParams(params);
         
