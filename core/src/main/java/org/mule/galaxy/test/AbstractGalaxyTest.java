@@ -1,20 +1,5 @@
 package org.mule.galaxy.test;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Collection;
-
-import javax.activation.MimeTypeParseException;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.mule.galaxy.ActivityManager;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
@@ -31,6 +16,22 @@ import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Collection;
+
+import javax.activation.MimeTypeParseException;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springmodules.jcr.SessionFactory;
@@ -61,11 +62,17 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
     }
 
     public URL getResource(String name) {
-        return getClass().getResource(name);
+        URL url = getClass().getResource(name);
+        assertNotNull("Resource not found: " + name, url);
+
+        return url;
     }
 
     public InputStream getResourceAsStream(String name) {
-        return getClass().getResourceAsStream(name);
+        InputStream is = getClass().getResourceAsStream(name);
+        assertNotNull("Resource not found: " + name, is);
+
+        return is;
     }
 
     protected User getAdmin() {
