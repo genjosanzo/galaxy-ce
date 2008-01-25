@@ -25,7 +25,7 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
 
         ArtifactPolicy p = policyManager.getPolicy(BasicProfilePolicy.WSI_BP_1_1_WSDL);
 
-        policyManager.setActivePolicies(lifecycleManager.getDefaultLifecycle(), new ArtifactPolicy[] { p });
+        policyManager.setActivePolicies(lifecycleManager.getDefaultLifecycle(), p);
 
         try {
             registry.createArtifact(workspace, "application/xml", "hello-invalid.wsdl", "0.1", helloWsdl,
