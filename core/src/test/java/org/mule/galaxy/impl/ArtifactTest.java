@@ -1,18 +1,6 @@
 package org.mule.galaxy.impl;
 
 
-import java.io.InputStream;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.jcr.Node;
-import javax.wsdl.Definition;
-
-import org.w3c.dom.Document;
-
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
@@ -21,7 +9,16 @@ import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.util.IOUtils;
+
+import java.io.InputStream;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.jcr.Node;
+
+import org.w3c.dom.Document;
 
 public class ArtifactTest extends AbstractGalaxyTest {
     public void testMove() throws Exception {
@@ -180,8 +177,8 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        ArtifactResult ar = registry.createArtifact(workspace, 
-                                                    "text/palin", 
+        ArtifactResult ar = registry.createArtifact(workspace,
+                                                    "text/plain", 
                                                     "log4j.properties", 
                                                     "0.1", 
                                                     logProps, 
