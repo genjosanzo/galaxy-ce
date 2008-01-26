@@ -1,15 +1,5 @@
 package org.mule.galaxy.web.client.artifact;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
-
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.RegistryPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
@@ -19,7 +9,17 @@ import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.TransitionResponse;
 
-public class HistoryPanel extends AbstractComposite {
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
+
+import java.util.Collection;
+
+public class HistoryPanel extends AbstractComposite
+{
 
     private RegistryPanel registryPanel;
     private RegistryServiceAsync registryService;
@@ -28,91 +28,108 @@ public class HistoryPanel extends AbstractComposite {
     private FlowPanel messages;
 
     public HistoryPanel(RegistryPanel registryPanel,
-                           ExtendedArtifactInfo info) {
+                        ExtendedArtifactInfo info)
+    {
         super();
         this.registryPanel = registryPanel;
         this.registryService = registryPanel.getRegistryService();
         this.info = info;
-        
+
         panel = new FlowPanel();
-        
+
         refresh();
-        
+
         initWidget(panel);
-        
+
         setTitle("Artifact History");
     }
 
-    private void refresh() {
+    private void refresh()
+    {
         panel.clear();
-        
-        registryService.getArtifactVersions(info.getId(), new AbstractCallback(registryPanel) {
 
-            public void onSuccess(Object o) {
+        registryService.getArtifactVersions(info.getId(), new AbstractCallback(registryPanel)
+        {
+
+            public void onSuccess(Object o)
+            {
                 initializePanel((Collection) o);
-            } 
-            
+            }
+
         });
     }
 
-    protected void initializePanel(Collection avs) {
-        for (Iterator iterator = avs.iterator(); iterator.hasNext();) {
-            final ArtifactVersionInfo av = (ArtifactVersionInfo)iterator.next();
-            
+    protected void initializePanel(Collection avs)
+    {
+        for (final Object av1 : avs)
+        {
+            final ArtifactVersionInfo av = (ArtifactVersionInfo) av1;
+
             FlowPanel avPanel = new FlowPanel();
             avPanel.setStyleName("artifact-version-panel");
-            
+
             Label title = new Label("Version " + av.getVersionLabel());
             title.setStyleName("artifact-version-title");
             avPanel.add(title);
-            
+
             FlowPanel bottom = new FlowPanel();
             avPanel.add(bottom);
             bottom.setStyleName("artifact-version-bottom-panel");
-            
-            bottom.add(new Label("By " + av.getAuthorName() 
-                + " (" + av.getAuthorUsername() + ") on " + av.getCreated()));
-            
+
+            bottom.add(new Label("By " + av.getAuthorName()
+                                 + " (" + av.getAuthorUsername() + ") on " + av.getCreated()));
+
             InlineFlowPanel links = new InlineFlowPanel();
             bottom.add(links);
-            
-            Hyperlink viewLink = new Hyperlink("View", "view-version");
-            viewLink.addClickListener(new ClickListener() {
 
-                public void onClick(Widget arg0) {
+            Hyperlink viewLink = new Hyperlink("View", "view-version");
+            viewLink.addClickListener(new ClickListener()
+            {
+
+                public void onClick(Widget arg0)
+                {
                     Window.open(av.getLink(), null, null);
                 }
-                
+
             });
             links.add(viewLink);
-            
-            if (!av.isActive()) {
-                links.add(new Label(" | "));
-                
-                Hyperlink rollbackLink = new Hyperlink("Set Active", "rollback-version");
-                rollbackLink.addClickListener(new ClickListener() {
 
-                    public void onClick(Widget w) {
+            if (!av.isActive())
+            {
+                links.add(new Label(" | "));
+
+                Hyperlink rollbackLink = new Hyperlink("Set Active", "rollback-version");
+                rollbackLink.addClickListener(new ClickListener()
+                {
+
+                    public void onClick(Widget w)
+                    {
                         setActive(av.getVersionLabel());
                     }
-                    
+
                 });
                 links.add(rollbackLink);
             }
-            
+
             panel.add(avPanel);
         }
     }
 
-    protected void setActive(String versionLabel) {
-        registryService.setActive(info.getId(), versionLabel, new AbstractCallback(registryPanel) {
+    protected void setActive(String versionLabel)
+    {
+        registryService.setActive(info.getId(), versionLabel, new AbstractCallback(registryPanel)
+        {
 
-            public void onSuccess(Object o) {
+            public void onSuccess(Object o)
+            {
                 TransitionResponse tr = (TransitionResponse) o;
-                
-                if (tr.isSuccess()) {
+
+                if (tr.isSuccess())
+                {
                     registryPanel.setMain(new ArtifactPanel(registryPanel, info.getId(), 2));
-                } else {
+                }
+                else
+                {
                     displayMessages(tr);
                 }
             }
@@ -120,10 +137,10 @@ public class HistoryPanel extends AbstractComposite {
         });
     }
 
-    protected void displayMessages(TransitionResponse tr) {
+    protected void displayMessages(TransitionResponse tr)
+    {
         registryPanel.setMessage("Policies were not met!");
     }
 
-    
 
 }
