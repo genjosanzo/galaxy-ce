@@ -1,5 +1,17 @@
 package org.mule.galaxy.atom;
 
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
+import org.mule.galaxy.security.User;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -15,8 +27,8 @@ import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.i18n.iri.IRI;
-import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.i18n.text.CharUtils.Profile;
+import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
@@ -27,17 +39,6 @@ import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.impl.AbstractCollectionProvider;
 import org.apache.abdera.protocol.server.impl.EmptyResponseContext;
 import org.apache.abdera.protocol.server.impl.ResponseContextException;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
-import org.mule.galaxy.security.User;
 
 public abstract class AbstractArtifactVersionProvider extends AbstractCollectionProvider<ArtifactVersion> {
     public static final String NAMESPACE = "http://galaxy.mule.org/1.0";
@@ -71,7 +72,7 @@ public abstract class AbstractArtifactVersionProvider extends AbstractCollection
             if (p.isVisible()) {
                 Element prop = factory.newElement(new QName(NAMESPACE, "property"), metadata);
                 prop.setAttributeValue("name", p.getName());
-                prop.setAttributeValue("locked", new Boolean(p.isLocked()).toString());
+                prop.setAttributeValue("locked", Boolean.toString(p.isLocked()));
                 Object value = p.getValue();
                 if (value == null) {
                     value = "";
@@ -198,7 +199,7 @@ public abstract class AbstractArtifactVersionProvider extends AbstractCollection
                 throw new ResponseContextException(500, e);
             }
         }
-        Artifact a = null;
+        Artifact a;
         try {
             a = registry.getArtifact(w, UrlEncoding.decode(paths[paths.length-1]));
             
