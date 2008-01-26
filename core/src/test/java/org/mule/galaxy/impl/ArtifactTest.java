@@ -9,7 +9,9 @@ import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.test.AbstractGalaxyTest;
+import org.mule.galaxy.util.IOUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Collection;
@@ -169,7 +171,51 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         registry.delete(a2);
     }
-    
+
+    /**
+     * Test for http://mule.mulesource.org/jira/browse/GALAXY-54 .
+     */
+    public void testActiveVersion() throws Exception
+    {
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+
+        Workspace workspace = workspaces.iterator().next();
+
+        String version1 = "This is version 1";
+        String version2 = "This is version 2";
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(version1.getBytes("UTF-8"));
+
+        ArtifactResult ar = registry.createArtifact(workspace,
+                                                    "text/plain",
+                                                    "test.txt",
+                                                    "1",
+                                                    bais,
+                                                    getAdmin());
+        assertNotNull(ar);
+        assertTrue(ar.isApproved());
+
+        bais = new ByteArrayInputStream(version2.getBytes());
+
+        final Artifact artifact = ar.getArtifact();
+
+        ar = registry.newVersion(artifact, bais, "2", getAdmin());
+        assertNotNull(ar);
+        assertTrue(ar.isApproved());
+
+        registry.setActiveVersion(artifact, "1", getAdmin());
+
+        Artifact a = registry.getArtifact(workspace, "test.txt");
+        assertNotNull(a);
+        assertEquals("1", a.getActiveVersion().getVersionLabel());
+        assertEquals(version1, IOUtils.readStringFromStream(a.getActiveVersion().getStream()));
+
+        ArtifactVersion artifactVersion = a.getVersion("2");
+        assertEquals(version2, IOUtils.readStringFromStream(artifactVersion.getStream()));
+    }
+
+
     public void testAddNonUnderstood() throws Exception {
         InputStream logProps = getResourceAsStream("/log4j.properties");
         
