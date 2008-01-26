@@ -1,5 +1,15 @@
 package org.mule.galaxy.impl.jcr;
 
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.util.QNameUtil;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -13,16 +23,6 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
-
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.util.QNameUtil;
 
 public class JcrArtifact extends AbstractJcrObject implements Artifact {
     public static final String CONTENT_TYPE = "contentType";
@@ -191,7 +191,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
 
     public ArtifactVersion getActiveVersion() {
         for (ArtifactVersion v : getVersions()) {
-            if (((JcrVersion)v).isActive()) {
+            if (v.isActive()) {
                 return v;
             }
         }
