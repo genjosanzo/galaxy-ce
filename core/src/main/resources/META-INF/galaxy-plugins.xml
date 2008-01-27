@@ -283,13 +283,13 @@ declare variable $document external;
                 </column>
             </view>
         </views>
-        <policies>
-            <policy>
-                <name>Require SSL</name>
-                <class>org.mule.galaxy.policy.mule.RequireSSLPolicy</class>
-                <description>Enforces the use of ssl on http and tcp endpoints</description>
-            </policy>
-        </policies>
+        <!--<policies>-->
+            <!--<policy>-->
+                <!--<name>Require SSL</name>-->
+                <!--<class>org.mule.galaxy.policy.mule.RequireSSLPolicy</class>-->
+                <!--<description>Enforces the use of ssl on http and tcp endpoints</description>-->
+            <!--</policy>-->
+        <!--</policies>-->
     </galaxy-plugin>
     
     <galaxy-plugin>
