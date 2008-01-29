@@ -9,20 +9,16 @@
  */
 package org.mule.galaxy.test;
 
-import org.mule.galaxy.test.AbstractAtomTest;
-import org.mule.galaxy.util.IOUtils;
-
-import java.util.List;
-import java.util.Iterator;
 import java.io.InputStream;
+import java.util.List;
 
-import org.apache.abdera.protocol.client.AbderaClient;
-import org.apache.abdera.protocol.client.RequestOptions;
-import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.i18n.text.UrlEncoding;
-import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Entry;
+import org.apache.abdera.model.Feed;
+import org.apache.abdera.protocol.client.AbderaClient;
+import org.apache.abdera.protocol.client.ClientResponse;
+import org.apache.abdera.protocol.client.RequestOptions;
 import org.apache.axiom.om.util.Base64;
 
 /**
@@ -50,9 +46,8 @@ public abstract class AbstractConfigLookupTest extends AbstractAtomTest
         prettyPrint(feedDoc);
         List<Entry> entries = feedDoc.getRoot().getEntries();
         assertEquals(expectedEntries, entries.size());
-        for (Iterator<Entry> iterator = entries.iterator(); iterator.hasNext();)
+        for (Entry entry : entries)
         {
-            Entry entry =  iterator.next();
             // GET the actual mule configuration
             String urlLink = entry.getContentSrc().toString();
             res = client.get(urlLink, defaultOpts);
@@ -61,7 +56,10 @@ public abstract class AbstractConfigLookupTest extends AbstractAtomTest
             // Use this as your handle to the mule configuration
             InputStream is = res.getInputStream();
 //            IOUtils.copy(is, System.out);
-            while (is.read() != -1);
+            while (is.read() != -1)
+            {
+                
+            }
             res.release();
         }
     }
