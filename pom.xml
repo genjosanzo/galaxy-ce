@@ -144,9 +144,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-idea-plugin</artifactId>
+                <!--
+                    Need to build it from source locally: http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-idea-plugin
+                    Due to http://jira.codehaus.org/browse/MIDEA-102
+                -->
+                <version>2.2-SNAPSHOT</version>
                 <configuration>
                     <downloadSources>true</downloadSources>
                     <jdkName>1.5</jdkName>
+                    <jdkLevel>1.5</jdkLevel>
                 </configuration>
             </plugin>
 
