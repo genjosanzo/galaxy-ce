@@ -306,7 +306,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <configuration>
                     <configLocation>codecheck/checkstyle.xml</configLocation>
-                    <headerLocation>codecheck/LicenseHeader.txt</headerLocation>
+                    <headerLocation>codecheck/LicenseHeader-GPLv2.txt</headerLocation>
                     <!-- do not link to JXR output as that is aggregated and the checkstyle
                          plugin does not recognize that.
                     -->
