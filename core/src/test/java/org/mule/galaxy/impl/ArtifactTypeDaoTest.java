@@ -1,11 +1,11 @@
 package org.mule.galaxy.impl;
 
-import java.util.List;
-
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.impl.jcr.ArtifactTypeDaoImpl;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
+
+import java.util.List;
 
 public class ArtifactTypeDaoTest extends AbstractGalaxyTest {
     protected ArtifactTypeDaoImpl artifactTypeDao;
@@ -24,11 +24,10 @@ public class ArtifactTypeDaoTest extends AbstractGalaxyTest {
         assertEquals(a.getId(), a2.getId());
         assertEquals(a.getDescription(), a2.getDescription());
         assertEquals(a.getContentType(), a2.getContentType());
-        
-        ArtifactType at = artifactTypeDao.getDefaultArtifactType();
-        at = artifactTypeDao.getArtifactType("application/wsdl+xml", 
-                                             Constants.WSDL_DEFINITION_QNAME);
-        
+
+        ArtifactType at = artifactTypeDao.getArtifactType("application/wsdl+xml",
+                                                          Constants.WSDL_DEFINITION_QNAME);
+
         assertNotNull(at);
         
         at = artifactTypeDao.getArtifactType("foobar", null);
