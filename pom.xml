@@ -16,6 +16,7 @@
     </licenses>
 
     <modules>
+        <module>buildtools</module>
         <module>core</module>
         <module>wsdldiff</module>
         <module>wsi</module>
@@ -148,6 +149,26 @@
                     <jdkName>1.5</jdkName>
                 </configuration>
             </plugin>
+
+            <!--
+                 Needed for checkstyle to find the license header file from the classpath.
+                 CAVEAT: you cannot build the site without mule-buildtools present in
+                 your local repository.
+
+                 For plugin config see below in reporting section
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.mule.galaxy</groupId>
+                        <artifactId>galaxy-buildtools</artifactId>
+                        <version>${version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
         </plugins>
 
         <defaultGoal>install</defaultGoal>
@@ -254,5 +275,45 @@
         </profile>
 
     </profiles>
+
+    <reporting>
+        <plugins>
+            <!-- Source code cross-reference -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <configuration>
+                    <aggregate>true</aggregate>
+                </configuration>
+            </plugin>
+
+            <!--
+                When there is JXR cross-refernce output available,
+                it will be linked to in case of test failures
+             -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <configuration>
+                    <!-- Display failed tests only -->
+                    <showSuccess>false</showSuccess>
+                </configuration>
+            </plugin>
+
+            <!-- Checkstyle reports -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <configLocation>codecheck/checkstyle.xml</configLocation>
+                    <headerLocation>codecheck/LicenseHeader.txt</headerLocation>
+                    <!-- do not link to JXR output as that is aggregated and the checkstyle
+                         plugin does not recognize that.
+                    -->
+                    <linkXRef>false</linkXRef>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
 
 </project>
