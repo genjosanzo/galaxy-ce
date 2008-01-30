@@ -1,5 +1,9 @@
 package org.mule.galaxy.web.client;
 
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.WSearchResults;
+
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -9,13 +13,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
-
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
-import org.mule.galaxy.web.rpc.WSearchResults;
 
 public class WorkspacePanel
     extends Composite
@@ -25,6 +24,7 @@ public class WorkspacePanel
     private FlowPanel artifactPanel;
     private SearchPanel searchPanel;
     private int resultStart = 0;
+    // TODO make it a configurable parameter, maybe per-user?
     private int maxResults = 15;
     
     public WorkspacePanel(RegistryPanel rp) {
@@ -77,14 +77,14 @@ public class WorkspacePanel
         if (w.getStyleName().equals("activity-nav-panel")) {
             panel.remove(1);
         }
-        
-        int resultSize = o.getResults().size();
-        if (resultSize == maxResults || resultStart > 0) {
+
+        long resultSize = o.getTotal();
+        if (resultSize > maxResults || resultStart > 0) {
             FlowPanel activityNavPanel = new FlowPanel();
             activityNavPanel.setStyleName("activity-nav-panel");
-            Hyperlink hl = null;
+            Hyperlink hl;
             
-            if (resultSize == maxResults && resultSize < o.getTotal()) {
+            if (resultSize > maxResults && resultStart < o.getTotal()) {
                 hl = new Hyperlink("Next", "next");
                 hl.setStyleName("activity-nav-next");
                 hl.addClickListener(new ClickListener() {
