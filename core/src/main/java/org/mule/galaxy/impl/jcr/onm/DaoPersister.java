@@ -1,11 +1,11 @@
 package org.mule.galaxy.impl.jcr.onm;
 
+import org.mule.galaxy.api.Dao;
+import org.mule.galaxy.api.Identifiable;
+import org.mule.galaxy.impl.jcr.JcrUtil;
+
 import javax.jcr.Node;
 import javax.jcr.Session;
-
-import org.mule.galaxy.Dao;
-import org.mule.galaxy.Identifiable;
-import org.mule.galaxy.impl.jcr.JcrUtil;
 
 public class DaoPersister implements FieldPersister {
     private Dao<? extends Identifiable> dao;

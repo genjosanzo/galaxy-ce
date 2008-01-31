@@ -19,12 +19,13 @@
 
 package org.mule.galaxy.impl.jcr;
 
+import org.mule.galaxy.api.Artifact;
+import org.mule.galaxy.api.Dependency;
+
 import javax.jcr.Node;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.Dependency;
-
-public class JcrDependency implements Dependency {
+public class JcrDependency implements Dependency
+{
     private final JcrArtifact artDep;
     private final Node depNode;
 

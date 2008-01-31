@@ -11,11 +11,11 @@ import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.providers.AuthenticationProvider;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.api.Artifact;
+import org.mule.galaxy.api.ArtifactVersion;
+import org.mule.galaxy.api.Registry;
+import org.mule.galaxy.api.policy.ApprovalMessage;
+import org.mule.galaxy.api.policy.ArtifactPolicy;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
@@ -64,7 +64,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         for (Iterator itr = artifacts.iterator(); itr.hasNext();) {
             ArtifactGroup group = (ArtifactGroup)itr.next();
             
-            if ("Mule 1 Configurations".equals(group.getName())) {
+            if ("Xml Schema Documents".equals(group.getName())) {
                 g1 = group;
             }
         }
@@ -78,7 +78,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         BasicArtifactInfo a = (BasicArtifactInfo) g1.getRows().get(0);
         Collection deps = gwtRegistry.getDependencyInfo(a.getId());
-        assertEquals(0, deps.size());
+        assertEquals(1, deps.size());
         
         // Test reretrieving the artifact
         g1 = gwtRegistry.getArtifact(a.getId());
@@ -87,7 +87,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         for (Iterator itr = artifacts.iterator(); itr.hasNext();) {
             ArtifactGroup group = (ArtifactGroup)itr.next();
 
-            if ("Mule 1 Configurations".equals(group.getName())) {
+            if ("Xml Schema Documents".equals(group.getName())) {
                 g1 = group;
             }
         }
@@ -128,7 +128,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         WComment wc3 = (WComment) comments.get(0);
         assertEquals(1, wc3.getComments().size());
         
-        assertEquals("/api/registry/Default Workspace/hello-config.xml", ext.getArtifactLink());
+        assertEquals("/api/registry/Default Workspace/hello.xsd", ext.getArtifactLink());
         assertEquals("/api/comments", ext.getCommentsFeedLink());
         
         // test desc

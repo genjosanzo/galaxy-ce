@@ -1,5 +1,17 @@
 package org.mule.galaxy.policy.wsdl;
 
+import org.mule.galaxy.api.Artifact;
+import org.mule.galaxy.api.ArtifactVersion;
+import org.mule.galaxy.api.Registry;
+import org.mule.galaxy.api.policy.ApprovalMessage;
+import org.mule.galaxy.api.policy.ArtifactPolicy;
+import org.mule.galaxy.api.util.LogUtils;
+import org.mule.galaxy.impl.RegistryLocator;
+import org.mule.galaxy.api.util.Constants;
+import org.mule.galaxy.wsdl.diff.DifferenceEvent;
+import org.mule.galaxy.wsdl.diff.DifferenceListener;
+import org.mule.galaxy.wsdl.diff.WsdlDiff;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,24 +20,13 @@ import java.util.logging.Logger;
 
 import javax.wsdl.WSDLException;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.impl.RegistryLocator;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactPolicy;
-import org.mule.galaxy.util.Constants;
-import org.mule.galaxy.util.LogUtils;
-import org.mule.galaxy.wsdl.diff.DifferenceEvent;
-import org.mule.galaxy.wsdl.diff.DifferenceListener;
-import org.mule.galaxy.wsdl.diff.WsdlDiff;
-
 import org.w3c.dom.Document;
 
 /**
  * Provides means to ensure that WSDL versioning rules are met.
  */
-public abstract class AbstractWsdlVersioningPolicy implements ArtifactPolicy {
+public abstract class AbstractWsdlVersioningPolicy implements ArtifactPolicy
+{
     private Logger LOGGER = LogUtils.getL7dLogger(AbstractWsdlVersioningPolicy.class);
     private Registry registry;
     
