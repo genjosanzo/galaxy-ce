@@ -5,8 +5,8 @@ import java.io.ByteArrayOutputStream;
 
 import javax.activation.MimeType;
 
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.ContentService;
+import org.mule.galaxy.api.ContentHandler;
+import org.mule.galaxy.api.ContentService;
 import org.mule.galaxy.impl.content.DefaultContentHandler;
 import org.mule.galaxy.impl.content.WsdlContentHandler;
 import org.mule.galaxy.impl.content.XmlDocumentContentHandler;

@@ -1,5 +1,9 @@
 package org.mule.galaxy.impl.jcr;
 
+import org.mule.galaxy.api.ArtifactTypeDao;
+import org.mule.galaxy.api.artifact.ArtifactType;
+import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,12 +20,9 @@ import javax.xml.namespace.QName;
 
 import org.springmodules.jcr.JcrCallback;
 
-import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.ArtifactTypeDao;
-import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
-
-public class ArtifactTypeDaoImpl extends AbstractReflectionDao<ArtifactType> 
-    implements ArtifactTypeDao {
+public class ArtifactTypeDaoImpl extends AbstractReflectionDao<ArtifactType>
+    implements ArtifactTypeDao
+{
     
     private ArtifactType defaultArtifactType;
     

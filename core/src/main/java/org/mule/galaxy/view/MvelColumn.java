@@ -1,5 +1,7 @@
 package org.mule.galaxy.view;
 
+import org.mule.galaxy.api.view.ColumnEvaluator;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +11,8 @@ import org.mvel.MVEL;
 /**
  * Takes an MVEL expression which will return a value from the artifact.
  */
-public class MvelColumn implements ColumnEvaluator {
+public class MvelColumn implements ColumnEvaluator
+{
 
     private Serializable compiled;        
     public MvelColumn(String expression) {

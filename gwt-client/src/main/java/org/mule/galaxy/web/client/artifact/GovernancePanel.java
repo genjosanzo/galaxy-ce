@@ -2,7 +2,6 @@ package org.mule.galaxy.web.client.artifact;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -49,7 +48,7 @@ public class GovernancePanel extends AbstractComposite {
     }
 
     protected void initializePanel(WGovernanceInfo gov) {
-        panel.add(createTitle("Lifecycle Management"));
+        panel.add(createTitle("LifecycleImpl Management"));
         
         panel.add(createLifecycleTable(gov));
         
@@ -67,10 +66,10 @@ public class GovernancePanel extends AbstractComposite {
         table.setCellSpacing(0);
         table.setCellPadding(0);
         
-        table.setText(0, 0, "Lifecycle:");
+        table.setText(0, 0, "LifecycleImpl:");
         table.setText(0, 1, gov.getLifecycle());
         
-        table.setText(1, 0, "Current Phase:");
+        table.setText(1, 0, "Current PhaseImpl:");
         table.setText(1, 1, gov.getCurrentPhase());
 
         table.setText(2, 0, "Next Phases:");

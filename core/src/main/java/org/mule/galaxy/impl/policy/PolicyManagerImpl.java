@@ -1,6 +1,20 @@
 package org.mule.galaxy.impl.policy;
 
+import org.mule.galaxy.api.Artifact;
+import org.mule.galaxy.api.ArtifactVersion;
+import org.mule.galaxy.api.Workspace;
+import org.mule.galaxy.api.lifecycle.LifecycleManager;
+import org.mule.galaxy.api.policy.ArtifactPolicy;
+import org.mule.galaxy.api.policy.PolicyManager;
+import org.mule.galaxy.impl.jcr.JcrUtil;
 import static org.mule.galaxy.impl.jcr.JcrUtil.getOrCreate;
+import org.mule.galaxy.api.lifecycle.Lifecycle;
+import org.mule.galaxy.api.lifecycle.LifecycleManager;
+import org.mule.galaxy.api.lifecycle.Phase;
+import org.mule.galaxy.api.policy.ApprovalMessage;
+import org.mule.galaxy.api.policy.ArtifactPolicy;
+import org.mule.galaxy.api.policy.PolicyInfo;
+import org.mule.galaxy.api.policy.PolicyManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,17 +37,6 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.apache.jackrabbit.util.ISO9075;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.jcr.JcrUtil;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactPolicy;
-import org.mule.galaxy.policy.PolicyInfo;
-import org.mule.galaxy.policy.PolicyManager;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

@@ -9,11 +9,11 @@ import org.apache.abdera.protocol.server.Target;
 import org.apache.abdera.protocol.server.TargetType;
 import org.apache.abdera.protocol.server.impl.DefaultTarget;
 import org.apache.abdera.protocol.server.impl.DefaultWorkspaceManager;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
+import org.mule.galaxy.api.Artifact;
+import org.mule.galaxy.api.NotFoundException;
+import org.mule.galaxy.api.Registry;
+import org.mule.galaxy.api.RegistryException;
+import org.mule.galaxy.api.Workspace;
 
 public class ArtifactResolver implements Resolver<Target> {
 

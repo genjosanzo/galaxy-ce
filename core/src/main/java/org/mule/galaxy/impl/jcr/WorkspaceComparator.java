@@ -1,8 +1,8 @@
 package org.mule.galaxy.impl.jcr;
 
-import java.util.Comparator;
+import org.mule.galaxy.api.Workspace;
 
-import org.mule.galaxy.Workspace;
+import java.util.Comparator;
 
 public class WorkspaceComparator implements Comparator<Workspace> {
 

@@ -1,33 +1,27 @@
 package org.mule.galaxy.impl;
 
+import org.mule.galaxy.api.Artifact;
+import org.mule.galaxy.api.ArtifactResult;
+import org.mule.galaxy.api.ArtifactVersion;
+import org.mule.galaxy.api.Index;
+import org.mule.galaxy.api.PropertyInfo;
+import org.mule.galaxy.api.Workspace;
+import org.mule.galaxy.api.util.Constants;
+import org.mule.galaxy.impl.jcr.JcrVersion;
+import org.mule.galaxy.query.QueryImpl;
+import org.mule.galaxy.query.RestrictionImpl;
+import org.mule.galaxy.test.AbstractGalaxyTest;
+
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Set;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactResult;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Index;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.jcr.JcrVersion;
-import org.mule.galaxy.query.Query;
-import org.mule.galaxy.query.Restriction;
-import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.util.Constants;
-
 public class IndexTest extends AbstractGalaxyTest {
-    
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] { "/META-INF/applicationContext-core.xml", 
-                              "/META-INF/applicationContext-test.xml" };
-        
-    }
+
     
     public void xtestReindex() throws Exception {
         Artifact artifact = importHelloWsdl();
@@ -104,8 +98,8 @@ public class IndexTest extends AbstractGalaxyTest {
         Artifact next = (Artifact) results.iterator().next();
         assertEquals(1, next.getVersions().size());
         
-        results = registry.search(new Query(Artifact.class, 
-                                                Restriction.eq("wsdl.service", 
+        results = registry.search(new QueryImpl(Artifact.class,
+                                                RestrictionImpl.eq("wsdl.service",
                                                                new QName("HelloWorldService")))).getResults();
         
         assertEquals(1, results.size());
@@ -113,8 +107,8 @@ public class IndexTest extends AbstractGalaxyTest {
         next = (Artifact) results.iterator().next();
         assertEquals(1, next.getVersions().size());
         
-        results = registry.search(new Query(ArtifactVersion.class, 
-                                            Restriction.eq("wsdl.service", 
+        results = registry.search(new QueryImpl(ArtifactVersion.class,
+                                            RestrictionImpl.eq("wsdl.service",
                                                            new QName("HelloWorldService")))).getResults();
     
         assertEquals(1, results.size());
@@ -124,106 +118,20 @@ public class IndexTest extends AbstractGalaxyTest {
         // assertNotNull(nextAV.getData());
         // TODO test data
         
-        results = registry.search(new Query(ArtifactVersion.class, 
-                                            Restriction.eq("documentType", Constants.WSDL_DEFINITION_QNAME.toString()))).getResults();
+        results = registry.search(new QueryImpl(ArtifactVersion.class,
+                                            RestrictionImpl.eq("documentType", Constants.WSDL_DEFINITION_QNAME.toString()))).getResults();
     
         assertEquals(1, results.size());
         
-        results = registry.search(new Query(ArtifactVersion.class, 
-                                            Restriction.eq("contentType", "application/xml"))).getResults();
+        results = registry.search(new QueryImpl(ArtifactVersion.class,
+                                            RestrictionImpl.eq("contentType", "application/xml"))).getResults();
     
         assertEquals(1, results.size());
         
 
-        results = registry.search(new Query(ArtifactVersion.class, 
-                                            Restriction.in("contentType", Arrays.asList("application/xml")))).getResults();
+        results = registry.search(new QueryImpl(ArtifactVersion.class,
+                                            RestrictionImpl.in("contentType", Arrays.asList("application/xml")))).getResults();
     
         assertEquals(1, results.size());
-    }
-    
-    public void testMule2Index() throws Exception {
-        Collection<Index> indices = indexManager.getIndices(Constants.MULE2_QNAME);
-        assertNotNull(indices);
-        assertEquals(7, indices.size());
-        Index idx = null;
-        for (Iterator<Index> iterator = indices.iterator(); iterator.hasNext();)
-        {
-            idx = iterator.next();
-            if("mule2.service".equals(idx.getId()))
-            {
-                break;
-            }
-        }
-        assertNotNull(idx);
-        assertEquals("mule2.service", idx.getId());
-        assertEquals("Mule 2 Services", idx.getName());
-        assertEquals(Index.Language.XQUERY, idx.getLanguage());
-        assertEquals(String.class, idx.getQueryType());
-        assertNotNull(idx.getExpression());
-        assertEquals(1, idx.getDocumentTypes().size());
-        
-        // Import a document which should now be indexed
-        InputStream helloWsdl = getResourceAsStream("/mule2/hello-config.xml");
-        
-        Collection<Workspace> workspaces = registry.getWorkspaces();
-        assertEquals(1, workspaces.size());
-        Workspace workspace = workspaces.iterator().next();
-        
-        ArtifactResult ar = registry.createArtifact(workspace, "application/xml", 
-                                                    "hello-config.xml", 
-                                                    "0.1", helloWsdl, getAdmin());
-        Artifact artifact = ar.getArtifact();
-        
-        JcrVersion version = (JcrVersion) artifact.getActiveVersion();
-        Object property = version.getProperty("mule2.service");
-        assertNotNull(property);
-        assertTrue(property instanceof Collection);
-        Collection services = (Collection) property;
-        
-        PropertyInfo pi = version.getPropertyInfo("mule2.service");
-        assertTrue(pi.isVisible());
-        assertTrue(pi.isLocked());
-        
-        assertTrue(services.contains("GreeterUMO"));
-        
-        // Try out search!
-        Set results = registry.search(new Query(Artifact.class, 
-                                                Restriction.eq("mule2.service", "GreeterUMO"))).getResults();
-        
-        assertEquals(1, results.size());
-        
-        Artifact next = (Artifact) results.iterator().next();
-        assertEquals(1, next.getVersions().size());
-        
-        results = registry.search(new Query(ArtifactVersion.class, 
-                                            Restriction.eq("mule2.service", "GreeterUMO"))).getResults();
-    
-        assertEquals(1, results.size());
-        
-        ArtifactVersion nextAV = (ArtifactVersion) results.iterator().next();
-        assertEquals("0.1", nextAV.getVersionLabel());
-        // assertNotNull(nextAV.getData());
-        // TODO test data
-    }
-    
-    public void testMuleIndex() throws Exception {
-        
-        // Import a document which should now be indexed
-        InputStream helloConfig = getResourceAsStream("/mule/hello-config.xml");
-        
-        Collection<Workspace> workspaces = registry.getWorkspaces();
-        assertEquals(1, workspaces.size());
-        Workspace workspace = workspaces.iterator().next();
-        
-        ArtifactResult ar = registry.createArtifact(workspace, 
-                                                    "application/xml", 
-                                                    "hello-config.xml", 
-                                                    "0.1", helloConfig, getAdmin());
-        Artifact artifact = ar.getArtifact();
-        
-        JcrVersion version = (JcrVersion) artifact.getActiveVersion();
-        Object property = version.getProperty("mule.description");
-        assertNotNull(property);
-        assertTrue(property instanceof String);
     }
 }

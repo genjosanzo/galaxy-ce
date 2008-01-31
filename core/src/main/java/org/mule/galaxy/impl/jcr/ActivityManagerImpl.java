@@ -1,5 +1,10 @@
 package org.mule.galaxy.impl.jcr;
 
+import org.mule.galaxy.api.Activity;
+import org.mule.galaxy.api.ActivityManager;
+import org.mule.galaxy.api.security.User;
+import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -25,13 +30,10 @@ import javax.jcr.version.VersionException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.mule.galaxy.Activity;
-import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
-import org.mule.galaxy.security.User;
 import org.springmodules.jcr.JcrCallback;
 
-public class ActivityManagerImpl extends AbstractReflectionDao<Activity> implements ActivityManager {
+public class ActivityManagerImpl extends AbstractReflectionDao<Activity> implements ActivityManager
+{
 
     private DatatypeFactory dataTypeFactory;
     
@@ -42,7 +44,7 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
     }
 
     @SuppressWarnings("unchecked")
-    public Collection<Activity> getActivities(final Date from, 
+    public Collection<Activity> getActivities(final Date from,
                                               final Date to, 
                                               final String user, 
                                               final EventType eventType, 

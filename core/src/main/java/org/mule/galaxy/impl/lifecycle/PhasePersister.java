@@ -1,15 +1,15 @@
 package org.mule.galaxy.impl.lifecycle;
 
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Session;
-
+import org.mule.galaxy.api.lifecycle.Lifecycle;
+import org.mule.galaxy.api.lifecycle.LifecycleManager;
+import org.mule.galaxy.api.lifecycle.Phase;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.onm.FieldDescriptor;
 import org.mule.galaxy.impl.jcr.onm.FieldPersister;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.lifecycle.Phase;
+
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Session;
 
 /**
  * Provides logic to persist phases to JCR nodes and recreate them from 

@@ -1,22 +1,18 @@
 package org.mule.galaxy.impl.jcr;
 
-import static org.mule.galaxy.impl.jcr.JcrUtil.getOrCreate;
+import org.mule.galaxy.api.ArtifactPlugin;
 
 import java.io.IOException;
 import java.util.Map;
 
-import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.mule.galaxy.ArtifactPlugin;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
-import org.springmodules.jcr.jackrabbit.support.UserTxSessionHolder;
 
 public class PluginRunner implements ApplicationContextAware {
     private ApplicationContext context;

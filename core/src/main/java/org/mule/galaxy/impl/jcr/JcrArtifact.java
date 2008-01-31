@@ -1,13 +1,14 @@
 package org.mule.galaxy.impl.jcr;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.api.Artifact;
+import org.mule.galaxy.api.ArtifactVersion;
+import org.mule.galaxy.api.ContentHandler;
+import org.mule.galaxy.api.PropertyException;
+import org.mule.galaxy.api.PropertyInfo;
+import org.mule.galaxy.api.Registry;
+import org.mule.galaxy.api.Workspace;
+import org.mule.galaxy.api.lifecycle.Lifecycle;
+import org.mule.galaxy.api.lifecycle.Phase;
 import org.mule.galaxy.util.QNameUtil;
 
 import java.util.ArrayList;
@@ -24,7 +25,8 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
 
-public class JcrArtifact extends AbstractJcrObject implements Artifact {
+public class JcrArtifact extends AbstractJcrObject implements Artifact
+{
     public static final String CONTENT_TYPE = "contentType";
     public static final String CREATED = "created";
     public static final String DESCRIPTION = "description";
@@ -234,7 +236,8 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     }
 
     @Override
-    public void setProperty(String name, Object value) throws PropertyException {
+    public void setProperty(String name, Object value) throws PropertyException
+    {
         getActiveVersion().setProperty(name, value);
     }
     
@@ -264,7 +267,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
         getActiveVersion().setVisible(name, visible);
     }
 
-    public JcrRegistryImpl getRegistry() {
+    public Registry getRegistry() {
         return registry;
     }
 

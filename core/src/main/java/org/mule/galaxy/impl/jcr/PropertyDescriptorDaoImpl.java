@@ -1,6 +1,6 @@
 package org.mule.galaxy.impl.jcr;
 
-import org.mule.galaxy.PropertyDescriptor;
+import org.mule.galaxy.api.PropertyDescriptor;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 
 public class PropertyDescriptorDaoImpl extends AbstractReflectionDao<PropertyDescriptor>{

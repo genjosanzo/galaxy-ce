@@ -1,5 +1,25 @@
 package org.mule.galaxy.impl.lifecycle;
 
+import org.mule.galaxy.api.ActivityManager;
+import org.mule.galaxy.api.ActivityManager.EventType;
+import org.mule.galaxy.api.Artifact;
+import org.mule.galaxy.api.ArtifactPolicyException;
+import org.mule.galaxy.api.ArtifactVersion;
+import org.mule.galaxy.api.Dao;
+import org.mule.galaxy.api.Workspace;
+import org.mule.galaxy.api.lifecycle.Lifecycle;
+import org.mule.galaxy.api.lifecycle.LifecycleManager;
+import org.mule.galaxy.api.lifecycle.Phase;
+import org.mule.galaxy.api.lifecycle.TransitionException;
+import org.mule.galaxy.api.policy.ApprovalMessage;
+import org.mule.galaxy.api.policy.ArtifactPolicy;
+import org.mule.galaxy.api.policy.PolicyManager;
+import org.mule.galaxy.api.security.User;
+import org.mule.galaxy.api.util.LogUtils;
+import org.mule.galaxy.impl.jcr.JcrArtifact;
+import org.mule.galaxy.api.lifecycle.PhaseLogEntry;
+import org.mule.galaxy.util.DOMUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -19,31 +39,11 @@ import java.util.logging.Logger;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Dao;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.ActivityManager.EventType;
-import org.mule.galaxy.impl.jcr.JcrArtifact;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.lifecycle.PhaseLogEntry;
-import org.mule.galaxy.lifecycle.TransitionException;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactPolicy;
-import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.util.DOMUtils;
-import org.mule.galaxy.util.LogUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -54,7 +54,7 @@ public class LifecycleManagerImpl implements LifecycleManager, ApplicationContex
     private static final Logger LOGGER = LogUtils.getL7dLogger(LifecycleManagerImpl.class);
 
     private List<String> lifecycleDocuments = new ArrayList<String>();
-    private Map<String,Lifecycle> lifecycles = new ConcurrentHashMap<String, Lifecycle>();
+    private Map<String, Lifecycle> lifecycles = new ConcurrentHashMap<String, Lifecycle>();
     private List<ArtifactPolicy> phaseApprovalListeners = new ArrayList<ArtifactPolicy>();
     private Dao<PhaseLogEntry> entryDao;
     private PolicyManager policyManager;
@@ -91,7 +91,7 @@ public class LifecycleManagerImpl implements LifecycleManager, ApplicationContex
         Document doc = DOMUtils.readXml(is);
         Element root = doc.getDocumentElement();
         
-        Map<String, Lifecycle> lifecycles = new HashMap<String, Lifecycle>(); 
+        Map<String, Lifecycle> lifecycles = new HashMap<String, Lifecycle>();
         Element lifecycleEl = (Element) DOMUtils.getChild(root, "lifecycle");
         while (lifecycleEl != null) {
             String name = lifecycleEl.getAttribute("name");
@@ -127,7 +127,7 @@ public class LifecycleManagerImpl implements LifecycleManager, ApplicationContex
                         Phase nextPhase = phases.get(nextPhaseName);
                         
                         if (nextPhase == null) {
-                            throw new Exception("Phase " + nextPhaseName + 
+                            throw new Exception("PhaseImpl " + nextPhaseName +
                                                 " is not a valid transition in phase " +
                                                 nextPhase + " in lifecycle " + name);
                         }
@@ -172,7 +172,7 @@ public class LifecycleManagerImpl implements LifecycleManager, ApplicationContex
     }
     
     public void transition(final Artifact a, 
-                           final Phase p, 
+                           final Phase p,
                            final User user) throws TransitionException, ArtifactPolicyException {
         if (!isTransitionAllowed(a, p)) {
             throw new TransitionException(p);

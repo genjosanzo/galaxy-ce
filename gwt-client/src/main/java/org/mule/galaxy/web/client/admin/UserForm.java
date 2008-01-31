@@ -43,9 +43,9 @@ public class UserForm extends AbstractComposite {
         FlowPanel panel = new FlowPanel();
         String title;
         if (add) {
-            title = "Add User";
+            title = "Add UserImpl";
         } else {
-            title = "Edit User " + u.getUsername();
+            title = "Edit UserImpl " + u.getUsername();
         }
         
         final FlexTable table = createTitledColumnTable(panel, title);
@@ -135,7 +135,7 @@ public class UserForm extends AbstractComposite {
 
             public void onFailure(Throwable caught) {
                 if (caught instanceof ItemNotFoundException) {
-                    adminPanel.setMessage("User was not found! " + user.getId());
+                    adminPanel.setMessage("UserImpl was not found! " + user.getId());
                     reenable();
                 } else {
                     super.onFailure(caught);
@@ -144,7 +144,7 @@ public class UserForm extends AbstractComposite {
 
             public void onSuccess(Object result) {
                 adminPanel.showUsers();
-                adminPanel.setMessage("User " + user.getUsername() + " was saved.");
+                adminPanel.setMessage("UserImpl " + user.getUsername() + " was saved.");
             }
             
         });
@@ -155,7 +155,7 @@ public class UserForm extends AbstractComposite {
 
             public void onFailure(Throwable caught) {
                 if (caught instanceof ItemNotFoundException) {
-                    adminPanel.setMessage("User was not found! " + user.getId());
+                    adminPanel.setMessage("UserImpl was not found! " + user.getId());
                     reenable();
                 } else {
                     super.onFailure(caught);
@@ -164,7 +164,7 @@ public class UserForm extends AbstractComposite {
 
             public void onSuccess(Object result) {
                 adminPanel.showUsers();
-                adminPanel.setMessage("User " + user.getUsername() + " was created.");
+                adminPanel.setMessage("UserImpl " + user.getUsername() + " was created.");
             }
             
         });

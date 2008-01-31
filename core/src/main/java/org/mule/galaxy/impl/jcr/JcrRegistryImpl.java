@@ -1,6 +1,38 @@
 package org.mule.galaxy.impl.jcr;
 
 
+import org.mule.galaxy.api.ActivityManager;
+import org.mule.galaxy.api.Artifact;
+import org.mule.galaxy.api.ArtifactPolicyException;
+import org.mule.galaxy.api.ArtifactResult;
+import org.mule.galaxy.api.ArtifactVersion;
+import org.mule.galaxy.api.ContentHandler;
+import org.mule.galaxy.api.ContentService;
+import org.mule.galaxy.api.Dao;
+import org.mule.galaxy.api.Dependency;
+import org.mule.galaxy.api.IndexManager;
+import org.mule.galaxy.api.NotFoundException;
+import org.mule.galaxy.api.PropertyDescriptor;
+import org.mule.galaxy.api.RegistryException;
+import org.mule.galaxy.api.Settings;
+import org.mule.galaxy.api.Workspace;
+import org.mule.galaxy.api.XmlContentHandler;
+import org.mule.galaxy.api.lifecycle.Lifecycle;
+import org.mule.galaxy.api.lifecycle.LifecycleManager;
+import org.mule.galaxy.api.policy.ApprovalMessage;
+import org.mule.galaxy.api.policy.ArtifactPolicy;
+import org.mule.galaxy.api.policy.PolicyManager;
+import org.mule.galaxy.api.query.QueryException;
+import org.mule.galaxy.api.query.Restriction;
+import org.mule.galaxy.api.query.SearchResults;
+import org.mule.galaxy.api.security.User;
+import org.mule.galaxy.api.security.UserManager;
+import org.mule.galaxy.api.util.LogUtils;
+import org.mule.galaxy.api.util.Message;
+import org.mule.galaxy.query.QueryImpl;
+import org.mule.galaxy.query.RestrictionImpl;
+import org.mule.galaxy.query.SearchResultsImpl;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -37,43 +69,11 @@ import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
 import org.apache.jackrabbit.core.nodetype.xml.NodeTypeReader;
 import org.apache.jackrabbit.name.MalformedPathException;
 import org.apache.jackrabbit.util.ISO9075;
-import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Comment;
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.ContentService;
-import org.mule.galaxy.Dao;
-import org.mule.galaxy.Dependency;
-import org.mule.galaxy.IndexManager;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.PropertyDescriptor;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Settings;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.XmlContentHandler;
-import org.mule.galaxy.ActivityManager.EventType;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactPolicy;
-import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.query.QueryException;
-import org.mule.galaxy.query.Restriction;
-import org.mule.galaxy.query.SearchResults;
-import org.mule.galaxy.query.Restriction.Operator;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.security.UserManager;
-import org.mule.galaxy.util.LogUtils;
-import org.mule.galaxy.util.Message;
 import org.springframework.dao.DataAccessException;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
-public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistry {
+public class JcrRegistryImpl extends JcrTemplate implements JcrRegistry {
 
     public static final String ARTIFACT_NODE_NAME = "__artifact";
     public static final String LATEST = "latest";
@@ -334,7 +334,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return artifacts;
     }
 
-    public Artifact getArtifact(final String id) throws NotFoundException {
+    public Artifact getArtifact(final String id) throws NotFoundException
+    {
         final JcrRegistryImpl registry = this;
         return (Artifact) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
@@ -396,8 +397,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return a;
     }
 
-    public ArtifactResult createArtifact(Workspace workspace, Object data, String versionLabel, User user) 
-        throws RegistryException, ArtifactPolicyException, MimeTypeParseException {
+    public ArtifactResult createArtifact(Workspace workspace, Object data, String versionLabel, User user)
+        throws RegistryException, ArtifactPolicyException {
         ContentHandler ch = contentService.getContentHandler(data.getClass());
         
         if (ch == null) {
@@ -420,7 +421,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         throws RegistryException, ArtifactPolicyException {
         
         if (user == null) {
-            throw new NullPointerException("User cannot be null.");
+            throw new NullPointerException("UserImpl cannot be null.");
         }
         if (name == null) {
             throw new NullPointerException("Artifact name cannot be null.");
@@ -571,10 +572,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         
         if (previous == null) {
             activityManager.logActivity(user, "Artifact " + artifact.getName() + " was created in workspace "
-                                              + artifact.getWorkspace().getPath() + ".", EventType.INFO);
+                                              + artifact.getWorkspace().getPath() + ".", ActivityManager.EventType.INFO);
         } else {
             activityManager.logActivity(user, "Version " + next.getVersionLabel() 
-                                        + " of artifact " + artifact.getPath() + " was created.", EventType.INFO);
+                                        + " of artifact " + artifact.getPath() + " was created.", ActivityManager.EventType.INFO);
         }
         
         
@@ -586,7 +587,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                                          String name,
                                          String versionLabel, 
                                          InputStream inputStream, 
-                                         User user) 
+                                         User user)
         throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException {
         contentType = trimContentType(contentType);
         MimeType ct = new MimeType(contentType);
@@ -617,7 +618,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     public ArtifactResult newVersion(final Artifact artifact, 
                                      final InputStream inputStream, 
                                      final String versionLabel, 
-                                     final User user) 
+                                     final User user)
         throws RegistryException, ArtifactPolicyException, IOException {
         return newVersion(artifact, inputStream, null, versionLabel, user);
     }
@@ -626,11 +627,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                                         final InputStream inputStream, 
                                         final Object data,
                                         final String versionLabel, 
-                                        final User user) 
+                                        final User user)
         throws RegistryException, ArtifactPolicyException, IOException {
        
         if (user == null) {
-            throw new NullPointerException("User cannot be null!");
+            throw new NullPointerException("UserImpl cannot be null!");
         }
         
         return (ArtifactResult) executeAndDewrap(new JcrCallback() {
@@ -853,9 +854,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
         
         if (!itr.hasNext()){
-            return search(new org.mule.galaxy.query.Query(selectTypeCls));
+            return search(new QueryImpl(selectTypeCls));
         }
-        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(selectTypeCls);
+        org.mule.galaxy.api.query.Query q = new QueryImpl(selectTypeCls);
         q.setStart(startOfResults);
         q.setMaxResults(maxResults);
         
@@ -890,11 +891,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             
             Restriction r = null;
             if (compare.equals("=")) {
-                r = Restriction.eq(left, dequote(itr.next(), itr));
+                r = RestrictionImpl.eq(left, dequote(itr.next(), itr));
             } else if (compare.equals("like")) {
-                r = Restriction.like(left, dequote(itr.next(), itr));
+                r = RestrictionImpl.like(left, dequote(itr.next(), itr));
             } else if (compare.equals("!=")) {
-                r = Restriction.not(Restriction.eq(left, dequote(itr.next(), itr)));
+                r = RestrictionImpl.not(RestrictionImpl.eq(left, dequote(itr.next(), itr)));
             } else if (compare.equals("in")) {
                 if (!itr.hasNext()) {
                     throw new QueryException(new Message("EXPECTED_IN_TOKEN", LOGGER));
@@ -928,7 +929,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         in.add(dequote(nextIn, itr));
                     }
                 }
-                r = Restriction.in(left, in);
+                r = RestrictionImpl.in(left, in);
             } else {
                 new QueryException(new Message("UNKNOWN_COMPARATOR", LOGGER, left));
             }
@@ -970,7 +971,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
 
-    public SearchResults search(final org.mule.galaxy.query.Query query) 
+    public SearchResults search(final org.mule.galaxy.api.query.Query query)
         throws RegistryException, QueryException {
         final JcrRegistryImpl registry = this;
         return (SearchResults) execute(new JcrCallback() {
@@ -1030,21 +1031,21 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     // TODO: NOT, LIKE, OR, etc
                     String property = (String) r.getLeft();
                     boolean not = false;
-                    Operator operator = r.getOperator();
+                    Restriction.Operator operator = r.getOperator();
                     
-                    if (operator.equals(Operator.NOT)) {
+                    if (operator.equals(Restriction.Operator.NOT)) {
                         not = true;
                         r = (Restriction) r.getRight();
                         operator = r.getOperator();
                         property = r.getLeft().toString();
                     }
                     
-                    if (operator.equals(Operator.IN)) {
+                    if (operator.equals(Restriction.Operator.IN)) {
                         Collection<?> right = (Collection<?>) r.getRight();
                         for (Object o : right) {
                             first = appendPropertySearch(qstr, propStr, first, 
                                                           o.toString(), property, 
-                                                          not, false, Operator.EQUALS);
+                                                          not, false, Restriction.Operator.EQUALS);
                         }
                     } else {
                         String right = r.getRight().toString();
@@ -1111,7 +1112,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     }
                 }                                                   
                 
-                return new SearchResults(nodes.getSize(), artifacts);
+                return new SearchResultsImpl(nodes.getSize(), artifacts);
             }
 
             private boolean appendPropertySearch(StringBuilder qstr, 
@@ -1121,7 +1122,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                                                   String property, 
                                                   boolean not,
                                                   boolean and,
-                                                  Operator operator) {
+                                                  Restriction.Operator operator) {
                 
                 if (property.equals(JcrArtifact.PHASE)
                     || property.equals(JcrArtifact.DOCUMENT_TYPE)
@@ -1236,7 +1237,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     private void createPropertySearch(StringBuilder qstr, String right, 
-                                      String property, Operator operator, 
+                                      String property, Restriction.Operator operator,
                                       boolean not, boolean appendBrackets) {
         if (appendBrackets) {
             qstr.append("[");
@@ -1246,7 +1247,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             qstr.append("not(");
         }
         
-        if (operator.equals(Operator.LIKE)) {
+        if (operator.equals(Restriction.Operator.LIKE)) {
             qstr.append("jcr:like(@")
             .append(property)
             .append(", '%")

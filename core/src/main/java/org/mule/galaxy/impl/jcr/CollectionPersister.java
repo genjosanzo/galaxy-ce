@@ -9,11 +9,10 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.apache.jackrabbit.core.persistence.PersistenceManager;
 import org.mule.galaxy.impl.jcr.onm.ClassPersister;
 import org.mule.galaxy.impl.jcr.onm.FieldDescriptor;
 import org.mule.galaxy.impl.jcr.onm.FieldPersister;
-import org.mule.galaxy.impl.jcr.onm.OneToMany;
+import org.mule.galaxy.api.jcr.onm.OneToMany;
 import org.mule.galaxy.impl.jcr.onm.PersisterManager;
 
 public class CollectionPersister implements FieldPersister {

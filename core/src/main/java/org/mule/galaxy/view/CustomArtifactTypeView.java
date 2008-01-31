@@ -1,12 +1,16 @@
 package org.mule.galaxy.view;
 
+import org.mule.galaxy.api.Artifact;
+import org.mule.galaxy.api.lifecycle.Phase;
+import org.mule.galaxy.api.view.ArtifactTypeView;
+import org.mule.galaxy.api.view.ColumnEvaluator;
+import org.mule.galaxy.api.view.ViewLink;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.lifecycle.Phase;
-
-public class CustomArtifactTypeView implements ArtifactTypeView {
+public class CustomArtifactTypeView implements ArtifactTypeView
+{
     private List<Column> columns = new ArrayList<Column>();
 
     public CustomArtifactTypeView() {

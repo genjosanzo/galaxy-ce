@@ -1,17 +1,19 @@
 package org.mule.galaxy.impl.content;
 
 
+import org.mule.galaxy.api.ContentHandler;
+import org.mule.galaxy.api.ContentService;
+import org.mule.galaxy.api.XmlContentHandler;
+
 import java.util.Collection;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import javax.xml.namespace.QName;
 
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.ContentService;
-import org.mule.galaxy.XmlContentHandler;
 
-public class ContentServiceImpl implements ContentService {
+public class ContentServiceImpl implements ContentService
+{
     private Collection<ContentHandler> contentHandlers;
     private ContentHandler defaultContentHandler = new DefaultContentHandler();
     private MimeType xmlMimeType;

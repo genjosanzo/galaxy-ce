@@ -1,9 +1,9 @@
 package org.mule.galaxy.policy.wsdl;
 
-import java.util.Collection;
-
-import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.api.policy.ApprovalMessage;
 import org.mule.galaxy.wsdl.diff.DifferenceEvent;
+
+import java.util.Collection;
 
 public class ForwardCompatibilityPolicy extends AbstractWsdlVersioningPolicy {
     private static final String WSDL_FORWARD_COMPAT = "wsdl-forward-compat";

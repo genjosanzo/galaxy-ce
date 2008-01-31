@@ -1,14 +1,14 @@
 package org.mule.galaxy.impl;
 
 
+import org.mule.galaxy.api.Artifact;
+import org.mule.galaxy.api.Comment;
+import org.mule.galaxy.test.AbstractGalaxyTest;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.Comment;
-import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class CommentTest extends AbstractGalaxyTest {
     public void testComments() throws Exception {

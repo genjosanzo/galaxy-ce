@@ -1,5 +1,7 @@
 package org.mule.galaxy.impl.jcr.onm;
 
+import org.mule.galaxy.api.jcr.onm.OneToMany;
+
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;

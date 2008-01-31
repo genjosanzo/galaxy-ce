@@ -1,12 +1,17 @@
 package org.mule.galaxy.lifecycle;
 
+import org.mule.galaxy.api.Artifact;
+import org.mule.galaxy.api.Dao;
+import org.mule.galaxy.api.lifecycle.Lifecycle;
+import org.mule.galaxy.api.lifecycle.LifecycleManager;
+import org.mule.galaxy.api.lifecycle.Phase;
+import org.mule.galaxy.api.lifecycle.TransitionException;
+import org.mule.galaxy.api.lifecycle.PhaseLogEntry;
+import org.mule.galaxy.test.AbstractGalaxyTest;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.Dao;
-import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class LifecycleManagerTest extends AbstractGalaxyTest {
     protected LifecycleManager lifecycleManager;

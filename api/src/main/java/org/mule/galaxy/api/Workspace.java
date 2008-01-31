@@ -1,0 +1,19 @@
+package org.mule.galaxy.api;
+
+import java.util.Collection;
+
+public interface Workspace {
+
+    String getId();
+    
+    String getName();
+    
+    Workspace getParent();
+    
+    Collection<Workspace> getWorkspaces();
+
+    Workspace getWorkspace(String name);
+
+    String getPath();
+
+}

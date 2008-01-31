@@ -1,41 +1,31 @@
 package org.mule.galaxy.impl.content;
 
+import org.mule.galaxy.api.ArtifactVersion;
+import org.mule.galaxy.api.XmlContentHandler;
+import org.mule.galaxy.impl.RegistryLocator;
+import org.mule.galaxy.api.util.Constants;
+import org.mule.galaxy.util.QNameUtil;
+import org.mule.galaxy.wsdl.diff.DifferenceEvent;
+import org.mule.galaxy.wsdl.diff.DifferenceListener;
+import org.mule.galaxy.wsdl.diff.WsdlDiff;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import javax.wsdl.WSDLException;
 import javax.wsdl.xml.WSDLLocator;
 import javax.xml.namespace.QName;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.XmlContentHandler;
-import org.mule.galaxy.impl.MapNamespaceContext;
-import org.mule.galaxy.impl.RegistryLocator;
-import org.mule.galaxy.util.Constants;
-import org.mule.galaxy.util.QNameUtil;
-import org.mule.galaxy.wsdl.diff.DifferenceEvent;
-import org.mule.galaxy.wsdl.diff.DifferenceListener;
-import org.mule.galaxy.wsdl.diff.WsdlDiff;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-public class WsdlContentHandler extends XmlDocumentContentHandler implements XmlContentHandler {
+public class WsdlContentHandler extends XmlDocumentContentHandler implements XmlContentHandler
+{
 
     public WsdlContentHandler() 
         throws WSDLException, MimeTypeParseException, XPathExpressionException {

@@ -1,16 +1,16 @@
 package org.mule.galaxy.web;
 
+import org.mule.galaxy.api.ArtifactPolicyException;
+import org.mule.galaxy.api.PropertyDescriptor;
+import org.mule.galaxy.api.RegistryException;
+import org.mule.galaxy.api.Workspace;
+import org.mule.galaxy.api.security.User;
+import org.mule.galaxy.api.security.UserManager;
+import org.mule.galaxy.impl.artifact.AbstractArtifactPlugin;
+
 import java.io.IOException;
 
 import javax.activation.MimeTypeParseException;
-
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.PropertyDescriptor;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.artifact.AbstractArtifactPlugin;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.security.UserManager;
 
 public class DemoArtifactPlugin extends AbstractArtifactPlugin {
     private UserManager userManager;
@@ -34,7 +34,7 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
         registry.savePropertyDescriptor(pd);
     }
 
-    private void add(Workspace w, User user, String name, String resource) 
+    private void add(Workspace w, User user, String name, String resource)
         throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException {
 
         registry.createArtifact(w,

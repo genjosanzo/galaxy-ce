@@ -1,6 +1,5 @@
 package org.mule.galaxy.web.client.activity;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -74,7 +73,7 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
         searchPanel.add(new Label("To:"));
         searchPanel.add(toTB);
 
-        searchPanel.add(new Label("User:"));
+        searchPanel.add(new Label("UserImpl:"));
         userLB = new ListBox();
         userLB.addItem("All");
         userLB.addItem("System", "system");
@@ -243,7 +242,7 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
         resultsPanel.add(table);
 
         table.setText(0, 0, "Date");
-        table.setText(0, 1, "User");
+        table.setText(0, 1, "UserImpl");
         table.setText(0, 2, "Event Type");
         table.setText(0, 3, "Activity");
 

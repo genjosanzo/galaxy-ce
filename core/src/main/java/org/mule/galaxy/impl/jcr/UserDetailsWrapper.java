@@ -1,11 +1,12 @@
 package org.mule.galaxy.impl.jcr;
 
+import org.mule.galaxy.api.security.User;
+
 import java.util.ArrayList;
 
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.GrantedAuthorityImpl;
 import org.acegisecurity.userdetails.UserDetails;
-import org.mule.galaxy.security.User;
 
 public class UserDetailsWrapper implements UserDetails {
     private User user;

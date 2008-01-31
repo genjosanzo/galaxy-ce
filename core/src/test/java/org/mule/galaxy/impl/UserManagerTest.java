@@ -1,12 +1,9 @@
 package org.mule.galaxy.impl;
 
-import java.util.List;
-
-import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.security.UserManager;
+import org.mule.galaxy.api.security.User;
 import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.util.Constants;
+
+import java.util.List;
 
 public class UserManagerTest extends AbstractGalaxyTest {
     public void testDao() throws Exception {

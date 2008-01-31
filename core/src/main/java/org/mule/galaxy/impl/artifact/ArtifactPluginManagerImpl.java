@@ -9,17 +9,17 @@
  */
 package org.mule.galaxy.impl.artifact;
 
-import org.mule.galaxy.ArtifactPlugin;
-import org.mule.galaxy.ArtifactPluginManager;
-import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.Dao;
-import org.mule.galaxy.IndexManager;
-import org.mule.galaxy.Registry;
+import org.mule.galaxy.api.ArtifactPlugin;
+import org.mule.galaxy.api.ArtifactPluginManager;
+import org.mule.galaxy.api.Dao;
+import org.mule.galaxy.api.IndexManager;
+import org.mule.galaxy.api.Registry;
+import org.mule.galaxy.api.artifact.ArtifactType;
+import org.mule.galaxy.api.policy.PolicyManager;
+import org.mule.galaxy.api.view.ViewManager;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.plugins.config.jaxb.GalaxyPluginType;
 import org.mule.galaxy.plugins.config.jaxb.GalaxyPluginsType;
-import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.view.ViewManager;
 
 import java.io.IOException;
 import java.net.URL;

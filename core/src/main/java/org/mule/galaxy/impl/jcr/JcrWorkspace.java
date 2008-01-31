@@ -1,5 +1,7 @@
 package org.mule.galaxy.impl.jcr;
 
+import org.mule.galaxy.api.Workspace;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,9 +11,7 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 
-import org.mule.galaxy.Workspace;
-
-public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.Workspace {
+public class JcrWorkspace extends AbstractJcrObject implements Workspace {
 
     public static final String NAME = "name";
     private List<Workspace> workspaces;

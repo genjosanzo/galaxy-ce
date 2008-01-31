@@ -1,5 +1,13 @@
 package org.mule.galaxy.impl;
 
+import org.mule.galaxy.api.Artifact;
+import org.mule.galaxy.api.NotFoundException;
+import org.mule.galaxy.api.Registry;
+import org.mule.galaxy.api.Workspace;
+import org.mule.galaxy.api.Registry;
+import org.mule.galaxy.api.Workspace;
+import org.mule.galaxy.api.util.LogUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -7,12 +15,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.wsdl.xml.WSDLLocator;
-
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.util.LogUtils;
 
 import org.xml.sax.InputSource;
 
