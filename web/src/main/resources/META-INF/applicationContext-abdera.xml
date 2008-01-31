@@ -9,36 +9,60 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
     http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
 
+  <!-- Collections -->
+  <bean name="searchableCollection" class="org.mule.galaxy.atom.SearchableArtifactCollection">
+    <constructor-arg ref="registry"/>
+  </bean>
   
-  <!-- Abdera -->
-  <a:serviceContext>
+  <bean name="artifactWorkspaceCollection" class="org.mule.galaxy.atom.ArtifactWorkspaceCollection">
+    <constructor-arg ref="registry"/>
+  </bean>
   
-    <a:provider>
-      <ref bean="provider"/>
-    </a:provider>
-    
-    <a:targetResolver>
-      <ref bean="provider"/> 
-    </a:targetResolver>
-    
-  </a:serviceContext>
-
-  <bean id="provider" class="org.mule.galaxy.atom.RegistryServiceProvider">
-    <property name="servicesPath" value="/api/"/>
-    
-    <property name="artifactVersionProvider">
-      <bean class="org.mule.galaxy.atom.ArtifactVersionCollectionProvider">
-        <constructor-arg ref="registry"/>
-      </bean> 
+  <bean name="historyCollection" class="org.mule.galaxy.atom.ArtifactHistoryCollection">
+    <constructor-arg ref="registry"/>
+  </bean>
+  
+  <bean name="commentCollection" class="org.mule.galaxy.atom.CommentCollectionProvider">
+    <constructor-arg ref="commentManager"/>
+    <constructor-arg ref="registry"/>
+    <property name="href" value="comments"/>
+  </bean>
+  
+  <bean name="workspaceCollection" class="org.mule.galaxy.atom.WorkspaceCollection">
+    <constructor-arg ref="registry"/>
+    <property name="href" value="registry"/>
+  </bean>
+  
+  <!-- The Provider -->
+  <bean id="org.apache.abdera.protocol.server.Provider"
+        class="org.mule.galaxy.atom.ServiceProvider">
+    <property name="targetResolver">
+      <bean class="org.mule.galaxy.atom.ArtifactResolver">
+        <property name="registry" ref="registry"/>
+        <property name="searchableCollection" ref="searchableCollection"/>
+        <property name="artifactWorkspaceCollection" ref="artifactWorkspaceCollection"/>
+        <property name="workspaceCollection" ref="workspaceCollection"/>
+        <property name="historyCollection" ref="historyCollection"/>
+        <property name="commentCollection" ref="commentCollection"/>
+      </bean>
     </property>
-    
-    <property name="workspaces">
-      <list>
-        <bean class="org.mule.galaxy.atom.ArtifactWorkspaceInfo" init-method="initialize">
-          <property name="commentManager" ref="commentManager"/>
-          <property name="registry" ref="registry"/>
-        </bean>
-      </list>
+    <property name="workspaceManager">
+      <bean class="org.apache.abdera.protocol.server.impl.DefaultWorkspaceManager">
+        <!-- These are the workspaces we'll be listing out in the services doc -->
+        <property name="workspaces">
+          <list>
+            <bean class="org.apache.abdera.protocol.server.impl.SimpleWorkspaceInfo">
+              <property name="title" value="Mule Galaxy Registry &amp; Repository"/>
+              <property name="collections">
+                <list>
+                  <ref bean="searchableCollection"/>
+                  <ref bean="commentCollection"/>
+                </list>
+              </property>
+            </bean> 
+          </list>
+        </property>
+      </bean>
     </property>
   </bean>
   

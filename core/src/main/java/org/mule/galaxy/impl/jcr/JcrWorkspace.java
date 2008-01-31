@@ -52,6 +52,7 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
                 NodeIterator nodes = node.getNodes();
                 while (nodes.hasNext()) {
                     Node n = nodes.nextNode();
+                    
                     if (n.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
                         workspaces.add(new JcrWorkspace(n));
                     }

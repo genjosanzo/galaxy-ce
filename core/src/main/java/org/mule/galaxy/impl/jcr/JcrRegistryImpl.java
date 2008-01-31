@@ -35,6 +35,7 @@ import org.apache.jackrabbit.core.nodetype.NodeTypeDef;
 import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
 import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
 import org.apache.jackrabbit.core.nodetype.xml.NodeTypeReader;
+import org.apache.jackrabbit.name.MalformedPathException;
 import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.ActivityManager;
 import org.mule.galaxy.Artifact;
@@ -131,7 +132,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public Workspace getWorkspaceByPath(String path) throws RegistryException, NotFoundException {
         try {
-            Node node = getWorkspacesNode().getNode(path);
+            if (path.startsWith("/")) {
+                path = path.substring(1);
+            }
+            
+            Node wNode = getWorkspacesNode();
+            
+            if (!wNode.hasNode(path)) throw new NotFoundException(path);
+            
+            Node node = wNode.getNode(path);
 
             return new JcrWorkspace(node);
         } catch (PathNotFoundException e) {

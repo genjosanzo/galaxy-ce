@@ -22,9 +22,8 @@ public class ArtifactCollectionQueryTest extends AbstractAtomTest {
         opts.setContentType("application/xml; charset=utf-8");
         opts.setSlug("hello_world.wsdl");
         opts.setHeader("X-Artifact-Version", "0.1");
-        opts.setHeader("X-Workspace", "Default Workspace");
         opts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
-        ClientResponse res = client.post(url, getWsdl(), opts);
+        ClientResponse res = client.post(url + "/Default%20Workspace", getWsdl(), opts);
         assertEquals(201, res.getStatus());
         
         prettyPrint(res.getDocument());

@@ -46,10 +46,9 @@ public class CxfPolicyTest extends AbstractAtomTest {
         opts.setContentType("application/xml; charset=utf-8");
         opts.setSlug("wsrm-policy.wsdl");
         opts.setHeader("X-Artifact-Version", "0.1");
-        opts.setHeader("X-Workspace", "Default Workspace");
         opts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
         
-        ClientResponse res = client.post("http://localhost:9002/api/registry", 
+        ClientResponse res = client.post("http://localhost:9002/api/registry/Default%20Workspace", 
                                          getClass().getResourceAsStream("/policies/wsrm-policy.xml"), 
                                          opts);
         assertEquals(201, res.getStatus());

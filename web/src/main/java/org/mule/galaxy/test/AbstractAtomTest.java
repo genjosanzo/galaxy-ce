@@ -1,9 +1,6 @@
 package org.mule.galaxy.test;
 
 
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.impl.IndexManagerImpl;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -14,22 +11,26 @@ import javax.jcr.Repository;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 
-import junit.framework.TestCase;
 import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Base;
-import org.apache.abdera.protocol.server.ServiceContext;
+import org.apache.abdera.protocol.server.Provider;
 import org.apache.abdera.writer.Writer;
 import org.apache.abdera.writer.WriterFactory;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.impl.IndexManagerImpl;
+import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import junit.framework.TestCase;
 
 public class AbstractAtomTest extends TestCase {
     
     protected Registry registry;
-    protected ServiceContext abderaServiceContext;
+    protected Provider provider;
     protected Abdera abdera = new Abdera();
     protected Factory factory = abdera.getFactory();
     private Server server;
@@ -66,6 +67,7 @@ public class AbstractAtomTest extends TestCase {
             Session session = repository.login(new SimpleCredentials("username", "password".toCharArray()));
 
             Node node = session.getRootNode();
+//            JcrUtil.dump(node.getNode("workspaces"));o
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
                 Node child = itr.nextNode();
                 if (!child.getName().equals("jcr:system")) {

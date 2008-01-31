@@ -47,7 +47,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         Collection collection = null;
         for (Collection c : collections) {
-            if ("registry".equals(c.getHref().toString())) {
+            if ("/api/registry".equals(c.getHref().toString())) {
                 collection = c;
             }
         }
@@ -59,21 +59,21 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         IRI colUri = new IRI(base).resolve(collection.getHref());
         System.out.println("Grabbing the Feed " + colUri.toString());
         res = client.get(colUri.toString(), defaultOpts);
+        System.out.println(res.getStatusText());
         assertEquals(200, res.getStatus());
         prettyPrint(res.getDocument());
         res.release();
         
         // Testing of entry creation
-        System.out.println("Creating Entry from a WSDL");
+        System.out.println("Creating Entry from a WSDL " + colUri.toString());
         
         RequestOptions opts = new RequestOptions();
         opts.setContentType("application/xml; charset=utf-8");
         opts.setSlug("hello_world.wsdl");
         opts.setHeader("X-Artifact-Version", "0.1");
-        opts.setHeader("X-Workspace", "Default Workspace");
         opts.setAuthorization(defaultOpts.getAuthorization());
         
-        res = client.post(colUri.toASCIIString(), getWsdl(), opts);
+        res = client.post(colUri.toString() + "/Default%20Workspace", getWsdl(), opts);
         assertEquals(201, res.getStatus());
         
         prettyPrint(res.getDocument());
@@ -98,11 +98,35 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
             }
         }
         assertNotNull(e);
+        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl;atom", e.getEditLink().getHref().toString());
+        assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl", e.getContentSrc().toString());
+        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl", 
+                     e.getLink("edit-media").getHref().toString());
         res.release();
         
+        // Grab the feed with a "/" at the end
+        res = client.get(UrlEncoding.encode(colUri.toString() + "/", Profile.PATH.filter()), defaultOpts);
+        assertEquals(200, res.getStatus());
+        feedDoc = res.getDocument();
+        feed = feedDoc.getRoot();
+        
+        entries = feed.getEntries();
+        assertEquals(7, entries.size());
+        
+        // Grab the feed for the workspace
+        res = client.get(UrlEncoding.encode(colUri.toString() + "/Default%20Workspace", Profile.PATH.filter()), defaultOpts);
+        assertEquals(200, res.getStatus());
+        feedDoc = res.getDocument();
+        feed = feedDoc.getRoot();
+        
+        entries = feed.getEntries();
+        assertEquals(7, entries.size());
+        
         // get the individual entry
+        System.out.println("Getting entry " + e.getEditLinkResolvedHref().toString());
         res = client.get(e.getEditLinkResolvedHref().toString(), defaultOpts);
         org.apache.abdera.model.Document<Entry> entryDoc = res.getDocument();
+        prettyPrint(entryDoc);
         Entry entry = entryDoc.getRoot();
         
         Collection versionCollection = null;
@@ -116,7 +140,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res.release();
         
         // try getting the version history
-        res = client.get(e.getContentSrc().toString() + "?view=history", defaultOpts);
+        res = client.get(e.getContentSrc().toString() + ";history", defaultOpts);
         prettyPrint(res.getDocument());
         feedDoc = res.getDocument();
         feed = feedDoc.getRoot();
@@ -145,6 +169,33 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         while (is.read() != -1);
         res.release();
         
+        // Add a new version
+        System.out.println("Creating Entry from a WSDL " + colUri.toString());
+        
+        opts = new RequestOptions();
+        opts.setContentType("application/xml; charset=utf-8");
+        opts.setSlug("hello_world.wsdl");
+        opts.setHeader("X-Artifact-Version", "0.2");
+        opts.setAuthorization(defaultOpts.getAuthorization());
+        
+        res = client.put(colUri.toString() + "/Default%20Workspace/hello_world.wsdl", getWsdl(), opts);
+        assertEquals(200, res.getStatus());
+        res.release();
+        
+        // Get the entry
+        System.out.println("Getting entry" + colUri.toString() + "/Default%20Workspace/hello_world.wsdl?version=0.2");
+        res = client.get(colUri.toString() + "/Default%20Workspace/hello_world.wsdl;atom?version=0.2", defaultOpts);
+        
+        entryDoc = res.getDocument();
+        prettyPrint(entryDoc);
+        e = entryDoc.getRoot();
+        
+        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl;atom?version=0.2", e.getEditLink().getHref().toString());
+        assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl?version=0.2", e.getContentSrc().toString());
+        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl?version=0.2", 
+                     e.getLink("edit-media").getHref().toString());
+        
+        res.release();
     }
     
     private InputStream getWsdl() {

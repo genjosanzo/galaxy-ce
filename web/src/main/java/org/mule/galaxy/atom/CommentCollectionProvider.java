@@ -4,22 +4,18 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.abdera.i18n.iri.IRI;
-import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.RequestContext.Scope;
-import org.apache.abdera.protocol.server.impl.AbstractCollectionProvider;
-import org.apache.abdera.protocol.server.impl.ResponseContextException;
-import org.mule.galaxy.Artifact;
+import org.apache.abdera.protocol.server.context.ResponseContextException;
+import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
 import org.mule.galaxy.Comment;
 import org.mule.galaxy.CommentManager;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
 
-public class CommentCollectionProvider extends AbstractCollectionProvider<Comment> {
+public class CommentCollectionProvider extends AbstractEntityCollectionAdapter<Comment> {
     
     private CommentManager commentManager;
     private Registry registry;
@@ -28,9 +24,16 @@ public class CommentCollectionProvider extends AbstractCollectionProvider<Commen
         this.commentManager = commentManager;
         this.registry = registry;
     }
-    
     @Override
-    public Comment createEntry(String arg0, IRI arg1, String arg2, Date arg3, List<Person> arg4,
+    public String getHref(RequestContext request) {
+        String href = (String) request.getAttribute(Scope.REQUEST, ArtifactResolver.COLLECTION_HREF);
+        if (href == null) {
+            href = request.getTargetBasePath() + "/comments";
+        }
+        return href;
+    }
+    @Override
+    public Comment postEntry(String arg0, IRI arg1, String arg2, Date arg3, List<Person> arg4,
                                Content arg5, RequestContext request) throws ResponseContextException {
         throw new ResponseContextException(501);
     }
@@ -65,7 +68,7 @@ public class CommentCollectionProvider extends AbstractCollectionProvider<Commen
     }
 
     @Override
-    public String getId() {
+    public String getId(RequestContext request) {
         return "tag:galaxy.mulesource.com,2008:registry:" + registry.getUUID() + ":comments:feed";
     }
 
@@ -84,8 +87,7 @@ public class CommentCollectionProvider extends AbstractCollectionProvider<Commen
         return "Comment on " + c.getArtifact().getPath() + " by " + c.getUser().getName();
     }
 
-    @Override
-    public String getTitle(RequestContext arg0) {
+    public String getTitle(RequestContext request) {
         return "Mule Galaxy Comments";
     }
 
@@ -95,8 +97,8 @@ public class CommentCollectionProvider extends AbstractCollectionProvider<Commen
     }
 
     @Override
-    public void updateEntry(Comment c, String arg1, Date arg2, List<Person> arg3, String arg4,
-                            Content arg5, RequestContext arg6) throws ResponseContextException {
+    public void putEntry(Comment c, String arg1, Date arg2, List<Person> arg3, String arg4,
+                         Content arg5, RequestContext arg6) throws ResponseContextException {
         throw new ResponseContextException(501);
     }
 
