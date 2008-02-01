@@ -1,8 +1,5 @@
 package org.mule.galaxy.view;
 
-import org.mule.galaxy.api.view.ColumnEvaluator;
-import org.mule.galaxy.api.view.ViewLink;
-
 public class Column {
 
     private String name;

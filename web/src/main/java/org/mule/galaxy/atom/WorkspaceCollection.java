@@ -11,10 +11,10 @@ import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.RequestContext.Scope;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
-import org.mule.galaxy.api.NotFoundException;
-import org.mule.galaxy.api.Registry;
-import org.mule.galaxy.api.RegistryException;
-import org.mule.galaxy.api.Workspace;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
 
 /**
  * Manage artifact workspaces through an AtomPub collection.

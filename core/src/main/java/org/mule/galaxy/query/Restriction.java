@@ -1,0 +1,57 @@
+package org.mule.galaxy.query;
+
+import java.util.Collection;
+
+public class Restriction {
+    public enum Operator {
+        EQUALS,
+        NOT,
+        IN,
+        LIKE
+    }
+
+    private Object value;
+    private Object left;
+    private Operator operator;
+    
+    protected Restriction(Operator o, Object left, Object right) {
+        this.operator = o;
+        this.left = left;
+        this.value = right;
+    }
+    
+    protected Restriction(Operator not, Restriction restriction) {
+        this.operator = not;
+        this.value = restriction;
+    }
+
+    public Object getRight() {
+        return value;
+    }
+
+    public Object getLeft() {
+        return left;
+    }
+
+    public Operator getOperator() {
+        return operator;
+    }
+
+    public static Restriction eq(String property, Object value) {
+        return new Restriction(Operator.EQUALS, property, value);
+    }
+
+    public static Restriction not(Restriction restriction) {
+        return new Restriction(Operator.NOT, restriction);
+    }
+
+    public static Restriction like(String property, Object value)
+    {
+        return new Restriction(Operator.LIKE, property, value);
+    }
+
+    public static Restriction in(String property, Collection<?> values) {
+        return new Restriction(Operator.IN, property, values);
+    }
+}
+

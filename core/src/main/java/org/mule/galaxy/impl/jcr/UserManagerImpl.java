@@ -1,10 +1,6 @@
 package org.mule.galaxy.impl.jcr;
 
-import org.mule.galaxy.api.security.User;
-import org.mule.galaxy.api.security.UserExistsException;
-import org.mule.galaxy.api.security.UserManager;
 import static org.mule.galaxy.impl.jcr.JcrUtil.getStringOrNull;
-import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,10 +20,14 @@ import javax.jcr.query.QueryResult;
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
+import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.security.UserExistsException;
+import org.mule.galaxy.security.UserManager;
 import org.springframework.dao.DataAccessException;
 import org.springmodules.jcr.JcrCallback;
 
-public class UserManagerImpl extends AbstractReflectionDao<User>
+public class UserManagerImpl extends AbstractReflectionDao<User> 
     implements UserManager, UserDetailsService {
     
     private static final String USERNAME = "username";
@@ -137,8 +137,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         return nodes.nextNode();
     }
 
-    public void create(final User user, final String password) throws UserExistsException
-    {
+    public void create(final User user, final String password) throws UserExistsException {
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node users = getObjectsNode(session);

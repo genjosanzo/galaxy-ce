@@ -6,7 +6,7 @@ import java.io.OutputStream;
 
 import javax.activation.MimeType;
 
-import org.mule.galaxy.api.Workspace;
+import org.mule.galaxy.Workspace;
 
 public class DefaultContentHandler extends AbstractContentHandler {
 

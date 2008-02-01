@@ -1,10 +1,5 @@
 package org.mule.galaxy.atom;
 
-import org.mule.galaxy.api.Comment;
-import org.mule.galaxy.api.CommentManager;
-import org.mule.galaxy.api.NotFoundException;
-import org.mule.galaxy.api.Registry;
-
 import java.util.Date;
 import java.util.List;
 
@@ -12,8 +7,13 @@ import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.protocol.server.RequestContext;
+import org.apache.abdera.protocol.server.RequestContext.Scope;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
+import org.mule.galaxy.Comment;
+import org.mule.galaxy.CommentManager;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.Registry;
 
 public class CommentCollectionProvider extends AbstractEntityCollectionAdapter<Comment> {
     
@@ -26,7 +26,7 @@ public class CommentCollectionProvider extends AbstractEntityCollectionAdapter<C
     }
     @Override
     public String getHref(RequestContext request) {
-        String href = (String) request.getAttribute(RequestContext.Scope.REQUEST, ArtifactResolver.COLLECTION_HREF);
+        String href = (String) request.getAttribute(Scope.REQUEST, ArtifactResolver.COLLECTION_HREF);
         if (href == null) {
             href = request.getTargetBasePath() + "/comments";
         }

@@ -29,18 +29,18 @@ import org.apache.abdera.protocol.server.RequestContext.Scope;
 import org.apache.abdera.protocol.server.context.EmptyResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
-import org.mule.galaxy.api.Artifact;
-import org.mule.galaxy.api.ArtifactPolicyException;
-import org.mule.galaxy.api.ArtifactResult;
-import org.mule.galaxy.api.ArtifactVersion;
-import org.mule.galaxy.api.NotFoundException;
-import org.mule.galaxy.api.PropertyInfo;
-import org.mule.galaxy.api.Registry;
-import org.mule.galaxy.api.RegistryException;
-import org.mule.galaxy.api.Workspace;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
-import org.mule.galaxy.api.lifecycle.Phase;
-import org.mule.galaxy.api.security.User;
+import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.security.User;
 
 public abstract class AbstractArtifactCollection 
     extends AbstractEntityCollectionAdapter<ArtifactVersion> {

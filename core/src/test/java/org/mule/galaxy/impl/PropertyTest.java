@@ -1,11 +1,16 @@
 package org.mule.galaxy.impl;
 
 
-import org.mule.galaxy.api.Dao;
-import org.mule.galaxy.api.PropertyDescriptor;
-import org.mule.galaxy.test.AbstractGalaxyTest;
-
+import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
+
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.Dao;
+import org.mule.galaxy.PropertyDescriptor;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class PropertyTest extends AbstractGalaxyTest {
     protected Dao<PropertyDescriptor> propertyDescriptorDao;
@@ -13,7 +18,7 @@ public class PropertyTest extends AbstractGalaxyTest {
     public void testProperties() throws Exception {
        importHelloWsdl();
        
-       PropertyDescriptor pd = new PropertyDescriptor("location",
+       PropertyDescriptor pd = new PropertyDescriptor("location", 
                                                       "Geographic Location",
                                                       false);
        

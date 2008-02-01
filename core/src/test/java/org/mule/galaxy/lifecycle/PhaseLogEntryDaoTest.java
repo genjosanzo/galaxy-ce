@@ -1,10 +1,9 @@
 package org.mule.galaxy.lifecycle;
 
-import org.mule.galaxy.api.Dao;
-import org.mule.galaxy.api.lifecycle.PhaseLogEntry;
-import org.mule.galaxy.test.AbstractGalaxyTest;
-
 import java.util.Calendar;
+
+import org.mule.galaxy.Dao;
+import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class PhaseLogEntryDaoTest extends AbstractGalaxyTest {
     protected Dao<PhaseLogEntry> phaseLogEntryDao;

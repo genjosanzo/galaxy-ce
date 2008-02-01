@@ -1,11 +1,5 @@
 package org.mule.galaxy.impl.jcr;
 
-import org.mule.galaxy.api.Artifact;
-import org.mule.galaxy.api.ArtifactVersion;
-import org.mule.galaxy.api.Dependency;
-import org.mule.galaxy.api.NotFoundException;
-import org.mule.galaxy.api.security.User;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
@@ -19,8 +13,13 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
-public class JcrVersion extends AbstractJcrObject implements ArtifactVersion
-{
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Dependency;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.security.User;
+
+public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     public static final String CREATED = "created";
     public static final String DATA = "data";
     public static final String LABEL = "label";
@@ -30,7 +29,7 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion
     public static final String DEPENDENCIES = "dependencies";
     public static final String USER_SPECIFIED = "userSpecified";
     
-    private Artifact parent;
+    private JcrArtifact parent;
     private Object data;
     private User author;
     

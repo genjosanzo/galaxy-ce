@@ -12,12 +12,12 @@ import java.util.Set;
 import javax.activation.MimeType;
 import javax.xml.transform.Source;
 
-import org.mule.galaxy.api.Artifact;
-import org.mule.galaxy.api.ArtifactVersion;
-import org.mule.galaxy.api.ContentHandler;
-import org.mule.galaxy.api.PropertyException;
-import org.mule.galaxy.api.Registry;
-import org.mule.galaxy.api.Workspace;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.Workspace;
 
 public abstract class AbstractContentHandler implements ContentHandler {
 

@@ -22,14 +22,14 @@ import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.RequestContext.Scope;
 import org.apache.abdera.protocol.server.context.EmptyResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
-import org.mule.galaxy.api.Artifact;
-import org.mule.galaxy.api.ArtifactPolicyException;
-import org.mule.galaxy.api.ArtifactResult;
-import org.mule.galaxy.api.ArtifactVersion;
-import org.mule.galaxy.api.Registry;
-import org.mule.galaxy.api.RegistryException;
-import org.mule.galaxy.api.Workspace;
-import org.mule.galaxy.api.security.User;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.security.User;
 
 public class SearchableArtifactCollection extends AbstractArtifactCollection {
     

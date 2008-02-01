@@ -9,20 +9,23 @@
  */
 package org.mule.galaxy.impl.artifact;
 
-import org.mule.galaxy.api.Index;
-import org.mule.galaxy.api.artifact.ArtifactType;
-import org.mule.galaxy.api.policy.PolicyManager;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.Index;
 import org.mule.galaxy.plugins.config.jaxb.ColumnType;
 import org.mule.galaxy.plugins.config.jaxb.GalaxyPluginType;
 import org.mule.galaxy.plugins.config.jaxb.IndexType;
 import org.mule.galaxy.plugins.config.jaxb.NamespaceType;
 import org.mule.galaxy.plugins.config.jaxb.ViewType;
+import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.util.TemplateParser;
 import org.mule.galaxy.view.Column;
+import org.mule.galaxy.view.ColumnEvaluator;
 import org.mule.galaxy.view.CustomArtifactTypeView;
 import org.mule.galaxy.view.MvelColumn;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;

@@ -1,14 +1,14 @@
 package org.mule.galaxy.impl;
 
 
-import org.mule.galaxy.api.ArtifactResult;
-import org.mule.galaxy.api.ArtifactVersion;
-import org.mule.galaxy.api.Dependency;
-import org.mule.galaxy.api.Workspace;
-import org.mule.galaxy.test.AbstractGalaxyTest;
-
 import java.util.Collection;
 import java.util.Set;
+
+import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Dependency;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class DependencyTest extends AbstractGalaxyTest {
     
@@ -28,7 +28,7 @@ public class DependencyTest extends AbstractGalaxyTest {
         Set<Dependency> deps = schema.getArtifactVersion().getDependencies();
         assertEquals(0, deps.size());
         
-        ArtifactResult portType = registry.createArtifact(workspace,
+        ArtifactResult portType = registry.createArtifact(workspace, 
                                                           "application/wsdl+xml", 
                                                           "hello-portType.wsdl", 
                                                           "0.1", 

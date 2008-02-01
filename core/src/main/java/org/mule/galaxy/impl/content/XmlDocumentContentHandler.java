@@ -21,10 +21,10 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.mule.galaxy.api.Artifact;
-import org.mule.galaxy.api.ArtifactVersion;
-import org.mule.galaxy.api.Workspace;
-import org.mule.galaxy.api.XmlContentHandler;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.impl.MapNamespaceContext;
 import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.QNameUtil;

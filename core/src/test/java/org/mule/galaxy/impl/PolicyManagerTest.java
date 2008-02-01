@@ -1,16 +1,17 @@
 package org.mule.galaxy.impl;
 
-import org.mule.galaxy.api.Artifact;
-import org.mule.galaxy.api.Workspace;
-import org.mule.galaxy.api.lifecycle.Lifecycle;
-import org.mule.galaxy.api.lifecycle.Phase;
-import org.mule.galaxy.api.policy.ArtifactPolicy;
-import org.mule.galaxy.api.policy.PolicyInfo;
-import org.mule.galaxy.test.AbstractGalaxyTest;
-
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyInfo;
+import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class PolicyManagerTest extends AbstractGalaxyTest {
     
@@ -88,7 +89,7 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         active = policyManager.getActivePolicies(phase1);
         assertNotNull(active);
         assertEquals(1, active.size());
-
+        
         policyManager.setActivePolicies(phases1);
         active = policyManager.getActivePolicies(artifact);
         assertNotNull(active);

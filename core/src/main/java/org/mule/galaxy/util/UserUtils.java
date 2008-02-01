@@ -1,11 +1,10 @@
 package org.mule.galaxy.util;
 
-import org.mule.galaxy.api.security.User;
-import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
-
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
+import org.mule.galaxy.security.User;
 
 public final class UserUtils {
 

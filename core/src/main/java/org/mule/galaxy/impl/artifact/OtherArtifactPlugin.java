@@ -1,19 +1,24 @@
 package org.mule.galaxy.impl.artifact;
 
-import org.mule.galaxy.api.artifact.ArtifactType;
-import org.mule.galaxy.api.util.Constants;
+import javax.xml.namespace.QName;
+
+import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.Dao;
+import org.mule.galaxy.Index;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.util.Constants;
 
 /**
  * Does some initialization for other artifact types.
  */
-public class OtherArtifactPlugin extends AbstractArtifactPlugin implements Constants
-{
+public class OtherArtifactPlugin extends AbstractArtifactPlugin implements Constants {
 
     public void initializeOnce() throws Exception {
 //        artifactTypeDao
-//            .save(new ArtifactTypeImpl("WS-Policy Documents", "application/policy+xml", POLICY_QNAME, POLICY_2006_QNAME));
-//        artifactTypeDao.save(new ArtifactTypeImpl("XML Schemas", "application/xmlschema+xml", SCHEMA_QNAME));
-//        artifactTypeDao.save(new ArtifactTypeImpl("XSLT Stylesheets", "application/xslt+xml", XSLT_QNAME));
+//            .save(new ArtifactType("WS-Policy Documents", "application/policy+xml", POLICY_QNAME, POLICY_2006_QNAME));
+//        artifactTypeDao.save(new ArtifactType("XML Schemas", "application/xmlschema+xml", SCHEMA_QNAME));
+//        artifactTypeDao.save(new ArtifactType("XSLT Stylesheets", "application/xslt+xml", XSLT_QNAME));
         artifactTypeDao.save(new ArtifactType("Other Artifacts", "*/*"));
     }
 

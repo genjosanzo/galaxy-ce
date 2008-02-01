@@ -1,10 +1,5 @@
 package org.mule.galaxy.impl.jcr;
 
-import org.mule.galaxy.api.Comment;
-import org.mule.galaxy.api.CommentManager;
-import org.mule.galaxy.api.NotFoundException;
-import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -13,8 +8,13 @@ import javax.jcr.Session;
 
 import org.springmodules.jcr.JcrCallback;
 
-public class CommentManagerImpl extends AbstractReflectionDao<Comment> implements CommentManager
-{
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.Comment;
+import org.mule.galaxy.CommentManager;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+
+public class CommentManagerImpl extends AbstractReflectionDao<Comment> implements CommentManager {
 
     public CommentManagerImpl() throws Exception {
         super(Comment.class, "comments", true);
@@ -55,8 +55,7 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
         save(c);
     }
 
-    public Comment getComment(String commentId) throws NotFoundException
-    {
+    public Comment getComment(String commentId) throws NotFoundException {
         return get(commentId);
     }
 }

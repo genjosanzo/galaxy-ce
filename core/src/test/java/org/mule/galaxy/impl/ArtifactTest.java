@@ -1,13 +1,13 @@
 package org.mule.galaxy.impl;
 
 
-import org.mule.galaxy.api.Artifact;
-import org.mule.galaxy.api.ArtifactResult;
-import org.mule.galaxy.api.ArtifactVersion;
-import org.mule.galaxy.api.PropertyInfo;
-import org.mule.galaxy.api.Workspace;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrVersion;
-import org.mule.galaxy.query.QueryImpl;
+import org.mule.galaxy.query.Query;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.IOUtils;
 
@@ -30,7 +30,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         registry.move(a, w.getId());
         
-        Set results = registry.search(new QueryImpl(Artifact.class).workspaceId(w.getId())).getResults();
+        Set results = registry.search(new Query(Artifact.class).workspaceId(w.getId())).getResults();
         
         assertEquals(1, results.size());
     }
@@ -73,7 +73,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        ArtifactResult ar = registry.createArtifact(workspace, "application/wsdl+xml",
+        ArtifactResult ar = registry.createArtifact(workspace, "application/wsdl+xml", 
                                                     "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
         
         Artifact artifact = ar.getArtifact();
@@ -89,7 +89,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         // test properties
         JcrVersion version = (JcrVersion) versions.iterator().next();
-        Iterator<PropertyInfo> properties = version.getProperties();
+        Iterator<PropertyInfo> properties = version.getProperties(); 
         boolean testedTNS = false;
         while(properties.hasNext()) {
             PropertyInfo next = properties.next();

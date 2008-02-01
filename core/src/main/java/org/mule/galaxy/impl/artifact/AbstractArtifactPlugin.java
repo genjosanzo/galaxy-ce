@@ -1,11 +1,12 @@
 package org.mule.galaxy.impl.artifact;
 
-import org.mule.galaxy.api.ArtifactPlugin;
-import org.mule.galaxy.api.Dao;
-import org.mule.galaxy.api.IndexManager;
-import org.mule.galaxy.api.Registry;
-import org.mule.galaxy.api.artifact.ArtifactType;
-import org.mule.galaxy.api.view.ViewManager;
+import org.mule.galaxy.ArtifactPlugin;
+import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.Dao;
+import org.mule.galaxy.IndexManager;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.view.ViewManager;
 
 /**
  * Makes it easy to add indexes and views for a new artifact type.

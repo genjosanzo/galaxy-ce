@@ -1,21 +1,21 @@
 package org.mule.galaxy.test;
 
-import org.mule.galaxy.api.ActivityManager;
-import org.mule.galaxy.api.Artifact;
-import org.mule.galaxy.api.ArtifactPolicyException;
-import org.mule.galaxy.api.ArtifactResult;
-import org.mule.galaxy.api.CommentManager;
-import org.mule.galaxy.api.IndexManager;
-import org.mule.galaxy.api.Registry;
-import org.mule.galaxy.api.RegistryException;
-import org.mule.galaxy.api.Settings;
-import org.mule.galaxy.api.Workspace;
-import org.mule.galaxy.api.lifecycle.LifecycleManager;
-import org.mule.galaxy.api.policy.PolicyManager;
-import org.mule.galaxy.api.security.User;
-import org.mule.galaxy.api.security.UserManager;
+import org.mule.galaxy.ActivityManager;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.CommentManager;
+import org.mule.galaxy.IndexManager;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Settings;
+import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.IndexManagerImpl;
 import org.mule.galaxy.impl.jcr.PluginRunner;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.security.UserManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -87,7 +87,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        ArtifactResult ar = registry.createArtifact(workspace,
+        ArtifactResult ar = registry.createArtifact(workspace, 
                                                     "application/xml", 
                                                     "hello_world.wsdl", 
                                                     "0.1", 
@@ -96,7 +96,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
         return ar.getArtifact();
     }
 
-    protected Artifact importHelloMule2() throws RegistryException, ArtifactPolicyException, IOException,
+    protected Artifact importHelloMule() throws RegistryException, ArtifactPolicyException, IOException,
         MimeTypeParseException {
         InputStream helloWsdl = getResourceAsStream("/mule2/hello-config.xml");
         
@@ -107,21 +107,6 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
         ArtifactResult ar = registry.createArtifact(workspace, 
                                                     "application/xml", 
                                                     "hello-config.xml", 
-                                                    "0.1", helloWsdl, getAdmin());
-        return ar.getArtifact();
-    }
-
-    protected Artifact importHelloMule() throws RegistryException, ArtifactPolicyException, IOException,
-        MimeTypeParseException {
-        InputStream helloWsdl = getResourceAsStream("/mule/hello-config.xml");
-
-        Collection<Workspace> workspaces = registry.getWorkspaces();
-        assertEquals(1, workspaces.size());
-        Workspace workspace = workspaces.iterator().next();
-
-        ArtifactResult ar = registry.createArtifact(workspace,
-                                                    "application/xml",
-                                                    "hello-config.xml",
                                                     "0.1", helloWsdl, getAdmin());
         return ar.getArtifact();
     }

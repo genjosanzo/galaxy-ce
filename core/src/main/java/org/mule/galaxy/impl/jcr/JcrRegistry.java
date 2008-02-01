@@ -1,11 +1,10 @@
 package org.mule.galaxy.impl.jcr;
 
-import org.mule.galaxy.api.Registry;
-
 import javax.jcr.Node;
 
-public interface JcrRegistry extends Registry
-{
+import org.mule.galaxy.Registry;
+
+public interface JcrRegistry extends Registry {
     Node getWorkspacesNode();
 
     Node getIndexNode();

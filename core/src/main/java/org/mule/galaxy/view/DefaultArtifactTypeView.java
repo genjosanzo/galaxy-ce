@@ -1,18 +1,15 @@
 package org.mule.galaxy.view;
 
-import org.mule.galaxy.api.Artifact;
-import org.mule.galaxy.api.view.ArtifactTypeView;
-import org.mule.galaxy.api.view.ViewLink;
+import org.mule.galaxy.Artifact;
 
-public class DefaultArtifactTypeView implements ArtifactTypeView
-{
+public class DefaultArtifactTypeView implements ArtifactTypeView {
 
     public String[] getColumnNames() {
         return new String [] {
           "Name",
           "Workspace",
           "Version",
-          "PhaseImpl"
+          "Phase"
         };
     }
 

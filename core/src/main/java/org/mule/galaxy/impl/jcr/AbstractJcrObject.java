@@ -1,13 +1,5 @@
 package org.mule.galaxy.impl.jcr;
 
-import org.mule.galaxy.api.ActivityManager;
-import org.mule.galaxy.api.PropertyException;
-import org.mule.galaxy.api.PropertyInfo;
-import org.mule.galaxy.api.Registry;
-import org.mule.galaxy.api.util.BundleUtils;
-import org.mule.galaxy.api.util.Message;
-import org.mule.galaxy.util.UserUtils;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -21,6 +13,12 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
 import org.apache.jackrabbit.value.StringValue;
+import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.ActivityManager.EventType;
+import org.mule.galaxy.util.BundleUtils;
+import org.mule.galaxy.util.Message;
+import org.mule.galaxy.util.UserUtils;
 
 
 public class AbstractJcrObject {
@@ -29,9 +27,9 @@ public class AbstractJcrObject {
     public static final String LOCKED = ".locked";
     public static final String VISIBLE = ".visible";
     protected Node node;
-    private Registry registry;
+    private JcrRegistryImpl registry;
 
-    public AbstractJcrObject(Node node, Registry registry) throws RepositoryException {
+    public AbstractJcrObject(Node node, JcrRegistryImpl registry) throws RepositoryException {
         this.node = node;
         this.registry = registry;
     }
@@ -78,8 +76,8 @@ public class AbstractJcrObject {
                 ensureProperty(name);
             }
             
-            registry.getActivityManager().logActivity(UserUtils.getCurrentUser(), "Property " + name + " was set to: " + value,
-                                        ActivityManager.EventType.INFO);
+            registry.getActivityManager().logActivity(UserUtils.getCurrentUser(), "Property " + name + " was set to: " + value, 
+                                        EventType.INFO);
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }

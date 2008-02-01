@@ -1,9 +1,6 @@
 package org.mule.galaxy.test;
 
 
-import org.mule.galaxy.api.Registry;
-import org.mule.galaxy.impl.IndexManagerImpl;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -22,6 +19,9 @@ import org.apache.abdera.writer.Writer;
 import org.apache.abdera.writer.WriterFactory;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.impl.IndexManagerImpl;
+import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 

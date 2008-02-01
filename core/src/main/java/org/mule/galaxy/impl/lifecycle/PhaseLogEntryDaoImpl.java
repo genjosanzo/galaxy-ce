@@ -1,7 +1,7 @@
 package org.mule.galaxy.impl.lifecycle;
 
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
-import org.mule.galaxy.api.lifecycle.PhaseLogEntry;
+import org.mule.galaxy.lifecycle.PhaseLogEntry;
 
 public class PhaseLogEntryDaoImpl extends AbstractReflectionDao<PhaseLogEntry> {
 

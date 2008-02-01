@@ -1,9 +1,9 @@
 package org.mule.galaxy.impl;
 
-import org.mule.galaxy.api.artifact.ArtifactType;
+import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.impl.jcr.ArtifactTypeDaoImpl;
 import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.api.util.Constants;
+import org.mule.galaxy.util.Constants;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class ArtifactTypeDaoTest extends AbstractGalaxyTest {
     public void testRegistration() throws Exception {
         List<ArtifactType> all = artifactTypeDao.listAll();
         System.out.println(all);
-        assertEquals(5, all.size());
+        assertTrue(all.size() > 5);
     }
     
     @Override

@@ -1,20 +1,8 @@
 package org.mule.galaxy.web;
 
-import org.mule.galaxy.api.Artifact;
-import org.mule.galaxy.api.ArtifactPolicyException;
-import org.mule.galaxy.api.ArtifactResult;
-import org.mule.galaxy.api.ContentHandler;
-import org.mule.galaxy.api.ContentService;
-import org.mule.galaxy.api.NotFoundException;
-import org.mule.galaxy.api.Registry;
-import org.mule.galaxy.api.RegistryException;
-import org.mule.galaxy.api.Workspace;
-import org.mule.galaxy.api.policy.ApprovalMessage;
-import org.mule.galaxy.api.security.User;
-import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
-
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -35,6 +23,18 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.ContentService;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.security.User;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 

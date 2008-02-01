@@ -8,7 +8,9 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.AbstractMenuPanel;
@@ -27,7 +29,7 @@ public class LifecycleSelectionPanel extends AbstractComposite {
         super();
         
         FlowPanel panel = new FlowPanel();
-        panel.add(createTitle("LifecycleImpl"));
+        panel.add(createTitle("Lifecycle"));
         lifecyclesLB = new ListBox();
         lifecyclesLB.setVisibleItemCount(4);
         

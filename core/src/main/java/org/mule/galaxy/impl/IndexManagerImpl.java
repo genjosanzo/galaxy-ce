@@ -1,26 +1,5 @@
 package org.mule.galaxy.impl;
 
-import org.mule.galaxy.api.ActivityManager;
-import org.mule.galaxy.api.ActivityManager.EventType;
-import org.mule.galaxy.api.Artifact;
-import org.mule.galaxy.api.ArtifactVersion;
-import org.mule.galaxy.api.ContentService;
-import org.mule.galaxy.api.Index;
-import org.mule.galaxy.api.IndexManager;
-import org.mule.galaxy.api.NotFoundException;
-import org.mule.galaxy.api.PropertyException;
-import org.mule.galaxy.api.Registry;
-import org.mule.galaxy.api.RegistryException;
-import org.mule.galaxy.api.XmlContentHandler;
-import org.mule.galaxy.api.query.QueryException;
-import org.mule.galaxy.api.util.LogUtils;
-import org.mule.galaxy.impl.jcr.JcrUtil;
-import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
-import org.mule.galaxy.query.QueryImpl;
-import org.mule.galaxy.query.RestrictionImpl;
-import org.mule.galaxy.util.DOMUtils;
-import org.mule.galaxy.util.QNameUtil;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,14 +13,21 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.jcr.AccessDeniedException;
+import javax.jcr.InvalidItemStateException;
+import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
+import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -56,8 +42,27 @@ import net.sf.saxon.javax.xml.xquery.XQItem;
 import net.sf.saxon.javax.xml.xquery.XQPreparedExpression;
 import net.sf.saxon.javax.xml.xquery.XQResultSequence;
 import net.sf.saxon.xqj.SaxonXQDataSource;
-
 import org.apache.commons.lang.BooleanUtils;
+import org.mule.galaxy.ActivityManager;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.ContentService;
+import org.mule.galaxy.GalaxyException;
+import org.mule.galaxy.Index;
+import org.mule.galaxy.IndexManager;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.XmlContentHandler;
+import org.mule.galaxy.ActivityManager.EventType;
+import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.util.DOMUtils;
+import org.mule.galaxy.util.LogUtils;
+import org.mule.galaxy.util.QNameUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -65,11 +70,12 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.SessionFactory;
 import org.springmodules.jcr.SessionFactoryUtils;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 
-public class IndexManagerImpl extends AbstractReflectionDao<Index>
+public class IndexManagerImpl extends AbstractReflectionDao<Index> 
     implements IndexManager, ApplicationContextAware {
     private Logger LOGGER = LogUtils.getL7dLogger(IndexManagerImpl.class);
 
@@ -238,8 +244,8 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
 
     protected void findAndReindex(Session session, Index idx) throws RepositoryException {
-        org.mule.galaxy.api.query.Query q = new QueryImpl(Artifact.class)
-            .add(RestrictionImpl.in("documentType", idx.getDocumentTypes()));
+        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(Artifact.class)
+            .add(Restriction.in("documentType", idx.getDocumentTypes()));
         
         try {
             Set results = getRegistry().search(q).getResults();

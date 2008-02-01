@@ -1,42 +1,41 @@
 package org.mule.galaxy.web.server;
 
-import org.mule.galaxy.api.Activity;
-import org.mule.galaxy.api.ActivityManager;
-import org.mule.galaxy.api.ActivityManager.EventType;
-import org.mule.galaxy.api.Artifact;
-import org.mule.galaxy.api.ArtifactPolicyException;
-import org.mule.galaxy.api.ArtifactTypeDao;
-import org.mule.galaxy.api.ArtifactVersion;
-import org.mule.galaxy.api.Comment;
-import org.mule.galaxy.api.CommentManager;
-import org.mule.galaxy.api.Dependency;
-import org.mule.galaxy.api.Index;
-import org.mule.galaxy.api.Index.Language;
-import org.mule.galaxy.api.IndexManager;
-import org.mule.galaxy.api.PropertyDescriptor;
-import org.mule.galaxy.api.PropertyException;
-import org.mule.galaxy.api.PropertyInfo;
-import org.mule.galaxy.api.Registry;
-import org.mule.galaxy.api.RegistryException;
-import org.mule.galaxy.api.Workspace;
-import org.mule.galaxy.api.artifact.ArtifactType;
-import org.mule.galaxy.api.lifecycle.Lifecycle;
-import org.mule.galaxy.api.lifecycle.LifecycleManager;
-import org.mule.galaxy.api.lifecycle.Phase;
-import org.mule.galaxy.api.lifecycle.TransitionException;
-import org.mule.galaxy.api.policy.ApprovalMessage;
-import org.mule.galaxy.api.policy.ArtifactPolicy;
-import org.mule.galaxy.api.policy.PolicyManager;
-import org.mule.galaxy.api.query.Query;
-import org.mule.galaxy.api.query.QueryException;
-import org.mule.galaxy.api.query.SearchResults;
-import org.mule.galaxy.api.security.User;
-import org.mule.galaxy.api.util.LogUtils;
-import org.mule.galaxy.api.view.ArtifactTypeView;
-import org.mule.galaxy.api.view.ViewManager;
+import org.mule.galaxy.Activity;
+import org.mule.galaxy.ActivityManager;
+import org.mule.galaxy.ActivityManager.EventType;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.ArtifactTypeDao;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Comment;
+import org.mule.galaxy.CommentManager;
+import org.mule.galaxy.Dependency;
+import org.mule.galaxy.Index;
+import org.mule.galaxy.Index.Language;
+import org.mule.galaxy.IndexManager;
+import org.mule.galaxy.PropertyDescriptor;
+import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
-import org.mule.galaxy.query.QueryImpl;
-import org.mule.galaxy.query.RestrictionImpl;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.lifecycle.TransitionException;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.query.Query;
+import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.query.SearchResults;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.util.LogUtils;
+import org.mule.galaxy.view.ArtifactTypeView;
+import org.mule.galaxy.view.ViewManager;
 import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
@@ -185,16 +184,16 @@ public class RegistryServiceImpl implements RegistryService {
         return atis;
     }
     
-    private RestrictionImpl getRestrictionForPredicate(SearchPredicate pred) {
+    private Restriction getRestrictionForPredicate(SearchPredicate pred) {
         String property = pred.getProperty();
         String value    = pred.getValue();
         switch (pred.getMatchType()) {
             case SearchPredicate.HAS_VALUE:
-                return RestrictionImpl.eq(property, value);
+                return Restriction.eq(property, value);
             case SearchPredicate.LIKE:
-                return RestrictionImpl.like(property, value);
+                return Restriction.like(property, value);
             case SearchPredicate.DOES_NOT_HAVE_VALUE:
-                return RestrictionImpl.not(RestrictionImpl.eq(property, value));
+                return Restriction.not(Restriction.eq(property, value));
             default:
                 return null;
         }
@@ -204,7 +203,7 @@ public class RegistryServiceImpl implements RegistryService {
     public WSearchResults getArtifacts(String workspaceId, Set artifactTypes, 
                                        Set searchPredicates, String freeformQuery, int start, int maxResults)
     throws RPCException {
-        Query q = new QueryImpl(Artifact.class)
+        Query q = new Query(Artifact.class)
             .workspaceId(workspaceId)
             .orderBy("artifactType");
         q.setMaxResults(maxResults);
@@ -227,7 +226,7 @@ public class RegistryServiceImpl implements RegistryService {
             
             for (Object o : results.getResults()) {
                 Artifact a = (Artifact) o;
-                ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(),
+                ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), 
                                                                     a.getDocumentType());
                 
                 // If we want to filter based on the artifact type, filter!
@@ -432,7 +431,7 @@ public class RegistryServiceImpl implements RegistryService {
     public ArtifactGroup getArtifact(String artifactId) throws RPCException {
         try {
             Artifact a = registry.getArtifact(artifactId);
-            ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(),
+            ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), 
                                                                 a.getDocumentType());
             
             ArtifactGroup g = new ArtifactGroup();
@@ -737,7 +736,7 @@ public class RegistryServiceImpl implements RegistryService {
     public TransitionResponse transition(String artifactId, String nextPhaseName) throws RPCException {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
-
+          
             Lifecycle lifecycle = artifact.getPhase().getLifecycle();
             Phase nextPhase = lifecycle.getPhase(nextPhaseName);
             
@@ -749,7 +748,7 @@ public class RegistryServiceImpl implements RegistryService {
                 tr.setSuccess(true);
             } catch (TransitionException e) {
                 tr.setSuccess(false);
-                tr.addMessage("PhaseImpl " + nextPhaseName + " isn't a valid next phase!", false);
+                tr.addMessage("Phase " + nextPhaseName + " isn't a valid next phase!", false);
             } catch (ArtifactPolicyException e) {
                 tr.setSuccess(false);
                 for (ApprovalMessage app : e.getApprovals()) {
@@ -976,7 +975,7 @@ public class RegistryServiceImpl implements RegistryService {
             eventType = EventType.ERROR;
         }
         
-        Collection<Activity> activities = activityManager.getActivities(from, to,
+        Collection<Activity> activities = activityManager.getActivities(from, to, 
                                                                         user, eventType, 
                                                                         start, results,
                                                                         ascending);

@@ -1,19 +1,18 @@
 package org.mule.galaxy.atom;
 
-import org.mule.galaxy.api.Artifact;
-import org.mule.galaxy.api.ArtifactVersion;
-import org.mule.galaxy.api.Registry;
-import org.mule.galaxy.api.RegistryException;
-import org.mule.galaxy.api.Workspace;
-import org.mule.galaxy.api.query.Query;
-import org.mule.galaxy.api.query.QueryException;
-import org.mule.galaxy.query.QueryImpl;
-
 import java.util.Iterator;
+
 
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.RequestContext.Scope;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.query.Query;
+import org.mule.galaxy.query.QueryException;
 
 /**
  * This collection will display all the artifacts within a particular workspace.
@@ -29,7 +28,7 @@ public class ArtifactWorkspaceCollection extends SearchableArtifactCollection {
     public Iterable<ArtifactVersion> getEntries(RequestContext request) throws ResponseContextException {
         Workspace w = (Workspace) request.getAttribute(Scope.REQUEST, ArtifactResolver.WORKSPACE);
         
-        Query query = new QueryImpl(Artifact.class).workspaceId(w.getId());
+        Query query = new Query(Artifact.class).workspaceId(w.getId());
         
         Iterator results;
         try {

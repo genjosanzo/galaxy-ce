@@ -1,12 +1,13 @@
 package org.mule.galaxy.impl.jcr;
 
-import org.mule.galaxy.api.Artifact;
-import org.mule.galaxy.api.Registry;
-import org.mule.galaxy.impl.jcr.onm.FieldDescriptor;
-import org.mule.galaxy.impl.jcr.onm.FieldPersister;
-
 import javax.jcr.Node;
 import javax.jcr.Session;
+
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.Identifiable;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.impl.jcr.onm.FieldDescriptor;
+import org.mule.galaxy.impl.jcr.onm.FieldPersister;
 
 public class ArtifactPersister implements FieldPersister {
     private Registry registry;

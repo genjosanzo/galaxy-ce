@@ -11,21 +11,22 @@
     <version>1.0-beta-2-SNAPSHOT</version>
     <name>Galaxy Integration</name>
     <packaging>pom</packaging>
+
     <licenses>
         <license>
             <name>CPAL</name>
             <url>http://mule.mulesource.org/display/MULE/License</url>
         </license>
     </licenses>
+
     <modules>
         <module>support</module>
         <module>mule1</module>
-        <module>mule1-client</module>
         <module>mule2</module>
-        <module>mule2-client</module>
         <module>cxf</module>
         <module>spring</module>
-        <module>spring-client</module>
         <module>distribution</module>
     </modules>
+
+
 </project>

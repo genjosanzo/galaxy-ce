@@ -153,12 +153,12 @@
   <bean id="persisterManager" class="org.mule.galaxy.impl.jcr.onm.PersisterManager">
     <property name="persisters">
       <map>
-        <entry key="org.mule.galaxy.api.lifecycle.Phase">
+        <entry key="org.mule.galaxy.lifecycle.Phase">
           <bean class="org.mule.galaxy.impl.lifecycle.PhasePersister">
             <constructor-arg ref="lifecycleManager"/>
           </bean>
         </entry>
-        <entry key="org.mule.galaxy.api.Artifact">
+        <entry key="org.mule.galaxy.Artifact">
           <bean class="org.mule.galaxy.impl.jcr.ArtifactPersister">
             <constructor-arg ref="registry"/>
           </bean>

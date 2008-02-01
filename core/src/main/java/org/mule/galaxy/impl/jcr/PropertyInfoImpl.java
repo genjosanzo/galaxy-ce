@@ -1,14 +1,13 @@
 package org.mule.galaxy.impl.jcr;
 
-import org.mule.galaxy.api.Index;
-import org.mule.galaxy.api.PropertyInfo;
-import org.mule.galaxy.api.Registry;
-import org.mule.galaxy.api.PropertyDescriptor;
-
 import javax.jcr.Node;
 
-public class PropertyInfoImpl implements PropertyInfo
-{
+import org.mule.galaxy.Index;
+import org.mule.galaxy.PropertyDescriptor;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.Registry;
+
+public class PropertyInfoImpl implements PropertyInfo {
 
     private Node node;
     private String name;

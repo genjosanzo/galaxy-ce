@@ -1,7 +1,5 @@
 package org.mule.galaxy.impl.jcr.onm;
 
-import org.mule.galaxy.api.jcr.onm.OneToMany;
-
 import java.lang.reflect.Method;
 
 public class FieldDescriptor {

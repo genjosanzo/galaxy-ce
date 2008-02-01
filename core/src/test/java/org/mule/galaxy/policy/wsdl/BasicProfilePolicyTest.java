@@ -1,9 +1,9 @@
 package org.mule.galaxy.policy.wsdl;
 
-import org.mule.galaxy.api.ArtifactPolicyException;
-import org.mule.galaxy.api.Workspace;
-import org.mule.galaxy.api.policy.ApprovalMessage;
-import org.mule.galaxy.api.policy.ArtifactPolicy;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 import java.io.InputStream;

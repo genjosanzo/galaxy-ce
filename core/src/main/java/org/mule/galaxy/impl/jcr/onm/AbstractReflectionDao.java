@@ -1,14 +1,12 @@
 package org.mule.galaxy.impl.jcr.onm;
 
-import org.mule.galaxy.api.NotFoundException;
-import org.mule.galaxy.api.Identifiable;
-import org.mule.galaxy.impl.jcr.JcrUtil;
 import static org.mule.galaxy.impl.jcr.JcrUtil.getOrCreate;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -18,7 +16,13 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
+import org.mule.galaxy.Identifiable;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springmodules.jcr.JcrCallback;
+import org.springmodules.jcr.SessionFactory;
+import org.springmodules.jcr.SessionFactoryUtils;
 
 public abstract class AbstractReflectionDao<T extends Identifiable> extends AbstractDao<T> {
 

@@ -36,7 +36,7 @@ import org.apache.jackrabbit.value.DateValue;
 import org.apache.jackrabbit.value.DoubleValue;
 import org.apache.jackrabbit.value.LongValue;
 import org.apache.jackrabbit.value.StringValue;
-import org.mule.galaxy.api.Identifiable;
+import org.mule.galaxy.Identifiable;
 
 public class JcrUtil {
 
