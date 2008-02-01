@@ -6,7 +6,6 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.wsdl.BackwardCompatibilityPolicy;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class WsdlVersioningAssessorTest extends AbstractGalaxyTest {
