@@ -164,8 +164,35 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
             throw new RuntimeException(e);
         }
     }
-    
 
+    // TODO: Remove once new abdera snaps are published
+    public ResponseContext deleteMedia(RequestContext request) {
+      String id = getEntryID(request);
+      if (id != null) {
+    
+        try {
+          deleteMedia(id, request);
+        } catch (ResponseContextException e) {
+          return createErrorResponse(e);
+        }
+        
+        return new EmptyResponseContext(204);
+      } else {
+        // TODO: is this right?
+        return new EmptyResponseContext(404);
+      }
+    }
+    
+    public void deleteMedia(String name, RequestContext request) throws ResponseContextException {
+        Artifact artifact = getArtifact(request);
+
+        try {
+            registry.delete(artifact);
+        } catch (RegistryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
     @Override
     public void putMedia(ArtifactVersion artifactVersion,
                          MimeType contentType, String slug, 

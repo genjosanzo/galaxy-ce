@@ -170,7 +170,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res.release();
         
         // Add a new version
-        System.out.println("Creating Entry from a WSDL " + colUri.toString());
+        System.out.println("Adding Entry from a WSDL " + colUri.toString());
         
         opts = new RequestOptions();
         opts.setContentType("application/xml; charset=utf-8");
@@ -195,6 +195,10 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl?version=0.2", 
                      e.getLink("edit-media").getHref().toString());
         
+        res.release();
+        
+        res = client.delete(colUri.toString() + "/Default%20Workspace/hello_world.wsdl");
+        assertEquals(204, res.getStatus());
         res.release();
     }
     
