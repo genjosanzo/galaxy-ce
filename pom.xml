@@ -17,6 +17,7 @@
 
     <modules>
         <module>buildtools</module>
+        <module>api</module>
         <module>core</module>
         <module>wsdldiff</module>
         <module>wsi</module>

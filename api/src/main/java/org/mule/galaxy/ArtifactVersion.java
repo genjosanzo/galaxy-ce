@@ -5,8 +5,6 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.wsdl.Definition;
-
 import org.mule.galaxy.security.User;
 
 import org.w3c.dom.Document;

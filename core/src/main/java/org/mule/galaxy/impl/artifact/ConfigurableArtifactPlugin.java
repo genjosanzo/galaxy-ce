@@ -12,6 +12,8 @@ package org.mule.galaxy.impl.artifact;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.Index;
+import org.mule.galaxy.impl.view.CustomArtifactTypeView;
+import org.mule.galaxy.impl.view.MvelColumn;
 import org.mule.galaxy.plugins.config.jaxb.ColumnType;
 import org.mule.galaxy.plugins.config.jaxb.GalaxyPluginType;
 import org.mule.galaxy.plugins.config.jaxb.IndexType;
@@ -21,8 +23,6 @@ import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.util.TemplateParser;
 import org.mule.galaxy.view.Column;
 import org.mule.galaxy.view.ColumnEvaluator;
-import org.mule.galaxy.view.CustomArtifactTypeView;
-import org.mule.galaxy.view.MvelColumn;
 
 import java.util.ArrayList;
 import java.util.Collection;

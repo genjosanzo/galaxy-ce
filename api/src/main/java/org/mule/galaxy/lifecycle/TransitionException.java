@@ -2,10 +2,8 @@ package org.mule.galaxy.lifecycle;
 
 import java.util.ResourceBundle;
 
-import org.springframework.util.ResourceUtils;
 import org.mule.galaxy.GalaxyException;
 import org.mule.galaxy.util.BundleUtils;
-import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.util.Message;
 
 public class TransitionException extends GalaxyException {

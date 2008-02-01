@@ -1,6 +1,8 @@
-package org.mule.galaxy.view;
+package org.mule.galaxy.impl.view;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.view.ArtifactTypeView;
+import org.mule.galaxy.view.ViewLink;
 
 public class DefaultArtifactTypeView implements ArtifactTypeView {
 

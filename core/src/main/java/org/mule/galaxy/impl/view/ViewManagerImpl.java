@@ -11,7 +11,6 @@ import org.mule.galaxy.util.Constants;
 import org.mule.galaxy.view.ArtifactTypeView;
 import org.mule.galaxy.view.Column;
 import org.mule.galaxy.view.ColumnEvaluator;
-import org.mule.galaxy.view.DefaultArtifactTypeView;
 import org.mule.galaxy.view.ViewManager;
 
 public class ViewManagerImpl implements ViewManager {

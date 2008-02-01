@@ -1,4 +1,4 @@
-package org.mule.galaxy.util;
+package org.mule.galaxy.impl.jcr;
 
 import javax.jcr.Session;
 
