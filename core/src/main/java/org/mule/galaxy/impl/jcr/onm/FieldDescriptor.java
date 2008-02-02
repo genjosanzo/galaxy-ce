@@ -2,6 +2,8 @@ package org.mule.galaxy.impl.jcr.onm;
 
 import java.lang.reflect.Method;
 
+import org.mule.galaxy.mapping.OneToMany;
+
 public class FieldDescriptor {
     private String name;
     private boolean id;

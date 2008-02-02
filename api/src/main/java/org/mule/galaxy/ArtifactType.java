@@ -1,6 +1,6 @@
 package org.mule.galaxy;
 
-import org.mule.galaxy.impl.jcr.onm.OneToMany;
+import org.mule.galaxy.mapping.OneToMany;
 
 import java.util.HashSet;
 import java.util.List;

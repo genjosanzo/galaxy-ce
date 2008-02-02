@@ -3,7 +3,7 @@ package org.mule.galaxy;
 import java.util.Calendar;
 import java.util.Set;
 
-import org.mule.galaxy.impl.jcr.onm.OneToMany;
+import org.mule.galaxy.mapping.OneToMany;
 import org.mule.galaxy.security.User;
 
 public class Comment implements Identifiable {

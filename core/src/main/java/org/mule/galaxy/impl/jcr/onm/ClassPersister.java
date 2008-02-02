@@ -12,6 +12,8 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
+import org.mule.galaxy.mapping.OneToMany;
+
 /**
  * A simple way to persist/build objects to and from JCR nodes. Only works for a 
  * limited set of use cases, but is good enough for most of our usages.

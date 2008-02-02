@@ -1,4 +1,4 @@
-package org.mule.galaxy.impl.jcr.onm;
+package org.mule.galaxy.mapping;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

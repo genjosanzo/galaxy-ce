@@ -5,7 +5,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.mule.galaxy.impl.jcr.onm.OneToMany;
+import org.mule.galaxy.mapping.OneToMany;
 
 public class Index implements Identifiable {
     public enum Language  {

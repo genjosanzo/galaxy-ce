@@ -13,8 +13,8 @@ import org.apache.jackrabbit.core.persistence.PersistenceManager;
 import org.mule.galaxy.impl.jcr.onm.ClassPersister;
 import org.mule.galaxy.impl.jcr.onm.FieldDescriptor;
 import org.mule.galaxy.impl.jcr.onm.FieldPersister;
-import org.mule.galaxy.impl.jcr.onm.OneToMany;
 import org.mule.galaxy.impl.jcr.onm.PersisterManager;
+import org.mule.galaxy.mapping.OneToMany;
 
 public class CollectionPersister implements FieldPersister {
 

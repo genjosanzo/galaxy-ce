@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mule.galaxy.Identifiable;
-import org.mule.galaxy.impl.jcr.onm.OneToMany;
+import org.mule.galaxy.mapping.OneToMany;
 
 public class User implements Identifiable {
     private String id;
