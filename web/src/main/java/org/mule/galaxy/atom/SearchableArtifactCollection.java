@@ -38,19 +38,20 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
     }
 
     @Override
-    protected void addEntryDetails(RequestContext request, 
-                                   Entry e, 
-                                   IRI entryBaseIri, 
-                                   ArtifactVersion entryObj)
+    protected String addEntryDetails(RequestContext request, 
+                                     Entry e, 
+                                     IRI entryBaseIri, 
+                                     ArtifactVersion entryObj)
         throws ResponseContextException {
-        super.addEntryDetails(request, e, entryBaseIri, entryObj);
+        String link = super.addEntryDetails(request, e, entryBaseIri, entryObj);
         
         Collection col = factory.newCollection();
         col.setAttributeValue("id", "versions");
-        // TODO: fix this!
         col.setHref(getArtifactLink(request, entryObj) + ";history");
         col.setTitle("Artifact Versions");
         e.addExtension(col);
+        
+        return link;
     }
 
     private IRI getArtifactLink(RequestContext request, ArtifactVersion entryObj) {
@@ -165,24 +166,6 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
         }
     }
 
-    // TODO: Remove once new abdera snaps are published
-    public ResponseContext deleteMedia(RequestContext request) {
-      String id = getEntryID(request);
-      if (id != null) {
-    
-        try {
-          deleteMedia(id, request);
-        } catch (ResponseContextException e) {
-          return createErrorResponse(e);
-        }
-        
-        return new EmptyResponseContext(204);
-      } else {
-        // TODO: is this right?
-        return new EmptyResponseContext(404);
-      }
-    }
-    
     public void deleteMedia(String name, RequestContext request) throws ResponseContextException {
         Artifact artifact = getArtifact(request);
 

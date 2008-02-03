@@ -61,12 +61,12 @@ public abstract class AbstractArtifactCollection
     }
     
     @Override
-    protected void addEntryDetails(RequestContext request, 
-                                   Entry e, 
-                                   IRI feedIri, 
-                                   ArtifactVersion entryObj)
+    protected String addEntryDetails(RequestContext request, 
+                                     Entry e, 
+                                     IRI feedIri, 
+                                     ArtifactVersion entryObj)
         throws ResponseContextException {
-        super.addEntryDetails(request, e, feedIri, entryObj);
+        String link = super.addEntryDetails(request, e, feedIri, entryObj);
 
         Element metadata = factory.newElement(new QName(NAMESPACE, "metadata"));
         
@@ -94,6 +94,7 @@ public abstract class AbstractArtifactCollection
         e.addExtension(lifecycle);
         
         e.addExtension(buildAvailablePhases(phase));
+        return link;
     }
 
     private Element buildAvailablePhases(Phase phase) {

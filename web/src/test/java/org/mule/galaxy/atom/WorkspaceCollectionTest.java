@@ -21,9 +21,10 @@ public class WorkspaceCollectionTest extends AbstractAtomTest {
         defaultOpts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
         defaultOpts.setContentType("application/atom+xml;type=entry");
         
-        String base = "http://localhost:9002/api/registry/Default%20Workspace";
+        String base = "http://localhost:9002/api/registry";
+        String dwBase = base + "/Default%20Workspace";
         // Grab workspaces & collections
-        ClientResponse res = client.get(base + ";workspaces", defaultOpts);
+        ClientResponse res = client.get(dwBase + ";workspaces", defaultOpts);
         assertEquals(res.getStatusText(), 200, res.getStatus());
         
         Document<Feed> feedDoc = res.getDocument();
@@ -39,7 +40,7 @@ public class WorkspaceCollectionTest extends AbstractAtomTest {
         // Once we support workspace descriptions, the description will go here
         entry.setContent("");
         
-        res = client.post(base + ";workspaces", entry, defaultOpts);
+        res = client.post(dwBase + ";workspaces", entry, defaultOpts);
         assertEquals(201, res.getStatus());
         Document<Entry> entryDoc = res.getDocument();
 //        prettyPrint(entryDoc);
@@ -55,23 +56,29 @@ public class WorkspaceCollectionTest extends AbstractAtomTest {
         opts.setHeader("X-Artifact-Version", "0.1");
         opts.setAuthorization(defaultOpts.getAuthorization());
         
-        res = client.post(base + "/MyWorkspace", getWsdl(), opts);
+        res = client.post(dwBase + "/MyWorkspace", getWsdl(), opts);
         assertEquals(201, res.getStatus());
         
         // TODO: test the entry's links. They aren't quite right yet.
         
         // Grab the new workspace's feed
-        res = client.get(base + "/MyWorkspace");
+        res = client.get(dwBase + "/MyWorkspace");
         feedDoc = res.getDocument();
         feed = feedDoc.getRoot();
         
         assertEquals(1, feed.getEntries().size());
         
         // delete the workspace
-        res = client.delete(base + "/MyWorkspace", defaultOpts);
+        res = client.delete(dwBase + "/MyWorkspace", defaultOpts);
         assertEquals(204, res.getStatus());
         
         res.release();
+        
+        res = client.get(base + ";workspaces");
+        feedDoc = res.getDocument();
+        feed = feedDoc.getRoot();
+        prettyPrint(feed);
+        assertEquals(1, feed.getEntries().size());
     }
 
     private InputStream getWsdl() {

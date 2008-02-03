@@ -31,13 +31,12 @@ public class ArtifactHistoryCollection extends AbstractArtifactCollection {
 
     @Override
     public String getMediaName(ArtifactVersion version) {
-        return super.getMediaName(version) + "?version=" + version.getVersionLabel();
+        return super.getMediaName(version);
     }
-
+    
     @Override
-    public ArtifactVersion getEntry(String name, RequestContext request) throws ResponseContextException {
-        // TODO Auto-generated method stub
-        return super.getEntry(name, request);
+    public String getQueryParameters(ArtifactVersion version, RequestContext request) {
+        return "version=" + version.getVersionLabel();
     }
 
     @Override
@@ -73,7 +72,7 @@ public class ArtifactHistoryCollection extends AbstractArtifactCollection {
 
     @Override
     public String getName(ArtifactVersion version) {
-        return super.getName(version) + "?version=" + version.getVersionLabel();
+        return super.getName(version);
     }
 
     @Override

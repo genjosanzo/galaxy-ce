@@ -60,6 +60,14 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
     public Iterable<Workspace> getEntries(RequestContext request) throws ResponseContextException {
         Workspace parent = getResolvedWorkspace(request);
 
+        if (parent == null) {
+            try {
+                return registry.getWorkspaces();
+            } catch (RegistryException e) {
+                throw new ResponseContextException(500, e);
+            }
+        }
+        
         return parent.getWorkspaces();
     }
 
@@ -121,11 +129,16 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
 
     @Override
     public String getId(RequestContext request) {
-        return ID_PREFIX + getResolvedWorkspace(request) + ":listing";
+        return ID_PREFIX + getResolvedWorkspace(request) + ":workspaces";
     }
 
     public String getTitle(RequestContext request) {
-        return "Workspaces in " + getResolvedWorkspace(request).getName();
+        Workspace wkspc = getResolvedWorkspace(request);
+        if (wkspc != null) {
+            return "Workspaces in " + wkspc.getName();
+        } else {
+            return "Root Workspaces";
+        }
     }
     
     @Override
@@ -133,7 +146,7 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
         String href = (String) request.getAttribute(Scope.REQUEST, ArtifactResolver.COLLECTION_HREF);
         if (href == null) {
             // this is the url we use when pulling down the services document
-            href = request.getTargetBasePath() + "/registry";
+            href = request.getTargetBasePath() + "/registry/";
         }
         return href;
     }

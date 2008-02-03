@@ -7,8 +7,10 @@ import org.apache.abdera.protocol.server.CollectionAdapter;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.Target;
 import org.apache.abdera.protocol.server.TargetType;
+import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.protocol.server.impl.DefaultTarget;
 import org.apache.abdera.protocol.server.impl.DefaultWorkspaceManager;
+import org.apache.commons.lang.StringUtils;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
@@ -17,6 +19,7 @@ import org.mule.galaxy.Workspace;
 
 public class ArtifactResolver implements Resolver<Target> {
 
+    private static final String WORKSPACES_CLASSIFIER = "workspaces";
     public static final String WORKSPACE = "workspace";
     public static final String ARTIFACT = "artifact";
     public static final String COLLECTION_HREF = "collectionHref";
@@ -39,6 +42,14 @@ public class ArtifactResolver implements Resolver<Target> {
         int qIdx = path.lastIndexOf('?');
         if (qIdx != -1) {
             path = path.substring(0, qIdx);
+        }
+
+        // Find the resource representation type
+        String classifier = null;
+        int cIdx = path.lastIndexOf(';');
+        if (cIdx != -1) {
+            classifier = path.substring(cIdx+1);
+            path = path.substring(0, cIdx);
         }
         
         // remove front slash
@@ -75,19 +86,28 @@ public class ArtifactResolver implements Resolver<Target> {
             }
         }
         
-        String classifier = null;
-        int cIdx = path.lastIndexOf(';');
-        if (cIdx != -1) {
-            classifier = path.substring(cIdx+1);
-            path = path.substring(0, cIdx);
+        if (!"registry".equals(atomWorkspace)) {
+            return returnUnknownLocation(context);
         }
         
+        // Somebody hit /api/registry
         if (path.length() == 0) {
-            // the user is going to the searchable, main registry URL
-            context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, searchableCollection);
-            return new DefaultTarget(TargetType.TYPE_COLLECTION, context);
+            if (WORKSPACES_CLASSIFIER.equals(classifier)) {
+                // the user is listing out the root workspaces
+                // the user is going to the searchable, main registry URL
+                context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, workspaceCollection);
+                return new DefaultTarget(TargetType.TYPE_COLLECTION, context);
+            } else if (StringUtils.isEmpty(classifier)) {
+                // the user is going to the searchable, main registry URL
+                context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, searchableCollection);
+                return new DefaultTarget(TargetType.TYPE_COLLECTION, context);
+            } else {
+                return returnUnknownLocation(context);
+            }
+           
         }
 
+        // somebody hit /api/registry/foo....
         path = UrlEncoding.decode(path);
         
         try {
@@ -99,6 +119,10 @@ public class ArtifactResolver implements Resolver<Target> {
         } catch (RegistryException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Target returnUnknownLocation(RequestContext context) {
+        return new DefaultTarget(TargetType.TYPE_UNKNOWN, context);
     }
 
     private Target resolveArtifact(String path, String classifier, RequestContext context)
@@ -134,10 +158,10 @@ public class ArtifactResolver implements Resolver<Target> {
                 return new DefaultTarget(TargetType.TYPE_MEDIA, context);
             }
         } catch (NotFoundException e1) {
-            return new DefaultTarget(TargetType.TYPE_UNKNOWN, context);
+            return returnUnknownLocation(context);
         }
         
-        return new DefaultTarget(TargetType.TYPE_UNKNOWN, context);
+        return returnUnknownLocation(context);
     }
 
     private String getPathWithoutArtifact(RequestContext context) {
@@ -158,7 +182,7 @@ public class ArtifactResolver implements Resolver<Target> {
         context.setAttribute(WORKSPACE, workspace);
         
         context.setAttribute(COLLECTION_HREF, context.getTargetPath());
-        if ("workspaces".equals(classifier) || "atom".equals(classifier)) {
+        if (WORKSPACES_CLASSIFIER.equals(classifier) || "atom".equals(classifier)) {
             context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, workspaceCollection);
         } else {
             context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, artifactWorkspaceCollection);

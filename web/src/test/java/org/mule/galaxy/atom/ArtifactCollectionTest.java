@@ -76,7 +76,8 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res = client.post(colUri.toString() + "/Default%20Workspace", getWsdl(), opts);
         assertEquals(201, res.getStatus());
         
-        prettyPrint(res.getDocument());
+        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl", 
+                     res.getLocation().toString());
         res.release();
         
         // Check the new feed for our entry
