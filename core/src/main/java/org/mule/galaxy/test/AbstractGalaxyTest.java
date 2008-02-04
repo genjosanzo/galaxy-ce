@@ -98,7 +98,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
 
     protected Artifact importHelloMule() throws RegistryException, ArtifactPolicyException, IOException,
         MimeTypeParseException {
-        InputStream helloWsdl = getResourceAsStream("/mule2/hello-config.xml");
+        InputStream helloWsdl = getResourceAsStream("/mule/hello-config.xml");
         
         Collection<Workspace> workspaces = registry.getWorkspaces();
         assertEquals(1, workspaces.size());
@@ -110,7 +110,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
                                                     "0.1", helloWsdl, getAdmin());
         return ar.getArtifact();
     }
-    
+
     private void clearJcrRepository() {
         try {
             Session session = repository.login(new SimpleCredentials("username", "password".toCharArray()));

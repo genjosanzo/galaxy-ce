@@ -205,25 +205,5 @@ public class IndexTest extends AbstractGalaxyTest {
         // assertNotNull(nextAV.getData());
         // TODO test data
     }
-    
-    public void testMuleIndex() throws Exception {
-        
-        // Import a document which should now be indexed
-        InputStream helloConfig = getResourceAsStream("/mule/hello-config.xml");
-        
-        Collection<Workspace> workspaces = registry.getWorkspaces();
-        assertEquals(1, workspaces.size());
-        Workspace workspace = workspaces.iterator().next();
-        
-        ArtifactResult ar = registry.createArtifact(workspace, 
-                                                    "application/xml", 
-                                                    "hello-config.xml", 
-                                                    "0.1", helloConfig, getAdmin());
-        Artifact artifact = ar.getArtifact();
-        
-        JcrVersion version = (JcrVersion) artifact.getActiveVersion();
-        Object property = version.getProperty("mule.description");
-        assertNotNull(property);
-        assertTrue(property instanceof String);
-    }
+
 }
