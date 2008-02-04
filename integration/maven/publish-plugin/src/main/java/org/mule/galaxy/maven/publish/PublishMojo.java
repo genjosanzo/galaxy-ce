@@ -2,11 +2,15 @@ package org.mule.galaxy.maven.publish;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.activation.MimeType;
+
+import org.apache.abdera.model.Document;
+import org.apache.abdera.model.Entry;
+import org.apache.abdera.model.Feed;
 import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
@@ -73,6 +77,14 @@ public class PublishMojo extends AbstractMojo {
      */
     private boolean publishProject = true;
 
+    /**
+     * Whether or not to clear the artifacts from the workspace before
+     * uploading new ones.
+     *
+     * @parameter
+     */
+    private boolean clearWorkspace = false;
+
     private AbderaClient client;
 
     private String authorization;
@@ -85,6 +97,10 @@ public class PublishMojo extends AbstractMojo {
         String auth = server.getUsername() + ":" + server.getPassword();
         authorization = "Basic " + Base64.encode(auth.getBytes());
     
+        if (clearWorkspace) {
+            clearWorkspace();
+        }
+        
         if (publishProject) {
             Set artifacts = project.getArtifacts();
             
@@ -96,8 +112,41 @@ public class PublishMojo extends AbstractMojo {
             
         }
         
+        // TODO
         for (Dependency d : artifacts) {
             
+        }
+    }
+
+    private void clearWorkspace() throws MojoFailureException {
+        RequestOptions opts = new RequestOptions();
+        opts.setAuthorization(authorization);
+        
+        getLog().info("Clearing workspace " + url);
+        ClientResponse res = client.get(url, opts);
+        if (res.getStatus() >= 300) {
+            throw new MojoFailureException("Could not GET the workspace URL. Got status: " 
+                                           + res.getStatus()
+                                           + " (" + res.getStatusText() + ")");
+        }
+        
+        assertResponseIsFeed(res);
+        
+        Document<Feed> doc = res.getDocument();
+        Feed feed = doc.getRoot();
+        
+        for (Entry e : feed.getEntries()) {
+            getLog().info("Deleting " + e.getTitle());
+            client.delete(e.getContentSrc().toString(), opts);
+        }
+    }
+
+    private void assertResponseIsFeed(ClientResponse res) throws MojoFailureException {
+        MimeType contentType = res.getContentType();
+        if ("application/atomcoll+xml".equals(contentType.getPrimaryType())) {
+            throw new MojoFailureException("URL is not a valid Galaxy workspace. "
+                                           + "It must be an Atom Collection. Received Content-Type: "
+                                           + contentType);
         }
     }
 
@@ -119,14 +168,15 @@ public class PublishMojo extends AbstractMojo {
             artifactUrl += name;
             
             // Check to see if this artifact exists already.
-            ClientResponse res = client.head(artifactUrl, opts);
+            ClientResponse res = client.head(artifactUrl + "?version=" + a.getVersion(), opts);
             if (res.getStatus() == 404) {
+                getLog().debug("Uploading artifact " + name + ".");
                 client.post(url, new FileInputStream(file), opts);
             } else if (res.getStatus() >= 300) {
                 throw new MojoFailureException("Could not determine if resource was already uploaded: " + name
                     + ". Got status " + res.getStatus() + " for URL " + artifactUrl + ".");
             } else {
-                client.put(name , new FileInputStream(file), opts);
+                getLog().debug("Skipping artifact " + name + " as the current version already exists in the destination workspace.");
             }
         } catch (IOException e) {
             throw new MojoExecutionException("Could not upload artifact to Galaxy: " 
