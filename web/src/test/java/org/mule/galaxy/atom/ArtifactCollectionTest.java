@@ -1,12 +1,14 @@
 package org.mule.galaxy.atom;
 
 
+import org.mule.galaxy.test.AbstractAtomTest;
+
 import java.io.InputStream;
 import java.util.List;
 
 import org.apache.abdera.i18n.iri.IRI;
-import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.i18n.text.CharUtils.Profile;
+import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.model.Collection;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
@@ -17,7 +19,6 @@ import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
 import org.apache.axiom.om.util.Base64;
-import org.mule.galaxy.test.AbstractAtomTest;
 
 public class ArtifactCollectionTest extends AbstractAtomTest {
     
@@ -163,7 +164,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res.release();
         
         // HEAD the resource
-        res = client.get(e.getContentSrc().toString(), defaultOpts);
+        res = client.head(e.getContentSrc().toString(), defaultOpts);
         assertEquals(200, res.getStatus());
         res.release();
         
