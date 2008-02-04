@@ -162,6 +162,15 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         while (is.read() != -1);
         res.release();
         
+        // HEAD the resource
+        res = client.get(e.getContentSrc().toString(), defaultOpts);
+        assertEquals(200, res.getStatus());
+        res.release();
+        
+        res = client.get(e.getContentSrc().toString() + "?version=0.1", defaultOpts);
+        assertEquals(200, res.getStatus());
+        res.release();
+        
         // Try the history entry
         res = client.get(historyEntry.getContentSrc().toString(), defaultOpts);
         assertEquals(200, res.getStatus());

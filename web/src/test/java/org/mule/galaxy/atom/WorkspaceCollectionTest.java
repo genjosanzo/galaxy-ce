@@ -1,5 +1,6 @@
 package org.mule.galaxy.atom;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
@@ -15,14 +16,21 @@ import org.mule.galaxy.util.IOUtils;
 
 public class WorkspaceCollectionTest extends AbstractAtomTest {
     
+    public void testRootWorkspaceManipulation() throws Exception {
+        testWorkspace("http://localhost:9002/api/registry", 1);
+    }
+    
     public void testWorkspaceManipulation() throws Exception {
+        testWorkspace("http://localhost:9002/api/registry/Default%20Workspace", 0);
+    }
+
+    private void testWorkspace(String dwBase, int entries)
+        throws IOException {
         AbderaClient client = new AbderaClient(abdera);
         RequestOptions defaultOpts = client.getDefaultRequestOptions();
         defaultOpts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
         defaultOpts.setContentType("application/atom+xml;type=entry");
         
-        String base = "http://localhost:9002/api/registry";
-        String dwBase = base + "/Default%20Workspace";
         // Grab workspaces & collections
         ClientResponse res = client.get(dwBase + ";workspaces", defaultOpts);
         assertEquals(res.getStatusText(), 200, res.getStatus());
@@ -30,7 +38,7 @@ public class WorkspaceCollectionTest extends AbstractAtomTest {
         Document<Feed> feedDoc = res.getDocument();
         Feed feed = feedDoc.getRoot();
         
-        assertEquals(0, feed.getEntries().size());
+        assertEquals(entries, feed.getEntries().size());
         
         Entry entry = factory.newEntry();
         entry.setTitle("MyWorkspace");
@@ -72,13 +80,7 @@ public class WorkspaceCollectionTest extends AbstractAtomTest {
         res = client.delete(dwBase + "/MyWorkspace", defaultOpts);
         assertEquals(204, res.getStatus());
         
-        res.release();
-        
-        res = client.get(base + ";workspaces");
-        feedDoc = res.getDocument();
-        feed = feedDoc.getRoot();
-        prettyPrint(feed);
-        assertEquals(1, feed.getEntries().size());
+        res.release();        
     }
 
     private InputStream getWsdl() {
