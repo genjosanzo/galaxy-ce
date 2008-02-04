@@ -9,6 +9,7 @@
  */
 package org.mule.galaxy.spring.config;
 
+import org.mule.galaxy.spring.GalaxyApplicationContext;
 import org.mule.galaxy.test.AbstractAtomTest;
 
 import java.net.URL;
