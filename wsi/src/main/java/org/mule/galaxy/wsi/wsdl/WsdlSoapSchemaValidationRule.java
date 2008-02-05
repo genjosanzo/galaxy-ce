@@ -26,10 +26,7 @@ public class WsdlSoapSchemaValidationRule extends AbstractWsdlRule {
     public WsdlSoapSchemaValidationRule() throws SAXException {
         super("R2029");
         schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-
-        // TODO GALAXY-48 need proper logging libs
-        System.out.println("============= schemaFactory = " + schemaFactory);
-
+        
         Source wsdlSoapSchemaSource = new StreamSource(getClass().getResourceAsStream("/org/mule/galaxy/wsi/wsdl/wsdl-2004-08-24.xsd"));
         wsdlSoapSchema = schemaFactory.newSchema(wsdlSoapSchemaSource);
     }

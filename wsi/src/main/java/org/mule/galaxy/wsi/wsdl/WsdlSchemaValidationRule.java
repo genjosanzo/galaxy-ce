@@ -34,7 +34,6 @@ public class WsdlSchemaValidationRule extends AbstractWsdlRule {
     public ValidationResult validate(Document document, Definition def) {
         ValidationResult result = new ValidationResult();
         
-        
         try {
             SchemaErrorHandler errorHandler = new SchemaErrorHandler("R2028");
 

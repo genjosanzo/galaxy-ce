@@ -29,6 +29,10 @@ public interface PolicyManager {
     Collection<ArtifactPolicy> getActivePolicies(Phase p);
 
     Collection<ArtifactPolicy> getActivePolicies(Lifecycle p);
+
+    Collection<ArtifactPolicy> getActivePolicies(Workspace w, Phase p);
+
+    Collection<ArtifactPolicy> getActivePolicies(Workspace w, Lifecycle p);
     
     
     void setActivePolicies(Workspace w, Collection<Phase> phases, ArtifactPolicy... policies);

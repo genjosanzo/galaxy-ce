@@ -163,9 +163,9 @@ public class PolicyPanel extends AbstractComposite {
         
         if (!currentPsPanel.isLoaded()) {
             if ("_all".equals(phase)) {
-                svc.getActivePoliciesForLifecycle(lifecycle, callback);
+                svc.getActivePoliciesForLifecycle(lifecycle, workspaceId, callback);
             } else if (!"_none".equals(phase)) {
-                svc.getActivePoliciesForPhase(lifecycle, phase, callback);
+                svc.getActivePoliciesForPhase(lifecycle, phase, workspaceId, callback);
             } else {
                 psPanelContainer.clear();
             }

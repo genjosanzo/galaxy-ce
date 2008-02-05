@@ -2,6 +2,7 @@ package org.mule.galaxy.atom;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
@@ -26,8 +27,11 @@ import org.apache.abdera.model.Text.Type;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.RequestContext.Scope;
+import org.apache.abdera.protocol.server.context.AbstractResponseContext;
 import org.apache.abdera.protocol.server.context.EmptyResponseContext;
+import org.apache.abdera.protocol.server.context.MediaResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
+import org.apache.abdera.protocol.server.context.SimpleResponseContext;
 import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
@@ -40,6 +44,7 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.security.User;
 
 public abstract class AbstractArtifactCollection 
@@ -163,9 +168,9 @@ public abstract class AbstractArtifactCollection
 
     @Override
     public ArtifactVersion postMedia(MimeType mimeType, 
-                                          String slug, 
-                                         InputStream inputStream, 
-                                         RequestContext request) throws ResponseContextException {
+                                     String slug, 
+                                     InputStream inputStream,
+                                     RequestContext request) throws ResponseContextException {
         try {
             String version = getVersion(request);
             
@@ -186,7 +191,38 @@ public abstract class AbstractArtifactCollection
     }
 
     protected ResponseContextException createArtifactPolicyExceptionResponse(ArtifactPolicyException e) {
-        return new ResponseContextException(500, e);
+        final StringBuilder s = new StringBuilder();
+        s.append("<html><head><title>Artifact Policy Failure</title></head><body>");
+        
+        List<ApprovalMessage> approvals = e.getApprovals();
+        
+        for (ApprovalMessage m : approvals) {
+            if (m.isWarning()) {
+                s.append("<div class=\"warning\">");
+            } else {
+                s.append("<div class=\"failure\">");
+            }
+            
+            s.append(m.getMessage());
+            s.append("</div>");
+        }
+        
+        s.append("</html>");
+        SimpleResponseContext rc = new SimpleResponseContext() {
+            @Override
+            protected void writeEntity(Writer writer) throws IOException {
+                writer.write(s.toString());
+            }
+
+            public boolean hasEntity() {
+                return true;
+            }
+        };
+        rc.setContentType("application/xhtml");
+        // bad request code
+        rc.setStatus(400);
+        
+        return new ResponseContextException(rc);
     }
 
     protected User getUser() {

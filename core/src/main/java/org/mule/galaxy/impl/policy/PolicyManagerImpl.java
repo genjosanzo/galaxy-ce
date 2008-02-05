@@ -48,7 +48,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     private String workspaceLifecyclesNodeId;
     private String artifactsLifecyclesNodeId;
     private String artifactsPhasesNodeId;
-    private String workspacesPhasesNodeId;
+    private String workspacePhasesNodeId;
     private String phasesNodeId;
     
     public void initilaize() throws Exception{
@@ -65,7 +65,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         
         Node workspaces = getOrCreate(activations, "workspaces");
         workspaceLifecyclesNodeId = getOrCreate(workspaces, "lifecycles").getUUID();
-        workspacesPhasesNodeId = getOrCreate(workspaces, "phases").getUUID();
+        workspacePhasesNodeId = getOrCreate(workspaces, "phases").getUUID();
         
         session.save();
     }
@@ -123,7 +123,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     }
 
     public void setActivePolicies(Workspace w, Collection<Phase> phases, ArtifactPolicy... policies) {
-        activatePolicy(workspacesPhasesNodeId, phases, policies, w.getId());
+        activatePolicy(workspacePhasesNodeId, phases, policies, w.getId());
     }
 
     public void setActivePolicies(Workspace w, Lifecycle lifecycle, ArtifactPolicy... policies) {
@@ -247,6 +247,51 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         return activePolicies;
     }
 
+    public Collection<ArtifactPolicy> getActivePolicies(final Workspace w, final Lifecycle l) {
+        final Set<ArtifactPolicy> activePolicies = new HashSet<ArtifactPolicy>();
+        jcrTemplate.execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node node = session.getNodeByUUID(workspaceLifecyclesNodeId);
+                try {
+                    node = node.getNode(w.getId());
+                    node = node.getNode(l.getName());
+                    
+                    for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
+                        activePolicies.add(getPolicy(nodes.nextNode().getName()));
+                    }
+                } catch (PathNotFoundException e) {
+                }
+                
+                return null;
+            }
+
+        });
+        return activePolicies;
+    }
+
+    public Collection<ArtifactPolicy> getActivePolicies(final Workspace w, final Phase p) {
+        final Set<ArtifactPolicy> activePolicies = new HashSet<ArtifactPolicy>();
+        jcrTemplate.execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node node = session.getNodeByUUID(workspacePhasesNodeId);
+                try {
+                    node = node.getNode(w.getId());
+                    node = node.getNode(p.getLifecycle().getName());
+                    node = node.getNode(p.getName());
+                    
+                    for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
+                        activePolicies.add(getPolicy(nodes.nextNode().getName()));
+                    }
+                } catch (PathNotFoundException e) {
+                }
+                
+                return null;
+            }
+
+        });
+        return activePolicies;
+    }
+
     public Collection<ArtifactPolicy> getActivePolicies(final Artifact a) {
         final Set<ArtifactPolicy> activePolicies = new HashSet<ArtifactPolicy>();
         jcrTemplate.execute(new JcrCallback() {
@@ -261,7 +306,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                             a.getId(), lifecycle);
                 addPolicies(activePolicies, a, session, phasesNodeId, 
                             lifecycle, a.getPhase().getName());
-                addPolicies(activePolicies, a, session, workspacesPhasesNodeId, 
+                addPolicies(activePolicies, a, session, workspacePhasesNodeId, 
                             workspace, lifecycle, a.getPhase().getName());
                 addPolicies(activePolicies, a, session, artifactsPhasesNodeId, 
                             a.getId(), lifecycle, a.getPhase().getName());

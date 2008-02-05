@@ -286,21 +286,15 @@ public final class DOMUtils {
         ParserConfigurationException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
-        dbf.setValidating(false);
         dbf.setIgnoringComments(false);
         dbf.setIgnoringElementContentWhitespace(true);
         dbf.setNamespaceAware(true);
-        // dbf.setCoalescing(true);
-        // dbf.setExpandEntityReferences(true);
-
-        DocumentBuilder db = null;
-        db = dbf.newDocumentBuilder();
+        
+        DocumentBuilder db = dbf.newDocumentBuilder();
         db.setEntityResolver(new NullResolver());
-
-        // db.setErrorHandler( new MyErrorHandler());
-
         return db.parse(is);
     }
+    
     public static Document readXml(StreamSource is) throws SAXException, IOException,
         ParserConfigurationException {
         

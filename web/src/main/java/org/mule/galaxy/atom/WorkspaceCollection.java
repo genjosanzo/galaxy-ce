@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.Content;
+import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.RequestContext.Scope;
@@ -15,6 +16,7 @@ import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.policy.PolicyManager;
 
 /**
  * Manage artifact workspaces through an AtomPub collection.
@@ -24,10 +26,20 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
     public static final String ID_PREFIX = "urn:galaxy:workspaces:";
     
     private Registry registry;
+    private PolicyManager policyManager;
     
     public WorkspaceCollection(Registry registry) {
         super();
         this.registry = registry;
+    }
+
+    @Override
+    protected String addEntryDetails(RequestContext request, Entry e, IRI feedIri, Workspace entryObj)
+        throws ResponseContextException {
+        
+        
+        
+        return super.addEntryDetails(request, e, feedIri, entryObj);
     }
 
     @Override

@@ -12,6 +12,7 @@ import org.mule.galaxy.Comment;
 import org.mule.galaxy.CommentManager;
 import org.mule.galaxy.Dependency;
 import org.mule.galaxy.Index;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Index.Language;
 import org.mule.galaxy.IndexManager;
 import org.mule.galaxy.PropertyDescriptor;
@@ -145,8 +146,6 @@ public class RegistryServiceImpl implements RegistryService {
            throw new RPCException(e.getMessage());
        }
     }
-
-    
 
     public void updateWorkspace(String workspaceId, String parentWorkspaceId, String workspaceName)
         throws RPCException {
@@ -792,15 +791,42 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
 
-    public Collection getActivePoliciesForLifecycle(String lifecycle) throws RPCException {
-        Collection<ArtifactPolicy> pols = policyManager.getActivePolicies(lifecycleManager.getLifecycle(lifecycle));
+    public Collection getActivePoliciesForLifecycle(String lifecycleName, String workspaceId) throws RPCException {
+        Collection<ArtifactPolicy> pols = null;
+        Lifecycle lifecycle = lifecycleManager.getLifecycle(lifecycleName);
+        try {
+            if (workspaceId != null) {
+                Workspace w = registry.getWorkspace(workspaceId);
+                policyManager.getActivePolicies(w, lifecycle);
+            } else {
+                policyManager.getActivePolicies(lifecycle);
+            }
+        } catch (NotFoundException e) {
+            throw new RPCException(e.getMessage());
+        } catch (RegistryException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
         return getArtifactPolicyIds(pols);
     }
 
-
-    public Collection getActivePoliciesForPhase(String lifecycle, String phase) throws RPCException {
-        Collection<ArtifactPolicy> pols = policyManager.getActivePolicies(
-                          lifecycleManager.getLifecycle(lifecycle).getPhase(phase));
+    public Collection getActivePoliciesForPhase(String lifecycle, String phaseName, String workspaceId) throws RPCException {
+        Collection<ArtifactPolicy> pols = null;
+        Phase phase = lifecycleManager.getLifecycle(lifecycle).getPhase(phaseName);
+        try {
+            if (workspaceId != null) {
+                Workspace w = registry.getWorkspace(workspaceId);
+                policyManager.getActivePolicies(w, phase);
+            } else {
+                policyManager.getActivePolicies(phase);
+            }
+        } catch (NotFoundException e) {
+            throw new RPCException(e.getMessage());
+        } catch (RegistryException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
+                          
         return getArtifactPolicyIds(pols);
     }
 
@@ -837,7 +863,6 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         }
     }
-
 
     private List<ArtifactPolicy> getArtifactPolicies(Collection ids) {
         List<ArtifactPolicy> policies = new ArrayList<ArtifactPolicy>();

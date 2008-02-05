@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.xml.XMLConstants;
+import javax.xml.validation.SchemaFactory;
+
 public class WSIRuleManagerImpl implements WSIRuleManager {
 
     
@@ -30,8 +33,15 @@ public class WSIRuleManagerImpl implements WSIRuleManager {
     public WSIRuleManagerImpl() throws Exception {
         super();
 
-        wsi11Rules.add(new WsdlSchemaValidationRule());
-        wsi11Rules.add(new WsdlSoapSchemaValidationRule());
+        String name = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).getClass().getName();
+        if (name.startsWith("com.sun.org.apache.xerces") && isJDK5()) {
+            System.err.println("WARNING: The Sun XML validator does not work correctly in Java 5.\n" +
+            		       "You must endorse Xerces for the WS-I Compliance validator to fully\n" +
+            		       "work. Schema validation rules will be disabled until then.");
+        } else {
+            wsi11Rules.add(new WsdlSchemaValidationRule());
+            wsi11Rules.add(new WsdlSoapSchemaValidationRule());
+        }
         wsi11Rules.add(new ImportUriRule());
         wsi11Rules.add(new NonEmptyWsdlLocationImportRule());
         
@@ -41,6 +51,12 @@ public class WSIRuleManagerImpl implements WSIRuleManager {
         wsi11Rules.add(new SoapHttpBindingTransportRule());
         wsi11Rules.add(new StyleConsistencyRule());
         wsi11Rules.add(new OperationSignatureRule());
+    }   
+    
+    boolean isJDK5() {
+        String v = System.getProperty("java.class.version", "44.0");
+        
+        return "49.0".equals(v);
     }
 
     public String getDescription(String ruleNumber) {

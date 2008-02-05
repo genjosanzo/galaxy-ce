@@ -148,7 +148,6 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
             throw new ResponseContextException(ctx);
         }
         
-        
         return registry.createArtifact(workspace, 
                                        mimeType.toString(), 
                                        slug, 
