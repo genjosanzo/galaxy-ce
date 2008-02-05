@@ -26,6 +26,7 @@
         <module>web-standalone</module>
         <module>gwt-client</module>
         <module>integration</module>
+        <module>server</module>
     </modules>
 
     <dependencyManagement>

@@ -7,9 +7,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.galaxy</groupId>
-    <artifactId>galaxy-integration</artifactId>
+    <artifactId>galaxy-server-integration</artifactId>
     <version>1.0-beta-2-SNAPSHOT</version>
-    <name>Galaxy Integration</name>
+    <name>Galaxy Server Integration</name>
     <packaging>pom</packaging>
 
     <licenses>
@@ -20,15 +20,8 @@
     </licenses>
 
     <modules>
-        <module>support</module>
-        <module>mule1-client</module>
-        <module>mule2-client</module>
-        <module>cxf</module>
-        <module>spring</module>
-        <module>maven/publish-plugin</module>
-        <module>maven/policy-plugin</module>
-        <module>distribution</module>
+        <module>mule1</module>
+        <module>mule2</module>
     </modules>
-
 
 </project>

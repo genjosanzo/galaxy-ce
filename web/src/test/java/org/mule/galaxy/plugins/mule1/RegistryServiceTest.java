@@ -1,4 +1,4 @@
-package org.mule.galaxy.mule1;
+package org.mule.galaxy.plugins.mule1;
 
 import java.util.Arrays;
 import java.util.Collection;

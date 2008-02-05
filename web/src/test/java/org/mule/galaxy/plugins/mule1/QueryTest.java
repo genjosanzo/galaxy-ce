@@ -1,4 +1,4 @@
-package org.mule.galaxy.mule1;
+package org.mule.galaxy.plugins.mule1;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Workspace;
