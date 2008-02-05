@@ -31,13 +31,6 @@
 
         <dependency>
             <groupId>org.mule.galaxy</groupId>
-            <artifactId>galaxy-integration-mule1-server</artifactId>
-            <version>1.0-beta-2-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-integration-support</artifactId>
             <version>1.0-beta-2-SNAPSHOT</version>
         </dependency>
