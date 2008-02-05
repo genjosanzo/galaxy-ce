@@ -8,6 +8,8 @@ import java.util.Set;
 
 import javax.activation.MimeType;
 
+import org.apache.abdera.i18n.text.UrlEncoding;
+import org.apache.abdera.i18n.text.CharUtils.Profile;
 import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
@@ -93,6 +95,10 @@ public class PublishMojo extends AbstractMojo {
         
         Server server = settings.getServer(serverId);
         
+        if (server == null) {
+            throw new MojoFailureException("Could not find server: " + serverId);
+        }
+        
         client = new AbderaClient();
         String auth = server.getUsername() + ":" + server.getPassword();
         authorization = "Basic " + Base64.encode(auth.getBytes());
@@ -109,12 +115,6 @@ public class PublishMojo extends AbstractMojo {
                 
                 publishArtifact(a);
             }
-            
-        }
-        
-        // TODO
-        for (Dependency d : artifacts) {
-            
         }
     }
 
@@ -139,6 +139,8 @@ public class PublishMojo extends AbstractMojo {
             getLog().info("Deleting " + e.getTitle());
             client.delete(e.getContentSrc().toString(), opts);
         }
+        
+        res.release();
     }
 
     private void assertResponseIsFeed(ClientResponse res) throws MojoFailureException {
@@ -165,23 +167,65 @@ public class PublishMojo extends AbstractMojo {
             if (!url.endsWith("/")) {
                 artifactUrl += "/";
             }
-            artifactUrl += name;
+            artifactUrl += UrlEncoding.encode(name, Profile.PATH.filter());
             
             // Check to see if this artifact exists already.
-            ClientResponse res = client.head(artifactUrl + "?version=" + a.getVersion(), opts);
-            if (res.getStatus() == 404) {
-                getLog().debug("Uploading artifact " + name + ".");
-                client.post(url, new FileInputStream(file), opts);
-            } else if (res.getStatus() >= 300) {
-                throw new MojoFailureException("Could not determine if resource was already uploaded: " + name
+            ClientResponse  res = client.head(artifactUrl, opts);
+            int artifactExists = res.getStatus();
+            res.release();
+            
+            // Check to see if this artifact version exists
+            int artifactVersionExists = 404;
+            if (artifactExists != 404 && artifactExists < 300) {
+                res = client.head(artifactUrl + "?version=" + a.getVersion(), opts);
+                artifactVersionExists = res.getStatus();
+                res.release();
+            }
+            
+            if (artifactExists == 404 && artifactVersionExists == 404) {
+                // create a new artifact
+                res = client.post(url, new FileInputStream(file), opts);
+                res.release();
+                getLog().debug("Uploaded artifact " + name + " (version " + a.getVersion() + ")");
+            } else if (artifactVersionExists < 300) {
+                getLog().debug("Skipping artifact " + name + " as the current version already exists in the destination workspace.");
+            } else if (artifactVersionExists >= 300 && artifactVersionExists != 404) {
+                throw new MojoFailureException("Could not determine if resource already exists in: " + name
                     + ". Got status " + res.getStatus() + " for URL " + artifactUrl + ".");
             } else {
-                getLog().debug("Skipping artifact " + name + " as the current version already exists in the destination workspace.");
+                // update the artifact
+                res = client.put(artifactUrl, new FileInputStream(file), opts);
+                res.release();
             }
+            
         } catch (IOException e) {
             throw new MojoExecutionException("Could not upload artifact to Galaxy: " 
                                              + name, e);
         }
+    }
+
+    public void setProject(MavenProject project) {
+        this.project = project;
+    }
+
+    public void setSettings(Settings settings) {
+        this.settings = settings;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setServerId(String serverId) {
+        this.serverId = serverId;
+    }
+
+    public void setPublishProject(boolean publishProject) {
+        this.publishProject = publishProject;
+    }
+
+    public void setClearWorkspace(boolean clearWorkspace) {
+        this.clearWorkspace = clearWorkspace;
     }
     
 }

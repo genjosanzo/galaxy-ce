@@ -122,7 +122,7 @@ public class ArtifactResolver implements Resolver<Target> {
     }
 
     private Target returnUnknownLocation(RequestContext context) {
-        return new DefaultTarget(TargetType.TYPE_UNKNOWN, context);
+        return new DefaultTarget(TargetType.TYPE_NOT_FOUND, context);
     }
 
     private Target resolveArtifact(String path, String classifier, RequestContext context)
@@ -158,7 +158,6 @@ public class ArtifactResolver implements Resolver<Target> {
                 return new DefaultTarget(TargetType.TYPE_MEDIA, context);
             }
         } catch (NotFoundException e1) {
-            return returnUnknownLocation(context);
         }
         
         return returnUnknownLocation(context);
