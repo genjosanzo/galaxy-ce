@@ -25,6 +25,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
+import org.codehaus.plexus.util.DirectoryScanner;
 
 /**
  * Publishes artifacts and resources to a workspace.
@@ -51,6 +52,15 @@ public class PublishMojo extends AbstractMojo {
     private Settings settings;
     
     /**
+     * The base directory
+     *
+     * @parameter expression="${basedir}"
+     * @required
+     * @readonly
+     */
+    private File basedir;
+    
+    /**
      * The Galaxy workspace URL.
      *
      * @parameter
@@ -71,6 +81,20 @@ public class PublishMojo extends AbstractMojo {
      */
     private Dependency[] artifacts;
 
+    /**
+     * Resources to publish to Galaxy
+     *
+     * @parameter
+     */
+    private String[] includes;
+
+    /**
+     * Resources to exclude from publishing to Galaxy
+     *
+     * @parameter
+     */
+    private String[] excludes;
+    
     /**
      * Whether or not to publish the project's artifacts which this
      * plugin is attached to.
@@ -116,6 +140,21 @@ public class PublishMojo extends AbstractMojo {
                 publishArtifact(a);
             }
         }
+        
+        if (includes != null || excludes != null) {
+            DirectoryScanner scanner = new DirectoryScanner();
+            scanner.setIncludes(includes);
+            scanner.setExcludes(excludes);
+            scanner.setBasedir(basedir);
+            scanner.scan();
+            
+            String[] files = scanner.getIncludedFiles();
+            if (files != null) {
+                for (String file : files) {
+                    publishFile(new File(file), project.getArtifact().getVersion());
+                }
+            }
+        }
     }
 
     private void clearWorkspace() throws MojoFailureException {
@@ -153,14 +192,24 @@ public class PublishMojo extends AbstractMojo {
     }
 
     private void publishArtifact(Artifact a) throws MojoExecutionException, MojoFailureException {
+        String version = a.getVersion();
         File file = a.getFile();
-        String name = file.getName();
+        
+        publishFile(file, version);
+    }
 
+    private void publishFile(File file, String version) throws MojoFailureException, MojoExecutionException {
+        if (version == null) {
+            throw new NullPointerException("Version can not be null!");
+        }
+        
+        String name = file.getName();
+        
         RequestOptions opts = new RequestOptions();
         opts.setAuthorization(authorization);
         opts.setContentType("application/octet-stream");
         opts.setSlug(name);
-        opts.setHeader("X-Artifact-Version", a.getVersion());
+        opts.setHeader("X-Artifact-Version", version);
         
         try {
             String artifactUrl = url;
@@ -177,7 +226,7 @@ public class PublishMojo extends AbstractMojo {
             // Check to see if this artifact version exists
             int artifactVersionExists = 404;
             if (artifactExists != 404 && artifactExists < 300) {
-                res = client.head(artifactUrl + "?version=" + a.getVersion(), opts);
+                res = client.head(artifactUrl + "?version=" + version, opts);
                 artifactVersionExists = res.getStatus();
                 res.release();
             }
@@ -186,7 +235,7 @@ public class PublishMojo extends AbstractMojo {
                 // create a new artifact
                 res = client.post(url, new FileInputStream(file), opts);
                 res.release();
-                getLog().debug("Uploaded artifact " + name + " (version " + a.getVersion() + ")");
+                getLog().debug("Uploaded artifact " + name + " (version " + version + ")");
             } else if (artifactVersionExists < 300) {
                 getLog().debug("Skipping artifact " + name + " as the current version already exists in the destination workspace.");
             } else if (artifactVersionExists >= 300 && artifactVersionExists != 404) {
@@ -226,6 +275,18 @@ public class PublishMojo extends AbstractMojo {
 
     public void setClearWorkspace(boolean clearWorkspace) {
         this.clearWorkspace = clearWorkspace;
+    }
+
+    public void setIncludes(String[] includes) {
+        this.includes = includes;
+    }
+
+    public void setExcludes(String[] excludes) {
+        this.excludes = excludes;
+    }
+
+    public void setBasedir(File basedir) {
+        this.basedir = basedir;
     }
     
 }
