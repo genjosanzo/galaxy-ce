@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:tns="http://galaxy.mule.org/example/background-check/" 
+        xmlns="http://www.w3.org/2001/XMLSchema" 
+        targetNamespace="http://galaxy.mule.org/example/background-check/">
+    
+    <element name="BackgroundInformation">
+    
+    </element>
+    
+</schema>

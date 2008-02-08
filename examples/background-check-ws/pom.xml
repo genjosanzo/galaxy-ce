@@ -1,0 +1,88 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.mule.galaxy</groupId>
+    <artifactId>galaxy-parent</artifactId>
+    <version>1.0-beta-2-SNAPSHOT</version>
+  </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.mule.galaxy</groupId>
+    <artifactId>galaxy-background-check-service</artifactId>
+    <version>1.0-beta-2-SNAPSHOT</version>
+    <name>Example: Background Check Service</name>
+    <description>
+      An example service which checks the background of an individual. 
+    </description>
+    
+    <properties>
+      <mule.version>2.0.0-RC2</mule.version>
+    </properties>
+
+    <dependencies>
+    
+        <dependency>
+           <groupId>org.mule</groupId>
+           <artifactId>mule-core</artifactId>
+           <version>${mule.version}</version>
+        </dependency>
+            
+        <dependency>
+           <groupId>org.mule.transports</groupId>
+           <artifactId>mule-transport-http</artifactId>
+           <version>${mule.version}</version>
+        </dependency>
+        
+        <dependency>
+           <groupId>junit</groupId>
+           <artifactId>junit</artifactId>
+           <optional>true</optional>
+           <scope>test</scope>
+        </dependency>
+        
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.mule.galaxy</groupId>
+                <artifactId>galaxy-maven-publish-plugin</artifactId>
+                <version>${version}</version>
+                <configuration>
+                    <url>http://localhost:9002/api/registry/Default%20Workspace</url>
+                    <username>admin</username>
+                    <password>admin</password>
+                    
+                    <!-- Use this to set up the username/password in your settings.xml -->
+                    <!-- <serverId>galaxy</serverId> -->
+                    
+                    <!-- Don't publish Mule to the repository -->
+                    <dependencyIncludes>
+                      <dependencyInclude>*:*</dependencyInclude>
+                    </dependencyIncludes>
+                    <dependencyExcludes>
+                      <dependencyExclude>org.mule:mule-core</dependencyExclude>
+                      <dependencyExclude>org.mule.transports:*</dependencyExclude>
+                    </dependencyExcludes>
+                    
+                    <!-- Publish our shared artifacts -->
+                    <includes>
+                        <include>src/main/resources/*.xsd</include>
+                        <include>src/main/resources/*.wsdl</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>publish-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                    </execution>
+
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>

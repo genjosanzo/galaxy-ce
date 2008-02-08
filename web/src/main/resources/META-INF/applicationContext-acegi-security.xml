@@ -156,18 +156,16 @@
       <property name="objectDefinitionSource">
          <value><![CDATA[
                 CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
-                PATTERN_TYPE_APACHE_ANTauthenticationProvider
-                /index.html=role_user
-                /api/*=role_user
-                /handler/userservice.rpc*=role_administrator
-                /handler/*=role_user
+                PATTERN_TYPE_APACHE_ANT
                 /logoff.jsp=ROLE_ANONYMOUS,role_user
-                /switchuser.jsp=ROLE_SUPERVISOR
+                /login.jsp=ROLE_ANONYMOUS,role_user
+                /login.css=ROLE_ANONYMOUS,role_user
+                /images/**=ROLE_ANONYMOUS,role_user
+                /favicon.ico*=ROLE_ANONYMOUS,role_user
+                /handler/userservice.rpc=role_administrator
                 /j_acegi_switch_user=ROLE_SUPERVISOR
-                /login.jsp*=ROLE_ANONYMOUS,role_user
-                /login.css*=ROLE_ANONYMOUS,role_user
-                /images/*=ROLE_ANONYMOUS,role_user
-                /favicon.ico*=ROLE_ANONYMOUS
+                /switchuser.jsp=ROLE_SUPERVISOR
+                /**=role_user
          ]]></value>
       </property>
    </bean>

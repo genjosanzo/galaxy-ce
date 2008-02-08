@@ -9,7 +9,7 @@
   <artifactId>galaxy-gwt-rpc</artifactId>
   <version>1.0-beta-2-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>Galaxy GWT RPC</name>
+  <name>Galaxy GWT RPC Web Client</name>
 
   <dependencies>
 

@@ -70,8 +70,9 @@ public class WorkspaceCollectionTest extends AbstractAtomTest {
         // TODO: test the entry's links. They aren't quite right yet.
         
         // Grab the new workspace's feed
-        res = client.get(dwBase + "/MyWorkspace");
+        res = client.get(dwBase + "/MyWorkspace", defaultOpts);
         feedDoc = res.getDocument();
+        prettyPrint(feedDoc);
         feed = feedDoc.getRoot();
         
         assertEquals(1, feed.getEntries().size());

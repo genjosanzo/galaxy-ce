@@ -3,7 +3,11 @@ package org.mule.galaxy.maven.publish;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.activation.MimeType;
@@ -68,19 +72,26 @@ public class PublishMojo extends AbstractMojo {
     private String url;
     
     /**
-     * The server id to use for username/password information.
+     * The server id to use for username/password information inside your settings.xml.
      *
      * @parameter
      */
     private String serverId;
-
+    
     /**
-     * The password for Galaxy.
+     * The username (see serverId as well).
      *
      * @parameter
      */
-    private Dependency[] artifacts;
+    private String username;
 
+    /**
+     * The username (see serverId as well).
+     *
+     * @parameter
+     */
+    private String password;
+    
     /**
      * Resources to publish to Galaxy
      *
@@ -94,14 +105,36 @@ public class PublishMojo extends AbstractMojo {
      * @parameter
      */
     private String[] excludes;
-    
+
     /**
-     * Whether or not to publish the project's artifacts which this
-     * plugin is attached to.
+     * Dependency filter to determine which artifacts which are attached to this project 
+     * will be published to Galaxy
      *
      * @parameter
      */
-    private boolean publishProject = true;
+    private String[] dependencyIncludes;
+
+    /**
+     * Dependency filter to determine which artifacts which are attached to this project 
+     * will NOT be published to Galaxy
+     *
+     * @parameter
+     */
+    private String[] dependencyExcludes;
+    
+    /**
+     * Whether or not to publish this project's dependencies to Galaxy.
+     *
+     * @parameter
+     */
+    private boolean publishProjectDependencies = true;
+    
+    /**
+     * Whether or not to publish the artifact produced by this build.
+     *
+     * @parameter
+     */
+    private boolean publishProjectArtifact = true;
 
     /**
      * Whether or not to clear the artifacts from the workspace before
@@ -115,26 +148,75 @@ public class PublishMojo extends AbstractMojo {
 
     private String authorization;
 
+    /**
+     * Whether or not dependency excludes should act transitively.
+     *
+     * @parameter
+     */
+    private boolean actTransitively = true;
+
+
+    /**
+     * Whether or not the plugin should fail if there were filtering dependency criteria
+     * which were not met.
+     *
+     * @parameter
+     */
+    private boolean strictFiltering;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         
-        Server server = settings.getServer(serverId);
-        
-        if (server == null) {
-            throw new MojoFailureException("Could not find server: " + serverId);
+        String auth = null;
+        if (serverId != null) {
+            Server server = settings.getServer(serverId);
+            
+            if (server == null) {
+                throw new MojoFailureException("Could not find server: " + serverId);
+            }
+
+            if (server.getUsername() == null || server.getPassword() == null) {
+                throw new MojoFailureException("You must specify a username & password in your settings.xml!");
+            }
+            
+            auth = server.getUsername() + ":" + server.getPassword();
+        } else {
+            if (username == null || password == null) {
+                throw new MojoFailureException("You must specify a username & password.");
+            }
+            auth = username + ":" + password;
         }
         
         client = new AbderaClient();
-        String auth = server.getUsername() + ":" + server.getPassword();
+        
         authorization = "Basic " + Base64.encode(auth.getBytes());
     
         if (clearWorkspace) {
             clearWorkspace();
         }
         
-        if (publishProject) {
-            Set artifacts = project.getArtifacts();
+        Set<Object> artifacts = new HashSet<Object>();
+        
+        if (publishProjectDependencies) {
+            Set<?> deps = project.getArtifacts();
+            if (deps != null && deps.size() > 0) artifacts.addAll(deps);
+        }
+        
+        if (publishProjectArtifact) {
+            artifacts.add(project.getArtifact());
+        }
+        
+        if (artifacts.size() > 0) {
+            List<?> filterIncludes = dependencyIncludes != null ? Arrays.asList(dependencyIncludes) : Collections.EMPTY_LIST;
+            List<?> filterExcludes = dependencyExcludes != null ? Arrays.asList(dependencyExcludes) : Collections.EMPTY_LIST;
             
-            for (Iterator itr = artifacts.iterator(); itr.hasNext();) {
+            FilterUtils.filterArtifacts(artifacts, 
+                                        filterIncludes, 
+                                        filterExcludes, 
+                                        strictFiltering, 
+                                        actTransitively, 
+                                        Collections.EMPTY_LIST, 
+                                        getLog());
+            for (Iterator<Object> itr = artifacts.iterator(); itr.hasNext();) {
                 Artifact a = (Artifact)itr.next();
                 
                 publishArtifact(a);
@@ -269,8 +351,8 @@ public class PublishMojo extends AbstractMojo {
         this.serverId = serverId;
     }
 
-    public void setPublishProject(boolean publishProject) {
-        this.publishProject = publishProject;
+    public void setPublishProjectDependencies(boolean publishProject) {
+        this.publishProjectDependencies = publishProject;
     }
 
     public void setClearWorkspace(boolean clearWorkspace) {
@@ -287,6 +369,14 @@ public class PublishMojo extends AbstractMojo {
 
     public void setBasedir(File basedir) {
         this.basedir = basedir;
+    }
+
+    public void setDependencyIncludes(String[] dependencyIncludes) {
+        this.dependencyIncludes = dependencyIncludes;
+    }
+
+    public void setDependencyExcludes(String[] dependencyExcludes) {
+        this.dependencyExcludes = dependencyExcludes;
     }
     
 }

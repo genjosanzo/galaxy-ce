@@ -37,8 +37,6 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
     protected String addEntryDetails(RequestContext request, Entry e, IRI feedIri, Workspace entryObj)
         throws ResponseContextException {
         
-        
-        
         return super.addEntryDetails(request, e, feedIri, entryObj);
     }
 
