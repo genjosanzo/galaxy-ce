@@ -1,24 +1,18 @@
 package org.mule.galaxy.impl;
 
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Set;
-import java.util.Iterator;
-
-import javax.xml.namespace.QName;
-
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Index;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
 
 public class IndexTest extends AbstractGalaxyTest {
     
