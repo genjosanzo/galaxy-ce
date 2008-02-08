@@ -32,6 +32,7 @@ public class PublishMojoTest extends AbstractAtomTest {
     private Artifact mavenArtifact;
     private File artifactFile ;
     private File projectArtifactFile;
+    private RequestOptions defaultOpts;
 
     public void setUp() throws Exception {
         super.setUp();
@@ -87,7 +88,7 @@ public class PublishMojoTest extends AbstractAtomTest {
         
         AbderaClient client = getClient();
         
-        ClientResponse res = client.get(WORKSPACE_URL);
+        ClientResponse res = client.get(WORKSPACE_URL, defaultOpts);
         assertEquals(200, res.getStatus());
         
         Document<Feed> feedDoc = res.getDocument();
@@ -102,7 +103,7 @@ public class PublishMojoTest extends AbstractAtomTest {
         mojo.execute();
         
         // Check that we still have just one entry;
-        res = client.get(WORKSPACE_URL);
+        res = client.get(WORKSPACE_URL, defaultOpts);
         assertEquals(200, res.getStatus());
         
         feedDoc = res.getDocument();
@@ -119,7 +120,7 @@ public class PublishMojoTest extends AbstractAtomTest {
         mojo.execute();
         
         // Ensure the second version is there
-        res = client.get(WORKSPACE_URL + "/pom.xml;history");
+        res = client.get(WORKSPACE_URL + "/pom.xml;history", defaultOpts);
         assertEquals(200, res.getStatus());
         
         feedDoc = res.getDocument();
@@ -141,7 +142,7 @@ public class PublishMojoTest extends AbstractAtomTest {
         mojo.execute();
         
         AbderaClient client = getClient();
-        ClientResponse res = client.get(WORKSPACE_URL);
+        ClientResponse res = client.get(WORKSPACE_URL, defaultOpts);
         assertEquals(200, res.getStatus());
         
         Document<Feed> feedDoc = res.getDocument();
@@ -155,7 +156,7 @@ public class PublishMojoTest extends AbstractAtomTest {
         mojo.setDependencyIncludes(new String[] { "org.mule.galaxy:project-artifact" } );
         mojo.execute();
 
-        res = client.get(WORKSPACE_URL);
+        res = client.get(WORKSPACE_URL, defaultOpts);
         assertEquals(200, res.getStatus());
         
         feedDoc = res.getDocument();
@@ -168,7 +169,7 @@ public class PublishMojoTest extends AbstractAtomTest {
     
     private AbderaClient getClient() {
         AbderaClient client = new AbderaClient();
-        RequestOptions defaultOpts = client.getDefaultRequestOptions();
+        defaultOpts = client.getDefaultRequestOptions();
         defaultOpts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
         return client;
     }
@@ -206,7 +207,7 @@ public class PublishMojoTest extends AbstractAtomTest {
         
         AbderaClient client = getClient();
         
-        ClientResponse res = client.get(WORKSPACE_URL);
+        ClientResponse res = client.get(WORKSPACE_URL, defaultOpts);
         assertEquals(200, res.getStatus());
         
         Document<Feed> feedDoc = res.getDocument();
@@ -221,7 +222,7 @@ public class PublishMojoTest extends AbstractAtomTest {
         mojo.execute();
         
         // Check that we still have just one entry;
-        res = client.get(WORKSPACE_URL);
+        res = client.get(WORKSPACE_URL, defaultOpts);
         assertEquals(200, res.getStatus());
         
         feedDoc = res.getDocument();
