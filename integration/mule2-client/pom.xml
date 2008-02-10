@@ -12,7 +12,7 @@
     <name>Galaxy Mule 2 Client </name>
 
     <properties>
-        <muleVersion>2.0.0-RC1</muleVersion>
+        <muleVersion>2.0.0-RC3-SNAPSHOT</muleVersion>
     </properties>
 
     <dependencies>
@@ -133,29 +133,29 @@
         </dependency>
 
         <!-- TODO: uncomment when RC2 is available -->
-        <!--<dependency>-->
-            <!--<groupId>org.mule.modules</groupId>-->
-            <!--<artifactId>mule-module-spring-config</artifactId>-->
-            <!--<version>${muleVersion}</version>-->
-            <!--<exclusions>-->
-                <!--<exclusion>-->
-                    <!--<groupId>org.slf4j</groupId>-->
-                    <!--<artifactId>slf4j-jdk14</artifactId>-->
-                <!--</exclusion>-->
-                <!--<exclusion>-->
-                    <!--<groupId>org.slf4j</groupId>-->
-                    <!--<artifactId>jcl104-over-slf4j</artifactId>-->
-                <!--</exclusion>-->
-                <!--<exclusion>-->
-                    <!--<groupId>xerces</groupId>-->
-                    <!--<artifactId>xmlParserAPIs</artifactId>-->
-                <!--</exclusion>-->
-                <!--<exclusion>-->
-                    <!--<groupId>xml-apis</groupId>-->
-                    <!--<artifactId>xmlParserAPIs</artifactId>-->
-                <!--</exclusion>-->
-            <!--</exclusions>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-spring-config</artifactId>
+            <version>${muleVersion}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jcl104-over-slf4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xmlParserAPIs</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xmlParserAPIs</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <dependency>
             <groupId>org.mule.galaxy</groupId>

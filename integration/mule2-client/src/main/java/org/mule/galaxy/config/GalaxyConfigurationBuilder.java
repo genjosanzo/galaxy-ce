@@ -9,11 +9,14 @@
  */
 package org.mule.galaxy.config;
 
-import org.mule.config.AbstractConfigurationBuilder;
-import org.mule.config.ConfigurationException;
-import org.mule.umo.UMOManagementContext;
+import org.mule.api.MuleContext;
+import org.mule.api.config.ConfigurationException;
+import org.mule.config.ConfigResource;
+import org.mule.config.builders.AbstractConfigurationBuilder;
+import org.mule.config.spring.SpringXmlConfigurationBuilder;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -36,33 +39,64 @@ public class GalaxyConfigurationBuilder extends AbstractConfigurationBuilder
      */
     protected transient final Log logger = LogFactory.getLog(GalaxyConfigurationBuilder.class);
 
-    public UMOManagementContext configure(String[] strings, Properties properties) throws ConfigurationException
+    private Properties properties;
+    private String url;
+
+    public GalaxyConfigurationBuilder(String url)
     {
-        //Not implemented for Galaxy 1.0
-        return null;
+        this(url, null);
     }
 
-    //TODO: this will work in Mule 2.0.0-RC2
-//    protected void doConfigure(UMOManagementContext managementContext, String[] strings) throws Exception
-//    {
-//        try
-//        {
-//            ConfigurationSupport configSupport = new ConfigurationSupport();
-//            Resource[] resources = configSupport.getArtifacts(strings[0], null);
-//
-//            for (int i = 0; i < resources.length; i++)
-//            {
-//                managementContext.configure(new XmlConfiguration(resources[i].getInputStream()));
-//            }
-//        }
-//        catch (IOException e)
-//        {
-//            throw new ConfigurationException(e);
-//        }
-//    }
-
-    public boolean isConfigured()
+    public GalaxyConfigurationBuilder(String url, Properties properties)
     {
-        return true;
+        this.url = url;
+        this.properties = properties;
+    }
+
+    public Properties getProperties()
+    {
+        return properties;
+    }
+
+    public void setProperties(Properties properties)
+    {
+        this.properties = properties;
+    }
+
+    public String getUrl()
+    {
+        return url;
+    }
+
+    public void setUrl(String url)
+    {
+        this.url = url;
+    }
+
+    protected void doConfigure(MuleContext muleContext) throws Exception
+    {
+        //We may want to set system props here or access to props in the MuleContext
+        if(properties==null) properties = new Properties();
+         try
+        {
+            ConfigurationSupport configSupport = new ConfigurationSupport();
+            Resource[] is = configSupport.getArtifacts(url, properties);
+
+            ConfigResource[] resources = new ConfigResource[is.length];
+            for (int i = 0; i < is.length; i++)
+            {
+                //This will cause the same file to be downloaded twice since Spring doesn't allow you to pass in an
+                //input stream when creating a context (complains that validation mode cannot be determined). 
+                resources[i] = new ConfigResource(is[i].getName());
+            }
+            //Really we should use the AutoConfigBuilder here so we can load scripted Mule instances, but it doesn;t
+            //look like its properly implemented yet
+            SpringXmlConfigurationBuilder builder = new SpringXmlConfigurationBuilder(resources);
+            builder.configure(muleContext);
+        }
+        catch (IOException e)
+        {
+            throw new ConfigurationException(e);
+        }
     }
 }

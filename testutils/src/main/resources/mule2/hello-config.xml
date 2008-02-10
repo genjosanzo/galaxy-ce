@@ -58,15 +58,16 @@
             Please refer to the Configuration Guide for a full description of all the parameters.
         -->
         <service name="GreeterUMO">
-            <component class="org.mule.samples.hello.Greeter"/>
 
-            <inbound-router>
+            <inbound>
                 <inbound-endpoint ref="Greeter.in">
                     <transformer ref="StdinToNameString"/>
                 </inbound-endpoint>
-            </inbound-router>
+            </inbound>
 
-            <outbound-router>
+            <component class="org.mule.samples.hello.Greeter"/>
+
+            <outbound>
                 <filtering-router>
                     <outbound-endpoint address="vm://chitchatter"/>
                     <payload-type-filter expectedType="org.mule.samples.hello.NameString"/>
@@ -76,7 +77,7 @@
                     <outbound-endpoint address="vm://userErrorHandler"/>
                     <payload-type-filter expectedType="java.lang.Exception"/>
                 </filtering-router>
-            </outbound-router>
+            </outbound>
 
             <!-- Route unexpected errors to separate error handler -->
             <default-service-exception-strategy>
@@ -85,57 +86,54 @@
         </service>
 
         <service name="ChitChatUMO">
-            <component class="org.mule.samples.hello.ChitChatter"/>
-
-            <inbound-router>
+            <inbound>
                 <inbound-endpoint address="vm://chitchatter">
                     <transformer ref="NameStringToChatString"/>
                 </inbound-endpoint>
-            </inbound-router>
+            </inbound>
 
-            <outbound-router>
+            <component class="org.mule.samples.hello.ChitChatter"/>
+
+            <outbound>
                 <outbound-pass-through-router>
                     <outbound-endpoint address="stdio://System.out">
                         <transformer ref="ChatStringToString"/>
                     </outbound-endpoint>
                 </outbound-pass-through-router>
-            </outbound-router>
+            </outbound>
 
-            <!-- TODO: MULE-2285 - How does this work in 2.0?                
-            <interceptor name="default"/>
-            -->
         </service>
 
         <!-- This error handler returns user error messages to caller. Errors could also be routed elsewhere,
 e.g. into an error file, send via email to a list, stored in a database, etc. -->
         <service name="UserErrorHandler">
-            <inbound-router>
+            <inbound>
                 <inbound-endpoint address="vm://userErrorHandler">
                     <transformer ref="ExceptionToString"/>
                 </inbound-endpoint>
                 <forwarding-router/>
-            </inbound-router>
+            </inbound>
 
-            <outbound-router>
+            <outbound>
                 <outbound-pass-through-router>
                     <outbound-endpoint address="stdio://System.out"/>
                 </outbound-pass-through-router>
-            </outbound-router>
+            </outbound>
         </service>
 
         <!-- Handle any unexpected errors. Errors could also be routed elsewhere,
-e.g. into an error file, send via email to a list, stored in a database, etc. -->
+             e.g. into an error file, send via email to a list, stored in a database, etc. -->
         <service name="SystemErrorHandler">
-            <inbound-router>
+            <inbound>
                 <inbound-endpoint address="vm://systemErrorHandler"/>
                 <forwarding-router/>
-            </inbound-router>
+            </inbound>
 
-            <outbound-router>
+            <outbound>
                 <outbound-pass-through-router>
                     <outbound-endpoint address="stdio://System.err"/>
                 </outbound-pass-through-router>
-            </outbound-router>
+            </outbound>
         </service>
     </model>
 
