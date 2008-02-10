@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.mule.galaxy</groupId>
         <artifactId>galaxy-parent</artifactId>
@@ -7,13 +8,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-server-mule2</artifactId>
-  <version>1.0-beta-2-SNAPSHOT</version>
+    <version>1.0-beta-2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Galaxy Server Mule 2 Support</name>
-
-    <properties>
-        <muleVersion>2.0.0-RC1</muleVersion>
-    </properties>
 
     <dependencies>
 
@@ -36,31 +33,10 @@
             <scope>test</scope>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.mule.galaxy</groupId>-->
-            <!--<artifactId>galaxy-web</artifactId>-->
-            <!--<version>1.0-beta-2-SNAPSHOT</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
         </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>org.mortbay.jetty</groupId>-->
-            <!--<artifactId>jetty</artifactId>-->
-            <!--<version>6.1.5</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>org.slf4j</groupId>-->
-            <!--<artifactId>slf4j-jdk14</artifactId>-->
-            <!--<version>1.4.3</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
 
     </dependencies>
 
