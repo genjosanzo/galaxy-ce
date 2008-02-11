@@ -1,8 +1,8 @@
 package org.mule.galaxy.web.client;
 
+import org.mule.galaxy.web.client.admin.UserForm;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -17,9 +17,11 @@ public abstract class AbstractMenuPanel extends Composite implements ErrorPanel 
     private Widget mainWidget;
     private FlowPanel errorPanel;
     private FlowPanel leftMenu;
+    private Galaxy galaxy;
     
     public AbstractMenuPanel(Galaxy galaxy) {
         super();
+        this.galaxy = galaxy;
         
         panel = new DockPanel();
         panel.setSpacing(0);
@@ -64,7 +66,10 @@ public abstract class AbstractMenuPanel extends Composite implements ErrorPanel 
         initWidget(panel);
     }
 
-
+    public Galaxy getGalaxy() {
+        return galaxy;
+    }
+    
     public void addMenuItem(Widget widget) {
         leftMenuContainer.add(widget);
     }
@@ -80,7 +85,22 @@ public abstract class AbstractMenuPanel extends Composite implements ErrorPanel 
         this.mainWidget = widget;
         
         mainPanel.add(widget);
-        
+    }    
+    
+    public void setMain(final PageInfo page) {
+        final Widget menu = this;
+        PageInfo wrapper = new PageInfo(page.getName()) {
+            public AbstractComposite createInstance() {
+                return page.createInstance();
+            }
+
+            public void show() {
+                int idx = galaxy.getTabPanel().getWidgetIndex(menu);
+                galaxy.getTabPanel().selectTab(idx);
+                page.show();
+            }
+        };
+        galaxy.show(wrapper, false);
     }
     
     protected int getErrorPanelPosition() {
@@ -100,4 +120,31 @@ public abstract class AbstractMenuPanel extends Composite implements ErrorPanel 
     public void setMessage(String string) {
         setMessage(new Label(string));
     }
+
+    public void addPage(PageInfo page) {
+        galaxy.addPage(page);
+    }
+
+    /**
+     * If you use this method, please make sure that the composite that you're instantiating
+     * doesn't do anything resource intensive in the constructor. Thats what AbstractComposite.onShow
+     * is for!
+     * 
+     * @param token
+     * @param composite
+     * @return
+     */
+    protected PageInfo createPageInfo(String token, final AbstractComposite composite) {
+        PageInfo page = new MenuPanelPageInfo(token, this) {
+            public AbstractComposite createInstance() {
+                return composite;
+            }
+        };
+        galaxy.addPage(page);
+        return page;
+    }
+    
+    protected int getTabIndex() {
+        return galaxy.getTabPanel().getWidgetIndex(this);
+    };
 }

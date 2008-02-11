@@ -10,10 +10,13 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.mule.galaxy.web.client.activity.ActivityPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -33,6 +36,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
     private RegistryServiceAsync registryService;
     private UserServiceAsync userService;
     private FlowPanel rightPanel;
+    private PageInfo curInfo;
+    private Map history = new HashMap();
+    private Map lastPageOnTab = new HashMap();
+    private TabPanel tabPanel;
     
     /**
      * This is the entry point method.
@@ -56,7 +63,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
         registryPanel = new RegistryPanel(this);
 
-        final TabPanel tabPanel = new TabPanel();
+        tabPanel = new TabPanel();
         
         rightPanel = new FlowPanel();
         rightPanel.setStyleName("header-right");
@@ -72,6 +79,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
                 
                 if (user.isAdmin()) {
                     tabPanel.add(new AdministrationPanel(galaxy), "Administration");
+                    showFirstPage();
                 }
             }
         });
@@ -87,7 +95,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         tabPanel.insert(registryPanel, "Registry", 0);
         tabPanel.setStyleName("headerTabPanel");
         tabPanel.getDeckPanel().setStyleName("headerTabDeckPanel");
-        tabPanel.selectTab(0);
+        
         final ActivityPanel activityPanel = new ActivityPanel(this);
         tabPanel.insert(activityPanel, "Activity", 1);
         
@@ -101,25 +109,71 @@ public class Galaxy implements EntryPoint, HistoryListener {
                 if (tab == 1) {
                     activityPanel.refresh();
                 }
+                History.newItem("tab-" + tab);
             }
             
         });
+        
         Label footer = new Label("Mule Galaxy, Copyright 2008 MuleSource, Inc.");
         footer.setStyleName("footer");
         base.add(footer);
         RootPanel.get().add(base);
     }
-
-    public void show(HistoryWidget w) {
-        
+    
+    protected void showFirstPage() {
+        // Show the initial screen.
+        String initToken = History.getToken();
+        if (initToken.length() > 0) {
+            onHistoryChanged(initToken);
+        } else {
+            tabPanel.selectTab(0);
+        }
     }
 
+    public void addPage(PageInfo info) {
+        history.put(info.getName(), info);
+    }
+
+    public void show(PageInfo info, boolean affectHistory) {
+      // Don't bother re-displaying the existing sink. This can be an issue
+      // in practice, because when the history context is set, our
+      // onHistoryChanged() handler will attempt to show the currently-visible
+      // sink.
+      if (info == curInfo) {
+        return;
+      }
+      curInfo = info;
+      
+      // If affectHistory is set, create a new item on the history stack. This
+      // will ultimately result in onHistoryChanged() being called. It will call
+      // show() again, but nothing will happen because it will request the exact
+      // same sink we're already showing.
+      if (affectHistory) {
+        History.newItem(info.getName());
+      }
+
+      // Display the page
+      history.put(info.getName(), info);
+      info.show();
+    }
+    
     public void onHistoryChanged(String token) {
-        // registryPanel.setMessage(token);
+        if (curInfo != null) {
+            curInfo.getInstance().onHide();
+        }
         
-//        if (token.startsWith("artifact-")) {
-//            registryPanel.setMain(new ArtifactPanel(registryPanel, token.substring(9)));
-//        }
+        PageInfo page = (PageInfo) history.get(token);
+        
+        if (page == null) {
+            return;
+        }
+        
+        int idx = page.getTabIndex();
+        if (idx > 0 && idx < tabPanel.getWidgetCount()) {
+            tabPanel.selectTab(page.getTabIndex());
+        }
+        page.show();
+        page.getInstance().onShow();
     }
 
     public RegistryServiceAsync getRegistryService() {
@@ -129,7 +183,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
     public UserServiceAsync getUserService() {
         return userService;
     }
-    
-    
 
+    public TabPanel getTabPanel() {
+        return tabPanel;
+    }
 }

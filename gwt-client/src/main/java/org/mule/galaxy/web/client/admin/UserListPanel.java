@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.MenuPanelPageInfo;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WUser;
 
@@ -17,13 +18,21 @@ public class UserListPanel
     extends AbstractComposite
 {
     private AdministrationPanel adminPanel;
+    private FlowPanel panel;
 
     public UserListPanel(AdministrationPanel a) {
         super();
         
         this.adminPanel = a;
         
-        FlowPanel panel = new FlowPanel();
+        panel = new FlowPanel();
+        
+        initWidget(panel);
+    }
+    
+    public void onShow() {
+        panel.clear();
+        
         final FlexTable table = createTitledRowTable(panel, "Users");
         
         table.setText(0, 0, "Username");
@@ -41,11 +50,14 @@ public class UserListPanel
                     
                     Hyperlink hyperlink = new Hyperlink(u.getUsername(), 
                                                         "user-" + u.getUsername());
-                    hyperlink.addClickListener(new ClickListener() {
-                        public void onClick(Widget sender) {
-                            adminPanel.setMain(new UserForm(adminPanel, u, false));
+                    MenuPanelPageInfo page = new MenuPanelPageInfo(hyperlink.getTargetHistoryToken(), adminPanel) {
+
+                        public AbstractComposite createInstance() {
+                            return new UserForm(adminPanel, u, false);
                         }
-                    });
+
+                    };
+                    adminPanel.getGalaxy().addPage(page);
                     
                     table.setWidget(i, 0, hyperlink);
                     table.setText(i, 1, u.getName());
@@ -56,9 +68,6 @@ public class UserListPanel
             }
             
         });
-
-        
-        initWidget(panel);
     }
 
     public String getTitle()

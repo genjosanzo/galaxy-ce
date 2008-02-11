@@ -10,6 +10,14 @@ import org.mule.galaxy.web.client.util.InlineFlowPanel;
 
 public abstract class AbstractComposite extends Composite {
 
+    public void onShow() {
+        
+    }
+    
+    public void onHide() {
+        
+    }
+    
     protected FlexTable createTitledRowTable(Panel panel, String title) {
         panel.add(createTitle(title));
         FlexTable table = createRowTable();

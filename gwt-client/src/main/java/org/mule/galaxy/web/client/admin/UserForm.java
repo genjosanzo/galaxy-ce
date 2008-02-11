@@ -26,6 +26,7 @@ public class UserForm extends AbstractComposite {
     private final boolean add;
     private TextBox usernameTB;
     private CheckBox adminCB;
+    private FlowPanel panel;
 
     public UserForm(AdministrationPanel adminPanel, WUser u) {
         this (adminPanel, u, false);
@@ -40,12 +41,18 @@ public class UserForm extends AbstractComposite {
         this.user = u;
         this.add = add;
         
-        FlowPanel panel = new FlowPanel();
+        panel = new FlowPanel();
+        initWidget(panel);
+    }
+    
+    public void onShow() {
+        panel.clear();
+        
         String title;
         if (add) {
             title = "Add User";
         } else {
-            title = "Edit User " + u.getUsername();
+            title = "Edit User " + user.getUsername();
         }
         
         final FlexTable table = createTitledColumnTable(panel, title);
@@ -61,15 +68,15 @@ public class UserForm extends AbstractComposite {
             usernameTB = new TextBox();
             table.setWidget(0, 1, usernameTB);
         } else {
-            table.setText(0, 1, u.getUsername());
+            table.setText(0, 1, user.getUsername());
         }
         
         nameTB = new TextBox();
-        nameTB.setText(u.getName());
+        nameTB.setText(user.getName());
         table.setWidget(1, 1, nameTB);
         
         emailTB = new TextBox();
-        emailTB.setText(u.getEmail());
+        emailTB.setText(user.getEmail());
         table.setWidget(2, 1, emailTB);
 
         passTB = new PasswordTextBox();
@@ -79,8 +86,8 @@ public class UserForm extends AbstractComposite {
         table.setWidget(4, 1, confirmTB);
 
         adminCB = new CheckBox();
-        adminCB.setChecked(u.isAdmin());
-        if ("admin".equals(u.getUsername())) {
+        adminCB.setChecked(user.isAdmin());
+        if ("admin".equals(user.getUsername())) {
             adminCB.setEnabled(false);
         }
         
@@ -97,7 +104,6 @@ public class UserForm extends AbstractComposite {
         });
         
         styleHeaderColumn(table);
-        initWidget(panel);
     }
 
     protected void save() {

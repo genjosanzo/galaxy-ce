@@ -21,6 +21,7 @@
         <module>core</module>
         <module>wsdldiff</module>
         <module>wsi</module>
+        <module>feed-model</module>
         <module>testutils</module>
         <module>web</module>
         <module>web-standalone</module>

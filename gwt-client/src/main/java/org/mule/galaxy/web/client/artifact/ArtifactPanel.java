@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.RegistryPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -24,7 +25,7 @@ import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
  *   (with history)
  * - View Artiact
  */
-public class ArtifactPanel extends Composite {
+public class ArtifactPanel extends AbstractComposite {
 
     private RegistryPanel registryPanel;
     private TabPanel artifactTabs;

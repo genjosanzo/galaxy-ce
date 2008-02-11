@@ -790,16 +790,15 @@ public class RegistryServiceImpl implements RegistryService {
         return wls;
     }
 
-
     public Collection getActivePoliciesForLifecycle(String lifecycleName, String workspaceId) throws RPCException {
         Collection<ArtifactPolicy> pols = null;
         Lifecycle lifecycle = lifecycleManager.getLifecycle(lifecycleName);
         try {
             if (workspaceId != null) {
                 Workspace w = registry.getWorkspace(workspaceId);
-                policyManager.getActivePolicies(w, lifecycle);
+                pols = policyManager.getActivePolicies(w, lifecycle);
             } else {
-                policyManager.getActivePolicies(lifecycle);
+                pols = policyManager.getActivePolicies(lifecycle);
             }
         } catch (NotFoundException e) {
             throw new RPCException(e.getMessage());
@@ -816,9 +815,9 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             if (workspaceId != null) {
                 Workspace w = registry.getWorkspace(workspaceId);
-                policyManager.getActivePolicies(w, phase);
+                pols = policyManager.getActivePolicies(w, phase);
             } else {
-                policyManager.getActivePolicies(phase);
+                pols = policyManager.getActivePolicies(phase);
             }
         } catch (NotFoundException e) {
             throw new RPCException(e.getMessage());

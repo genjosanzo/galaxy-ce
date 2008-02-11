@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.MenuPanelPageInfo;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WIndex;
 
@@ -17,13 +18,20 @@ public class IndexListPanel
     extends AbstractComposite
 {
     private AdministrationPanel adminPanel;
+    private FlowPanel panel;
 
     public IndexListPanel(AdministrationPanel a) {
         super();
         
         this.adminPanel = a;
         
-        FlowPanel panel = new FlowPanel();
+        panel = new FlowPanel();
+        initWidget(panel);
+    }
+    
+    public void onShow() {
+        panel.clear();
+        
         final FlexTable table = createTitledRowTable(panel, "Indexes");
         
         table.setText(0, 0, "Index");
@@ -42,11 +50,13 @@ public class IndexListPanel
                     
                     Hyperlink hyperlink = new Hyperlink(idx.getName(), 
                                                         "user-" + idx.getId());
-                    hyperlink.addClickListener(new ClickListener() {
-                        public void onClick(Widget sender) {
-                            adminPanel.setMain(new IndexForm(adminPanel, idx, false));
+                    MenuPanelPageInfo page = new MenuPanelPageInfo(hyperlink, adminPanel) {
+                        public AbstractComposite createInstance() {
+                            return new IndexForm(adminPanel, idx, false);
                         }
-                    });
+                        
+                    };
+                    adminPanel.addPage(page);
                     
                     table.setWidget(i, 0, hyperlink);
                     table.setText(i, 1, idx.getId());
@@ -63,8 +73,5 @@ public class IndexListPanel
             }
             
         });
-
-        
-        initWidget(panel);
     }
 }

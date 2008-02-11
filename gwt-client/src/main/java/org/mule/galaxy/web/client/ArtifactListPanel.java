@@ -29,13 +29,13 @@ public class ArtifactListPanel
             for (int c = 0; c < group.getColumns().size(); c++) {
                 if (c == 0) {
                     Hyperlink hl = new Hyperlink(info.getValue(c), "artifact-" + info.getId());
-                    hl.addClickListener(new ClickListener() {
-
-                        public void onClick(Widget arg0) {
-                            registryPanel.setMain(new ArtifactPanel(registryPanel, info.getId()));
+                    MenuPanelPageInfo page = new MenuPanelPageInfo(hl.getTargetHistoryToken(), registryPanel) {
+                        public AbstractComposite createInstance() {
+                            return new ArtifactPanel(registryPanel, info.getId());
                         }
-                        
-                    });
+                    };
+                    registryPanel.addPage(page);
+                    
                     table.setWidget(i+1, c, hl);
                 } else {
                     table.setText(i+1, c, info.getValue(c));

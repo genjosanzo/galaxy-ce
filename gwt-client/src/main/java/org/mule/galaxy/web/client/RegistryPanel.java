@@ -42,41 +42,51 @@ public class RegistryPanel extends AbstractMenuPanel {
         
         Image addImg = new Image("images/add_obj.gif");
         final RegistryPanel registryPanel = this;
-        addImg.addClickListener(new ClickListener() {
-            public void onClick(Widget w) {
-                setMain(new ArtifactForm(registryPanel));
-                errorPosition = 0;
+        MenuPanelPageInfo page = new MenuPanelPageInfo("add-artifact", this) {
+            public AbstractComposite createInstance() {
+                return new ArtifactForm(registryPanel);
             }
-            
-        });
+        };
+        addImg.addClickListener(createClickListener(page));
+        
         workspaceBox.addButton(addImg);
         
         Image addWkspcImg = new Image("images/fldr_obj.gif");
-        addWkspcImg.addClickListener(new ClickListener() {
-            public void onClick(Widget arg0) {
-                setMain(new EditWorkspacePanel(registryPanel, 
-                                               workspaces,
-                                               workspaceId));
-                errorPosition = 0;
+        page = new MenuPanelPageInfo("add-workspace", this) {
+            public AbstractComposite createInstance() {
+                return new EditWorkspacePanel(registryPanel, 
+                                              workspaces,
+                                              workspaceId);
             }
-            
-        });
+        };
+        addWkspcImg.addClickListener(createClickListener(page));
         workspaceBox.addButton(addWkspcImg);
         
         Image editWkspcImg = new Image("images/editor_area.gif");
+        page = new MenuPanelPageInfo("edit-workspace-" + workspaceId, this) {
+            public AbstractComposite createInstance() {
+                return new EditWorkspacePanel(registryPanel, 
+                                              workspaces,
+                                              workspaceId);
+            }
+        };
         editWkspcImg.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
-                TreeItem item = workspaceTree.getSelectedItem();
+                final TreeItem item = workspaceTree.getSelectedItem();
                 TreeItem parent = item.getParentItem();
-                String parentId = null;
-                if (parent != null) {
-                    parentId = (String) parent.getUserObject();
-                }
-                setMain(new WorkspaceViewPanel(registryPanel, 
-                                               workspaces,
-                                               parentId,
-                                               workspaceId,
-                                               item.getText()));
+                final String parentId = parent != null ? (String) parent.getUserObject() : null;
+
+                MenuPanelPageInfo page = new MenuPanelPageInfo("edit-workspace-" + workspaceId, registryPanel) {
+                    public AbstractComposite createInstance() {
+                        return new WorkspaceViewPanel(registryPanel, 
+                                                      workspaces,
+                                                      parentId,
+                                                      workspaceId,
+                                                      item.getText());
+                    }
+                };
+                
+                setMain(page);
                 errorPosition = 0;
             }
             
@@ -104,6 +114,16 @@ public class RegistryPanel extends AbstractMenuPanel {
         addMenuItem(artifactTypesBox);
         
         initArtifactTypes();
+    }
+
+    private ClickListener createClickListener(final MenuPanelPageInfo page) {
+        return new ClickListener() {
+            public void onClick(Widget w) {
+                setMain(page);
+                errorPosition = 0;
+            }
+            
+        };
     }
 
     public void refreshWorkspaces() {

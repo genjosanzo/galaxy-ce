@@ -17,18 +17,23 @@
       <version>1.0-beta-2-SNAPSHOT</version>
     </dependency>
 
-      <dependency>
+    <dependency>
+      <groupId>org.mule.galaxy</groupId>
+      <artifactId>galaxy-feed-model</artifactId>
+      <version>1.0-beta-2-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-server-mule1</artifactId>
       <version>1.0-beta-2-SNAPSHOT</version>
     </dependency>
 
-       <dependency>
+    <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-server-mule2</artifactId>
       <version>1.0-beta-2-SNAPSHOT</version>
     </dependency>
-
 
     <dependency>
       <groupId>org.mule.galaxy</groupId>
