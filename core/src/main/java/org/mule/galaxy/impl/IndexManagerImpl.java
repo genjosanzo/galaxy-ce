@@ -331,7 +331,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         NodeList nodes = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
         
         if (nodes.getLength() >= 1) {
-            jcrVersion.setProperty(idx.getId(), nodes.item(0).getNodeValue());
+            jcrVersion.setProperty(idx.getId(), DOMUtils.getContent(nodes.item(0)));
             jcrVersion.setLocked(idx.getId(), true);
         }
 //        } else if (nodes.getLength() > 1) {
