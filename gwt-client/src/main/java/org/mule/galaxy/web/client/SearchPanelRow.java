@@ -43,7 +43,6 @@ public class SearchPanelRow
         propertyList.addItem("Document Type", "documentType");
         propertyList.addItem("Name", "name");
         propertyList.addItem("Phase", "phase");
-        propertyList.addItem("Workspace", "workspaceName");
         
         propertyList.setSelectedIndex(3);
         propertyList.addChangeListener(new ChangeListener() {
