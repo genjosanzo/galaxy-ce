@@ -1,32 +1,26 @@
 package org.mule.galaxy.atom;
 
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
 import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 
-import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.protocol.server.RequestContext;
-import org.apache.abdera.protocol.server.RequestContext.Scope;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.security.User;
 
 public class ArtifactHistoryCollection extends AbstractArtifactCollection {
     
-    public ArtifactHistoryCollection(Registry registry) {
-        super(registry);
+    public ArtifactHistoryCollection(Registry registry, LifecycleManager lifecycleManager) {
+        super(registry, lifecycleManager);
     }
 
     @Override
@@ -73,12 +67,6 @@ public class ArtifactHistoryCollection extends AbstractArtifactCollection {
     @Override
     public String getName(ArtifactVersion version) {
         return super.getName(version);
-    }
-
-    @Override
-    public void putEntry(ArtifactVersion arg0, String arg1, Date arg2, List<Person> arg3, String arg4,
-                            Content arg5, RequestContext arg6) throws ResponseContextException {
-        throw new ResponseContextException(501);
     }
 
     public String getTitle(RequestContext request) {

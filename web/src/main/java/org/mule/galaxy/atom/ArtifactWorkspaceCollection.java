@@ -2,7 +2,6 @@ package org.mule.galaxy.atom;
 
 import java.util.Iterator;
 
-
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.RequestContext.Scope;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
@@ -11,6 +10,7 @@ import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
 
@@ -20,8 +20,8 @@ import org.mule.galaxy.query.QueryException;
  */
 public class ArtifactWorkspaceCollection extends SearchableArtifactCollection {
 
-    public ArtifactWorkspaceCollection(Registry registry) {
-        super(registry);
+    public ArtifactWorkspaceCollection(Registry registry, LifecycleManager lifecycleManager) {
+        super(registry, lifecycleManager);
     }
 
     @Override

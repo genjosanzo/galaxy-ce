@@ -3,25 +3,29 @@ package org.mule.galaxy.atom;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Writer;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
+import javax.xml.namespace.QName;
 
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.i18n.text.UrlEncoding;
-import org.apache.abdera.i18n.text.CharUtils.Profile;
 import org.apache.abdera.model.Collection;
 import org.apache.abdera.model.Content;
+import org.apache.abdera.model.Document;
+import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Person;
+import org.apache.abdera.parser.ParseException;
 import org.apache.abdera.protocol.server.RequestContext;
-import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.RequestContext.Scope;
 import org.apache.abdera.protocol.server.context.EmptyResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
+import org.apache.abdera.protocol.server.context.SimpleResponseContext;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
@@ -29,12 +33,16 @@ import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.lifecycle.TransitionException;
 import org.mule.galaxy.security.User;
 
 public class SearchableArtifactCollection extends AbstractArtifactCollection {
     
-    public SearchableArtifactCollection(Registry registry) {
-        super(registry);
+    public SearchableArtifactCollection(Registry registry, LifecycleManager lifecycleManager) {
+        super(registry, lifecycleManager);
     }
 
     @Override
@@ -192,19 +200,5 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
             throw new ResponseContextException(500, e);
         }
     }
-
-    @Override
-    public void putEntry(ArtifactVersion entry, 
-                         String title, 
-                         Date updated, 
-                         List<Person> authors, 
-                         String summary,
-                         Content content, 
-                         RequestContext request) throws ResponseContextException {
-        Artifact artifact = entry.getParent();
-        artifact.setDescription(summary);
-        artifact.setName(title);
-    }
-
 
 }

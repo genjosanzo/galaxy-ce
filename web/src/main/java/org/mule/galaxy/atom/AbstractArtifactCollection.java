@@ -3,7 +3,9 @@ package org.mule.galaxy.atom;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -19,17 +21,16 @@ import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.i18n.text.CharUtils.Profile;
 import org.apache.abdera.model.Content;
+import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.model.Text;
 import org.apache.abdera.model.Text.Type;
+import org.apache.abdera.parser.ParseException;
 import org.apache.abdera.protocol.server.RequestContext;
-import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.RequestContext.Scope;
-import org.apache.abdera.protocol.server.context.AbstractResponseContext;
 import org.apache.abdera.protocol.server.context.EmptyResponseContext;
-import org.apache.abdera.protocol.server.context.MediaResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.protocol.server.context.SimpleResponseContext;
 import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
@@ -37,13 +38,16 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.lifecycle.TransitionException;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.security.User;
 
@@ -54,10 +58,12 @@ public abstract class AbstractArtifactCollection
 
     protected Factory factory = new Abdera().getFactory();
     protected Registry registry;
+    protected LifecycleManager lifecycleManager;
     
-    public AbstractArtifactCollection(Registry registry) {
+    public AbstractArtifactCollection(Registry registry, LifecycleManager lifecycleManager) {
         super();
         this.registry = registry;
+        this.lifecycleManager = lifecycleManager;
     }
 
     public Content getContent(ArtifactVersion doc, RequestContext request) {
@@ -81,11 +87,21 @@ public abstract class AbstractArtifactCollection
                 Element prop = factory.newElement(new QName(NAMESPACE, "property"), metadata);
                 prop.setAttributeValue("name", p.getName());
                 prop.setAttributeValue("locked", new Boolean(p.isLocked()).toString());
+                
                 Object value = p.getValue();
                 if (value == null) {
                     value = "";
-                } 
-                prop.setAttributeValue("value", value.toString());
+                }
+                
+                if (value instanceof Collection) {
+                    for (Object o : ((Collection) value)) {
+                        Element valueEl = factory.newElement(new QName(NAMESPACE, "value"), prop);
+                        
+                        valueEl.setText(o.toString());
+                    }
+                } else {
+                    prop.setAttributeValue("value", value.toString());
+                }
             }
         }
         
@@ -108,7 +124,7 @@ public abstract class AbstractArtifactCollection
         boolean first = true;
         for (Phase p : phase.getNextPhases()) {
             if (!first) {
-                sb.append(" ");
+                sb.append(", ");
             } else {
                 first = false;
             }
@@ -310,5 +326,124 @@ public abstract class AbstractArtifactCollection
     protected Artifact getArtifact(RequestContext request) {
         return (Artifact) request.getAttribute(Scope.REQUEST, ArtifactResolver.ARTIFACT);
     }
+
+    @Override
+    public void putEntry(ArtifactVersion av, 
+                         String title, 
+                         Date updated, 
+                         List<Person> authors, 
+                         String summary,
+                         Content content, 
+                         RequestContext request) throws ResponseContextException {
+        Artifact artifact = av.getParent();
+        artifact.setDescription(summary);
+//        artifact.setName(title);
+        
+        try {
+            Document<Entry> entryDoc = request.getDocument();
+            Entry entry = entryDoc.getRoot();
+            
+            for (Element e : entry.getElements()) {
+                QName q = e.getQName();
+                if (NAMESPACE.equals(q.getNamespaceURI())) {
+                    if ("lifecycle".equals(q.getLocalPart())) {
+                        updateLifecycle(av, e);
+                    } else if ("metadata".equals(q.getLocalPart())) {
+                        updateMetadata(av, e);
+                    }
+                }
+            }
+        } catch (ParseException e) {
+            throw new ResponseContextException(500, e);
+        } catch (IOException e) {
+            throw new ResponseContextException(500, e);
+        }
+    }
+
+    private void updateLifecycle(ArtifactVersion av, Element e) throws ResponseContextException {
+        String name = e.getAttributeValue("name");
+        assertNotEmpty(name, "Lifecycle name attribute cannot be null.");
+        
+        String phaseName = e.getAttributeValue("phase");
+        assertNotEmpty(phaseName, "Lifecycle phase attribute cannot be null.");
+        
+        Lifecycle lifecycle = lifecycleManager.getLifecycle(name);
+        
+        if (lifecycle == null)
+            throwMalformed("Lifecycle \"" + name + "\" does not exist.");
+        
+        Phase phase = lifecycle.getPhase(phaseName);
+
+        if (phase == null)
+            throwMalformed("Lifecycle phase \"" + phaseName + "\" does not exist.");
+        
+        try {
+            lifecycleManager.transition(av.getParent(), phase, getUser());
+        } catch (TransitionException e1) {
+            throwMalformed(e1.getMessage());
+        } catch (ArtifactPolicyException e1) {
+            throw createArtifactPolicyExceptionResponse(e1);
+        }
+    }
+
+    protected void assertNotEmpty(String name, String message) throws ResponseContextException {
+        if (name == null || "".equals(name)) {
+            throwMalformed(message);
+        }
+    }
+
+    protected void throwMalformed(final String message) throws ResponseContextException {
+        SimpleResponseContext rc = new SimpleResponseContext() {
+
+            @Override
+            protected void writeEntity(Writer writer) throws IOException {
+                writer.write("<html><head><title>)");
+                writer.write("Malformed Atom Entry");
+                writer.write("</title></head><body><div class=\"error\">");
+                writer.write(message);
+                writer.write("</div></body></html>");
+            }
+
+            public boolean hasEntity() {
+                return true;
+            }
+            
+        };
+        
+        rc.setStatus(400);
+        
+        throw new ResponseContextException(rc);
+    }
+
+    private void updateMetadata(ArtifactVersion av, Element e) throws ResponseContextException {
+        for (Element propEl : e.getElements()) {
+            String name = propEl.getAttributeValue("name");
+            if (name == null)
+                throwMalformed("You must specify name attributes on metadata properties.");
+            
+            String value = propEl.getAttributeValue("value");
+            if (value != null) {
+                try {
+                    av.setProperty(name, value);
+                } catch (PropertyException e1) {
+                    // Ignore as its probably because its locked
+                }
+            } else {
+                List<Element> elements = propEl.getElements();
+                ArrayList<String> values = new ArrayList<String>();
+                for (Element valueEl : elements) {
+                    if (valueEl.getQName().getLocalPart().equals("value")) {
+                        values.add(valueEl.getText().trim());
+                    }
+                }
+                try {
+                    av.setProperty(name, values);
+                } catch (PropertyException e1) {
+                    // Ignore as its probably because its locked
+                }
+            }
+        }
+    }
+
 
 }

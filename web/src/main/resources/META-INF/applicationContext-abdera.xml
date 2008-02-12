@@ -12,14 +12,17 @@
   <!-- Collections -->
   <bean name="searchableCollection" class="org.mule.galaxy.atom.SearchableArtifactCollection">
     <constructor-arg ref="registry"/>
+    <constructor-arg ref="lifecycleManager"/>
   </bean>
   
   <bean name="artifactWorkspaceCollection" class="org.mule.galaxy.atom.ArtifactWorkspaceCollection">
     <constructor-arg ref="registry"/>
+    <constructor-arg ref="lifecycleManager"/>
   </bean>
   
   <bean name="historyCollection" class="org.mule.galaxy.atom.ArtifactHistoryCollection">
     <constructor-arg ref="registry"/>
+    <constructor-arg ref="lifecycleManager"/>
   </bean>
   
   <bean name="commentCollection" class="org.mule.galaxy.atom.CommentCollectionProvider">
