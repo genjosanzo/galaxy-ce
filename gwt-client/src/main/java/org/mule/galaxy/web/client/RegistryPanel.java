@@ -116,6 +116,11 @@ public class RegistryPanel extends AbstractMenuPanel {
         initArtifactTypes();
     }
 
+    public void onShow() {
+        super.onShow();
+        refreshWorkspaces();
+    }
+
     private ClickListener createClickListener(final MenuPanelPageInfo page) {
         return new ClickListener() {
             public void onClick(Widget w) {
