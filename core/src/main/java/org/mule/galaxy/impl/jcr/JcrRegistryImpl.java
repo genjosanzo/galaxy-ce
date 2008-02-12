@@ -876,8 +876,22 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             throw new QueryException(new Message("EXPECTED_WHERE_BUT_FOUND", LOGGER, next));
         }
         
+        boolean firstRestriction = true;
         while (itr.hasNext()) {
+            if (firstRestriction) {
+                firstRestriction = false;
+            } else {
+                if (!itr.hasNext()) {
+                    throw new QueryException(new Message("EXPECTED_AND", LOGGER));
+                }
+                String t = itr.next();
+                if (!"and".equals(t.toLowerCase())) {
+                    throw new QueryException(new Message("EXPECTED_AND", LOGGER));
+                }
+            }
+            
             String left = itr.next();
+            
             if (!itr.hasNext()) {
                 throw new QueryException(new Message("EXPECTED_COMPARATOR", LOGGER));
             }

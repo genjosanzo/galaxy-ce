@@ -24,7 +24,6 @@ public class QueryTest extends AbstractGalaxyTest {
         Set results = registry.search(new Query(Artifact.class).workspaceId(workspace.getId())).getResults();
 
         assertEquals(2, results.size());
-
         results = registry.search(new Query(Artifact.class)
             .workspaceId(workspace.getId())
                  .add(Restriction.eq("mule.descriptor", "GreeterUMO"))
@@ -59,6 +58,10 @@ public class QueryTest extends AbstractGalaxyTest {
 
         results = registry.search("select artifact where mule.model = 'main'", 0, 100).getResults();
         assertEquals(1, results.size());
+        
+        results = registry.search("select artifact where mule.model = 'main' and mule.endpoint = 'Greeter.in'", 0, 100).getResults();
+        assertEquals(1, results.size());
+        
 
         results = registry.search(new Query(Artifact.class)
             .workspaceId(workspace.getId())
