@@ -225,7 +225,7 @@
         </snapshotRepository>
         <site>
             <id>muleforge.webdav.sites</id>
-            <url>dav:https://dav.muleforge.org/${artifactId}/</url>
+            <url>dav:https://dav.muleforge.org/galaxy/</url>
         </site>
     </distributionManagement>
     <scm>

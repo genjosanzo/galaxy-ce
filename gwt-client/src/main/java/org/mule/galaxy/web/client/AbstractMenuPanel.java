@@ -9,7 +9,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
-public abstract class AbstractMenuPanel extends Composite implements ErrorPanel {
+public abstract class AbstractMenuPanel extends AbstractComposite implements ErrorPanel {
 
     private DockPanel panel;
     private FlowPanel leftMenuContainer;

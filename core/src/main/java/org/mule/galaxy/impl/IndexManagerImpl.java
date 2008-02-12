@@ -74,6 +74,7 @@ import org.springmodules.jcr.SessionFactoryUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.NodeList;
 
 public class IndexManagerImpl extends AbstractReflectionDao<Index> 
     implements IndexManager, ApplicationContextAware {
@@ -327,12 +328,22 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         XPath xpath = factory.newXPath();
         XPathExpression expr = xpath.compile(idx.getExpression());
 
-        Object result = expr.evaluate(document, XPathConstants.STRING);
+        NodeList nodes = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
         
-        if (result instanceof String) {
-            jcrVersion.setProperty(idx.getId(), result);
+        if (nodes.getLength() >= 1) {
+            jcrVersion.setProperty(idx.getId(), nodes.item(0).getNodeValue());
             jcrVersion.setLocked(idx.getId(), true);
         }
+//        } else if (nodes.getLength() > 1) {
+//            Collection<String> values = new ArrayList<String>();
+//            for (int i = 0; i < nodes.getLength(); i++) {
+//                org.w3c.dom.Node n = nodes.item(i);
+//                
+//                values.add(n.getNodeValue());
+//            }
+//            jcrVersion.setProperty(idx.getId(), values);
+//            jcrVersion.setLocked(idx.getId(), true);
+//        }
         
     }
 

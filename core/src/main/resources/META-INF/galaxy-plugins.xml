@@ -20,7 +20,7 @@
     </galaxy-plugin>
 
     <galaxy-plugin>
-        <name>Xml Schema Documents</name>
+        <name>XML Schemas</name>
         <description>Allows Xml Schema Documents to be managed by Galaxy.</description>
         <content-type>application/xmlschema+xml</content-type>
         <!--<small-icon>META-INF/images/xmlschema_16x16.png</small-icon>-->
@@ -29,10 +29,77 @@
             <local-name>schema</local-name>
             <uri>http://www.w3.org/2001/XMLSchema</uri>
         </namespace>
+        <indexes>
+            <index>
+                <field-name>xmlschema.targetNamespace</field-name>
+                <display-name>XML Schema Target Namespace</display-name>
+                <description>XML Schema Target Namespace</description>
+                <language>XPATH</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[/*/@targetNamespace]]></expression>
+            </index>
+            <index>
+                <field-name>xmlschema.element</field-name>
+                <display-name>XML Schema Elements</display-name>
+                <description>XML Schema Elements</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+declare namespace xsd="${namespace.uri}";
+declare variable $document external;
+<values> {
+    for $b in $document/xsd:schema/xsd:element
+        return <value>{data($b/@name)}</value>
+} </values>]]></expression>
+            </index>
+            <index>
+                <field-name>xmlschema.complexType</field-name>
+                <display-name>XML Schema Complex Types</display-name>
+                <description>XML Schema Complex Types</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+declare namespace xsd="${namespace.uri}";
+declare variable $document external;
+<values> {
+    for $b in $document/xsd:schema/xsd:complexType
+        return <value>{data($b/@name)}</value>
+} </values>]]></expression>
+            </index>
+            <index>
+                <field-name>xmlschema.group</field-name>
+                <display-name>XML Schema Groups</display-name>
+                <description>XML Schema Groups</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+declare namespace xsd="${namespace.uri}";
+declare variable $document external;
+<values> {
+    for $b in $document/xsd:schema/xsd:group
+        return <value>{data($b/@name)}</value>
+} </values>]]></expression>
+            </index>
+            <index>
+                <field-name>xmlschema.attributeGroup</field-name>
+                <display-name>XML Schema Attribute Group</display-name>
+                <description>XML Schema Attribute Group</description>
+                <language>XQUERY</language>
+                <search-input-type>java.lang.String</search-input-type>
+                <expression><![CDATA[
+declare namespace xsd="${namespace.uri}";
+declare variable $document external;
+<values> {
+    for $b in $document/xsd:schema/xsd:attributeGroup
+        return <value>{data($b/@name)}</value>
+} </values>]]></expression>
+            </index>
+        </indexes>
     </galaxy-plugin>
+    
 
     <galaxy-plugin>
-        <name>Xslt Documents</name>
+        <name>XSLT Stylesheets</name>
         <description>Allows Xslt Documents to be managed by Galaxy.</description>
         <content-type>application/xslt+xml</content-type>
         <!--<small-icon>META-INF/images/xslt_16x16.png</small-icon>-->
@@ -126,7 +193,7 @@ declare variable $document external;
             <index>
                 <field-name>wsdl.targetNamespace</field-name>
                 <display-name>WSDL Target Namespace</display-name>
-                <description>WSDL Target Namespace Definition</description>
+                <description>WSDL Target Namespace</description>
                 <language>XPATH</language>
                 <search-input-type>java.lang.String</search-input-type>
                 <expression><![CDATA[/*/@targetNamespace]]>

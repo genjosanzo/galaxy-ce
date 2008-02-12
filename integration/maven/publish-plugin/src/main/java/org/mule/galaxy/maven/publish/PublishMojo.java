@@ -317,9 +317,9 @@ public class PublishMojo extends AbstractMojo {
                 // create a new artifact
                 res = client.post(url, new FileInputStream(file), opts);
                 res.release();
-                getLog().debug("Uploaded artifact " + name + " (version " + version + ")");
+                getLog().info("Created artifact " + name + " (version " + version + ")");
             } else if (artifactVersionExists < 300) {
-                getLog().debug("Skipping artifact " + name + " as the current version already exists in the destination workspace.");
+                getLog().info("Skipping artifact " + name + " as the current version already exists in the destination workspace.");
             } else if (artifactVersionExists >= 300 && artifactVersionExists != 404) {
                 throw new MojoFailureException("Could not determine if resource already exists in: " + name
                     + ". Got status " + res.getStatus() + " for URL " + artifactUrl + ".");
@@ -327,6 +327,7 @@ public class PublishMojo extends AbstractMojo {
                 // update the artifact
                 res = client.put(artifactUrl, new FileInputStream(file), opts);
                 res.release();
+                getLog().info("Updated artifact " + name + " (version " + version + ")");
             }
             
         } catch (IOException e) {

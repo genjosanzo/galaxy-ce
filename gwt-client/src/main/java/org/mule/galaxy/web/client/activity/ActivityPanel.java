@@ -109,7 +109,7 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
         search.addClickListener(new ClickListener() {
 
             public void onClick(Widget sender) {
-                refresh();
+                onShow();
             }
 
         });
@@ -132,7 +132,7 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
         }
     }
 
-    public void refresh() {
+    public void onShow() {
         panel.remove(errorPanel);
 
         resultsPanel.clear();
@@ -210,7 +210,7 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
                     public void onClick(Widget arg0) {
                         resultStart += maxResults;
                         
-                        refresh();
+                        onShow();
                     }
                     
                 });
@@ -226,7 +226,7 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
                         resultStart = resultStart - maxResults;
                         if (resultStart < 0) resultStart = 0;
                         
-                        refresh();
+                        onShow();
                     }
                     
                 });

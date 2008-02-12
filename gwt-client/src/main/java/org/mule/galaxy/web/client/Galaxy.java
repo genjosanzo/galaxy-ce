@@ -38,8 +38,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
     private FlowPanel rightPanel;
     private PageInfo curInfo;
     private Map history = new HashMap();
-    private Map lastPageOnTab = new HashMap();
     private TabPanel tabPanel;
+    protected int oldTab;
     
     /**
      * This is the entry point method.
@@ -67,22 +67,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         
         rightPanel = new FlowPanel();
         rightPanel.setStyleName("header-right");
-        
-        final Galaxy galaxy = this;
-        registryService.getUserInfo(new AbstractCallback(registryPanel) {
-            public void onSuccess(Object o) {
-                WUser user = (WUser) o;
-                rightPanel.add(new Label(user.getName()));
-                
-                HTML logout = new HTML("<a href=\"" + GWT.getHostPageBaseURL() + "j_logout\">Logout</a>");
-                rightPanel.add(logout);
-                
-                if (user.isAdmin()) {
-                    tabPanel.add(new AdministrationPanel(galaxy), "Administration");
-                    showFirstPage();
-                }
-            }
-        });
+
         
         FlowPanel header = new FlowPanel();
         header.setStyleName("header");
@@ -101,17 +86,42 @@ public class Galaxy implements EntryPoint, HistoryListener {
         
         tabPanel.addTabListener(new TabListener() {
 
-            public boolean onBeforeTabSelected(SourcesTabEvents arg0, int arg1) {
+            public boolean onBeforeTabSelected(SourcesTabEvents event, int newTab) {
+                if (oldTab != newTab) {
+                    if (curInfo != null) {
+                        history.put("tab-" + oldTab, curInfo);
+                    }
+                }
                 return true;
             }
 
             public void onTabSelected(SourcesTabEvents arg0, int tab) {
-                if (tab == 1) {
-                    activityPanel.refresh();
+                if (oldTab != tab) {
+                    History.newItem("tab-" + tab);
                 }
-                History.newItem("tab-" + tab);
+                oldTab = tab;
             }
             
+        });
+        
+        createPageForTab(0);
+        createPageForTab(1);
+        
+        final Galaxy galaxy = this;
+        registryService.getUserInfo(new AbstractCallback(registryPanel) {
+            public void onSuccess(Object o) {
+                WUser user = (WUser) o;
+                rightPanel.add(new Label(user.getName()));
+                
+                HTML logout = new HTML("<a href=\"" + GWT.getHostPageBaseURL() + "j_logout\">Logout</a>");
+                rightPanel.add(logout);
+                
+                if (user.isAdmin()) {
+                    tabPanel.add(new AdministrationPanel(galaxy), "Administration");
+                    createPageForTab(2);
+                    showFirstPage();
+                }
+            }
         });
         
         Label footer = new Label("Mule Galaxy, Copyright 2008 MuleSource, Inc.");
@@ -120,6 +130,21 @@ public class Galaxy implements EntryPoint, HistoryListener {
         RootPanel.get().add(base);
     }
     
+    private void createPageForTab(int i) {
+        final AbstractComposite ac = (AbstractComposite) tabPanel.getWidget(i);
+        
+        PageInfo page = new PageInfo("tab-" + i, i) {
+            public AbstractComposite createInstance() {
+                return ac;
+            }
+
+            public void show() {
+            }
+        };
+        
+        history.put(page.getName(), page);
+    }
+
     protected void showFirstPage() {
         // Show the initial screen.
         String initToken = History.getToken();
@@ -169,7 +194,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         }
         
         int idx = page.getTabIndex();
-        if (idx > 0 && idx < tabPanel.getWidgetCount()) {
+        if (idx >= 0 && idx < tabPanel.getWidgetCount()) {
             tabPanel.selectTab(page.getTabIndex());
         }
         page.show();

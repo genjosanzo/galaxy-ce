@@ -1,15 +1,20 @@
 package org.mule.galaxy.impl;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Index;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.Workspace;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -23,6 +28,47 @@ public class IndexTest extends AbstractGalaxyTest {
         
     }
     
+    public void testXmlSchema() throws Exception {
+        InputStream xsd = getResourceAsStream("/schema/test.xsd");
+        
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+        
+        ArtifactResult ar = registry.createArtifact(workspace, 
+                                                    "application/xml", 
+                                                    "test.xsd", 
+                                                    "0.1", 
+                                                    xsd, 
+                                                    getAdmin());
+        
+        Artifact a = ar.getArtifact();
+        
+        assertEquals("http://www.example.org/test/", 
+                     a.getProperty("xmlschema.targetNamespace"));
+        
+        Object property = a.getProperty("xmlschema.element");
+        assertNotNull(property);
+        assertTrue(property instanceof Collection);
+        assertTrue(((Collection) property).contains("testElement"));
+
+        property = a.getProperty("xmlschema.complexType");
+        assertNotNull(property);
+        assertTrue(property instanceof Collection);
+        assertTrue(((Collection) property).contains("testComplexType"));
+
+        property = a.getProperty("xmlschema.group");
+        assertNotNull(property);
+        assertTrue(property instanceof Collection);
+        assertTrue(((Collection) property).contains("testGroup"));
+
+        property = a.getProperty("xmlschema.attributeGroup");
+        assertNotNull(property);
+        assertTrue(property instanceof Collection);
+        assertTrue(((Collection) property).contains("testAttributeGroup"));
+        
+        
+    }
     public void xtestReindex() throws Exception {
         Artifact artifact = importHelloWsdl();
         
