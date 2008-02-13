@@ -22,8 +22,7 @@
     <modules>
         <module>support</module>
         <module>mule1-client</module>
-        <!--Disabled for now since it relies on Mule 2.0.0-RC3-SNAPSHOT-->
-        <!--<module>mule2-client</module>-->
+        <module>mule2-client</module>
         <module>cxf</module>
         <module>spring</module>
         <module>maven/publish-plugin</module>

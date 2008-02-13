@@ -87,7 +87,7 @@ public class GalaxyConfigurationBuilder extends AbstractConfigurationBuilder
             {
                 //This will cause the same file to be downloaded twice since Spring doesn't allow you to pass in an
                 //input stream when creating a context (complains that validation mode cannot be determined). 
-                resources[i] = new ConfigResource(is[i].getName());
+                resources[i] = new ConfigResource(is[i].getName(), is[i].getInputStream());
             }
             //Really we should use the AutoConfigBuilder here so we can load scripted Mule instances, but it doesn;t
             //look like its properly implemented yet

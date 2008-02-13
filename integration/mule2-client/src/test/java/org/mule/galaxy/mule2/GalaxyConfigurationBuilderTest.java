@@ -3,6 +3,7 @@ package org.mule.galaxy.mule2;
 
 import org.mule.api.MuleContext;
 import org.mule.api.model.Model;
+
 import org.mule.context.DefaultMuleContextFactory;
 import org.mule.galaxy.config.GalaxyConfigurationBuilder;
 import org.mule.galaxy.test.AbstractAtomTest;
@@ -22,7 +23,7 @@ public class GalaxyConfigurationBuilderTest extends AbstractAtomTest
         context = new DefaultMuleContextFactory().createMuleContext(builder);
 
         //Assert components
-        Model model = context.getRegistry().lookupModel("main");
+        Model model = context.getRegistry().lookupModel("helloSample");
         assertNotNull(model);
         assertNotNull(context.getRegistry().lookupService("GreeterUMO"));
         assertNotNull(context.getRegistry().lookupService("ChitChatUMO"));
@@ -41,7 +42,7 @@ public class GalaxyConfigurationBuilderTest extends AbstractAtomTest
         context = new DefaultMuleContextFactory().createMuleContext(builder);
 
         //Assert components
-        Model model = context.getRegistry().lookupModel("main");
+        Model model = context.getRegistry().lookupModel("helloSample");
         assertNotNull(model);
         assertNotNull(context.getRegistry().lookupService("GreeterUMO"));
         assertNotNull(context.getRegistry().lookupService("ChitChatUMO"));
@@ -54,7 +55,7 @@ public class GalaxyConfigurationBuilderTest extends AbstractAtomTest
     {
         try
         {
-            if(context!=null)
+            if (context != null)
             {
                 context.dispose();
             }
