@@ -367,6 +367,12 @@ public abstract class AbstractArtifactCollection
         String phaseName = e.getAttributeValue("phase");
         assertNotEmpty(phaseName, "Lifecycle phase attribute cannot be null.");
         
+        Phase current = av.getParent().getPhase();
+        if (name.equals(current.getLifecycle().getName()) 
+            && phaseName.equals(current.getName())) {
+            return;
+        }
+            
         Lifecycle lifecycle = lifecycleManager.getLifecycle(name);
         
         if (lifecycle == null)
@@ -407,7 +413,6 @@ public abstract class AbstractArtifactCollection
             public boolean hasEntity() {
                 return true;
             }
-            
         };
         
         rc.setStatus(400);
