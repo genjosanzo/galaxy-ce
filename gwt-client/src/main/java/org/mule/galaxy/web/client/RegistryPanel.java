@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.client;
 
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
@@ -59,6 +60,7 @@ public class RegistryPanel extends AbstractMenuPanel {
                                               workspaceId);
             }
         };
+        addPage(page);
         addWkspcImg.addClickListener(createClickListener(page));
         workspaceBox.addButton(addWkspcImg);
         
@@ -70,6 +72,7 @@ public class RegistryPanel extends AbstractMenuPanel {
                                               workspaceId);
             }
         };
+        addPage(page);
         editWkspcImg.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
                 final TreeItem item = workspaceTree.getSelectedItem();
@@ -124,7 +127,7 @@ public class RegistryPanel extends AbstractMenuPanel {
     private ClickListener createClickListener(final MenuPanelPageInfo page) {
         return new ClickListener() {
             public void onClick(Widget w) {
-                setMain(page);
+                History.newItem(page.getName());
                 errorPosition = 0;
             }
             

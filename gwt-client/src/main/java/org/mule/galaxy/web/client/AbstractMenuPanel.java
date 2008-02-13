@@ -1,9 +1,7 @@
 package org.mule.galaxy.web.client;
 
-import org.mule.galaxy.web.client.admin.UserForm;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -146,5 +144,9 @@ public abstract class AbstractMenuPanel extends AbstractComposite implements Err
     
     protected int getTabIndex() {
         return galaxy.getTabPanel().getWidgetIndex(this);
+    }
+
+    public Widget getMain() {
+        return mainWidget;
     };
 }

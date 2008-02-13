@@ -21,6 +21,7 @@ import java.util.Iterator;
 
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.ArtifactForm;
+import org.mule.galaxy.web.client.MenuPanelPageInfo;
 import org.mule.galaxy.web.client.RegistryPanel;
 import org.mule.galaxy.web.client.WorkspacePanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
@@ -306,14 +307,13 @@ public class ArtifactInfoPanel extends AbstractComposite {
         });
         
         rightGroup.add(hl);
-        hl = new Hyperlink("New Version", "new-artifact-version");
-        hl.addClickListener(new ClickListener() {
-
-            public void onClick(Widget arg0) {
-                registryPanel.setMain(new ArtifactForm(registryPanel, info.getId()));
+        hl = new Hyperlink("New Version", "new-artifact-version-"+info.getId());
+        MenuPanelPageInfo newVersionPage = new MenuPanelPageInfo(hl, registryPanel) {
+            public AbstractComposite createInstance() {
+                return new ArtifactForm(registryPanel, info.getId());
             }
-            
-        });
+        };
+        registryPanel.addPage(newVersionPage);
         rightGroup.add(hl);
         
         hl = new Hyperlink("Delete", "delete-artifact");

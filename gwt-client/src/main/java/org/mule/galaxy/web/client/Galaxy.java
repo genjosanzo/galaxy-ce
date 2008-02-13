@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +41,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     private Map history = new HashMap();
     private TabPanel tabPanel;
     protected int oldTab;
+    private boolean suppressTabHistory;
     
     /**
      * This is the entry point method.
@@ -87,16 +89,16 @@ public class Galaxy implements EntryPoint, HistoryListener {
         tabPanel.addTabListener(new TabListener() {
 
             public boolean onBeforeTabSelected(SourcesTabEvents event, int newTab) {
-                if (oldTab != newTab) {
-                    if (curInfo != null) {
-                        history.put("tab-" + oldTab, curInfo);
-                    }
-                }
+//                if (oldTab != newTab) {
+//                    if (curInfo != null) {
+//                        history.put("tab-" + oldTab, curInfo);
+//                    }
+//                }
                 return true;
             }
 
-            public void onTabSelected(SourcesTabEvents arg0, int tab) {
-                if (oldTab != tab) {
+            public void onTabSelected(SourcesTabEvents tabPanel, int tab) {
+                if (oldTab != tab && !suppressTabHistory) {
                     History.newItem("tab-" + tab);
                 }
                 oldTab = tab;
@@ -104,8 +106,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
             
         });
         
-        createPageForTab(0);
-        createPageForTab(1);
+        createPageInfoForMenuPanel(0);
+        createPageInfoForActivity(1);
         
         final Galaxy galaxy = this;
         registryService.getUserInfo(new AbstractCallback(registryPanel) {
@@ -118,7 +120,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
                 
                 if (user.isAdmin()) {
                     tabPanel.add(new AdministrationPanel(galaxy), "Administration");
-                    createPageForTab(2);
+                    createPageInfoForMenuPanel(2);
                     showFirstPage();
                 }
             }
@@ -130,9 +132,32 @@ public class Galaxy implements EntryPoint, HistoryListener {
         RootPanel.get().add(base);
     }
     
-    private void createPageForTab(int i) {
-        final AbstractComposite ac = (AbstractComposite) tabPanel.getWidget(i);
+    private void createPageInfoForMenuPanel(int i) {
+        final AbstractMenuPanel menuPanel = (AbstractMenuPanel) tabPanel.getWidget(i);
+        Widget main = menuPanel.getMain();
         
+        if (main == null) {
+            main = new Label("");
+        }
+        
+        final Widget fMain = main;
+        
+        PageInfo page = new PageInfo("tab-" + i, i) {
+            public AbstractComposite createInstance() {
+                return menuPanel;
+            }
+
+            public void show() {
+                menuPanel.setMain(fMain);
+            }
+        };
+        
+        history.put(page.getName(), page);
+    }
+    
+    
+    private void createPageInfoForActivity(int i) {
+        final AbstractComposite ac = (AbstractComposite) tabPanel.getWidget(i);
         PageInfo page = new PageInfo("tab-" + i, i) {
             public AbstractComposite createInstance() {
                 return ac;
@@ -160,38 +185,53 @@ public class Galaxy implements EntryPoint, HistoryListener {
     }
 
     public void show(PageInfo info, boolean affectHistory) {
-      // Don't bother re-displaying the existing sink. This can be an issue
-      // in practice, because when the history context is set, our
-      // onHistoryChanged() handler will attempt to show the currently-visible
-      // sink.
-      if (info == curInfo) {
-        return;
-      }
-      curInfo = info;
-      
-      // If affectHistory is set, create a new item on the history stack. This
-      // will ultimately result in onHistoryChanged() being called. It will call
-      // show() again, but nothing will happen because it will request the exact
-      // same sink we're already showing.
-      if (affectHistory) {
-        History.newItem(info.getName());
-      }
+        // Don't bother re-displaying the existing sink. This can be an issue
+        // in practice, because when the history context is set, our
+        // onHistoryChanged() handler will attempt to show the currently-visible
+        // sink.
+        if (info == curInfo) {
+            return;
+        }
+        suppressTabHistory = true;
+        curInfo = info;
 
-      // Display the page
-      history.put(info.getName(), info);
-      info.show();
+        // If affectHistory is set, create a new item on the history stack. This
+        // will ultimately result in onHistoryChanged() being called. It will
+        // call
+        // show() again, but nothing will happen because it will request the
+        // exact
+        // same sink we're already showing.
+        if (affectHistory) {
+            History.newItem(info.getName());
+        }
+
+        // Display the page
+        history.put(info.getName(), info);
+        info.show();
+        suppressTabHistory = false;
     }
     
     public void onHistoryChanged(String token) {
-        if (curInfo != null) {
-            curInfo.getInstance().onHide();
+        suppressTabHistory = true;
+        if (token == "") {
+            token = "tab-0";
         }
         
         PageInfo page = (PageInfo) history.get(token);
         
         if (page == null) {
+            // went to a page which isn't in our history anymore. go to the first page
+            if (curInfo == null) {
+                onHistoryChanged("tab-0");
+            }
             return;
         }
+        
+        if (curInfo != null) {
+            curInfo.getInstance().onHide();
+        }
+        
+        curInfo = page;
         
         int idx = page.getTabIndex();
         if (idx >= 0 && idx < tabPanel.getWidgetCount()) {
@@ -199,6 +239,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         }
         page.show();
         page.getInstance().onShow();
+        suppressTabHistory = false;
     }
 
     public RegistryServiceAsync getRegistryService() {
