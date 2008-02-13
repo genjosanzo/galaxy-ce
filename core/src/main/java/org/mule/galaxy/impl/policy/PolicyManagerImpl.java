@@ -24,16 +24,23 @@ import javax.jcr.query.QueryResult;
 
 import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.ArtifactCollectionPolicyException;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyInfo;
 import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.query.SearchResults;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -43,6 +50,7 @@ import org.springmodules.jcr.JcrTemplate;
 public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware {
     private Map<String, ArtifactPolicy> policies = new HashMap<String, ArtifactPolicy>();
     private LifecycleManager lifecycleManager;
+    private Registry registry;
     private JcrTemplate jcrTemplate;
     private String lifecyclesNodeId;
     private String workspaceLifecyclesNodeId;
@@ -50,6 +58,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     private String artifactsPhasesNodeId;
     private String workspacePhasesNodeId;
     private String phasesNodeId;
+    private ApplicationContext applicationContext;
     
     public void initilaize() throws Exception{
         Session session = jcrTemplate.getSessionFactory().getSession();
@@ -76,6 +85,15 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
             ArtifactPolicy p = (ArtifactPolicy) ctx.getBean(s);
             addPolicy(p);
         }
+        
+        this.applicationContext = ctx;
+    }
+    
+    public Registry getRegistry() {
+        if (registry == null) {
+            registry = (Registry) applicationContext.getBean("registry");
+        }
+        return registry;
     }
 
     public void addPolicy(ArtifactPolicy p) {
@@ -104,21 +122,101 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     public Collection<ArtifactPolicy> getPolicies() {
         return policies.values();
     }
-
     
-    public void setActivePolicies(Artifact a, Collection<Phase> phases, ArtifactPolicy... policies) {
+    public void setActivePolicies(Artifact a, Collection<Phase> phases, ArtifactPolicy... policies) 
+        throws ArtifactPolicyException {
+        if (phases.contains(a.getPhase())) {
+            approveArtifact(a, policies);
+        }
         activatePolicy(artifactsPhasesNodeId, phases, policies, a.getId());
     }
 
-    public void setActivePolicies(Artifact a, Lifecycle lifecycle, ArtifactPolicy... policies) {
+    private void approveArtifact(Artifact a, ArtifactPolicy... policies) throws ArtifactPolicyException {
+        List<ApprovalMessage> messages = approve(a, policies);
+        
+        if (messages != null) {
+            throw new ArtifactPolicyException(messages);
+        }
+    }
+
+    private List<ApprovalMessage> approve(Artifact a, ArtifactPolicy... policies) {
+        List<ApprovalMessage> messages = null;
+        for (ArtifactPolicy p : policies) {
+            if (!p.applies(a)) return null;
+            
+            Collection<ApprovalMessage> approved = p.isApproved(a, a.getActiveVersion().getPrevious(), a.getActiveVersion());
+            boolean failed = false;
+            for (ApprovalMessage m : approved) {
+                if (!m.isWarning()) {
+                    failed = true;
+                    break;
+                }
+            }
+            
+            if (failed) {
+                if (messages == null) {
+                    messages = new ArrayList<ApprovalMessage>();
+                }
+                messages.addAll(approved);
+            }
+        }
+        return messages;
+    }
+
+    public void setActivePolicies(Artifact a, Lifecycle lifecycle, ArtifactPolicy... policies) 
+        throws ArtifactPolicyException {
+        if (lifecycle.getName().equals(a.getPhase().getLifecycle())) {
+            approveArtifact(a, policies);
+        }
+        
         activatePolicy(artifactsLifecyclesNodeId, policies, a.getId(), lifecycle.getName());
     }
 
-    public void setActivePolicies(Collection<Phase> phases, ArtifactPolicy... policies) {
+    public void setActivePolicies(Collection<Phase> phases, ArtifactPolicy... policies) 
+        throws ArtifactCollectionPolicyException, RegistryException {
+        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(Artifact.class);
+        
+        q.add(Restriction.in("phase", phases));
+        
+        approveArtifacts(q, policies);
+        
         activatePolicy(phasesNodeId, phases, policies);
     }
 
-    public void setActivePolicies(Lifecycle lifecycle, ArtifactPolicy... policies) {
+    private void approveArtifacts(org.mule.galaxy.query.Query q, ArtifactPolicy... policies)
+        throws RegistryException, ArtifactCollectionPolicyException {
+        try {
+            SearchResults results = getRegistry().search(q);
+            Map<Artifact, List<ApprovalMessage>> approvals = null;
+            
+            for (Object o : results.getResults()) {
+                Artifact a = (Artifact) o;
+                
+                List<ApprovalMessage> messages = approve(a, policies);
+                if (messages != null) {
+                    if (approvals == null) {
+                        approvals = new HashMap<Artifact, List<ApprovalMessage>>();
+                    }
+                    approvals.put(a, messages);
+                }
+            }
+            
+            if (approvals != null) {
+                throw new ArtifactCollectionPolicyException(approvals);
+            }
+        } catch (QueryException e) {
+            // this should never happen as we know our query is valid
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setActivePolicies(Lifecycle lifecycle, ArtifactPolicy... policies) 
+        throws RegistryException, ArtifactCollectionPolicyException {
+        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(Artifact.class);
+        q.add(Restriction.eq("lifecycle", lifecycle.getName()));
+        
+        approveArtifacts(q, policies);
+        
         activatePolicy(lifecyclesNodeId, policies, lifecycle.getName());
     }
 
@@ -126,7 +224,14 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         activatePolicy(workspacePhasesNodeId, phases, policies, w.getId());
     }
 
-    public void setActivePolicies(Workspace w, Lifecycle lifecycle, ArtifactPolicy... policies) {
+    public void setActivePolicies(Workspace w, Lifecycle lifecycle, ArtifactPolicy... policies) 
+        throws RegistryException, ArtifactCollectionPolicyException {
+        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(Artifact.class);
+        q.workspaceId(w.getId())
+         .add(Restriction.eq("lifecycle", lifecycle.getName()));
+        
+        approveArtifacts(q, policies);
+        
         activatePolicy(workspaceLifecyclesNodeId, policies, w.getId(), lifecycle.getName());
     }
     

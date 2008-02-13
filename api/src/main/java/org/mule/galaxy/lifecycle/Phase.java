@@ -55,4 +55,8 @@ public class Phase {
         this.approvedUsers = approvedUsers;
     }
 
+    public String toString() {
+        return getLifecycle().getName() + ":" + getName();
+    }
+
 }

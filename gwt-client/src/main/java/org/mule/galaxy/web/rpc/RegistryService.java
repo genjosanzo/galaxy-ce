@@ -131,9 +131,10 @@ public interface RegistryService extends RemoteService {
     Collection getActivePoliciesForPhase(String lifecycle, String phase, String workspaceId) throws RPCException;
 
     /**
+     * @throws ApplyPolicyException 
      * @gwt.typeArgs ids <java.lang.String>
      */
-    void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids) throws RPCException;
+    void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids) throws RPCException, ApplyPolicyException;
 
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WActivity>

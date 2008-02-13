@@ -532,6 +532,35 @@ a:visited {
 
 /**
  **
+ ** Artifact policy failures
+ **
+ **/
+.policy-failure-panel {
+	padding: 4px;
+}
+
+.policy-result-artifact-panel {
+	margin: 4px;
+	padding: 4px;
+	background-color: #ddd;
+}
+
+.policy-result-section-header {
+	padding-top: 4px;
+	font-weight: bold;
+}
+
+.policy-result-warning-label {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.policy-result-failure-label {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+/**
+ **
  ** Search Panel
  **
  **/

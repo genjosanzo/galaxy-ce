@@ -48,6 +48,7 @@ public class RegistryPanel extends AbstractMenuPanel {
                 return new ArtifactForm(registryPanel);
             }
         };
+        addPage(page);
         addImg.addClickListener(createClickListener(page));
         
         workspaceBox.addButton(addImg);

@@ -54,6 +54,12 @@
             <artifactId>mule-example-hello</artifactId>
             <version>${muleVersion}</version>
             <scope>test</scope>
+             <exclusions>
+                <exclusion>
+                    <groupId>jetty</groupId>
+                    <artifactId>org.mortbay.jetty</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

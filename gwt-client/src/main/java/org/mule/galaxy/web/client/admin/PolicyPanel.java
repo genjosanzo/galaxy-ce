@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.client.admin;
 
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -16,10 +17,13 @@ import java.util.Map;
 
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.AbstractMenuPanel;
+import org.mule.galaxy.web.client.MenuPanelPageInfo;
+import org.mule.galaxy.web.client.artifact.ArtifactCollectionPolicyResultsPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LifecycleSelectionPanel;
 import org.mule.galaxy.web.client.util.PolicySelectionPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ApplyPolicyException;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 
 public class PolicyPanel extends AbstractComposite {
@@ -28,7 +32,7 @@ public class PolicyPanel extends AbstractComposite {
     private RegistryServiceAsync svc;
     private LifecycleSelectionPanel lsPanel;
     private SimplePanel psPanelContainer;
-    private final AbstractMenuPanel adminPanel;
+    private final AbstractMenuPanel menuPanel;
 
     private Map lifecycle2Phase2Panel = new HashMap();
     private PolicySelectionPanel currentPsPanel;
@@ -43,7 +47,7 @@ public class PolicyPanel extends AbstractComposite {
     
     public PolicyPanel(AbstractMenuPanel adminPanel, RegistryServiceAsync svc, String workspaceId) {
         super();
-        this.adminPanel = adminPanel;
+        this.menuPanel = adminPanel;
         this.workspaceId = workspaceId;
         this.svc = svc;
 
@@ -91,12 +95,16 @@ public class PolicyPanel extends AbstractComposite {
         saveButton.setText("Saving...");
         saveButton.setEnabled(false);
         
-        AbstractCallback callback = new AbstractCallback(adminPanel) {
+        AbstractCallback callback = new AbstractCallback(menuPanel) {
 
             public void onFailure(Throwable caught) {
                 reenable();
                 
-                super.onFailure(caught);
+                if (caught instanceof ApplyPolicyException) {
+                    handlePolicyFailure((ApplyPolicyException) caught);
+                } else {
+                    super.onFailure(caught);
+                }
             }
 
             private void reenable() {
@@ -111,7 +119,7 @@ public class PolicyPanel extends AbstractComposite {
                 saveCount--;
                 
                 if (saveCount == 0 && finishedSave) {
-                    adminPanel.setMessage("Policies were saved.");
+                    menuPanel.setMessage("Policies were saved.");
                     reenable();
                     finishedSave = false;
                 }
@@ -145,6 +153,18 @@ public class PolicyPanel extends AbstractComposite {
 
     }
 
+    protected void handlePolicyFailure(final ApplyPolicyException caught) {
+        MenuPanelPageInfo page = new MenuPanelPageInfo("policy-failure-" + caught.hashCode(), menuPanel) {
+
+            public AbstractComposite createInstance() {
+                return new ArtifactCollectionPolicyResultsPanel(caught.getPolicyFailures());
+            }
+            
+        };
+        menuPanel.addPage(page);
+        History.newItem(page.getName());
+    }
+
     protected void loadPolicies() {
         final String lifecycle = lsPanel.getSelectedLifecycle();
         final String phase = lsPanel.getSelectedPhase();
@@ -154,7 +174,7 @@ public class PolicyPanel extends AbstractComposite {
         psPanelContainer.clear();
         psPanelContainer.add(currentPsPanel);
         
-        AbstractCallback callback = new AbstractCallback(adminPanel) {
+        AbstractCallback callback = new AbstractCallback(menuPanel) {
             public void onSuccess(Object o) {
                currentPsPanel.selectAndShow((Collection) o);
             }
@@ -181,7 +201,7 @@ public class PolicyPanel extends AbstractComposite {
         
         PolicySelectionPanel psPanel = (PolicySelectionPanel) phase2Panel.get(phase);
         if (psPanel == null) {
-            psPanel = new PolicySelectionPanel(adminPanel, svc);
+            psPanel = new PolicySelectionPanel(menuPanel, svc);
             phase2Panel.put(phase, psPanel);
         }
         return psPanel;

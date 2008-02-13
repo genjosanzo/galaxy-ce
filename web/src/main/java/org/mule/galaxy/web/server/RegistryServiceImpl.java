@@ -27,6 +27,7 @@ import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.lifecycle.TransitionException;
 import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.ArtifactCollectionPolicyException;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.Query;
@@ -38,6 +39,7 @@ import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.view.ArtifactTypeView;
 import org.mule.galaxy.view.ViewManager;
 import org.mule.galaxy.web.client.RPCException;
+import org.mule.galaxy.web.rpc.ApplyPolicyException;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
 import org.mule.galaxy.web.rpc.BasicArtifactInfo;
@@ -47,6 +49,7 @@ import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.TransitionResponse;
 import org.mule.galaxy.web.rpc.WActivity;
+import org.mule.galaxy.web.rpc.WApprovalMessage;
 import org.mule.galaxy.web.rpc.WArtifactPolicy;
 import org.mule.galaxy.web.rpc.WArtifactType;
 import org.mule.galaxy.web.rpc.WComment;
@@ -829,7 +832,8 @@ public class RegistryServiceImpl implements RegistryService {
         return getArtifactPolicyIds(pols);
     }
 
-    public void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids) throws RPCException {
+    public void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids) 
+        throws RPCException, ApplyPolicyException {
         Lifecycle l = lifecycleManager.getLifecycle(lifecycle);
         List<ArtifactPolicy> policies = getArtifactPolicies(ids);
         
@@ -860,6 +864,28 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (ArtifactCollectionPolicyException e) {
+            Map<BasicArtifactInfo,Collection<WApprovalMessage>> failures 
+                = new HashMap<BasicArtifactInfo,Collection<WApprovalMessage>>();
+            for (Map.Entry<Artifact, List<ApprovalMessage>> entry : e.getPolicyFailures().entrySet()) {
+                Artifact a = entry.getKey();
+                List<ApprovalMessage> approvals = entry.getValue();
+                
+                ArtifactTypeView view = viewManager.getArtifactTypeView(a.getDocumentType());
+                if (view == null) {
+                    view = viewManager.getArtifactTypeView(a.getContentType().toString());
+                }
+                
+                BasicArtifactInfo info = createBasicArtifactInfo(a, view);
+                
+                ArrayList<WApprovalMessage> wapprovals = new ArrayList<WApprovalMessage>();
+                for (ApprovalMessage app : approvals) {
+                    wapprovals.add(new WApprovalMessage(app.getMessage(), app.isWarning()));
+                }
+                
+                failures.put(info, wapprovals);
+            }
+            throw new ApplyPolicyException(failures);
         }
     }
 

@@ -96,6 +96,25 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
         return ar.getArtifact();
     }
 
+    protected Artifact importXmlSchema() throws RegistryException, ArtifactPolicyException, IOException,
+        MimeTypeParseException {
+        InputStream xsd = getResourceAsStream("/schema/test.xsd");
+        
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+        
+        ArtifactResult ar = registry.createArtifact(workspace, 
+                                                    "application/xml", 
+                                                    "test.xsd", 
+                                                    "0.1", 
+                                                    xsd, 
+                                                    getAdmin());
+        
+        Artifact a = ar.getArtifact();
+        return a;
+    }
+
     protected Artifact importHelloMule() throws RegistryException, ArtifactPolicyException, IOException,
         MimeTypeParseException {
         InputStream helloWsdl = getResourceAsStream("/mule/hello-config.xml");

@@ -544,6 +544,22 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 throw e;
             }
         }
+    }    
+    
+    private Object executeQuery(JcrCallback jcrCallback) 
+        throws RegistryException, QueryException {
+        try {
+            return execute(jcrCallback);
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RegistryException) {
+                throw (RegistryException) cause;
+            } else if (cause instanceof QueryException) {
+                throw (QueryException) cause;
+            } else {
+                throw e;
+            }
+        }
     }
 
     private ArtifactResult approve(Session session, Artifact artifact, 
@@ -987,11 +1003,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     public SearchResults search(final org.mule.galaxy.query.Query query) 
         throws RegistryException, QueryException {
         final JcrRegistryImpl registry = this;
-        return (SearchResults) execute(new JcrCallback() {
+        return (SearchResults) executeQuery(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                         
                 QueryManager qm = getQueryManager(session);
-                StringBuilder qstr = new StringBuilder();
                 
                 Set<Object> artifacts = new HashSet<Object>();
                 
@@ -1003,84 +1018,17 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     throw new RuntimeException(new QueryException(new Message("INVALID_SELECT_TYPE", LOGGER, selectType.getName())));
                 }
                 
-                if (query.getWorkspaceId() != null) {
-                    qstr.append("//*[@jcr:uuid='")
-                        .append(query.getWorkspaceId())
-                        .append("'][@jcr:primaryType=\"galaxy:workspace\"]/")
-                        .append(ARTIFACT_NODE_NAME);
-                } else if (query.getWorkspacePath() != null) {
-                    String path = query.getWorkspacePath();
-
-                    if (path.startsWith("/")) {
-                        path = path.substring(1);
-                    }
-                    
-                    if (path.endsWith("/")) {
-                        path = path.substring(0, path.length() - 1);
-                    }
-                    
-                    qstr.append("//")
-                    .append(ISO9075.encode(path))
-                    .append("[@jcr:primaryType=\"galaxy:workspace\"]/")
-                    .append(ARTIFACT_NODE_NAME);
-                } else {
-                    qstr.append("//")
-                        .append(ARTIFACT_NODE_NAME);
-                }
-                
-                StringBuilder propStr = new StringBuilder();
-
-                // Search the latest if we're searching for artifacts, otherwise
-                // search all versions
-                if (!av) {
-                    propStr.append("/version[@latest='true']");
-                } else {
-                    propStr.append("/version");
-                }
-                
-                boolean first = true;
-                for (Restriction r : query.getRestrictions()) {
-
-                    // TODO: NOT, LIKE, OR, etc
-                    String property = (String) r.getLeft();
-                    boolean not = false;
-                    Operator operator = r.getOperator();
-                    
-                    if (operator.equals(Operator.NOT)) {
-                        not = true;
-                        r = (Restriction) r.getRight();
-                        operator = r.getOperator();
-                        property = r.getLeft().toString();
-                    }
-                    
-                    if (operator.equals(Operator.IN)) {
-                        Collection<?> right = (Collection<?>) r.getRight();
-                        for (Object o : right) {
-                            first = appendPropertySearch(qstr, propStr, first, 
-                                                          o.toString(), property, 
-                                                          not, false, Operator.EQUALS);
-                        }
-                    } else {
-                        String right = r.getRight().toString();
-                        
-                        first = appendPropertySearch(qstr, propStr, first, right, 
-                                                      property, not, true, operator);
-                    }
-                }
-                
-                // No search criteria
-                if (qstr.length() == 0) {
-                    qstr.append("//")
-                        .append(ARTIFACT_NODE_NAME);
-                } else {
-                    if (!first) propStr.append("]");
-                    
-                    qstr.append(propStr);
+                String qstr = null;
+                try {
+                    qstr = createQueryString(query, av);
+                } catch (QueryException e) {
+                    // will be dewrapped later
+                    throw new RuntimeException(e);
                 }
                 
                 LOGGER.log(Level.FINE, "Query: " + qstr.toString());
                 
-                Query jcrQuery = qm.createQuery(qstr.toString(), Query.XPATH);
+                Query jcrQuery = qm.createQuery(qstr, Query.XPATH);
                 
                 QueryResult result = jcrQuery.execute();
                 NodeIterator nodes = result.getNodes(); 
@@ -1128,43 +1076,167 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 return new SearchResults(nodes.getSize(), artifacts);
             }
 
-            private boolean appendPropertySearch(StringBuilder qstr, 
-                                                  StringBuilder propStr, 
-                                                  boolean first,
-                                                  String right, 
-                                                  String property, 
-                                                  boolean not,
-                                                  boolean and,
-                                                  Operator operator) {
-                
-                if (property.equals(JcrArtifact.PHASE)
-                    || property.equals(JcrArtifact.DOCUMENT_TYPE)
-                    || property.equals(JcrArtifact.CONTENT_TYPE)
-                    || property.equals(JcrArtifact.NAME)
-                    || property.equals(JcrArtifact.LIFECYCLE)
-                    || property.equals(JcrArtifact.DESCRIPTION)) {
-                    createPropertySearch(qstr, right, property, operator, not, true);
-                } else if (property.equals("workspace")) {
-                    
-                } else {
-                    if (first) {
-                        first = false;
-                        propStr.append("[");
-                    } else if (and) {
-                        propStr.append(" and ");
-                    } else {
-                        propStr.append(" or ");
-                    }
-                    
-                    createPropertySearch(propStr, right, property, operator, not, false);
-                }
-                return first;
-            }
-
         });
     }
 
+    protected String createQueryString(final org.mule.galaxy.query.Query query, boolean av) throws QueryException {
+        StringBuilder qstr = new StringBuilder();
+        if (query.getWorkspaceId() != null) {
+            qstr.append("//*[@jcr:uuid='")
+                .append(query.getWorkspaceId())
+                .append("'][@jcr:primaryType=\"galaxy:workspace\"]/")
+                .append(ARTIFACT_NODE_NAME);
+        } else if (query.getWorkspacePath() != null) {
+            String path = query.getWorkspacePath();
 
+            if (path.startsWith("/")) {
+                path = path.substring(1);
+            }
+            
+            if (path.endsWith("/")) {
+                path = path.substring(0, path.length() - 1);
+            }
+            
+            qstr.append("//")
+            .append(ISO9075.encode(path))
+            .append("[@jcr:primaryType=\"galaxy:workspace\"]/")
+            .append(ARTIFACT_NODE_NAME);
+        } else {
+            qstr.append("//")
+                .append(ARTIFACT_NODE_NAME);
+        }
+        
+        StringBuilder propStr = new StringBuilder();
+
+        // Search the latest if we're searching for artifacts, otherwise
+        // search all versions
+        if (!av) {
+            propStr.append("/version[@latest='true']");
+        } else {
+            propStr.append("/version");
+        }
+        
+        boolean first = true;
+        for (Restriction r : query.getRestrictions()) {
+
+            // TODO: NOT, LIKE, OR, etc
+            String property = (String) r.getLeft();
+            boolean not = false;
+            Operator operator = r.getOperator();
+            
+            if (operator.equals(Operator.NOT)) {
+                not = true;
+                r = (Restriction) r.getRight();
+                operator = r.getOperator();
+                property = r.getLeft().toString();
+            }
+            
+            if ("phase".equals(property)) {
+                if (operator.equals(Operator.IN)) {
+                    Collection<?> right = (Collection<?>) r.getRight();
+                    boolean firstPhase = true;
+                    for (Object o : right) {
+                        
+                        
+                        if (firstPhase) {
+                            qstr.append("[");
+                            firstPhase = false;
+                        } else {
+                            qstr.append(" or ");
+                        }
+                        
+                        qstr.append("(");
+                        
+                        createLifecycleAndPhasePropertySearch(qstr, property, o, not, operator);
+                        
+                        qstr.append(")");
+                    }
+                    
+                    if (!firstPhase) {
+                        qstr.append("]");
+                    }
+                } else {
+                    String right = r.getRight().toString();
+                    
+                    qstr.append("[");
+                    createLifecycleAndPhasePropertySearch(qstr, property, right, not, operator);
+                    qstr.append("]");
+                }
+            } else {
+                // this is a normal property
+                if (operator.equals(Operator.IN)) {
+                    Collection<?> right = (Collection<?>) r.getRight();
+                    for (Object o : right) {
+                        first = appendPropertySearch(qstr, propStr, first, 
+                                                      o.toString(), property, 
+                                                      not, false, Operator.EQUALS);
+                    }
+                } else {
+                    String right = r.getRight().toString();
+                    
+                    first = appendPropertySearch(qstr, propStr, first, right, 
+                                                  property, not, true, operator);
+                }
+            }
+        }
+        
+        // No search criteria
+        if (qstr.length() == 0) {
+            qstr.append("//")
+                .append(ARTIFACT_NODE_NAME);
+        } else {
+            if (!first) propStr.append("]");
+            
+            qstr.append(propStr);
+        }
+        return qstr.toString();
+    }
+
+    private void createLifecycleAndPhasePropertySearch(StringBuilder qstr, String property, Object right,
+                                                       boolean not, Operator operator) throws QueryException {
+        String[] lp = right.toString().split(":");
+        if (lp.length != 2) {
+            throw new QueryException(new Message("INVALID_PHASE_FORMAT", LOGGER, right.toString()));
+        }
+        // phase = ...
+        createPropertySearch(qstr, "lifecycle", lp[0], operator, not, false);
+        
+        qstr.append(" and ");
+        
+        // lifecycle = 
+        createPropertySearch(qstr, property, lp[1], operator, not, false);
+    }
+
+    protected boolean appendPropertySearch(StringBuilder qstr, 
+                                          StringBuilder propStr, 
+                                          boolean first,
+                                          String right, 
+                                          String property, 
+                                          boolean not,
+                                          boolean and,
+                                          Operator operator) {
+        
+        if (property.equals(JcrArtifact.PHASE)
+            || property.equals(JcrArtifact.DOCUMENT_TYPE)
+            || property.equals(JcrArtifact.CONTENT_TYPE)
+            || property.equals(JcrArtifact.NAME)
+            || property.equals(JcrArtifact.LIFECYCLE)
+            || property.equals(JcrArtifact.DESCRIPTION)) {
+            createPropertySearch(qstr, property, right, operator, not, true);
+        } else {
+            if (first) {
+                first = false;
+                propStr.append("[");
+            } else if (and) {
+                propStr.append(" and ");
+            } else {
+                propStr.append(" or ");
+            }
+            
+            createPropertySearch(propStr, property, right, operator, not, false);
+        }
+        return first;
+    }
 
     @SuppressWarnings("unchecked")
     public Set<Dependency> getDependedOnBy(final Artifact artifact) 
@@ -1249,8 +1321,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return ISO9075.encode(right);
     }
 
-    private void createPropertySearch(StringBuilder qstr, String right, 
-                                      String property, Operator operator, 
+    private void createPropertySearch(StringBuilder qstr, String property, 
+                                      String right, Operator operator, 
                                       boolean not, boolean appendBrackets) {
         if (appendBrackets) {
             qstr.append("[");

@@ -4,16 +4,52 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.ArtifactCollectionPolicyException;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyInfo;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class PolicyManagerTest extends AbstractGalaxyTest {
+
+    public void testPolicyEnablementFailureOnWorkspace() throws Exception {
+        AlwaysFailArtifactPolicy failPolicy = new AlwaysFailArtifactPolicy();
+        policyManager.addPolicy(failPolicy);
+        
+        // try lifecycle policies
+        Lifecycle lifecycle = lifecycleManager.getDefaultLifecycle();
+        
+        Artifact artifact = importHelloWsdl();
+        Workspace workspace = artifact.getWorkspace();
+
+        try {
+            policyManager.setActivePolicies(workspace, lifecycle, failPolicy);
+            fail("Expected policy failure.");
+        } catch (ArtifactCollectionPolicyException e) {
+            Map<Artifact, List<ApprovalMessage>> policyFailures = e.getPolicyFailures();
+            
+            assertEquals(1, policyFailures.size());
+            // deactivate
+            policyManager.setActivePolicies(workspace, lifecycle);
+        }
+
+        try {
+            policyManager.setActivePolicies(lifecycle, failPolicy);
+            fail("Expected policy failure.");
+        } catch (ArtifactCollectionPolicyException e) {
+            Map<Artifact, List<ApprovalMessage>> policyFailures = e.getPolicyFailures();
+            
+            assertEquals(1, policyFailures.size());
+            // deactivate
+            policyManager.setActivePolicies(lifecycle);
+        }
+    }
     
     public void testPM() throws Exception {
         Collection<ArtifactPolicy> policies = policyManager.getPolicies();

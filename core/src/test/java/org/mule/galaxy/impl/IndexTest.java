@@ -1,22 +1,26 @@
 package org.mule.galaxy.impl;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Index;
 import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.activation.MimeTypeParseException;
 import javax.xml.namespace.QName;
 
 public class IndexTest extends AbstractGalaxyTest {
@@ -29,20 +33,7 @@ public class IndexTest extends AbstractGalaxyTest {
     }
     
     public void testXmlSchema() throws Exception {
-        InputStream xsd = getResourceAsStream("/schema/test.xsd");
-        
-        Collection<Workspace> workspaces = registry.getWorkspaces();
-        assertEquals(1, workspaces.size());
-        Workspace workspace = workspaces.iterator().next();
-        
-        ArtifactResult ar = registry.createArtifact(workspace, 
-                                                    "application/xml", 
-                                                    "test.xsd", 
-                                                    "0.1", 
-                                                    xsd, 
-                                                    getAdmin());
-        
-        Artifact a = ar.getArtifact();
+        Artifact a = importXmlSchema();
         
         assertEquals("http://www.example.org/test/", 
                      a.getProperty("xmlschema.targetNamespace"));

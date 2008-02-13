@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
@@ -35,17 +36,23 @@ public interface PolicyManager {
     Collection<ArtifactPolicy> getActivePolicies(Workspace w, Lifecycle p);
     
     
-    void setActivePolicies(Workspace w, Collection<Phase> phases, ArtifactPolicy... policies);
+    void setActivePolicies(Workspace w, Collection<Phase> phases, ArtifactPolicy... policies)
+        throws ArtifactCollectionPolicyException, RegistryException;
     
-    void setActivePolicies(Artifact a, Collection<Phase> phases, ArtifactPolicy... policies);
+    void setActivePolicies(Artifact a, Collection<Phase> phases, ArtifactPolicy... policies)
+        throws ArtifactPolicyException;
+    
+    void setActivePolicies(Collection<Phase> phases, ArtifactPolicy... policies)
+        throws ArtifactCollectionPolicyException, RegistryException;
+    
+    void setActivePolicies(Workspace w, Lifecycle lifecycle, ArtifactPolicy... policies) 
+        throws ArtifactCollectionPolicyException, RegistryException;
+    
+    void setActivePolicies(Artifact a, Lifecycle lifecycle, ArtifactPolicy... policies)
+        throws ArtifactPolicyException;
 
-    void setActivePolicies(Collection<Phase> phases, ArtifactPolicy... policies);
-    
-    void setActivePolicies(Workspace w, Lifecycle lifecycle, ArtifactPolicy... policies);
-    
-    void setActivePolicies(Artifact a, Lifecycle lifecycle, ArtifactPolicy... policies);
-
-    void setActivePolicies(Lifecycle lifecycle, ArtifactPolicy... policies);
+    void setActivePolicies(Lifecycle lifecycle, ArtifactPolicy... policies) 
+        throws ArtifactCollectionPolicyException, RegistryException;
     
 
     ArtifactPolicy getPolicy(String id);
