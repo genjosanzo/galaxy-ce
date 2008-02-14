@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -47,7 +48,7 @@ public class ArtifactForm extends AbstractTitledComposite {
         this.registryPanel = registryPanel;
         this.artifactId = artifactId;
         form = new FormPanel();
-        form.setAction("/artifactUpload");
+        form.setAction(GWT.getModuleBaseURL() + "../artifactUpload");
         form.setEncoding(FormPanel.ENCODING_MULTIPART);
         form.setMethod(FormPanel.METHOD_POST);
 
