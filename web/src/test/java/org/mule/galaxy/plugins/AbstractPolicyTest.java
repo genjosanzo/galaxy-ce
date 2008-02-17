@@ -18,7 +18,7 @@ import org.mule.galaxy.test.AbstractGalaxyTest;
 import java.io.InputStream;
 import java.util.Collection;
 
-public class AbstractPolicyTest extends AbstractGalaxyTest
+public abstract class AbstractPolicyTest extends AbstractGalaxyTest
 {
     public void doPolicyTest(InputStream stream, String policyId, boolean fail) throws Exception
     {
