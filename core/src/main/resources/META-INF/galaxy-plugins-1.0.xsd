@@ -89,7 +89,7 @@
 
     <xs:complexType name="indexesType">
         <xs:sequence>
-            <xs:element type="xs:string" name="notes" minOccurs="0" maxOccurs="1"/>
+            <!--<xs:element type="xs:string" name="notes" minOccurs="0" maxOccurs="1"/>-->
             <xs:element type="indexType" name="index" maxOccurs="unbounded" minOccurs="1"/>
         </xs:sequence>
     </xs:complexType>
@@ -108,14 +108,14 @@
 
     <xs:complexType name="policiesType">
         <xs:sequence minOccurs="1" maxOccurs="unbounded">
-            <xs:element type="xs:string" name="notes" minOccurs="0" maxOccurs="1"/>
+            <!--<xs:element type="xs:string" name="notes" minOccurs="0" maxOccurs="1"/>-->
             <xs:element type="policyType" name="policy"/>
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="viewsType">
         <xs:sequence minOccurs="1" maxOccurs="unbounded">
-            <xs:element type="xs:string" name="notes" minOccurs="0" maxOccurs="1"/>
+            <!--<xs:element type="xs:string" name="notes" minOccurs="0" maxOccurs="1"/>-->
             <xs:element type="viewType" name="view"/>
         </xs:sequence>
     </xs:complexType>
