@@ -109,7 +109,11 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         Collection<ArtifactPolicy> policies = getActivePolicies(next.getParent());
         List<ApprovalMessage> approvals = new ArrayList<ApprovalMessage>();
         for (ArtifactPolicy p : policies) {
-            approvals.addAll(p.isApproved(next.getParent(), previous, next));
+            Collection list = p.isApproved(next.getParent(), previous, next);
+            if(list!=null)
+            {
+                approvals.addAll(list);
+            }
         }
         return approvals;
     }

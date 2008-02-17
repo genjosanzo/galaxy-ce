@@ -9,7 +9,6 @@
  */
 package org.mule.galaxy.impl.artifact;
 
-import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.Index;
 import org.mule.galaxy.impl.view.CustomArtifactTypeView;
@@ -18,14 +17,14 @@ import org.mule.galaxy.plugins.config.jaxb.ColumnType;
 import org.mule.galaxy.plugins.config.jaxb.GalaxyPluginType;
 import org.mule.galaxy.plugins.config.jaxb.IndexType;
 import org.mule.galaxy.plugins.config.jaxb.NamespaceType;
+import org.mule.galaxy.plugins.config.jaxb.PolicyType;
 import org.mule.galaxy.plugins.config.jaxb.ViewType;
+import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.util.TemplateParser;
 import org.mule.galaxy.view.Column;
-import org.mule.galaxy.view.ColumnEvaluator;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -34,12 +33,14 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.ClassLoaderUtils;
 import org.springframework.util.ClassUtils;
 
 /**
  * TODO
  */
-public class ConfigurableArtifactPlugin extends AbstractArtifactPlugin {
+public class ConfigurableArtifactPlugin extends AbstractArtifactPlugin
+{
     /**
      * logger used by this class
      */
@@ -51,26 +52,31 @@ public class ConfigurableArtifactPlugin extends AbstractArtifactPlugin {
     private List<QName> pluginQNames;
     private TemplateParser parser = TemplateParser.createAntStyleParser();
 
-    public ConfigurableArtifactPlugin(GalaxyPluginType pluginXml) {
+    public ConfigurableArtifactPlugin(GalaxyPluginType pluginXml)
+    {
         this.pluginXml = pluginXml;
     }
 
-    public void setPolicyManager(PolicyManager policyManager) {
+    public void setPolicyManager(PolicyManager policyManager)
+    {
         this.policyManager = policyManager;
     }
 
-    public void initializeOnce() throws Exception {
+    public void initializeOnce() throws Exception
+    {
         // Is there is no namespace we can assume that this is just a
         // placeholder pluging for a generic
         // type of artifact
-        if (pluginXml.getNamespace().size() == 0) {
+        if (pluginXml.getNamespace().size() == 0)
+        {
             artifactTypeDao.save(new ArtifactType(pluginXml.getName(), pluginXml.getContentType()));
             return;
         }
 
         pluginQNames = new ArrayList<QName>(pluginXml.getNamespace().size());
         int i = 0;
-        for (Iterator<NamespaceType> iterator = pluginXml.getNamespace().iterator(); iterator.hasNext(); i++) {
+        for (Iterator<NamespaceType> iterator = pluginXml.getNamespace().iterator(); iterator.hasNext(); i++)
+        {
             NamespaceType ns = iterator.next();
             pluginQNames.add(getQName(ns));
         }
@@ -80,7 +86,8 @@ public class ConfigurableArtifactPlugin extends AbstractArtifactPlugin {
         Properties props = new Properties(System.getProperties());
         String prefix = "";
         i = 2;
-        for (Iterator<QName> iterator = pluginQNames.iterator(); iterator.hasNext(); i++) {
+        for (Iterator<QName> iterator = pluginQNames.iterator(); iterator.hasNext(); i++)
+        {
             QName qName = iterator.next();
             props.setProperty("namespace.uri" + prefix, qName.getNamespaceURI());
             props.setProperty("namespace.local-name" + prefix, qName.getLocalPart());
@@ -88,77 +95,110 @@ public class ConfigurableArtifactPlugin extends AbstractArtifactPlugin {
             prefix = "." + i;
         }
 
-        if (pluginXml.getIndexes() == null) {
-            return;
+        if (pluginXml.getIndexes() != null)
+        {
+            List<IndexType> indexes = pluginXml.getIndexes().getIndex();
+            for (Iterator<IndexType> iterator = indexes.iterator(); iterator.hasNext();)
+            {
+                IndexType indexType = iterator.next();
+                Index idx = new Index(indexType.getFieldName(), indexType.getDisplayName(), Index.Language
+                        .valueOf(indexType.getLanguage().toString()), ClassUtils.resolveClassName(indexType
+                        .getSearchInputType(), getClass().getClassLoader()), // search
+                        // input
+                        // type
+                        parser.parse(props, indexType.getExpression()), getQName(indexType
+                        .getNamespace()));
+
+                indexManager.save(idx, true);
+
+                if (logger.isDebugEnabled())
+                {
+                    logger.debug("Created index: " + idx);
+                }
+            }
         }
-        List<IndexType> indexes = pluginXml.getIndexes().getIndex();
-        for (Iterator<IndexType> iterator = indexes.iterator(); iterator.hasNext();) {
-            IndexType indexType = iterator.next();
-            Index idx = new Index(indexType.getFieldName(), indexType.getDisplayName(), Index.Language
-                .valueOf(indexType.getLanguage().toString()), ClassUtils.resolveClassName(indexType
-                .getSearchInputType(), getClass().getClassLoader()), // search
-                                                                        // input
-                                                                        // type
-                                  parser.parse(props, indexType.getExpression()), getQName(indexType
-                                      .getNamespace()));
 
-            indexManager.save(idx, true);
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Created index: " + idx);
+        if (pluginXml.getPolicies() != null)
+        {
+            List<PolicyType> indexes = pluginXml.getPolicies().getPolicy();
+            for (Iterator<PolicyType> iterator = indexes.iterator(); iterator.hasNext();)
+            {
+                PolicyType policyType = iterator.next();
+                Class clazz =ClassUtils.forName(policyType.getClazz());
+                ArtifactPolicy policy = (ArtifactPolicy)clazz.newInstance();
+                policy.setRegistry(registry);
+                policyManager.addPolicy(policy);
             }
         }
     }
 
-    protected QName getQName(NamespaceType namespaceType) {
-        if (namespaceType == null) {
-            if (pluginQNames.size() == 1) {
+    protected QName getQName(NamespaceType namespaceType)
+    {
+        if (namespaceType == null)
+        {
+            if (pluginQNames.size() == 1)
+            {
                 return pluginQNames.get(0);
-            } else if (pluginQNames.size() == 0) {
+            }
+            else if (pluginQNames.size() == 0)
+            {
                 throw new IllegalArgumentException("No plugin namespace set");
-            } else {
+            }
+            else
+            {
                 throw new IllegalArgumentException(
-                                                   "There is more than one Namesapce associated with this plugin, you cannot inherit the namespace.");
+                        "There is more than one Namesapce associated with this plugin, you cannot inherit the namespace.");
             }
         }
 
-        if (namespaceType.getUri() != null) {
+        if (namespaceType.getUri() != null)
+        {
             return new QName(namespaceType.getUri(), namespaceType.getLocalName());
-        } else {
+        }
+        else
+        {
             return new QName(namespaceType.getLocalName());
         }
     }
 
-    public void initializeEverytime() throws Exception {
-        if (pluginXml.getViews() == null || pluginQNames == null) {
+    public void initializeEverytime() throws Exception
+    {
+        if (pluginXml.getViews() == null || pluginQNames == null)
+        {
             return;
         }
 
         List<ViewType> views = pluginXml.getViews().getView();
 
-        for (Iterator<ViewType> iterator = views.iterator(); iterator.hasNext();) {
+        for (Iterator<ViewType> iterator = views.iterator(); iterator.hasNext();)
+        {
             ViewType viewType = iterator.next();
             CustomArtifactTypeView view = new CustomArtifactTypeView();
 
             List<ColumnType> columns = viewType.getColumn();
-            for (Iterator<ColumnType> columnTypeIterator = columns.iterator(); columnTypeIterator.hasNext();) {
+            for (Iterator<ColumnType> columnTypeIterator = columns.iterator(); columnTypeIterator.hasNext();)
+            {
                 final ColumnType column = columnTypeIterator.next();
                 // Create a custom view
 
                 Integer colNumber = column.getColumn();
                 Column c = new Column(column.getName(), column.isSummary(), column.isDetail(),
-                                      new MvelColumn(column.getExpression()));
+                        new MvelColumn(column.getExpression()));
 
-                if (colNumber == null) {
+                if (colNumber == null)
+                {
                     view.getColumns().add(c);
-                } else {
+                }
+                else
+                {
                     view.getColumns().add(colNumber.intValue(), c);
                 }
             }
 
-            if (pluginQNames.size() == 0) {
+            if (pluginQNames.size() == 0)
+            {
                 throw new IllegalArgumentException(
-                                                   "Unabled to select Namespace for view, there is either none or more than one namespace set on the plugin");
+                        "Unabled to select Namespace for view, there is either none or more than one namespace set on the plugin");
             }
             viewManager.addView(view, pluginQNames);
 

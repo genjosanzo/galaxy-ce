@@ -105,8 +105,6 @@ public class ArtifactPluginManagerImpl implements ArtifactPluginManager, Applica
 
         JcrUtil.doInTransaction(jcrTemplate.getSessionFactory(), new JcrCallback()
         {
-            JAXBContext jc = JAXBContext.newInstance("org.mule.galaxy.plugins.config.jaxb");
-
             public Object doInJcr(Session session) throws IOException, RepositoryException
             {
                 try

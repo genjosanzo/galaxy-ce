@@ -213,6 +213,7 @@
   <bean id="artfactPluginManager" class="org.mule.galaxy.impl.artifact.ArtifactPluginManagerImpl"
          parent="abstractArtifactPlugin" init-method="initialize">
     <property name="jcrTemplate" ref="jcrTemplate"/>
+    <property name="policyManager" ref="policyManager"/>
   </bean>
 
   <bean class="org.mule.galaxy.impl.artifact.OtherArtifactPlugin" parent="abstractArtifactPlugin"/>
