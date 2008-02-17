@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<galaxy-plugins xmlns="http://www.mulesource.org/schema/galaxy-plugin"
+<galaxy-plugins xmlns="http://www.mulesource.org/schema/galaxy-plugins"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.mulesource.org/schema/galaxy-plugin http://www.mulesource.org/schema/galaxy-plugin/galaxy-plugin-1.0.xsd">
+       xsi:schemaLocation="http://www.mulesource.org/schema/galaxy-plugins http://www.mulesource.org/schema/galaxy-plugin/galaxy-plugins-1.0.xsd">
 
     <galaxy-plugin>
         <name>Mule 1 Configurations</name>
@@ -131,13 +131,28 @@ declare variable $document external;
                 </column>
             </view>
         </views>
-        <!--<policies>-->
-            <!--<policy>-->
-                <!--<name>Require SSL</name>-->
-                <!--<class>org.mule.galaxy.policy.mule.RequireSSLPolicy</class>-->
-                <!--<description>Enforces the use of ssl on http and tcp endpoints</description>-->
-            <!--</policy>-->
-        <!--</policies>-->
+        <policies>
+            <policy>
+                <name>Require SSL</name>
+                <class>org.mule.galaxy.mule1.policy.RequireSSLPolicy</class>
+                <description>Enforces the use of ssl on http and tcp endpoints</description>
+            </policy>
+            <policy>
+                <name>Require JMX</name>
+                <class>org.mule.galaxy.mule1.policy.RequireJMXPolicy</class>
+                <description>Enforces that JMX is configured.</description>
+            </policy>
+            <policy>
+                <name>Require JMX</name>
+                <class>org.mule.galaxy.mule1.policy.RequireNoClientRemotingPolicy</class>
+                <description>Requires that Client Remote Dispatcher support is not enabled.</description>
+            </policy>
+            <policy>
+                <name>Require Global Endpoints</name>
+                <class>org.mule.galaxy.mule1.policy.RequireGlobalEndpointsPolicy</class>
+                <description>Requires all All Endpoints are defined as top level Endpoints.</description>
+            </policy>
+        </policies>
     </galaxy-plugin>
 
 </galaxy-plugins>

@@ -1,5 +1,5 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
-                xmlns:g="http://www.mulesource.org/schema/galaxy-plugin">
+                xmlns:g="http://www.mulesource.org/schema/galaxy-plugins">
     <xsl:output method="html" version="1.0" encoding="UTF-8" indent="yes" omit-xml-declaration="yes"/>
 
     <xsl:template match="g:galaxy-plugins">

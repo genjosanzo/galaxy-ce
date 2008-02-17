@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<galaxy-plugins xmlns="http://www.mulesource.org/schema/galaxy-plugin"
+<galaxy-plugins xmlns="http://www.mulesource.org/schema/galaxy-plugins"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="
-       http://www.mulesource.org/schema/galaxy-plugin http://www.mulesource.org/schema/galaxy-plugin/galaxy-plugin-1.0.xsd">
+       http://www.mulesource.org/schema/galaxy-plugins http://www.mulesource.org/schema/galaxy-plugin/galaxy-plugins-1.0.xsd">
     <galaxy-plugin>
         <name>WS-Policy Documents</name>
         <description>Allows WSDL-Policy Documents to be managed by Galaxy.</description>
