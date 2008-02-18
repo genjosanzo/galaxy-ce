@@ -20,14 +20,6 @@
     </property>
   </bean>
 
-  <bean id="lifecycleManager" 
-        class="org.mule.galaxy.impl.lifecycle.LifecycleManagerImpl" 
-        init-method="initialize">
-    <property name="phaseLogEntryDao" ref="phaseLogEntryDao"/>
-    <property name="policyManager" ref="policyManager"/>
-    <property name="jcrTemplate" ref="jcrTemplate"/>
-  </bean>
-
   <bean class="org.mule.galaxy.policy.wsdl.BackwardCompatibilityPolicy"/>
   <bean class="org.mule.galaxy.policy.wsdl.ForwardCompatibilityPolicy"/>
   <bean class="org.mule.galaxy.policy.wsdl.BasicProfilePolicy"/>
@@ -36,6 +28,19 @@
     <!-- normal factory beans params -->
     <property name="configuration" value="classpath:/META-INF/jackrabbit-repo.xml"/>
     <property name="homeDir" value="file:./jackrabbit"/>
+  </bean>
+
+  <bean id="lifecycleManager" parent="txProxyTemplate">
+    <property name="target" ref="lifecycleManagerTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="lifecycleManagerTarget" 
+        class="org.mule.galaxy.impl.lifecycle.LifecycleManagerImpl" 
+        init-method="initialize">
+    <property name="phaseLogEntryDao" ref="phaseLogEntryDao"/>
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="persisterManager" ref="persisterManager" />
   </bean>
         
   <bean id="indexManager" parent="txProxyTemplate">
@@ -154,14 +159,10 @@
     <property name="persisters">
       <map>
         <entry key="org.mule.galaxy.lifecycle.Phase">
-          <bean class="org.mule.galaxy.impl.lifecycle.PhasePersister">
-            <constructor-arg ref="lifecycleManager"/>
-          </bean>
+          <bean class="org.mule.galaxy.impl.lifecycle.PhasePersister"/>
         </entry>
         <entry key="org.mule.galaxy.Artifact">
-          <bean class="org.mule.galaxy.impl.jcr.ArtifactPersister">
-            <constructor-arg ref="registry"/>
-          </bean>
+          <bean class="org.mule.galaxy.impl.jcr.ArtifactPersister"/>
         </entry>
         <entry key="java.util.Map">
           <bean class="org.mule.galaxy.impl.jcr.onm.MapPersister"/>

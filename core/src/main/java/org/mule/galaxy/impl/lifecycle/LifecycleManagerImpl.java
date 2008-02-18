@@ -1,23 +1,27 @@
 package org.mule.galaxy.impl.lifecycle;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import javax.jcr.ItemExistsException;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.Value;
+import javax.jcr.ValueFormatException;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.version.VersionException;
 
 import org.mule.galaxy.ActivityManager;
 import org.mule.galaxy.Artifact;
@@ -27,6 +31,8 @@ import org.mule.galaxy.Dao;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.ActivityManager.EventType;
 import org.mule.galaxy.impl.jcr.JcrArtifact;
+import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
@@ -36,34 +42,32 @@ import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.security.User;
-import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.LogUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springmodules.jcr.JcrCallback;
-import org.springmodules.jcr.JcrTemplate;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
-public class LifecycleManagerImpl implements LifecycleManager, ApplicationContextAware {
+public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle> 
+    implements LifecycleManager, ApplicationContextAware {
 
+    private static final String NEXT_PHASES = "nextPhases";
     private static final String DEFAULT_LIFECYCLE = "Default";
     private static final Logger LOGGER = LogUtils.getL7dLogger(LifecycleManagerImpl.class);
 
-    private List<String> lifecycleDocuments = new ArrayList<String>();
-    private Map<String,Lifecycle> lifecycles = new ConcurrentHashMap<String, Lifecycle>();
     private List<ArtifactPolicy> phaseApprovalListeners = new ArrayList<ArtifactPolicy>();
     private Dao<PhaseLogEntry> entryDao;
     private PolicyManager policyManager;
-    private JcrTemplate jcrTemplate;
     private ApplicationContext context;
     private ActivityManager activityManager;
     
+    public LifecycleManagerImpl() throws Exception {
+        super(Lifecycle.class, "lifecycles", false);
+    }
+
     public Lifecycle getDefaultLifecycle() {
-        return lifecycles.get(DEFAULT_LIFECYCLE);
+        return getLifecycle(DEFAULT_LIFECYCLE);
     }
 
     public Lifecycle getLifecycle(Workspace workspace) {
@@ -71,95 +75,34 @@ public class LifecycleManagerImpl implements LifecycleManager, ApplicationContex
     }
 
     public Collection<Lifecycle> getLifecycles() {
-        return Collections.unmodifiableCollection(lifecycles.values());
+        return listAll();
     }
 
-    public void initialize() throws Exception {
-        Enumeration<URL> lifecycleUrls = getClass().getClassLoader().getResources("META-INF/galaxy-lifecycles.xml");
-
-        while(lifecycleUrls.hasMoreElements()) {
-            URL url = lifecycleUrls.nextElement();
-            
-            LOGGER.info("Loading lifecycles from " + url.toString());
-            
-            Map<String, Lifecycle> ls = buildLifecycle(url.openStream());
-            lifecycles.putAll(ls);
-        }
-    }
-
-    private Map<String, Lifecycle> buildLifecycle(InputStream is) throws Exception {
-        Document doc = DOMUtils.readXml(is);
-        Element root = doc.getDocumentElement();
+    @Override
+    protected void doCreateInitialNodes(Session session, javax.jcr.Node objects) throws RepositoryException {
+        if (objects.getNodes().getSize() > 0)
+            return;
         
-        Map<String, Lifecycle> lifecycles = new HashMap<String, Lifecycle>(); 
-        Element lifecycleEl = (Element) DOMUtils.getChild(root, "lifecycle");
-        while (lifecycleEl != null) {
-            String name = lifecycleEl.getAttribute("name");
-            
-            Lifecycle l = new Lifecycle();
-            l.setName(name);
-            lifecycles.put(name, l);
-            
-            HashMap<String, Phase> phases = new HashMap<String, Phase>();
-            l.setPhases(phases);
-            
-            Element phaseEl = (Element) DOMUtils.getChild(lifecycleEl, "phase");
-            while (phaseEl != null) {
-                String phaseName = phaseEl.getAttribute("name");
-                Phase phase = new Phase(l);
-                phase.setName(phaseName);
-                phases.put(phaseName, phase);
-                
-                phaseEl = (Element) DOMUtils.getNext(phaseEl);
-            }
-            
-            // second pass to link phases
-            phaseEl = (Element) DOMUtils.getChild(lifecycleEl, "phase");
-            while (phaseEl != null) {
-                String phaseName = phaseEl.getAttribute("name");
-                String nextPhasesStr = phaseEl.getAttribute("nextPhases");
-                Phase p = phases.get(phaseName);
-                
-                if (nextPhasesStr != null && !"".equals(nextPhasesStr)) {
-                    StringTokenizer st = new StringTokenizer(nextPhasesStr, ",");
-                    while (st.hasMoreTokens()) {
-                        String nextPhaseName = st.nextToken().trim();
-                        Phase nextPhase = phases.get(nextPhaseName);
-                        
-                        if (nextPhase == null) {
-                            throw new Exception("Phase " + nextPhaseName + 
-                                                " is not a valid transition in phase " +
-                                                nextPhase + " in lifecycle " + name);
-                        }
-                        
-                        p.getNextPhases().add(nextPhase);
-                    }
-                }
-                phaseEl = (Element) DOMUtils.getNext(phaseEl);
-            }
-            
-            // Set up initial phases
-            String initialPhase = lifecycleEl.getAttribute("initialPhase");
-            if (initialPhase == null || "".equals(initialPhase)) {
-                throw new Exception("Lifecycle " + name + " must have at least one initial phase!");
-            }
-
-            Phase p = phases.get(initialPhase);
-            if (p == null) {
-                throw new Exception("Initial phase " + name + " isn't a valid phase!");
-            }
-            l.setInitialPhase(p);
-            
-            
-            lifecycleEl = (Element) DOMUtils.getNext(lifecycleEl, "lifecycle", Node.ELEMENT_NODE);
-        }
-        return lifecycles;
+        Node lNode = JcrUtil.getOrCreate(objects, "Default");
+        
+        Node created = addPhaseNode(lNode, "Created", new String[] { "Developed" });
+        created.setProperty("initial", true);
+        
+        addPhaseNode(lNode, "Developed", new String[] { "Tested" });
+        addPhaseNode(lNode, "Tested", new String[] { "Staged", "Deployed", "Retired" });
+        addPhaseNode(lNode, "Staged", new String[] { "Deployed", "Retired" });
+        addPhaseNode(lNode, "Deployed", new String[] { "Retired" });
+        addPhaseNode(lNode, "Retired", new String[0]);
     }
 
-    public Lifecycle getLifecycle(String lifecycleName) {
-        return lifecycles.get(lifecycleName);
+    private Node addPhaseNode(Node lNode, String name, String[] nextPhases) throws ItemExistsException,
+        PathNotFoundException, VersionException, ConstraintViolationException, LockException,
+        RepositoryException, ValueFormatException {
+        Node pNode = lNode.addNode(name);
+        pNode.setProperty(NEXT_PHASES, nextPhases);
+        return pNode;
     }
-
+    
     public boolean isTransitionAllowed(Artifact a, Phase p2) {
         Phase p = a.getPhase();
         Lifecycle l = p2.getLifecycle();
@@ -188,7 +131,7 @@ public class LifecycleManagerImpl implements LifecycleManager, ApplicationContex
                 ArtifactVersion previous = latest.getPrevious();
                 
                 boolean approved = true;
-                List<ApprovalMessage> approvals = policyManager.approve(previous, latest);
+                List<ApprovalMessage> approvals = getPolicyManager().approve(previous, latest);
                 for (ApprovalMessage app : approvals) {
                     if (!app.isWarning()) {
                         approved = false;
@@ -221,13 +164,18 @@ public class LifecycleManagerImpl implements LifecycleManager, ApplicationContex
             }
             
         });
-        
-        
+    }
+
+    protected PolicyManager getPolicyManager() {
+        if (policyManager == null) {
+            policyManager = (PolicyManager) context.getBean("policyManager");
+        }
+        return policyManager;
     }
 
     private void executeWithPolicyException(JcrCallback jcrCallback) throws ArtifactPolicyException {
         try {
-            jcrTemplate.execute(jcrCallback);
+            execute(jcrCallback);
         } catch (RuntimeException e) {
             if (e.getCause() instanceof ArtifactPolicyException) {
                 throw (ArtifactPolicyException) e.getCause();
@@ -235,15 +183,7 @@ public class LifecycleManagerImpl implements LifecycleManager, ApplicationContex
             throw e;
         }
     }
-
-    public List<String> getLifecycleDocuments() {
-        return lifecycleDocuments;
-    }
-
-    public void setLifecycleDocuments(List<String> lifecycleDocuments) {
-        this.lifecycleDocuments = lifecycleDocuments;
-    }
-
+    
     public List<ArtifactPolicy> getPhaseApprovalListeners() {
         return phaseApprovalListeners;
     }
@@ -260,16 +200,87 @@ public class LifecycleManagerImpl implements LifecycleManager, ApplicationContex
         return activityManager;
     }
 
+    public Lifecycle getLifecycle(final String lifecycleName) {
+        return (Lifecycle) execute(new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node node = JcrUtil.getOrCreate(getObjectsNode(session), lifecycleName);
+                
+                if (node == null) {
+                    return null;
+                }
+                
+                return build(node, session);
+            }
+            
+        });
+    }
+
+    @Override
+    public Lifecycle build(Node node, Session session) throws RepositoryException {
+        Lifecycle l = new Lifecycle();
+        l.setName(node.getName());
+        l.setPhases(new HashMap<String,Phase>());
+        
+        for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
+            Node phaseNode = nodes.nextNode();
+            
+            Phase phase = new Phase(l);
+            phase.setName(phaseNode.getName());
+            
+            l.getPhases().put(phase.getName(), phase);
+        }
+        
+        for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
+            Node phaseNode = nodes.nextNode();
+            
+            Phase phase = l.getPhase(phaseNode.getName());
+            
+            HashSet<Phase> nextPhases = new HashSet<Phase>();
+            try {
+                Property property = phaseNode.getProperty(NEXT_PHASES);
+                
+                for (Value v : property.getValues()) {
+                    Phase next = l.getPhase(v.getString());
+                    nextPhases.add(next);
+                }
+                
+                phase.setNextPhases(nextPhases);
+            } catch (PathNotFoundException e) {
+                
+            }
+            
+            try {
+                Property property = phaseNode.getProperty("initial");
+                
+                if (property.getValue().getBoolean()) {
+                    l.setInitialPhase(phase);
+                }
+            } catch (PathNotFoundException e) {
+            }
+        }
+        
+        return l;
+    }
+
+    @Override
+    protected void persist(Lifecycle l, javax.jcr.Node node, Session session) throws Exception {
+        Node lNode = JcrUtil.getOrCreate(node, l.getName());
+        
+        for (Phase p : l.getPhases().values()) {
+           Node pNode = JcrUtil.getOrCreate(lNode, p.getName());
+           
+           ArrayList<String> nextPhases = new ArrayList<String>();
+           for (Phase nextPhase : p.getNextPhases()) {
+               nextPhases.add(nextPhase.getName());
+           }
+           
+           pNode.setProperty(NEXT_PHASES, nextPhases.toArray(new String[nextPhases.size()]));
+        }
+    }
+
     public void setPhaseLogEntryDao(Dao<PhaseLogEntry> entryDao) {
         this.entryDao = entryDao;
-    }
-
-    public void setPolicyManager(PolicyManager policyManager) {
-        this.policyManager = policyManager;
-    }
-
-    public void setJcrTemplate(JcrTemplate jcrTemplate) {
-        this.jcrTemplate = jcrTemplate;
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
