@@ -7,16 +7,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.galaxy.config;
+package org.mule.galaxy.mule2.config;
 
 import org.mule.api.MuleContext;
 import org.mule.api.config.ConfigurationException;
 import org.mule.config.ConfigResource;
 import org.mule.config.builders.AbstractConfigurationBuilder;
 import org.mule.config.spring.SpringXmlConfigurationBuilder;
+import org.mule.galaxy.config.ConfigurationSupport;
+import org.mule.galaxy.config.Resource;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -79,7 +80,7 @@ public class GalaxyConfigurationBuilder extends AbstractConfigurationBuilder
         if(properties==null) properties = new Properties();
          try
         {
-            ConfigurationSupport configSupport = new ConfigurationSupport();
+            org.mule.galaxy.config.ConfigurationSupport configSupport = new ConfigurationSupport();
             Resource[] is = configSupport.getArtifacts(url, properties);
 
             ConfigResource[] resources = new ConfigResource[is.length];
