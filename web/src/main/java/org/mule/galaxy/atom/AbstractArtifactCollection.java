@@ -157,7 +157,7 @@ public abstract class AbstractArtifactCollection
         return entry.getParent().getContentType().toString();
     }
 
-    public String getAuthor() {
+    public String getAuthor(RequestContext request) {
         return "Mule Galaxy";
     }
 

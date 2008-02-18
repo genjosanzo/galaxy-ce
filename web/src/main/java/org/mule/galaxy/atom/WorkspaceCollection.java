@@ -137,7 +137,7 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
     }
 
     @Override
-    public String getAuthor() throws ResponseContextException {
+    public String getAuthor(RequestContext request) throws ResponseContextException {
         return "Mule Galaxy";
     }
 

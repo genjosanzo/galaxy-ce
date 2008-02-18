@@ -44,7 +44,7 @@ public class CommentCollectionProvider extends AbstractEntityCollectionAdapter<C
     }
 
     @Override
-    public String getAuthor() throws ResponseContextException {
+    public String getAuthor(RequestContext request) throws ResponseContextException {
         return "Mule Galaxy";
     }
 
