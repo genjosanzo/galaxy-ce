@@ -7,7 +7,7 @@
         <artifactId>galaxy-mule1-bootstrap-parent</artifactId>
         <version>1.0-beta-2-SNAPSHOT</version>
     </parent>
-    <artifactId>galaxy-mule1w-bootstrap-distribution</artifactId>
+    <artifactId>galaxy-mule1-bootstrap-distribution</artifactId>
     <packaging>pom</packaging>
     <name>Mule Distribution for Galaxy Bootstrap</name>
 
