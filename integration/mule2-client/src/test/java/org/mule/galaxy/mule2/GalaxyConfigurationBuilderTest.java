@@ -3,9 +3,8 @@ package org.mule.galaxy.mule2;
 
 import org.mule.api.MuleContext;
 import org.mule.api.model.Model;
-
 import org.mule.context.DefaultMuleContextFactory;
-import org.mule.galaxy.config.GalaxyConfigurationBuilder;
+import org.mule.galaxy.mule2.config.GalaxyConfigurationBuilder;
 import org.mule.galaxy.test.AbstractAtomTest;
 import org.mule.util.IOUtils;
 
