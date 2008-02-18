@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.mule.galaxy</groupId>
-        <artifactId>galaxy-mule-bootstrap-parent</artifactId>
+        <artifactId>galaxy-mule1-bootstrap-parent</artifactId>
         <version>1.0-beta-2-SNAPSHOT</version>
     </parent>
-    <artifactId>galaxy-mule-bootstrap-distribution</artifactId>
+    <artifactId>galaxy-mule1w-bootstrap-distribution</artifactId>
     <packaging>pom</packaging>
     <name>Mule Distribution for Galaxy Bootstrap</name>
 
@@ -85,13 +85,13 @@
     <dependencies>
         <dependency>
             <groupId>org.mule.galaxy</groupId>
-            <artifactId>galaxy-bootstrap-module</artifactId>
+            <artifactId>galaxy-mule1-bootstrap-support</artifactId>
             <version>${version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.mule.galaxy</groupId>
-            <artifactId>galaxy-launcher</artifactId>
+            <artifactId>galaxy-mule1-bootstrap-launcher</artifactId>
             <version>${version}</version>
         </dependency>
 

@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.mule.galaxy</groupId>
-        <artifactId>galaxy-mule-bootstrap-parent</artifactId>
+        <artifactId>galaxy-mule1-bootstrap-parent</artifactId>
         <version>1.0-beta-2-SNAPSHOT</version>
     </parent>
-    <artifactId>galaxy-bootstrap-module</artifactId>
+    <artifactId>galaxy-mule1-bootstrap-support</artifactId>
     <packaging>jar</packaging>
     <name>Galaxy Bootstrap Module for Mule</name>
 
@@ -70,25 +70,9 @@
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.abdera</groupId>
-            <artifactId>abdera-client</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.abdera</groupId>
-            <artifactId>abdera-protocol</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.abdera</groupId>
-            <artifactId>abdera-core</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.mule.galaxy</groupId>
-            <artifactId>galaxy-launcher</artifactId>
+            <artifactId>galaxy-mule1-bootstrap-launcher</artifactId>
             <version>${version}</version>
         </dependency>
 

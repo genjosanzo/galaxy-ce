@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.mule.galaxy</groupId>
-        <artifactId>galaxy-mule-bootstrap-parent</artifactId>
+        <artifactId>galaxy-mule1-bootstrap-parent</artifactId>
         <version>1.0-beta-2-SNAPSHOT</version>
     </parent>
-    <artifactId>galaxy-launcher</artifactId>
+    <artifactId>galaxy-mule1-bootstrap-launcher</artifactId>
     <packaging>jar</packaging>
     <name>Galaxy Launchpad for Mule</name>
 
@@ -16,7 +16,6 @@
             <groupId>tanukisoft</groupId>
             <artifactId>wrapper</artifactId>
         </dependency>
-
     </dependencies>
 
 </project>
