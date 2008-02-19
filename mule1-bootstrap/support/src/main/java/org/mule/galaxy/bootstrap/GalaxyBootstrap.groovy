@@ -143,6 +143,8 @@ Fetching artifacts from Galaxy...
             urls << compService.take().get()
         }
 
+        response.releaseConnection()
+
         urls
     }
 
