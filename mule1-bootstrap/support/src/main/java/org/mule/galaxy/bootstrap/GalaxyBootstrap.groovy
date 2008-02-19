@@ -71,6 +71,8 @@ Workspace: $workspace
 Proc Units: $numUnits
 Debug: $debug
 ${'=' * 78}
+
+Fetching artifacts from Galaxy...
 """
 
         g = new Galaxy(//httpScheme: httpScheme,

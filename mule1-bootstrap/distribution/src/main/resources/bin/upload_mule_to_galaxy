@@ -2,5 +2,28 @@
 
 MULE_BOOTSTRAP_HOME=`pwd`/..
 
-set cp=.:$MULE_BOOTSTRAP_HOME/conf:$MULE_BOOTSTRAP_HOME/lib/opt/groovy-all-1.5.4.jar:$MULE_BOOTSTRAP_HOME/lib/boot/commons-cli-1.0.jar
-java -Dmule.bootstrap.home=$MULE_BOOTSTRAP_HOME -Dmule.home=$MULE_HOME -cp "$cp" org.codehaus.groovy.tools.GroovyStarter --main PopulateGalaxy --conf $MULE_BOOTSTRAP_HOME/bin/galaxy_launcher.conf $@
+cygwin=false;
+case "`uname`" in
+  CYGWIN*) cygwin=true ;;
+esac
+
+if $cygwin ; then
+  export MULE_BOOTSTRAP_HOME=`cygpath --windows "$MULE_BOOTSTRAP_HOME"`
+  export GALAXY_LIB=${MULE_BOOTSTRAP_HOME}lib\\galaxy
+  export MULE_HOME=`cygpath --windows "$MULE_HOME"`
+  export CP=".;$MULE_BOOTSTRAP_HOME\\conf;$MULE_BOOTSTRAP_HOME\\lib\\opt\\groovy-all-1.5.4.jar;$MULE_BOOTSTRAP_HOME\\lib\\boot\\commons-cli-1.0.jar"
+  export CONF="${MULE_BOOTSTRAP_HOME}bin\\galaxy_launcher.conf"
+else
+  export CP=.:$MULE_BOOTSTRAP_HOME/conf:$MULE_BOOTSTRAP_HOME/lib/opt/groovy-all-1.5.4.jar:$MULE_BOOTSTRAP_HOME/lib/boot/commons-cli-1.0.jar
+  export CONF="$MULE_BOOTSTRAP_HOME/bin/galaxy_launcher.conf"
+  export GALAXY_LIB=${MULE_BOOTSTRAP_HOME}/lib/galaxy
+fi
+
+java -Dmule.bootstrap.home="$MULE_BOOTSTRAP_HOME" \
+  -Dgalaxy.lib="$GALAXY_LIB" \
+  -Dmule.home="$MULE_HOME" \
+  -classpath "$CP" \
+  org.codehaus.groovy.tools.GroovyStarter \
+  --main PopulateGalaxy \
+  --conf "$CONF" \
+  $@
