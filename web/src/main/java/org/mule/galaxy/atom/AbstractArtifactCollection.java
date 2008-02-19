@@ -173,7 +173,7 @@ public abstract class AbstractArtifactCollection
         return sb;
     }
     public Date getUpdated(ArtifactVersion doc) {
-        return doc.getCreated().getTime();
+        return doc.getUpdated().getTime();
     }
 
     @Override

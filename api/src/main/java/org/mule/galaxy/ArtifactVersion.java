@@ -14,6 +14,8 @@ public interface ArtifactVersion {
     
     Calendar getCreated();
     
+    Calendar getUpdated();
+    
     /**
      * Get the version label - i.e. "1.0".
      * @return

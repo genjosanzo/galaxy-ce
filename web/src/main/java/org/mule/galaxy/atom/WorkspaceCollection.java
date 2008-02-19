@@ -105,8 +105,7 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
 
     @Override
     public Date getUpdated(Workspace entry) throws ResponseContextException {
-        // TODO: We should keep track of the date
-        return new Date();
+        return entry.getUpdated().getTime();
     }
 
     @Override

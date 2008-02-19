@@ -18,6 +18,7 @@ import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Dependency;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.security.User;
+import org.mule.galaxy.util.DateUtil;
 
 public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     public static final String CREATED = "created";
@@ -50,6 +51,8 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
             } else {
                 JcrUtil.setProperty(JcrVersion.LATEST, Boolean.TRUE, node);
             }
+            
+            update();
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
@@ -62,6 +65,7 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     public void setActive(boolean active) {
         try {
             JcrUtil.setProperty(ACTIVE, active, node);
+            update();
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
@@ -92,10 +96,15 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
 
     public void setVersionLabel(String vname) {
         setNodeProperty(LABEL, vname);
+        update();
     }
 
     public Calendar getCreated() {
-        return getDateOrNull(CREATED);
+        return getCalendarOrNull(CREATED);
+    }
+    
+    public Calendar getUpdated() {
+        return getCalendarOrNull(UPDATED);
     }
 
     public InputStream getStream() {

@@ -2,6 +2,7 @@ package org.mule.galaxy.impl.jcr;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -17,6 +18,7 @@ import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.ActivityManager.EventType;
 import org.mule.galaxy.util.BundleUtils;
+import org.mule.galaxy.util.DateUtil;
 import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.UserUtils;
 
@@ -26,6 +28,8 @@ public class AbstractJcrObject {
     public static final String PROPERTIES = "properties";
     public static final String LOCKED = ".locked";
     public static final String VISIBLE = ".visible";
+    public static final String UPDATED = "updated";
+    
     protected Node node;
     private JcrRegistryImpl registry;
 
@@ -42,14 +46,21 @@ public class AbstractJcrObject {
         this.node = node;
     }
 
+    public Calendar getUpdated() {
+        return getCalendarOrNull(UPDATED);
+    }
+
     protected String getStringOrNull(String propName) {
         return JcrUtil.getStringOrNull(node, propName);
     }
     
-    protected Calendar getDateOrNull(String propName) {
+    protected Date getDateOrNull(String propName) {
         return JcrUtil.getDateOrNull(node, propName);
     }
     
+    protected Calendar getCalendarOrNull(String propName) {
+        return JcrUtil.getCalendarOrNull(node, propName);
+    }
     protected Value getValueOrNull(String propName) throws PathNotFoundException, RepositoryException {
         return JcrUtil.getValueOrNull(node, propName);
     }
@@ -78,6 +89,7 @@ public class AbstractJcrObject {
             
             registry.getActivityManager().logActivity(UserUtils.getCurrentUser(), "Property " + name + " was set to: " + value, 
                                         EventType.INFO);
+            update();
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
@@ -105,7 +117,7 @@ public class AbstractJcrObject {
             }
             
             p.setValue(values.toArray(new Value[values.size()]));
-            
+            update();
         } catch (PathNotFoundException e) {
             return;
         }
@@ -203,6 +215,7 @@ public class AbstractJcrObject {
     public void setLocked(String name, boolean locked) {
         try {
             node.setProperty(name + LOCKED, locked);
+            update();
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
@@ -211,10 +224,18 @@ public class AbstractJcrObject {
     public void setVisible(String name, boolean visible) {
         try {
             node.setProperty(name + VISIBLE, visible);
+            update();
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
     }
 
+    protected void update() {
+        try {
+            node.setProperty(UPDATED, DateUtil.getCalendarForNow());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
     
 }

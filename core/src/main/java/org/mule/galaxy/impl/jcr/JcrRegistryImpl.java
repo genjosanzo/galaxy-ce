@@ -67,6 +67,7 @@ import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.query.Restriction.Operator;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
+import org.mule.galaxy.util.DateUtil;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.util.Message;
 import org.springframework.dao.DataAccessException;
@@ -162,7 +163,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
                 JcrWorkspace workspace = new JcrWorkspace(node);
                 workspace.setName(escapedName);
-
+                
+                Calendar now = DateUtil.getCalendarForNow();
+                node.setProperty(JcrWorkspace.CREATED, now);
+                node.setProperty(JcrWorkspace.UPDATED, now);
+                
                 session.save();
                 
                 return workspace;
@@ -186,32 +191,34 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         executeWithNotFound(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 
+                JcrWorkspace jw = (JcrWorkspace) w;
+                Node node = jw.getNode();
+                node.setProperty(JcrWorkspace.NAME, newName);
+                jw.update();
                 
-                    Node node = ((JcrWorkspace) w).getNode();
-                    node.setProperty(JcrWorkspace.NAME, newName);
-                    Node parentNode = null;
-                    if (parentId != null) {
-                        try {
-                            parentNode = getNodeByUUID(parentId);
-                        } catch (DataAccessException e) {
-                            throw new RuntimeException(new NotFoundException(parentId));
-                        }
-                    } else {
-                        parentNode = node.getParent();
+                Node parentNode = null;
+                if (parentId != null) {
+                    try {
+                        parentNode = getNodeByUUID(parentId);
+                    } catch (DataAccessException e) {
+                        throw new RuntimeException(new NotFoundException(parentId));
                     }
+                } else {
+                    parentNode = node.getParent();
+                }
 
-                    Node checked = parentNode;
-                    while (checked != null && checked.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
-                        if (checked.equals(node)) {
-                            throw new RuntimeException(new RegistryException(new Message("MOVE_ONTO_CHILD", LOGGER)));
-                        }
-                        
-                        checked = checked.getParent();
+                Node checked = parentNode;
+                while (checked != null && checked.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
+                    if (checked.equals(node)) {
+                        throw new RuntimeException(new RegistryException(new Message("MOVE_ONTO_CHILD", LOGGER)));
                     }
-                    session.save();
                     
-                    String dest = parentNode.getPath() + "/" + newName;
-                    session.getWorkspace().move(node.getPath(), dest);
+                    checked = checked.getParent();
+                }
+                session.save();
+                
+                String dest = parentNode.getPath() + "/" + newName;
+                session.getWorkspace().move(node.getPath(), dest);
                 
                 session.save();
                 
@@ -253,6 +260,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 Node node = parentNode.addNode(escapedName, "galaxy:workspace");
                 node.addMixin("mix:referenceable");
     
+                Calendar now = DateUtil.getCalendarForNow();
+                node.setProperty(JcrWorkspace.CREATED, now);
+                node.setProperty(JcrWorkspace.UPDATED, now);
+                
                 JcrWorkspace workspace = new JcrWorkspace(node);
                 workspace.setName(escapedName);
                 workspaces.add(workspace);

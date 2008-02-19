@@ -1,5 +1,6 @@
 package org.mule.galaxy;
 
+import java.util.Calendar;
 import java.util.Collection;
 
 public interface Workspace {
@@ -16,4 +17,7 @@ public interface Workspace {
 
     String getPath();
 
+    Calendar getCreated();
+    
+    Calendar getUpdated();
 }

@@ -28,7 +28,6 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     public static final String CONTENT_TYPE = "contentType";
     public static final String CREATED = "created";
     public static final String DESCRIPTION = "description";
-    public static final String UPDATED = "updated";
     public static final String NAME = "name";
     public static final String DOCUMENT_TYPE = "documentType";
     public static final String LIFECYCLE = "lifecycle";
@@ -80,11 +79,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     }
 
     public Calendar getCreated() {
-        return getDateOrNull(CREATED);
-    }
-
-    public Calendar getUpdated() {
-        return getDateOrNull(UPDATED);
+        return getCalendarOrNull(CREATED);
     }
 
     public MimeType getContentType() {
@@ -126,6 +121,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     public void setDescription(String desc) {
         try {
             node.setProperty(DESCRIPTION, desc);
+            update();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -142,6 +138,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     public void setName(String name) {
         try {
             node.setProperty(NAME, name);
+            update();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -218,6 +215,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
         try {
             node.setProperty(LIFECYCLE, p.getLifecycle().getName());
             node.setProperty(PHASE, p.getName());
+            update();
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
@@ -250,17 +248,20 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
 
     @Override
     public void setLocked(String name, boolean locked) {
+        update();
         getActiveVersion().setLocked(name, locked);
     }
 
 
     @Override
     public boolean hasProperty(String name) {
-        return  getActiveVersion().hasProperty(name);
+        update();
+        return getActiveVersion().hasProperty(name);
     }
 
     @Override
     public void setVisible(String name, boolean visible) {
+        update();
         getActiveVersion().setVisible(name, visible);
     }
 

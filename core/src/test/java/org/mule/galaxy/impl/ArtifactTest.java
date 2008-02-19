@@ -46,6 +46,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         Workspace child = registry.createWorkspace(newWork, "Child");
         assertEquals("Child", child.getName());
         assertNotNull(child.getId());
+        assertNotNull(child.getUpdated());
         
         assertEquals(1, newWork.getWorkspaces().size());
         
@@ -106,6 +107,9 @@ public class ArtifactTest extends AbstractGalaxyTest {
             }
         }
         
+        Calendar origUpdated = version.getUpdated();
+        assertNotNull(origUpdated);
+        
         assertTrue(testedTNS);
         
         version.setLocked("wsdl.targetNamespace", true);
@@ -113,6 +117,9 @@ public class ArtifactTest extends AbstractGalaxyTest {
         PropertyInfo pi = version.getPropertyInfo("wsdl.targetNamespace");
         assertTrue(pi.isLocked());
         assertFalse(pi.isVisible());
+        
+        Calendar update = version.getUpdated();
+        assertTrue(update.after(origUpdated));
         
         artifact.setProperty("foo", "bar");
         assertEquals("bar", artifact.getProperty("foo"));

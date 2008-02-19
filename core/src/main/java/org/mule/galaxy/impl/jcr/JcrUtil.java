@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -186,8 +187,16 @@ public class JcrUtil {
         
         return false;
     }
+
+    protected static Date getDateOrNull(Node node, String propName) {
+        Calendar c = getCalendarOrNull(node, propName);
+        
+        if (c == null) return null;
+        
+        return c.getTime();
+    }
     
-    public static Calendar getDateOrNull(Node node, String propName) {
+    public static Calendar getCalendarOrNull(Node node, String propName) {
         try {
             Value v = getValueOrNull(node, propName);   
             if (v != null) {

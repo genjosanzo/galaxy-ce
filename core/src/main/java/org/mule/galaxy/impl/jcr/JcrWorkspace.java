@@ -1,6 +1,7 @@
 package org.mule.galaxy.impl.jcr;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -10,10 +11,12 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.util.DateUtil;
 
 public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.Workspace {
 
     public static final String NAME = "name";
+    public static final String CREATED = "updated";
     private List<Workspace> workspaces;
     
     public JcrWorkspace(Node node) throws RepositoryException  {
@@ -71,6 +74,8 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
     }
 
     public void setName(String name) {
+        update();
+        
         try {
             node.setProperty(NAME, name);
         } catch (Exception e) {
@@ -78,6 +83,10 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
         } 
     }
 
+    public Calendar getCreated() {
+        return getCalendarOrNull(CREATED);
+    }
+    
     public Workspace getWorkspace(String name) {
         try {
             NodeIterator nodes = node.getNodes();
