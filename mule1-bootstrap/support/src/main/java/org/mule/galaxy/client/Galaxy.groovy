@@ -106,7 +106,6 @@ class Galaxy {
                 def delete = new DeleteMethod("http://$host:$port$apiUrl/$path")
                 remoteCall(delete, {status, responseStream ->
                     //assert status == 204
-                    System.out << responseStream
                     status
                 })
             },
