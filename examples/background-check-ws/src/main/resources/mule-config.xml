@@ -1,0 +1,12 @@
+<mule-configuration id="myId" version="1.0">
+    <description></description>
+
+    <model name="TestXfire">
+        <mule-descriptor name="backgroundCheckService"
+            implementation="org.mule.galaxy.example.background.BackgroundcheckService">
+            <inbound-router>
+                <endpoint address="http://localhost:9000/background"/>
+            </inbound-router>
+        </mule-descriptor>
+    </model>
+</mule-configuration>

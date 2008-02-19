@@ -96,6 +96,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.mule.galaxy</groupId>
+            <artifactId>galaxy-client-mule1</artifactId>
+            <version>${version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
         </dependency>

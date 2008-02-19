@@ -101,6 +101,7 @@ Assembly descriptor for the full Mule distribution.
             <outputDirectory>lib/galaxy</outputDirectory>
             <includes>
                 <include>org.mule.galaxy:galaxy-mule1-bootstrap-support</include>
+                <include>org.mule.galaxy:galaxy-client-mule1</include>
                 <include>commons-httpclient:commons-httpclient</include>
                 <include>commons-codec:commons-codec</include>
                 <include>org.slf4j:jcl104-over-slf4j</include>
@@ -148,7 +149,7 @@ Assembly descriptor for the full Mule distribution.
             should kick in, since only jars in the endorsed directory are
             explicitly blacklisted by full path.
         -->
-        <dependencySet>
+        <!-- dependencySet>
             <outputDirectory>lib/endorsed</outputDirectory>
             <includes>
                 <include>xml-apis:xml-apis</include>
@@ -156,7 +157,7 @@ Assembly descriptor for the full Mule distribution.
                 <include>xerces:xml-serializer</include>
                 <include>xalan:xalan</include>
             </includes>
-        </dependencySet>
+        </dependencySet -->
 
     </dependencySets>
 </assembly>
