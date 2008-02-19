@@ -87,6 +87,9 @@ Fetching artifacts from Galaxy...
         urls += processWorkspace('mule')
         urls += processWorkspace('opt')
 
+        // add $MULE_HOME/lib/user to pick up properties for now
+        urls += new File(muleHome, 'lib/user').toURI().toURL()
+
         exec.shutdown()
 
         println 'Launching Mule from Galaxy, get set for a hyper-jump...\n'
