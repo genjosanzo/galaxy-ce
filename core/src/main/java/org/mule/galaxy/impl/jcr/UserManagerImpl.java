@@ -126,7 +126,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
 
     protected Node findUser(String username, Session session) throws RepositoryException {
         QueryManager qm = getQueryManager(session);
-        Query q = qm.createQuery("/*/users/user[@enabled='true' and @username='" + username + "']", Query.XPATH);
+        Query q = qm.createQuery("/jcr:root/users/*[@enabled='true' and @username='" + username + "']", Query.XPATH);
         QueryResult qr = q.execute();
         
         NodeIterator nodes = qr.getNodes();
@@ -142,12 +142,13 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node users = getObjectsNode(session);
                 
-                Node node = users.addNode(USER);
+                String id = generateId();
+                Node node = users.addNode(id);
                 node.addMixin("mix:referenceable");
                 node.setProperty(PASSWORD, password);
                 node.setProperty(ENABLED, true);
                 
-                user.setId(node.getUUID());
+                user.setId(id);
                 user.getRoles().add(UserManager.ROLE_USER);
                 
                 Calendar cal = Calendar.getInstance();
@@ -185,7 +186,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         return (List<User>) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 QueryManager qm = getQueryManager(session);
-                Query q = qm.createQuery("/*/users/user[@enabled='true']", Query.XPATH);
+                Query q = qm.createQuery("/jcr:root/users/*[@enabled='true']", Query.XPATH);
                 QueryResult qr = q.execute();
                 
                 ArrayList<User> users = new ArrayList<User>();
@@ -211,7 +212,8 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
 
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
         if (objects.getNodes().getSize() == 0) {
-            Node node = objects.addNode(USER);
+            String id = generateId();
+            Node node = objects.addNode(id);
             node.addMixin("mix:referenceable");
             node.setProperty(PASSWORD, "admin");
             node.setProperty(ENABLED, true);

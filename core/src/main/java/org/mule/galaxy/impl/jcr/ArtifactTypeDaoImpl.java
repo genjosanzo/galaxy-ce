@@ -35,7 +35,7 @@ public class ArtifactTypeDaoImpl extends AbstractReflectionDao<ArtifactType>
 
                 QueryManager qm = getQueryManager(session);
                 StringBuilder query = new StringBuilder();
-                query.append("/*/artifactTypes/artifactType");
+                query.append("/*/artifactTypes/*");
 
                 if (documentType != null) {
                     query.append("[@documentTypes = ")

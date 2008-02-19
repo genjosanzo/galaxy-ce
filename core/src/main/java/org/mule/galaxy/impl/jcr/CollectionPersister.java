@@ -42,11 +42,11 @@ public class CollectionPersister implements FieldPersister {
         }
         
         String parentField = otm.mappedBy();
-        String parentId = n.getUUID();
+        String parentId = n.getName();
         String rootNode = fd.getClassPersister().getPath();
         
         QueryManager qm = session.getWorkspace().getQueryManager();
-        Query q = qm.createQuery("/*/" + rootNode 
+        Query q = qm.createQuery("/jcr:root/" + rootNode 
                                  + "/*[@" + parentField + "='" + parentId + "']", Query.XPATH);
         
         QueryResult result = q.execute();

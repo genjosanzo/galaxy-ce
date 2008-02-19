@@ -5,8 +5,8 @@ import static org.mule.galaxy.impl.jcr.JcrUtil.getOrCreate;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -16,13 +16,11 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
+import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.impl.jcr.JcrUtil;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springmodules.jcr.JcrCallback;
-import org.springmodules.jcr.SessionFactory;
-import org.springmodules.jcr.SessionFactoryUtils;
 
 public abstract class AbstractReflectionDao<T extends Identifiable> extends AbstractDao<T> {
 
@@ -30,23 +28,18 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
     private String rootNode;
     private String objectsNodeId;
     private String idNode;
-    private boolean useNodeId;
+    private boolean generateId;
     private String objectNodeName;
     private PersisterManager persisterManager;
     private Class type;
     
-    protected AbstractReflectionDao(Class t, String rootNode, boolean useNodeId) throws Exception {
-        this(t, rootNode, useNodeId, "id");
+    protected AbstractReflectionDao(Class t, String rootNode) throws Exception {
+        this(t, rootNode, false);
     }
     
-    protected AbstractReflectionDao(Class t, String rootNode, String idNode) throws Exception {
-        this(t, rootNode, false, idNode);
-    }
-    
-    private AbstractReflectionDao(Class t, String rootNode, boolean useNodeId, String idNode) throws Exception {
+    protected AbstractReflectionDao(Class t, String rootNode,  boolean generateId) throws Exception {
         this.rootNode = rootNode;
-        this.idNode = idNode;
-        this.useNodeId = useNodeId;
+        this.generateId = generateId;
         this.type = t;
         
         objectNodeName = t.getSimpleName();
@@ -111,8 +104,8 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
     @SuppressWarnings("unchecked")
     public T build(Node node, Session session) throws Exception {
         T t = (T) persister.build(node, session);
-        if (useNodeId) {
-            t.setId(node.getUUID());
+        if (generateId) {
+            t.setId(getId(t, node, session));
         }
         return t;
     }
@@ -160,16 +153,17 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         Node node = null;
         
         if (id == null) {
-            node = getNodeForObject(getObjectsNode(session), t).addNode(getObjectNodeName(t), getNodeType());
+            String genId = generateId();
+            node = getNodeForObject(getObjectsNode(session), t)
+                .addNode(genId, getNodeType());
             node.addMixin("mix:referenceable");
             
-            id = getId(t, node, session);
-            t.setId(id);
+            t.setId(getId(t, node, session));
         } else {
             node = findNode(id, session);
             
             // the user supplied a new ID
-            if (node == null && !useNodeId) {
+            if (node == null && !generateId) {
                 node = getNodeForObject(getObjectsNode(session), t).addNode(getObjectNodeName(t), getNodeType());
                 node.addMixin("mix:referenceable");
             }
@@ -189,6 +183,12 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         }
     }
 
+    protected String generateId() {
+        UUID uuid = UUID.randomUUID();
+        String genId = ISO9075.encode(uuid.toString());
+        return genId;
+    }
+
     protected String getNodeType() {
         return "nt:unstructured";
     }
@@ -205,11 +205,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
     }
 
     protected String getId(T t, Node node, Session session) throws RepositoryException {
-        if (useNodeId) {
-            return node.getUUID();
-        }
-        
-        return null;
+        return node.getName();
     }
 
     protected String getObjectNodeName(T t) {
@@ -217,12 +213,13 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
     }
 
     protected Node findNode(String id, Session session) throws RepositoryException {
-        if (useNodeId) {
-            return getNodeByUUID(id);
-        } 
-        
         QueryManager qm = getQueryManager(session);
-        Query q = qm.createQuery("/*/" + rootNode + "/*[@" + idNode + "='" + id + "']", Query.XPATH);
+        Query q = null;
+        if (generateId) {
+            q = qm.createQuery("/jcr:root/" + rootNode + "/" + ISO9075.encode(id), Query.XPATH);
+        } else {
+            q = qm.createQuery("/jcr:root/" + rootNode + "/*[@" + idNode + "='" + id + "']", Query.XPATH);
+        }
         
         QueryResult qr = q.execute();
         
