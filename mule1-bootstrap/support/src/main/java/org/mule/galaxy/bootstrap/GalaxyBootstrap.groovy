@@ -89,7 +89,7 @@ Fetching artifacts from Galaxy...
 
         exec.shutdown()
 
-        println 'Launching Mule from Galaxy, get set for a hyper-jump...'
+        println 'Launching Mule from Galaxy, get set for a hyper-jump...\n'
 
         urls.toArray(new URL[urls.size()])
     }
