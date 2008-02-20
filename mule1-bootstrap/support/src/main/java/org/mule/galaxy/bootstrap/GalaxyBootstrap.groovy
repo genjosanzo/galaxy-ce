@@ -83,16 +83,38 @@ Fetching artifacts from Galaxy...
                        password: password,
                        debug: debug)
 
-        def urls = processWorkspace('user')
-        urls += processWorkspace('mule')
-        urls += processWorkspace('opt')
-
+        def urls = []
         // add $MULE_HOME/lib/user to pick up properties for now
         urls += new File(muleHome, 'lib/user').toURI().toURL()
 
+        try {
+            /*
+                Use a new collection in case Galaxy goes down during the process.
+                In this case we'll abandon the process immediately and try with a
+                clean classpath from the cache.
+             */
+            def cachedUrls = []
+            cachedUrls += processWorkspace('user')
+            cachedUrls += processWorkspace('mule')
+            cachedUrls += processWorkspace('opt')
+
+            urls += cachedUrls
+        } catch (ConnectException cex) {
+            println "Galaxy server is not available, will try a local cache..."
+            new File(cacheDir, 'lib/user').listFiles().each { file ->
+                urls << file.toURI().toURL()
+            }
+            new File(cacheDir, 'lib/mule').listFiles().each { file ->
+                urls << file.toURI().toURL()
+            }
+            new File(cacheDir, 'lib/opt').listFiles().each { file ->
+                urls << file.toURI().toURL()
+            }
+        }
+
         exec.shutdown()
 
-        println '\nLaunching Mule from Galaxy, get set for a hyper-jump...\n'
+        println '\nLaunching Mule, get set for a hyper-jump...\n'
 
         urls.toArray(new URL[urls.size()])
     }
