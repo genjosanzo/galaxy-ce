@@ -92,7 +92,7 @@ Fetching artifacts from Galaxy...
 
         exec.shutdown()
 
-        println 'Launching Mule from Galaxy, get set for a hyper-jump...\n'
+        println '\nLaunching Mule from Galaxy, get set for a hyper-jump...\n'
 
         urls.toArray(new URL[urls.size()])
     }
@@ -121,11 +121,10 @@ Fetching artifacts from Galaxy...
                 File localJar = new File(dir, jarName)
 
                 if (lastUpdatedVote (localJar, node)) {
-                    if (debug) {
-                        println "Updating a local copy of $jarName"
-                    }
+                    println "Updating a local copy of $jarName"
                     GetMethod content = g.get("$workspace/lib/$name/$jarName")
                     localJar.newOutputStream() << content.responseBodyAsStream
+                    content.releaseConnection()
                 }
 
                 // fix broken URLs for File class before Java 6
@@ -156,13 +155,17 @@ Fetching artifacts from Galaxy...
         }
 
         // not thread-safe, create a local instance
-        // TODO not sure about timezones, but Galaxy always responds with Z at the end and no offset anyway
+        // Galaxy returns update timestamps in GMT
         def iso8601Date = new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:sss")
+        iso8601Date.setTimeZone(TimeZone.getTimeZone('GMT'))
 
-        // TODO http://www.mulesource.org/jira/browse/GALAXY-105 - it's not really the last updated value, but 'created'
         Date galaxyUpdate = iso8601Date.parse (atomEntryNode.updated.text())
 
-        if (debug) { println "Vote lastUpdated for $localFile.name: $vote" }
+        final Date localFileUpdate = new Date(localFile.lastModified())
+        vote = galaxyUpdate.after(localFileUpdate)
+        if (debug) {
+            println "$localFile.name >>$vote<<  galaxyUpdate: $galaxyUpdate || localFile: ${localFileUpdate}"
+        }
 
         return vote
     }
