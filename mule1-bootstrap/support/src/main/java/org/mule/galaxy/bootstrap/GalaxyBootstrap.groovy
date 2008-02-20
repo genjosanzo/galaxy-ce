@@ -162,6 +162,9 @@ Fetching artifacts from Galaxy...
         // TODO http://www.mulesource.org/jira/browse/GALAXY-105 - it's not really the last updated value, but 'created'
         Date galaxyUpdate = iso8601Date.parse (atomEntryNode.updated.text())
 
+        // TODO timezones?
+        vote = galaxyUpdate.after(new Date(localFile.lastModified()))
+
         if (debug) { println "Vote lastUpdated for $localFile.name: $vote" }
 
         return vote
