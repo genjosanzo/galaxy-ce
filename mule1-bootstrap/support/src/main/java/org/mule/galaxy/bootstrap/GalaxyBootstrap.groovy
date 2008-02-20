@@ -57,7 +57,7 @@ class GalaxyBootstrap {
         // Passed in as -Dmule.home
         def muleHome = p.'mule.home'
         // create a local cache dir if needed
-        cacheDir = new File(muleHome, 'lib/cache')
+        cacheDir = new File(muleHome, "lib/cache/$workspace")
         cacheDir.mkdirs()
         assert cacheDir.exists()
 
