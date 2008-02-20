@@ -3,7 +3,7 @@
 
     <model name="TestXfire">
         <mule-descriptor name="backgroundCheckService"
-            implementation="org.mule.galaxy.example.background.BackgroundcheckService">
+            implementation="org.mule.galaxy.example.background.BackgroundCheckService">
             <inbound-router>
                 <endpoint address="http://localhost:9000/background"/>
             </inbound-router>

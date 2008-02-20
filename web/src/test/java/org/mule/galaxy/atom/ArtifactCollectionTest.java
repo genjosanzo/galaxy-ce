@@ -132,7 +132,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         System.out.println("Getting entry " + e.getEditLinkResolvedHref().toString());
         res = client.get(e.getEditLinkResolvedHref().toString(), defaultOpts);
         org.apache.abdera.model.Document<Entry> entryDoc = res.getDocument();
-//        prettyPrint(entryDoc);
+        prettyPrint(entryDoc);
         Entry entry = entryDoc.getRoot();
         
         Collection versionCollection = null;

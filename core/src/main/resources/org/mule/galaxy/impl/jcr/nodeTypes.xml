@@ -12,14 +12,13 @@
     <supertypes>
       <supertype>nt:unstructured</supertype>
     </supertypes>
-    
+    <nodeDefinition name="galaxy:artifact" multiple="false" />     
   </nodeType>
 
   <nodeType name="galaxy:artifact" 
     isMixin="false" 
     hasOrderableChildNodes="false"
-    primaryItemName="" 
-    allowSameNameSiblings="false">
+    primaryItemName="" >
     
     <supertypes>
       <supertype>nt:unstructured</supertype>

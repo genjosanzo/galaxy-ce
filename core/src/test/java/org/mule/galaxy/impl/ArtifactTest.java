@@ -6,6 +6,7 @@ import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.jcr.JcrArtifact;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.test.AbstractGalaxyTest;
@@ -33,6 +34,16 @@ public class ArtifactTest extends AbstractGalaxyTest {
         Set results = registry.search(new Query(Artifact.class).workspaceId(w.getId())).getResults();
         
         assertEquals(1, results.size());
+        
+        a.setName("test.wsdl");
+        
+        Collection<Artifact> artifacts = registry.getArtifacts(w);
+        assertEquals(1, artifacts.size());
+        
+        Artifact a2 = artifacts.iterator().next();
+        assertEquals("test.wsdl", a2.getName());
+        
+        assertEquals("test.wsdl", ((JcrArtifact) a2).getName());
     }
     
     public void testWorkspaces() throws Exception {
@@ -65,6 +76,22 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         child = children.iterator().next();
         assertNotNull(child.getParent());
+    }
+    
+    public void xtestAddDuplicate() throws Exception {
+        InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
+        
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+        
+        registry.createArtifact(workspace, "application/wsdl+xml", "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
+        
+        helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
+        registry.createArtifact(workspace, "application/wsdl+xml", "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
+        
+        Collection<Artifact> artifacts = registry.getArtifacts(workspace);
+        assertEquals(1, artifacts.size());
     }
     
     public void testAddWsdl() throws Exception {

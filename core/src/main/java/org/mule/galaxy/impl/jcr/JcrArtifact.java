@@ -10,6 +10,7 @@ import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.util.QNameUtil;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -22,7 +23,10 @@ import javax.activation.MimeTypeParseException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.xml.namespace.QName;
+
+import org.springmodules.jcr.JcrCallback;
 
 public class JcrArtifact extends AbstractJcrObject implements Artifact {
     public static final String CONTENT_TYPE = "contentType";
@@ -135,9 +139,25 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
         }
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         try {
+            
+            registry.execute(new JcrCallback() {
+
+                public Object doInJcr(Session session) throws IOException, RepositoryException {
+                    // lame-o JCR makes us save before moving. Hopefully there weren't properties
+                    // the user didn't want saved...
+                    session.save();
+                    
+                    String dest = node.getParent().getPath() + "/" + name;
+                    session.getWorkspace().move(node.getPath(), dest);
+                    return null;
+                }
+                
+            });
             node.setProperty(NAME, name);
+            
+            
             update();
         } catch (Exception e) {
             throw new RuntimeException(e);

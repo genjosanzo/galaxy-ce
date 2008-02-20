@@ -35,14 +35,12 @@ import org.apache.jackrabbit.core.nodetype.NodeTypeDef;
 import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
 import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
 import org.apache.jackrabbit.core.nodetype.xml.NodeTypeReader;
-import org.apache.jackrabbit.name.MalformedPathException;
 import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.ActivityManager;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Comment;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
 import org.mule.galaxy.Dao;
@@ -76,7 +74,7 @@ import org.springmodules.jcr.JcrTemplate;
 
 public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistry {
 
-    public static final String ARTIFACT_NODE_NAME = "__artifact";
+    private static final String ARTIFACT_NODE_TYPE = "galaxy:artifact";
     public static final String LATEST = "latest";
     private static final String REPOSITORY_LAYOUT_VERSION = "version";
     private static final String NAMESPACE = "http://galaxy.mule.org";
@@ -139,11 +137,20 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             
             Node wNode = getWorkspacesNode();
             
-            if (!wNode.hasNode(path)) throw new NotFoundException(path);
+            try {
+                // have to have the catch because jackrabbit is lame...
+                if (!wNode.hasNode(path)) throw new NotFoundException(path);
+            } catch (RegistryException e) {
+                throw new NotFoundException(path);
+            }
             
             Node node = wNode.getNode(path);
 
-            return new JcrWorkspace(node);
+            if (node.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
+                return new JcrWorkspace(node);
+            }
+            
+            throw new NotFoundException(path);
         } catch (PathNotFoundException e) {
             throw new NotFoundException(e);
         } catch (RepositoryException e) {
@@ -377,9 +384,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 QueryManager qm = getQueryManager(session);
                 StringBuilder sb = new StringBuilder();
-                sb.append("//")
-                  .append(ARTIFACT_NODE_NAME)
-                  .append("[@name='")
+                sb.append("//element(*, galaxy:artifact)[@name='")
                   .append(name)
                   .append("']");
                 
@@ -441,7 +446,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return (ArtifactResult) executeAndDewrap(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node workspaceNode = ((JcrWorkspace)workspace).getNode();
-                Node artifactNode = workspaceNode.addNode(ARTIFACT_NODE_NAME, "galaxy:artifact");
+                Node artifactNode = workspaceNode.addNode(ISO9075.encode(name), ARTIFACT_NODE_TYPE);
                 artifactNode.addMixin("mix:referenceable");
                 Node versionNode = artifactNode.addNode("version");
                 versionNode.addMixin("mix:referenceable");
@@ -788,8 +793,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 Node aNode = ((JcrArtifact) artifact).getNode();
                 Node wNode = ((JcrWorkspace) workspace).getNode();
-                
-                session.move(aNode.getPath(), wNode.getPath() + "/" + ARTIFACT_NODE_NAME);
+                System.out.println("Moving from " + aNode.getPath() + " to " + wNode.getPath());
+                session.move(aNode.getPath(), wNode.getPath() + "/" + aNode.getName());
                 session.save();
                 return null;
             }
@@ -1056,7 +1061,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     // so we need to traverse the hierarchy to find the right node
                     if (av) {
                         Node artifactNode = node;
-                        if (!artifactNode.getName().equals(ARTIFACT_NODE_NAME)) {
+                        if (!artifactNode.getPrimaryNodeType().getName().equals(ARTIFACT_NODE_TYPE)) {
                             while (!node.getName().equals("version")) {
                                 node = node.getParent();
                             }
@@ -1068,7 +1073,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         setupContentHandler(artifact);
                         artifacts.add(new JcrVersion(artifact, node));
                     } else {
-                        while (!node.getName().equals(ARTIFACT_NODE_NAME)) {
+                        while (!node.getPrimaryNodeType().getName().equals(ARTIFACT_NODE_TYPE)) {
                             node = node.getParent();
                         }
                         JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(node.getParent()), node,
@@ -1095,8 +1100,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         if (query.getWorkspaceId() != null) {
             qstr.append("//*[@jcr:uuid='")
                 .append(query.getWorkspaceId())
-                .append("'][@jcr:primaryType=\"galaxy:workspace\"]/")
-                .append(ARTIFACT_NODE_NAME);
+                .append("'][@jcr:primaryType=\"galaxy:workspace\"]/element(*, galaxy:artifact)");
         } else if (query.getWorkspacePath() != null) {
             String path = query.getWorkspacePath();
 
@@ -1110,11 +1114,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             
             qstr.append("//")
             .append(ISO9075.encode(path))
-            .append("[@jcr:primaryType=\"galaxy:workspace\"]/")
-            .append(ARTIFACT_NODE_NAME);
+            .append("[@jcr:primaryType=\"galaxy:workspace\"]/element(*, galaxy:artifact)");
         } else {
-            qstr.append("//")
-                .append(ARTIFACT_NODE_NAME);
+            qstr.append("//element(*, galaxy:artifact)");
         }
         
         StringBuilder propStr = new StringBuilder();
@@ -1193,8 +1195,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         
         // No search criteria
         if (qstr.length() == 0) {
-            qstr.append("//")
-                .append(ARTIFACT_NODE_NAME);
+            qstr.append("//element(*, galaxy:artifact)");
         } else {
             if (!first) propStr.append("]");
             
@@ -1260,9 +1261,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 QueryManager qm = getQueryManager(session);
                 
                 StringBuilder qstr = new StringBuilder();
-                qstr.append("//")
-                    .append(ARTIFACT_NODE_NAME)
-                    .append("/version/")
+                qstr.append("//element(*, galaxy:artifact)/version/")
                     .append(JcrVersion.DEPENDENCIES)
                     .append("/")
                     .append(ISO9075.encode(artifact.getId()))
@@ -1396,6 +1395,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         // Get the NodeTypeManager from the Workspace.
         // Note that it must be cast from the generic JCR NodeTypeManager to the
         // Jackrabbit-specific implementation.
+
         NodeTypeManagerImpl ntmgr = (NodeTypeManagerImpl)workspace.getNodeTypeManager();
 
         // Acquire the NodeTypeRegistry

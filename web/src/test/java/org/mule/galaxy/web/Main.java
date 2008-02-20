@@ -15,15 +15,15 @@ public class Main {
         
         Server server = new Server();    
         Connector connector = new SelectChannelConnector();
-        connector.setPort(9002);
+        connector.setPort(8080);
         connector.setHost("0.0.0.0");
         server.addConnector(connector);
 
         
         WebAppContext wac = new WebAppContext();
         wac.setContextPath("/");
-//        wac.setWar("./target/galaxy-web-1.0-M1-SNAPSHOT");
-        wac.setWar("./src/main/webapp");
+        wac.setWar("./target/galaxy-web-1.0-beta-2-SNAPSHOT");
+//        wac.setWar("./src/main/webapp");
         
         Map params = new HashMap();
         params.put("useFileMappedBuffer", Boolean.FALSE);
