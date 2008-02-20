@@ -26,7 +26,6 @@ Assembly descriptor for the full Mule distribution.
             <fileMode>644</fileMode>
             <includes>
                 <include>*.txt</include>
-                <include>*.bat</include>
                 <include>*.conf</include>
                 <include>*.groovy</include>
             </includes>
