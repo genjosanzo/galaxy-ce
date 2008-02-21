@@ -22,11 +22,9 @@
     <modules>
         <module>support</module>
         <module>mule1-client</module>
-        <module>mule2-client</module>
         <module>cxf</module>
         <module>spring</module>
         <module>maven/publish-plugin</module>
-        <module>maven/policy-plugin</module>
         <module>distribution</module>
     </modules>
 
