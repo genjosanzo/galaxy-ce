@@ -1,14 +1,13 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.mule.galaxy</groupId>
         <artifactId>galaxy-parent</artifactId>
-        <version>1.0-beta-2-SNAPSHOT</version>
+        <version>1.0-beta-2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-server-mule2</artifactId>
-    <version>1.0-beta-2-SNAPSHOT</version>
+    <version>1.0-beta-2</version>
     <packaging>jar</packaging>
     <name>Galaxy Server Mule 2 Support</name>
 
@@ -17,20 +16,20 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-core</artifactId>
-            <version>1.0-beta-2-SNAPSHOT</version>
+            <version>1.0-beta-2</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-api</artifactId>
-            <version>1.0-beta-2-SNAPSHOT</version>
+            <version>1.0-beta-2</version>
         </dependency>
 
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-testutils</artifactId>
-            <version>1.0-beta-2-SNAPSHOT</version>
+            <version>1.0-beta-2</version>
             <scope>test</scope>
         </dependency>
 
