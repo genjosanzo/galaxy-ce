@@ -19,7 +19,7 @@
     </dependency>
     <dependency>
       <groupId>org.mule.galaxy</groupId>
-      <artifactId>galaxy-integration-mule1</artifactId>
+      <artifactId>galaxy-client-mule1</artifactId>
       <version>1.0-beta-2-SNAPSHOT</version>
     </dependency>
     <!-- dependency>
