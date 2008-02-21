@@ -19,4 +19,6 @@ public interface UserService extends RemoteService {
     
     void updateUser(WUser user, String password, String confirm) 
         throws PasswordChangeException, ItemNotFoundException;
+    
+    void deleteUser(String userId);
 }

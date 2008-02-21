@@ -38,6 +38,7 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.ItemExistsException;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
@@ -195,6 +196,8 @@ public abstract class AbstractArtifactCollection
             ArtifactResult result = postMediaEntry(slug, mimeType, version, inputStream, user, request);
             
             return result.getArtifactVersion();
+        } catch (ItemExistsException e) {
+            throw newErrorMessage("Duplicate artifact.", "An artifact with that name already exists in this workspace.", 409);
         } catch (RegistryException e) {
             throw new ResponseContextException(500, e);
         } catch (IOException e) {
@@ -399,12 +402,17 @@ public abstract class AbstractArtifactCollection
     }
 
     protected void throwMalformed(final String message) throws ResponseContextException {
+        throw newErrorMessage("Malformed Atom Entry", message, 400);
+    }
+
+    protected ResponseContextException newErrorMessage(final String title,
+                                   final String message, int status) throws ResponseContextException {
         SimpleResponseContext rc = new SimpleResponseContext() {
 
             @Override
             protected void writeEntity(Writer writer) throws IOException {
                 writer.write("<html><head><title>)");
-                writer.write("Malformed Atom Entry");
+                writer.write(title);
                 writer.write("</title></head><body><div class=\"error\">");
                 writer.write(message);
                 writer.write("</div></body></html>");
@@ -415,9 +423,9 @@ public abstract class AbstractArtifactCollection
             }
         };
         
-        rc.setStatus(400);
+        rc.setStatus(status);
         
-        throw new ResponseContextException(rc);
+        return new ResponseContextException(rc);
     }
 
     private void updateMetadata(ArtifactVersion av, Element e) throws ResponseContextException {

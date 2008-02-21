@@ -1,14 +1,18 @@
 package org.mule.galaxy.web.client.admin;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
 import org.mule.galaxy.web.rpc.UserServiceAsync;
@@ -27,6 +31,7 @@ public class UserForm extends AbstractComposite {
     private TextBox usernameTB;
     private CheckBox adminCB;
     private FlowPanel panel;
+    private Button delete;
 
     public UserForm(AdministrationPanel adminPanel, WUser u) {
         this (adminPanel, u, false);
@@ -94,7 +99,6 @@ public class UserForm extends AbstractComposite {
         table.setWidget(5, 1, adminCB);
         
         save = new Button("Save");
-        table.setWidget(6, 1, save);
         save.addClickListener(new ClickListener() {
 
             public void onClick(Widget sender) {
@@ -102,6 +106,34 @@ public class UserForm extends AbstractComposite {
             }
             
         });
+        
+        if (add || user.getUsername().equals("admin")) {
+            table.setWidget(6, 1, save);
+        } else {
+            InlineFlowPanel buttons = new InlineFlowPanel();
+            buttons.add(save);
+            
+            final DeleteDialog popup = new DeleteDialog(this);
+            
+            delete = new Button("Delete");
+            delete.addClickListener(new ClickListener() {
+
+                public void onClick(Widget sender) {
+                    popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+                        public void setPosition(int offsetWidth, int offsetHeight) {
+                            int left = (Window.getClientWidth() - offsetWidth) / 3;
+                            int top = (Window.getClientHeight() - offsetHeight) / 3;
+                            popup.setPopupPosition(left, top);
+                        }
+                    });
+                }
+                
+            });
+            buttons.add(delete);
+            
+            table.setWidget(6, 1, buttons);
+            
+        }
         
         styleHeaderColumn(table);
     }
@@ -135,6 +167,7 @@ public class UserForm extends AbstractComposite {
             update(svc, p, c);
         }
     }
+
 
     private void update(UserServiceAsync svc, String p, String c) {
         svc.updateUser(user, p, c, new AbstractCallback(adminPanel) {
@@ -175,10 +208,62 @@ public class UserForm extends AbstractComposite {
             
         });
     }
+
+    protected void delete() {
+        save.setEnabled(false);
+        save.setText("Deleting...");
+        
+        UserServiceAsync svc = adminPanel.getUserService();
+        
+        svc.deleteUser(user.getId(), new AbstractCallback(adminPanel) {
+
+            public void onFailure(Throwable caught) {
+                if (caught instanceof ItemNotFoundException) {
+                    adminPanel.setMessage("User was not found! " + user.getId());
+                    reenable();
+                } else {
+                    super.onFailure(caught);
+                }
+            }
+
+            public void onSuccess(Object result) {
+                adminPanel.showUsers();
+                adminPanel.setMessage("User " + user.getUsername() + " was deleted.");
+            }
+            
+        });
+    }
     
     private void reenable() {
         save.setEnabled(true);
         save.setText("Save");
     }
+    public static final class DeleteDialog extends DialogBox {
 
+        public DeleteDialog(final UserForm panel) {
+          // Set the dialog box's caption.
+          setText("Are you sure you want to delete this user?");
+
+          InlineFlowPanel buttonPanel = new InlineFlowPanel();
+
+          Button no = new Button("No");
+          no.addClickListener(new ClickListener() {
+            public void onClick(Widget sender) {
+                DeleteDialog.this.hide();
+            }
+          });
+          
+          Button yes = new Button("Yes");
+          yes.addClickListener(new ClickListener() {
+            public void onClick(Widget sender) {
+                DeleteDialog.this.hide();
+                panel.delete();
+            }
+          });
+          buttonPanel.add(no);
+          buttonPanel.add(yes);
+          
+          setWidget(buttonPanel);
+        }
+      }
 }

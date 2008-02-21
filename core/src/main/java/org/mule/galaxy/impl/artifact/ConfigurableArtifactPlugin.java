@@ -117,19 +117,6 @@ public class ConfigurableArtifactPlugin extends AbstractArtifactPlugin
                 }
             }
         }
-
-        if (pluginXml.getPolicies() != null)
-        {
-            List<PolicyType> indexes = pluginXml.getPolicies().getPolicy();
-            for (Iterator<PolicyType> iterator = indexes.iterator(); iterator.hasNext();)
-            {
-                PolicyType policyType = iterator.next();
-                Class clazz =ClassUtils.forName(policyType.getClazz());
-                ArtifactPolicy policy = (ArtifactPolicy)clazz.newInstance();
-                policy.setRegistry(registry);
-                policyManager.addPolicy(policy);
-            }
-        }
     }
 
     protected QName getQName(NamespaceType namespaceType)
@@ -163,6 +150,19 @@ public class ConfigurableArtifactPlugin extends AbstractArtifactPlugin
 
     public void initializeEverytime() throws Exception
     {
+        if (pluginXml.getPolicies() != null)
+        {
+            List<PolicyType> indexes = pluginXml.getPolicies().getPolicy();
+            for (Iterator<PolicyType> pitr = indexes.iterator(); pitr.hasNext();)
+            {
+                PolicyType policyType = pitr.next();
+                Class clazz = ClassUtils.forName(policyType.getClazz());
+                ArtifactPolicy policy = (ArtifactPolicy)clazz.newInstance();
+                policy.setRegistry(registry);
+                policyManager.addPolicy(policy);
+            }
+        }
+        
         if (pluginXml.getViews() == null || pluginQNames == null)
         {
             return;
@@ -201,6 +201,7 @@ public class ConfigurableArtifactPlugin extends AbstractArtifactPlugin
                         "Unabled to select Namespace for view, there is either none or more than one namespace set on the plugin");
             }
             viewManager.addView(view, pluginQNames);
+
 
         }
     }

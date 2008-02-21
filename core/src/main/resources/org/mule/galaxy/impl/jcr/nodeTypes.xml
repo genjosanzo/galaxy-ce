@@ -7,22 +7,19 @@
     isMixin="false" 
     hasOrderableChildNodes="false"
     primaryItemName="" 
-    allowSameNameSiblings="false">
-    
-    <supertypes>
-      <supertype>nt:unstructured</supertype>
-    </supertypes>
-    <nodeDefinition name="galaxy:artifact" multiple="false" />     
+    sameNameSiblings="false">
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
   </nodeType>
 
   <nodeType name="galaxy:artifact" 
     isMixin="false" 
     hasOrderableChildNodes="false"
-    primaryItemName="" >
+    primaryItemName=""
+    sameNameSiblings="false">
     
-    <supertypes>
-      <supertype>nt:unstructured</supertype>
-    </supertypes>
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="true" />
     
   </nodeType>
   
@@ -30,11 +27,10 @@
     isMixin="false" 
     hasOrderableChildNodes="false"
     primaryItemName="" 
-    allowSameNameSiblings="true">
+    sameNameSiblings="false">
     
-    <supertypes>
-      <supertype>nt:unstructured</supertype>
-    </supertypes>
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
     
   </nodeType>
     
@@ -42,11 +38,10 @@
     isMixin="false" 
     hasOrderableChildNodes="false"
     primaryItemName="" 
-    allowSameNameSiblings="false">
+    sameNameSiblings="false">
     
-    <supertypes>
-      <supertype>nt:unstructured</supertype>
-    </supertypes>
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
     
   </nodeType>
 </nodeTypes>
