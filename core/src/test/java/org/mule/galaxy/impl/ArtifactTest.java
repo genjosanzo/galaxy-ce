@@ -4,7 +4,7 @@ package org.mule.galaxy.impl;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ItemExistsException;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrArtifact;
@@ -92,7 +92,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         try {
             registry.createArtifact(workspace, "application/wsdl+xml", "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
             fail("Expected item exists exception");
-        } catch (ItemExistsException e) {
+        } catch (DuplicateItemException e) {
             // great!
         }
         

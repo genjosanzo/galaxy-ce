@@ -93,7 +93,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         org.apache.abdera.model.Document<Feed> feedDoc = res.getDocument();
         Feed feed = feedDoc.getRoot();
-        
+        Thread.sleep(1000);
         List<Entry> entries = feed.getEntries();
         assertEquals(7, entries.size());
         

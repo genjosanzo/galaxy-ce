@@ -5,15 +5,15 @@ import java.util.logging.Logger;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.util.Message;
 
-public class ItemExistsException extends RegistryException {
+public class DuplicateItemException extends RegistryException {
 
-    private static final Logger logger = LogUtils.getL7dLogger(ItemExistsException.class);
+    private static final Logger logger = LogUtils.getL7dLogger(DuplicateItemException.class);
     
-    public ItemExistsException(Object key, Throwable t) {
+    public DuplicateItemException(Object key, Throwable t) {
         super(new Message("ITEM_EXISTS", logger, key), t);
     }
 
-    public ItemExistsException(Object key) {
+    public DuplicateItemException(Object key) {
         super( new Message("ITEM_EXISTS", logger, key) );
     }
 

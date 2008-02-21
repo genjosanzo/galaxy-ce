@@ -38,7 +38,7 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ItemExistsException;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
@@ -196,7 +196,7 @@ public abstract class AbstractArtifactCollection
             ArtifactResult result = postMediaEntry(slug, mimeType, version, inputStream, user, request);
             
             return result.getArtifactVersion();
-        } catch (ItemExistsException e) {
+        } catch (DuplicateItemException e) {
             throw newErrorMessage("Duplicate artifact.", "An artifact with that name already exists in this workspace.", 409);
         } catch (RegistryException e) {
             throw new ResponseContextException(500, e);
@@ -305,7 +305,10 @@ public abstract class AbstractArtifactCollection
 
     @Override
     public String getName(ArtifactVersion doc) {
-        return UrlEncoding.encode(doc.getParent().getName(), Profile.PATH.filter()) + ";atom";
+        return getNameOfArtifact(doc) + ";atom";
+    }
+    public String getNameOfArtifact(ArtifactVersion doc) {
+        return UrlEncoding.encode(doc.getParent().getName(), Profile.PATH.filter());
     }
     
     public ArtifactVersion getEntry(String name, RequestContext request) throws ResponseContextException {

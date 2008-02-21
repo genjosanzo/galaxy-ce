@@ -9,6 +9,20 @@
  */
 package org.mule.galaxy.impl.artifact;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Unmarshaller;
+
 import org.mule.galaxy.ArtifactPlugin;
 import org.mule.galaxy.ArtifactPluginManager;
 import org.mule.galaxy.ArtifactType;
@@ -19,21 +33,8 @@ import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.plugins.config.jaxb.GalaxyPluginType;
 import org.mule.galaxy.plugins.config.jaxb.GalaxyPluginsType;
 import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.view.ViewManager;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Unmarshaller;
-
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -49,6 +50,8 @@ public class ArtifactPluginManagerImpl implements ArtifactPluginManager, Applica
 
     public static final String GALAXY_PLUGIN_DESCRIPTOR = "galaxy-plugins.xml";
 
+    private Logger LOGGER = LogUtils.getL7dLogger(ArtifactPluginManagerImpl.class);
+    
     protected Registry registry;
     protected Dao<ArtifactType> artifactTypeDao;
     protected ViewManager viewManager;
@@ -115,6 +118,7 @@ public class ArtifactPluginManagerImpl implements ArtifactPluginManager, Applica
                     while (e.hasMoreElements())
                     {
                         URL url = (URL) e.nextElement();
+                        LOGGER.info("Loading plugins from: " + url.toString());
                         Unmarshaller u = jc.createUnmarshaller();
                         JAXBElement ele = (JAXBElement) u.unmarshal(url.openStream());
 

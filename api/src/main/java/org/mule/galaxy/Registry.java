@@ -24,9 +24,9 @@ public interface Registry {
      */
     String getUUID();
     
-    Workspace createWorkspace(String name) throws ItemExistsException, RegistryException;
+    Workspace createWorkspace(String name) throws DuplicateItemException, RegistryException;
 
-    Workspace createWorkspace(Workspace parent, String name) throws ItemExistsException, RegistryException;
+    Workspace createWorkspace(Workspace parent, String name) throws DuplicateItemException, RegistryException;
     
     void deleteWorkspace(String id) throws RegistryException, NotFoundException;
     
@@ -58,7 +58,7 @@ public interface Registry {
                                   Object data, 
                                   String versionLabel, 
                                   User user) 
-        throws ItemExistsException, RegistryException, ArtifactPolicyException, MimeTypeParseException;
+        throws DuplicateItemException, RegistryException, ArtifactPolicyException, MimeTypeParseException;
     
     ArtifactResult createArtifact(Workspace workspace, 
                                   String contentType, 
@@ -66,7 +66,7 @@ public interface Registry {
                                   String versionLabel, 
                                   InputStream inputStream, 
                                   User user) 
-        throws ItemExistsException, RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException;
+        throws DuplicateItemException, RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException;
     
     /**
      * Create a new ArtifactVersion from a POJOish object.

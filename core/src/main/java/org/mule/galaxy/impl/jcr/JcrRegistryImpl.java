@@ -47,7 +47,7 @@ import org.mule.galaxy.ContentService;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Dependency;
 import org.mule.galaxy.IndexManager;
-import org.mule.galaxy.ItemExistsException;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.Registry;
@@ -170,7 +170,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 try {
                     node = getWorkspacesNode().addNode(escapedName, "galaxy:workspace");
                 } catch (javax.jcr.ItemExistsException e) {
-                    throw new RuntimeException(new ItemExistsException(name));
+                    throw new RuntimeException(new DuplicateItemException(name));
                 }
                 node.addMixin("mix:referenceable");
     
@@ -456,7 +456,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 try {
                     artifactNode = workspaceNode.addNode(ISO9075.encode(name), ARTIFACT_NODE_TYPE);
                 } catch (javax.jcr.ItemExistsException e) {
-                    throw new RuntimeException(new ItemExistsException(name));
+                    throw new RuntimeException(new DuplicateItemException(name));
                 }
                 
                 artifactNode.addMixin("mix:referenceable");
@@ -529,15 +529,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     private Object executeAndDewrap(JcrCallback jcrCallback) 
-        throws RegistryException, ArtifactPolicyException, ItemExistsException {
+        throws RegistryException, ArtifactPolicyException, DuplicateItemException {
         try {
             return execute(jcrCallback);
         } catch (RuntimeException e) {
             Throwable cause = e.getCause();
             if (cause instanceof RegistryException) {
                 throw (RegistryException) cause;
-            } else if (cause instanceof ItemExistsException) {
-                throw (ItemExistsException) cause;
+            } else if (cause instanceof DuplicateItemException) {
+                throw (DuplicateItemException) cause;
             } else if (cause instanceof ArtifactPolicyException) {
                 throw (ArtifactPolicyException) cause;
             } else {
