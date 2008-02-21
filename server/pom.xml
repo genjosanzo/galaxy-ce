@@ -2,12 +2,12 @@
     <parent>
         <groupId>org.mule.galaxy</groupId>
         <artifactId>galaxy-parent</artifactId>
-        <version>1.0-beta-2</version>
+        <version>1.0-beta-3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-server-integration</artifactId>
-    <version>1.0-beta-2</version>
+    <version>1.0-beta-3-SNAPSHOT</version>
     <name>Galaxy Server Integration</name>
     <packaging>pom</packaging>
 
