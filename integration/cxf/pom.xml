@@ -2,44 +2,44 @@
   <parent>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-parent</artifactId>
-    <version>1.0-beta-2-SNAPSHOT</version>
-  </parent>  
+    <version>1.0-beta-3-SNAPSHOT</version>
+  </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-integration-cxf</artifactId>
-  <version>1.0-beta-2-SNAPSHOT</version>
+  <version>1.0-beta-3-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Galaxy CXF Integration</name>
 
   <properties>
     <cxf.version>2.0.3-incubator</cxf.version>
   </properties>
-  
+
   <dependencies>
 
     <dependency>
       <groupId>org.apache.abdera</groupId>
       <artifactId>abdera-client</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring</artifactId>
       <version>2.0.7</version>
       <optional>true</optional>
     </dependency>
-    
+
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-web</artifactId>
-      <version>1.0-beta-2-SNAPSHOT</version>
+      <version>1.0-beta-3-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-testutils</artifactId>
-      <version>1.0-beta-2-SNAPSHOT</version>
+      <version>1.0-beta-3-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     

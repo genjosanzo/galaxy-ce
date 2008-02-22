@@ -2,12 +2,12 @@
   <parent>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-parent</artifactId>
-    <version>1.0-beta-2-SNAPSHOT</version>
-  </parent>  
+    <version>1.0-beta-3-SNAPSHOT</version>
+  </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-gwt-rpc</artifactId>
-  <version>1.0-beta-2-SNAPSHOT</version>
+  <version>1.0-beta-3-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Galaxy GWT RPC Web Client</name>
 
@@ -16,7 +16,7 @@
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-core</artifactId>
-      <version>1.0-beta-2-SNAPSHOT</version>
+      <version>1.0-beta-3-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -30,18 +30,18 @@
       <artifactId>gwt-widgets</artifactId>
       <version>0.1.5</version>
     </dependency>
-    
+
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
       <version>1.4.60</version>
       <scope>provided</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-testutils</artifactId>
-      <version>1.0-beta-2-SNAPSHOT</version>
+      <version>1.0-beta-3-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
 

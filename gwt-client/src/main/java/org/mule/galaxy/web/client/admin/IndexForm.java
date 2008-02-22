@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.client.admin;
 
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -249,7 +250,7 @@ public class IndexForm extends AbstractComposite {
             }
 
             public void onSuccess(Object result) {
-                adminPanel.setMain(new IndexListPanel(adminPanel));;
+                History.newItem("indexes");
                 adminPanel.setMessage("Index " + index.getName() + " was saved.");
             }
             

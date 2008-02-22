@@ -5,13 +5,13 @@
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-beta-2-SNAPSHOT</version>
+    <version>1.0-beta-3-SNAPSHOT</version>
     <name>Galaxy</name>
 
     <properties>
         <slf4jVersion>1.4.3</slf4jVersion>
     </properties>
-    
+
     <licenses>
         <license>
             <name>GPL v2</name>
@@ -187,7 +187,7 @@
                 <artifactId>wrapper</artifactId>
                 <version>3.2.3</version>
             </dependency>
-            
+
         </dependencies>
     </dependencyManagement>
     <dependencies>

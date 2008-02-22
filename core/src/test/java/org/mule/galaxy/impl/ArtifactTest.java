@@ -4,6 +4,7 @@ package org.mule.galaxy.impl;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrArtifact;
@@ -78,7 +79,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertNotNull(child.getParent());
     }
     
-    public void xtestAddDuplicate() throws Exception {
+    public void testAddDuplicate() throws Exception {
         InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
         
         Collection<Workspace> workspaces = registry.getWorkspaces();
@@ -88,7 +89,12 @@ public class ArtifactTest extends AbstractGalaxyTest {
         registry.createArtifact(workspace, "application/wsdl+xml", "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
         
         helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
-        registry.createArtifact(workspace, "application/wsdl+xml", "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
+        try {
+            registry.createArtifact(workspace, "application/wsdl+xml", "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
+            fail("Expected item exists exception");
+        } catch (DuplicateItemException e) {
+            // great!
+        }
         
         Collection<Artifact> artifacts = registry.getArtifacts(workspace);
         assertEquals(1, artifacts.size());

@@ -35,6 +35,7 @@ import org.apache.jackrabbit.core.nodetype.NodeTypeDef;
 import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
 import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
 import org.apache.jackrabbit.core.nodetype.xml.NodeTypeReader;
+import org.apache.jackrabbit.name.QName;
 import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.ActivityManager;
 import org.mule.galaxy.Artifact;
@@ -46,6 +47,7 @@ import org.mule.galaxy.ContentService;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Dependency;
 import org.mule.galaxy.IndexManager;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.Registry;
@@ -158,14 +160,18 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
     
-    public Workspace createWorkspace(String name) throws RegistryException {
+    public Workspace createWorkspace(final String name) throws RegistryException {
         // we should throw an error, but lets be defensive for now
         final String escapedName = JcrUtil.escape(name);
         
-        return (Workspace) execute(new JcrCallback() {
+        return (Workspace) executeWithRegistryException(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                
-                Node node = getWorkspacesNode().addNode(escapedName, "galaxy:workspace");
+                Node node;
+                try {
+                    node = getWorkspacesNode().addNode(escapedName, "galaxy:workspace");
+                } catch (javax.jcr.ItemExistsException e) {
+                    throw new RuntimeException(new DuplicateItemException(name));
+                }
                 node.addMixin("mix:referenceable");
     
                 JcrWorkspace workspace = new JcrWorkspace(node);
@@ -446,7 +452,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return (ArtifactResult) executeAndDewrap(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node workspaceNode = ((JcrWorkspace)workspace).getNode();
-                Node artifactNode = workspaceNode.addNode(ISO9075.encode(name), ARTIFACT_NODE_TYPE);
+                Node artifactNode;
+                try {
+                    artifactNode = workspaceNode.addNode(ISO9075.encode(name), ARTIFACT_NODE_TYPE);
+                } catch (javax.jcr.ItemExistsException e) {
+                    throw new RuntimeException(new DuplicateItemException(name));
+                }
+                
                 artifactNode.addMixin("mix:referenceable");
                 Node versionNode = artifactNode.addNode("version");
                 versionNode.addMixin("mix:referenceable");
@@ -516,14 +528,16 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         });
     }
 
-    private ArtifactResult executeAndDewrap(JcrCallback jcrCallback) 
-        throws RegistryException, ArtifactPolicyException {
+    private Object executeAndDewrap(JcrCallback jcrCallback) 
+        throws RegistryException, ArtifactPolicyException, DuplicateItemException {
         try {
-            return (ArtifactResult) execute(jcrCallback);
+            return execute(jcrCallback);
         } catch (RuntimeException e) {
             Throwable cause = e.getCause();
             if (cause instanceof RegistryException) {
                 throw (RegistryException) cause;
+            } else if (cause instanceof DuplicateItemException) {
+                throw (DuplicateItemException) cause;
             } else if (cause instanceof ArtifactPolicyException) {
                 throw (ArtifactPolicyException) cause;
             } else {
@@ -532,10 +546,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
 
-    private ArtifactResult executeWithNotFound(JcrCallback jcrCallback) 
+    private Object executeWithNotFound(JcrCallback jcrCallback) 
         throws RegistryException, NotFoundException {
         try {
-            return (ArtifactResult) execute(jcrCallback);
+            return execute(jcrCallback);
         } catch (RuntimeException e) {
             Throwable cause = e.getCause();
             if (cause instanceof RegistryException) {
@@ -548,10 +562,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
     
-    private ArtifactResult executeWithRegistryException(JcrCallback jcrCallback) 
+    private Object executeWithRegistryException(JcrCallback jcrCallback) 
         throws RegistryException {
         try {
-            return (ArtifactResult) execute(jcrCallback);
+            return execute(jcrCallback);
         } catch (RuntimeException e) {
             Throwable cause = e.getCause();
             if (cause instanceof RegistryException) {
@@ -562,7 +576,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }    
     
-    private Object executeQuery(JcrCallback jcrCallback) 
+    private Object executeWithQueryException(JcrCallback jcrCallback) 
         throws RegistryException, QueryException {
         try {
             return execute(jcrCallback);
@@ -793,7 +807,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 Node aNode = ((JcrArtifact) artifact).getNode();
                 Node wNode = ((JcrWorkspace) workspace).getNode();
-                System.out.println("Moving from " + aNode.getPath() + " to " + wNode.getPath());
+                
                 session.move(aNode.getPath(), wNode.getPath() + "/" + aNode.getName());
                 session.save();
                 return null;
@@ -1019,7 +1033,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     public SearchResults search(final org.mule.galaxy.query.Query query) 
         throws RegistryException, QueryException {
         final JcrRegistryImpl registry = this;
-        return (SearchResults) executeQuery(new JcrCallback() {
+        return (SearchResults) executeWithQueryException(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                         
                 QueryManager qm = getQueryManager(session);
@@ -1399,7 +1413,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         NodeTypeManagerImpl ntmgr = (NodeTypeManagerImpl)workspace.getNodeTypeManager();
 
         // Acquire the NodeTypeRegistry
-        NodeTypeRegistry ntreg = ntmgr.getNodeTypeRegistry();
+        NodeTypeRegistry ntreg = ntmgr.getNodeTypeRegistry();        
 
         // Loop through the prepared NodeTypeDefs
         for (NodeTypeDef ntd : nodeTypes) {
@@ -1407,7 +1421,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             if (!ntreg.isRegistered(ntd.getName())) {
                 ntreg.registerNodeType(ntd);
             }
+                
+            
         }
+//        ntreg.dump(System.out);
+
         
         Node workspaces = JcrUtil.getOrCreate(root, "workspaces");
         workspacesId = workspaces.getUUID();

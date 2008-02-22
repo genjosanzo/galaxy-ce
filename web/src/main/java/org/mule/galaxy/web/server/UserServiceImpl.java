@@ -91,6 +91,11 @@ public class UserServiceImpl implements UserService {
             throw new ItemNotFoundException();
         }
     }
+    
+
+    public void deleteUser(String userId) {
+        userManager.delete(userId);
+    }
 
     public void setUserManager(UserManager userManager) {
         this.userManager = userManager;

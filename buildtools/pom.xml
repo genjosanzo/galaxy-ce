@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.mule.galaxy</groupId>
         <artifactId>galaxy-parent</artifactId>
-        <version>1.0-beta-2-SNAPSHOT</version>
+        <version>1.0-beta-3-SNAPSHOT</version>
     </parent>
     <artifactId>galaxy-buildtools</artifactId>
     <packaging>jar</packaging>

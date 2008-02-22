@@ -63,7 +63,7 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
     }
 
     private IRI getArtifactLink(RequestContext request, ArtifactVersion entryObj) {
-        return new IRI(getHref(request)).resolve(getName(entryObj));
+        return new IRI(getHref(request)).resolve(getNameOfArtifact(entryObj));
     }
 
     public String getId(RequestContext request) {

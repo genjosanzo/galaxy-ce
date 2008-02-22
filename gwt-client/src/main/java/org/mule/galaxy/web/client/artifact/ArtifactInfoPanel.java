@@ -118,7 +118,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
         InlineFlowPanel descLabelPanel = new InlineFlowPanel();
         descLabelPanel.setStyleName("artifactDescriptionPanel");
         descLabelPanel.add(new Label("Description ["));
-        Hyperlink hl = new Hyperlink("Edit", "");
+        Hyperlink hl = new Hyperlink("Edit", "edit-description-" + info.getId());
         hl.addClickListener(new ClickListener() {
 
             public void onClick(Widget w) {
