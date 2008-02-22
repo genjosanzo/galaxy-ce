@@ -7,7 +7,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-wsdldiff</artifactId>
-  <version>1.0-beta-3-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Galaxy WSDL Diff</name>
 
@@ -27,7 +26,7 @@
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-testutils</artifactId>
-      <version>1.0-beta-3-SNAPSHOT</version>
+      <version>${version}</version>
       <scope>test</scope>
     </dependency>  
     

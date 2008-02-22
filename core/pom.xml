@@ -7,7 +7,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-core</artifactId>
-  <version>1.0-beta-3-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Galaxy Core</name>
 
@@ -137,25 +136,25 @@
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-api</artifactId>
-      <version>1.0-beta-3-SNAPSHOT</version>
+      <version>${version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-wsdldiff</artifactId>
-      <version>1.0-beta-3-SNAPSHOT</version>
+      <version>${version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-wsi</artifactId>
-      <version>1.0-beta-3-SNAPSHOT</version>
+      <version>${version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-testutils</artifactId>
-      <version>1.0-beta-3-SNAPSHOT</version>
+      <version>${version}</version>
       <scope>test</scope>
     </dependency>
 

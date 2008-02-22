@@ -10,7 +10,6 @@
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-mule1-bootstrap-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-beta-3-SNAPSHOT</version>
     <name>Galaxy Mule Bootstrap</name>
 
     <modules>

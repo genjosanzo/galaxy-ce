@@ -9,7 +9,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-maven-policy-plugin</artifactId>
-  <version>1.0-beta-3-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Galaxy Maven Integration</name>
 
@@ -30,14 +29,14 @@
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-web</artifactId>
-      <version>1.0-beta-3-SNAPSHOT</version>
+      <version>${version}</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-testutils</artifactId>
-      <version>1.0-beta-3-SNAPSHOT</version>
+      <version>${version}</version>
       <scope>test</scope>
     </dependency>
 

@@ -8,7 +8,6 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-server-integration</artifactId>
-    <version>1.0-beta-3-SNAPSHOT</version>
     <name>Galaxy Server Integration</name>
     <packaging>pom</packaging>
 
