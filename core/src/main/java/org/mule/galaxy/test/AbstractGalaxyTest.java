@@ -135,7 +135,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
             Session session = repository.login(new SimpleCredentials("username", "password".toCharArray()));
 
             Node node = session.getRootNode();
-//            JcrUtil.dump(node.getNode("workspaces"));
+//            JcrUtil.dump(node.getNode("phaseLogEntries"));
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
                 Node child = itr.nextNode();
                 if (!child.getName().startsWith("jcr:")) {

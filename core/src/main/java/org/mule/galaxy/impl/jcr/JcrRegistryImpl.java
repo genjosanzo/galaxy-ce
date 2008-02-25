@@ -124,7 +124,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             
             Node node = getNodeByUUID(id);
 
-            return new JcrWorkspace(node);
+            return new JcrWorkspace(lifecycleManager, node);
         } catch (RepositoryException e) {
             throw new RegistryException(e);
         }
@@ -149,7 +149,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             Node node = wNode.getNode(path);
 
             if (node.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
-                return new JcrWorkspace(node);
+                return new JcrWorkspace(lifecycleManager, node);
             }
             
             throw new NotFoundException(path);
@@ -174,8 +174,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 }
                 node.addMixin("mix:referenceable");
     
-                JcrWorkspace workspace = new JcrWorkspace(node);
+                JcrWorkspace workspace = new JcrWorkspace(lifecycleManager, node);
                 workspace.setName(escapedName);
+                workspace.setDefaultLifecycle(lifecycleManager.getDefaultLifecycle());
                 
                 Calendar now = DateUtil.getCalendarForNow();
                 node.setProperty(JcrWorkspace.CREATED, now);
@@ -277,10 +278,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 node.setProperty(JcrWorkspace.CREATED, now);
                 node.setProperty(JcrWorkspace.UPDATED, now);
                 
-                JcrWorkspace workspace = new JcrWorkspace(node);
+                JcrWorkspace workspace = new JcrWorkspace(lifecycleManager, node);
                 workspace.setName(escapedName);
+                workspace.setDefaultLifecycle(lifecycleManager.getDefaultLifecycle());
                 workspaces.add(workspace);
-                
+
                 session.save();
                 
                 return workspace;
@@ -328,7 +330,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 Node n = itr.nextNode();
 
                 if (!n.getName().equals("jcr:system")) {
-                    workspaceCol.add(new JcrWorkspace(n));
+                    workspaceCol.add(new JcrWorkspace(lifecycleManager, n));
                 }
                 
                 Collections.sort(workspaceCol, new WorkspaceComparator());
@@ -364,7 +366,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node node = session.getNodeByUUID(id);
                 Node wNode = node.getParent();
-                JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(wNode), 
+                JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(lifecycleManager, wNode), 
                                                        node, registry);
 
                 setupContentHandler(artifact);
@@ -510,7 +512,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     Set<Artifact> dependencies = ch.detectDependencies(loadedData, workspace);
                     jcrVersion.addDependencies(dependencies, false);
                     
-                    Lifecycle lifecycle = lifecycleManager.getLifecycle(workspace);
+                    Lifecycle lifecycle = workspace.getDefaultLifecycle();
                     artifact.setPhase(lifecycle.getInitialPhase());                    
                     
                     List<ArtifactVersion> versions = new ArrayList<ArtifactVersion>();
@@ -1081,7 +1083,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                             }
                             artifactNode = node.getParent(); 
                         }
-                        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(artifactNode.getParent()), 
+                        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(lifecycleManager, artifactNode.getParent()), 
                                                                artifactNode, 
                                                                registry);
                         setupContentHandler(artifact);
@@ -1090,7 +1092,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         while (!node.getPrimaryNodeType().getName().equals(ARTIFACT_NODE_TYPE)) {
                             node = node.getParent();
                         }
-                        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(node.getParent()), node,
+                        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(lifecycleManager, node.getParent()), node,
                                                                registry);
                         setupContentHandler(artifact);
                         artifacts.add(artifact);
@@ -1292,7 +1294,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     
                     final Node node = depNode.getParent().getParent().getParent();
                     
-                    JcrWorkspace workspace = new JcrWorkspace(node.getParent());
+                    JcrWorkspace workspace = new JcrWorkspace(lifecycleManager, node.getParent());
                     final JcrArtifact artDep = new JcrArtifact(workspace, node, registry);
                     
                     Dependency dependency = new JcrDependency(artDep, depNode);
@@ -1439,7 +1441,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                                            "galaxy:workspace");
             node.addMixin("mix:referenceable");
 
-            JcrWorkspace w = new JcrWorkspace(node);
+            JcrWorkspace w = new JcrWorkspace(lifecycleManager, node);
             w.setName(settings.getDefaultWorkspaceName());
 
             System.setProperty("initializeOnce", "true");

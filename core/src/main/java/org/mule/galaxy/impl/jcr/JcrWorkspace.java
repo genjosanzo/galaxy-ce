@@ -11,16 +11,21 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.util.DateUtil;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
 
 public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.Workspace {
 
     public static final String NAME = "name";
     public static final String CREATED = "updated";
+    public static final String LIFECYCLE = "lifecycle";
     private List<Workspace> workspaces;
+    private Lifecycle lifecycle;
+    private final LifecycleManager lifecycleManager;
     
-    public JcrWorkspace(Node node) throws RepositoryException  {
+    public JcrWorkspace(LifecycleManager lifecycleManager, Node node) throws RepositoryException  {
         super(node, null);
+        this.lifecycleManager = lifecycleManager;
     }
 
     public String getId() {
@@ -39,7 +44,7 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
         try {
             Node parent = node.getParent();
             if (parent.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
-                return new JcrWorkspace(parent);
+                return new JcrWorkspace(lifecycleManager, parent);
             } 
             
             return null;
@@ -57,7 +62,7 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
                     Node n = nodes.nextNode();
                     
                     if (n.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
-                        workspaces.add(new JcrWorkspace(n));
+                        workspaces.add(new JcrWorkspace(lifecycleManager, n));
                     }
                 }
                 Collections.sort(workspaces, new WorkspaceComparator());
@@ -96,7 +101,7 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
                     String wname = JcrUtil.getStringOrNull(n, NAME);
                     
                     if (wname != null && wname.equals(name)) {
-                        return new JcrWorkspace(n);
+                        return new JcrWorkspace(lifecycleManager, n);
                     }
                 }
             }
@@ -117,5 +122,37 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
         }
         sb.insert(0, '/');
         return sb.toString();
+    }
+
+    public Lifecycle getDefaultLifecycle() {
+        if (lifecycle == null) {
+            String name = (String) JcrUtil.getProperty("LIFECYCLE", node);
+            
+            if (name == null) {
+                Workspace parent = getParent();
+                if (parent == null) {
+                    return lifecycleManager.getDefaultLifecycle();
+                } else {
+                    return parent.getDefaultLifecycle();
+                }
+            }
+            lifecycle = lifecycleManager.getLifecycle(name);
+        }
+        return lifecycle;
+    }
+
+    public void setDefaultLifecycle(Lifecycle lifecycle) {
+        this.lifecycle = lifecycle;
+        update();
+        
+        try {
+            if (lifecycle == null) {
+                node.setProperty(LIFECYCLE, (String) null);
+            } else {
+                node.setProperty(LIFECYCLE, lifecycle.getName());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } 
     }
 }
