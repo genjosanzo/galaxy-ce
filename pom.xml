@@ -32,7 +32,7 @@
         <module>gwt-client</module>
         <module>integration</module>
         <module>server</module>
-        <module>mule1-bootstrap</module>
+        <module>netboot</module>
     </modules>
 
     <dependencyManagement>
