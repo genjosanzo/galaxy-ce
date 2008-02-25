@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.mule.galaxy.bootstrap;
+package org.mule.galaxy.netboot;
 
 import java.io.File;
 import java.io.FileFilter;

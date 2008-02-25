@@ -2,7 +2,7 @@
 Assembly descriptor for the full Mule distribution.
 -->
 <assembly>
-    <id>mule-galaxy-bootstrap</id>
+    <id>mule1-netboot</id>
     <formats>
         <format>zip</format>
         <!--<format>tar.gz</format>-->
@@ -70,11 +70,11 @@ Assembly descriptor for the full Mule distribution.
          http://jira.codehaus.org/browse/MASSEMBLY-220
     -->
     <dependencySets>
-        <!-- Mule bootstrap -->
+        <!-- Mule NetBoot -->
         <dependencySet>
             <outputDirectory>lib/boot</outputDirectory>
             <includes>
-                <include>org.mule.galaxy:galaxy-mule1-bootstrap-launcher</include>
+                <include>org.mule.galaxy.netboot:mule1-netboot-launcher</include>
                 <include>commons-cli:commons-cli</include>
                 <include>tanukisoft:wrapper</include>
             </includes>
@@ -87,19 +87,11 @@ Assembly descriptor for the full Mule distribution.
             </excludes>
         </dependencySet>
 
-        <!-- Mule bootstrap -->
-        <!--<dependencySet>-->
-            <!--<outputDirectory>lib/mule</outputDirectory>-->
-            <!--<includes>-->
-                <!--<include>org.mule:mule-core</include>-->
-            <!--</includes>-->
-        <!--</dependencySet>-->
-
         <!-- Galaxy Bootstrap -->
         <dependencySet>
             <outputDirectory>lib/galaxy</outputDirectory>
             <includes>
-                <include>org.mule.galaxy:galaxy-mule1-bootstrap-support</include>
+                <include>org.mule.galaxy.netboot:mule1-netboot-support</include>
                 <include>commons-httpclient:commons-httpclient</include>
                 <include>commons-codec:commons-codec</include>
                 <include>org.slf4j:jcl104-over-slf4j</include>

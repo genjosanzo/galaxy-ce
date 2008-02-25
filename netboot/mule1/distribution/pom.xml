@@ -12,7 +12,7 @@
     <name>Mule 1 NetBoot Distribution</name>
 
     <properties>
-        <baseName>mule-bootstrapped</baseName>
+        <baseName>mule1-netboot</baseName>
     </properties>
 
     <build>
@@ -84,14 +84,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.mule.galaxy</groupId>
-            <artifactId>galaxy-mule1-bootstrap-support</artifactId>
+            <groupId>org.mule.galaxy.netboot</groupId>
+            <artifactId>mule1-netboot-support</artifactId>
             <version>${version}</version>
         </dependency>
 
         <dependency>
-            <groupId>org.mule.galaxy</groupId>
-            <artifactId>galaxy-mule1-bootstrap-launcher</artifactId>
+            <groupId>org.mule.galaxy.netboot</groupId>
+            <artifactId>mule1-netboot-launcher</artifactId>
             <version>${version}</version>
         </dependency>
 

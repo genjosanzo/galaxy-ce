@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.mule.galaxy.bootstrap.launch;
+package org.mule.galaxy.netboot.launch;
 
 import java.net.URLClassLoader;
 import java.net.URL;

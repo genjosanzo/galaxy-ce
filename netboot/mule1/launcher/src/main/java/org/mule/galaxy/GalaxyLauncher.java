@@ -18,8 +18,8 @@
 
 package org.mule.galaxy;
 
-import org.mule.galaxy.bootstrap.GalaxyClientClassPathConfig;
-import org.mule.galaxy.bootstrap.launch.NamedUrlClassLoader;
+import org.mule.galaxy.netboot.GalaxyClientClassPathConfig;
+import org.mule.galaxy.netboot.launch.NamedUrlClassLoader;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -62,7 +62,7 @@ public class GalaxyLauncher
         Thread.currentThread().setContextClassLoader(muleCl);
 
         // launch Mule
-        Object wrapper = Class.forName("org.mule.galaxy.bootstrap.launch.MuleServerWrapper",
+        Object wrapper = Class.forName("org.mule.galaxy.netboot.launch.MuleServerWrapper",
                                        true, Thread.currentThread().getContextClassLoader()).newInstance();
         WrapperManager.start((WrapperListener) wrapper, args);
     }

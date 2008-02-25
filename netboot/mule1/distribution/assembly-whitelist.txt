@@ -1,8 +1,8 @@
 commons-cli-1.0
 commons-codec-1.3
 commons-httpclient-3.1
-galaxy-mule1-bootstrap-support-1.0-beta-3-SNAPSHOT
-galaxy-mule1-bootstrap-launcher-1.0-beta-3-SNAPSHOT
+mule1-netboot-support
+mule1-netboot-launcher
 groovy-all-1.5.4
 jcl104-over-slf4j-1.4.3
 log4j-1.2.14
