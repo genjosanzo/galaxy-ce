@@ -3,13 +3,13 @@
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.mule.galaxy</groupId>
-        <artifactId>galaxy-mule1-bootstrap-parent</artifactId>
+        <groupId>org.mule.galaxy.netboot</groupId>
+        <artifactId>mule1-netboot-parent</artifactId>
         <version>1.0-beta-3-SNAPSHOT</version>
     </parent>
-    <artifactId>galaxy-mule1-bootstrap-launcher</artifactId>
+    <artifactId>mule1-netboot-launcher</artifactId>
     <packaging>jar</packaging>
-    <name>Galaxy Launchpad for Mule</name>
+    <name>Mule 1 NetBoot Launcher</name>
 
     <dependencies>
         <dependency>

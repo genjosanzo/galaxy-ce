@@ -3,13 +3,13 @@
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.mule.galaxy</groupId>
-        <artifactId>galaxy-mule1-bootstrap-parent</artifactId>
+        <groupId>org.mule.galaxy.netboot</groupId>
+        <artifactId>mule1-netboot-parent</artifactId>
         <version>1.0-beta-3-SNAPSHOT</version>
     </parent>
-    <artifactId>galaxy-mule1-bootstrap-distribution</artifactId>
+    <artifactId>mule1-netboot-distribution</artifactId>
     <packaging>pom</packaging>
-    <name>Mule Distribution for Galaxy Bootstrap</name>
+    <name>Mule 1 NetBoot Distribution</name>
 
     <properties>
         <baseName>mule-bootstrapped</baseName>
