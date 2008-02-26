@@ -99,26 +99,23 @@ Fetching artifacts from Galaxy...
                 clean classpath from the cache.
              */
             def cachedUrls = []
-            cachedUrls += new Workspace(galaxy: g,
+            cachedUrls += new NetBootWorkspace(galaxy: g,
                                   name: 'user',
-                                  parentWorkspace: "$netBootWorkspace/lib",
-                                  cacheDir: new File(netBootCacheDir, 'lib').canonicalPath,
-                                  query: "select artifact where artifact.contentType='application/java-archive'",
-                                  compService: compService).process()
+                                  netBootWorkspace: netBootWorkspace,
+                                  netBootCacheDir: netBootCacheDir.canonicalPath,
+                                  compService: compService).init().process()
 
-            cachedUrls += new Workspace(galaxy: g,
+            cachedUrls += new NetBootWorkspace(galaxy: g,
                                   name: 'mule',
-                                  parentWorkspace: "$netBootWorkspace/lib",
-                                  cacheDir: new File(netBootCacheDir, 'lib').canonicalPath,
-                                  query: "select artifact where artifact.contentType='application/java-archive'",
-                                  compService: compService).process()
+                                  netBootWorkspace: netBootWorkspace,
+                                  netBootCacheDir:netBootCacheDir.canonicalPath,
+                                  compService: compService).init().process()
 
-            cachedUrls += new Workspace(galaxy: g,
+            cachedUrls += new NetBootWorkspace(galaxy: g,
                                   name: 'opt',
-                                  parentWorkspace: "$netBootWorkspace/lib",
-                                  cacheDir: new File(netBootCacheDir, 'lib').canonicalPath,
-                                  query: "select artifact where artifact.contentType='application/java-archive'",
-                                  compService: compService).process()
+                                  netBootWorkspace: netBootWorkspace,
+                                  netBootCacheDir: netBootCacheDir.canonicalPath,
+                                  compService: compService).init().process()
 
             urls += cachedUrls
         } catch (ConnectException cex) {
