@@ -30,7 +30,7 @@ class GalaxyBootstrap {
     def static List workspaces
     def static netBootWorkspace
     def static boolean debug
-    def static File cacheDir
+    def static File netBootCacheDir
 
     def static numUnits = Runtime.runtime.availableProcessors() * 4
 
@@ -60,9 +60,10 @@ class GalaxyBootstrap {
         // Passed in as -Dmule.home
         def muleHome = p.'mule.home'
         // create a local cache dir if needed
-        cacheDir = new File(muleHome, "lib/cache/$netBootWorkspace")
-        cacheDir.mkdirs()
-        assert cacheDir.exists()
+        File cacheDir = new File(muleHome, 'lib/cache')
+        netBootCacheDir = new File(cacheDir, netBootWorkspace)
+        netBootCacheDir.mkdirs()
+        assert netBootCacheDir.exists()
 
         println """\n
 ${'=' * 78}
@@ -105,13 +106,13 @@ Fetching artifacts from Galaxy...
             urls += cachedUrls
         } catch (ConnectException cex) {
             println "Galaxy server is not available, will try a local cache..."
-            new File(cacheDir, 'lib/user').listFiles().each { file ->
+            new File(netBootCacheDir, 'lib/user').listFiles().each { file ->
                 urls << file.toURI().toURL()
             }
-            new File(cacheDir, 'lib/mule').listFiles().each { file ->
+            new File(netBootCacheDir, 'lib/mule').listFiles().each { file ->
                 urls << file.toURI().toURL()
             }
-            new File(cacheDir, 'lib/opt').listFiles().each { file ->
+            new File(netBootCacheDir, 'lib/opt').listFiles().each { file ->
                 urls << file.toURI().toURL()
             }
         }
@@ -127,7 +128,7 @@ Fetching artifacts from Galaxy...
         GetMethod response = g.get("$netBootWorkspace/lib/$name")
 
         // local cache dir
-        def dir = new File(cacheDir, "lib/$name")
+        def dir = new File(netBootCacheDir, "lib/$name")
         dir.mkdirs()
         assert dir.exists()
 
