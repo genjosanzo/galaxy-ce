@@ -30,7 +30,6 @@ class NetBootWorkspace extends Workspace {
     // we push in a value map :/
     def Workspace init() {
         parentWorkspace = "$netBootWorkspace/lib"
-        query = "select artifact where artifact.contentType='application/java-archive'"
         cacheDir = new File(netBootCacheDir, 'lib').canonicalPath
 
         this

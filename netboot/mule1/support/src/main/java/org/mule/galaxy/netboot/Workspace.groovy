@@ -32,7 +32,7 @@ class Workspace {
     def String parentWorkspace = ''
     def String name
     def String cacheDir
-    def String query
+    def String query = "select artifact where artifact.contentType='application/java-archive'"
     
     def Galaxy galaxy
 
@@ -47,7 +47,7 @@ class Workspace {
 
 
     def List<URL> process() {
-        def encodedQuery = URLEncoder.encode("select artifact where artifact.contentType='application/java-archive'", "UTF-8")
+        def encodedQuery = URLEncoder.encode(query, "UTF-8")
         GetMethod response = galaxy.get("$parentWorkspace/$name?q=$encodedQuery")
 
         // local cache dir
