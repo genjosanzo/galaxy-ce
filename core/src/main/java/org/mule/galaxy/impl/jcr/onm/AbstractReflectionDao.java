@@ -27,7 +27,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
     private ClassPersister persister;
     private String rootNode;
     private String objectsNodeId;
-    private String idNode;
+    private String idAttributeName;
     private boolean generateId;
     private String objectNodeName;
     private PersisterManager persisterManager;
@@ -158,13 +158,13 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
                 .addNode(genId, getNodeType());
             node.addMixin("mix:referenceable");
             
-            t.setId(getId(t, node, session));
+            t.setId(ISO9075.decode(getId(t, node, session)));
         } else {
             node = findNode(id, session);
             
             // the user supplied a new ID
             if (node == null && !generateId) {
-                node = getNodeForObject(getObjectsNode(session), t).addNode(getObjectNodeName(t), getNodeType());
+                node = getNodeForObject(getObjectsNode(session), t).addNode(ISO9075.encode(getObjectNodeName(t)), getNodeType());
                 node.addMixin("mix:referenceable");
             }
         }
@@ -172,7 +172,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         if (node == null) throw new NotFoundException(t.getId());
         
         try {
-            persister.persist(t, node, session);
+            persist(t, node, session);
         } catch (Exception e) {
             if (e instanceof RepositoryException) {
                 throw ((RepositoryException) e);
@@ -185,8 +185,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
 
     protected String generateId() {
         UUID uuid = UUID.randomUUID();
-        String genId = ISO9075.encode(uuid.toString());
-        return genId;
+        return uuid.toString();
     }
 
     protected String getNodeType() {
@@ -215,11 +214,12 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
     protected Node findNode(String id, Session session) throws RepositoryException {
         QueryManager qm = getQueryManager(session);
         Query q = null;
-        if (generateId) {
+        if (isIdNodeName()) {
             q = qm.createQuery("/jcr:root/" + rootNode + "/" + ISO9075.encode(id), Query.XPATH);
         } else {
-            q = qm.createQuery("/jcr:root/" + rootNode + "/*[@" + idNode + "='" + id + "']", Query.XPATH);
+            q = qm.createQuery("/jcr:root/" + rootNode + "/*[@" + idAttributeName + "='" + id + "']", Query.XPATH);
         }
+        System.out.println("Searching for " + q.getStatement());
         
         QueryResult qr = q.execute();
         
@@ -229,6 +229,10 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         }
         
         return nodes.nextNode();
+    }
+
+    protected boolean isIdNodeName() {
+        return true;
     }
 
     @Override

@@ -10,6 +10,8 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.apache.jackrabbit.core.persistence.PersistenceManager;
+import org.apache.jackrabbit.util.ISO9075;
+import org.apache.log4j.helpers.ISO8601DateFormat;
 import org.mule.galaxy.impl.jcr.onm.ClassPersister;
 import org.mule.galaxy.impl.jcr.onm.FieldDescriptor;
 import org.mule.galaxy.impl.jcr.onm.FieldPersister;
@@ -42,7 +44,7 @@ public class CollectionPersister implements FieldPersister {
         }
         
         String parentField = otm.mappedBy();
-        String parentId = n.getName();
+        String parentId = ISO9075.decode(n.getName());
         String rootNode = fd.getClassPersister().getPath();
         
         QueryManager qm = session.getWorkspace().getQueryManager();

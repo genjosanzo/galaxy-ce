@@ -1,5 +1,6 @@
 package org.mule.galaxy.lifecycle;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -70,6 +71,13 @@ public class Lifecycle implements Identifiable {
         } else if (!name.equals(other.name))
             return false;
         return true;
+    }
+
+    public void addPhase(Phase phase) {
+        if (phases == null) {
+            phases = new HashMap<String, Phase>();
+        }
+        phases.put(phase.getName(), phase);
     }
     
 }

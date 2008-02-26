@@ -1,11 +1,13 @@
 package org.mule.galaxy.lifecycle;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Dao;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class LifecycleManagerTest extends AbstractGalaxyTest {
@@ -70,6 +72,49 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         assertEquals(artifact.getId(), e.getArtifact().getId());
         assertNotNull(e.getCalendar());
         assertNotNull(e.getPhase());
+    }
+    
+    public void testSave() throws Exception {
+        Lifecycle l = lifecycleManager.getDefaultLifecycle();
+        l.setName("test");
+        
+        lifecycleManager.save("Default", l);
+        assertEquals("test", l.getName());
+
+        Collection<Lifecycle> lcs = lifecycleManager.getLifecycles();
+        assertEquals(1, lcs.size());
+        
+        Lifecycle l2 = lifecycleManager.getLifecycle("test");
+        assertNotNull(l2);
+        
+        Artifact a = importHelloWsdl();
+        
+        l.setName("test2");
+        lifecycleManager.save("test", l);
+        
+        a = registry.getArtifact(a.getId());
+        assertEquals(l, a.getPhase().getLifecycle());
+        
+        try {
+            lifecycleManager.delete(l.getName(), "bad");
+            fail("Expected not found exception");
+        } catch (NotFoundException e) {
+            
+        }
+        
+        Lifecycle newLc = new Lifecycle();
+        newLc.setName("another");
+        
+        Phase phase = new Phase(newLc);
+        phase.setName("p1");
+        newLc.setInitialPhase(phase);
+        
+        newLc.addPhase(phase);
+        
+        lifecycleManager.save(newLc);
+        
+        lcs = lifecycleManager.getLifecycles();
+        assertEquals(2, lcs.size());
     }
     
     @Override

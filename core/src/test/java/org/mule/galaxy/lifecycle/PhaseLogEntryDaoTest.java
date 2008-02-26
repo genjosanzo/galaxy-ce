@@ -17,6 +17,7 @@ public class PhaseLogEntryDaoTest extends AbstractGalaxyTest {
         phaseLogEntryDao.save(entry);
         
         PhaseLogEntry entry2 = phaseLogEntryDao.get(entry.getId());
+        assertNotNull(entry2);
         assertEquals("admin", entry2.getUser().getUsername());
         assertNotNull(entry2.getPhase());
     }

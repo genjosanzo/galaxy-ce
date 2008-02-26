@@ -6,8 +6,7 @@
   <nodeType name="galaxy:workspace" 
     isMixin="false" 
     hasOrderableChildNodes="false"
-    primaryItemName="" 
-    sameNameSiblings="false">
+    primaryItemName="">
     <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
     <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" multiple="true"/>
     <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
@@ -16,8 +15,7 @@
   <nodeType name="galaxy:artifact" 
     isMixin="false" 
     hasOrderableChildNodes="false"
-    primaryItemName=""
-    sameNameSiblings="false">
+    primaryItemName="">
     
     <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
     <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" multiple="true"/>
@@ -28,8 +26,7 @@
   <nodeType name="galaxy:activity" 
     isMixin="false" 
     hasOrderableChildNodes="false"
-    primaryItemName="" 
-    sameNameSiblings="false">
+    primaryItemName="">
     
     <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
     <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" multiple="true"/>
@@ -40,8 +37,18 @@
   <nodeType name="galaxy:index" 
     isMixin="false" 
     hasOrderableChildNodes="false"
-    primaryItemName="" 
-    sameNameSiblings="false">
+    primaryItemName="" >
+    
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+    
+  </nodeType>
+  
+  <nodeType name="galaxy:lifecycle" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
     
     <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
     <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" multiple="true"/>
