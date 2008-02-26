@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutorCompletionService
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import org.mule.galaxy.client.Galaxy
-import org.mule.galaxy.netboot.Workspace
+import java.util.concurrent.Callable
 
 class GalaxyBootstrap {
 
@@ -99,25 +99,40 @@ Fetching artifacts from Galaxy...
                 clean classpath from the cache.
              */
             def cachedUrls = []
-            cachedUrls += new NetBootWorkspace(galaxy: g,
+
+            /*
+                Process workspaces in parallel below
+            */
+
+            // lib/user
+            def libUser = exec.submit({
+                new NetBootWorkspace(galaxy: g,
                                   name: 'user',
                                   netBootWorkspace: netBootWorkspace,
                                   netBootCacheDir: netBootCacheDir.canonicalPath,
                                   compService: compService).init().process()
+            } as Callable)
 
-            cachedUrls += new NetBootWorkspace(galaxy: g,
+            // lib/mule
+            def libMule = exec.submit({
+                    new NetBootWorkspace(galaxy: g,
                                   name: 'mule',
                                   netBootWorkspace: netBootWorkspace,
                                   netBootCacheDir:netBootCacheDir.canonicalPath,
                                   compService: compService).init().process()
+            } as Callable)
 
-            cachedUrls += new NetBootWorkspace(galaxy: g,
+            // lib/opt
+            def libOpt = exec.submit({
+                    new NetBootWorkspace(galaxy: g,
                                   name: 'opt',
                                   netBootWorkspace: netBootWorkspace,
                                   netBootCacheDir: netBootCacheDir.canonicalPath,
                                   compService: compService).init().process()
+            } as Callable)
 
-            urls += cachedUrls
+            urls += libUser.get() + libMule.get() + libOpt.get() 
+
         } catch (ConnectException cex) {
             println "Galaxy server is not available, will try a local cache..."
             new File(netBootCacheDir, 'lib/user').listFiles().each { file ->
