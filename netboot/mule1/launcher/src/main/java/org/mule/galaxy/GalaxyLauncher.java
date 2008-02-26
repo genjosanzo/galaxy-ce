@@ -31,6 +31,8 @@ import org.tanukisoftware.wrapper.WrapperListener;
 
 public class GalaxyLauncher
 {
+    public static final String GALAXY_BOOTSTRAP_CLASS_NAME = "org.mule.galaxy.netboot.GalaxyBootstrap";
+
     public static void main(String[] args) throws Exception
     {
         GalaxyClientClassPathConfig classpath = new GalaxyClientClassPathConfig(lookupMuleHome());
@@ -45,7 +47,7 @@ public class GalaxyLauncher
         Thread.currentThread().setContextClassLoader(galaxyCl);
 
         // call out to external class interacting with Galaxy to construct the final set of jar URLs 
-        Class galaxyBootstrap = Class.forName("GalaxyBootstrap", true, Thread.currentThread().getContextClassLoader());
+        Class galaxyBootstrap = Class.forName(GALAXY_BOOTSTRAP_CLASS_NAME, true, Thread.currentThread().getContextClassLoader());
         Method method = galaxyBootstrap.getMethod("constructMuleClasspath");
         URL[] muleClasspathUrls = (URL[]) method.invoke(null); // it's a static method
 
