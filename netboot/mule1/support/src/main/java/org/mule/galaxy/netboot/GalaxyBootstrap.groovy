@@ -27,7 +27,8 @@ import java.text.SimpleDateFormat
 class GalaxyBootstrap {
 
     def static g
-    def static workspace
+    def static List workspaces
+    def static netBootWorkspace
     def static boolean debug
     def static File cacheDir
 
@@ -51,13 +52,15 @@ class GalaxyBootstrap {
         def apiUrl = p.'galaxy.apiUrl' ?: '/api/registry'
         def username = p.'galaxy.username' ?: 'admin'
         def password = p.'galaxy.password' ?: 'admin'
-        workspace = p.'galaxy.workspace' ?: 'Mule'
+        // split by comma, prune duplicates, all in a null-safe manner
+        workspaces = p.'galaxy.app.workspaces'?.split(',')?.toList()?.unique() ?: []
+        netBootWorkspace = p.'galaxy.netboot.workspace' ?: 'Mule'
         debug = 'true'.equalsIgnoreCase(p.'galaxy.debug')
 
         // Passed in as -Dmule.home
         def muleHome = p.'mule.home'
         // create a local cache dir if needed
-        cacheDir = new File(muleHome, "lib/cache/$workspace")
+        cacheDir = new File(muleHome, "lib/cache/$netBootWorkspace")
         cacheDir.mkdirs()
         assert cacheDir.exists()
 
@@ -67,7 +70,8 @@ MULE_HOME: $muleHome
 Local Jar Cache: $cacheDir.canonicalPath
 Galaxy URL: $httpScheme://$host:$port$apiUrl
 Username: $username
-Workspace: $workspace
+NetBoot Workspace: $netBootWorkspace
+Application Workspaces: $workspaces
 Proc Units: $numUnits
 Debug: $debug
 ${'=' * 78}
@@ -120,7 +124,7 @@ Fetching artifacts from Galaxy...
     }
 
     private static processWorkspace(name) {
-        GetMethod response = g.get("$workspace/lib/$name")
+        GetMethod response = g.get("$netBootWorkspace/lib/$name")
 
         // local cache dir
         def dir = new File(cacheDir, "lib/$name")
@@ -144,7 +148,7 @@ Fetching artifacts from Galaxy...
 
                 if (lastUpdatedVote (localJar, node)) {
                     println "Updating a local copy of $jarName"
-                    GetMethod content = g.get("$workspace/lib/$name/$jarName")
+                    GetMethod content = g.get("$netBootWorkspace/lib/$name/$jarName")
                     localJar.newOutputStream() << content.responseBodyAsStream
                     content.releaseConnection()
                 }
