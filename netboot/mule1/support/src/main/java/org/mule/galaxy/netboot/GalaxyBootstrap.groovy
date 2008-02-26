@@ -131,7 +131,18 @@ Fetching artifacts from Galaxy...
                                   compService: compService).init().process()
             } as Callable)
 
-            urls += libUser.get() + libMule.get() + libOpt.get() 
+
+            /*
+                Now process application workspaces
+            */
+
+            workspaces.each { name ->
+                // TODO implement
+            }
+
+            urls += libUser.get() + libMule.get() + libOpt.get()
+
+            if (debug) { println urls.join('\n') }
 
         } catch (ConnectException cex) {
             println "Galaxy server is not available, will try a local cache..."
