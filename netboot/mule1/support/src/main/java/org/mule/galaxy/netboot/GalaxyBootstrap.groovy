@@ -109,8 +109,7 @@ Fetching artifacts from Galaxy...
                 new NetBootWorkspace(galaxy: g,
                                   name: 'user',
                                   netBootWorkspace: netBootWorkspace,
-                                  netBootCacheDir: netBootCacheDir.canonicalPath,
-                                  compService: compService).init().process()
+                                  netBootCacheDir: netBootCacheDir.canonicalPath).init().process()
             } as Callable)
 
             // lib/mule
@@ -118,8 +117,7 @@ Fetching artifacts from Galaxy...
                     new NetBootWorkspace(galaxy: g,
                                   name: 'mule',
                                   netBootWorkspace: netBootWorkspace,
-                                  netBootCacheDir:netBootCacheDir.canonicalPath,
-                                  compService: compService).init().process()
+                                  netBootCacheDir: netBootCacheDir.canonicalPath).init().process()
             } as Callable)
 
             // lib/opt
@@ -127,8 +125,7 @@ Fetching artifacts from Galaxy...
                     new NetBootWorkspace(galaxy: g,
                                   name: 'opt',
                                   netBootWorkspace: netBootWorkspace,
-                                  netBootCacheDir: netBootCacheDir.canonicalPath,
-                                  compService: compService).init().process()
+                                  netBootCacheDir: netBootCacheDir.canonicalPath).init().process()
             } as Callable)
 
 

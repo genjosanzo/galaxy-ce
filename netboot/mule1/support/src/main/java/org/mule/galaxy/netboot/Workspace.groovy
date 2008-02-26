@@ -23,6 +23,8 @@ import org.apache.commons.httpclient.methods.GetMethod
 import org.mule.galaxy.client.Galaxy
 import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutorCompletionService
+import java.util.concurrent.Executors
+import java.util.concurrent.ExecutorService
 
 
 class Workspace {
@@ -38,7 +40,10 @@ class Workspace {
 
     def List<Voter> voters = []
 
-    def ExecutorCompletionService compService
+    def numUnits = Runtime.runtime.availableProcessors() * 4
+
+    def ExecutorService exec = Executors.newFixedThreadPool(numUnits)
+    def ExecutorCompletionService compService = new ExecutorCompletionService(exec)
 
 
     def List<URL> process() {
