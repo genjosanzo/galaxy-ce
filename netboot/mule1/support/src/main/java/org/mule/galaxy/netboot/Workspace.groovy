@@ -48,7 +48,8 @@ class Workspace {
 
     def List<URL> process() {
         def encodedQuery = URLEncoder.encode(query, "UTF-8")
-        GetMethod response = galaxy.get("$parentWorkspace/$name?q=$encodedQuery")
+        def relativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$name?q=$encodedQuery" : "$name?q=$encodedQuery"
+        GetMethod response = galaxy.get(relativeUrl)
 
         // local cache dir
         def dir = new File(cacheDir, name)
@@ -72,7 +73,8 @@ class Workspace {
 
                 if (lastUpdatedVote (localJar, node)) {
                     println "Updating a local copy of $jarName"
-                    GetMethod content = galaxy.get("$parentWorkspace/$name/$jarName")
+                    def jarRelativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$name/$jarName" : "$name/$jarName"
+                    GetMethod content = galaxy.get(jarRelativeUrl)
                     localJar.newOutputStream() << content.responseBodyAsStream
                     content.releaseConnection()
                 }

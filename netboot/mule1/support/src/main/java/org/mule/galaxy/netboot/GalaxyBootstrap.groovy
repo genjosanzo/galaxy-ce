@@ -133,11 +133,24 @@ Fetching artifacts from Galaxy...
                 Now process application workspaces
             */
 
-            workspaces.each { name ->
-                // TODO implement
+            def appWsFutures = []
+            workspaces.each { String ws ->
+                def name = ws.contains('/') ? ws.substring(ws.lastIndexOf('/') + 1) : ws
+                def parentWorkspace = ws.contains('/') ? ws.substring(0, ws.lastIndexOf('/')) : ''
+
+
+                appWsFutures << exec.submit({
+                    File file = new File(cacheDir, "$parentWorkspace/$name")
+                    new Workspace(galaxy: g,
+                                  name: name,
+                                  parentWorkspace: parentWorkspace,
+                                  cacheDir: file.canonicalPath).process()
+                } as Callable)
             }
 
             urls += libUser.get() + libMule.get() + libOpt.get()
+            // add application workspaces' urls
+            appWsFutures.each { urls += it.get() }
 
             if (debug) { println urls.join('\n') }
 
@@ -152,6 +165,8 @@ Fetching artifacts from Galaxy...
             new File(netBootCacheDir, 'lib/opt').listFiles().each { file ->
                 urls << file.toURI().toURL()
             }
+
+            // TODO try caches for application workspaces too
         }
 
         exec.shutdown()
