@@ -80,7 +80,7 @@ class Workspace {
                         def jarRelativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$name/$jarName" : "$name/$jarName"
                         GetMethod content = galaxy.get(jarRelativeUrl)
                         try {
-                            localJar.newOutputStream() << content.responseBodyAsStream
+                            localJar.withOutputStream { it << content.responseBodyAsStream }
                         } finally {
                             content?.releaseConnection()
                         }
