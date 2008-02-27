@@ -71,16 +71,25 @@ class Workspace {
 
                     def jarName = node.title.text()
 
-                    // TODO plug voters here to decide if it needs to be downloaded really
-                    // cache jars locally
                     File localJar = new File(dir, jarName)
 
+                    // TODO plug voters here to decide if it needs to be downloaded really
                     if (lastUpdatedVote (localJar, node)) {
                         println "Updating a local copy of $jarName"
                         def jarRelativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$name/$jarName" : "$name/$jarName"
                         GetMethod content = galaxy.get(jarRelativeUrl)
                         try {
-                            localJar.withOutputStream { it << content.responseBodyAsStream }
+                            // stream to a temp location to protect startup from corrupted jars
+                            // TODO this is the place to plug checksum verification
+                            final File downloadsDir = new File(System.properties.'mule.home', 'lib/cache/_temp_downloads')
+                            downloadsDir.mkdirs()
+                            assert downloadsDir.exists()
+                            File tempJar = File.createTempFile('mule-netboot-', null, downloadsDir)
+                            tempJar.deleteOnExit()
+
+                            tempJar.withOutputStream { it << content.responseBodyAsStream }
+
+                            assert tempJar.renameTo(localJar)
                         } finally {
                             content?.releaseConnection()
                         }
