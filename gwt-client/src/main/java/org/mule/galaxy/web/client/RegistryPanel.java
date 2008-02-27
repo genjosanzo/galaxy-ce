@@ -2,9 +2,9 @@ package org.mule.galaxy.web.client;
 
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.Widget;
@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.mule.galaxy.web.client.util.ColumnView;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.client.workspace.EditWorkspacePanel;
 import org.mule.galaxy.web.client.workspace.WorkspaceViewPanel;
@@ -31,8 +32,11 @@ public class RegistryPanel extends AbstractMenuPanel {
     private RegistryServiceAsync service;
     private WorkspacePanel workspacePanel;
     private Toolbox workspaceBox;
-    private Tree workspaceTree;
     private int errorPosition = 1;
+    protected ColumnView cv;
+    private FlowPanel browsePanel;
+    private FlowPanel searchingPanel;
+    private SearchPanel searchPanel;
     
     public RegistryPanel(Galaxy galaxy) {
         super(galaxy);
@@ -51,8 +55,6 @@ public class RegistryPanel extends AbstractMenuPanel {
         addPage(page);
         addImg.addClickListener(createClickListener(page));
         
-        workspaceBox.addButton(addImg);
-        
         Image addWkspcImg = new Image("images/fldr_obj.gif");
         page = new MenuPanelPageInfo("add-workspace", this) {
             public AbstractComposite createInstance() {
@@ -63,7 +65,6 @@ public class RegistryPanel extends AbstractMenuPanel {
         };
         addPage(page);
         addWkspcImg.addClickListener(createClickListener(page));
-        workspaceBox.addButton(addWkspcImg);
         
         Image editWkspcImg = new Image("images/editor_area.gif");
         page = new MenuPanelPageInfo("edit-workspace-" + workspaceId, this) {
@@ -76,7 +77,7 @@ public class RegistryPanel extends AbstractMenuPanel {
         addPage(page);
         editWkspcImg.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
-                final TreeItem item = workspaceTree.getSelectedItem();
+                final TreeItem item = cv.getSelectedItem();
                 TreeItem parent = item.getParentItem();
                 final String parentId = parent != null ? (String) parent.getUserObject() : null;
 
@@ -95,16 +96,47 @@ public class RegistryPanel extends AbstractMenuPanel {
             }
             
         });
-        workspaceBox.addButton(editWkspcImg);
-        this.workspaceTree = new Tree();
-        workspaceTree.setStyleName("workspaces");
-        workspaceBox.add(workspaceTree);
         
-        addMenuItem(workspaceBox);
+        FlowPanel browseToolbar = new FlowPanel();
+        browseToolbar.setStyleName("toolbar");
+        browseToolbar.add(addImg);
+        browseToolbar.add(addWkspcImg);
+        browseToolbar.add(editWkspcImg);
+        
+        Hyperlink searchLink = new Hyperlink("Search", "search");
+        searchLink.addClickListener(new ClickListener() {
+            public void onClick(Widget w) {
+                setTop(searchingPanel);
+            }
+        });
+        browseToolbar.add(searchLink);
+        
+        //addMenuItem(workspaceBox);
+        workspacePanel = new WorkspacePanel(registryPanel);
+        
+        searchingPanel = new FlowPanel();
+        FlowPanel searchToolbar = new FlowPanel();
+        searchToolbar.setStyleName("toolbar");
+        Hyperlink browseLink = new Hyperlink("Browse Workspaces", "browse");
+        browseLink.addClickListener(new ClickListener() {
+            public void onClick(Widget w){
+                setTop(browsePanel);
+            }
+        });
+        searchToolbar.add(browseLink);
+        searchingPanel.add(searchToolbar);
+        searchPanel = new SearchPanel(this);
+        searchingPanel.add(searchPanel);
+        
+        browsePanel = new FlowPanel(); 
+        cv = new ColumnView();
+        browsePanel.add(browseToolbar);
+        browsePanel.add(cv);
+        setTop(browsePanel);
 
         refreshWorkspaces();
         
-        workspaceTree.addTreeListener(new TreeListener() {
+        cv.addTreeListener(new TreeListener() {
             public void onTreeItemSelected(TreeItem ti) {
                 setActiveWorkspace((String) ti.getUserObject());
             }
@@ -114,7 +146,7 @@ public class RegistryPanel extends AbstractMenuPanel {
         });
         
         artifactTypesBox = new Toolbox(false);
-        artifactTypesBox.setTitle("Artifact Types");
+        artifactTypesBox.setTitle("By Artifact Type");
         addMenuItem(artifactTypesBox);
         
         initArtifactTypes();
@@ -136,12 +168,7 @@ public class RegistryPanel extends AbstractMenuPanel {
     }
 
     public void refreshWorkspaces() {
-        if (workspaceTree.getItemCount() > 0) {
-            workspaceTree.clear();
-        }
-        
-        final TreeItem treeItem = workspaceTree.addItem("All");
-        treeItem.setState(true);
+        final TreeItem treeItem = new TreeItem();
         
         // Load the workspaces into a tree on the left
         service.getWorkspaces(new AbstractCallback(this) {
@@ -150,6 +177,11 @@ public class RegistryPanel extends AbstractMenuPanel {
                 workspaces = (Collection) o;
                 
                 initWorkspaces(treeItem, workspaces);
+
+                TreeItem child = treeItem.getChild(0);
+                workspaceId    = (String) child.getUserObject();
+                
+                cv.setRootItem(treeItem);
             }
         });
     }
@@ -161,7 +193,6 @@ public class RegistryPanel extends AbstractMenuPanel {
     private void initArtifactTypes() {
         artifactTypes = new HashSet();
         
-        // Load the workspaces into a tree on the left
         service.getArtifactTypes(new AbstractCallback(this) {
 
             public void onSuccess(Object o) {
@@ -198,20 +229,11 @@ public class RegistryPanel extends AbstractMenuPanel {
             TreeItem treeItem = ti.addItem(wi.getName());
             treeItem.setUserObject(wi.getId());
             
-            Collection workspaces2 = wi.getWorkspaces();
-            if (workspaces2 != null) {
-                initWorkspaces(treeItem, workspaces2);
+            Collection children = wi.getWorkspaces();
+            if (children != null) {
+                initWorkspaces(treeItem, children);
             }
         }
-        
-        ti.setState(true);
-        TreeItem child = ti.getChild(0);
-        workspaceTree.setSelectedItem(child, false);
-        
-        workspaceId = (String) child.getUserObject();
-        
-        workspacePanel = new WorkspacePanel(this);
-        setMain(workspacePanel);
     }
     
     public void addArtifactTypeFilter(String id) {
@@ -245,6 +267,10 @@ public class RegistryPanel extends AbstractMenuPanel {
 
     public Collection getWorkspaces() {
         return workspaces;
+    }
+    
+    public SearchPanel getSearchPanel() {
+        return searchPanel;
     }
 
     // TODO

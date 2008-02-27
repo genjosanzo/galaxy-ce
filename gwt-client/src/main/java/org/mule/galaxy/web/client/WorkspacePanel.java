@@ -22,7 +22,6 @@ public class WorkspacePanel
     private RegistryPanel registryPanel;
     private FlowPanel panel;
     private FlowPanel artifactPanel;
-    private SearchPanel searchPanel;
     private int resultStart = 0;
     // TODO make it a configurable parameter, maybe per-user?
     private int maxResults = 15;
@@ -31,10 +30,6 @@ public class WorkspacePanel
         super();
         
         panel = new FlowPanel();
-        
-        searchPanel = new SearchPanel(rp);
-        searchPanel.setStyleName("search-panel");
-        panel.insert(searchPanel, 0);
 
         SimplePanel artifactPanelBase = new SimplePanel();
         artifactPanelBase.setStyleName("artifact-panel-base");
@@ -45,7 +40,6 @@ public class WorkspacePanel
         artifactPanelBase.add(artifactPanel);
 
         registryPanel = rp;
-        reloadArtifacts();
         initWidget(panel);
     }
     
@@ -73,9 +67,9 @@ public class WorkspacePanel
     }
     
     private void createNavigationPanel(WSearchResults o) {
-        Widget w = panel.getWidget(1);
+        Widget w = panel.getWidget(0);
         if (w.getStyleName().equals("activity-nav-panel")) {
-            panel.remove(1);
+            panel.remove(0);
         }
 
         long resultSize = o.getTotal();
@@ -119,12 +113,13 @@ public class WorkspacePanel
             spacer.add(new HTML("&nbsp;"));
             activityNavPanel.add(spacer);
             
-            panel.insert(activityNavPanel, 1);
+            panel.insert(activityNavPanel, 0);
         }
     }
 
     public void reloadArtifacts() {
         artifactPanel.clear();
+        SearchPanel searchPanel = registryPanel.getSearchPanel();
         
         String workspaceId   = registryPanel.getWorkspaceId();
         Set    artifactTypes = registryPanel.getArtifactTypes();

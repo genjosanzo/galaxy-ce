@@ -13,6 +13,8 @@ public abstract class AbstractMenuPanel extends AbstractComposite implements Err
     private FlowPanel leftMenuContainer;
     private FlowPanel mainPanel;
     private Widget mainWidget;
+    private FlowPanel topPanel;
+    private Widget topWidget;
     private FlowPanel errorPanel;
     private FlowPanel leftMenu;
     private Galaxy galaxy;
@@ -23,6 +25,10 @@ public abstract class AbstractMenuPanel extends AbstractComposite implements Err
         
         panel = new DockPanel();
         panel.setSpacing(0);
+
+        topPanel = new FlowPanel();
+        topPanel.setStyleName("top-panel");
+        panel.add(topPanel, DockPanel.NORTH);
         
         leftMenu = new FlowPanel() {
 
@@ -84,6 +90,14 @@ public abstract class AbstractMenuPanel extends AbstractComposite implements Err
         
         mainPanel.add(widget);
     }    
+    
+    public void setTop(Widget widget) {
+        if (topWidget != null)
+            topPanel.remove(topWidget);
+        
+        topWidget = widget;
+        topPanel.add(widget);
+    }
     
     public void setMain(final PageInfo page) {
         final Widget menu = this;

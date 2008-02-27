@@ -57,21 +57,15 @@ a:visited {
 }
 
 .unselected-link {
-    color: black;
     background-color: white;
-    padding: 2px;
+    padding: 3px;
 }
     
 .selected-link {
-    color: white;
-    background-color: #656565;
     font-weight: bold;
-    padding: 2px;
+    padding: 3px;
 }
 
-.selected-link a, .selected-link a:visited {
-    color: white;
-}
 
 
 /**
@@ -81,9 +75,8 @@ a:visited {
  **/
 
 .left-menu {
-    /* border-right: 1px #d0d0d0 solid ; */
+    border-right: 1px #aaa solid ;
     width: 200px;
-    background-color: #ddd;
 }
 
 .clearit {
@@ -95,7 +88,17 @@ a:visited {
 
 .left-menu-container {
     padding: 6px;
-    background-color: #ddd;
+}
+
+.left-menu-button a {
+	background-color: #ddd;
+	font-weight: bold;
+	display: block;
+	color: black;
+	padding: 4px 8px;
+	margin: 5px auto;
+	width: 125px;
+	text-align: center;
 }
 
 .workspaces {
@@ -109,8 +112,66 @@ a:visited {
 }
 
 .workspaces .gwt-TreeItem-selected {
-    background-color: #ddd;
+    background-color: #e8e8e8;
     font-weight: bold;
+}
+
+
+/**
+ **
+ ** Top Styles
+ **
+ **/
+ 
+.top-panel {
+     background-color: #656565;
+     padding: 5px;
+}
+
+.top-panel .toolbar .gwt-Hyperlink {
+	float: right;
+	padding-right: 10px;
+}
+
+.top-panel .toolbar .gwt-Hyperlink a {
+	color: white;
+	text-decoration: underline;
+}
+ 
+.top-panel .column-view,
+.top-panel .search-panel {
+ 	margin: 0 auto 5px;
+}
+
+/**
+ **
+ ** Search Panel
+ **
+ **/
+
+.search-panel {
+	padding-top: 1.5em;
+    width: 603px;
+}
+
+.search-panel .gwt-Hyperlink {
+    text-align: left;
+    margin-left: 1em;
+    padding-bottom: 0.2em;
+}
+
+.search-button-panel {
+    text-align: right;
+    padding: 0.3em 0;
+}
+
+.search-button-panel .gwt-Hyperlink {
+	float: left;
+}
+
+.search-button-panel .gwt-Hyperlink a {
+	color: white;
+	font-size: 0.9em;
 }
 
 
@@ -128,19 +189,14 @@ a:visited {
 
 .right-title-panel {
     margin-top: 8px;
-    background-image: url("images/nw_maj_rond.gif");
-    background-repeat: no-repeat;
-    background-color: #4c0000;    
 }
 
 .right-title {
-    font-weight: bold; 
-    
-    padding: 4px 0px 2px 8px;
+    padding: 4px 0px 2px;
     
     border-bottom: 1px #fff solid;
-    font-size: 1.3em;
-    color: white;
+    font-family: Helvetica;
+    font-size: 1.2em;
 }
 
 /* A different right title which allows a link */
@@ -183,14 +239,14 @@ a:visited {
 .toolbox {
     width: 100%;
     color: white;
+    padding-top: 4px;
+    margin-left: 4px;
     margin-bottom: 4px;
 }
 
 .toolbox-body {
     color: black;
     background-color: white;
-    border: solid #333 2px;
-    border-top: 0;
 }
 
 .toolbox-items {
@@ -215,13 +271,9 @@ a:visited {
     display: inline;
 }
 .toolbox-header {
-  font-weight: bold;
-  background-color: #333;
-  border-bottom: 1px #333 solid;
-  padding: 4px;
-  padding-left: 6px;
-  background-image: url("images/nw_maj_rond_gray.gif");
-  background-repeat: no-repeat;
+	font-weight: bold;
+  	color: black;
+  	padding: 3px;
 }
 .toolbox-header-onwhite {
   font-weight: bold;
@@ -233,6 +285,26 @@ a:visited {
   background-repeat: no-repeat;
 }
 
+.toolbox .selected-link,
+.toolbox .unselected-link {
+	font-size: 0.9em;
+	margin-left: 4px;
+	padding-left: 4px;
+}
+
+.toolbox .selected-link a,
+.toolbox .unselected-link a {
+	text-decoration: none;
+}
+
+.toolbox .unselected-link {
+	border-left: solid 4px transparent;
+}
+
+.toolbox .selected-link {
+	border-left: solid 4px #bbb;
+}
+
 
 /**
  **
@@ -242,7 +314,6 @@ a:visited {
 
 .main-panel {
     background-color: white;
-    border-left: 1px solid #aaa;
 }
     
 .error-panel {
@@ -383,28 +454,24 @@ a:visited {
 }
 
 .artifactTableFull td {
-    background-color: #e8e8e8;
-    border-top: 1px #fff solid;
+    border-bottom: 1px #e8e8e8 solid;
 }
 
 .artifactTableHeader {
-    font-weight: bold;
     padding: 6px;
-    background-color: #c0c0c0;
 }
 
 
 
 .artifactTableEntry {
-    background-color: #e8e8e8;
     padding: 4px;
 }
 
 .artifactTableHeader td {
-    font-weight: bold;
     padding: 6px;
-    background-color: #c0c0c0;
+    background-color: #eee;
     border-top: 0px;
+    font-weight: bold;
 }
 
 .artifactTable {
@@ -416,10 +483,11 @@ a:visited {
     margin-bottom: 10px;
 }
 .artifactTableFull td {
-    padding: 4px;
+    padding: 3px;
 }
 
 .artifact-list-container {
+	margin-bottom: 20px;
     width: 100%;
 }
 
@@ -557,30 +625,6 @@ a:visited {
 .policy-result-failure-label {
     padding-top: 2px;
     padding-bottom: 2px;
-}
-
-/**
- **
- ** Search Panel
- **
- **/
-
-.search-panel {
-    background: #ddd;
-    padding: 0.3em;
-}
-
-.search-panel .gwt-Hyperlink {
-    text-align: right;
-    padding-bottom: 0.2em;
-}
-
-.search-button-panel {
-    text-align: right;
-    padding: 0.3em;
-}
-
-.search-predicate {
 }
 
                    
@@ -734,7 +778,6 @@ a:visited {
 
 .gwt-TabBar .gwt-TabBarItem-selected {
   padding: 5px 10px 5px 10px;
-  font-weight: bold;
   cursor: default;
 
   background-color: #87b3ff;
@@ -763,7 +806,7 @@ a:visited {
 }
 
 .gwt-Tree .gwt-TreeItem-selected {
-  background-color: #ddd;
+  background-color: #e8e8e8;
 }
 
 .gwt-StackPanel {
@@ -972,7 +1015,6 @@ a:visited {
 
 .headerTabPanel .gwt-TabBar .gwt-TabBarItem-selected {
   padding: 5px 10px 5px 10px;
-  font-weight: bold;
   cursor: default;
   color: white;
   
