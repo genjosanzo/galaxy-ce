@@ -1,0 +1,42 @@
+div.column-view
+{
+	background-color: white;
+    border: solid #333 1px;
+    height: 138px;
+    width: 603px;
+    overflow-y: hidden;
+    overflow-x: scroll;
+}
+
+div.column-view div.column-view-inner
+{
+    width: 603px;
+}
+
+div.column-view div.column:first-child
+{
+    border-left: 0;
+}
+
+div.column-view div.column
+{
+    border-left: solid #333 1px;
+    float: left;
+    height: 123px;
+    width: 150px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+div.column-view div.column a
+{
+	color: black;
+    display: block;
+    text-decoration: none;
+    padding: 3px 6px;
+}
+
+div.column-view div.column div.selected a
+{
+    background-color: #ccc;
+}

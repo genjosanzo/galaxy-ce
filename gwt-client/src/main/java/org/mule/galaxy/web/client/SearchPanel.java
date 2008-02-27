@@ -27,7 +27,6 @@ public class SearchPanel
     private Map artifactPropertyMap;
     private Button searchButton;
     private RegistryPanel registryPanel;
-    private Hyperlink searchLink;
     private Button clearButton;
     private InlineFlowPanel buttonPanel;
     private Hyperlink freeformQueryLink;
@@ -55,23 +54,14 @@ public class SearchPanel
         });
 
         freeformQueryArea = new TextArea();
-        freeformQueryArea.setCharacterWidth(80);
+        freeformQueryArea.setCharacterWidth(83);
         freeformQueryArea.setVisibleLines(7);
-        freeformQueryLink = new Hyperlink("Freeform >>", "customQuery");
+        freeformQueryLink = new Hyperlink("Use Freeform Query", "customQuery");
         freeformQueryLink.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
                 showHideFreeformQuery();
             }
         });
-        
-        searchLink = new Hyperlink("Search", "search");
-        searchLink.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
-                panel.remove(searchLink);
-                addPredicate();
-              }
-        });
-        panel.add(searchLink);
         
         searchButton = new Button("Search", new ClickListener() {
            public void onClick(Widget sender) {
@@ -85,11 +75,11 @@ public class SearchPanel
                 panel.clear();
                 freeformQueryArea.setText("");
                 
-                panel.insert(searchLink, 0);
-                
-                registryPanel.reloadArtifacts();
+                addPredicate();
             }
          });
+        
+        addPredicate();
         
         initWidget(panel);
     }
@@ -119,10 +109,9 @@ public class SearchPanel
         
         // Add the search button if we're adding our first row
         if (rows.size() == 0) {
-            panel.add(freeformQueryLink);
-            
             buttonPanel = new InlineFlowPanel();
             buttonPanel.setStyleName("search-button-panel");
+            buttonPanel.add(freeformQueryLink);
             buttonPanel.add(searchButton);
             buttonPanel.add(clearButton);
             panel.add(buttonPanel);
@@ -136,30 +125,26 @@ public class SearchPanel
         panel.remove(pred);
         rows.remove(pred);
         
-        // Remove the search button if we're removing our last row
+        // Add a new predicate if we're removing our last row
         if (rows.size() == 0) {
-            panel.remove(freeformQueryLink);
-            panel.remove(freeformQueryArea);
-            searchButton.click();
-            panel.remove(buttonPanel);
-            panel.insert(searchLink, 0);
+            addPredicate();
         }
     }
     
     public void showHideFreeformQuery() {
         if (panel.remove(freeformQueryArea)) {
             freeformQueryArea.setText("");
-            freeformQueryLink.setText("Freeform >>");
+            freeformQueryLink.setText("Use Freeform Query");
             
             // Clear the panel because addPredicate will add everything back
             panel.clear();
             addPredicate();
         }
         else {
-            panel.insert(freeformQueryArea, 1);
+            panel.insert(freeformQueryArea, 0);
             freeformQueryArea.setText("Add a custom query...");
             freeformQueryArea.selectAll();
-            freeformQueryLink.setText("Structured >>");
+            freeformQueryLink.setText("Use Structured Query");
             
             // Remove all the structured query rows
             for (Iterator iter=rows.iterator(); iter.hasNext();)
