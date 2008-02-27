@@ -115,6 +115,10 @@ public interface RegistryService extends RemoteService {
      * @throws Exception 
      */
     Collection getLifecycles() throws RPCException;
+
+    void updateLifecycle(String origName, WLifecycle l) throws RPCException, ItemExistsException;
+
+    void saveLifecycle(WLifecycle l) throws RPCException, ItemExistsException;
     
     /**
      * @gwt.typeArgs <java.lang.String>

@@ -28,6 +28,7 @@ import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
@@ -162,6 +163,9 @@ public class ArtifactUploadServlet extends HttpServlet {
             });
         } catch (MimeTypeParseException e) {
             writer.write("Invalid mime type.");
+        } catch (DuplicateItemException e) {
+            resp.setStatus(409);
+            writer.write("An artifact with that name already exists.");
         }
     }
 

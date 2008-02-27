@@ -218,25 +218,19 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     }
     
     public Phase getPhase() {
-        String lifecycle = getStringOrNull(LIFECYCLE);
-        if (lifecycle == null) {
-            return null;
-        }
-        
         String phase = getStringOrNull(PHASE);
         if (phase == null) {
             return null;
         }
         
-        Lifecycle l = registry.getLifecycleManager().getLifecycle(lifecycle);
+        Phase p = registry.getLifecycleManager().getPhaseById(phase);
         
-        return l.getPhase(phase);
+        return p;
     }
     
     public void setPhase(Phase p) {
         try {
-            node.setProperty(LIFECYCLE, p.getLifecycle().getName());
-            node.setProperty(PHASE, p.getName());
+            node.setProperty(PHASE, p.getId());
             update();
         } catch (RepositoryException e) {
             throw new RuntimeException(e);

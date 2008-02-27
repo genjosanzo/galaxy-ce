@@ -12,7 +12,8 @@ public class WLifecycle implements IsSerializable {
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WPhase>
      */
     private Collection phases;
-
+    private WPhase initialPhase;
+    
     public WLifecycle() {
     }
 
@@ -32,4 +33,13 @@ public class WLifecycle implements IsSerializable {
     public void setPhases(Collection phases) {
         this.phases = phases;
     }
+
+    public WPhase getInitialPhase() {
+        return initialPhase;
+    }
+
+    public void setInitialPhase(WPhase initialPhase) {
+        this.initialPhase = initialPhase;
+    }
+   
 }

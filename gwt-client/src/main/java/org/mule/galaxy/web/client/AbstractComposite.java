@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 
@@ -16,6 +17,13 @@ public abstract class AbstractComposite extends Composite {
     
     public void onHide() {
         
+    }
+
+    protected InlineFlowPanel asHorizontal(Widget w1, Widget w2) {
+        InlineFlowPanel p = new InlineFlowPanel();
+        p.add(w1);
+        p.add(w2);
+        return p;
     }
     
     protected FlexTable createTitledRowTable(Panel panel, String title) {

@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
+import javax.jcr.ItemExistsException;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.NamespaceException;
 import javax.jcr.Node;
@@ -262,16 +263,22 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     public Workspace createWorkspace(final Workspace parent, 
-                                     final String name) throws RegistryException {
+                                     final String name) throws DuplicateItemException, RegistryException {
         // we should throw an error, but lets be defensive for now
         final String escapedName = JcrUtil.escape(name);
         
-        return (Workspace) execute(new JcrCallback() {
+        return (Workspace) executeWithRegistryException(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Collection<Workspace> workspaces = parent.getWorkspaces();
                 
                 Node parentNode = ((JcrWorkspace) parent).getNode();
-                Node node = parentNode.addNode(escapedName, "galaxy:workspace");
+                Node node = null;
+                try {
+                    node = parentNode.addNode(escapedName, "galaxy:workspace");
+                } catch (ItemExistsException e) {
+                    throw new RuntimeException(new DuplicateItemException(name));
+                }
+                
                 node.addMixin("mix:referenceable");
     
                 Calendar now = DateUtil.getCalendarForNow();
@@ -421,7 +428,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     public ArtifactResult createArtifact(Workspace workspace, Object data, String versionLabel, User user) 
-        throws RegistryException, ArtifactPolicyException, MimeTypeParseException {
+        throws RegistryException, ArtifactPolicyException, MimeTypeParseException, DuplicateItemException {
         ContentHandler ch = contentService.getContentHandler(data.getClass());
         
         if (ch == null) {
@@ -441,7 +448,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                                          final String versionLabel,
                                          final MimeType contentType,
                                          final User user)
-        throws RegistryException, ArtifactPolicyException {
+        throws RegistryException, ArtifactPolicyException, DuplicateItemException {
         
         if (user == null) {
             throw new NullPointerException("User cannot be null.");
@@ -635,7 +642,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                                          String versionLabel, 
                                          InputStream inputStream, 
                                          User user) 
-        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException {
+        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, DuplicateItemException {
         contentType = trimContentType(contentType);
         MimeType ct = new MimeType(contentType);
 
@@ -658,7 +665,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                                      Object data, 
                                      String versionLabel, 
                                      User user)
-        throws RegistryException, ArtifactPolicyException, IOException {
+        throws RegistryException, ArtifactPolicyException, IOException, DuplicateItemException {
         return newVersion(artifact, null, data, versionLabel, user);
     }
 
@@ -675,7 +682,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                                         final Object data,
                                         final String versionLabel, 
                                         final User user) 
-        throws RegistryException, ArtifactPolicyException, IOException {
+        throws RegistryException, ArtifactPolicyException, IOException, DuplicateItemException {
        
         if (user == null) {
             throw new NullPointerException("User cannot be null!");

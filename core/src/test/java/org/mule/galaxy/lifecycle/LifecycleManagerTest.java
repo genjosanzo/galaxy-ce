@@ -117,6 +117,24 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         assertEquals(2, lcs.size());
     }
     
+    public void testPhaseChanges() throws Exception {
+        Lifecycle l = lifecycleManager.getDefaultLifecycle();
+        
+        Artifact artifact = importHelloWsdl();
+        
+        Phase p1 = l.getInitialPhase();
+        p1.setName("new name");
+        
+        lifecycleManager.save(l.getName(), l);
+        
+        artifact = registry.getArtifact(artifact.getId());
+        assertEquals(p1, artifact.getPhase());
+        
+        // todo: deletion of a node
+        
+        // todo: invalid nextPhases
+    }
+    
     @Override
     protected String[] getConfigLocations() {
         return new String[] {

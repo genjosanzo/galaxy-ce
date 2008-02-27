@@ -12,6 +12,7 @@ import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.RequestContext.Scope;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
@@ -126,6 +127,8 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
             }
         } catch (RegistryException e) {
             throw new ResponseContextException(500, e);
+        } catch (DuplicateItemException e) {
+            throw new ResponseContextException(409);
         }
     }
 

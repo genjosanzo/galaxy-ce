@@ -58,8 +58,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
     }
 
-    protected Artifact importHelloTestWSDL() throws RegistryException, ArtifactPolicyException, IOException,
-            MimeTypeParseException
+    protected Artifact importHelloTestWSDL() throws Exception
     {
         InputStream helloWsdl = getResourceAsStream("/wsdl/hello-noOperation.wsdl");
 

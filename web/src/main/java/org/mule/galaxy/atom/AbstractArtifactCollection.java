@@ -265,7 +265,7 @@ public abstract class AbstractArtifactCollection
 
     protected abstract ArtifactResult postMediaEntry(String slug, MimeType mimeType, String version,
                                                      InputStream inputStream, User user, RequestContext ctx)
-        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, ResponseContextException;
+        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, ResponseContextException, DuplicateItemException;
     
     @Override
     public boolean isMediaEntry(ArtifactVersion entry) {

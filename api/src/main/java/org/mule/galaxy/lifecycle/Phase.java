@@ -3,17 +3,26 @@ package org.mule.galaxy.lifecycle;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.security.User;
 
-public class Phase {
+public class Phase implements Identifiable {
+    private String id;
     private String name;
     private Set<Phase> nextPhases;
     private Set<User> approvedUsers;
     private Lifecycle lifecycle;
-    
     public Phase(Lifecycle lifecycle) {
         super();
         this.lifecycle = lifecycle;
+    }
+    
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Lifecycle getLifecycle() {

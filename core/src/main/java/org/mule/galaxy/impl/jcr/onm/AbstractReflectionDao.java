@@ -219,8 +219,6 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         } else {
             q = qm.createQuery("/jcr:root/" + rootNode + "/*[@" + idAttributeName + "='" + id + "']", Query.XPATH);
         }
-        System.out.println("Searching for " + q.getStatement());
-        
         QueryResult qr = q.execute();
         
         NodeIterator nodes = qr.getNodes();

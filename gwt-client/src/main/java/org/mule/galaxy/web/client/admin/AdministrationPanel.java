@@ -36,7 +36,7 @@ public class AdministrationPanel extends AbstractMenuPanel {
 
         Hyperlink link = new Hyperlink("Lifecycles", "lifecycles");
         manageBox.add(link);
-        createPageInfo(link.getTargetHistoryToken(), new LifecyclePanel(adminPanel));
+        createPageInfo(link.getTargetHistoryToken(), new LifecycleListPanel(adminPanel));
 
         link = new Hyperlink("Indexes", "indexes");
         manageBox.add(link);

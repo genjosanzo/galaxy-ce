@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.activation.MimeTypeParseException;
 
 import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
@@ -35,7 +36,7 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
     }
 
     private void add(Workspace w, User user, String name, String resource) 
-        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException {
+        throws Exception {
 
         registry.createArtifact(w,
                                 "application/xml", 

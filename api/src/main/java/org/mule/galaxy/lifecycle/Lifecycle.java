@@ -2,6 +2,7 @@ package org.mule.galaxy.lifecycle;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,6 +39,17 @@ public class Lifecycle implements Identifiable {
 
     public Phase getPhase(String phase) {
         return phases.get(phase);
+    }
+
+    public Object getPhaseById(String id) {
+        for (Iterator itr = phases.values().iterator(); itr.hasNext();) {
+            Phase p = (Phase)itr.next();
+            
+            if (id.equals(p.getId())) {
+                return p;
+            }
+        }
+        return null;
     }
 
     public Map<String, Phase> getPhases() {

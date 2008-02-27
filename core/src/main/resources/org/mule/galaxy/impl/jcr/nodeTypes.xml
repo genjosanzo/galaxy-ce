@@ -7,8 +7,8 @@
     isMixin="false" 
     hasOrderableChildNodes="false"
     primaryItemName="">
-    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
-    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" multiple="true"/>
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
     <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
   </nodeType>
 
@@ -28,8 +28,8 @@
     hasOrderableChildNodes="false"
     primaryItemName="">
     
-    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
-    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" multiple="true"/>
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
     <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
     
   </nodeType>
@@ -39,8 +39,8 @@
     hasOrderableChildNodes="false"
     primaryItemName="" >
     
-    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
-    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" multiple="true"/>
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
     <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
     
   </nodeType>
@@ -50,8 +50,8 @@
     hasOrderableChildNodes="false"
     primaryItemName="">
     
-    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
-    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" multiple="true"/>
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
     <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
     
   </nodeType>

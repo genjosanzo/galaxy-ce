@@ -77,12 +77,13 @@ public interface Registry {
      * @return
      * @throws RegistryException
      * @throws IOException
+     * @throws DuplicateItemException 
      */
     ArtifactResult newVersion(Artifact artifact, 
                               Object data, 
                               String versionLabel, 
                               User user) 
-        throws RegistryException, ArtifactPolicyException, IOException;
+        throws RegistryException, ArtifactPolicyException, IOException, DuplicateItemException;
     
     /**
      * Create a new ArtifactVersion its byte form. 

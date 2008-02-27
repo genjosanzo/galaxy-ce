@@ -30,6 +30,7 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
@@ -145,7 +146,7 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
                                             InputStream inputStream, 
                                             User user,
                                             RequestContext request)
-        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, ResponseContextException  {
+        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, ResponseContextException, DuplicateItemException  {
 
         Workspace workspace = (Workspace) request.getAttribute(Scope.REQUEST, ArtifactResolver.WORKSPACE);
 

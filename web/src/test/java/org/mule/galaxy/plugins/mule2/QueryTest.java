@@ -72,8 +72,7 @@ public class QueryTest extends AbstractGalaxyTest {
 
     }
 
-    protected Artifact importHelloMule2() throws RegistryException, ArtifactPolicyException, IOException,
-            MimeTypeParseException
+    protected Artifact importHelloMule2() throws Exception
     {
         InputStream helloWsdl = getResourceAsStream("/mule2/hello-config.xml");
 

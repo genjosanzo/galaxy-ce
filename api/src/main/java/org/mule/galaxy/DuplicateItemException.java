@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.util.Message;
 
-public class DuplicateItemException extends RegistryException {
+public class DuplicateItemException extends GalaxyException {
 
     private static final Logger logger = LogUtils.getL7dLogger(DuplicateItemException.class);
     

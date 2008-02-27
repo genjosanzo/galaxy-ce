@@ -11,6 +11,7 @@ import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Comment;
 import org.mule.galaxy.CommentManager;
 import org.mule.galaxy.Dependency;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Index;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Index.Language;
@@ -45,6 +46,7 @@ import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
 import org.mule.galaxy.web.rpc.BasicArtifactInfo;
 import org.mule.galaxy.web.rpc.DependencyInfo;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.TransitionResponse;
@@ -142,7 +144,10 @@ public class RegistryServiceImpl implements RegistryService {
                 Workspace parent = registry.getWorkspace(parentWorkspaceId);
                 registry.createWorkspace(parent, workspaceName);
             }
-        } catch (RegistryException e) {
+        } catch (DuplicateItemException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }  catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
         }
@@ -731,7 +736,7 @@ public class RegistryServiceImpl implements RegistryService {
             List<WPhase> wphases = new ArrayList<WPhase>();
 
             for (Phase p : l.getPhases().values()) {
-                wphases.add(new WPhase(p.getName()));
+                wphases.add(new WPhase(p.getId(), p.getName()));
             }
 
             Collections.sort(wphases, new Comparator<WPhase>() {
@@ -923,6 +928,38 @@ public class RegistryServiceImpl implements RegistryService {
         });
 
         return gwtPolicies;
+    }
+
+    public void saveLifecycle(WLifecycle l) throws RPCException, ItemExistsException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void updateLifecycle(String origName, WLifecycle wl) throws RPCException, ItemExistsException {
+        Lifecycle l = new Lifecycle();
+        l.setName(wl.getName());
+        
+        for (Object o : wl.getPhases()) {
+            WPhase wp = (WPhase) o;
+            
+            Phase p = new Phase(l);
+            p.setId(wp.getId());
+            p.setName(wp.getName());
+        }
+
+        for (Object o : wl.getPhases()) {
+            WPhase wp = (WPhase) o;
+            Phase p = l.getPhase(wp.getName());
+            
+            for (Object oNext : wp.getNextPhases()) {
+                WPhase wNext = (WPhase) oNext;
+                Phase next = l.getPhase(wNext.getName());
+                
+                p.getNextPhases().add(next);
+            }
+        }
+
+        l.setInitialPhase(l.getPhase(wl.getInitialPhase().getName()));
     }
 
     private WArtifactPolicy createPolicyInfo(ArtifactPolicy p) {

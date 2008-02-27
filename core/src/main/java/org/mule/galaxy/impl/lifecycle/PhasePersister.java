@@ -41,15 +41,14 @@ public class PhasePersister implements FieldPersister, ApplicationContextAware {
             return null;
         }
         
-        String lifecycle = JcrUtil.getStringOrNull(n, "lifecycle");
         String phase = JcrUtil.getStringOrNull(n, "phase");
         
-        if (phase == null || lifecycle == null) return null;
+        if (phase == null) return null;
         
-        Lifecycle l = getLifecycleManager().getLifecycle(lifecycle);
-        if (l == null) return null;
+        Phase p = getLifecycleManager().getPhaseById(phase);
+        if (p == null) return null;
         
-        return l.getPhase(phase);
+        return p;
     }
 
     public void persist(Object o, Node n, FieldDescriptor fd, Session session) throws Exception {
@@ -57,8 +56,7 @@ public class PhasePersister implements FieldPersister, ApplicationContextAware {
         Phase p = (Phase) o;
         if (p == null) return;
         
-        child.setProperty("phase", p.getName());
-        child.setProperty("lifecycle", p.getLifecycle().getName());
+        child.setProperty("phase", p.getId());
     }
 
 }

@@ -39,5 +39,7 @@ public interface LifecycleManager {
      * @throws NotFoundException 
      */
     void delete(String lifecycleName, String fallbackLifecycle) throws NotFoundException;
+
+    Phase getPhaseById(String phase);
     
 }

@@ -132,14 +132,6 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
         execute(new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                NodeIterator nodes = getArtifactsInLifecycle(origName, session);
-                
-                while (nodes.hasNext()) {
-                    Node n = nodes.nextNode();
-                
-                    n.setProperty(JcrArtifact.LIFECYCLE, newName);
-                }
-                
                 Node lifecycleNode = findNode(origName, session);
                 
                 session.move(lifecycleNode.getPath(), 
@@ -205,13 +197,6 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
         });
     }
 
-
-    @Override
-    protected void doSave(Lifecycle t, Session session) throws RepositoryException, NotFoundException {
-        // TODO Auto-generated method stub
-        super.doSave(t, session);
-    }
-
     @Override
     protected void doCreateInitialNodes(Session session, javax.jcr.Node objects) throws RepositoryException {
         if (objects.getNodes().getSize() > 0)
@@ -232,6 +217,7 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
 
     private Node addPhaseNode(Node lNode, String name, String[] nextPhases) throws RepositoryException {
         Node pNode = lNode.addNode(name);
+        pNode.addMixin("mix:referenceable");
         pNode.setProperty(NEXT_PHASES, nextPhases);
         return pNode;
     }
@@ -359,7 +345,8 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
             Node phaseNode = nodes.nextNode();
             
             Phase phase = new Phase(l);
-            phase.setName(phaseNode.getName());
+            phase.setId(phaseNode.getUUID());
+            phase.setName(ISO9075.decode(phaseNode.getName()));
             
             l.getPhases().put(phase.getName(), phase);
         }
@@ -367,7 +354,7 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
         for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
             Node phaseNode = nodes.nextNode();
             
-            Phase phase = l.getPhase(phaseNode.getName());
+            Phase phase = l.getPhase(ISO9075.decode(phaseNode.getName()));
             
             HashSet<Phase> nextPhases = new HashSet<Phase>();
             try {
@@ -404,8 +391,13 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
     @Override
     protected void persist(Lifecycle l, javax.jcr.Node lNode, Session session) throws Exception {
         for (Phase p : l.getPhases().values()) {
-           Node pNode = JcrUtil.getOrCreate(lNode, p.getName());
+           Node pNode = getChild(lNode, p.getId());
            
+           // I suppose this could happen if someone else deletes a lifecycle phase before we save
+           if (pNode == null) {
+               pNode = JcrUtil.getOrCreate(lNode, p.getName());
+               p.setId(pNode.getUUID());
+           }
            ArrayList<String> nextPhases = new ArrayList<String>();
            for (Phase nextPhase : p.getNextPhases()) {
                nextPhases.add(nextPhase.getName());
@@ -418,9 +410,39 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
            }
            
            pNode.setProperty(NEXT_PHASES, nextPhases.toArray(new String[nextPhases.size()]));
+
+           if (!p.getName().equals(pNode.getName())) {
+               session.move(pNode.getPath(), 
+                            pNode.getParent().getPath() + "/" + ISO9075.encode(p.getName()));
+           }
         }
     }
     
+    private Node getChild(Node node, String id) throws RepositoryException {
+        for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
+            Node n = nodes.nextNode();
+            if (id.equals(n.getUUID())) {
+                return n;
+            }
+        }
+        return null;
+    }
+    
+
+    public Phase getPhaseById(final String id) {
+        return (Phase) execute(new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node pNode = getNodeByUUID(id);
+                
+                Lifecycle l = build(pNode.getParent(), session);
+                
+                return l.getPhaseById(id);
+            }
+            
+        });
+    }
+
     @Override
     protected String getNodeType() {
         return "galaxy:lifecycle";
