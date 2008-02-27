@@ -140,7 +140,7 @@ Fetching artifacts from Galaxy...
 
 
                 appWsFutures << exec.submit({
-                    File file = new File(cacheDir, "$parentWorkspace")
+                    File file = new File(cacheDir, parentWorkspace)
                     new Workspace(galaxy: g,
                                   name: name,
                                   parentWorkspace: parentWorkspace,
