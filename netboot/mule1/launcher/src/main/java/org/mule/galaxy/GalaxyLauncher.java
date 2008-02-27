@@ -23,6 +23,7 @@ import org.mule.galaxy.netboot.launch.NamedUrlClassLoader;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class GalaxyLauncher
 {
     public static final String GALAXY_BOOTSTRAP_CLASS_NAME = "org.mule.galaxy.netboot.GalaxyBootstrap";
 
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args) throws Throwable
     {
         GalaxyClientClassPathConfig classpath = new GalaxyClientClassPathConfig(lookupMuleHome());
 
@@ -49,7 +50,16 @@ public class GalaxyLauncher
         // call out to external class interacting with Galaxy to construct the final set of jar URLs 
         Class galaxyBootstrap = Class.forName(GALAXY_BOOTSTRAP_CLASS_NAME, true, Thread.currentThread().getContextClassLoader());
         Method method = galaxyBootstrap.getMethod("constructMuleClasspath");
-        URL[] muleClasspathUrls = (URL[]) method.invoke(null); // it's a static method
+        URL[] muleClasspathUrls = new URL[0]; // it's a static method
+        try
+        {
+            muleClasspathUrls = (URL[]) method.invoke(null);
+        }
+        catch (InvocationTargetException e)
+        {
+            // rethrow a nested root cause
+            throw e.getCause();
+        }
 
         // dereference explicitly to help GC
         galaxyCl = null;
