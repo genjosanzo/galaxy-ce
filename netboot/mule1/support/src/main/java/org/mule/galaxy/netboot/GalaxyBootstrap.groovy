@@ -180,8 +180,9 @@ Fetching artifacts from Galaxy...
                 fromCache(name)
             }
         }
-
-        exec.shutdown()
+        finally {
+            exec.shutdown()
+        }
 
         if (debug) { println urls.join('\n') }
 

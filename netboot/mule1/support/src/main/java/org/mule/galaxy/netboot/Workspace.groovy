@@ -47,57 +47,63 @@ class Workspace {
 
 
     def List<URL> process() {
-        def encodedQuery = URLEncoder.encode(query, "UTF-8")
-        def relativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$name?q=$encodedQuery" : "$name?q=$encodedQuery"
-        GetMethod response = galaxy.get(relativeUrl)
 
-        // local cache dir
-        def dir = new File(cacheDir, name)
-        dir.mkdirs()
-        assert dir.exists()
+        GetMethod response
 
-        def feed = new XmlSlurper().parse(response.responseBodyAsStream)
+        try {
+            def encodedQuery = URLEncoder.encode(query, "UTF-8")
+            def relativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$name?q=$encodedQuery" : "$name?q=$encodedQuery"
+            response = galaxy.get(relativeUrl)
 
-        int totalCount = 0
-        feed.entry.each {
-            // close on a local var for it to be accessible in Callable, fixes NPE
-            def node = it
-            def task = {
-                URL url = new URL("http://${galaxy.host}:$galaxy.port${node.content.@src}")
+            // local cache dir
+            def dir = new File(cacheDir, name)
+            dir.mkdirs()
+            assert dir.exists()
 
-                def jarName = node.title.text()
+            def feed = new XmlSlurper().parse(response.responseBodyAsStream)
 
-                // TODO plug voters here to decide if it needs to be downloaded really
-                // cache jars locally
-                File localJar = new File(dir, jarName)
+            int totalCount = 0
+            feed.entry.each {
+                // close on a local var for it to be accessible in Callable, fixes NPE
+                def node = it
+                def task = {
+                    URL url = new URL("http://${galaxy.host}:$galaxy.port${node.content.@src}")
 
-                if (lastUpdatedVote (localJar, node)) {
-                    println "Updating a local copy of $jarName"
-                    def jarRelativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$name/$jarName" : "$name/$jarName"
-                    GetMethod content = galaxy.get(jarRelativeUrl)
-                    localJar.newOutputStream() << content.responseBodyAsStream
-                    content.releaseConnection()
-                }
+                    def jarName = node.title.text()
 
-                // fix broken URLs for File class before Java 6
-                return localJar.toURI().toURL()
-            } as Callable
+                    // TODO plug voters here to decide if it needs to be downloaded really
+                    // cache jars locally
+                    File localJar = new File(dir, jarName)
 
-            compService.submit task
+                    if (lastUpdatedVote (localJar, node)) {
+                        println "Updating a local copy of $jarName"
+                        def jarRelativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$name/$jarName" : "$name/$jarName"
+                        GetMethod content = galaxy.get(jarRelativeUrl)
+                        localJar.newOutputStream() << content.responseBodyAsStream
+                        content.releaseConnection()
+                    }
 
-            totalCount++
+                    // fix broken URLs for File class before Java 6
+                    return localJar.toURI().toURL()
+                } as Callable
+
+                compService.submit task
+
+                totalCount++
+            }
+
+            // locally cached jar urls
+            def urls = []
+            totalCount.times {
+                urls << compService.take().get()
+            }
+
+            urls
+        } finally {
+            exec.shutdown()
+            response?.releaseConnection()
         }
 
-        // locally cached jar urls
-        def urls = []
-        totalCount.times {
-            urls << compService.take().get()
-        }
-
-        // TODO in finally block
-        response.releaseConnection()
-
-        urls
     }
 
     // return true if update from Galaxy is required
