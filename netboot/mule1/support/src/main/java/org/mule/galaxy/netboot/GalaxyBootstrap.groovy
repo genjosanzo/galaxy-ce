@@ -23,6 +23,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import org.mule.galaxy.client.Galaxy
 import java.util.concurrent.Callable
+import java.util.concurrent.ExecutionException
 
 class GalaxyBootstrap {
 
@@ -152,24 +153,37 @@ Fetching artifacts from Galaxy...
             // add application workspaces' urls
             appWsFutures.each { urls += it.get() }
 
-            if (debug) { println urls.join('\n') }
+        } catch (ExecutionException eex) { // wraps any execution job
 
-        } catch (ConnectException cex) {
+            def rootCause = eex.cause?.cause // 1st cause is groovy invoker exception, next is the real one
+
+            if (!(rootCause instanceof ConnectException)) {
+                // fail-fast and rethrow
+                throw rootCause
+            }
+
             println "Galaxy server is not available, will try a local cache..."
-            new File(netBootCacheDir, 'lib/user').listFiles().each { file ->
-                urls << file.toURI().toURL()
-            }
-            new File(netBootCacheDir, 'lib/mule').listFiles().each { file ->
-                urls << file.toURI().toURL()
-            }
-            new File(netBootCacheDir, 'lib/opt').listFiles().each { file ->
-                urls << file.toURI().toURL()
+
+            def fromCache = { subDir ->
+                new File(cacheDir, subDir).listFiles().each { file ->
+                    urls << file.toURI().toURL()
+                }
             }
 
-            // TODO try caches for application workspaces too
+            // netboot cache
+            fromCache("$netBootWorkspace/lib/user")
+            fromCache("$netBootWorkspace/lib/mule")
+            fromCache("$netBootWorkspace/lib/opt")
+
+            // app workspaces cache
+            workspaces.each { name ->
+                fromCache(name)
+            }
         }
 
         exec.shutdown()
+
+        if (debug) { println urls.join('\n') }
 
         println '\nLaunching Mule, get set for a hyper-jump...\n'
 
