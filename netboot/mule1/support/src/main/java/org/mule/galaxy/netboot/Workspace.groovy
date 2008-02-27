@@ -79,8 +79,11 @@ class Workspace {
                         println "Updating a local copy of $jarName"
                         def jarRelativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$name/$jarName" : "$name/$jarName"
                         GetMethod content = galaxy.get(jarRelativeUrl)
-                        localJar.newOutputStream() << content.responseBodyAsStream
-                        content.releaseConnection()
+                        try {
+                            localJar.newOutputStream() << content.responseBodyAsStream
+                        } finally {
+                            content?.releaseConnection()
+                        }
                     }
 
                     // fix broken URLs for File class before Java 6
