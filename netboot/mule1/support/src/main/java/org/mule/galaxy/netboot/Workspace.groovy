@@ -98,7 +98,7 @@ class Workspace {
                 urls << compService.take().get()
             }
 
-            urls
+            return urls
         } finally {
             exec.shutdown()
             response?.releaseConnection()
