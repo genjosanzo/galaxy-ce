@@ -77,7 +77,9 @@ if (debugEnabled || profileEnabled || adHocOptionsAvailable) {
 */
 def void writeAdHocProps(Writer w) {
     args.findAll { it.startsWith('-M') }.each { arg ->
-        w << "wrapper.java.additional.${paramIndex++}=${arg.replaceFirst("^-M", "")}\n"
+        w << "wrapper.java.additional.${paramIndex}=\"${arg.replaceFirst("^-M", "")}\"\n"
+        w << "wrapper.java.additional.${paramIndex}.stripquotes=TRUE\n"
+        paramIndex++
     }
 }
 
