@@ -95,7 +95,7 @@ class Workspace {
 
                             if (localJar.exists()) {
                                 // overwriting a file means implicit delete first
-                                localJar.delete()
+                                assert localJar.delete()
                             }
                             assert tempJar.renameTo(localJar)
                         } finally {
