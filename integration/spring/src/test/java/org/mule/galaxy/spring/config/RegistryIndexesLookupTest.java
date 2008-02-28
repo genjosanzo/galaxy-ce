@@ -18,6 +18,6 @@ public class RegistryIndexesLookupTest extends AbstractConfigLookupTest
 
     public void testLookupByDescription() throws Exception
     {
-        doLookup("select artifact where spring.description = 'Test Sprng Application Context'", 1);
+        doLookup("select artifact where spring.description = 'Test Spring Application Context'", 1);
     }
 }

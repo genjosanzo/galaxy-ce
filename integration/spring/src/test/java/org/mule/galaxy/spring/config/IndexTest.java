@@ -89,7 +89,7 @@ public class IndexTest extends AbstractGalaxyTest
         //"select artifact where spring.bean = 'TestObject1'" 1
         //"select artifact where spring.bean = 'TestObject2'" 1
         //"select artifact where spring.bean = 'TestObjectXX'" 0
-        //"select artifact where spring.description = 'Test Sprng Application Context'" 1
+        //"select artifact where spring.description = 'Test Spring Application Context'" 1
     }
 
 }
