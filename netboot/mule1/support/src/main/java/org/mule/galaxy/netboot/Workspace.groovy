@@ -93,6 +93,10 @@ class Workspace {
 
                             tempJar.withOutputStream { it << content.responseBodyAsStream }
 
+                            if (localJar.exists()) {
+                                // overwriting a file means implicit delete first
+                                localJar.delete()
+                            }
                             assert tempJar.renameTo(localJar)
                         } finally {
                             content?.releaseConnection()
