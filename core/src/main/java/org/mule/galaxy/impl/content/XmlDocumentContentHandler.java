@@ -15,6 +15,7 @@ import javax.activation.MimeTypeParseException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.Source;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -146,4 +147,8 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
         }
     }
 
+    // TODO maybe should go, neither used nor overridden anywhere
+    public Object read(Source source, Workspace workspace) throws Exception {
+        throw new UnsupportedOperationException();
+    }
 }

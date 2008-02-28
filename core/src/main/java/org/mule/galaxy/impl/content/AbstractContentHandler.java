@@ -10,12 +10,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.activation.MimeType;
-import javax.xml.transform.Source;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
 
@@ -39,10 +37,6 @@ public abstract class AbstractContentHandler implements ContentHandler {
     
     public Set<String> getSupportedFileExtensions() {
         return supportedFileExtensions;
-    }
-
-    public Object read(Source source, Workspace workspace) throws Exception {
-        throw new UnsupportedOperationException();
     }
 
     public void addMetadata(ArtifactVersion v) {
