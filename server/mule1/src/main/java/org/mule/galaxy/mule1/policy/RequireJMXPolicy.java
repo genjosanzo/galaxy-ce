@@ -51,7 +51,7 @@ public class RequireJMXPolicy implements ArtifactPolicy
     public Collection<ApprovalMessage> isApproved(Artifact a, ArtifactVersion previous, ArtifactVersion next) {
         try {
 
-            if(!((Boolean)xpath.evaluate((Document) next.getData(), XPathConstants.BOOLEAN)).booleanValue())
+            if(!(Boolean) xpath.evaluate((Document) next.getData(), XPathConstants.BOOLEAN))
             {
                 return Arrays.asList(new ApprovalMessage("The Mule configuration does not have JMX support Enabled", false));
             }
