@@ -132,6 +132,14 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
         execute(new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
+                NodeIterator nodes = getArtifactsInLifecycle(origName, session);
+
+                while (nodes.hasNext()) {
+                    Node n = nodes.nextNode();
+
+                    n.setProperty(JcrArtifact.LIFECYCLE, newName);
+                }
+                
                 Node lifecycleNode = findNode(origName, session);
                 
                 session.move(lifecycleNode.getPath(), 

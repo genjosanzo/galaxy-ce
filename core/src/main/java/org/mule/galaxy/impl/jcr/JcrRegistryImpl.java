@@ -59,6 +59,7 @@ import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.ActivityManager.EventType;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
@@ -1181,11 +1182,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                             qstr.append(" or ");
                         }
                         
-                        qstr.append("(");
-                        
                         createLifecycleAndPhasePropertySearch(qstr, property, o, not, operator);
-                        
-                        qstr.append(")");
                     }
                     
                     if (!firstPhase) {
@@ -1234,12 +1231,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             throw new QueryException(new Message("INVALID_PHASE_FORMAT", LOGGER, right.toString()));
         }
         // phase = ...
-        createPropertySearch(qstr, "lifecycle", lp[0], operator, not, false);
+        Lifecycle l = lifecycleManager.getLifecycle(lp[0]);
+        String pid = "invalid";
+        if (l != null) {
+            Phase p = l.getPhase(lp[1]);
+            
+            if (p != null) pid = p.getId();
+        }
         
-        qstr.append(" and ");
-        
-        // lifecycle = 
-        createPropertySearch(qstr, property, lp[1], operator, not, false);
+        createPropertySearch(qstr, "phase", pid, operator, not, false);
     }
 
     protected boolean appendPropertySearch(StringBuilder qstr, 

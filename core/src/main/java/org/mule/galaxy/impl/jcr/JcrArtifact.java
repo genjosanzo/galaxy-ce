@@ -230,6 +230,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     
     public void setPhase(Phase p) {
         try {
+            node.setProperty(LIFECYCLE, p.getLifecycle().getId());
             node.setProperty(PHASE, p.getId());
             update();
         } catch (RepositoryException e) {

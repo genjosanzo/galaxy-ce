@@ -1,15 +1,12 @@
 package org.mule.galaxy.impl;
 
+import java.util.Arrays;
+import java.util.Set;
+
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.Workspace;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.util.Constants;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
 
 public class QueryTest extends AbstractGalaxyTest {
     
