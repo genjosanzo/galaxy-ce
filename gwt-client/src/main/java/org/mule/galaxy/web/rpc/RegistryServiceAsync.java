@@ -83,8 +83,6 @@ public interface RegistryServiceAsync extends RemoteService {
 
     void saveLifecycle(WLifecycle l, AsyncCallback c);
     
-    void updateLifecycle(String origName, WLifecycle l, AsyncCallback c);
-    
     void getActivePoliciesForLifecycle(String name, String workspaceId, AsyncCallback c);
     
     void getActivePoliciesForPhase(String lifecycle, String phase, String workspaceId, AsyncCallback c);

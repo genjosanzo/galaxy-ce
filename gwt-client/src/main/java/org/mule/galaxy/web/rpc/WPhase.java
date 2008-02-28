@@ -11,6 +11,7 @@ public class WPhase implements IsSerializable {
     
     public WPhase(String id, String name) {
         super();
+        this.id = id;
         this.name = name;
     }
 

@@ -1,25 +1,22 @@
 package org.mule.galaxy.web.server;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.io.IOException;
-import java.io.InputStream;
 
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.providers.AuthenticationProvider;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.test.AbstractGalaxyTest;
@@ -33,10 +30,8 @@ import org.mule.galaxy.web.rpc.WApprovalMessage;
 import org.mule.galaxy.web.rpc.WComment;
 import org.mule.galaxy.web.rpc.WGovernanceInfo;
 import org.mule.galaxy.web.rpc.WIndex;
+import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WWorkspace;
-
-import javax.activation.MimeTypeParseException;
-
 import org.springframework.context.ApplicationContext;
 
 public class RegistryServiceTest extends AbstractGalaxyTest {
@@ -276,6 +271,26 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         WIndex idx = gwtRegistry.getIndex("wsdl.service");
         assertNotNull(idx);
         assertNotNull(idx.getResultType());
+    }
+    
+    public void testLifecycles() throws Exception {
+        Collection lifecycles = gwtRegistry.getLifecycles();
+        
+        assertEquals(1, lifecycles.size());
+        
+        WLifecycle wl = (WLifecycle) lifecycles.iterator().next();
+        assertEquals("Default", wl.getName());
+        assertNotNull(wl.getId());
+     
+        wl.setName("newname");
+        
+        gwtRegistry.saveLifecycle(wl);
+        
+        lifecycles = gwtRegistry.getLifecycles();
+        assertEquals(1, lifecycles.size());
+        
+        wl = (WLifecycle) lifecycles.iterator().next();
+        assertEquals("newname", wl.getName());
     }
     
     private final class FauxPolicy implements ArtifactPolicy {

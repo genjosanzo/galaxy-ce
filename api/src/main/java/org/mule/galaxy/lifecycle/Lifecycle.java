@@ -9,16 +9,17 @@ import java.util.Set;
 import org.mule.galaxy.Identifiable;
 
 public class Lifecycle implements Identifiable {
+    private String id;
     private String name;
     private Phase initialPhase;
     private Map<String, Phase> phases;
     
     public String getId() {
-        return getName();
+        return id;
     }
 
     public void setId(String id) {
-        setName(id);
+        this.id = id;
     }
 
     public String getName() {
@@ -41,7 +42,7 @@ public class Lifecycle implements Identifiable {
         return phases.get(phase);
     }
 
-    public Object getPhaseById(String id) {
+    public Phase getPhaseById(String id) {
         for (Iterator itr = phases.values().iterator(); itr.hasNext();) {
             Phase p = (Phase)itr.next();
             

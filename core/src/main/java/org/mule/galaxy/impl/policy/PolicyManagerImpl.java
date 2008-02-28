@@ -109,9 +109,8 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         Collection<ArtifactPolicy> policies = getActivePolicies(next.getParent());
         List<ApprovalMessage> approvals = new ArrayList<ApprovalMessage>();
         for (ArtifactPolicy p : policies) {
-            Collection list = p.isApproved(next.getParent(), previous, next);
-            if(list!=null)
-            {
+            Collection<ApprovalMessage> list = p.isApproved(next.getParent(), previous, next);
+            if (list != null) {
                 approvals.addAll(list);
             }
         }
@@ -169,11 +168,11 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
 
     public void setActivePolicies(Artifact a, Lifecycle lifecycle, ArtifactPolicy... policies) 
         throws ArtifactPolicyException {
-        if (lifecycle.getName().equals(a.getPhase().getLifecycle())) {
+        if (lifecycle.getId().equals(a.getPhase().getLifecycle().getId())) {
             approveArtifact(a, policies);
         }
         
-        activatePolicy(artifactsLifecyclesNodeId, policies, a.getId(), lifecycle.getName());
+        activatePolicy(artifactsLifecyclesNodeId, policies, a.getId(), lifecycle.getId());
     }
 
     public void setActivePolicies(Collection<Phase> phases, ArtifactPolicy... policies) 
@@ -221,7 +220,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         
         approveArtifacts(q, policies);
         
-        activatePolicy(lifecyclesNodeId, policies, lifecycle.getName());
+        activatePolicy(lifecyclesNodeId, policies, lifecycle.getId());
     }
 
     public void setActivePolicies(Workspace w, Collection<Phase> phases, ArtifactPolicy... policies) {
@@ -236,7 +235,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         
         approveArtifacts(q, policies);
         
-        activatePolicy(workspaceLifecyclesNodeId, policies, w.getId(), lifecycle.getName());
+        activatePolicy(workspaceLifecyclesNodeId, policies, w.getId(), lifecycle.getId());
     }
     
     private void activatePolicy(final String nodeId, 
@@ -255,7 +254,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                     node = getOrCreate(node, name);
                 }
                 for (Phase p : phases) {
-                    Node lNode = getOrCreate(node, p.getLifecycle().getName());
+                    Node lNode = getOrCreate(node, p.getLifecycle().getId());
                     Node pNode = getOrCreate(lNode, p.getName());
                     
                     JcrUtil.removeChildren(pNode);
@@ -318,7 +317,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                 Node node = session.getNodeByUUID(lifecyclesNodeId);
                 try {
 
-                    node = node.getNode(l.getName());
+                    node = node.getNode(l.getId());
                     
                     for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
                         activePolicies.add(getPolicy(nodes.nextNode().getName()));
@@ -340,7 +339,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                 Node node = session.getNodeByUUID(phasesNodeId);
                 try {
 
-                    node = node.getNode(p.getLifecycle().getName());
+                    node = node.getNode(p.getLifecycle().getId());
                     node = node.getNode(p.getName());
                     
                     for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
@@ -363,7 +362,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                 Node node = session.getNodeByUUID(workspaceLifecyclesNodeId);
                 try {
                     node = node.getNode(w.getId());
-                    node = node.getNode(l.getName());
+                    node = node.getNode(l.getId());
                     
                     for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
                         activePolicies.add(getPolicy(nodes.nextNode().getName()));
@@ -385,7 +384,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                 Node node = session.getNodeByUUID(workspacePhasesNodeId);
                 try {
                     node = node.getNode(w.getId());
-                    node = node.getNode(p.getLifecycle().getName());
+                    node = node.getNode(p.getLifecycle().getId());
                     node = node.getNode(p.getName());
                     
                     for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
@@ -405,7 +404,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         final Set<ArtifactPolicy> activePolicies = new HashSet<ArtifactPolicy>();
         jcrTemplate.execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                String lifecycle = a.getPhase().getLifecycle().getName();
+                String lifecycle = a.getPhase().getLifecycle().getId();
                 String workspace = a.getWorkspace().getId();
                 
                 addPolicies(activePolicies, a, session, lifecyclesNodeId, lifecycle);
@@ -468,7 +467,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         for (NodeIterator lifecycles = result.getNodes(); lifecycles.hasNext();) {
             Node lifecycleNode = lifecycles.nextNode();
             
-            Lifecycle l = lifecycleManager.getLifecycle(lifecycleNode.getName());
+            Lifecycle l = lifecycleManager.getLifecycleById(lifecycleNode.getName());
             
             for (NodeIterator phases = lifecycleNode.getNodes(); phases.hasNext();) {
                 Node phasesNode = phases.nextNode();
@@ -498,7 +497,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         for (NodeIterator lifecycles = result.getNodes(); lifecycles.hasNext();) {
             Node lifecycleNode = lifecycles.nextNode();
             
-            Lifecycle l = lifecycleManager.getLifecycle(lifecycleNode.getName());
+            Lifecycle l = lifecycleManager.getLifecycleById(lifecycleNode.getName());
             
             for (NodeIterator policiesNodes = lifecycleNode.getNodes(); policiesNodes.hasNext();) { 
                 ArtifactPolicy policy = policies.get(policiesNodes.nextNode().getName());

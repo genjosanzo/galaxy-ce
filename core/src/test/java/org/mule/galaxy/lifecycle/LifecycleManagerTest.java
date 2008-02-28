@@ -77,8 +77,9 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
     public void testSave() throws Exception {
         Lifecycle l = lifecycleManager.getDefaultLifecycle();
         l.setName("test");
+        assertNotNull(l.getId());
         
-        lifecycleManager.save("Default", l);
+        lifecycleManager.save(l);
         assertEquals("test", l.getName());
 
         Collection<Lifecycle> lcs = lifecycleManager.getLifecycles();
@@ -90,7 +91,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         Artifact a = importHelloWsdl();
         
         l.setName("test2");
-        lifecycleManager.save("test", l);
+        lifecycleManager.save(l);
         
         a = registry.getArtifact(a.getId());
         assertEquals(l, a.getPhase().getLifecycle());
@@ -125,7 +126,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         Phase p1 = l.getInitialPhase();
         p1.setName("new name");
         
-        lifecycleManager.save(l.getName(), l);
+        lifecycleManager.save(l);
         
         artifact = registry.getArtifact(artifact.getId());
         assertEquals(p1, artifact.getPhase());

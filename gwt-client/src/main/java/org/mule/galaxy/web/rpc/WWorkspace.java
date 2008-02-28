@@ -9,6 +9,7 @@ public class WWorkspace implements IsSerializable {
     private String name;
     private Collection workspaces;
     private String path;
+    private WLifecycle defaultLifecycle;
     
     public WWorkspace() {
         super();
@@ -19,6 +20,12 @@ public class WWorkspace implements IsSerializable {
         this.path = path;
     }
     
+    public WLifecycle getDefaultLifecycle() {
+        return defaultLifecycle;
+    }
+    public void setDefaultLifecycle(WLifecycle defaultLifecycle) {
+        this.defaultLifecycle = defaultLifecycle;
+    }
     public String getPath() {
         return path;
     }

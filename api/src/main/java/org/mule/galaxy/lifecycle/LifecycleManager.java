@@ -23,13 +23,13 @@ public interface LifecycleManager {
     
     Lifecycle getLifecycle(String lifecycleName);
 
+    Lifecycle getLifecycleById(String id);
+    
     /**
-     * Save a new lifecycle.
+     * Save/update a lifecycle.
      * @param newLc
      */
     void save(Lifecycle newLc);
-
-    void save(String origName, Lifecycle lifecycle);
     
     /**
      * 

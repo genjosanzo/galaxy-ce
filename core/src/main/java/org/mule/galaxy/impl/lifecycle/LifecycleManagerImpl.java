@@ -113,45 +113,6 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
     public Collection<Lifecycle> getLifecycles() {
         return listAll();
     }
-
-    public void save(final String origName, Lifecycle lifecycle) {
-        
-        final String newName = lifecycle.getName();
-        
-        lifecycle.setName(origName);
-        save(lifecycle);
-        
-        if (!newName.equals(origName)) {
-            renameLifecycle(origName, newName);
-            
-            lifecycle.setName(newName);
-        }
-    }
-
-    private void renameLifecycle(final String origName, final String newName) {
-        execute(new JcrCallback() {
-
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                NodeIterator nodes = getArtifactsInLifecycle(origName, session);
-
-                while (nodes.hasNext()) {
-                    Node n = nodes.nextNode();
-
-                    n.setProperty(JcrArtifact.LIFECYCLE, newName);
-                }
-                
-                Node lifecycleNode = findNode(origName, session);
-                
-                session.move(lifecycleNode.getPath(), 
-                             lifecycleNode.getParent().getPath() + "/" + newName);
-                lifecycleNode.setProperty("name", newName);
-                session.save();
-                
-                return null;
-            }
-        });
-    }
-
     public void delete(final String lifecycleName, 
                        final String fallbackLifecycleName) throws NotFoundException {
         final Lifecycle fallbackLifecycle;
@@ -169,13 +130,15 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
             throw new IllegalArgumentException("The fallback lifecycle cannot be the same as the lifecycle being deleted.");
         }
         
-       execute(new JcrCallback() {
+        final Lifecycle lifecycle = getLifecycle(lifecycleName);
+        
+        execute(new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Phase p = fallbackLifecycle.getInitialPhase();
                 
                 // update all the artifacts using this lifecycle
-                NodeIterator nodes = getArtifactsInLifecycle(lifecycleName, session);
+                NodeIterator nodes = getArtifactsInLifecycle(lifecycle.getId(), session);
                 
                 while (nodes.hasNext()) {
                     Node n = nodes.nextNode();
@@ -342,10 +305,27 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
             
         });
     }
+    
+
+    public Lifecycle getLifecycleById(final String id) {
+        return (Lifecycle) execute(new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                try {
+                    Node node = getNodeByUUID(id);
+                    
+                    return build(node, session);
+                } catch (PathNotFoundException e) {
+                    return null;
+                }
+            }
+        });
+    }
 
     @Override
     public Lifecycle build(Node node, Session session) throws RepositoryException {
         Lifecycle l = new Lifecycle();
+        l.setId(node.getUUID());
         l.setName(node.getName());
         l.setPhases(new HashMap<String,Phase>());
         
@@ -397,6 +377,11 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
     }
 
     @Override
+    protected Node findNode(String id, Session session) throws RepositoryException {
+        return getNodeByUUID(id);
+    }
+
+    @Override
     protected void persist(Lifecycle l, javax.jcr.Node lNode, Session session) throws Exception {
         for (Phase p : l.getPhases().values()) {
            Node pNode = getChild(lNode, p.getId());
@@ -423,6 +408,15 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
                session.move(pNode.getPath(), 
                             pNode.getParent().getPath() + "/" + ISO9075.encode(p.getName()));
            }
+        }
+
+        String newName = l.getName();
+        String origName = ISO9075.decode(lNode.getName());
+        
+        if (!newName.equals(origName)) {
+            session.move(lNode.getPath(), 
+                         lNode.getParent().getPath() + "/" + ISO9075.encode(newName));
+            lNode.setProperty("name", newName);
         }
     }
     

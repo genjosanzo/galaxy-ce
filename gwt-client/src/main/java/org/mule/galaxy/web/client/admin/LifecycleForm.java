@@ -1,6 +1,7 @@
 package org.mule.galaxy.web.client.admin;
 
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusListener;
@@ -9,12 +10,18 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WPhase;
 
+/**
+ * I apologize for the ugliness of this class in advance - there
+ * is no way to develop a good UI for this without spaghetti code. - DD
+ */
 public class LifecycleForm extends AbstractComposite {
 
     private FlowPanel panel;
@@ -24,20 +31,29 @@ public class LifecycleForm extends AbstractComposite {
     private FlowPanel nextPhasesPanel;
     private Button save;
     private ListBox phases;
+    private ListBox nextPhases;
+    private TextBox phaseNameTB;
+    private final AdministrationPanel adminPanel;
+    private String originalName;
 
     public LifecycleForm(AdministrationPanel adminPanel, 
                          WLifecycle l, 
                          boolean add) {
+        this.adminPanel = adminPanel;
         this.lifecycle = l;
+        this.originalName = l.getName();
         this.add = add;
         panel = new FlowPanel();
+        panel.setStyleName("lifecycle-form-base");
         
         initWidget(panel);
     }
 
     public void onShow() {
+        panel.clear();
+        panel.add(createTitle("Edit Lifecycle " + lifecycle.getName()));
+
         FlowPanel nameAndPhases = new FlowPanel();
-        nameAndPhases.add(new Label("Lifecycle"));
         
         nameTB = new TextBox();
         nameTB.setText(lifecycle.getName());
@@ -73,21 +89,20 @@ public class LifecycleForm extends AbstractComposite {
         // add to main panel
         panel.add(asHorizontal(nameAndPhases, nextPhasesPanel));
     }
-
-    protected void save() {
-        // TODO Auto-generated method stub
-        
-    }
-
+    
     protected void showNextPhases() {
         int idx = phases.getSelectedIndex();
         if (idx == -1) return;
 
         nextPhasesPanel.clear();
         
-        final WPhase phase = findPhase(phases.getItemText(idx));
+        final WPhase phase = lifecycle.getPhaseById(phases.getValue(idx));
+
+        nextPhases = new ListBox();
+        nextPhases.setMultipleSelect(true);
+        nextPhases.setVisibleItemCount(10);
         
-        final TextBox phaseNameTB = new TextBox();
+        phaseNameTB = new TextBox();
         phaseNameTB.setText(phase.getName());
         phaseNameTB.addFocusListener(new FocusListener() {
             public void onFocus(Widget arg0) {
@@ -95,19 +110,23 @@ public class LifecycleForm extends AbstractComposite {
 
             public void onLostFocus(Widget arg0) {
                 String newName = phaseNameTB.getText();
-                int idx = findPhaseInList(phase.getName());
                 
-                phase.setName(newName);
+                // update left hand phases list with new name
+                int idx = findPhaseInList(phases, phase.getName());
                 phases.setItemText(idx, newName);
+                
+                // update next phases list with new name
+                idx = findPhaseInList(nextPhases, phase.getName());
+                nextPhases.setItemText(idx, newName);
+                
+                // update actual phase object
+                phase.setName(newName);
             }
         });
         nextPhasesPanel.add(asHorizontal(new Label("Name: "), phaseNameTB));
         
         nextPhasesPanel.add(new Label("Next Phases"));
         
-        ListBox nextPhases = new ListBox();
-        nextPhases.setMultipleSelect(true);
-        nextPhases.setVisibleItemCount(10);
         
         int i = 0;
         for (Iterator itr = lifecycle.getPhases().iterator(); itr.hasNext();) {
@@ -115,15 +134,30 @@ public class LifecycleForm extends AbstractComposite {
             
             nextPhases.addItem(p.getName(), p.getId());
             
-            if (phase.getNextPhases().contains(p)) {
+            if (phase.getNextPhases() != null && phase.getNextPhases().contains(p)) {
                 nextPhases.setItemSelected(i, true);
             }
             i++;
         }
         nextPhasesPanel.add(nextPhases);
+        
+        nextPhases.addChangeListener(new ChangeListener() {
+            public void onChange(Widget arg0) {
+                updateNextPhases(phase, nextPhases);
+            }
+        });
     }
 
-    protected int findPhaseInList(String name) {
+    protected void updateNextPhases(WPhase phase, ListBox nextPhases) {
+        phase.setNextPhases(new ArrayList());
+        for (int i = 0; i < nextPhases.getItemCount(); i++) {
+            if (nextPhases.isItemSelected(i)) {
+                phase.getNextPhases().add(lifecycle.getPhaseById(nextPhases.getValue(i)));
+            }
+        }
+    }
+
+    protected int findPhaseInList(ListBox phases, String name) {
         for (int i = 0; i < phases.getItemCount(); i++) {
             String txt = phases.getItemText(i);
             
@@ -134,16 +168,41 @@ public class LifecycleForm extends AbstractComposite {
         return -1;
     }
 
-    private WPhase findPhase(String value) {
-        for (Iterator itr = lifecycle.getPhases().iterator(); itr.hasNext();) {
-            WPhase p = (WPhase)itr.next();
-            
-            if (p.getName().equals(value)) {
-                return p;
-            }
-        }
+
+    protected void save() {
+        nameTB.setEnabled(false);
+        phases.setEnabled(false);
         
-        return null;
+        nextPhases.setEnabled(false);
+        phaseNameTB.setEnabled(false);
+        
+        save.setText("Saving...");
+        save.setEnabled(false);
+        
+        adminPanel.getRegistryService().saveLifecycle(lifecycle, new AbstractCallback(adminPanel) {
+
+            public void onFailure(Throwable caught) {
+                reenable();
+                super.onFailure(caught);
+            }
+
+            public void onSuccess(Object arg0) {
+                reenable();
+            }
+            
+        });
+    }
+
+    protected void reenable() {
+        nameTB.setEnabled(true);
+        phases.setEnabled(true);
+        
+        nextPhases.setEnabled(true);
+        phaseNameTB.setEnabled(true);
+        
+        save.setText("Save");
+        save.setEnabled(true);
+        
     }
 
 }

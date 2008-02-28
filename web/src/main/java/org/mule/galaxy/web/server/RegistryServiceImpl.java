@@ -1,8 +1,27 @@
 package org.mule.galaxy.web.server;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.xml.namespace.QName;
+
+import org.acegisecurity.context.SecurityContextHolder;
 import org.mule.galaxy.Activity;
 import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.ActivityManager.EventType;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactType;
@@ -13,15 +32,16 @@ import org.mule.galaxy.CommentManager;
 import org.mule.galaxy.Dependency;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Index;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.Index.Language;
 import org.mule.galaxy.IndexManager;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.ActivityManager.EventType;
+import org.mule.galaxy.Index.Language;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
@@ -63,27 +83,6 @@ import org.mule.galaxy.web.rpc.WProperty;
 import org.mule.galaxy.web.rpc.WSearchResults;
 import org.mule.galaxy.web.rpc.WUser;
 import org.mule.galaxy.web.rpc.WWorkspace;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.xml.namespace.QName;
-
-import org.acegisecurity.context.SecurityContextHolder;
 
 public class RegistryServiceImpl implements RegistryService {
     private Logger LOGGER = LogUtils.getL7dLogger(RegistryServiceImpl.class);
@@ -725,31 +724,54 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public Collection getLifecycles() throws RPCException {
         Collection<Lifecycle> lifecycles = lifecycleManager.getLifecycles();
         ArrayList<WLifecycle> wls = new ArrayList<WLifecycle>();
         for (Lifecycle l : lifecycles) {
-            WLifecycle lifecycle = new WLifecycle(l.getName());
-
+            WLifecycle lifecycle = toWeb(l);
             wls.add(lifecycle);
 
-            List<WPhase> wphases = new ArrayList<WPhase>();
-
-            for (Phase p : l.getPhases().values()) {
-                wphases.add(new WPhase(p.getId(), p.getName()));
-            }
-
-            Collections.sort(wphases, new Comparator<WPhase>() {
-
-                public int compare(WPhase o1, WPhase o2) {
-                    return o1.getName().compareTo(o2.getName());
-                }
-
-            });
-            lifecycle.setPhases(wphases);
+            
         }
 
         return wls;
+    }
+
+    private WLifecycle toWeb(Lifecycle l) {
+        WLifecycle lifecycle = new WLifecycle(l.getId(), l.getName());
+        
+        List<WPhase> wphases = new ArrayList<WPhase>();
+        lifecycle.setPhases(wphases);
+        
+        for (Phase p : l.getPhases().values()) {
+            WPhase wp = new WPhase(p.getId(), p.getName());
+            wphases.add(wp);
+            
+            if (p.equals(l.getInitialPhase())) {
+                lifecycle.setInitialPhase(wp);
+            }
+        }
+        
+        for (Phase p : l.getPhases().values()) {
+            WPhase wp = lifecycle.getPhase(p.getName());
+            wp.setNextPhases(new ArrayList());
+            
+            for (Phase next : p.getNextPhases()) {
+                WPhase wnext = lifecycle.getPhase(next.getName());
+                
+                wp.getNextPhases().add(wnext);
+            }
+        }
+        
+        Collections.sort(wphases, new Comparator<WPhase>() {
+
+            public int compare(WPhase o1, WPhase o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+
+        });
+        return lifecycle;
     }
 
     public Collection getActivePoliciesForLifecycle(String lifecycleName, String workspaceId)
@@ -930,14 +952,17 @@ public class RegistryServiceImpl implements RegistryService {
         return gwtPolicies;
     }
 
-    public void saveLifecycle(WLifecycle l) throws RPCException, ItemExistsException {
-        // TODO Auto-generated method stub
+    public void saveLifecycle(WLifecycle wl) throws RPCException, ItemExistsException {
+        Lifecycle l = fromWeb(wl);
         
+        lifecycleManager.save(l);
     }
 
-    public void updateLifecycle(String origName, WLifecycle wl) throws RPCException, ItemExistsException {
+    private Lifecycle fromWeb(WLifecycle wl) {
         Lifecycle l = new Lifecycle();
+        l.setPhases(new HashMap<String, Phase>());
         l.setName(wl.getName());
+        l.setId(wl.getId());
         
         for (Object o : wl.getPhases()) {
             WPhase wp = (WPhase) o;
@@ -945,11 +970,13 @@ public class RegistryServiceImpl implements RegistryService {
             Phase p = new Phase(l);
             p.setId(wp.getId());
             p.setName(wp.getName());
+            l.getPhases().put(p.getName(), p);
         }
 
         for (Object o : wl.getPhases()) {
             WPhase wp = (WPhase) o;
-            Phase p = l.getPhase(wp.getName());
+            Phase p = l.getPhaseById(wp.getId());
+            p.setNextPhases(new HashSet<Phase>());
             
             for (Object oNext : wp.getNextPhases()) {
                 WPhase wNext = (WPhase) oNext;
@@ -959,7 +986,8 @@ public class RegistryServiceImpl implements RegistryService {
             }
         }
 
-        l.setInitialPhase(l.getPhase(wl.getInitialPhase().getName()));
+        l.setInitialPhase(l.getPhaseById(wl.getInitialPhase().getId()));
+        return l;
     }
 
     private WArtifactPolicy createPolicyInfo(ArtifactPolicy p) {

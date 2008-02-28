@@ -3,10 +3,12 @@ package org.mule.galaxy.web.rpc;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 public class WLifecycle implements IsSerializable {
     
     private String name;
+    private String id;
     
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WPhase>
@@ -17,10 +19,19 @@ public class WLifecycle implements IsSerializable {
     public WLifecycle() {
     }
 
-    public WLifecycle(String name) {
+    public WLifecycle(String id, String name) {
+        this.id = id;
         this.name = name;
     }
     
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -40,6 +51,30 @@ public class WLifecycle implements IsSerializable {
 
     public void setInitialPhase(WPhase initialPhase) {
         this.initialPhase = initialPhase;
+    }
+
+    public WPhase getPhase(String name) {
+        if (phases == null) return null;
+        
+        for (Iterator itr = phases.iterator(); itr.hasNext();) {
+            WPhase p = (WPhase)itr.next();
+            if (p.getName().equals(name)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public WPhase getPhaseById(String id) {
+        if (phases == null) return null;
+        
+        for (Iterator itr = phases.iterator(); itr.hasNext();) {
+            WPhase p = (WPhase)itr.next();
+            if (p.getId().equals(id)) {
+                return p;
+            }
+        }
+        return null;
     }
    
 }

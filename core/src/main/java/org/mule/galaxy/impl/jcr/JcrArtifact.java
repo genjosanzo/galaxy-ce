@@ -146,19 +146,14 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
                 registry.execute(new JcrCallback() {
     
                     public Object doInJcr(Session session) throws IOException, RepositoryException {
-                        // lame-o JCR makes us save before moving. Hopefully there weren't properties
-                        // the user didn't want saved...
-                        session.save();
-                        
                         String dest = node.getParent().getPath() + "/" + name;
-                        session.getWorkspace().move(node.getPath(), dest);
+                        session.move(node.getPath(), dest);
                         return null;
                     }
                     
                 });
             }
             node.setProperty(NAME, name);
-            
             
             update();
         } catch (Exception e) {
