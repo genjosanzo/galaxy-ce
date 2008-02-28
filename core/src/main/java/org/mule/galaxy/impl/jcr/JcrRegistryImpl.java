@@ -673,7 +673,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                                      final InputStream inputStream, 
                                      final String versionLabel, 
                                      final User user) 
-        throws RegistryException, ArtifactPolicyException, IOException {
+        throws RegistryException, ArtifactPolicyException, IOException, DuplicateItemException {
         return newVersion(artifact, inputStream, null, versionLabel, user);
     }
     

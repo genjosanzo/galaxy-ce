@@ -94,12 +94,13 @@ public interface Registry {
      * @return
      * @throws RegistryException
      * @throws IOException
+     * @throws DuplicateItemException 
      */
     ArtifactResult newVersion(Artifact artifact, 
                                InputStream inputStream, 
                                String versionLabel, 
                                User user) 
-        throws RegistryException, ArtifactPolicyException, IOException;
+        throws RegistryException, ArtifactPolicyException, IOException, DuplicateItemException;
 
     /**
      * Sets the active version of an artifact to the specified one. It may

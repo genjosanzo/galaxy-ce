@@ -199,6 +199,8 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
            throw createArtifactPolicyExceptionResponse(e);
         } catch (IOException e) {
             throw new ResponseContextException(500, e);
+        } catch (DuplicateItemException e) {
+            throw new ResponseContextException(409, e);
         }
     }
 

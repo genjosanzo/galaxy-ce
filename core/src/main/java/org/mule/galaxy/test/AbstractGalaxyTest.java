@@ -20,6 +20,7 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.CommentManager;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.IndexManager;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
@@ -80,7 +81,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
     }
     
     protected Artifact importHelloWsdl() 
-        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException {
+        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, DuplicateItemException {
         InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
         
         Collection<Workspace> workspaces = registry.getWorkspaces();
@@ -97,7 +98,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
     }
 
     protected Artifact importXmlSchema() throws RegistryException, ArtifactPolicyException, IOException,
-        MimeTypeParseException {
+        MimeTypeParseException, DuplicateItemException {
         InputStream xsd = getResourceAsStream("/schema/test.xsd");
         
         Collection<Workspace> workspaces = registry.getWorkspaces();
@@ -116,7 +117,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
     }
 
     protected Artifact importHelloMule() throws RegistryException, ArtifactPolicyException, IOException,
-        MimeTypeParseException {
+        MimeTypeParseException, DuplicateItemException {
         InputStream helloWsdl = getResourceAsStream("/mule/hello-config.xml");
         
         Collection<Workspace> workspaces = registry.getWorkspaces();
