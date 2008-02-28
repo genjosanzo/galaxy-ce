@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutorCompletionService
 import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
+import com.google.gdata.util.httputil.FastURLEncoder
 
 
 class Workspace {
@@ -51,8 +52,11 @@ class Workspace {
         GetMethod response
 
         try {
-            def encodedQuery = URLEncoder.encode(query, "UTF-8")
-            def relativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$name?q=$encodedQuery" : "$name?q=$encodedQuery"
+            def enc = FastURLEncoder.&encode // just a method shortcut for readability
+            def safe = FastURLEncoder.createSafeOctetBitSet() // don't make latin chars unreadable, only special ones
+            def encodedQuery = enc(query, safe, true) // space as +
+            def encodedName = enc(name, safe, false) // space as %20, not +
+            def relativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$encodedName?q=$encodedQuery" : "$encodedName?q=$encodedQuery"
             response = galaxy.get(relativeUrl)
 
             // local cache dir
@@ -76,7 +80,7 @@ class Workspace {
                     // TODO plug voters here to decide if it needs to be downloaded really
                     if (lastUpdatedVote (localJar, node)) {
                         println "Updating a local copy of $jarName"
-                        def jarRelativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$name/$jarName" : "$name/$jarName"
+                        def jarRelativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$encodedName/$jarName" : "$encodedName/$jarName"
                         GetMethod content = galaxy.get(jarRelativeUrl)
                         try {
                             // stream to a temp location to protect startup from corrupted jars
