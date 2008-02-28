@@ -18,6 +18,8 @@
 
 package org.mule.galaxy.netboot
 
+import com.google.gdata.util.httputil.FastURLEncoder
+
 /**
     A convenience class defaulting some values for NetBoot system workspaces.
 */
@@ -29,7 +31,9 @@ class NetBootWorkspace extends Workspace {
     // need a post-constructor call because those props above aren't yet initialised when
     // we push in a value map :/
     def Workspace init() {
-        parentWorkspace = "$netBootWorkspace/lib"
+        def safe = FastURLEncoder.createSafeOctetBitSet() // don't make latin chars unreadable, only special ones
+        def encodedName = FastURLEncoder.encode(netBootWorkspace, safe, false) // space as %20, not +
+        parentWorkspace = "$encodedName/lib"
         cacheDir = new File(netBootCacheDir, 'lib').canonicalPath
 
         this
