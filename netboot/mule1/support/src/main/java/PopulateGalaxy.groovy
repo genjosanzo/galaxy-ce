@@ -127,10 +127,12 @@ galaxy.createWorkspace(workspace, "lib")
 galaxy.createWorkspace("$workspace/lib", "mule")
 galaxy.createWorkspace("$workspace/lib", "opt")
 galaxy.createWorkspace("$workspace/lib", "user")
+galaxy.createWorkspace("$workspace/lib", "endorsed")
 
 upload('mule')
 upload('opt')
 upload('user')
+upload('endorsed')
 
 totalCount.times {
     // just ensure all submitted ones finish

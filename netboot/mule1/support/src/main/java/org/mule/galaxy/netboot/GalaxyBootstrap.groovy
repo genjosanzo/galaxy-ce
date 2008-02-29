@@ -129,6 +129,15 @@ Fetching artifacts from Galaxy...
                                   netBootCacheDir: netBootCacheDir.canonicalPath).init().process()
             } as Callable)
 
+            // lib/endorsed has to be treated a bit specially
+            def libEndorsed = exec.submit({
+                    new NetBootWorkspace(galaxy: g,
+                                  name: 'endorsed',
+                                  netBootWorkspace: netBootWorkspace,
+                                  // note we put it in $MULE_HOME/lib/endorsed, not cache, to configure JVM startup
+                                  netBootCacheDir: new File(muleHome).canonicalPath).init().process()
+            } as Callable)
+
 
             /*
                 Now process application workspaces
