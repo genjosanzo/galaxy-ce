@@ -57,6 +57,7 @@ class GalaxyBootstrap {
         workspaces = p.'galaxy.app.workspaces'?.split(',')?.toList()?.unique() ?: []
         netBootWorkspace = p.'galaxy.netboot.workspace' ?: 'Mule'
         debug = 'true'.equalsIgnoreCase(p.'galaxy.debug')
+        def clean = 'true'.equalsIgnoreCase(p.'galaxy.clean')
 
         // Passed in as -Dmule.home
         def muleHome = p.'mule.home'
@@ -66,20 +67,37 @@ class GalaxyBootstrap {
         netBootCacheDir.mkdirs()
         assert netBootCacheDir.exists()
 
-        println """\n
-${'=' * 78}
-MULE_HOME: $muleHome
+        splash(
+"""MULE_HOME: $muleHome
 Local Jar Cache: $cacheDir.canonicalPath
 Galaxy URL: $httpScheme://$host:$port$apiUrl
 Username: $username
 NetBoot Workspace: $netBootWorkspace
 Application Workspaces: $workspaces
 Proc Units: $numUnits
-Debug: $debug
-${'=' * 78}
+Clean: $clean
+Debug: $debug""")
+        // check if clean run has been requested
+        if (clean) {
 
-Fetching artifacts from Galaxy...
-"""
+            splash 'A clean NetBoot has been requested, purging workspace caches...'
+
+            // a closure to recursively delete files and folders
+            def delete // split it into a declaration and definition, otherwise can't call itself
+            delete = {
+                println "Deleting ${it.canonicalPath}";
+                it.eachDir(delete);
+                it.eachFile {
+                    assert it.delete()
+                }
+            }
+
+            delete(netBootCacheDir)
+            delete(new File(muleHome, 'lib/endorsed'))
+            workspaces.each {delete it}
+        }
+
+        splash 'Fetching artifacts from Galaxy...'
 
         g = new Galaxy(//httpScheme: httpScheme,
                        host: host,
@@ -200,5 +218,15 @@ Fetching artifacts from Galaxy...
         urls.toArray(new URL[urls.size()])
     }
 
+    /**
+    A helper splash message method.
+    */
+    def static splash(text) {
+        println """\n
+${'=' * 78}
+$text
+${'=' * 78}
+"""
+    }
 }
     
