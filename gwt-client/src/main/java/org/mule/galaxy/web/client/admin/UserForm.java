@@ -241,29 +241,29 @@ public class UserForm extends AbstractComposite {
     public static final class DeleteDialog extends DialogBox {
 
         public DeleteDialog(final UserForm panel) {
-          // Set the dialog box's caption.
-          setText("Are you sure you want to delete this user?");
+            // Set the dialog box's caption.
+            setText("Are you sure you want to delete this user?");
 
-          InlineFlowPanel buttonPanel = new InlineFlowPanel();
+            InlineFlowPanel buttonPanel = new InlineFlowPanel();
 
-          Button no = new Button("No");
-          no.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
-                DeleteDialog.this.hide();
-            }
-          });
-          
-          Button yes = new Button("Yes");
-          yes.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
-                DeleteDialog.this.hide();
-                panel.delete();
-            }
-          });
-          buttonPanel.add(no);
-          buttonPanel.add(yes);
-          
-          setWidget(buttonPanel);
+            Button no = new Button("No");
+            no.addClickListener(new ClickListener() {
+                public void onClick(Widget sender) {
+                    DeleteDialog.this.hide();
+                }
+            });
+
+            Button yes = new Button("Yes");
+            yes.addClickListener(new ClickListener() {
+                public void onClick(Widget sender) {
+                    DeleteDialog.this.hide();
+                    panel.delete();
+                }
+            });
+            buttonPanel.add(no);
+            buttonPanel.add(yes);
+
+            setWidget(buttonPanel);
         }
-      }
+    }
 }

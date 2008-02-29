@@ -92,5 +92,15 @@ public class Lifecycle implements Identifiable {
         }
         phases.put(phase.getName(), phase);
     }
+
+    public void removePhase(Phase toRemove) {
+        phases.remove(toRemove.getName());
+        
+        for (Phase p : phases.values()) {
+            if (p.getNextPhases() != null) {
+                p.getNextPhases().remove(toRemove);
+            }
+        }
+    }
     
 }

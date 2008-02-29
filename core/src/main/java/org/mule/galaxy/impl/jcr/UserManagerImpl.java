@@ -32,7 +32,6 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
-    private static final String USER = "user";
     private static final String NAME = "name";
     private static final String CREATED = "created";
     private static final String EMAIL = "email";
@@ -142,7 +141,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node users = getObjectsNode(session);
                 
-                String id = generateId();
+                String id = generateId(null);
                 Node node = users.addNode(id);
                 node.addMixin("mix:referenceable");
                 node.setProperty(PASSWORD, password);
@@ -212,7 +211,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
 
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
         if (objects.getNodes().getSize() == 0) {
-            String id = generateId();
+            String id = generateId(null);
             Node node = objects.addNode(id);
             node.addMixin("mix:referenceable");
             node.setProperty(PASSWORD, "admin");

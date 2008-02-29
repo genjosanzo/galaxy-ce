@@ -153,7 +153,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         Node node = null;
         
         if (id == null) {
-            String genId = generateId();
+            String genId = generateId(t);
             node = getNodeForObject(getObjectsNode(session), t)
                 .addNode(genId, getNodeType());
             node.addMixin("mix:referenceable");
@@ -183,7 +183,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         }
     }
 
-    protected String generateId() {
+    protected String generateId(T t) {
         UUID uuid = UUID.randomUUID();
         return uuid.toString();
     }

@@ -31,6 +31,7 @@ import org.mule.galaxy.web.rpc.WComment;
 import org.mule.galaxy.web.rpc.WGovernanceInfo;
 import org.mule.galaxy.web.rpc.WIndex;
 import org.mule.galaxy.web.rpc.WLifecycle;
+import org.mule.galaxy.web.rpc.WPhase;
 import org.mule.galaxy.web.rpc.WWorkspace;
 import org.springframework.context.ApplicationContext;
 
@@ -185,7 +186,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         WWorkspace w = (WWorkspace) workspaces.iterator().next();
         
-        gwtRegistry.addWorkspace(w.getId(), "Foo");
+        gwtRegistry.addWorkspace(w.getId(), "Foo", null);
         
         workspaces = gwtRegistry.getWorkspaces();
         assertEquals(1, workspaces.size());
@@ -211,8 +212,8 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertNotNull(nextPhases);
         assertEquals(1, nextPhases.size());
         
-        String next = (String) nextPhases.iterator().next();
-        TransitionResponse res = gwtRegistry.transition(a.getId(), next);
+        WPhase next = (WPhase) nextPhases.iterator().next();
+        TransitionResponse res = gwtRegistry.transition(a.getId(), next.getId());
         
         assertTrue(res.isSuccess());
         
@@ -227,11 +228,11 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertNotNull(nextPhases);
         assertEquals(1, nextPhases.size());
 
-        next = (String) nextPhases.iterator().next();
+        next = (WPhase) nextPhases.iterator().next();
         
-        policyManager.setActivePolicies(Arrays.asList(lifecycleManager.getDefaultLifecycle().getPhase(next)), policy);
+        policyManager.setActivePolicies(Arrays.asList(lifecycleManager.getPhaseById(next.getId())), policy);
         
-        res = gwtRegistry.transition(a.getId(), next);
+        res = gwtRegistry.transition(a.getId(), next.getId());
         
         assertFalse(res.isSuccess());
         assertEquals(1, res.getMessages().size());

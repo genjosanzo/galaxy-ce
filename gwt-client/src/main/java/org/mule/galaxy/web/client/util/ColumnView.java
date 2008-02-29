@@ -64,7 +64,7 @@ public class ColumnView
         for (int idx=0; idx < item.getChildCount(); idx++) {
             final TreeItem child  = item.getChild(idx);
             
-            Hyperlink link = new Hyperlink(child.getText(), child.toString());
+            Hyperlink link = new Hyperlink(child.getText(), "workspace-" + child.getUserObject().toString());
             column.add(link);
             link.addClickListener(new ClickListener() {
                 public void onClick(Widget w) {

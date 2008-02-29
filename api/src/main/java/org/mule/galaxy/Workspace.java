@@ -11,6 +11,8 @@ public interface Workspace {
     
     String getName();
     
+    void setName(String name);
+    
     Workspace getParent();
     
     Collection<Workspace> getWorkspaces();

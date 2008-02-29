@@ -144,17 +144,18 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
 
     public Lifecycle getDefaultLifecycle() {
         if (lifecycle == null) {
-            String name = (String) JcrUtil.getProperty("LIFECYCLE", node);
+            String id = (String) getStringOrNull(LIFECYCLE);
             
-            if (name == null) {
+            if (id == null) {
                 Workspace parent = getParent();
                 if (parent == null) {
                     return lifecycleManager.getDefaultLifecycle();
                 } else {
                     return parent.getDefaultLifecycle();
                 }
+            } else {
+                lifecycle = lifecycleManager.getLifecycleById(id);
             }
-            lifecycle = lifecycleManager.getLifecycle(name);
         }
         return lifecycle;
     }
@@ -167,10 +168,10 @@ public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.W
             if (lifecycle == null) {
                 node.setProperty(LIFECYCLE, (String) null);
             } else {
-                node.setProperty(LIFECYCLE, lifecycle.getName());
+                node.setProperty(LIFECYCLE, lifecycle.getId());
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } 
+        }
     }
 }

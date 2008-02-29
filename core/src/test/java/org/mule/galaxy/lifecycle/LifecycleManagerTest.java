@@ -8,6 +8,7 @@ import java.util.Set;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.Workspace;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class LifecycleManagerTest extends AbstractGalaxyTest {
@@ -118,6 +119,27 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         assertEquals(2, lcs.size());
     }
     
+    public void testWorkspaceInteraction() throws Exception {
+        Lifecycle newLc = new Lifecycle();
+        newLc.setName("another");
+        
+        Phase phase = new Phase(newLc);
+        phase.setName("p1");
+        newLc.setInitialPhase(phase);
+        newLc.addPhase(phase);
+        
+        lifecycleManager.save(newLc);
+        
+        assertNotNull(newLc.getId());
+        
+        Workspace w = registry.getWorkspaces().iterator().next();
+        w.setDefaultLifecycle(newLc);
+        registry.save(w);
+        
+        Workspace w2 = registry.getWorkspaceByPath(w.getPath());
+        assertEquals(newLc.getName(), w2.getDefaultLifecycle().getName());
+    }
+    
     public void testPhaseChanges() throws Exception {
         Lifecycle l = lifecycleManager.getDefaultLifecycle();
         
@@ -131,7 +153,13 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         artifact = registry.getArtifact(artifact.getId());
         assertEquals(p1, artifact.getPhase());
         
-        // todo: deletion of a node
+        Phase p2 = p1.getNextPhases().iterator().next();
+        
+        l.removePhase(p2);
+        lifecycleManager.save(l);
+        
+        Lifecycle l2 = lifecycleManager.getDefaultLifecycle();
+        assertEquals(l.getPhases().size(), l2.getPhases().size());
         
         // todo: invalid nextPhases
     }

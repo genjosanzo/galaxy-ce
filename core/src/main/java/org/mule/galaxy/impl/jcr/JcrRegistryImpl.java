@@ -138,6 +138,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             if (path.startsWith("/")) {
                 path = path.substring(1);
             }
+            if (path.endsWith("/")) {
+                path = path.substring(0, path.length()-1);
+            }
             
             Node wNode = getWorkspacesNode();
             
@@ -192,50 +195,50 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         });
     }
 
-    public void updateWorkspace(final Workspace w, 
-                                String name, 
-                                final String parentId) 
+    public void save(Workspace w) {
+        execute(new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                session.save();
+                return null;
+            }
+            
+        });
+    }
+
+    public void save(final Workspace w, final String parentId) 
         throws RegistryException, NotFoundException {
-        
-        if (name == null) {
-            name = w.getName();
-        }
-        
-        name = JcrUtil.escape(name);
-        
-        final String newName = name;
-        
         executeWithNotFound(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 
                 JcrWorkspace jw = (JcrWorkspace) w;
                 Node node = jw.getNode();
-                node.setProperty(JcrWorkspace.NAME, newName);
-                jw.update();
                 
-                Node parentNode = null;
-                if (parentId != null) {
-                    try {
-                        parentNode = getNodeByUUID(parentId);
-                    } catch (DataAccessException e) {
-                        throw new RuntimeException(new NotFoundException(parentId));
-                    }
-                } else {
-                    parentNode = node.getParent();
-                }
-
-                Node checked = parentNode;
-                while (checked != null && checked.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
-                    if (checked.equals(node)) {
-                        throw new RuntimeException(new RegistryException(new Message("MOVE_ONTO_CHILD", LOGGER)));
+                if (parentId != null && !parentId.equals(node.getParent().getUUID())) {
+                    Node parentNode = null;
+                    if (parentId != null) {
+                        try {
+                            parentNode = getNodeByUUID(parentId);
+                        } catch (DataAccessException e) {
+                            throw new RuntimeException(new NotFoundException(parentId));
+                        }
+                    } else {
+                        parentNode = node.getParent();
                     }
                     
-                    checked = checked.getParent();
+                    // ensure the user isn't trying to move this to a child node of the workspace
+                    Node checked = parentNode;
+                    while (checked != null && checked.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
+                        if (checked.equals(node)) {
+                            throw new RuntimeException(new RegistryException(new Message("MOVE_ONTO_CHILD", LOGGER)));
+                        }
+                        
+                        checked = checked.getParent();
+                    }
+                    
+                    String dest = parentNode.getPath() + "/" + w.getName();
+                    session.move(node.getPath(), dest);
                 }
-                session.save();
-                
-                String dest = parentNode.getPath() + "/" + newName;
-                session.getWorkspace().move(node.getPath(), dest);
                 
                 session.save();
                 

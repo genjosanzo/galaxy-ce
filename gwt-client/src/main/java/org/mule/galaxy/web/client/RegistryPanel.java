@@ -86,8 +86,7 @@ public class RegistryPanel extends AbstractMenuPanel {
                         return new WorkspaceViewPanel(registryPanel, 
                                                       workspaces,
                                                       parentId,
-                                                      workspaceId,
-                                                      item.getText());
+                                                      getWorkspace(workspaceId));
                     }
                 };
                 
@@ -150,6 +149,24 @@ public class RegistryPanel extends AbstractMenuPanel {
         addMenuItem(artifactTypesBox);
         
         initArtifactTypes();
+    }
+
+    protected WWorkspace getWorkspace(String workspaceId) {
+        return getWorkspace(workspaceId, workspaces);
+    }
+
+    private WWorkspace getWorkspace(String workspaceId2, Collection workspaces2) {
+        for (Iterator itr = workspaces2.iterator(); itr.hasNext();) {
+            WWorkspace w = (WWorkspace)itr.next();
+            
+            if (w.getId().equals(workspaceId2)) {
+                return w;
+            }
+            
+            WWorkspace child = getWorkspace(workspaceId2, w.getWorkspaces());
+            if (child != null) return child;
+        }
+        return null;
     }
 
     public void onShow() {

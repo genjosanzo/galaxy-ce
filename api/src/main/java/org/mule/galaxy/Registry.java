@@ -34,8 +34,10 @@ public interface Registry {
     
     Workspace getWorkspaceByPath(String path) throws RegistryException, NotFoundException;
     
-    void updateWorkspace(Workspace w, String name, String parentId)
+    void save(Workspace w, String parentId)
         throws RegistryException, NotFoundException;
+
+    void save(Workspace w);
     
     Collection<Workspace> getWorkspaces() throws RegistryException;
     
@@ -155,5 +157,6 @@ public interface Registry {
     void removeDependencies(ArtifactVersion artifactVersion, Artifact... artifact) throws RegistryException;
     
     Set<Dependency> getDependedOnBy(Artifact a) throws RegistryException;
+
 
 }

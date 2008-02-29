@@ -25,6 +25,14 @@ public abstract class AbstractComposite extends Composite {
         p.add(w2);
         return p;
     }
+
+    protected InlineFlowPanel asHorizontal(Widget w1, Widget w2, Widget w3) {
+        InlineFlowPanel p = new InlineFlowPanel();
+        p.add(w1);
+        p.add(w2);
+        p.add(w3);
+        return p;
+    }
     
     protected FlexTable createTitledRowTable(Panel panel, String title) {
         panel.add(createTitle(title));

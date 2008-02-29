@@ -18,9 +18,12 @@ public interface RegistryService extends RemoteService {
      */
     Collection getWorkspaces() throws RPCException;
     
-    void addWorkspace(String parentWorkspaceId, String workspaceName) throws RPCException;
+    void addWorkspace(String parentWorkspaceId, String workspaceName, String lifecycleId) throws RPCException;
 
-    void updateWorkspace(String workspaceId, String parentWorkspaceId, String workspaceName) throws RPCException;
+    void updateWorkspace(String workspaceId, 
+                         String parentWorkspaceId, 
+                         String workspaceName,
+                         String lifecycleId) throws RPCException;
     
     void deleteWorkspace(String workspaceId) throws RPCException;
     
@@ -78,6 +81,7 @@ public interface RegistryService extends RemoteService {
     void delete(String artifactId) throws RPCException;
     
     Map getPropertyList() throws RPCException;
+    
     /**
      * @gwt.typeArgs <java.lang.String,java.lang.String>
      * @return

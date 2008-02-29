@@ -15,11 +15,13 @@ public interface RegistryServiceAsync extends RemoteService {
     
     void addWorkspace(String parentWorkspaceId, 
                       String workspaceName,
+                      String lifecycleId,
                       AsyncCallback callback);
     
     void updateWorkspace(String workspaceId, 
                          String parentWorkspaceId, 
                          String workspaceName,
+                         String lifecycleId,
                          AsyncCallback callback);
 
     void deleteWorkspace(String workspaceId,
@@ -67,7 +69,7 @@ public interface RegistryServiceAsync extends RemoteService {
     
     void getGovernanceInfo(String artifactId, AsyncCallback c);
     
-    void transition(String artifactId, String nextPhaseName, AsyncCallback c);
+    void transition(String artifactId, String nextPhaseId, AsyncCallback c);
 
     void setActive(String artifactId, String versionLabel, AsyncCallback c);
     

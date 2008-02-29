@@ -16,6 +16,7 @@ import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.UserService;
 import org.mule.galaxy.web.rpc.UserServiceAsync;
+import org.mule.galaxy.web.rpc.WLifecycle;
 
 public class AdministrationPanel extends AbstractMenuPanel {
 
@@ -33,11 +34,21 @@ public class AdministrationPanel extends AbstractMenuPanel {
         addMenuItem(manageBox);
 
         final AdministrationPanel adminPanel = this;
-
+        
         Hyperlink link = new Hyperlink("Lifecycles", "lifecycles");
-        manageBox.add(link);
         createPageInfo(link.getTargetHistoryToken(), new LifecycleListPanel(adminPanel));
 
+        add = new Hyperlink("Add", "add-lifecycle");
+        createPageInfo(add.getTargetHistoryToken(), new LifecycleForm(adminPanel, new WLifecycle(), true));
+        
+        InlineFlowPanel item = new InlineFlowPanel();
+        item.add(link);
+        item.add(new Label(" ["));
+        item.add(add);
+        item.add(new Label("]"));
+        
+        manageBox.add(item);
+        
         link = new Hyperlink("Indexes", "indexes");
         manageBox.add(link);
         createPageInfo(link.getTargetHistoryToken(), new IndexListPanel(adminPanel));
@@ -45,7 +56,7 @@ public class AdministrationPanel extends AbstractMenuPanel {
         add = new Hyperlink("Add", "add-index");
         createPageInfo(add.getTargetHistoryToken(), new IndexForm(adminPanel));
 
-        InlineFlowPanel item = new InlineFlowPanel();
+        item = new InlineFlowPanel();
         item.add(link);
         item.add(new Label(" ["));
         item.add(add);

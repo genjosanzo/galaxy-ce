@@ -105,20 +105,26 @@ public class RegistryServiceImpl implements RegistryService {
             List wis = new ArrayList();
 
             for (Workspace w : workspaces) {
-                WWorkspace ww = new WWorkspace(w.getId(), w.getName(), w.getPath());
+                WWorkspace ww = toWeb(w);
                 wis.add(ww);
-
-                Collection<Workspace> children = w.getWorkspaces();
-                if (children != null && children.size() > 0) {
-                    ww.setWorkspaces(new ArrayList());
-                    addWorkspaces(ww, children);
-                }
             }
             return wis;
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
         }
+    }
+
+    private WWorkspace toWeb(Workspace w) {
+        WWorkspace ww = new WWorkspace(w.getId(), w.getName(), w.getPath());
+        ww.setDefaultLifecycleId(w.getDefaultLifecycle().getId());
+        
+        Collection<Workspace> children = w.getWorkspaces();
+        if (children != null && children.size() > 0) {
+            ww.setWorkspaces(new ArrayList());
+            addWorkspaces(ww, children);
+        }
+        return ww;
     }
 
     @SuppressWarnings("unchecked")
@@ -135,13 +141,18 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void addWorkspace(String parentWorkspaceId, String workspaceName) throws RPCException {
+    public void addWorkspace(String parentWorkspaceId, String workspaceName, String lifecycleId) throws RPCException {
         try {
+            Workspace w;
             if (parentWorkspaceId == null || "[No parent]".equals(parentWorkspaceId)) {
-                registry.createWorkspace(workspaceName);
+                w = registry.createWorkspace(workspaceName);
             } else {
                 Workspace parent = registry.getWorkspace(parentWorkspaceId);
-                registry.createWorkspace(parent, workspaceName);
+                w = registry.createWorkspace(parent, workspaceName);
+            }
+            if (lifecycleId != null) {
+                w.setDefaultLifecycle(lifecycleManager.getLifecycleById(lifecycleId));
+                registry.save(w);
             }
         } catch (DuplicateItemException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
@@ -152,14 +163,18 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void updateWorkspace(String workspaceId, String parentWorkspaceId, String workspaceName)
+    public void updateWorkspace(String workspaceId, String parentWorkspaceId, String workspaceName, String lifecycleId)
         throws RPCException {
         try {
             if (parentWorkspaceId == null || "[No parent]".equals(parentWorkspaceId)) {
                 parentWorkspaceId = null;
             }
-
-            registry.updateWorkspace(registry.getWorkspace(workspaceId), workspaceName, parentWorkspaceId);
+            Workspace w = registry.getWorkspace(workspaceId);
+            if (lifecycleId != null) {
+                w.setDefaultLifecycle(lifecycleManager.getLifecycleById(lifecycleId));
+            }
+            w.setName(workspaceName);
+            registry.save(w, parentWorkspaceId);
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -311,13 +326,13 @@ public class RegistryServiceImpl implements RegistryService {
 
         Collection<Index> indices = indexManager.getIndexes();
         for (Index idx : indices) {
-            windexes.add(createWIndex(idx));
+            windexes.add(toWeb(idx));
         }
 
         return windexes;
     }
 
-    private WIndex createWIndex(Index idx) {
+    private WIndex toWeb(Index idx) {
 
         ArrayList<String> docTypes = new ArrayList<String>();
         if (idx.getDocumentTypes() != null) {
@@ -342,7 +357,7 @@ public class RegistryServiceImpl implements RegistryService {
             if (idx == null) {
                 return null;
             }
-            return createWIndex(idx);
+            return toWeb(idx);
         } catch (Exception e) {
             throw new RPCException("Could not find index " + id);
         }
@@ -350,7 +365,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void saveIndex(WIndex wi) throws RPCException {
         try {
-            Index idx = buildIndex(wi);
+            Index idx = fromWeb(wi);
 
             indexManager.save(idx);
         } catch (Exception e) {
@@ -359,7 +374,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    private Index buildIndex(WIndex wi) throws RPCException {
+    private Index fromWeb(WIndex wi) throws RPCException {
         Index idx = new Index();
         idx.setId(wi.getId());
         idx.setExpression(wi.getExpression());
@@ -678,11 +693,11 @@ public class RegistryServiceImpl implements RegistryService {
             gov.setLifecycle(phase.getLifecycle().getName());
 
             Set<Phase> nextPhases = phase.getNextPhases();
-            ArrayList<String> nextPhaseNames = new ArrayList<String>();
+            List<WPhase> wNextPhases = new ArrayList<WPhase>();
             for (Phase p : nextPhases) {
-                nextPhaseNames.add(p.getName());
+                wNextPhases.add(toWeb(p));
             }
-            gov.setNextPhases(nextPhaseNames);
+            gov.setNextPhases(wNextPhases);
 
             // Collection<PolicyInfo> policies =
             // policyManager.getActivePolicies(artifact, false);
@@ -694,12 +709,11 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public TransitionResponse transition(String artifactId, String nextPhaseName) throws RPCException {
+    public TransitionResponse transition(String artifactId, String nextPhaseId) throws RPCException {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
 
-            Lifecycle lifecycle = artifact.getPhase().getLifecycle();
-            Phase nextPhase = lifecycle.getPhase(nextPhaseName);
+            Phase nextPhase = lifecycleManager.getPhaseById(nextPhaseId);
 
             TransitionResponse tr = new TransitionResponse();
 
@@ -709,7 +723,7 @@ public class RegistryServiceImpl implements RegistryService {
                 tr.setSuccess(true);
             } catch (TransitionException e) {
                 tr.setSuccess(false);
-                tr.addMessage("Phase " + nextPhaseName + " isn't a valid next phase!", false);
+                tr.addMessage("Phase " + nextPhase.getName() + " isn't a valid next phase!", false);
             } catch (ArtifactPolicyException e) {
                 tr.setSuccess(false);
                 for (ApprovalMessage app : e.getApprovals()) {
@@ -745,7 +759,7 @@ public class RegistryServiceImpl implements RegistryService {
         lifecycle.setPhases(wphases);
         
         for (Phase p : l.getPhases().values()) {
-            WPhase wp = new WPhase(p.getId(), p.getName());
+            WPhase wp = toWeb(p);
             wphases.add(wp);
             
             if (p.equals(l.getInitialPhase())) {
@@ -755,13 +769,14 @@ public class RegistryServiceImpl implements RegistryService {
         
         for (Phase p : l.getPhases().values()) {
             WPhase wp = lifecycle.getPhase(p.getName());
-            wp.setNextPhases(new ArrayList());
+            List<WPhase> nextPhases = new ArrayList<WPhase>();
             
             for (Phase next : p.getNextPhases()) {
                 WPhase wnext = lifecycle.getPhase(next.getName());
                 
-                wp.getNextPhases().add(wnext);
+                nextPhases.add(wnext);
             }
+            wp.setNextPhases(nextPhases);
         }
         
         Collections.sort(wphases, new Comparator<WPhase>() {
@@ -772,6 +787,11 @@ public class RegistryServiceImpl implements RegistryService {
 
         });
         return lifecycle;
+    }
+
+    private WPhase toWeb(Phase p) {
+        WPhase wp = new WPhase(p.getId(), p.getName());
+        return wp;
     }
 
     public Collection getActivePoliciesForLifecycle(String lifecycleName, String workspaceId)
@@ -939,7 +959,7 @@ public class RegistryServiceImpl implements RegistryService {
         Collection<ArtifactPolicy> policies = policyManager.getPolicies();
         List<WArtifactPolicy> gwtPolicies = new ArrayList<WArtifactPolicy>();
         for (ArtifactPolicy p : policies) {
-            gwtPolicies.add(createPolicyInfo(p));
+            gwtPolicies.add(toWeb(p));
         }
         Collections.sort(gwtPolicies, new Comparator<WArtifactPolicy>() {
 
@@ -958,7 +978,7 @@ public class RegistryServiceImpl implements RegistryService {
         lifecycleManager.save(l);
     }
 
-    private Lifecycle fromWeb(WLifecycle wl) {
+    private Lifecycle fromWeb(WLifecycle wl) throws RPCException {
         Lifecycle l = new Lifecycle();
         l.setPhases(new HashMap<String, Phase>());
         l.setName(wl.getName());
@@ -975,22 +995,28 @@ public class RegistryServiceImpl implements RegistryService {
 
         for (Object o : wl.getPhases()) {
             WPhase wp = (WPhase) o;
-            Phase p = l.getPhaseById(wp.getId());
+            Phase p = l.getPhase(wp.getName());
             p.setNextPhases(new HashSet<Phase>());
             
-            for (Object oNext : wp.getNextPhases()) {
-                WPhase wNext = (WPhase) oNext;
-                Phase next = l.getPhase(wNext.getName());
-                
-                p.getNextPhases().add(next);
+            if (wp.getNextPhases() != null) {
+                for (Object oNext : wp.getNextPhases()) {
+                    WPhase wNext = (WPhase) oNext;
+                    Phase next = l.getPhase(wNext.getName());
+                    
+                    p.getNextPhases().add(next);
+                }
             }
         }
 
-        l.setInitialPhase(l.getPhaseById(wl.getInitialPhase().getId()));
+        if (wl.getInitialPhase() == null) {
+            throw new RPCException("You must set a phase as the initial phase.");
+        }
+        
+        l.setInitialPhase(l.getPhase(wl.getInitialPhase().getName()));
         return l;
     }
 
-    private WArtifactPolicy createPolicyInfo(ArtifactPolicy p) {
+    private WArtifactPolicy toWeb(ArtifactPolicy p) {
         WArtifactPolicy wap = new WArtifactPolicy();
         wap.setId(p.getId());
         wap.setDescription(p.getDescription());

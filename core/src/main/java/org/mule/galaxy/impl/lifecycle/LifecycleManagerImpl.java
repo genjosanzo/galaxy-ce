@@ -197,7 +197,7 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
         Phase p = a.getPhase();
         Lifecycle l = p2.getLifecycle();
         
-        if (p == null) {
+        if (p == null || !l.equals(p.getLifecycle())) {
             return l.getInitialPhase().equals(p2);
         } else {
             return p != null && p.getNextPhases() != null && p.getNextPhases().contains(p2);
@@ -342,7 +342,7 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
         for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
             Node phaseNode = nodes.nextNode();
             
-            Phase phase = l.getPhase(ISO9075.decode(phaseNode.getName()));
+            Phase phase = l.getPhaseById(phaseNode.getUUID());
             
             HashSet<Phase> nextPhases = new HashSet<Phase>();
             try {
@@ -378,7 +378,15 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
 
     @Override
     protected Node findNode(String id, Session session) throws RepositoryException {
+        if (id == null) {
+            return null;
+        }
         return getNodeByUUID(id);
+    }
+
+    @Override
+    protected String generateId(Lifecycle t) {
+        return t.getName();
     }
 
     @Override
@@ -386,14 +394,15 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
         for (Phase p : l.getPhases().values()) {
            Node pNode = getChild(lNode, p.getId());
            
-           // I suppose this could happen if someone else deletes a lifecycle phase before we save
+           // We're creating a new phase
            if (pNode == null) {
                pNode = JcrUtil.getOrCreate(lNode, p.getName());
                p.setId(pNode.getUUID());
            }
+           
            ArrayList<String> nextPhases = new ArrayList<String>();
            for (Phase nextPhase : p.getNextPhases()) {
-               nextPhases.add(nextPhase.getName());
+               nextPhases.add(nextPhase.getId());
            }
            
            if (l.getInitialPhase().equals(p)) {
@@ -408,6 +417,26 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
                session.move(pNode.getPath(), 
                             pNode.getParent().getPath() + "/" + ISO9075.encode(p.getName()));
            }
+        }
+        for (NodeIterator nodes = lNode.getNodes(); nodes.hasNext();) {
+            Node node = nodes.nextNode();
+            
+            if (l.getPhaseById(node.getUUID()) == null) {
+                NodeIterator artifacts = getArtifactsInPhase(node.getUUID(), session);
+                
+                if (artifacts.getSize() > 0) {
+                    // we should probably throw an exception here, but for now
+                    // we'll switch people back to the beginning phase.
+                    
+                    while (artifacts.hasNext()) {
+                        Node artifactNode = artifacts.nextNode();
+                        
+                        artifactNode.setProperty(JcrArtifact.PHASE, l.getInitialPhase().getId());
+                    }
+                }
+                
+                node.remove();
+            }
         }
 
         String newName = l.getName();
@@ -446,6 +475,11 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
     }
 
     @Override
+    protected String getId(Lifecycle t, Node node, Session session) throws RepositoryException {
+        return node.getUUID();
+    }
+
+    @Override
     protected String getNodeType() {
         return "galaxy:lifecycle";
     }
@@ -458,11 +492,25 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
         this.context = applicationContext;
     }
 
-    private NodeIterator getArtifactsInLifecycle(final String lifecycleName, Session session)
+    private NodeIterator getArtifactsInLifecycle(final String lifecycleId, Session session)
         throws RepositoryException, InvalidQueryException {
         QueryManager qm = getQueryManager(session);
         javax.jcr.query.Query query = 
-            qm.createQuery("//element(*, galaxy:artifact)[@lifecycle = '" + lifecycleName + "']", 
+            qm.createQuery("//element(*, galaxy:artifact)[@lifecycle = '" + lifecycleId + "']", 
+                           javax.jcr.query.Query.XPATH);
+        
+        QueryResult qr = query.execute();
+        
+        NodeIterator nodes = qr.getNodes();
+        return nodes;
+    }
+    
+
+    private NodeIterator getArtifactsInPhase(final String phaseId, Session session)
+        throws RepositoryException, InvalidQueryException {
+        QueryManager qm = getQueryManager(session);
+        javax.jcr.query.Query query = 
+            qm.createQuery("//element(*, galaxy:artifact)[@phaseId = '" + phaseId + "']", 
                            javax.jcr.query.Query.XPATH);
         
         QueryResult qr = query.execute();

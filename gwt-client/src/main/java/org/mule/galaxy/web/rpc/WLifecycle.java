@@ -70,7 +70,7 @@ public class WLifecycle implements IsSerializable {
         
         for (Iterator itr = phases.iterator(); itr.hasNext();) {
             WPhase p = (WPhase)itr.next();
-            if (p.getId().equals(id)) {
+            if (p.getId() != null && p.getId().equals(id)) {
                 return p;
             }
         }

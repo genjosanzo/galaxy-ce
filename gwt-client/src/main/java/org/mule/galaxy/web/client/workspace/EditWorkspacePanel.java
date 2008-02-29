@@ -20,6 +20,7 @@ import org.mule.galaxy.web.client.WorkspacePanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.WorkspacesListBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WWorkspace;
 
 public class EditWorkspacePanel extends AbstractTitledComposite {
@@ -27,39 +28,37 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
     private TextBox workspaceTextBox;
     private RegistryPanel registryPanel;
     private boolean edit;
-    private String workspaceId;
+    private ListBox lifecyclesLB;
+    private final WWorkspace workspace;
 
     public EditWorkspacePanel(final RegistryPanel registryPanel,
                               final Collection workspaces,
                               final String parentWorkspaceId) {
-        this(registryPanel, workspaces, parentWorkspaceId, null, null, false);
+        this(registryPanel, workspaces, parentWorkspaceId, new WWorkspace(), false);
     }
 
     public EditWorkspacePanel(final RegistryPanel registryPanel,
                               final Collection workspaces,
                               final String parentWorkspaceId,
-                              final String workspaceId,
-                              final String workspaceName) {
-        this(registryPanel, workspaces, parentWorkspaceId, 
-             workspaceId, workspaceName, true);
+                              final WWorkspace workspace) {
+        this(registryPanel, workspaces, parentWorkspaceId, workspace, true);
     }
     
     protected EditWorkspacePanel(final RegistryPanel registryPanel,
                                  final Collection workspaces,
                                  final String parentWorkspaceId,
-                                 final String workspaceId,
-                                 final String workspaceName,
+                                 final WWorkspace workspace,
                                  boolean edit) {
         super();
+        this.workspace = workspace;
         this.edit = edit;
         this.registryPanel = registryPanel;
-        this.workspaceId = workspaceId;
         
         FlowPanel panel = new FlowPanel();
-        FlexTable table = createColumnTable();
+        final FlexTable table = createColumnTable();
         
         final WorkspacesListBox workspacesLB = 
-            new WorkspacesListBox(workspaces, workspaceId, parentWorkspaceId, true);
+            new WorkspacesListBox(workspaces, workspace.getId(), parentWorkspaceId, true);
         
         table.setText(0, 0, "Parent Workspace:");
         table.setWidget(0, 1, workspacesLB);
@@ -70,9 +69,15 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
         table.setWidget(1, 1, workspaceTextBox);
         
         if (edit) {
-            workspaceTextBox.setText(workspaceName);
+            workspaceTextBox.setText(workspace.getName());
         }
-        
+
+        table.setText(2, 0, "Default Lifecycle:");
+        registryPanel.getRegistryService().getLifecycles(new AbstractCallback(registryPanel) {
+            public void onSuccess(Object o) {
+                loadLifecycles(table, (Collection) o);
+            }
+        });
         panel.add(table);
         
         InlineFlowPanel buttonPanel = new InlineFlowPanel();
@@ -93,23 +98,40 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
             deleteButton.addClickListener(new ClickListener() {
 
                 public void onClick(Widget arg0) {
-                    showDeleteDialog(workspaceId);
+                    showDeleteDialog(workspace.getId());
                 }
                 
             });
             buttonPanel.add(deleteButton);
         }
-        table.setWidget(2, 1, buttonPanel);
+        table.setWidget(3, 1, buttonPanel);
         
         initWidget(panel);
 
         if (edit) {
-            setTitle("Edit Workspace " + workspaceName);
+            setTitle("Edit Workspace " + workspace.getName());
         } else {
             setTitle("Add Workspace");
         }
         
         styleHeaderColumn(table);
+    }
+
+    protected void loadLifecycles(FlexTable table, Collection lifecycles) {
+        lifecyclesLB = new ListBox();
+        lifecyclesLB.addItem("[Inherit From Parent]", "inherit");
+        
+        for (Iterator itr = lifecycles.iterator(); itr.hasNext();) {
+            WLifecycle l = (WLifecycle)itr.next();
+            
+            lifecyclesLB.addItem(l.getName(), l.getId());
+            
+            if (l.getId().equals(workspace.getDefaultLifecycleId())) {
+                lifecyclesLB.setSelectedIndex(lifecyclesLB.getItemCount()-1);
+            }
+        }
+        
+        table.setWidget(2, 1, lifecyclesLB);
     }
 
     protected void showDeleteDialog(String workspaceId) {
@@ -129,18 +151,24 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
             public void onSuccess(Object arg0) {
                 registryPanel.refreshWorkspaces();
                 registryPanel.setMain(new WorkspacePanel(registryPanel));
-                registryPanel.setMessage("Saved workspace " + text);
             }
             
         };
         
+        String lifecycleId = null;
+        int idx = lifecyclesLB.getSelectedIndex();
+        if (idx > 0) {
+            lifecycleId = lifecyclesLB.getValue(idx);
+        }
+        
         if (edit) {
-            registryPanel.getRegistryService().updateWorkspace(workspaceId, 
+            registryPanel.getRegistryService().updateWorkspace(workspace.getId(), 
                                                                parentWorkspaceId,
                                                                text, 
+                                                               lifecycleId,
                                                                callback);
         } else {
-            registryPanel.getRegistryService().addWorkspace(parentWorkspaceId, text, callback);
+            registryPanel.getRegistryService().addWorkspace(parentWorkspaceId, text, lifecycleId, callback);
         }
     }
     protected void delete(String workspaceId2) {

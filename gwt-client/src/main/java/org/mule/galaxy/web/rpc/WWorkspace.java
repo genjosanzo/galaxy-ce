@@ -9,7 +9,7 @@ public class WWorkspace implements IsSerializable {
     private String name;
     private Collection workspaces;
     private String path;
-    private WLifecycle defaultLifecycle;
+    private String defaultLifecycleId;
     
     public WWorkspace() {
         super();
@@ -20,11 +20,11 @@ public class WWorkspace implements IsSerializable {
         this.path = path;
     }
     
-    public WLifecycle getDefaultLifecycle() {
-        return defaultLifecycle;
+    public String getDefaultLifecycleId() {
+        return defaultLifecycleId;
     }
-    public void setDefaultLifecycle(WLifecycle defaultLifecycle) {
-        this.defaultLifecycle = defaultLifecycle;
+    public void setDefaultLifecycleId(String defaultLifecycleId) {
+        this.defaultLifecycleId = defaultLifecycleId;
     }
     public String getPath() {
         return path;
