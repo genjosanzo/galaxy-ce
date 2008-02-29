@@ -77,24 +77,14 @@ Application Workspaces: $workspaces
 Proc Units: $numUnits
 Clean: $clean
 Debug: $debug""")
+        
         // check if clean run has been requested
         if (clean) {
-
             splash 'A clean NetBoot has been requested, purging workspace caches...'
-
-            // a closure to recursively delete files and folders
-            def delete // split it into a declaration and definition, otherwise can't call itself
-            delete = {
-                println "Deleting ${it.canonicalPath}";
-                it.eachDir(delete);
-                it.eachFile {
-                    assert it.delete()
-                }
-            }
-
             delete(netBootCacheDir)
+            delete(new File(cacheDir, '_temp_downloads'))
             delete(new File(muleHome, 'lib/endorsed'))
-            workspaces.each {delete it}
+            workspaces.each { delete new File(cacheDir, it) }
         }
 
         splash 'Fetching artifacts from Galaxy...'
@@ -218,8 +208,17 @@ Debug: $debug""")
         urls.toArray(new URL[urls.size()])
     }
 
+
+    // Rrecursively delete files and folders
+    def static delete(File f) {
+        if (!f.exists()) { return }
+        println "Deleting $f.canonicalPath"
+        f.eachDir { delete it }
+        f.eachFile { assert it.delete(): it }
+    }
+
     /**
-    A helper splash message method.
+        A helper splash message method.
     */
     def static splash(text) {
         println """\n
