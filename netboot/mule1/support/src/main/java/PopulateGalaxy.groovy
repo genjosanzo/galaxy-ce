@@ -68,8 +68,6 @@ def libOpt = "$lib/opt"
 
 def mimeType = "application/java-archive"
 
-// TODO there seems to be a race condition in Abdera, it's failing with IllegalStateException under load
-// def numUnits = 1
 def numUnits = Runtime.runtime.availableProcessors() * 4
 
 def ExecutorService exec = Executors.newFixedThreadPool(numUnits)
