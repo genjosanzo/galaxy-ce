@@ -344,12 +344,17 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
             
             Phase phase = l.getPhaseById(phaseNode.getUUID());
             
+            if (phase == null) {
+                throw new RuntimeException("Null phase for node " + phaseNode.getName());
+            }
+            
             HashSet<Phase> nextPhases = new HashSet<Phase>();
             try {
                 Property property = phaseNode.getProperty(NEXT_PHASES);
                 
                 for (Value v : property.getValues()) {
                     Phase next = l.getPhase(v.getString());
+                    
                     nextPhases.add(next);
                 }
                 
@@ -402,7 +407,7 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
            
            ArrayList<String> nextPhases = new ArrayList<String>();
            for (Phase nextPhase : p.getNextPhases()) {
-               nextPhases.add(nextPhase.getId());
+               nextPhases.add(nextPhase.getName());
            }
            
            if (l.getInitialPhase().equals(p)) {

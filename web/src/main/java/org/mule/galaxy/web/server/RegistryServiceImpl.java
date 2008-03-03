@@ -745,8 +745,6 @@ public class RegistryServiceImpl implements RegistryService {
         for (Lifecycle l : lifecycles) {
             WLifecycle lifecycle = toWeb(l);
             wls.add(lifecycle);
-
-            
         }
 
         return wls;
