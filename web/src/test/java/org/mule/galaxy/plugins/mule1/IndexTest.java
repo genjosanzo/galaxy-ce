@@ -28,8 +28,7 @@ public class IndexTest extends AbstractGalaxyTest {
         Artifact artifact = ar.getArtifact();
 
         JcrVersion version = (JcrVersion) artifact.getActiveVersion();
-        Object property = version.getProperty("mule.description");
-        //TODO RM* revist after the refactor assertNotNull(property);
-        //assertTrue(property instanceof String);
+        Object serverId = version.getProperty("mule.server.id");
+        assertEquals("hello-server", serverId);
     }
 }
