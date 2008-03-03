@@ -12,7 +12,6 @@ package org.mule.galaxy.impl.artifact;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -125,10 +124,8 @@ public class ArtifactPluginManagerImpl implements ArtifactPluginManager, Applica
                         GalaxyPluginsType pluginsType = (GalaxyPluginsType) ele.getValue();
                         List<GalaxyPluginType> pluginsList = pluginsType.getGalaxyPlugin();
 
-                        for (Iterator<GalaxyPluginType> iterator = pluginsList.iterator(); iterator.hasNext();)
+                        for (GalaxyPluginType pluginType : pluginsList)
                         {
-                            GalaxyPluginType pluginType = iterator.next();
-
                             ConfigurableArtifactPlugin plugin = new ConfigurableArtifactPlugin(pluginType);
                             plugin.setArtifactTypeDao(artifactTypeDao);
                             plugin.setIndexManager(indexManager);
