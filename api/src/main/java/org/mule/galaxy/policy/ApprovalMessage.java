@@ -32,7 +32,6 @@ public class ApprovalMessage {
     @Override
     public String toString()
     {
-        // TODO AP is ApprovalMessage class supposed to be serialized remotely? Reflection helper may not work then
         return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
 }
