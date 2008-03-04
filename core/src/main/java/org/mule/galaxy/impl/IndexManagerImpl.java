@@ -12,6 +12,7 @@ import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.XmlContentHandler;
+import org.mule.galaxy.impl.content.JarContentHandler;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.query.QueryException;
@@ -238,8 +239,10 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
     protected void findAndReindex(Session session, Index idx) throws RepositoryException {
         org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(Artifact.class)
+            // TODO searching by documentType doesn't work for jars, it's all xml-centric    
+            //.add(Restriction.in("contentType", Arrays.asList("application/java-archive")));
             .add(Restriction.in("documentType", idx.getDocumentTypes()));
-        
+
         try {
             Set results = getRegistry().search(q).getResults();
 
@@ -399,7 +402,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
     private void indexWithGroovy(ArtifactVersion jcrVersion, Index idx)
     {
-        XmlContentHandler ch = (XmlContentHandler) contentService.getContentHandler(jcrVersion.getParent().getContentType());
+        JarContentHandler ch = (JarContentHandler) contentService.getContentHandler(jcrVersion.getParent().getContentType());
 
     }
 

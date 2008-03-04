@@ -1,26 +1,21 @@
 package org.mule.galaxy.impl;
 
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Index;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
 
-import java.io.IOException;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Set;
 
-import javax.activation.MimeTypeParseException;
 import javax.xml.namespace.QName;
 
 public class IndexTest extends AbstractGalaxyTest {
@@ -170,5 +165,56 @@ public class IndexTest extends AbstractGalaxyTest {
                                             Restriction.in("contentType", Arrays.asList("application/xml")))).getResults();
     
         assertEquals(1, results.size());
+    }
+
+    public void testGroovyIndex() throws Exception
+    {
+        InputStream stream = new FileInputStream("c:\\java\\mule\\mule1-netboot-1.0-beta-3-SNAPSHOT\\lib\\boot\\mule1-netboot-launcher-1.0-beta-3-SNAPSHOT.jar");
+
+        assertNotNull(stream);
+
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+
+        ArtifactResult ar = registry.createArtifact(workspace,
+                                                    "application/java-archive",
+                                                    "test.jar",
+                                                    "1",
+                                                    stream,
+                                                    getAdmin());
+
+        Artifact artifact = ar.getArtifact();
+
+        assertNotNull(artifact);
+
+        Index idx = indexManager.getIndex("test.field");
+        assertNotNull(idx);
+
+        indexManager.save(idx, true);
+
+        //assertEquals("http://www.example.org/test/",
+        //             artifact.getProperty("xmlschema.targetNamespace"));
+        //
+        //Object property = artifact.getProperty("xmlschema.element");
+        //assertNotNull(property);
+        //assertTrue(property instanceof Collection);
+        //assertTrue(((Collection) property).contains("testElement"));
+        //
+        //property = artifact.getProperty("xmlschema.complexType");
+        //assertNotNull(property);
+        //assertTrue(property instanceof Collection);
+        //assertTrue(((Collection) property).contains("testComplexType"));
+        //
+        //property = artifact.getProperty("xmlschema.group");
+        //assertNotNull(property);
+        //assertTrue(property instanceof Collection);
+        //assertTrue(((Collection) property).contains("testGroup"));
+        //
+        //property = artifact.getProperty("xmlschema.attributeGroup");
+        //assertNotNull(property);
+        //assertTrue(property instanceof Collection);
+        //assertTrue(((Collection) property).contains("testAttributeGroup"));
+
     }
 }

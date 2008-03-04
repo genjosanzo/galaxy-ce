@@ -219,6 +219,8 @@
 
   <bean class="org.mule.galaxy.impl.artifact.OtherArtifactPlugin" parent="abstractArtifactPlugin"/>
 
-  <bean class="org.mule.galaxy.impl.artifact.JarArtifactPlugin" parent="abstractArtifactPlugin"/>
+    <bean class="org.mule.galaxy.impl.artifact.JarArtifactPlugin" parent="abstractArtifactPlugin">
+        <property name="contentService" ref="contentService"/>
+    </bean>
 
 </beans>
