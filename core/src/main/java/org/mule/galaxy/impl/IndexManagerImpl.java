@@ -1,5 +1,25 @@
 package org.mule.galaxy.impl;
 
+import org.mule.galaxy.ActivityManager;
+import org.mule.galaxy.ActivityManager.EventType;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.ContentService;
+import org.mule.galaxy.Index;
+import org.mule.galaxy.IndexManager;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.XmlContentHandler;
+import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.util.DOMUtils;
+import org.mule.galaxy.util.LogUtils;
+import org.mule.galaxy.util.QNameUtil;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,21 +33,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.jcr.AccessDeniedException;
-import javax.jcr.InvalidItemStateException;
-import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -43,26 +56,6 @@ import net.sf.saxon.javax.xml.xquery.XQPreparedExpression;
 import net.sf.saxon.javax.xml.xquery.XQResultSequence;
 import net.sf.saxon.xqj.SaxonXQDataSource;
 import org.apache.commons.lang.BooleanUtils;
-import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentService;
-import org.mule.galaxy.GalaxyException;
-import org.mule.galaxy.Index;
-import org.mule.galaxy.IndexManager;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.XmlContentHandler;
-import org.mule.galaxy.ActivityManager.EventType;
-import org.mule.galaxy.impl.jcr.JcrUtil;
-import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
-import org.mule.galaxy.query.QueryException;
-import org.mule.galaxy.query.Restriction;
-import org.mule.galaxy.util.DOMUtils;
-import org.mule.galaxy.util.LogUtils;
-import org.mule.galaxy.util.QNameUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -70,7 +63,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.SessionFactory;
 import org.springmodules.jcr.SessionFactoryUtils;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -250,7 +242,13 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         
         try {
             Set results = getRegistry().search(q).getResults();
-            
+
+            if (results.isEmpty())
+            {
+                // no empty log entries
+                return;
+            }
+
             logActivity("Reindexing " + idx.getId() + " for " + results.size() + " artifacts.");
             
             for (Object o : results) {
@@ -311,6 +309,8 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
             case XPATH:
                 indexWithXPath(version, idx);
                 break;
+            case GROOVY:
+                indexWithGroovy(version, idx);
             default:
                 throw new UnsupportedOperationException();
             }
@@ -396,6 +396,13 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         jcrVersion.setVisible(idx.getId(), visible);
     
     }
+
+    private void indexWithGroovy(ArtifactVersion jcrVersion, Index idx)
+    {
+        XmlContentHandler ch = (XmlContentHandler) contentService.getContentHandler(jcrVersion.getParent().getContentType());
+
+    }
+
 
     public void setContentService(ContentService contentService) {
         this.contentService = contentService;
