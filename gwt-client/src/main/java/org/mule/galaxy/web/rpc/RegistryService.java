@@ -33,6 +33,9 @@ public interface RegistryService extends RemoteService {
      */
     Collection getArtifactTypes();
 
+    void saveArtifactType(WArtifactType artifactType) throws RPCException;
+    
+    void deleteArtifactType(String id) throws RPCException;
     
     /**
      * @gwt.typeArgs searchPredicates <org.mule.galaxy.web.rpc.SearchPredicate>

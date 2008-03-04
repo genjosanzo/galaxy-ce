@@ -196,9 +196,64 @@ public class RegistryServiceImpl implements RegistryService {
         List atis = new ArrayList();
 
         for (ArtifactType a : artifactTypes) {
-            atis.add(new WArtifactType(a.getId(), a.getDescription()));
+            WArtifactType at = toWeb(a);
+            atis.add(at);
         }
         return atis;
+    }
+
+    private WArtifactType toWeb(ArtifactType a) {
+        Set<QName> docTypes = a.getDocumentTypes();
+        List<String> docTypesAsStr = new ArrayList<String>();
+        if (docTypes != null) {
+            for (QName q : docTypes) {
+                docTypesAsStr.add(q.toString());
+            }
+        }
+        return new WArtifactType(a.getId(), a.getContentType(), a.getDescription(), docTypesAsStr);
+    }
+
+    public void deleteArtifactType(String id) throws RPCException {
+        try {
+            artifactTypeDao.delete(id);
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    public void saveArtifactType(WArtifactType artifactType) throws RPCException {
+        try {
+            ArtifactType at = fromWeb(artifactType);
+            artifactTypeDao.save(at);
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    private ArtifactType fromWeb(WArtifactType wat) {
+        ArtifactType at = new ArtifactType();
+        at.setId(wat.getId());
+        at.setDescription(wat.getDescription());
+        at.setContentType(wat.getMediaType());
+        at.setDocumentTypes(fromWeb(wat.getDocumentTypes()));
+        return at;
+    }
+
+    private Set<QName> fromWeb(Collection documentTypes) {
+        if (documentTypes == null) return null;
+        
+        Set<QName> s = new HashSet<QName>();
+        for (Object o : documentTypes) {
+            String qn = o.toString();
+            if (qn.startsWith("{}")) {
+                qn = qn.substring(2);
+            }
+            
+            s.add(QName.valueOf(qn));
+        }
+        return s;
     }
 
     private Restriction getRestrictionForPredicate(SearchPredicate pred) {
