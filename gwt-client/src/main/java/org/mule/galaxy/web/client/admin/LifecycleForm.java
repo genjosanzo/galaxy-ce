@@ -238,12 +238,6 @@ public class LifecycleForm extends AbstractComposite {
         });
     }
 
-    private Widget newLabel(String name, String style) {
-        Label label = new Label(name);
-        label.setStyleName(style);
-        return label;
-    }
-
     private WPhase getSelectedPhase() {
         int idx = phases.getSelectedIndex();
         

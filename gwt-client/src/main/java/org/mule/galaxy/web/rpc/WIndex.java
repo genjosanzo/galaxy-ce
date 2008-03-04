@@ -9,7 +9,7 @@ public class WIndex implements IsSerializable {
     private String id;
     private String name;
     private String expression;
-    private String language;
+    private String indexer;
     private String resultType;
     
     /**
@@ -17,14 +17,15 @@ public class WIndex implements IsSerializable {
      */
     private Collection documentTypes;
     
-    public WIndex(String id, String name, String expression, 
-                  String language, String resultType,
+    public WIndex(String id, String name, 
+                  String expression, 
+                  String indexer, String resultType,
                   Collection documentTypes) {
         super();
         this.id = id;
         this.name = name;
         this.expression = expression;
-        this.language = language;
+        this.indexer = indexer;
         this.resultType = resultType;
         this.documentTypes = documentTypes;
     }
@@ -57,11 +58,11 @@ public class WIndex implements IsSerializable {
     public void setExpression(String expression) {
         this.expression = expression;
     }
-    public String getLanguage() {
-        return language;
+    public String getIndexer() {
+        return indexer;
     }
-    public void setLanguage(String language) {
-        this.language = language;
+    public void setIndexer(String indexer) {
+        this.indexer = indexer;
     }
     public String getResultType() {
         return resultType;

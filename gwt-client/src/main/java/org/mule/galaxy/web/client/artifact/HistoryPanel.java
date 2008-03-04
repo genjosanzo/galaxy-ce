@@ -25,7 +25,6 @@ public class HistoryPanel extends AbstractComposite {
     private RegistryServiceAsync registryService;
     private FlowPanel panel;
     private ExtendedArtifactInfo info;
-    private FlowPanel messages;
 
     public HistoryPanel(RegistryPanel registryPanel,
                            ExtendedArtifactInfo info) {

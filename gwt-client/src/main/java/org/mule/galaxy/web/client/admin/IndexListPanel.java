@@ -60,8 +60,8 @@ public class IndexListPanel
                     
                     table.setWidget(i, 0, hyperlink);
                     table.setText(i, 1, idx.getId());
-                    String type = idx.getLanguage();
-                    if ("XPATH".equals(type)) {
+                    String type = idx.getIndexer();
+                    if ("xpath".equals(type)) {
                         table.setText(i, 2, "XPath");
                     } else {
                         table.setText(i, 2, "XQuery");

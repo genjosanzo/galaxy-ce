@@ -82,7 +82,6 @@ public class XQueryIndexer extends AbstractIndexer {
                 }
             }
     
-            System.out.println("Setting property " + index.getId() + " with value " + results);
             artifact.setProperty(index.getId(), results);
             artifact.setLocked(index.getId(), true);
             artifact.setVisible(index.getId(), visible);
