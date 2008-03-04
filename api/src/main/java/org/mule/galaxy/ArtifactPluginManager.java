@@ -10,6 +10,7 @@
 package org.mule.galaxy;
 
 import org.mule.galaxy.view.ViewManager;
+import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.policy.PolicyManager;
 
 /**

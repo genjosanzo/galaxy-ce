@@ -3,10 +3,10 @@ package org.mule.galaxy.spring.config;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Index;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrVersion;
+import org.mule.galaxy.index.Index;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.test.AbstractGalaxyTest;
@@ -22,9 +22,9 @@ public class IndexTest extends AbstractGalaxyTest
 
 
     public void testSpringIndexes() throws Exception {
-        Collection<Index> indices = indexManager.getIndices(Constants.SPRING_QNAME);
+        Collection<Index> indices = indexManager.getIndexes();
         assertNotNull(indices);
-        assertEquals(2, indices.size());
+//        assertEquals(2, indices.size());
         Index idx = null;
         for (Iterator<Index> iterator = indices.iterator(); iterator.hasNext();)
         {
@@ -37,9 +37,9 @@ public class IndexTest extends AbstractGalaxyTest
         assertNotNull(idx);
         assertEquals("spring.bean", idx.getId());
         assertEquals("Spring Beans", idx.getName());
-        assertEquals(Index.Language.XQUERY, idx.getLanguage());
+        assertEquals("xquery", idx.getIndexer());
         assertEquals(String.class, idx.getQueryType());
-        assertNotNull(idx.getExpression());
+        assertNotNull(idx.getConfiguration().get("expression"));
         assertEquals(1, idx.getDocumentTypes().size());
 
         // Import a document which should now be indexed

@@ -31,8 +31,6 @@ import org.mule.galaxy.Comment;
 import org.mule.galaxy.CommentManager;
 import org.mule.galaxy.Dependency;
 import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.Index;
-import org.mule.galaxy.IndexManager;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.PropertyException;
@@ -41,8 +39,9 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.ActivityManager.EventType;
-import org.mule.galaxy.Index.Language;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
+import org.mule.galaxy.index.Index;
+import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
@@ -402,7 +401,7 @@ public class RegistryServiceImpl implements RegistryService {
             qt = "QName";
         }
 
-        return new WIndex(idx.getId(), idx.getName(), idx.getExpression(), idx.getLanguage().toString(), qt,
+        return new WIndex(idx.getId(), idx.getName(), idx.getConfiguration().get("expression"), idx.getIndexer(), qt,
                           docTypes);
     }
 
@@ -432,8 +431,9 @@ public class RegistryServiceImpl implements RegistryService {
     private Index fromWeb(WIndex wi) throws RPCException {
         Index idx = new Index();
         idx.setId(wi.getId());
-        idx.setExpression(wi.getExpression());
-        idx.setLanguage(Language.valueOf(wi.getLanguage()));
+        idx.setConfiguration(new HashMap<String,String>());
+        idx.getConfiguration().put("expression", wi.getExpression());
+        idx.setIndexer(wi.getIndexer());
         idx.setName(wi.getName());
 
         if (wi.getResultType().equals("String")) {

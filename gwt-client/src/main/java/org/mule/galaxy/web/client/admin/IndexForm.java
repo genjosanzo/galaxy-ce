@@ -85,7 +85,7 @@ public class IndexForm extends AbstractComposite {
         languageList.addItem("XPath");
         languageList.addItem("XQuery");
         
-        if (idx.getLanguage() == null || idx.getLanguage().equals("XPATH")) {
+        if (idx.getIndexer() == null || idx.getIndexer().equals("xpath")) {
             languageList.setSelectedIndex(0);
             xpathExpressionTB.setText(idx.getExpression());
             table.setWidget(4, 1, xpathExpressionTB);
@@ -153,8 +153,8 @@ public class IndexForm extends AbstractComposite {
         index.setName(nameTB.getText());
         index.setResultType(resultTypeLB.getValue(resultTypeLB.getSelectedIndex()));
         
-        String language = languageList.getValue(languageList.getSelectedIndex()).toUpperCase();
-        index.setLanguage(language);
+        String language = languageList.getValue(languageList.getSelectedIndex()).toLowerCase();
+        index.setIndexer(language);
         if ("XPATH".equals(language)) {
             index.setExpression(xpathExpressionTB.getText());
         } else {

@@ -1,8 +1,13 @@
 package org.mule.galaxy.impl.jcr.onm;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
 import javax.jcr.Session;
 
 import org.mule.galaxy.impl.jcr.JcrUtil;
@@ -10,8 +15,24 @@ import org.mule.galaxy.impl.jcr.JcrUtil;
 public class MapPersister implements FieldPersister {
 
     public Object build(Node n, FieldDescriptor fd, Session session) throws Exception {
-        // TODO
-        return null;
+        try {
+            n = n.getNode(fd.getName());
+        } catch (PathNotFoundException e) {
+            return null;
+        }
+        
+        // technically could be the wrong parameterization, but java loses all the info so who cares
+        Map<String,Object> map = new HashMap<String, Object>();
+        
+        // TODO: This is UGLY, but it'll do for now.
+        for (PropertyIterator props = n.getProperties(); props.hasNext();) {
+            Property child = props.nextProperty();
+            
+            if (!child.getName().startsWith("jcr:")) {
+                map.put(child.getName(), JcrUtil.getProperty(child.getName(), n));
+            }
+        }
+        return map;
     }
 
     public void persist(Object o, Node n, FieldDescriptor fd, Session session) throws Exception {

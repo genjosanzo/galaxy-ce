@@ -1,53 +1,83 @@
-package org.mule.galaxy;
+package org.mule.galaxy.index;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.mapping.OneToMany;
 
 public class Index implements Identifiable {
-    public enum Language  {
-        GROOVY,
-        XPATH,
-        XQUERY
-    }
+
     private String id;
     private String name;
-    private String expression;
-    private Language language;
+    private String mediaType;
     private Set<QName> documentTypes;
     private Class<?> queryType;
+    private String indexer;
+    private Map<String,String> configuration;
     
-    public Index(String id, String name, Language language, Class<?> queryType, 
-                 String expression, QName documentType) {
+    public Index(String id, 
+                 String name, 
+                 String mediaType,
+                 QName documentType, 
+                 Class<?> queryType,
+                 String indexer,
+                 Map<String, String> configuration) {
         super();
         this.id = id;
         this.name = name;
-        this.expression = expression;
-        this.language = language;
+        this.mediaType = mediaType;
+        
         this.documentTypes = new HashSet<QName>();
         this.documentTypes.add(documentType);
         
         this.queryType = queryType;
+        this.indexer = indexer;
+        this.configuration = configuration;
     }
     
-    public Index(String id, String name, Language language, Class<?> queryType, 
-                 String expression, Set<QName> documentTypes) {
+   
+    public Index(String id, 
+                 String name, 
+                 String mediaType,
+                 Set<QName> documentTypes, 
+                 Class<?> queryType,
+                 String indexer,
+                 Map<String, String> configuration) {
         super();
         this.id = id;
         this.name = name;
-        this.expression = expression;
-        this.language = language;
+        this.mediaType = mediaType;
         this.documentTypes = documentTypes;
         this.queryType = queryType;
+        this.indexer = indexer;
+        this.configuration = configuration;
     }
-    
+
+
     public Index() {
         super();
     }
     
+    public String getIndexer() {
+        return indexer;
+    }
+    
+    public void setIndexer(String indexer) {
+        this.indexer = indexer;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
+    }
+
     public String getName() {
         return name;
     }
@@ -59,18 +89,6 @@ public class Index implements Identifiable {
     }
     public void setId(String id) {
         this.id = id;
-    }
-    public String getExpression() {
-        return expression;
-    }
-    public void setExpression(String expression) {
-        this.expression = expression;
-    }
-    public Language getLanguage() {
-        return language;
-    }
-    public void setLanguage(Language language) {
-        this.language = language;
     }
     @OneToMany(treatAsField=true)
     public Set<QName> getDocumentTypes() {
@@ -86,6 +104,13 @@ public class Index implements Identifiable {
         this.queryType = queryType;
     }
 
+    public Map<String, String> getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(Map<String, String> configuration) {
+        this.configuration = configuration;
+    }
 
     public String toString()
     {
@@ -93,9 +118,8 @@ public class Index implements Identifiable {
         sb.append("Index");
         sb.append(", id='").append(id).append('\'');
         sb.append(", name='").append(name).append('\'');
-        sb.append(", language=").append(language);
         sb.append(", queryType=").append(queryType);
-        sb.append(", expression='").append(expression).append('\'');        
+        sb.append(", configuration='").append(configuration).append('\'');        
         sb.append('}');
         return sb.toString();
     }

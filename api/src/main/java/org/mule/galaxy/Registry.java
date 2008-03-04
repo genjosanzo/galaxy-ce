@@ -4,13 +4,10 @@ package org.mule.galaxy;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import javax.activation.MimeTypeParseException;
-import javax.xml.namespace.QName;
 
-import org.mule.galaxy.Index.Language;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.SearchResults;

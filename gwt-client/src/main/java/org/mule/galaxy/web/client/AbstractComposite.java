@@ -19,6 +19,11 @@ public abstract class AbstractComposite extends Composite {
         
     }
 
+    protected Widget newLabel(String name, String style) {
+        Label label = new Label(name);
+        label.setStyleName(style);
+        return label;
+    }
     protected InlineFlowPanel asHorizontal(Widget w1, Widget w2) {
         InlineFlowPanel p = new InlineFlowPanel();
         p.add(w1);

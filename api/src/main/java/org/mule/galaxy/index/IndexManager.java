@@ -1,8 +1,10 @@
-package org.mule.galaxy;
+package org.mule.galaxy.index;
 
 import java.util.Collection;
 
-import javax.xml.namespace.QName;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.GalaxyException;
+import org.mule.galaxy.NotFoundException;
 
 public interface IndexManager {
     
@@ -16,7 +18,7 @@ public interface IndexManager {
 
     Collection<Index> getIndexes();
     
-    Collection<Index> getIndices(QName documentType);
+    Collection<Index> getIndexes(ArtifactVersion artifactVersion);
 
     void index(ArtifactVersion version);
 }

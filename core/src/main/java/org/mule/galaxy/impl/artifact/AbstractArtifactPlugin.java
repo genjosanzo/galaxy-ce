@@ -3,8 +3,8 @@ package org.mule.galaxy.impl.artifact;
 import org.mule.galaxy.ArtifactPlugin;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.Dao;
-import org.mule.galaxy.IndexManager;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.view.ViewManager;
 
