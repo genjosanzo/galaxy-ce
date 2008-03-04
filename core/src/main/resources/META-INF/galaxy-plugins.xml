@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<galaxy-plugins xmlns="http://www.mulesource.org/schema/galaxy-plugins"
+<galaxy xmlns="http://www.mulesource.org/schema/galaxy-plugins"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="
-       http://www.mulesource.org/schema/galaxy-plugins http://www.mulesource.org/schema/galaxy-plugin/galaxy-plugins-1.0.xsd">
-    <galaxy-plugin>
+       http://www.mulesource.org/schema/galaxy-plugins http://www.mulesource.org/schema/artifact-type/galaxy-plugins-1.0.xsd">
+    
+    <artifact-type>
         <name>WS-Policy Documents</name>
         <description>Allows WSDL-Policy Documents to be managed by Galaxy.</description>
         <content-type>application/policy+xml</content-type>
@@ -17,9 +18,9 @@
             <local-name>policy</local-name>
             <uri>http://http://www.w3.org/2006/07/ws-policy</uri>
         </namespace>
-    </galaxy-plugin>
+    </artifact-type>
 
-    <galaxy-plugin>
+    <artifact-type>
         <name>XML Schemas</name>
         <description>Allows Xml Schema Documents to be managed by Galaxy.</description>
         <content-type>application/xmlschema+xml</content-type>
@@ -98,10 +99,10 @@ declare variable $document external;
 } </values>]]></expression></configuration>
             </index>
         </indexes>
-    </galaxy-plugin>
+    </artifact-type>
     
 
-    <galaxy-plugin>
+    <artifact-type>
         <name>XSLT Stylesheets</name>
         <description>Allows Xslt Documents to be managed by Galaxy.</description>
         <content-type>application/xslt+xml</content-type>
@@ -111,9 +112,9 @@ declare variable $document external;
             <local-name>stylesheet</local-name>
             <uri>http://www.w3.org/1999/XSL/Transform</uri>
         </namespace>
-    </galaxy-plugin>
+    </artifact-type>
 
-    <galaxy-plugin>
+    <artifact-type>
         <name>WSDL Documents</name>
         <description>Allows WSDL Documents to be managed by Galaxy. Users can register, query and view WSDL documents with this plugin.
         </description>
@@ -224,9 +225,9 @@ declare variable $document external;
                 </column>
             </view>
         </views>
-    </galaxy-plugin>
+    </artifact-type>
     
-    <galaxy-plugin>
+    <artifact-type>
         <name>Spring Configurations</name>
         <description>Allows Spring Bean cofiguration files to be managed by Galaxy. Users can register, query and view Spring
             configuration files with this plugin.
@@ -275,5 +276,5 @@ declare variable $document external;
                 </column>
             </view>
         </views>
-    </galaxy-plugin>
-</galaxy-plugins>
+    </artifact-type>
+</galaxy>

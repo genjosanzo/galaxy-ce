@@ -25,12 +25,11 @@ import org.mule.galaxy.impl.view.MvelColumn;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.plugins.config.jaxb.ColumnType;
 import org.mule.galaxy.plugins.config.jaxb.ConfigurationType;
-import org.mule.galaxy.plugins.config.jaxb.GalaxyPluginType;
+import org.mule.galaxy.plugins.config.jaxb.GalaxyArtifactType;
+import org.mule.galaxy.plugins.config.jaxb.GalaxyType;
 import org.mule.galaxy.plugins.config.jaxb.IndexType;
 import org.mule.galaxy.plugins.config.jaxb.NamespaceType;
-import org.mule.galaxy.plugins.config.jaxb.PolicyType;
 import org.mule.galaxy.plugins.config.jaxb.ViewType;
-import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.util.TemplateParser;
 import org.mule.galaxy.view.Column;
@@ -41,20 +40,20 @@ import org.w3c.dom.Node;
 /**
  * TODO
  */
-public class ConfigurableArtifactPlugin extends AbstractArtifactPlugin
+public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
 {
     /**
      * logger used by this class
      */
-    protected transient final Log logger = LogFactory.getLog(ConfigurableArtifactPlugin.class);
+    protected transient final Log logger = LogFactory.getLog(XmlArtifactTypePlugin.class);
 
     protected PolicyManager policyManager;
 
-    private GalaxyPluginType pluginXml;
+    private GalaxyArtifactType pluginXml;
     private List<QName> pluginQNames;
     private TemplateParser parser = TemplateParser.createAntStyleParser();
     
-    public ConfigurableArtifactPlugin(GalaxyPluginType pluginXml)
+    public XmlArtifactTypePlugin(GalaxyArtifactType pluginXml)
     {
         this.pluginXml = pluginXml;
     }
@@ -172,19 +171,6 @@ public class ConfigurableArtifactPlugin extends AbstractArtifactPlugin
 
     public void initializeEverytime() throws Exception
     {
-        if (pluginXml.getPolicies() != null)
-        {
-            List<PolicyType> indexes = pluginXml.getPolicies().getPolicy();
-            for (Iterator<PolicyType> pitr = indexes.iterator(); pitr.hasNext();)
-            {
-                PolicyType policyType = pitr.next();
-                Class clazz = ClassUtils.forName(policyType.getClazz());
-                ArtifactPolicy policy = (ArtifactPolicy)clazz.newInstance();
-                policy.setRegistry(registry);
-                policyManager.addPolicy(policy);
-            }
-        }
-        
         if (pluginXml.getViews() == null || pluginQNames == null)
         {
             return;

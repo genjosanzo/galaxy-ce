@@ -29,14 +29,18 @@ import org.mule.galaxy.Dao;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.index.IndexManager;
-import org.mule.galaxy.plugins.config.jaxb.GalaxyPluginType;
-import org.mule.galaxy.plugins.config.jaxb.GalaxyPluginsType;
+import org.mule.galaxy.plugins.config.jaxb.ArtifactPolicyType;
+import org.mule.galaxy.plugins.config.jaxb.GalaxyArtifactType;
+import org.mule.galaxy.plugins.config.jaxb.GalaxyPoliciesType;
+import org.mule.galaxy.plugins.config.jaxb.GalaxyType;
+import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.view.ViewManager;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.ClassUtils;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
@@ -121,24 +125,33 @@ public class ArtifactPluginManagerImpl implements ArtifactPluginManager, Applica
                         Unmarshaller u = jc.createUnmarshaller();
                         JAXBElement ele = (JAXBElement) u.unmarshal(url.openStream());
 
-                        GalaxyPluginsType pluginsType = (GalaxyPluginsType) ele.getValue();
-                        List<GalaxyPluginType> pluginsList = pluginsType.getGalaxyPlugin();
+                        GalaxyType pluginsType = (GalaxyType) ele.getValue();
+                        List<GalaxyArtifactType> pluginsList = pluginsType.getArtifactType();
 
-                        for (GalaxyPluginType pluginType : pluginsList)
+                        for (GalaxyArtifactType pluginType : pluginsList)
                         {
-                            ConfigurableArtifactPlugin plugin = new ConfigurableArtifactPlugin(pluginType);
+                            XmlArtifactTypePlugin plugin = new XmlArtifactTypePlugin(pluginType);
                             plugin.setArtifactTypeDao(artifactTypeDao);
                             plugin.setIndexManager(indexManager);
                             plugin.setRegistry(registry);
                             plugin.setViewManager(viewManager);
                             plugin.setPolicyManager(policyManager);
 
-
                             if (System.getProperty("initializeOnce") != null)
                             {
                                 plugin.initializeOnce();
                             }
                             plugin.initializeEverytime();
+                        }
+                        
+                        GalaxyPoliciesType policies = pluginsType.getPolicies();
+                        if (policies != null) {
+                            for (ArtifactPolicyType p : policies.getArtifactPolicy()) {
+                                Class clazz = ClassUtils.forName(p.getClazz());
+                                ArtifactPolicy policy = (ArtifactPolicy)clazz.newInstance();
+                                policy.setRegistry(registry);
+                                policyManager.addPolicy(policy);
+                            }
                         }
                     }
                 }

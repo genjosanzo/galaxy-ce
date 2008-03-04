@@ -4,7 +4,7 @@
            xmlns="http://www.mulesource.org/schema/galaxy-plugins"
            xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-    <xs:element name="galaxy-plugins" type="galaxyPluginsType">
+    <xs:element name="galaxy" type="galaxyType">
          <xs:annotation>
             <xs:documentation>A Galaxy plugin file can contain one or more galaxy-plugin elements. A Galaxy plugin
                 defines how the Galaxy server can index and manage an artifact. An artifact can be anything from an Xml
@@ -13,9 +13,19 @@
         </xs:annotation>
     </xs:element>
 
-    <xs:complexType name="galaxyPluginsType">
-        <xs:sequence minOccurs="1" maxOccurs="unbounded">
-            <xs:element name="galaxy-plugin" type="galaxyPluginType">
+    <xs:complexType name="galaxyType">
+        <xs:sequence>
+            <xs:element name="artifact-type" type="galaxyArtifactType" minOccurs="1" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>A Galaxy plugin defines Indexes, views and policies that apply to an artifact managed by
+                        Galaxy. There is on plugin per artifact. For example The plug in for Mule 1 configuration files defines
+                        a set of indexes that a Mule configuration can be queriesd on, a set of polices that will get applied
+                        to Mule configurations managed by Galaxy and a 'view' that defines how the artifact gets deployed in
+                        the Galaxy web interface.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="policies" type="galaxyPoliciesType">
                 <xs:annotation>
                     <xs:documentation>A Galaxy plugin defines Indexes, views and policies that apply to an artifact managed by
                         Galaxy. There is on plugin per artifact. For example The plug in for Mule 1 configuration files defines
@@ -27,8 +37,8 @@
             </xs:element>
         </xs:sequence>
     </xs:complexType>
-
-    <xs:complexType name="galaxyPluginType">
+    
+    <xs:complexType name="galaxyArtifactType">
         <xs:sequence>
             <xs:element type="xs:string" name="name">
                 <xs:annotation>
@@ -78,12 +88,6 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element type="policiesType" name="policies" maxOccurs="1" minOccurs="0">
-                <xs:annotation>
-                    <xs:documentation>A set of policies that will be applied to artifacts associated with this plugin.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
         </xs:sequence>
     </xs:complexType>
 
@@ -112,13 +116,6 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="policiesType">
-        <xs:sequence minOccurs="1" maxOccurs="unbounded">
-            <!--<xs:element type="xs:string" name="notes" minOccurs="0" maxOccurs="1"/>-->
-            <xs:element type="policyType" name="policy"/>
-        </xs:sequence>
-    </xs:complexType>
-
     <xs:complexType name="viewsType">
         <xs:sequence minOccurs="1" maxOccurs="unbounded">
             <!--<xs:element type="xs:string" name="notes" minOccurs="0" maxOccurs="1"/>-->
@@ -131,14 +128,6 @@
             <xs:element name="local-name" type="xs:string" maxOccurs="1" minOccurs="1"/>
             <xs:element name="uri" type="xs:string" minOccurs="0" maxOccurs="1"/>
             <!--<xs:element name="prefix" type="xs:string" maxOccurs="1" minOccurs="0"/>-->
-        </xs:sequence>
-    </xs:complexType>
-
-    <xs:complexType name="policyType">
-        <xs:sequence>
-            <xs:element type="xs:string" name="name"/>
-            <xs:element type="xs:NMTOKEN" name="class"/>
-            <xs:element type="xs:string" name="description"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -156,5 +145,24 @@
         <xs:attribute name="column" type="xs:int"/>
         <xs:attribute name="summary" type="xs:boolean" default="true"/>
         <xs:attribute name="detail" type="xs:boolean" default="false"/>
+    </xs:complexType>
+    
+    <xs:complexType name="galaxyPoliciesType">
+        <xs:sequence>
+            <xs:element name="artifact-policy" type="artifactPolicyType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="artifactPolicyType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="name"/>
+            <xs:element type="xs:NMTOKEN" name="class"/>
+            <xs:element type="xs:string" name="description"/>
+        </xs:sequence>
     </xs:complexType>
 </xs:schema>
