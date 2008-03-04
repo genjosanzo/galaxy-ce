@@ -4,9 +4,9 @@ import javax.xml.namespace.QName;
 
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.Dao;
-import org.mule.galaxy.Index;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.index.Index;
 import org.mule.galaxy.util.Constants;
 
 /**

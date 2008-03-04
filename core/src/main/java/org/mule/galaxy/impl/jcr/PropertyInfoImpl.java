@@ -2,10 +2,10 @@ package org.mule.galaxy.impl.jcr;
 
 import javax.jcr.Node;
 
-import org.mule.galaxy.Index;
 import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.index.Index;
 
 public class PropertyInfoImpl implements PropertyInfo {
 

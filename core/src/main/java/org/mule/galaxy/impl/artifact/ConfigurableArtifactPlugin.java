@@ -9,11 +9,22 @@
  */
 package org.mule.galaxy.impl.artifact;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
+import javax.xml.namespace.QName;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.Index;
 import org.mule.galaxy.impl.view.CustomArtifactTypeView;
 import org.mule.galaxy.impl.view.MvelColumn;
+import org.mule.galaxy.index.Index;
 import org.mule.galaxy.plugins.config.jaxb.ColumnType;
+import org.mule.galaxy.plugins.config.jaxb.ConfigurationType;
 import org.mule.galaxy.plugins.config.jaxb.GalaxyPluginType;
 import org.mule.galaxy.plugins.config.jaxb.IndexType;
 import org.mule.galaxy.plugins.config.jaxb.NamespaceType;
@@ -23,18 +34,9 @@ import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.util.TemplateParser;
 import org.mule.galaxy.view.Column;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-
-import javax.xml.namespace.QName;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.util.ClassLoaderUtils;
 import org.springframework.util.ClassUtils;
+
+import org.w3c.dom.Node;
 
 /**
  * TODO
@@ -51,7 +53,7 @@ public class ConfigurableArtifactPlugin extends AbstractArtifactPlugin
     private GalaxyPluginType pluginXml;
     private List<QName> pluginQNames;
     private TemplateParser parser = TemplateParser.createAntStyleParser();
-
+    
     public ConfigurableArtifactPlugin(GalaxyPluginType pluginXml)
     {
         this.pluginXml = pluginXml;
@@ -101,13 +103,19 @@ public class ConfigurableArtifactPlugin extends AbstractArtifactPlugin
             for (Iterator<IndexType> iterator = indexes.iterator(); iterator.hasNext();)
             {
                 IndexType indexType = iterator.next();
-                Index idx = new Index(indexType.getFieldName(), indexType.getDisplayName(), Index.Language
-                        .valueOf(indexType.getLanguage().toString()), ClassUtils.resolveClassName(indexType
-                        .getSearchInputType(), getClass().getClassLoader()), // search
-                        // input
-                        // type
-                        parser.parse(props, indexType.getExpression()), getQName(indexType
-                        .getNamespace()));
+                ConfigurationType configType = indexType.getConfiguration();
+                HashMap<String, String> config = new HashMap<String,String>();
+                if (configType != null) {
+                    populateConfiguration(configType, config, props);
+                }
+                Index idx = new Index(indexType.getFieldName(), 
+                                      indexType.getDisplayName(), 
+                                      pluginXml.getContentType(),
+                                      getQName(indexType.getNamespace()),
+                                      ClassUtils.resolveClassName(indexType.getSearchInputType(), 
+                                                                  getClass().getClassLoader()), 
+                                      indexType.getIndexer(), 
+                                      config);
 
                 indexManager.save(idx, true);
 
@@ -115,6 +123,20 @@ public class ConfigurableArtifactPlugin extends AbstractArtifactPlugin
                 {
                     logger.debug("Created index: " + idx);
                 }
+            }
+        }
+    }
+
+    private void populateConfiguration(ConfigurationType configType, HashMap<String, String> config, Properties templateProps) {
+        if (configType.getAny() == null) return;
+        
+        for (Object o : configType.getAny()) {
+            Node n = (Node) o;
+            String val = org.mule.galaxy.util.DOMUtils.getContent(n);
+            
+            if (val != null) {
+                val = parser.parse(templateProps, val);
+                config.put(n.getLocalName(), val.trim());
             }
         }
     }

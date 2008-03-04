@@ -21,14 +21,14 @@ import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.CommentManager;
 import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.IndexManager;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.IndexManagerImpl;
+import org.mule.galaxy.impl.index.IndexManagerImpl;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.PluginRunner;
+import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.security.User;
@@ -136,7 +136,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
             Session session = repository.login(new SimpleCredentials("username", "password".toCharArray()));
 
             Node node = session.getRootNode();
-//            JcrUtil.dump(node.getNode("phaseLogEntries"));
+//            JcrUtil.dump(node.getNode("workspaces"));
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
                 Node child = itr.nextNode();
                 if (!child.getName().startsWith("jcr:")) {

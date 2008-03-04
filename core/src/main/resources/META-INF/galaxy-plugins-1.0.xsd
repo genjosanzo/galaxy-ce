@@ -99,10 +99,16 @@
             <xs:element name="field-name" type="xs:NMTOKEN"/>
             <xs:element name="display-name" type="xs:string"/>
             <xs:element name="description" type="xs:string"/>
-            <xs:element name="language" type="languagesType"/>
+            <xs:element name="indexer" type="xs:string"/>
             <xs:element name="search-input-type" type="xs:NMTOKEN"/>
-            <xs:element name="expression" type="xs:string"/>
+            <xs:element name="configuration" type="configurationType"/>
             <xs:element name="namespace" type="namespaceType" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="configurationType">
+        <xs:sequence>
+            <xs:any minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -151,12 +157,4 @@
         <xs:attribute name="summary" type="xs:boolean" default="true"/>
         <xs:attribute name="detail" type="xs:boolean" default="false"/>
     </xs:complexType>
-
-    <xs:simpleType name="languagesType">
-        <xs:restriction base="xs:NMTOKEN">
-            <xs:enumeration value="XQUERY"/>
-            <xs:enumeration value="XPATH"/>
-            <xs:enumeration value="GROOVY"/>
-        </xs:restriction>
-    </xs:simpleType>
 </xs:schema>

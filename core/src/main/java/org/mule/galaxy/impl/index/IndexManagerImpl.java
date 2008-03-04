@@ -1,7 +1,6 @@
-package org.mule.galaxy.impl;
+package org.mule.galaxy.impl.index;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -13,76 +12,50 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.jcr.AccessDeniedException;
-import javax.jcr.InvalidItemStateException;
-import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
-import net.sf.saxon.javax.xml.xquery.XQConnection;
-import net.sf.saxon.javax.xml.xquery.XQDataSource;
-import net.sf.saxon.javax.xml.xquery.XQException;
-import net.sf.saxon.javax.xml.xquery.XQItem;
-import net.sf.saxon.javax.xml.xquery.XQPreparedExpression;
-import net.sf.saxon.javax.xml.xquery.XQResultSequence;
-import net.sf.saxon.xqj.SaxonXQDataSource;
-import org.apache.commons.lang.BooleanUtils;
 import org.mule.galaxy.ActivityManager;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
-import org.mule.galaxy.GalaxyException;
-import org.mule.galaxy.Index;
-import org.mule.galaxy.IndexManager;
 import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.ActivityManager.EventType;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+import org.mule.galaxy.index.Index;
+import org.mule.galaxy.index.IndexException;
+import org.mule.galaxy.index.IndexManager;
+import org.mule.galaxy.index.Indexer;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
-import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.LogUtils;
-import org.mule.galaxy.util.QNameUtil;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.util.ClassUtils;
 import org.springmodules.jcr.JcrCallback;
+import org.springmodules.jcr.JcrTemplate;
 import org.springmodules.jcr.SessionFactory;
 import org.springmodules.jcr.SessionFactoryUtils;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
 
 public class IndexManagerImpl extends AbstractReflectionDao<Index> 
     implements IndexManager, ApplicationContextAware {
     private Logger LOGGER = LogUtils.getL7dLogger(IndexManagerImpl.class);
 
     private ContentService contentService;
-
-    private XPathFactory factory = XPathFactory.newInstance();
 
     private BlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>();
     
@@ -145,13 +118,24 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
 
     @SuppressWarnings("unchecked")
-    public Set<Index> getIndices(final QName documentType) {
+    public Set<Index> getIndexes(final ArtifactVersion av) {
         return (Set<Index>) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 QueryManager qm = getQueryManager(session);
-                Query query = qm.createQuery("//element(*, galaxy:index)[@documentTypes=" 
-                                                 + JcrUtil.stringToXPathLiteral(documentType.toString()) + "]", 
-                                             Query.XPATH);
+                StringBuilder qstr = new StringBuilder("//element(*, galaxy:index)");
+                
+                QName dt = av.getParent().getDocumentType();
+                if (dt == null) {
+                    qstr.append("[@mediaType=")
+                       .append(JcrUtil.stringToXPathLiteral(av.getParent().getContentType().toString()))
+                       .append("]");
+                } else {
+                    qstr.append("[@documentTypes=")
+                        .append(JcrUtil.stringToXPathLiteral(dt.toString()))
+                        .append("]");
+                }
+                
+                Query query = qm.createQuery(qstr.toString(), Query.XPATH);
                 
                 QueryResult result = query.execute();
                 
@@ -257,7 +241,15 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 Artifact a = (Artifact) o;
                 
                 for (ArtifactVersion v : a.getVersions()) {
-                    index(v, idx);
+                    ContentHandler ch = contentService.getContentHandler(v.getParent().getContentType());
+                    
+                    try {
+                        getIndexer(idx.getIndexer()).index(v, ch, idx);
+                    } catch (IndexException e) {
+                        handleIndexingException(idx, e);
+                    } catch (IOException e) {
+                        handleIndexingException(idx, e);
+                    }
                 }
                 
                 session.save();
@@ -292,111 +284,33 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
     
     public void index(final ArtifactVersion version) {
-        QName dt = version.getParent().getDocumentType();
-        if (dt == null) return;
-        
-        Collection<Index> indices = getIndices(dt);
+        Collection<Index> indices = getIndexes(version);
         
         for (Index idx : indices) {
-            index(version, idx);
+            ContentHandler ch = contentService.getContentHandler(version.getParent().getContentType());
+            
+            try {
+                getIndexer(idx.getIndexer()).index(version, ch, idx);
+            } catch (IndexException e) {
+                handleIndexingException(idx, e);
+            } catch (IOException e) {
+                handleIndexingException(idx, e);
+            }
         }
     }
 
-    private void index(final ArtifactVersion version, Index idx) {
+    public Indexer getIndexer(String id) {
         try {
-            switch (idx.getLanguage()) {
-            case XQUERY:
-                indexWithXQuery(version, idx);
-                break;
-            case XPATH:
-                indexWithXPath(version, idx);
-                break;
-            default:
-                throw new UnsupportedOperationException();
+            return (Indexer) context.getBean("indexer." + id);
+        } catch (NoSuchBeanDefinitionException e) {
+            try {
+                return (Indexer) ClassUtils.resolveClassName(id, getClass().getClassLoader()).newInstance();
+            } catch (Exception e1) {
+                throw new RuntimeException(e1);
             }
-        } catch (Throwable t) {
-            handleIndexingException(idx, t);
         }
     }
-
-
-    private void indexWithXPath(ArtifactVersion jcrVersion, Index idx) throws IOException, XPathExpressionException, PropertyException {
-        XmlContentHandler ch = (XmlContentHandler) contentService.getContentHandler(jcrVersion.getParent().getContentType());
-        
-        Document document = ch.getDocument(jcrVersion.getData());
-        
-        XPath xpath = factory.newXPath();
-        XPathExpression expr = xpath.compile(idx.getExpression());
-
-        NodeList nodes = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
-        
-        if (nodes.getLength() >= 1) {
-            jcrVersion.setProperty(idx.getId(), DOMUtils.getContent(nodes.item(0)));
-            jcrVersion.setLocked(idx.getId(), true);
-        }
-//        } else if (nodes.getLength() > 1) {
-//            Collection<String> values = new ArrayList<String>();
-//            for (int i = 0; i < nodes.getLength(); i++) {
-//                org.w3c.dom.Node n = nodes.item(i);
-//                
-//                values.add(n.getNodeValue());
-//            }
-//            jcrVersion.setProperty(idx.getId(), values);
-//            jcrVersion.setLocked(idx.getId(), true);
-//        }
-        
-    }
-
-    private void indexWithXQuery(ArtifactVersion jcrVersion, Index idx) throws XQException, IOException, PropertyException {
-        
-        XQDataSource ds = new SaxonXQDataSource();
-        
-            
-        XQConnection conn = ds.getConnection();
-        
-        XQPreparedExpression ex = conn.prepareExpression(idx.getExpression());
-        XmlContentHandler ch = (XmlContentHandler) contentService.getContentHandler(jcrVersion.getParent().getContentType());
-        
-        ex.bindNode(new QName("document"), ch.getDocument(jcrVersion.getData()), null);
-        
-        XQResultSequence result = ex.executeQuery();
-        
-        List<Object> results = new ArrayList<Object>();
-        
-        boolean visible = true;
-        
-        if (result.next()) {
-            XQItem item = result.getItem();
-
-            org.w3c.dom.Node values = item.getNode();
-            
-            // check locking & visibility
-            NamedNodeMap atts = values.getAttributes();
-            org.w3c.dom.Node visibleNode = atts.getNamedItem("visible");
-            if (visibleNode != null) {
-                visible = BooleanUtils.toBoolean(visibleNode.getNodeValue());
-            }
-            
-            // loop through the values
-            Element value = DOMUtils.getFirstElement(values);
-            while (value != null) {
-                Object content = DOMUtils.getContent(value);
-                if (idx.getQueryType().equals(QName.class)) {
-                    results.add(QNameUtil.fromString(content.toString())); 
-                } else {
-                    results.add(content);
-                }
-                
-                value = (Element) DOMUtils.getNext(value, "value", org.w3c.dom.Node.ELEMENT_NODE);
-            }
-        }
-
-        jcrVersion.setProperty(idx.getId(), results);
-        jcrVersion.setLocked(idx.getId(), true);
-        jcrVersion.setVisible(idx.getId(), visible);
     
-    }
-
     public void setContentService(ContentService contentService) {
         this.contentService = contentService;
     }
