@@ -147,8 +147,6 @@ public class RegistryPanel extends AbstractMenuPanel {
         artifactTypesBox = new Toolbox(false);
         artifactTypesBox.setTitle("By Artifact Type");
         addMenuItem(artifactTypesBox);
-        
-        initArtifactTypes();
     }
 
     protected WWorkspace getWorkspace(String workspaceId) {
@@ -172,6 +170,7 @@ public class RegistryPanel extends AbstractMenuPanel {
     public void onShow() {
         super.onShow();
         refreshWorkspaces();
+        initArtifactTypes();
     }
 
     private ClickListener createClickListener(final MenuPanelPageInfo page) {
@@ -209,6 +208,7 @@ public class RegistryPanel extends AbstractMenuPanel {
 
     private void initArtifactTypes() {
         artifactTypes = new HashSet();
+        artifactTypesBox.clear();
         
         service.getArtifactTypes(new AbstractCallback(this) {
 

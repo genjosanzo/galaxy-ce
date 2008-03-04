@@ -29,6 +29,12 @@ public interface RegistryServiceAsync extends RemoteService {
     
     void getArtifactTypes(AsyncCallback callback);
     
+    void saveArtifactType(WArtifactType artifactType, 
+                      AsyncCallback callback);
+    
+    void deleteArtifactType(String id, 
+                            AsyncCallback callback);
+    
     void getArtifacts(String workspace, Set artifactTypes, 
                       Set searchPredicates, String freeformQuery, 
                       int start, int maxResults, 

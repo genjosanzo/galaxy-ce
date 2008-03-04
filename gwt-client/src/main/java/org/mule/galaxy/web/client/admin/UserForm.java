@@ -4,7 +4,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
@@ -12,7 +11,9 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.util.DeleteDialog;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.DeleteDialog.DeleteListener;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
 import org.mule.galaxy.web.rpc.UserServiceAsync;
@@ -113,7 +114,11 @@ public class UserForm extends AbstractComposite {
             InlineFlowPanel buttons = new InlineFlowPanel();
             buttons.add(save);
             
-            final DeleteDialog popup = new DeleteDialog(this);
+            final DeleteDialog popup = new DeleteDialog("user", new DeleteListener() {
+                public void onYes() {
+                    delete();
+                }
+            });
             
             delete = new Button("Delete");
             delete.addClickListener(new ClickListener() {
@@ -237,33 +242,5 @@ public class UserForm extends AbstractComposite {
     private void reenable() {
         save.setEnabled(true);
         save.setText("Save");
-    }
-    public static final class DeleteDialog extends DialogBox {
-
-        public DeleteDialog(final UserForm panel) {
-            // Set the dialog box's caption.
-            setText("Are you sure you want to delete this user?");
-
-            InlineFlowPanel buttonPanel = new InlineFlowPanel();
-
-            Button no = new Button("No");
-            no.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
-                    DeleteDialog.this.hide();
-                }
-            });
-
-            Button yes = new Button("Yes");
-            yes.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
-                    DeleteDialog.this.hide();
-                    panel.delete();
-                }
-            });
-            buttonPanel.add(no);
-            buttonPanel.add(yes);
-
-            setWidget(buttonPanel);
-        }
     }
 }

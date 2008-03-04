@@ -72,4 +72,8 @@ public class Toolbox extends Composite {
             panel.add(w);
         }
     }
+    
+    public void clear() {
+        panel.clear();
+    }
 }

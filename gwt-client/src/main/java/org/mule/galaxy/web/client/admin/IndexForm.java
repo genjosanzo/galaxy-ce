@@ -18,6 +18,7 @@ import java.util.Iterator;
 
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.QNameListBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
@@ -34,10 +35,8 @@ public class IndexForm extends AbstractComposite {
     private ListBox languageList;
     private TextBox xpathExpressionTB;
     private ListBox resultTypeLB;
-    private ListBox docTypesLB;
-    private Button rmDocTypeButton;
-    private Button addDocTypeButton;
-
+    private QNameListBox docTypesLB;
+    
     public IndexForm(AdministrationPanel adminPanel, WIndex u) {
         this (adminPanel, u, false);
     }
@@ -123,66 +122,9 @@ public class IndexForm extends AbstractComposite {
             resultTypeLB.setSelectedIndex(1);
         }
         
-        docTypesLB = new ListBox();
-        docTypesLB.setVisibleItemCount(5);
-        if (idx.getDocumentTypes() != null) {
-            for (Iterator itr = idx.getDocumentTypes().iterator(); itr.hasNext();) {
-                String q = (String)itr.next();
-                
-                docTypesLB.addItem(q);
-            }
-        }
-        
-        FlexTable docTypeTable = new FlexTable();
-        docTypeTable.setWidget(0, 0, docTypesLB);
-        
-        rmDocTypeButton = new Button("Remove");
-        rmDocTypeButton.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
-                int idx = docTypesLB.getSelectedIndex();
-                if (idx != -1) {
-                    docTypesLB.removeItem(idx);
-                }
-            }
-        });
-        docTypeTable.setWidget(0, 1, rmDocTypeButton);
-        
-        InlineFlowPanel addPanel = new InlineFlowPanel();
-        final TextBox addDocTypeTB = new TextBox();
-        addDocTypeTB.setVisibleLength(60);
-        addPanel.add(addDocTypeTB);
-        addDocTypeButton = new Button("Add");
-        addDocTypeButton.addClickListener(new ClickListener() {
+        docTypesLB = new QNameListBox(idx.getDocumentTypes());
 
-            public void onClick(Widget sender) {
-                String text = addDocTypeTB.getText();
-                
-                if (!text.startsWith("{") || text.indexOf('{', 1) != -1) {
-                    Window.alert("Document type QNames must be in the form of \"{NAMESPACE}LOCAL-NAME\"");
-                    return;
-                }
-                int rightIdx = text.indexOf("}");
-                if (rightIdx != -1) {
-                    if (text.indexOf('}', rightIdx+1) != -1) {
-                        Window.alert("Document type QNames must be in the form of \"{NAMESPACE}LOCAL-NAME\"");
-                        return;
-                    }
-                } else {
-                    Window.alert("Document type QNames must be in the form of \"{NAMESPACE}LOCAL-NAME\"");
-                    return;
-                }
-                
-                docTypesLB.addItem(text);
-                addDocTypeTB.setText("");
-            }
-            
-        });
-        addPanel.add(addDocTypeButton);
-
-        docTypeTable.setWidget(1, 0, addPanel);
-        docTypeTable.getFlexCellFormatter().setRowSpan(1, 0, 2);
-
-        table.setWidget(5, 1, docTypeTable);
+        table.setWidget(5, 1, docTypesLB);
         
         save = new Button("Save");
         table.setWidget(6, 1, save);
@@ -219,11 +161,8 @@ public class IndexForm extends AbstractComposite {
             index.setExpression(xqueryExpressionTA.getText());
         }
         
-        ArrayList docTypes = new ArrayList();
-        for (int i = 0; i < docTypesLB.getItemCount(); i++) {
-            docTypes.add(docTypesLB.getValue(i));
-        }
-        index.setDocumentTypes(docTypes);
+        
+        index.setDocumentTypes(docTypesLB.getItems());
         
         // validation
         

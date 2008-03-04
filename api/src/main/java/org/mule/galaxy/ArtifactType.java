@@ -2,13 +2,14 @@ package org.mule.galaxy;
 
 import org.mule.galaxy.mapping.OneToMany;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-public class ArtifactType implements Identifiable {
+public class ArtifactType implements Identifiable, Serializable {
     private String id;
     private String description;
     private Set<QName> documentTypes;
