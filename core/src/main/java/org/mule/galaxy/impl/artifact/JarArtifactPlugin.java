@@ -42,7 +42,9 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
         System.out.println(">>> Updated JAR plugin");
 
         // TODO Index revolves too much around XML, needs a serious refactoring
-        Index idx = new Index("jar.index", "This is an index description", "application/java-archive", (QName) null, String.class,
+        Index idx = new Index("jar.index", "This is an index description", "application/java-archive",
+                              new QName("application/java-archive"), // the constructor should be overloaded and QName go
+                              String.class,
                               "groovy", null);
 
 
