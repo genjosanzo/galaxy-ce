@@ -192,7 +192,7 @@ public class IndexTest extends AbstractGalaxyTest {
 
         assertNotNull(artifact);
 
-        Index idx = indexManager.getIndex("test.field");
+        Index idx = indexManager.getIndex("jar.index");
         assertNotNull(idx);
 
         indexManager.save(idx, true);

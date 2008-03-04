@@ -45,7 +45,7 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
         Index idx = new Index("jar.index", "This is an index description", "application/java-archive",
                               new QName("application/java-archive"), // the constructor should be overloaded and QName go
                               String.class,
-                              "groovy", null);
+                              "org.mule.galaxy.impl.index.GroovyIndexer", null);
 
 
         // dynamically register jar content handler (instead of putting it in core's spring config

@@ -1,6 +1,26 @@
 package org.mule.galaxy.impl.index;
 
+import org.mule.galaxy.ActivityManager;
+import org.mule.galaxy.ActivityManager.EventType;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.ContentService;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+import org.mule.galaxy.index.Index;
+import org.mule.galaxy.index.IndexException;
+import org.mule.galaxy.index.IndexManager;
+import org.mule.galaxy.index.Indexer;
+import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.util.LogUtils;
+
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -22,24 +42,6 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.xml.namespace.QName;
 
-import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.ContentService;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.ActivityManager.EventType;
-import org.mule.galaxy.impl.jcr.JcrUtil;
-import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
-import org.mule.galaxy.index.Index;
-import org.mule.galaxy.index.IndexException;
-import org.mule.galaxy.index.IndexManager;
-import org.mule.galaxy.index.Indexer;
-import org.mule.galaxy.query.QueryException;
-import org.mule.galaxy.query.Restriction;
-import org.mule.galaxy.util.LogUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
@@ -47,7 +49,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.ClassUtils;
 import org.springmodules.jcr.JcrCallback;
-import org.springmodules.jcr.JcrTemplate;
 import org.springmodules.jcr.SessionFactory;
 import org.springmodules.jcr.SessionFactoryUtils;
 
@@ -228,21 +229,25 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         return runnable;
     }
 
-    protected void findAndReindex(Session session, Index idx) throws RepositoryException {
+    protected void findAndReindex(Session session, Index idx) throws RepositoryException
+    {
         org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(Artifact.class)
-            .add(Restriction.in("documentType", idx.getDocumentTypes()));
-        
-        try {
+                // TODO documentType lookup won't work for non-xml artifacts
+                .add(Restriction.in("contentType", Arrays.asList(idx.getMediaType())));
+                //.add(Restriction.in("documentType", idx.getDocumentTypes()));
+
+        try
+        {
             Set results = getRegistry().search(q).getResults();
-            
+
             logActivity("Reindexing " + idx.getId() + " for " + results.size() + " artifacts.");
-            
+
             for (Object o : results) {
                 Artifact a = (Artifact) o;
-                
+
                 for (ArtifactVersion v : a.getVersions()) {
                     ContentHandler ch = contentService.getContentHandler(v.getParent().getContentType());
-                    
+
                     try {
                         getIndexer(idx.getIndexer()).index(v, ch, idx);
                     } catch (IndexException e) {
@@ -251,7 +256,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                         handleIndexingException(idx, e);
                     }
                 }
-                
+
                 session.save();
             }
         } catch (QueryException e) {
@@ -259,7 +264,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         } catch (RegistryException e) {
             logActivity("Could not reindex documents for index " + idx.getId(), e);
         }
-        
+
     }
 
 
