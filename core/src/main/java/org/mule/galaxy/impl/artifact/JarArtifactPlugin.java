@@ -1,9 +1,12 @@
 package org.mule.galaxy.impl.artifact;
 
 import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.Index;
 import org.mule.galaxy.util.Constants;
 
 import java.util.List;
+
+import javax.xml.namespace.QName;
 
 /**
  * Java Archive (JAR) artifact plugin.
@@ -33,6 +36,13 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
 
         artifactTypeDao.save(new ArtifactType("Java Archives (JARs)", "application/java-archive"));
         System.out.println(">>> Updated JAR plugin");
+
+        // TODO Index revolves too much around XML, needs a serious refactoring
+        Index idx = new Index("test.field", "This is an index description", Index.Language.GROOVY, String.class,
+                              "some expression", new QName("application/java-archive"));
+
+        indexManager.save(idx, true);
+
     }
 
 }
