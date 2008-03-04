@@ -1031,6 +1031,14 @@ public class RegistryServiceImpl implements RegistryService {
         lifecycleManager.save(l);
     }
 
+    public void deleteLifecycle(String id) throws RPCException {
+        try {
+            lifecycleManager.delete(id, lifecycleManager.getDefaultLifecycle().getName());
+        } catch (NotFoundException e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
+
     private Lifecycle fromWeb(WLifecycle wl) throws RPCException {
         Lifecycle l = new Lifecycle();
         l.setPhases(new HashMap<String, Phase>());

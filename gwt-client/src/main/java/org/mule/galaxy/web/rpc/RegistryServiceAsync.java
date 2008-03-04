@@ -1,14 +1,11 @@
 package org.mule.galaxy.web.rpc;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
-
-import org.mule.galaxy.web.client.RPCException;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.Set;
 
 public interface RegistryServiceAsync extends RemoteService {
     void getWorkspaces(AsyncCallback callback);
@@ -100,4 +97,6 @@ public interface RegistryServiceAsync extends RemoteService {
     void getActivities(Date from, Date to, String user, String eventType, int start, int results, boolean ascending, AsyncCallback c);
     
     void getUserInfo(AsyncCallback c);
+
+    void deleteLifecycle(String id, AsyncCallback abstractCallback);
 }
