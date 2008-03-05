@@ -72,6 +72,7 @@ import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.util.DateUtil;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.util.Message;
+import org.mule.galaxy.util.UserUtils;
 import org.springframework.dao.DataAccessException;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
@@ -190,6 +191,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 session.save();
                 
+                activityManager.logActivity(UserUtils.getCurrentUser(),
+                                            "Workspace " + workspace.getPath() + " was created", 
+                                            EventType.INFO);
                 return workspace;
             }
         });
@@ -298,6 +302,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 workspaces.add(workspace);
 
                 session.save();
+                
+                activityManager.logActivity(UserUtils.getCurrentUser(),
+                                            "Workspace " + workspace.getPath() + " was created", 
+                                            EventType.INFO);
                 
                 return workspace;
             }
