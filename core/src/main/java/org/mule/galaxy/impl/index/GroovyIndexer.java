@@ -46,9 +46,11 @@ public class GroovyIndexer extends AbstractIndexer
         }
 
         Binding b = new Binding();
-        b.setVariable("config", config);
         b.setVariable("artifact", artifact);
+        b.setVariable("config", config);
+        b.setVariable("contentHandler", contentHandler);
         b.setVariable("index", index);
+        
         GroovyShell shell = new GroovyShell(Thread.currentThread().getContextClassLoader(), b);
         // TODO check it exists first
         Script script = shell.parse(new File(scriptSource));
