@@ -252,20 +252,26 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     public void deleteWorkspace(final String id) throws RegistryException, NotFoundException {
+        final JcrRegistryImpl registry = this;
         executeWithNotFound(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 
                 try {
                     Node node = getNodeByUUID(id);
+
+                    JcrWorkspace wkspc = new JcrWorkspace(registry, lifecycleManager, node);
+                    String path = wkspc.getPath();
                     
                     node.remove();
-                    
+
+                    activityManager.logActivity(UserUtils.getCurrentUser(),
+                                                "Workspace " + path + " was deleted", 
+                                                EventType.INFO);
                     session.save();
+                    
                 } catch (ItemNotFoundException e) {
                     throw new RuntimeException(new NotFoundException(id));
                 }
-                session.save();
-                
                 return null;
             }
         });
@@ -829,10 +835,16 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 
+                String p1 = artifact.getPath();
                 Node aNode = ((JcrArtifact) artifact).getNode();
                 Node wNode = ((JcrWorkspace) workspace).getNode();
                 
                 session.move(aNode.getPath(), wNode.getPath() + "/" + aNode.getName());
+
+                activityManager.logActivity(UserUtils.getCurrentUser(),
+                                            "Workspace " + p1 + " was moved to " + artifact.getPath(), 
+                                            EventType.INFO);
+                
                 session.save();
                 return null;
             }
@@ -854,8 +866,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 for (Dependency d : deps) {
                     ((JcrDependency) d).getDependencyNode().remove();
                 }
-                
+                String path = artifact.getPath();
                 ((JcrArtifact) artifact).getNode().remove();
+
+                activityManager.logActivity(UserUtils.getCurrentUser(),
+                                            "Artifact " + path + " was deleted", 
+                                            EventType.INFO);
                 
                 session.save();
                 return null;
