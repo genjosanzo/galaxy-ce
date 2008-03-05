@@ -111,7 +111,7 @@ public class LifecycleForm extends AbstractComposite {
         delete = new Button("Delete");
         delete.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
-                deletePhase();
+                delete();
             }
         });
         nameAndPhases.add(asHorizontal(save, delete));
@@ -279,16 +279,7 @@ public class LifecycleForm extends AbstractComposite {
             return;
         }
         
-        nameTB.setEnabled(false);
-        phases.setEnabled(false);
-        
-        if (nextPhases != null) {
-            nextPhases.setEnabled(false);
-            phaseNameTB.setEnabled(false);
-        }
-        
-        save.setText("Saving...");
-        save.setEnabled(false);
+        disable();
         
         lifecycle.setName(nameTB.getText());
         lifecycle.setInitialPhase(initialPhase);
@@ -307,6 +298,38 @@ public class LifecycleForm extends AbstractComposite {
             }
             
         });
+    }
+    
+    protected void delete() {
+        disable();
+        
+        adminPanel.getRegistryService().deleteLifecycle(lifecycle.getId(), new AbstractCallback(adminPanel) {
+
+            public void onFailure(Throwable caught) {
+                reenable();
+                super.onFailure(caught);
+            }
+
+            public void onSuccess(Object arg0) {
+                reenable();
+                History.newItem("lifecycles");
+                adminPanel.setMessage("Lifecycle was deleted.");
+            }
+            
+        });
+    }
+
+    private void disable() {
+        nameTB.setEnabled(false);
+        phases.setEnabled(false);
+        
+        if (nextPhases != null) {
+            nextPhases.setEnabled(false);
+            phaseNameTB.setEnabled(false);
+        }
+        
+        save.setText("Saving...");
+        save.setEnabled(false);
     }
 
     protected void reenable() {

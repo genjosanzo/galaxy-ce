@@ -147,6 +147,8 @@ public class RegistryPanel extends AbstractMenuPanel {
         artifactTypesBox = new Toolbox(false);
         artifactTypesBox.setTitle("By Artifact Type");
         addMenuItem(artifactTypesBox);
+        
+        initArtifactTypes();
     }
 
     protected WWorkspace getWorkspace(String workspaceId) {

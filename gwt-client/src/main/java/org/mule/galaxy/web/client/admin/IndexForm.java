@@ -155,7 +155,7 @@ public class IndexForm extends AbstractComposite {
         
         String language = languageList.getValue(languageList.getSelectedIndex()).toLowerCase();
         index.setIndexer(language);
-        if ("XPATH".equals(language)) {
+        if ("xpath".equals(language)) {
             index.setExpression(xpathExpressionTB.getText());
         } else {
             index.setExpression(xqueryExpressionTA.getText());

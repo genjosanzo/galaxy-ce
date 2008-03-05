@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<galaxy-plugins xmlns="http://www.mulesource.org/schema/galaxy-plugins"
+<galaxy xmlns="http://www.mulesource.org/schema/galaxy-plugins"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.mulesource.org/schema/galaxy-plugins http://www.mulesource.org/schema/galaxy-plugin/galaxy-plugins-1.0.xsd">
 
-    <galaxy-plugin>
+    <artifact-type>
         <name>Mule 1 Configurations</name>
         <description>Allows Mule 1 cofiguration files to be managed by Galaxy. Users can register, query and view Mule 1
             configuration files with this plugin.
@@ -131,28 +131,29 @@ declare variable $document external;
                 </column>
             </view>
         </views>
-        <policies>
-            <policy>
-                <name>Require SSL</name>
-                <class>org.mule.galaxy.mule1.policy.RequireSSLPolicy</class>
-                <description>Enforces the use of ssl on http and tcp endpoints</description>
-            </policy>
-            <policy>
-                <name>Require JMX</name>
-                <class>org.mule.galaxy.mule1.policy.RequireJMXPolicy</class>
-                <description>Enforces that JMX is configured.</description>
-            </policy>
-            <policy>
-                <name>Require JMX</name>
-                <class>org.mule.galaxy.mule1.policy.RequireNoClientRemotingPolicy</class>
-                <description>Requires that Client Remote Dispatcher support is not enabled.</description>
-            </policy>
-            <policy>
-                <name>Require Global Endpoints</name>
-                <class>org.mule.galaxy.mule1.policy.RequireGlobalEndpointsPolicy</class>
-                <description>Requires all All Endpoints are defined as top level Endpoints.</description>
-            </policy>
-        </policies>
-    </galaxy-plugin>
+    </artifact-type>
+    
+    <policies>
+        <artifact-policy>
+            <name>Require SSL</name>
+            <class>org.mule.galaxy.mule1.policy.RequireSSLPolicy</class>
+            <description>Enforces the use of ssl on http and tcp endpoints</description>
+        </artifact-policy>
+        <artifact-policy>
+            <name>Require JMX</name>
+            <class>org.mule.galaxy.mule1.policy.RequireJMXPolicy</class>
+            <description>Enforces that JMX is configured.</description>
+        </artifact-policy>
+        <artifact-policy>
+            <name>Require JMX</name>
+            <class>org.mule.galaxy.mule1.policy.RequireNoClientRemotingPolicy</class>
+            <description>Requires that Client Remote Dispatcher support is not enabled.</description>
+        </artifact-policy>
+        <artifact-policy>
+            <name>Require Global Endpoints</name>
+            <class>org.mule.galaxy.mule1.policy.RequireGlobalEndpointsPolicy</class>
+            <description>Requires all All Endpoints are defined as top level Endpoints.</description>
+        </artifact-policy>
+    </policies>
 
-</galaxy-plugins>
+</galaxy>
