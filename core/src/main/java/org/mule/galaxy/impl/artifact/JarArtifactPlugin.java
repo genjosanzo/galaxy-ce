@@ -6,7 +6,9 @@ import org.mule.galaxy.impl.content.JarContentHandler;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.util.Constants;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -41,11 +43,14 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
         artifactTypeDao.save(new ArtifactType("Java Archives (JARs)", "application/java-archive", new QName("application/java-archive")));
         System.out.println(">>> Updated JAR plugin");
 
+        Map<String, String> config = new HashMap<String, String>();
+        config.put("scriptSource", "C:\\projects\\mule\\galaxy\\branches\\jar-indexer\\core\\src\\main\\resources\\JarManifestIndex.groovy");
+
         // TODO Index revolves too much around XML, needs a serious refactoring
-        Index idx = new Index("jar.index", "This is an index description", "application/java-archive",
+        Index idx = new Index("jar.manifest", "JAR Manifest", "application/java-archive",
                               new QName("application/java-archive"), // the constructor should be overloaded and QName go
                               String.class,
-                              "org.mule.galaxy.impl.index.GroovyIndexer", null);
+                              "org.mule.galaxy.impl.index.GroovyIndexer", config);
 
 
         // dynamically register jar content handler (instead of putting it in core's spring config

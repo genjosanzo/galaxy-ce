@@ -23,13 +23,33 @@ import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexException;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Map;
+
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
+import groovy.lang.Script;
 
 public class GroovyIndexer extends AbstractIndexer
 {
+
     public void index(final ArtifactVersion artifact, final ContentHandler contentHandler, final Index index) throws IOException, IndexException
     {
-        // TODO implement
-        System.out.println("TODO Implement Groovy Indexer");
+        Map<String, String> config = index.getConfiguration();
+        String scriptSource = config.get("scriptSource");
+
+        if (scriptSource == null)
+        {
+            // TODO misconfig, log or throw an error
+            return;
+        }
+
+        Binding b = new Binding(config);
+        GroovyShell shell = new GroovyShell(Thread.currentThread().getContextClassLoader(), b);
+        // TODO check it exists first
+        Script script = shell.parse(new File(scriptSource));
+        // TODO not optimal, cache script
+        script.run();
     }
 }
