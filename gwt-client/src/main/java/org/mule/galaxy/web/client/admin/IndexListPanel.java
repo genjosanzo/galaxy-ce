@@ -1,18 +1,16 @@
 package org.mule.galaxy.web.client.admin;
 
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Widget;
-
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.MenuPanelPageInfo;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WIndex;
+
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 public class IndexListPanel
     extends AbstractComposite
@@ -61,10 +59,21 @@ public class IndexListPanel
                     table.setWidget(i, 0, hyperlink);
                     table.setText(i, 1, idx.getId());
                     String type = idx.getIndexer();
-                    if ("xpath".equals(type)) {
+                    if ("xpath".equalsIgnoreCase(type))
+                    {
                         table.setText(i, 2, "XPath");
-                    } else {
+                    }
+                    else if ("xquery".equalsIgnoreCase(type))
+                    {
                         table.setText(i, 2, "XQuery");
+                    }
+                    else if ("groovy".equalsIgnoreCase(type))
+                    {
+                        table.setText(i, 2, "Groovy");
+                    }
+                    else
+                    {
+                        table.setText(i, 2, type);
                     }
                     table.setText(i, 3, idx.getResultType());
                     table.getRowFormatter().setStyleName(i, "artifactTableEntry");

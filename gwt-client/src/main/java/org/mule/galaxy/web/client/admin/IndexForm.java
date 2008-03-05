@@ -1,28 +1,22 @@
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.util.QNameListBox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemNotFoundException;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.WIndex;
+
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.QNameListBox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ItemNotFoundException;
-import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.rpc.WIndex;
 
 public class IndexForm extends AbstractComposite {
 
@@ -84,7 +78,8 @@ public class IndexForm extends AbstractComposite {
         languageList = new ListBox();
         languageList.addItem("XPath");
         languageList.addItem("XQuery");
-        
+        languageList.addItem("Groovy");
+
         if (idx.getIndexer() == null || idx.getIndexer().equals("xpath")) {
             languageList.setSelectedIndex(0);
             xpathExpressionTB.setText(idx.getExpression());
@@ -160,6 +155,7 @@ public class IndexForm extends AbstractComposite {
         } else {
             index.setExpression(xqueryExpressionTA.getText());
         }
+        // TODO Groovy index
         
         
         index.setDocumentTypes(docTypesLB.getItems());
