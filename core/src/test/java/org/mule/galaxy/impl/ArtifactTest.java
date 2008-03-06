@@ -165,7 +165,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals("0.1", version.getVersionLabel());
         assertNotNull(version.getAuthor());
         assertTrue(version.isLatest());
-        assertEquals("Created", artifact.getPhase().getName());
+        assertEquals("Created", version.getPhase().getName());
         
         Calendar created = version.getCreated();
         assertTrue(created.getTime().getTime() > 0);
@@ -189,6 +189,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(2, versions.size());
         
         assertEquals("0.2", newVersion.getVersionLabel());
+        assertEquals("Created", newVersion.getPhase().getName());
         
         stream = newVersion.getStream();
         assertNotNull(stream);

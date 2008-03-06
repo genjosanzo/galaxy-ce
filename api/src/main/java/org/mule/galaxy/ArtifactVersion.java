@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.security.User;
 
 import org.w3c.dom.Document;
@@ -30,6 +31,8 @@ public interface ArtifactVersion {
     Object getData();
     
     InputStream getStream();
+
+    Phase getPhase();
     
     Artifact getParent();
 

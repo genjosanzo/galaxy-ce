@@ -541,7 +541,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     jcrVersion.addDependencies(dependencies, false);
                     
                     Lifecycle lifecycle = workspace.getDefaultLifecycle();
-                    artifact.setPhase(lifecycle.getInitialPhase());                    
+                    jcrVersion.setPhase(lifecycle.getInitialPhase());                    
                     
                     List<ArtifactVersion> versions = new ArrayList<ArtifactVersion>();
                     versions.add(jcrVersion);
@@ -753,6 +753,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     next.setLatest(true);
                     
                     ((List<ArtifactVersion>)jcrArtifact.getVersions()).add(0, next);
+                    
+                    Lifecycle lifecycle = jcrArtifact.getWorkspace().getDefaultLifecycle();
+                    next.setPhase(lifecycle.getInitialPhase());        
                     
                     ch.addMetadata(next);
                     
@@ -1212,7 +1215,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                             qstr.append(" or ");
                         }
                         
-                        createLifecycleAndPhasePropertySearch(qstr, property, o, not, operator);
+                        createLifecycleAndPhasePropertySearch(propStr, property, o, not, operator);
                     }
                     
                     if (!firstPhase) {
@@ -1222,7 +1225,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     String right = r.getRight().toString();
                     
                     qstr.append("[");
-                    createLifecycleAndPhasePropertySearch(qstr, property, right, not, operator);
+                    createLifecycleAndPhasePropertySearch(propStr, property, right, not, operator);
                     qstr.append("]");
                 }
             } else {
@@ -1290,19 +1293,16 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     protected boolean appendPropertySearch(StringBuilder qstr, 
-                                          StringBuilder propStr, 
-                                          boolean first,
-                                          String right, 
-                                          String property, 
-                                          boolean not,
-                                          boolean and,
-                                          Operator operator) {
-        
-        if (property.equals(JcrArtifact.PHASE)
-            || property.equals(JcrArtifact.DOCUMENT_TYPE)
+                                           StringBuilder propStr, 
+                                           boolean first,
+                                           String right, 
+                                           String property, 
+                                           boolean not,
+                                           boolean and,
+                                           Operator operator) {
+        if (property.equals(JcrArtifact.DOCUMENT_TYPE)
             || property.equals(JcrArtifact.CONTENT_TYPE)
             || property.equals(JcrArtifact.NAME)
-            || property.equals(JcrArtifact.LIFECYCLE)
             || property.equals(JcrArtifact.DESCRIPTION)) {
             createPropertySearch(qstr, property, right, operator, not, true);
         } else {

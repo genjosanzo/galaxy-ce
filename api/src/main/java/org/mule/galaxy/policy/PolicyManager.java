@@ -23,7 +23,7 @@ public interface PolicyManager {
     
     Collection<ArtifactPolicy> getPolicies();
     
-    Collection<ArtifactPolicy> getActivePolicies(Artifact a);
+    Collection<ArtifactPolicy> getActivePolicies(ArtifactVersion a);
 
     Collection<PolicyInfo> getActivePolicies(Artifact a, boolean includeInherited);
 

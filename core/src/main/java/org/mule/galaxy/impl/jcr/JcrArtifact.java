@@ -34,8 +34,6 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     public static final String DESCRIPTION = "description";
     public static final String NAME = "name";
     public static final String DOCUMENT_TYPE = "documentType";
-    public static final String LIFECYCLE = "lifecycle";
-    public static final String PHASE = "phase";
     
     private List<ArtifactVersion> versions;
     private Workspace workspace;
@@ -212,31 +210,9 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
         return null;
     }
     
-    public Phase getPhase() {
-        String phase = getStringOrNull(PHASE);
-        if (phase == null) {
-            return null;
-        }
-        
-        Phase p = registry.getLifecycleManager().getPhaseById(phase);
-        
-        return p;
-    }
-    
-    public void setPhase(Phase p) {
-        try {
-            node.setProperty(LIFECYCLE, p.getLifecycle().getId());
-            node.setProperty(PHASE, p.getId());
-            update();
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
     public void setVersions(List<ArtifactVersion> versions2) {
         this.versions = versions2;
     }
-    
 
     @Override
     public Object getProperty(String name) {

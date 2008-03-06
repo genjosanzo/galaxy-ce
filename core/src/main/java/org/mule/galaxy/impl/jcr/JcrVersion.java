@@ -17,6 +17,7 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Dependency;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.util.DateUtil;
 
@@ -29,6 +30,9 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     public static final String AUTHOR_ID = "authorId";
     public static final String DEPENDENCIES = "dependencies";
     public static final String USER_SPECIFIED = "userSpecified";
+
+    public static final String LIFECYCLE = "lifecycle";
+    public static final String PHASE = "phase";
     
     private JcrArtifact parent;
     private Object data;
@@ -40,6 +44,28 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
         this.parent = parent;
     }
 
+    
+    public void setPhase(Phase p) {
+        try {
+            node.setProperty(LIFECYCLE, p.getLifecycle().getId());
+            node.setProperty(PHASE, p.getId());
+            update();
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public Phase getPhase() {
+        String phase = getStringOrNull(PHASE);
+        if (phase == null) {
+            return null;
+        }
+        
+        Phase p = parent.getRegistry().getLifecycleManager().getPhaseById(phase);
+        
+        return p;
+    }
+    
     public boolean isLatest() {
         return JcrUtil.getBooleanOrNull(node, LATEST);
     }

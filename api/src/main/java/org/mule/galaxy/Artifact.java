@@ -57,8 +57,6 @@ public interface Artifact  {
     Object getProperty(String name);
 
     boolean hasProperty(String name);
-    
-    public Phase getPhase();
 
     Iterator<PropertyInfo> getProperties();
     

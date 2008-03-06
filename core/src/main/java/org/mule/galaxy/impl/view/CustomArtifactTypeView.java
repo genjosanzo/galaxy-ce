@@ -40,7 +40,7 @@ public class CustomArtifactTypeView implements ArtifactTypeView {
         
         columns.add(new Column("Phase", new ColumnEvaluator() {
             public Object getValue(Object artifact) {
-                Phase p = ((Artifact) artifact).getPhase();
+                Phase p = ((Artifact) artifact).getActiveVersion().getPhase();
                 if (p != null)
                     return p.getName();
                 
