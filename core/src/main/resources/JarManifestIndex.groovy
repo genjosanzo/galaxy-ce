@@ -1,4 +1,5 @@
 import java.util.jar.JarFile
+import java.util.jar.JarEntry
 
 println "=================== Executing a groovy index"
 
@@ -19,6 +20,19 @@ try {
         artifact.setProperty(encodedName, it.value)
         artifact.setLocked(encodedName, true)
     }
+
+    def entries = []
+    jarFile.entries().each { JarEntry e ->
+        def name = e.name.replaceAll('/', '\\.') // replace / with . for classnames
+        name -= '.class' // drop the trailing .class from the name
+        entries << name
+    }
+
+    def propertyName = "${index.id}.entries"
+    def encodedName = URLEncoder.encode(propertyName)
+    artifact.setProperty encodedName, entries
+    artifact.setLocked encodedName, true
+
 } finally {
     jarFile?.close()
 }
