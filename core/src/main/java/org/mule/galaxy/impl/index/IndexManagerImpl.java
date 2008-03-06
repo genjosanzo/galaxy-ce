@@ -280,11 +280,17 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
 
     protected void handleIndexingException(Throwable t) {
+        if (t instanceof IndexException && t.getMessage() == null) {
+            t = t.getCause();
+        }
         activityManager.logActivity("Could not reindex documents: " + t.getMessage(), EventType.ERROR);
         LOGGER.log(Level.SEVERE, "Could not index documents.", t);
     }
 
     private void handleIndexingException(Index idx, Throwable t) {
+        if (t instanceof IndexException && t.getMessage() == null) {
+            t = t.getCause();
+        }
         activityManager.logActivity("Could not process index " + idx.getId() + ": " + t.getMessage(), EventType.ERROR);
         LOGGER.log(Level.SEVERE, "Could not process index " + idx.getId(), t);
     }
