@@ -22,7 +22,7 @@ try {
     }
 
     def entries = []
-    jarFile.entries().each { JarEntry e ->
+    jarFile.entries().findAll { !it.directory }.each { JarEntry e ->
         def name = e.name.replaceAll('/', '\\.') // replace / with . for classnames
         name -= '.class' // drop the trailing .class from the name
         entries << name
