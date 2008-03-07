@@ -1,3 +1,5 @@
+import org.mule.galaxy.impl.index.osgi.OsgiManifestUtil
+
 import java.util.jar.JarFile
 import java.util.jar.JarEntry
 
@@ -9,16 +11,61 @@ temp.withOutputStream {
     it << artifact.stream
 }
 
+// just for a start, will populate with values from org.osgi.framework.Constants
+def osgiHeaders = [
+        'Export-Package',
+        'Import-Package',
+        'Ignore-Package',
+        'Private-Package',
+]
+
 def jarFile
 try {
     jarFile = new JarFile(temp)
 
-    jarFile.manifest.mainAttributes.each {
+    def attrs = jarFile.manifest.mainAttributes 
+
+    def osgiAttrs = attrs.findAll {
+        osgiHeaders.contains it.key?.toString() // it's Attributes.Name class, thus the need for toString()
+    }
+
+    def nonOsgiAttrs = attrs.findAll {
+        !osgiHeaders.contains(it.key?.toString())
+    }
+
+    nonOsgiAttrs.each {
         def propertyName = "${index.id}.${it.key}"
         def encodedName = URLEncoder.encode(propertyName)
 
         artifact.setProperty(encodedName, it.value)
         artifact.setLocked(encodedName, true)
+    }
+
+    osgiAttrs.each {
+        // TODO needs to be optimized and refactored most likely
+        def List exports = OsgiManifestUtil.parseEntries(it.key.toString(), it.value, false, true, false)
+
+        def propertyName = "${index.id}.${it.key}.packages"
+        def encodedName = URLEncoder.encode(propertyName)
+
+        def pkgs = exports.collect { it.keys[0] }
+        artifact.setProperty encodedName, pkgs
+        artifact.setLocked encodedName, true
+
+        /*
+        exports.each {exp ->
+            def name = exp.keys[0]
+            println "$name =="
+            exp.each {
+                if (it.key != 'keys')
+                {
+                    println "$it.key = $it.value"
+                }
+            }
+
+            println ''
+        }
+        */
     }
 
     def entries = []
