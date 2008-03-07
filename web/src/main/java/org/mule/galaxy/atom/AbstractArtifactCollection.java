@@ -326,7 +326,7 @@ public abstract class AbstractArtifactCollection
                 throw new ResponseContextException(res);
             }
         }
-        return next.getActiveVersion();
+        return next.getDefaultVersion();
     }
 
     protected Artifact getArtifact(RequestContext request) {

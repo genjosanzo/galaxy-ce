@@ -13,6 +13,8 @@ import org.w3c.dom.Document;
 
 public interface ArtifactVersion {
     
+    String getId();
+    
     Calendar getCreated();
     
     Calendar getUpdated();
@@ -61,5 +63,9 @@ public interface ArtifactVersion {
     
     Set<Dependency> getDependencies();
     
-    boolean isActive();
+    boolean isDefault();
+    
+    boolean isEnabled();
+    
+    void setEnabled(boolean enabled);
 }

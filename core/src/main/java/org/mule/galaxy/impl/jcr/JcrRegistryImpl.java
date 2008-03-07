@@ -148,7 +148,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             try {
                 // have to have the catch because jackrabbit is lame...
                 if (!wNode.hasNode(path)) throw new NotFoundException(path);
-            } catch (RegistryException e) {
+            } catch (RepositoryException e) {
                 throw new NotFoundException(path);
             }
             
@@ -388,9 +388,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return artifacts;
     }
 
-    public Artifact getArtifact(final String id) throws NotFoundException {
+    public Artifact getArtifact(final String id) throws NotFoundException, RegistryException {
         final JcrRegistryImpl registry = this;
-        return (Artifact) execute(new JcrCallback() {
+        return (Artifact) executeWithNotFound(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node node = session.getNodeByUUID(id);
                 Node wNode = node.getParent();
@@ -403,7 +403,27 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
         });
     }
-    
+
+    public ArtifactVersion getArtifactVersion(final String id) throws NotFoundException, RegistryException {
+        final JcrRegistryImpl registry = this;
+        return (ArtifactVersion) executeWithNotFound(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node node = session.getNodeByUUID(id);
+                Node aNode = node.getParent();
+                Node wNode = aNode.getParent();
+                JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(registry, lifecycleManager, wNode), 
+                                                       aNode, registry);
+
+                setupContentHandler(artifact);
+
+                ArtifactVersion av = artifact.getVersion(JcrUtil.getStringOrNull(node, JcrVersion.LABEL));
+                if (av == null) {
+                    throw new RuntimeException(new NotFoundException(id));
+                }
+                return av;
+            }
+        });
+    }
     protected void setupContentHandler(JcrArtifact artifact) {
         ContentHandler ch = null;
         if (artifact.getDocumentType() != null) {
@@ -534,7 +554,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 jcrVersion.setVersionLabel(versionLabel);
                 jcrVersion.setAuthor(user);
                 jcrVersion.setLatest(true);
-                jcrVersion.setActive(true);
+                jcrVersion.setDefault(true);
+                jcrVersion.setEnabled(true);
                 
                 try {
                     Set<Artifact> dependencies = ch.detectDependencies(loadedData, workspace);
@@ -714,10 +735,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 JcrArtifact jcrArtifact = (JcrArtifact) artifact;
                 Node artifactNode = jcrArtifact.getNode();
                 artifactNode.refresh(false);
-                JcrVersion previousLatest = ((JcrVersion)jcrArtifact.getActiveVersion());
+                JcrVersion previousLatest = ((JcrVersion)jcrArtifact.getDefaultVersion());
                 Node previousNode = previousLatest.getNode();
                 
-                previousLatest.setActive(false);
+                previousLatest.setDefault(false);
                 previousLatest.setLatest(false);
 
                 ContentHandler ch = contentService.getContentHandler(jcrArtifact.getContentType());
@@ -732,7 +753,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 
                 JcrVersion next = new JcrVersion(jcrArtifact, versionNode);
-                next.setActive(true);
+                next.setDefault(true);
                 next.setLatest(true);
                 
                 try {
@@ -751,6 +772,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     next.setVersionLabel(versionLabel);
                     next.setAuthor(user);
                     next.setLatest(true);
+                    next.setEnabled(true);
                     
                     ((List<ArtifactVersion>)jcrArtifact.getVersions()).add(0, next);
                     
@@ -809,11 +831,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         ArtifactPolicyException {
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                ArtifactVersion av = artifact.getActiveVersion();
+                ArtifactVersion av = artifact.getDefaultVersion();
                 ArtifactVersion newAV = artifact.getVersion(version);
                 
-                ((JcrVersion) av).setActive(false);
-                ((JcrVersion) newAV).setActive(true);
+                ((JcrVersion) av).setDefault(false);
+                ((JcrVersion) newAV).setDefault(true);
                 
                 session.save();
                 return null;
@@ -1099,7 +1121,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     throw new RuntimeException(e);
                 }
                 
-                LOGGER.log(Level.FINE, "Query: " + qstr.toString());
+                LOGGER.log(Level.INFO, "Query: " + qstr.toString());
                 
                 Query jcrQuery = qm.createQuery(qstr, Query.XPATH);
                 
@@ -1203,30 +1225,36 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             
             if ("phase".equals(property)) {
                 if (operator.equals(Operator.IN)) {
+                    if (first) {
+                        first = false;
+                        propStr.append("[");
+                    } else {
+                        propStr.append(" and ");
+                    }
+                    
                     Collection<?> right = (Collection<?>) r.getRight();
                     boolean firstPhase = true;
                     for (Object o : right) {
                         
-                        
                         if (firstPhase) {
-                            qstr.append("[");
+                            propStr.append("(");
                             firstPhase = false;
                         } else {
-                            qstr.append(" or ");
+                            propStr.append(" or ");
                         }
                         
                         createLifecycleAndPhasePropertySearch(propStr, property, o, not, operator);
                     }
                     
                     if (!firstPhase) {
-                        qstr.append("]");
+                        propStr.append(")");
                     }
                 } else {
                     String right = r.getRight().toString();
                     
-                    qstr.append("[");
+                    propStr.append("[");
                     createLifecycleAndPhasePropertySearch(propStr, property, right, not, operator);
-                    qstr.append("]");
+                    propStr.append("]");
                 }
             } else {
                 // this is a normal property

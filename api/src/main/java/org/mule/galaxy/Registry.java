@@ -120,7 +120,9 @@ public interface Registry {
     
     Collection<Artifact> getArtifacts(Workspace workspace) throws RegistryException;
     
-    Artifact getArtifact(String id) throws NotFoundException;
+    Artifact getArtifact(String id) throws NotFoundException, RegistryException;
+
+    ArtifactVersion getArtifactVersion(String id) throws NotFoundException, RegistryException;
     
     void delete(Artifact artifact) throws RegistryException;
 
@@ -154,6 +156,7 @@ public interface Registry {
     void removeDependencies(ArtifactVersion artifactVersion, Artifact... artifact) throws RegistryException;
     
     Set<Dependency> getDependedOnBy(Artifact a) throws RegistryException;
+
 
 
 }

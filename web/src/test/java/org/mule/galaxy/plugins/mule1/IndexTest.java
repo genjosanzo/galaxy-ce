@@ -27,7 +27,7 @@ public class IndexTest extends AbstractGalaxyTest {
                                                     "0.1", helloConfig, getAdmin());
         Artifact artifact = ar.getArtifact();
 
-        JcrVersion version = (JcrVersion) artifact.getActiveVersion();
+        JcrVersion version = (JcrVersion) artifact.getDefaultVersion();
         Object serverId = version.getProperty("mule.server.id");
         assertEquals("hello-server", serverId);
     }

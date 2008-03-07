@@ -22,9 +22,9 @@ public class DefaultArtifactTypeView implements ArtifactTypeView {
         case 1:
             return row.getWorkspace().getPath();
         case 2:
-            return row.getActiveVersion().getVersionLabel();
+            return row.getDefaultVersion().getVersionLabel();
         case 3:
-            return row.getActiveVersion().getPhase().getName();
+            return row.getDefaultVersion().getPhase().getName();
         }
         
         return null;

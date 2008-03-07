@@ -181,7 +181,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
 
     public void setActivePolicies(Collection<Phase> phases, ArtifactPolicy... policies) 
         throws ArtifactCollectionPolicyException, RegistryException {
-        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(Artifact.class);
+        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(ArtifactVersion.class);
         
         q.add(Restriction.in("phase", phases));
         

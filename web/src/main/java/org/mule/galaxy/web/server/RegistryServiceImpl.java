@@ -459,7 +459,7 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
             List deps = new ArrayList();
-            ArtifactVersion latest = artifact.getActiveVersion();
+            ArtifactVersion latest = artifact.getDefaultVersion();
             for (Dependency d : latest.getDependencies()) {
                 Artifact depArt = d.getArtifact();
                 deps.add(new DependencyInfo(d.isUserSpecified(), true, depArt.getName(), depArt.getId()));
@@ -998,7 +998,7 @@ public class RegistryServiceImpl implements RegistryService {
             List versions = new ArrayList();
             for (ArtifactVersion av : artifact.getVersions()) {
                 versions.add(new ArtifactVersionInfo(av.getVersionLabel(), getVersionLink(av), av
-                    .getCreated().getTime(), av.isActive(), av.getAuthor().getName(), av.getAuthor()
+                    .getCreated().getTime(), av.isDefault(), av.getAuthor().getName(), av.getAuthor()
                     .getUsername()));
             }
             return versions;

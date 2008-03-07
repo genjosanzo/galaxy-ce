@@ -183,7 +183,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertTrue(newVersion.isLatest());
         assertFalse(version.isLatest());
         
-        assertSame(newVersion, ar.getArtifact().getActiveVersion());
+        assertSame(newVersion, ar.getArtifact().getDefaultVersion());
         
         versions = artifact.getVersions();
         assertEquals(2, versions.size());
@@ -207,7 +207,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         registry.setActiveVersion(a2, "0.1", getAdmin());
         
         assertEquals(2, a2.getVersions().size());
-        ArtifactVersion activeVersion = a2.getActiveVersion();
+        ArtifactVersion activeVersion = a2.getDefaultVersion();
         assertEquals("0.1", activeVersion.getVersionLabel());
         
         registry.delete(a2);
@@ -249,8 +249,8 @@ public class ArtifactTest extends AbstractGalaxyTest {
 
         Artifact a = registry.getArtifact(workspace, "test.txt");
         assertNotNull(a);
-        assertEquals("1", a.getActiveVersion().getVersionLabel());
-        assertEquals(version1, IOUtils.readStringFromStream(a.getActiveVersion().getStream()));
+        assertEquals("1", a.getDefaultVersion().getVersionLabel());
+        assertEquals(version1, IOUtils.readStringFromStream(a.getDefaultVersion().getStream()));
 
         ArtifactVersion artifactVersion = a.getVersion("2");
         assertEquals(version2, IOUtils.readStringFromStream(artifactVersion.getStream()));
