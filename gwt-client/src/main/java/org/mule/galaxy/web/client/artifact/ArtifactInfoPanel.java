@@ -89,10 +89,6 @@ public class ArtifactInfoPanel extends AbstractComposite {
             table.setText(c, 1, info.getValue(c));
         }
 
-        table.setText(c, 0, "Version:");
-        table.setText(c, 1, version.getVersionLabel());
-        c++;
-
         table.setText(c, 0, "Phase:");
         table.setText(c, 1, version.getPhase());
         c++;
