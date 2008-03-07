@@ -66,6 +66,7 @@ import org.mule.galaxy.web.rpc.BasicArtifactInfo;
 import org.mule.galaxy.web.rpc.DependencyInfo;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
 import org.mule.galaxy.web.rpc.ItemExistsException;
+import org.mule.galaxy.web.rpc.ItemNotFoundException;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.TransitionResponse;
@@ -140,7 +141,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void addWorkspace(String parentWorkspaceId, String workspaceName, String lifecycleId) throws RPCException {
+    public void addWorkspace(String parentWorkspaceId, String workspaceName, String lifecycleId) throws RPCException, ItemNotFoundException {
         try {
             Workspace w;
             if (parentWorkspaceId == null || "[No parent]".equals(parentWorkspaceId)) {
@@ -159,11 +160,14 @@ public class RegistryServiceImpl implements RegistryService {
         }  catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new ItemNotFoundException();
         }
     }
 
     public void updateWorkspace(String workspaceId, String parentWorkspaceId, String workspaceName, String lifecycleId)
-        throws RPCException {
+        throws RPCException, ItemNotFoundException {
         try {
             if (parentWorkspaceId == null || "[No parent]".equals(parentWorkspaceId)) {
                 parentWorkspaceId = null;
@@ -177,15 +181,19 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
         }
     }
 
-    public void deleteWorkspace(String workspaceId) throws RPCException {
+    public void deleteWorkspace(String workspaceId) throws RPCException, ItemNotFoundException {
         try {
             registry.deleteWorkspace(workspaceId);
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
         }
     }
 
@@ -479,7 +487,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     @SuppressWarnings("unchecked")
-    public ArtifactGroup getArtifact(String artifactId) throws RPCException {
+    public ArtifactGroup getArtifact(String artifactId) throws RPCException, ItemNotFoundException {
         try {
             Artifact a = registry.getArtifact(artifactId);
             ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), a
@@ -555,6 +563,8 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
         }
     }
 
@@ -566,7 +576,7 @@ public class RegistryServiceImpl implements RegistryService {
         return sb.toString();
     }
 
-    public WComment addComment(String artifactId, String parentComment, String text) throws RPCException {
+    public WComment addComment(String artifactId, String parentComment, String text) throws RPCException, ItemNotFoundException {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
 
@@ -595,6 +605,8 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
         }
     }
 
@@ -637,7 +649,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void setProperty(String artifactId, String propertyName, String propertyValue) throws RPCException {
+    public void setProperty(String artifactId, String propertyName, String propertyValue) throws RPCException, ItemNotFoundException {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
 
@@ -650,10 +662,12 @@ public class RegistryServiceImpl implements RegistryService {
             // occurs if property name is formatted wrong
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
         }
     }
 
-    public void deleteProperty(String artifactId, String propertyName) throws RPCException {
+    public void deleteProperty(String artifactId, String propertyName) throws RPCException, ItemNotFoundException {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
             artifact.setProperty(propertyName, null);
@@ -665,6 +679,8 @@ public class RegistryServiceImpl implements RegistryService {
             // occurs if property name is formatted wrong
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
         }
     }
 
@@ -700,7 +716,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void setDescription(String artifactId, String description) throws RPCException {
+    public void setDescription(String artifactId, String description) throws RPCException, ItemNotFoundException {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
 
@@ -710,10 +726,12 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
         }
     }
 
-    public void move(String artifactId, String workspaceId, String name) throws RPCException {
+    public void move(String artifactId, String workspaceId, String name) throws RPCException, ItemNotFoundException {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
 
@@ -724,10 +742,12 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
         }
     }
 
-    public void delete(String artifactId) throws RPCException {
+    public void delete(String artifactId) throws RPCException, ItemNotFoundException {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
 
@@ -735,6 +755,8 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
         }
     }
 
@@ -966,7 +988,7 @@ public class RegistryServiceImpl implements RegistryService {
         return polNames;
     }
 
-    public TransitionResponse setActive(String artifactId, String versionLabel) throws RPCException {
+    public TransitionResponse setActive(String artifactId, String versionLabel) throws RPCException, ItemNotFoundException {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
 
@@ -987,11 +1009,13 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
         }
     }
 
     @SuppressWarnings("unchecked")
-    public Collection getArtifactVersions(String artifactId) throws RPCException {
+    public Collection getArtifactVersions(String artifactId) throws RPCException, ItemNotFoundException {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
 
@@ -1005,6 +1029,8 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
         }
     }
 

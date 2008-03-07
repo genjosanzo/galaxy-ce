@@ -109,7 +109,7 @@ public abstract class AbstractArtifactCollection
         e.addExtension(metadata);
         
         Element lifecycle = factory.newElement(new QName(NAMESPACE, "lifecycle"));
-        Phase phase = entryObj.getParent().getPhase();
+        Phase phase = entryObj.getPhase();
         lifecycle.setAttributeValue("name", phase.getLifecycle().getName());
         lifecycle.setAttributeValue("phase", phase.getName());
         
@@ -373,7 +373,7 @@ public abstract class AbstractArtifactCollection
         String phaseName = e.getAttributeValue("phase");
         assertNotEmpty(phaseName, "Lifecycle phase attribute cannot be null.");
         
-        Phase current = av.getParent().getPhase();
+        Phase current = av.getPhase();
         if (name.equals(current.getLifecycle().getName()) 
             && phaseName.equals(current.getName())) {
             return;
@@ -390,7 +390,7 @@ public abstract class AbstractArtifactCollection
             throwMalformed("Lifecycle phase \"" + phaseName + "\" does not exist.");
         
         try {
-            lifecycleManager.transition(av.getParent(), phase, getUser());
+            lifecycleManager.transition(av, phase, getUser());
         } catch (TransitionException e1) {
             throwMalformed(e1.getMessage());
         } catch (ArtifactPolicyException e1) {
