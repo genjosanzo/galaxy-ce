@@ -411,6 +411,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 Node node = session.getNodeByUUID(id);
                 Node aNode = node.getParent();
                 Node wNode = aNode.getParent();
+                
                 JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(registry, lifecycleManager, wNode), 
                                                        aNode, registry);
 
@@ -612,7 +613,22 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
         }
     }
-    
+
+    private Object executeWithPolicy(JcrCallback jcrCallback) 
+        throws RegistryException, ArtifactPolicyException {
+        try {
+            return execute(jcrCallback);
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RegistryException) {
+                throw (RegistryException) cause;
+            } else if (cause instanceof ArtifactPolicyException) {
+                throw (ArtifactPolicyException) cause;
+            } else {
+                throw e;
+            }
+        }
+    }
     private Object executeWithRegistryException(JcrCallback jcrCallback) 
         throws RegistryException {
         try {
@@ -648,19 +664,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                                    JcrVersion next,
                                    User user)
         throws RegistryException, RepositoryException {
-        boolean approved = true;
-        
-        List<ApprovalMessage> approvals = policyManager.approve(previous, next);
-        for (ApprovalMessage a : approvals) {
-            if (!a.isWarning()) {
-                approved = false;
-                break;
-            }
-        }
-        
-        if (!approved) {
-            throw new RuntimeException(new ArtifactPolicyException(approvals));
-        }
+        List<ApprovalMessage> approvals = approve(previous, next);
 
         indexManager.index(next);
         
@@ -676,6 +680,23 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         
         
         return new ArtifactResult(artifact, next, approvals);
+    }
+
+    private List<ApprovalMessage> approve(ArtifactVersion previous, ArtifactVersion next) {
+        boolean approved = true;
+        
+        List<ApprovalMessage> approvals = policyManager.approve(previous, next);
+        for (ApprovalMessage a : approvals) {
+            if (!a.isWarning()) {
+                approved = false;
+                break;
+            }
+        }
+        
+        if (!approved) {
+            throw new RuntimeException(new ArtifactPolicyException(approvals));
+        }
+        return approvals;
     }
     
     public ArtifactResult createArtifact(Workspace workspace, 
@@ -825,17 +846,31 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
     
-    public void setActiveVersion(final Artifact artifact, 
-                                 final String version, 
-                                 final User user) throws RegistryException,
+    public void setDefaultVersion(final ArtifactVersion version, 
+                                  final User user) throws RegistryException,
         ArtifactPolicyException {
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                ArtifactVersion av = artifact.getDefaultVersion();
-                ArtifactVersion newAV = artifact.getVersion(version);
+                ArtifactVersion oldDefault = version.getParent().getDefaultVersion();
                 
-                ((JcrVersion) av).setDefault(false);
-                ((JcrVersion) newAV).setDefault(true);
+                ((JcrVersion) oldDefault).setDefault(false);
+                ((JcrVersion) version).setDefault(true);
+                
+                session.save();
+                return null;
+            }
+        });
+    }
+    
+    public void setEnabled(final ArtifactVersion version, 
+                           final boolean enabled,
+                           final User user) throws RegistryException,
+        ArtifactPolicyException {
+        executeWithPolicy(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                if (enabled) approve(version.getPrevious(), version);
+                
+                ((JcrVersion) version).setEnabled(enabled);
                 
                 session.save();
                 return null;

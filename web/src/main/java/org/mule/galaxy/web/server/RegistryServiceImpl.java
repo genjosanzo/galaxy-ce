@@ -511,34 +511,6 @@ public class RegistryServiceImpl implements RegistryService {
 
             info.setDescription(a.getDescription());
 
-            for (Iterator<PropertyInfo> props = a.getProperties(); props.hasNext();) {
-                PropertyInfo p = props.next();
-
-                Object val = p.getValue();
-                if (val instanceof Collection) {
-                    String s = val.toString();
-                    val = s.substring(1, s.length() - 1);
-                } else if (val != null) {
-                    val = val.toString();
-                } else {
-                    val = "";
-                }
-
-                String desc = p.getDescription();
-                if (desc == null) {
-                    desc = p.getName();
-                }
-                info.getProperties().add(new WProperty(p.getName(), desc, val.toString(), p.isLocked()));
-            }
-
-            Collections.sort(info.getProperties(), new Comparator() {
-
-                public int compare(Object o1, Object o2) {
-                    return ((WProperty)o1).getDescription().compareTo(((WProperty)o2).getDescription());
-                }
-
-            });
-
             List wcs = info.getComments();
 
             List<Comment> comments = commentManager.getComments(a.getId());
@@ -559,6 +531,49 @@ public class RegistryServiceImpl implements RegistryService {
             info.setArtifactFeedLink(getLink("/api/registry", a) + "?view=history");
             info.setCommentsFeedLink("/api/comments");
 
+            List versions = new ArrayList();
+            for (ArtifactVersion av : a.getVersions()) {
+                ArtifactVersionInfo vi = new ArtifactVersionInfo(av.getId(), 
+                                                                 av.getVersionLabel(),
+                                                                 getVersionLink(av), 
+                                                                 av.getCreated().getTime(), 
+                                                                 av.isDefault(), 
+                                                                 av.isEnabled(), 
+                                                                 av.getAuthor().getName(),
+                                                                 av.getAuthor().getUsername(),
+                                                                 av.getPhase().getName());
+                versions.add(vi);
+
+                for (Iterator<PropertyInfo> props = av.getProperties(); props.hasNext();) {
+                    PropertyInfo p = props.next();
+
+                    Object val = p.getValue();
+                    if (val instanceof Collection) {
+                        String s = val.toString();
+                        val = s.substring(1, s.length() - 1);
+                    } else if (val != null) {
+                        val = val.toString();
+                    } else {
+                        val = "";
+                    }
+
+                    String desc = p.getDescription();
+                    if (desc == null) {
+                        desc = p.getName();
+                    }
+                    vi.getProperties().add(new WProperty(p.getName(), desc, val.toString(), p.isLocked()));
+                }
+
+                Collections.sort(vi.getProperties(), new Comparator() {
+
+                    public int compare(Object o1, Object o2) {
+                        return ((WProperty)o1).getDescription().compareTo(((WProperty)o2).getDescription());
+                    }
+
+                });
+            }
+            info.setVersions(versions);
+            
             return g;
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
@@ -760,9 +775,9 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public WGovernanceInfo getGovernanceInfo(String artifactId) throws RPCException {
+    public WGovernanceInfo getGovernanceInfo(String artifactVersionId) throws RPCException, ItemNotFoundException {
         try {
-            Artifact artifact = registry.getArtifact(artifactId);
+            ArtifactVersion artifact = registry.getArtifactVersion(artifactVersionId);
 
             WGovernanceInfo gov = new WGovernanceInfo();
             Phase phase = artifact.getPhase();
@@ -783,12 +798,14 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
         }
     }
 
-    public TransitionResponse transition(String artifactId, String nextPhaseId) throws RPCException {
+    public TransitionResponse transition(String artifactVersionId, String nextPhaseId) throws RPCException, ItemNotFoundException {
         try {
-            Artifact artifact = registry.getArtifact(artifactId);
+            ArtifactVersion artifact = registry.getArtifactVersion(artifactVersionId);
 
             Phase nextPhase = lifecycleManager.getPhaseById(nextPhaseId);
 
@@ -812,6 +829,8 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
         }
     }
 
@@ -911,7 +930,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     public void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids)
-        throws RPCException, ApplyPolicyException {
+        throws RPCException, ApplyPolicyException, ItemNotFoundException {
         Lifecycle l = lifecycleManager.getLifecycle(lifecycle);
         List<ArtifactPolicy> policies = getArtifactPolicies(ids);
 
@@ -947,10 +966,11 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (ArtifactCollectionPolicyException e) {
             Map<BasicArtifactInfo, Collection<WApprovalMessage>> failures = new HashMap<BasicArtifactInfo, Collection<WApprovalMessage>>();
-            for (Map.Entry<Artifact, List<ApprovalMessage>> entry : e.getPolicyFailures().entrySet()) {
-                Artifact a = entry.getKey();
+            for (Map.Entry<ArtifactVersion, List<ApprovalMessage>> entry : e.getPolicyFailures().entrySet()) {
+                ArtifactVersion av = entry.getKey();
                 List<ApprovalMessage> approvals = entry.getValue();
 
+                Artifact a = av.getParent();
                 ArtifactTypeView view = viewManager.getArtifactTypeView(a.getDocumentType());
                 if (view == null) {
                     view = viewManager.getArtifactTypeView(a.getContentType().toString());
@@ -966,6 +986,8 @@ public class RegistryServiceImpl implements RegistryService {
                 failures.put(info, wapprovals);
             }
             throw new ApplyPolicyException(failures);
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
         }
     }
 
@@ -988,14 +1010,14 @@ public class RegistryServiceImpl implements RegistryService {
         return polNames;
     }
 
-    public TransitionResponse setActive(String artifactId, String versionLabel) throws RPCException, ItemNotFoundException {
+    public TransitionResponse setDefault(String artifactVersionId) throws RPCException, ItemNotFoundException {
         try {
-            Artifact artifact = registry.getArtifact(artifactId);
+            ArtifactVersion artifact = registry.getArtifactVersion(artifactVersionId);
 
             TransitionResponse tr = new TransitionResponse();
 
             try {
-                registry.setActiveVersion(artifact, versionLabel, getCurrentUser());
+                registry.setDefaultVersion(artifact, getCurrentUser());
 
                 tr.setSuccess(true);
             } catch (ArtifactPolicyException e) {
@@ -1014,18 +1036,29 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public Collection getArtifactVersions(String artifactId) throws RPCException, ItemNotFoundException {
+    public TransitionResponse setEnabled(String artifactVersionId, boolean enabled) throws RPCException,
+        ItemNotFoundException {
         try {
-            Artifact artifact = registry.getArtifact(artifactId);
+            ArtifactVersion artifact = registry.getArtifactVersion(artifactVersionId);
 
-            List versions = new ArrayList();
-            for (ArtifactVersion av : artifact.getVersions()) {
-                versions.add(new ArtifactVersionInfo(av.getVersionLabel(), getVersionLink(av), av
-                    .getCreated().getTime(), av.isDefault(), av.getAuthor().getName(), av.getAuthor()
-                    .getUsername()));
+            TransitionResponse tr = new TransitionResponse();
+
+            try {
+                registry.setEnabled(artifact, enabled, getCurrentUser());
+                
+                if (!enabled) {
+                    return null;
+                }
+                
+                tr.setSuccess(true);
+            } catch (ArtifactPolicyException e) {
+                tr.setSuccess(false);
+                for (ApprovalMessage app : e.getApprovals()) {
+                    tr.addMessage(app.getMessage(), app.isWarning());
+                }
             }
-            return versions;
+
+            return tr;
         } catch (RegistryException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new RPCException(e.getMessage());

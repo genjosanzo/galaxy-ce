@@ -354,13 +354,17 @@ a:visited {
 .feed-icon {
     margin-left: 6px;
 }
-.artifact-title {
-    font-weight: bold;
+.artifact-title-base {
     padding: 6px;
     margin-bottom: 4px;
     margin-top: 4px;
     font-size: 1.3em;
 }
+	
+.artifact-title {
+    font-weight: bold;
+}
+    
 
 .artifact-panel {
 }

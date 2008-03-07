@@ -96,20 +96,15 @@ public interface RegistryService extends RemoteService {
     
     void setDescription(String artifactId, String description) throws RPCException, ItemNotFoundException;
 
-    WGovernanceInfo getGovernanceInfo(String artifactId) throws RPCException;
+    WGovernanceInfo getGovernanceInfo(String artifactVersionId) throws RPCException, ItemNotFoundException;
 
-    TransitionResponse setActive(String artifactId, String versionLabel) throws RPCException, ItemNotFoundException;
-    
-    TransitionResponse transition(String artifactId, String nextPhase) throws RPCException;
+    TransitionResponse setDefault(String artifactVersionId) throws RPCException, ItemNotFoundException;
 
-    /**
-     * @gwt.typeArgs <java.lang.String,java.lang.String>
-     * @return
-     * @throws ItemNotFoundException 
-     * @throws Exception 
-     */
-    Collection getArtifactVersions(String artifactId) throws RPCException, ItemNotFoundException;
+    TransitionResponse setEnabled(String artifactVersionId, boolean enabled) throws RPCException, ItemNotFoundException;
     
+    TransitionResponse transition(String artifactVersionId, String nextPhase) throws RPCException, ItemNotFoundException;
+
+
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WArtifactPolicy>
      * @return
@@ -144,9 +139,10 @@ public interface RegistryService extends RemoteService {
 
     /**
      * @throws ApplyPolicyException 
+     * @throws ItemNotFoundException 
      * @gwt.typeArgs ids <java.lang.String>
      */
-    void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids) throws RPCException, ApplyPolicyException;
+    void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids) throws RPCException, ApplyPolicyException, ItemNotFoundException;
 
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WActivity>

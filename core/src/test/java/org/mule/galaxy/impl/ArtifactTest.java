@@ -204,7 +204,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         Artifact a2 = registry.getArtifact(workspace, artifact.getName());
         assertNotNull(a2);
         
-        registry.setActiveVersion(a2, "0.1", getAdmin());
+        registry.setDefaultVersion(version, getAdmin());
         
         assertEquals(2, a2.getVersions().size());
         ArtifactVersion activeVersion = a2.getDefaultVersion();
@@ -245,7 +245,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertNotNull(ar);
         assertTrue(ar.isApproved());
 
-        registry.setActiveVersion(artifact, "1", getAdmin());
+        registry.setDefaultVersion(artifact.getVersion("1"), getAdmin());
 
         Artifact a = registry.getArtifact(workspace, "test.txt");
         assertNotNull(a);
