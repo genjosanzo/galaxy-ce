@@ -106,7 +106,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
 
     public List<ApprovalMessage> approve(ArtifactVersion previous, 
                                         ArtifactVersion next) {
-        Collection<ArtifactPolicy> policies = getActivePolicies(next.getParent());
+        Collection<ArtifactPolicy> policies = getActivePolicies(next);
         List<ApprovalMessage> approvals = new ArrayList<ApprovalMessage>();
         for (ArtifactPolicy p : policies) {
             Collection<ApprovalMessage> list = p.isApproved(next.getParent(), previous, next);
@@ -128,26 +128,28 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     
     public void setActivePolicies(Artifact a, Collection<Phase> phases, ArtifactPolicy... policies) 
         throws ArtifactPolicyException {
-        if (phases.contains(a.getPhase())) {
-            approveArtifact(a, policies);
+        for (ArtifactVersion v : a.getVersions()) {
+            if (phases.contains(v.getPhase())) {
+                approveArtifact(v, policies);
+            }
         }
         activatePolicy(artifactsPhasesNodeId, phases, policies, a.getId());
     }
 
-    private void approveArtifact(Artifact a, ArtifactPolicy... policies) throws ArtifactPolicyException {
-        List<ApprovalMessage> messages = approve(a, policies);
+    private void approveArtifact(ArtifactVersion v, ArtifactPolicy... policies) throws ArtifactPolicyException {
+        List<ApprovalMessage> messages = approve(v, policies);
         
         if (messages != null) {
             throw new ArtifactPolicyException(messages);
         }
     }
 
-    private List<ApprovalMessage> approve(Artifact a, ArtifactPolicy... policies) {
+    private List<ApprovalMessage> approve(ArtifactVersion a, ArtifactPolicy... policies) {
         List<ApprovalMessage> messages = null;
         for (ArtifactPolicy p : policies) {
-            if (!p.applies(a)) return null;
+            if (!p.applies(a.getParent())) return null;
             
-            Collection<ApprovalMessage> approved = p.isApproved(a, a.getActiveVersion().getPrevious(), a.getActiveVersion());
+            Collection<ApprovalMessage> approved = p.isApproved(a.getParent(), a.getPrevious(), a);
             boolean failed = false;
             for (ApprovalMessage m : approved) {
                 if (!m.isWarning()) {
@@ -168,8 +170,10 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
 
     public void setActivePolicies(Artifact a, Lifecycle lifecycle, ArtifactPolicy... policies) 
         throws ArtifactPolicyException {
-        if (lifecycle.getId().equals(a.getPhase().getLifecycle().getId())) {
-            approveArtifact(a, policies);
+        for (ArtifactVersion v : a.getVersions()) {
+            if (lifecycle.getId().equals(v.getPhase().getLifecycle().getId())) {
+                approveArtifact(v, policies);
+            }
         }
         
         activatePolicy(artifactsLifecyclesNodeId, policies, a.getId(), lifecycle.getId());
@@ -177,8 +181,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
 
     public void setActivePolicies(Collection<Phase> phases, ArtifactPolicy... policies) 
         throws ArtifactCollectionPolicyException, RegistryException {
-        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(Artifact.class);
-        
+        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(ArtifactVersion.class);
         q.add(Restriction.in("phase", phases));
         
         approveArtifacts(q, policies);
@@ -189,16 +192,17 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     private void approveArtifacts(org.mule.galaxy.query.Query q, ArtifactPolicy... policies)
         throws RegistryException, ArtifactCollectionPolicyException {
         try {
+            q.add(Restriction.eq("enabled", true));
             SearchResults results = getRegistry().search(q);
-            Map<Artifact, List<ApprovalMessage>> approvals = null;
+            Map<ArtifactVersion, List<ApprovalMessage>> approvals = null;
             
             for (Object o : results.getResults()) {
-                Artifact a = (Artifact) o;
+                ArtifactVersion a = (ArtifactVersion) o;
                 
                 List<ApprovalMessage> messages = approve(a, policies);
                 if (messages != null) {
                     if (approvals == null) {
-                        approvals = new HashMap<Artifact, List<ApprovalMessage>>();
+                        approvals = new HashMap<ArtifactVersion, List<ApprovalMessage>>();
                     }
                     approvals.put(a, messages);
                 }
@@ -215,7 +219,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
 
     public void setActivePolicies(Lifecycle lifecycle, ArtifactPolicy... policies) 
         throws RegistryException, ArtifactCollectionPolicyException {
-        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(Artifact.class);
+        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(ArtifactVersion.class);
         q.add(Restriction.eq("lifecycle", lifecycle.getName()));
         
         approveArtifacts(q, policies);
@@ -229,7 +233,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
 
     public void setActivePolicies(Workspace w, Lifecycle lifecycle, ArtifactPolicy... policies) 
         throws RegistryException, ArtifactCollectionPolicyException {
-        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(Artifact.class);
+        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(ArtifactVersion.class);
         q.workspaceId(w.getId())
          .add(Restriction.eq("lifecycle", lifecycle.getName()));
         
@@ -400,24 +404,25 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         return activePolicies;
     }
 
-    public Collection<ArtifactPolicy> getActivePolicies(final Artifact a) {
+    public Collection<ArtifactPolicy> getActivePolicies(final ArtifactVersion v) {
         final Set<ArtifactPolicy> activePolicies = new HashSet<ArtifactPolicy>();
         jcrTemplate.execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                String lifecycle = a.getPhase().getLifecycle().getId();
+                Artifact a = v.getParent();
+                String lifecycle = v.getPhase().getLifecycle().getId();
                 String workspace = a.getWorkspace().getId();
-                
+
                 addPolicies(activePolicies, a, session, lifecyclesNodeId, lifecycle);
                 addPolicies(activePolicies, a, session, workspaceLifecyclesNodeId, 
                             workspace, lifecycle);
                 addPolicies(activePolicies, a, session, artifactsLifecyclesNodeId, 
                             a.getId(), lifecycle);
                 addPolicies(activePolicies, a, session, phasesNodeId, 
-                            lifecycle, a.getPhase().getName());
+                            lifecycle, v.getPhase().getName());
                 addPolicies(activePolicies, a, session, workspacePhasesNodeId, 
-                            workspace, lifecycle, a.getPhase().getName());
+                            workspace, lifecycle, v.getPhase().getName());
                 addPolicies(activePolicies, a, session, artifactsPhasesNodeId, 
-                            a.getId(), lifecycle, a.getPhase().getName());
+                            a.getId(), lifecycle, v.getPhase().getName());
                 
                 return null;
             }

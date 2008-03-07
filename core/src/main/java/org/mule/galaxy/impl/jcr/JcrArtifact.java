@@ -34,8 +34,6 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
     public static final String DESCRIPTION = "description";
     public static final String NAME = "name";
     public static final String DOCUMENT_TYPE = "documentType";
-    public static final String LIFECYCLE = "lifecycle";
-    public static final String PHASE = "phase";
     
     private List<ArtifactVersion> versions;
     private Workspace workspace;
@@ -203,78 +201,56 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
         return node;
     }
 
-    public ArtifactVersion getActiveVersion() {
+    public ArtifactVersion getDefaultVersion() {
         for (ArtifactVersion v : getVersions()) {
-            if (v.isActive()) {
+            if (v.isDefault()) {
                 return v;
             }
         }
         return null;
     }
     
-    public Phase getPhase() {
-        String phase = getStringOrNull(PHASE);
-        if (phase == null) {
-            return null;
-        }
-        
-        Phase p = registry.getLifecycleManager().getPhaseById(phase);
-        
-        return p;
-    }
-    
-    public void setPhase(Phase p) {
-        try {
-            node.setProperty(LIFECYCLE, p.getLifecycle().getId());
-            node.setProperty(PHASE, p.getId());
-            update();
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
     public void setVersions(List<ArtifactVersion> versions2) {
         this.versions = versions2;
     }
-    
 
     @Override
     public Object getProperty(String name) {
-        return getActiveVersion().getProperty(name);
+        return getDefaultVersion().getProperty(name);
     }
 
     @Override
     public void setProperty(String name, Object value) throws PropertyException {
-        getActiveVersion().setProperty(name, value);
+        getDefaultVersion().setProperty(name, value);
     }
     
     @Override
     public Iterator<PropertyInfo> getProperties() {
-        return getActiveVersion().getProperties();
+        return getDefaultVersion().getProperties();
     }
 
     @Override
     public PropertyInfo getPropertyInfo(String name) {
-        return getActiveVersion().getPropertyInfo(name);
+        return getDefaultVersion().getPropertyInfo(name);
     }
 
     @Override
     public void setLocked(String name, boolean locked) {
         update();
-        getActiveVersion().setLocked(name, locked);
+        getDefaultVersion().setLocked(name, locked);
     }
 
 
     @Override
     public boolean hasProperty(String name) {
         update();
-        return getActiveVersion().hasProperty(name);
+        return getDefaultVersion().hasProperty(name);
     }
 
     @Override
     public void setVisible(String name, boolean visible) {
         update();
-        getActiveVersion().setVisible(name, visible);
+        getDefaultVersion().setVisible(name, visible);
     }
 
     public JcrRegistryImpl getRegistry() {

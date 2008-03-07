@@ -70,14 +70,12 @@ public interface RegistryServiceAsync extends RemoteService {
     
     void getProperties(AsyncCallback c);
     
-    void getGovernanceInfo(String artifactId, AsyncCallback c);
+    void getGovernanceInfo(String artifactVersionId, AsyncCallback c);
     
-    void transition(String artifactId, String nextPhaseId, AsyncCallback c);
+    void transition(String artifactVersionId, String nextPhaseId, AsyncCallback c);
 
-    void setActive(String artifactId, String versionLabel, AsyncCallback c);
+    void setDefault(String artifactVersionId, AsyncCallback c);
     
-    void getArtifactVersions(String artifactId, AsyncCallback c);
-
     void move(String artifactId, String workspaceId, String name, AsyncCallback c);
     
     void delete(String artifactId, AsyncCallback c);
@@ -99,4 +97,6 @@ public interface RegistryServiceAsync extends RemoteService {
     void getUserInfo(AsyncCallback c);
 
     void deleteLifecycle(String id, AsyncCallback abstractCallback);
+
+    void setEnabled(String versionId, boolean enabled, AsyncCallback callback);
 }

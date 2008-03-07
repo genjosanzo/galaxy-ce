@@ -32,15 +32,14 @@ public class CustomArtifactTypeView implements ArtifactTypeView {
                 return ((Artifact) artifact).getContentType();
             }
         }));
-        columns.add(new Column("Version", new ColumnEvaluator() {
+        columns.add(new Column("Version", true, false, new ColumnEvaluator() {
             public Object getValue(Object artifact) {
-                return ((Artifact) artifact).getActiveVersion().getVersionLabel();
+                return ((Artifact) artifact).getDefaultVersion().getVersionLabel();
             }
         }));
-        
-        columns.add(new Column("Phase", new ColumnEvaluator() {
+        columns.add(new Column("Phase", true, false, new ColumnEvaluator() {
             public Object getValue(Object artifact) {
-                Phase p = ((Artifact) artifact).getPhase();
+                Phase p = ((Artifact) artifact).getDefaultVersion().getPhase();
                 if (p != null)
                     return p.getName();
                 

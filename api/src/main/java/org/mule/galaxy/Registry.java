@@ -102,25 +102,40 @@ public interface Registry {
         throws RegistryException, ArtifactPolicyException, IOException, DuplicateItemException;
 
     /**
-     * Sets the active version of an artifact to the specified one. It may
+     * Sets the default version of an artifact to the specified one. It may
      * fail due to increased policy restrictions which have been enforced on 
      * the artifact.
-     * 
-     * @param artifact
-     * @param version
+     * @param version 
      * @param user
+     * 
      * @return
      * @throws RegistryException
      * @throws ArtifactPolicyException
      */
-    void setActiveVersion(Artifact artifact, String version, User user) 
+    void setDefaultVersion(ArtifactVersion version, User user) 
+        throws RegistryException, ArtifactPolicyException;
+    
+    /**
+     * Enables or disables an artifac version. Reenabling an artifact may
+     * fail due to increased policy restrictions which have been enforced on 
+     * the artifact.
+     * @param version 
+     * @param user
+     * 
+     * @return
+     * @throws RegistryException
+     * @throws ArtifactPolicyException
+     */
+    void setEnabled(ArtifactVersion version, boolean enabled, User user) 
         throws RegistryException, ArtifactPolicyException;
 
     void move(Artifact artifact, String workspaceId) throws RegistryException;
     
     Collection<Artifact> getArtifacts(Workspace workspace) throws RegistryException;
     
-    Artifact getArtifact(String id) throws NotFoundException;
+    Artifact getArtifact(String id) throws NotFoundException, RegistryException;
+
+    ArtifactVersion getArtifactVersion(String id) throws NotFoundException, RegistryException;
     
     void delete(Artifact artifact) throws RegistryException;
 
@@ -154,6 +169,7 @@ public interface Registry {
     void removeDependencies(ArtifactVersion artifactVersion, Artifact... artifact) throws RegistryException;
     
     Set<Dependency> getDependedOnBy(Artifact a) throws RegistryException;
+
 
 
 }

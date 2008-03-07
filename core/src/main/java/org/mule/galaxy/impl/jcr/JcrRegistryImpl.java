@@ -148,7 +148,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             try {
                 // have to have the catch because jackrabbit is lame...
                 if (!wNode.hasNode(path)) throw new NotFoundException(path);
-            } catch (RegistryException e) {
+            } catch (RepositoryException e) {
                 throw new NotFoundException(path);
             }
             
@@ -388,9 +388,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return artifacts;
     }
 
-    public Artifact getArtifact(final String id) throws NotFoundException {
+    public Artifact getArtifact(final String id) throws NotFoundException, RegistryException {
         final JcrRegistryImpl registry = this;
-        return (Artifact) execute(new JcrCallback() {
+        return (Artifact) executeWithNotFound(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node node = session.getNodeByUUID(id);
                 Node wNode = node.getParent();
@@ -403,7 +403,28 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
         });
     }
-    
+
+    public ArtifactVersion getArtifactVersion(final String id) throws NotFoundException, RegistryException {
+        final JcrRegistryImpl registry = this;
+        return (ArtifactVersion) executeWithNotFound(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node node = session.getNodeByUUID(id);
+                Node aNode = node.getParent();
+                Node wNode = aNode.getParent();
+                
+                JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(registry, lifecycleManager, wNode), 
+                                                       aNode, registry);
+
+                setupContentHandler(artifact);
+
+                ArtifactVersion av = artifact.getVersion(JcrUtil.getStringOrNull(node, JcrVersion.LABEL));
+                if (av == null) {
+                    throw new RuntimeException(new NotFoundException(id));
+                }
+                return av;
+            }
+        });
+    }
     protected void setupContentHandler(JcrArtifact artifact) {
         ContentHandler ch = null;
         if (artifact.getDocumentType() != null) {
@@ -534,14 +555,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 jcrVersion.setVersionLabel(versionLabel);
                 jcrVersion.setAuthor(user);
                 jcrVersion.setLatest(true);
-                jcrVersion.setActive(true);
+                jcrVersion.setDefault(true);
+                jcrVersion.setEnabled(true);
                 
                 try {
                     Set<Artifact> dependencies = ch.detectDependencies(loadedData, workspace);
                     jcrVersion.addDependencies(dependencies, false);
                     
                     Lifecycle lifecycle = workspace.getDefaultLifecycle();
-                    artifact.setPhase(lifecycle.getInitialPhase());                    
+                    jcrVersion.setPhase(lifecycle.getInitialPhase());                    
                     
                     List<ArtifactVersion> versions = new ArrayList<ArtifactVersion>();
                     versions.add(jcrVersion);
@@ -591,7 +613,22 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
         }
     }
-    
+
+    private Object executeWithPolicy(JcrCallback jcrCallback) 
+        throws RegistryException, ArtifactPolicyException {
+        try {
+            return execute(jcrCallback);
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RegistryException) {
+                throw (RegistryException) cause;
+            } else if (cause instanceof ArtifactPolicyException) {
+                throw (ArtifactPolicyException) cause;
+            } else {
+                throw e;
+            }
+        }
+    }
     private Object executeWithRegistryException(JcrCallback jcrCallback) 
         throws RegistryException {
         try {
@@ -627,19 +664,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                                    JcrVersion next,
                                    User user)
         throws RegistryException, RepositoryException {
-        boolean approved = true;
-        
-        List<ApprovalMessage> approvals = policyManager.approve(previous, next);
-        for (ApprovalMessage a : approvals) {
-            if (!a.isWarning()) {
-                approved = false;
-                break;
-            }
-        }
-        
-        if (!approved) {
-            throw new RuntimeException(new ArtifactPolicyException(approvals));
-        }
+        List<ApprovalMessage> approvals = approve(previous, next);
 
         indexManager.index(next);
         
@@ -655,6 +680,23 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         
         
         return new ArtifactResult(artifact, next, approvals);
+    }
+
+    private List<ApprovalMessage> approve(ArtifactVersion previous, ArtifactVersion next) {
+        boolean approved = true;
+        
+        List<ApprovalMessage> approvals = policyManager.approve(previous, next);
+        for (ApprovalMessage a : approvals) {
+            if (!a.isWarning()) {
+                approved = false;
+                break;
+            }
+        }
+        
+        if (!approved) {
+            throw new RuntimeException(new ArtifactPolicyException(approvals));
+        }
+        return approvals;
     }
     
     public ArtifactResult createArtifact(Workspace workspace, 
@@ -714,10 +756,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 JcrArtifact jcrArtifact = (JcrArtifact) artifact;
                 Node artifactNode = jcrArtifact.getNode();
                 artifactNode.refresh(false);
-                JcrVersion previousLatest = ((JcrVersion)jcrArtifact.getActiveVersion());
+                JcrVersion previousLatest = ((JcrVersion)jcrArtifact.getDefaultVersion());
                 Node previousNode = previousLatest.getNode();
                 
-                previousLatest.setActive(false);
+                previousLatest.setDefault(false);
                 previousLatest.setLatest(false);
 
                 ContentHandler ch = contentService.getContentHandler(jcrArtifact.getContentType());
@@ -732,7 +774,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 
                 JcrVersion next = new JcrVersion(jcrArtifact, versionNode);
-                next.setActive(true);
+                next.setDefault(true);
                 next.setLatest(true);
                 
                 try {
@@ -751,8 +793,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     next.setVersionLabel(versionLabel);
                     next.setAuthor(user);
                     next.setLatest(true);
+                    next.setEnabled(true);
                     
                     ((List<ArtifactVersion>)jcrArtifact.getVersions()).add(0, next);
+                    
+                    Lifecycle lifecycle = jcrArtifact.getWorkspace().getDefaultLifecycle();
+                    next.setPhase(lifecycle.getInitialPhase());        
                     
                     ch.addMetadata(next);
                     
@@ -800,17 +846,31 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
     
-    public void setActiveVersion(final Artifact artifact, 
-                                 final String version, 
-                                 final User user) throws RegistryException,
+    public void setDefaultVersion(final ArtifactVersion version, 
+                                  final User user) throws RegistryException,
         ArtifactPolicyException {
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                ArtifactVersion av = artifact.getActiveVersion();
-                ArtifactVersion newAV = artifact.getVersion(version);
+                ArtifactVersion oldDefault = version.getParent().getDefaultVersion();
                 
-                ((JcrVersion) av).setActive(false);
-                ((JcrVersion) newAV).setActive(true);
+                ((JcrVersion) oldDefault).setDefault(false);
+                ((JcrVersion) version).setDefault(true);
+                
+                session.save();
+                return null;
+            }
+        });
+    }
+    
+    public void setEnabled(final ArtifactVersion version, 
+                           final boolean enabled,
+                           final User user) throws RegistryException,
+        ArtifactPolicyException {
+        executeWithPolicy(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                if (enabled) approve(version.getPrevious(), version);
+                
+                ((JcrVersion) version).setEnabled(enabled);
                 
                 session.save();
                 return null;
@@ -1200,30 +1260,36 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             
             if ("phase".equals(property)) {
                 if (operator.equals(Operator.IN)) {
+                    if (first) {
+                        first = false;
+                        propStr.append("[");
+                    } else {
+                        propStr.append(" and ");
+                    }
+                    
                     Collection<?> right = (Collection<?>) r.getRight();
                     boolean firstPhase = true;
                     for (Object o : right) {
                         
-                        
                         if (firstPhase) {
-                            qstr.append("[");
+                            propStr.append("(");
                             firstPhase = false;
                         } else {
-                            qstr.append(" or ");
+                            propStr.append(" or ");
                         }
                         
-                        createLifecycleAndPhasePropertySearch(qstr, property, o, not, operator);
+                        createLifecycleAndPhasePropertySearch(propStr, property, o, not, operator);
                     }
                     
                     if (!firstPhase) {
-                        qstr.append("]");
+                        propStr.append(")");
                     }
                 } else {
                     String right = r.getRight().toString();
                     
-                    qstr.append("[");
-                    createLifecycleAndPhasePropertySearch(qstr, property, right, not, operator);
-                    qstr.append("]");
+                    propStr.append("[");
+                    createLifecycleAndPhasePropertySearch(propStr, property, right, not, operator);
+                    propStr.append("]");
                 }
             } else {
                 // this is a normal property
@@ -1290,19 +1356,16 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     protected boolean appendPropertySearch(StringBuilder qstr, 
-                                          StringBuilder propStr, 
-                                          boolean first,
-                                          String right, 
-                                          String property, 
-                                          boolean not,
-                                          boolean and,
-                                          Operator operator) {
-        
-        if (property.equals(JcrArtifact.PHASE)
-            || property.equals(JcrArtifact.DOCUMENT_TYPE)
+                                           StringBuilder propStr, 
+                                           boolean first,
+                                           String right, 
+                                           String property, 
+                                           boolean not,
+                                           boolean and,
+                                           Operator operator) {
+        if (property.equals(JcrArtifact.DOCUMENT_TYPE)
             || property.equals(JcrArtifact.CONTENT_TYPE)
             || property.equals(JcrArtifact.NAME)
-            || property.equals(JcrArtifact.LIFECYCLE)
             || property.equals(JcrArtifact.DESCRIPTION)) {
             createPropertySearch(qstr, property, right, operator, not, true);
         } else {

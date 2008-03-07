@@ -28,6 +28,7 @@ import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
 import org.mule.galaxy.web.rpc.DependencyInfo;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
 import org.mule.galaxy.web.rpc.WComment;
@@ -41,12 +42,15 @@ public class ArtifactInfoPanel extends AbstractComposite {
     private VerticalPanel panel;
     private FlowPanel commentsPanel;
     private ExtendedArtifactInfo info;
+    private ArtifactVersionInfo version;
 
     public ArtifactInfoPanel(final RegistryPanel registryPanel, 
                              ArtifactGroup group,
-                             ExtendedArtifactInfo info) {
+                             ExtendedArtifactInfo info, 
+                             ArtifactVersionInfo version) {
         this.registryPanel = registryPanel;
         this.info = info;
+        this.version = version;
         
         panel = new VerticalPanel();
         
@@ -84,6 +88,10 @@ public class ArtifactInfoPanel extends AbstractComposite {
         for (; c < group.getColumns().size(); c++) {
             table.setText(c, 1, info.getValue(c));
         }
+
+        table.setText(c, 0, "Phase:");
+        table.setText(c, 1, version.getPhase());
+        c++;
         
         initDescription(table, c);
         styleHeaderColumn(table);
@@ -105,7 +113,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
             
         });
         
-        panel.add(new ArtifactMetadataPanel(registryPanel, info));
+        panel.add(new ArtifactMetadataPanel(registryPanel, version));
         
         initComments();
         

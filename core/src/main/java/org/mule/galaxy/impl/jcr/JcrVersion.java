@@ -11,12 +11,15 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
+import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.Value;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Dependency;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.util.DateUtil;
 
@@ -25,10 +28,14 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     public static final String DATA = "data";
     public static final String LABEL = "label";
     public static final String LATEST = "latest";
-    public static final String ACTIVE = "active";
+    public static final String DEFAULT = "default";
+    public static final String ENABLED = "enabled";
     public static final String AUTHOR_ID = "authorId";
     public static final String DEPENDENCIES = "dependencies";
     public static final String USER_SPECIFIED = "userSpecified";
+
+    public static final String LIFECYCLE = "lifecycle";
+    public static final String PHASE = "phase";
     
     private JcrArtifact parent;
     private Object data;
@@ -39,9 +46,42 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
         super(v, parent.getRegistry());
         this.parent = parent;
     }
-
+    
+    public String getId() {
+        try {
+            return node.getUUID();
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public void setPhase(Phase p) {
+        try {
+            node.setProperty(LIFECYCLE, p.getLifecycle().getId());
+            node.setProperty(PHASE, p.getId());
+            update();
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public Phase getPhase() {
+        String phase = getStringOrNull(PHASE);
+        if (phase == null) {
+            return null;
+        }
+        
+        Phase p = parent.getRegistry().getLifecycleManager().getPhaseById(phase);
+        
+        return p;
+    }
+    
     public boolean isLatest() {
         return JcrUtil.getBooleanOrNull(node, LATEST);
+    }
+    
+    public boolean isEnabled() {
+        return JcrUtil.getBooleanOrNull(node, ENABLED);
     }
 
     public void setLatest(boolean latest) {
@@ -58,13 +98,23 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
         }
     }
 
-    public boolean isActive() {
-        return JcrUtil.getBooleanOrNull(node, ACTIVE);
+    public void setEnabled(boolean enabled) {
+        try {
+            JcrUtil.setProperty(JcrVersion.ENABLED, enabled, node);
+            
+            update();
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void setActive(boolean active) {
+    public boolean isDefault() {
+        return JcrUtil.getBooleanOrNull(node, DEFAULT);
+    }
+
+    public void setDefault(boolean active) {
         try {
-            JcrUtil.setProperty(ACTIVE, active, node);
+            JcrUtil.setProperty(DEFAULT, active, node);
             update();
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
@@ -196,7 +246,6 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
                 final boolean user = JcrUtil.getBooleanOrNull(dep, USER_SPECIFIED);
                 try {
                     final Artifact a = parent.getRegistry().getArtifact(dep.getName());
-                    
                     deps.add(new Dependency() {
 
                         public Artifact getArtifact() {
@@ -210,6 +259,8 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
                     });
                 } catch (NotFoundException e) {
                     dep.remove();
+                } catch (RegistryException e) {
+                    throw new RuntimeException(e);
                 }
             }
             return deps;

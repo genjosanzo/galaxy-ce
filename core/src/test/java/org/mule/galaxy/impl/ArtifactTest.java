@@ -165,7 +165,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals("0.1", version.getVersionLabel());
         assertNotNull(version.getAuthor());
         assertTrue(version.isLatest());
-        assertEquals("Created", artifact.getPhase().getName());
+        assertEquals("Created", version.getPhase().getName());
         
         Calendar created = version.getCreated();
         assertTrue(created.getTime().getTime() > 0);
@@ -183,12 +183,13 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertTrue(newVersion.isLatest());
         assertFalse(version.isLatest());
         
-        assertSame(newVersion, ar.getArtifact().getActiveVersion());
+        assertSame(newVersion, ar.getArtifact().getDefaultVersion());
         
         versions = artifact.getVersions();
         assertEquals(2, versions.size());
         
         assertEquals("0.2", newVersion.getVersionLabel());
+        assertEquals("Created", newVersion.getPhase().getName());
         
         stream = newVersion.getStream();
         assertNotNull(stream);
@@ -203,10 +204,10 @@ public class ArtifactTest extends AbstractGalaxyTest {
         Artifact a2 = registry.getArtifact(workspace, artifact.getName());
         assertNotNull(a2);
         
-        registry.setActiveVersion(a2, "0.1", getAdmin());
+        registry.setDefaultVersion(version, getAdmin());
         
         assertEquals(2, a2.getVersions().size());
-        ArtifactVersion activeVersion = a2.getActiveVersion();
+        ArtifactVersion activeVersion = a2.getDefaultVersion();
         assertEquals("0.1", activeVersion.getVersionLabel());
         
         registry.delete(a2);
@@ -244,12 +245,12 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertNotNull(ar);
         assertTrue(ar.isApproved());
 
-        registry.setActiveVersion(artifact, "1", getAdmin());
+        registry.setDefaultVersion(artifact.getVersion("1"), getAdmin());
 
         Artifact a = registry.getArtifact(workspace, "test.txt");
         assertNotNull(a);
-        assertEquals("1", a.getActiveVersion().getVersionLabel());
-        assertEquals(version1, IOUtils.readStringFromStream(a.getActiveVersion().getStream()));
+        assertEquals("1", a.getDefaultVersion().getVersionLabel());
+        assertEquals(version1, IOUtils.readStringFromStream(a.getDefaultVersion().getStream()));
 
         ArtifactVersion artifactVersion = a.getVersion("2");
         assertEquals(version2, IOUtils.readStringFromStream(artifactVersion.getStream()));

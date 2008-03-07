@@ -23,6 +23,7 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang.BooleanUtils;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
@@ -53,6 +54,7 @@ public class ArtifactUploadServlet extends HttpServlet {
         String name = null;
         String versionLabel = null;
         FileItem uploadItem = null;
+        boolean disablePrevious = false;
         
         resp.setContentType("text/plain");
 
@@ -80,6 +82,8 @@ public class ArtifactUploadServlet extends HttpServlet {
                         versionLabel = item.getString();
                     } else if ("artifactId".equals(f)) {
                         artifactId = item.getString();
+                    }  else if ("disablePrevious".equals(f)) {
+                        disablePrevious = BooleanUtils.toBoolean(item.getString());
                     }
                 }
             } catch (FileUploadException e) {
@@ -133,6 +137,10 @@ public class ArtifactUploadServlet extends HttpServlet {
                 Artifact a = registry.getArtifact(artifactId);
                 
                 result = registry.newVersion(a, uploadItem.getInputStream(), versionLabel, user);
+                
+                if (disablePrevious) {
+                    result.getArtifactVersion().getPrevious().setEnabled(false);
+                }
             }
             
             writer.write("OK " + result.getArtifact().getId());

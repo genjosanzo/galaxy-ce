@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Workspace;
@@ -45,22 +46,22 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         Phase dev = created.getNextPhases().iterator().next();
         
         Artifact artifact = importHelloWsdl();
+        ArtifactVersion version = artifact.getDefaultVersion();
+        assertEquals(created, version.getPhase());
         
-        assertEquals(created, artifact.getPhase());
+        assertFalse(lifecycleManager.isTransitionAllowed(version, created));
+        assertTrue(lifecycleManager.isTransitionAllowed(version, dev));
         
-        assertFalse(lifecycleManager.isTransitionAllowed(artifact, created));
-        assertTrue(lifecycleManager.isTransitionAllowed(artifact, dev));
-        
-        Phase current = artifact.getPhase();
+        Phase current = version.getPhase();
         assertEquals(created.getName(), current.getName());
         
-        lifecycleManager.transition(artifact, dev, getAdmin());
+        lifecycleManager.transition(version, dev, getAdmin());
         
-        current = artifact.getPhase();
+        current = version.getPhase();
         assertEquals(dev.getName(), current.getName());
         
         try {
-            lifecycleManager.transition(artifact, dev, getAdmin());
+            lifecycleManager.transition(version, dev, getAdmin());
             fail("Expected Transition Exception");
         } catch (TransitionException e) {
             // expected
@@ -70,7 +71,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         assertEquals(1, entries.size());
         PhaseLogEntry e = entries.get(0);
         assertNotNull(e.getUser());
-        assertEquals(artifact.getId(), e.getArtifact().getId());
+        assertEquals(artifact.getId(), e.getArtifactVersion().getParent().getId());
         assertNotNull(e.getCalendar());
         assertNotNull(e.getPhase());
     }
@@ -95,7 +96,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         lifecycleManager.save(l);
         
         a = registry.getArtifact(a.getId());
-        assertEquals(l, a.getPhase().getLifecycle());
+        assertEquals(l, a.getDefaultVersion().getPhase().getLifecycle());
         
         try {
             lifecycleManager.delete(l.getName(), "bad");
@@ -151,7 +152,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         lifecycleManager.save(l);
         
         artifact = registry.getArtifact(artifact.getId());
-        assertEquals(p1, artifact.getPhase());
+        assertEquals(p1, artifact.getDefaultVersion().getPhase());
         
         Phase p2 = p1.getNextPhases().iterator().next();
         

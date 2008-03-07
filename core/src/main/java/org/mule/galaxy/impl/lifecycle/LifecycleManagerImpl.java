@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -23,7 +22,6 @@ import javax.jcr.query.QueryResult;
 
 import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Dao;
@@ -32,6 +30,7 @@ import org.mule.galaxy.Workspace;
 import org.mule.galaxy.ActivityManager.EventType;
 import org.mule.galaxy.impl.jcr.JcrArtifact;
 import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
@@ -42,7 +41,6 @@ import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.security.User;
-import org.mule.galaxy.util.LogUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -55,7 +53,6 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
     private static final String INITIAL_PHASE = "initial";
     private static final String DEFAULT = "default";
     private static final String NEXT_PHASES = "nextPhases";
-    private static final Logger LOGGER = LogUtils.getL7dLogger(LifecycleManagerImpl.class);
 
     private List<ArtifactPolicy> phaseApprovalListeners = new ArrayList<ArtifactPolicy>();
     private Dao<PhaseLogEntry> entryDao;
@@ -138,13 +135,13 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
                 Phase p = fallbackLifecycle.getInitialPhase();
                 
                 // update all the artifacts using this lifecycle
-                NodeIterator nodes = getArtifactsInLifecycle(lifecycle.getId(), session);
+                NodeIterator nodes = getArtifactVersionsInLifecycle(lifecycle.getId(), session);
                 
                 while (nodes.hasNext()) {
                     Node n = nodes.nextNode();
                     
-                    n.setProperty(JcrArtifact.LIFECYCLE, fallbackLifecycle.getName());
-                    n.setProperty(JcrArtifact.PHASE, p.getName());
+                    n.setProperty(JcrVersion.LIFECYCLE, fallbackLifecycle.getName());
+                    n.setProperty(JcrVersion.PHASE, p.getName());
                 }
 
                 // switch the default lifecycle for workspaces
@@ -153,7 +150,7 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
                 while (nodes.hasNext()) {
                     Node n = nodes.nextNode();
                     
-                    n.setProperty(JcrArtifact.LIFECYCLE, fallbackLifecycle.getName());
+                    n.setProperty(JcrVersion.LIFECYCLE, fallbackLifecycle.getName());
                 }
 
                 // technically we should clean up the policy manager too
@@ -193,7 +190,7 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
         return pNode;
     }
     
-    public boolean isTransitionAllowed(Artifact a, Phase p2) {
+    public boolean isTransitionAllowed(ArtifactVersion a, Phase p2) {
         Phase p = a.getPhase();
         Lifecycle l = p2.getLifecycle();
         
@@ -204,7 +201,7 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
         }
     }
     
-    public void transition(final Artifact a, 
+    public void transition(final ArtifactVersion a, 
                            final Phase p, 
                            final User user) throws TransitionException, ArtifactPolicyException {
         if (!isTransitionAllowed(a, p)) {
@@ -214,14 +211,13 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
         executeWithPolicyException(new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                JcrArtifact ja =(JcrArtifact) a;
+                JcrVersion ja = (JcrVersion) a;
                 ja.setPhase(p);
                 
-                ArtifactVersion latest = a.getActiveVersion();
-                ArtifactVersion previous = latest.getPrevious();
+                ArtifactVersion previous = a.getPrevious();
                 
                 boolean approved = true;
-                List<ApprovalMessage> approvals = getPolicyManager().approve(previous, latest);
+                List<ApprovalMessage> approvals = getPolicyManager().approve(previous, a);
                 for (ApprovalMessage app : approvals) {
                     if (!app.isWarning()) {
                         approved = false;
@@ -236,7 +232,7 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
                 PhaseLogEntry entry = new PhaseLogEntry();
                 entry.setUser(user);
                 entry.setPhase(p);
-                entry.setArtifact(a);
+                entry.setArtifactVersion(a);
                 
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(new Date());
@@ -245,7 +241,9 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
                 entryDao.save(entry);
 
                 getActivityManager().logActivity(user,
-                                                 "Artifact " + ja.getPath() + " was transitioned to phase "
+                                                 "Artifact " + ja.getParent().getPath() 
+                                                     + " (version " + ja.getVersionLabel()
+                                                     + ") was transitioned to phase "
                                                      + p.getName() + " in lifecycle "
                                                      + p.getLifecycle().getName(), EventType.INFO);
                                             
@@ -436,7 +434,7 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
                     while (artifacts.hasNext()) {
                         Node artifactNode = artifacts.nextNode();
                         
-                        artifactNode.setProperty(JcrArtifact.PHASE, l.getInitialPhase().getId());
+                        artifactNode.setProperty(JcrVersion.PHASE, l.getInitialPhase().getId());
                     }
                 }
                 
@@ -497,11 +495,11 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
         this.context = applicationContext;
     }
 
-    private NodeIterator getArtifactsInLifecycle(final String lifecycleId, Session session)
+    private NodeIterator getArtifactVersionsInLifecycle(final String lifecycleId, Session session)
         throws RepositoryException, InvalidQueryException {
         QueryManager qm = getQueryManager(session);
         javax.jcr.query.Query query = 
-            qm.createQuery("//element(*, galaxy:artifact)[@lifecycle = '" + lifecycleId + "']", 
+            qm.createQuery("//element(*, galaxy:artifact)/version[@lifecycle = '" + lifecycleId + "']", 
                            javax.jcr.query.Query.XPATH);
         
         QueryResult qr = query.execute();

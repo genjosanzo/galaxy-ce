@@ -3,6 +3,7 @@ package org.mule.galaxy.web.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -32,6 +33,7 @@ public class ArtifactForm extends AbstractTitledComposite {
     private WorkspacesListBox workspacesLB;
     private final RegistryPanel registryPanel;
     private final String artifactId;
+    private CheckBox disablePrevious;
 
     public ArtifactForm(final RegistryPanel registryPanel) {
         this(registryPanel, null, true);
@@ -178,18 +180,23 @@ public class ArtifactForm extends AbstractTitledComposite {
     }
 
     private int setupAddVersionForm(final RegistryPanel registryPanel, FlowPanel panel) {
-        Label versionLabel = new Label("Version Label");
-        table.setWidget(0, 0, versionLabel);
+        table.setText(0, 0, "Version Label");
 
         versionBox = new TextBox();
         table.setWidget(0, 1, versionBox);
         versionBox.setName("versionLabel");
         
+        table.setText(1, 0, "Disable Previous");
+
+        disablePrevious = new CheckBox();
+        disablePrevious.setName("disablePrevious");
+        table.setWidget(1, 1, disablePrevious);
+        
         Label artifactLabel = new Label("Artifact");
-        table.setWidget(1, 0, artifactLabel);
+        table.setWidget(2, 0, artifactLabel);
         
         panel.add(new Hidden("artifactId", artifactId));
         
-        return 1;
+        return 2;
     }
 }

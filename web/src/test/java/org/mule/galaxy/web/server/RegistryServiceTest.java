@@ -203,8 +203,12 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         ArtifactGroup g1 = (ArtifactGroup) artifacts.iterator().next();
         
         BasicArtifactInfo a = (BasicArtifactInfo) g1.getRows().get(0);
+        ExtendedArtifactInfo ext = (ExtendedArtifactInfo) gwtRegistry.getArtifact(a.getId()).getRows().get(0);
         
-        WGovernanceInfo gov = gwtRegistry.getGovernanceInfo(a.getId());
+        Collection versions = ext.getVersions();
+        ArtifactVersionInfo v = (ArtifactVersionInfo) versions.iterator().next();
+        
+        WGovernanceInfo gov = gwtRegistry.getGovernanceInfo(v.getId());
         
         assertEquals("Created", gov.getCurrentPhase());
         
@@ -213,7 +217,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals(1, nextPhases.size());
         
         WPhase next = (WPhase) nextPhases.iterator().next();
-        TransitionResponse res = gwtRegistry.transition(a.getId(), next.getId());
+        TransitionResponse res = gwtRegistry.transition(v.getId(), next.getId());
         
         assertTrue(res.isSuccess());
         
@@ -222,7 +226,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         policyManager.addPolicy(policy);
 
         // Try transitioning
-        gov = gwtRegistry.getGovernanceInfo(a.getId());
+        gov = gwtRegistry.getGovernanceInfo(v.getId());
         
         nextPhases = gov.getNextPhases();
         assertNotNull(nextPhases);
@@ -232,7 +236,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         policyManager.setActivePolicies(Arrays.asList(lifecycleManager.getPhaseById(next.getId())), policy);
         
-        res = gwtRegistry.transition(a.getId(), next.getId());
+        res = gwtRegistry.transition(v.getId(), next.getId());
         
         assertFalse(res.isSuccess());
         assertEquals(1, res.getMessages().size());
@@ -249,8 +253,9 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         registry.newVersion(a, getResourceAsStream("/wsdl/imports/hello.wsdl"), "0.2", getAdmin());
         
+        ExtendedArtifactInfo ext = (ExtendedArtifactInfo) gwtRegistry.getArtifact(a.getId()).getRows().get(0);
         
-        Collection versions = gwtRegistry.getArtifactVersions(a.getId());
+        Collection versions = ext.getVersions();
         assertEquals(2, versions.size());
         
         ArtifactVersionInfo info = (ArtifactVersionInfo) versions.iterator().next();
@@ -260,7 +265,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals("Administrator", info.getAuthorName());
         assertEquals("admin", info.getAuthorUsername());
         
-        TransitionResponse res = gwtRegistry.setActive(a.getId(), "0.1");
+        TransitionResponse res = gwtRegistry.setDefault(info.getId());
         assertTrue(res.isSuccess());
     }
     

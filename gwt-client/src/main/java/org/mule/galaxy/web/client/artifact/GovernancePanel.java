@@ -16,6 +16,7 @@ import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.RegistryPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.TransitionResponse;
@@ -29,22 +30,22 @@ public class GovernancePanel extends AbstractComposite {
     private RegistryPanel registryPanel;
     private RegistryServiceAsync registryService;
     private FlowPanel panel;
-    private ExtendedArtifactInfo info;
     private FlowPanel messages;
     private ListBox lifecyclesLB;
     private Collection lifecycles;
     private WGovernanceInfo governanceInfo;
+    private final ArtifactVersionInfo version;
 
     public GovernancePanel(RegistryPanel registryPanel,
-                           ExtendedArtifactInfo info) {
+                           ArtifactVersionInfo version) {
         super();
         this.registryPanel = registryPanel;
+        this.version = version;
         this.registryService = registryPanel.getRegistryService();
-        this.info = info;
         
         panel = new FlowPanel();
         
-        registryService.getGovernanceInfo(info.getId(), new AbstractCallback(registryPanel) {
+        registryService.getGovernanceInfo(version.getId(), new AbstractCallback(registryPanel) {
 
             public void onSuccess(Object o) {
                 initializePanel((WGovernanceInfo) o);
@@ -174,7 +175,7 @@ public class GovernancePanel extends AbstractComposite {
             table.setText(0, 1, lifecycle.getName());
             return;
         }
-        registryPanel.getRegistryService().transition(info.getId(), p.getId(), 
+        registryPanel.getRegistryService().transition(version.getId(), p.getId(), 
                                                       new AbstractCallback(registryPanel) {
 
             public void onFailure(Throwable caught) {
@@ -212,7 +213,7 @@ public class GovernancePanel extends AbstractComposite {
         
         int idx = nextPhasesList.getSelectedIndex();
         
-        registryService.transition(info.getId(), nextPhasesList.getValue(idx), new AbstractCallback(registryPanel) {
+        registryService.transition(version.getId(), nextPhasesList.getValue(idx), new AbstractCallback(registryPanel) {
 
             public void onFailure(Throwable caught) {
                 transitionButton.setEnabled(true);
@@ -242,7 +243,7 @@ public class GovernancePanel extends AbstractComposite {
                 messages.add(new Label(msg));
             }
         } else {
-            registryService.getGovernanceInfo(info.getId(), new AbstractCallback(registryPanel) {
+            registryService.getGovernanceInfo(version.getId(), new AbstractCallback(registryPanel) {
     
                 public void onSuccess(Object o) {
                     panel.clear();
