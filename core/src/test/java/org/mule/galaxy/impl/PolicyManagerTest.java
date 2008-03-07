@@ -49,6 +49,11 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
             // deactivate
             policyManager.setActivePolicies(lifecycle);
         }
+        
+        registry.setEnabled(artifact.getDefaultVersion(), false, getAdmin());
+
+        // this should work now that the artifact is disabled.
+        policyManager.setActivePolicies(lifecycle, failPolicy);
     }
     
     public void testPM() throws Exception {
