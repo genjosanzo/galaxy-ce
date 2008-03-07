@@ -1156,7 +1156,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     throw new RuntimeException(e);
                 }
                 
-                LOGGER.log(Level.INFO, "Query: " + qstr.toString());
+                LOGGER.log(Level.FINE, "Query: " + qstr.toString());
                 
                 Query jcrQuery = qm.createQuery(qstr, Query.XPATH);
                 
