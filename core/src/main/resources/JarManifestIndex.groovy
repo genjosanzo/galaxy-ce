@@ -7,6 +7,7 @@ println "=================== Executing a groovy index"
 
 // copy to a temp location, not happy :(
 def temp = File.createTempFile('galaxy-index', 'tmp')
+temp.deleteOnExit()
 temp.withOutputStream {
     it << artifact.stream
 }
@@ -82,6 +83,7 @@ try {
 
 } finally {
     jarFile?.close()
+    temp?.delete()
 }
 
 println "Done"
