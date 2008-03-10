@@ -1,5 +1,23 @@
 package org.mule.galaxy.test;
 
+import org.mule.galaxy.ActivityManager;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.CommentManager;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Settings;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.index.IndexManagerImpl;
+import org.mule.galaxy.impl.jcr.PluginRunner;
+import org.mule.galaxy.index.IndexManager;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.security.UserManager;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -15,24 +33,6 @@ import javax.jcr.SimpleCredentials;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.api.JackrabbitRepository;
-import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
-import org.mule.galaxy.CommentManager;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Settings;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.index.IndexManagerImpl;
-import org.mule.galaxy.impl.jcr.JcrUtil;
-import org.mule.galaxy.impl.jcr.PluginRunner;
-import org.mule.galaxy.index.IndexManager;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.security.UserManager;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springmodules.jcr.SessionFactory;
@@ -63,14 +63,22 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
     }
 
     public URL getResource(String name) {
-        URL url = getClass().getResource(name);
+        URL url = Thread.currentThread().getContextClassLoader().getResource(name);
+        if (url == null)
+        {
+            url = getClass().getResource(name);
+        }
         assertNotNull("Resource not found: " + name, url);
 
         return url;
     }
 
     public InputStream getResourceAsStream(String name) {
-        InputStream is = getClass().getResourceAsStream(name);
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
+        if (is == null)
+        {
+            is = getClass().getResourceAsStream(name);
+        }
         assertNotNull("Resource not found: " + name, is);
 
         return is;
