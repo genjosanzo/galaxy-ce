@@ -46,19 +46,17 @@ public interface Artifact  {
     ArtifactVersion getVersion(String versionName);
 
     /**
-     * Get the active version of this artifact. If this hasn't been specifically set,
+     * Get the default version of this artifact. If this hasn't been specifically set,
      * its the latest version of the artifact.
      * @return
      */
-    ArtifactVersion getActiveVersion();
+    ArtifactVersion getDefaultVersion();
     
     public void setProperty(String name, Object value) throws PropertyException;
     
     Object getProperty(String name);
 
     boolean hasProperty(String name);
-    
-    public Phase getPhase();
 
     Iterator<PropertyInfo> getProperties();
     

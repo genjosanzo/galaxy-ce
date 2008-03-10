@@ -16,18 +16,18 @@ import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.RegistryPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
 import org.mule.galaxy.web.rpc.WProperty;
 
 public class ArtifactMetadataPanel extends AbstractComposite {
 
     private FlowPanel metadata;
     private RegistryPanel registryPanel;
-    private ExtendedArtifactInfo info;
+    private ArtifactVersionInfo info;
     private FlexTable table;
     
     public ArtifactMetadataPanel(final RegistryPanel registryPanel,
-                                 final ExtendedArtifactInfo info) {
+                                 final ArtifactVersionInfo info) {
         super();
         this.info = info;
         this.registryPanel = registryPanel;

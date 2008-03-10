@@ -1,10 +1,13 @@
 package org.mule.galaxy.web.client.artifact;
 
+import java.util.Iterator;
+
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -13,6 +16,7 @@ import org.mule.galaxy.web.client.RegistryPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
 
 /**
@@ -33,7 +37,25 @@ public class ArtifactPanel extends AbstractComposite {
     private ArtifactGroup group;
     private VerticalPanel panel;
     private int selectedTab;
+    private ListBox versionLB;
 
+    public ArtifactPanel(RegistryPanel registryPanel, String artifactId) {
+        this(registryPanel, artifactId, -1);
+    }
+    
+    public ArtifactPanel(RegistryPanel registryPanel, String artifactId, int selectedTab) {
+        this(registryPanel, selectedTab);
+        
+        registryPanel.getRegistryService().getArtifact(artifactId, new AbstractCallback(registryPanel) { 
+            public void onSuccess(Object o) {
+                group = (ArtifactGroup) o;
+                info = (ExtendedArtifactInfo) group.getRows().get(0);
+                
+                init();
+            }
+        });
+    }
+    
     protected ArtifactPanel(RegistryPanel registryPanel, int selectedTab) {
         this.registryPanel = registryPanel;
         this.selectedTab = selectedTab;
@@ -52,8 +74,29 @@ public class ArtifactPanel extends AbstractComposite {
     
     private void init() {
         InlineFlowPanel artifactTitle = new InlineFlowPanel();
-        artifactTitle.add(new Label(info.getPath()));
-        artifactTitle.setStyleName("artifact-title");
+        artifactTitle.setStyleName("artifact-title-base");
+        artifactTitle.add(newLabel(info.getPath() + " ", "artifact-title")); // add a space to keep the version box away... ugly.
+        artifactTitle.add(newLabel("- Viewing Version: ", "artifact-title-version")); // add a space to keep the version box away... ugly.
+        
+        ArtifactVersionInfo defaultVersion = null;
+        versionLB = new ListBox();
+        for (Iterator itr = info.getVersions().iterator(); itr.hasNext();) {
+            ArtifactVersionInfo v = (ArtifactVersionInfo)itr.next();
+            
+            versionLB.addItem(v.getVersionLabel(), v.getId());
+            if (v.isDefault()) {
+                defaultVersion = v;
+                versionLB.setSelectedIndex(versionLB.getItemCount()-1);
+            }
+        }
+        versionLB.addChangeListener(new ChangeListener() {
+
+            public void onChange(Widget arg0) {
+                viewNewVersion();
+            }
+            
+        });
+        artifactTitle.add(versionLB);
         
         Image img = new Image("images/feed-icon-14x14.png");
         img.addClickListener(new ClickListener() {
@@ -69,8 +112,27 @@ public class ArtifactPanel extends AbstractComposite {
         
         panel.insert(artifactTitle, 0);
         
-        artifactTabs.add(new ArtifactInfoPanel(registryPanel, group, info), "Info");
-        artifactTabs.add(new GovernancePanel(registryPanel, info), "Governance");
+        initTabs(defaultVersion);
+    }
+
+    protected void viewNewVersion() {
+        int idx = versionLB.getSelectedIndex();
+        String id = versionLB.getValue(idx);
+        
+        for (Iterator itr = info.getVersions().iterator(); itr.hasNext();) {
+            ArtifactVersionInfo avi = (ArtifactVersionInfo)itr.next();               
+            
+            if (avi.getId().equals(id)) {
+                artifactTabs.clear();
+                initTabs(avi);
+                return;
+            }
+        }
+    }
+
+    private void initTabs(ArtifactVersionInfo version) {
+        artifactTabs.add(new ArtifactInfoPanel(registryPanel, group, info, version), "Info");
+        artifactTabs.add(new GovernancePanel(registryPanel, version), "Governance");
         artifactTabs.add(new HistoryPanel(registryPanel, info), "History");
         
         if (selectedTab > -1) {
@@ -78,23 +140,6 @@ public class ArtifactPanel extends AbstractComposite {
         } else {
             artifactTabs.selectTab(0);
         }
-    }
-
-    public ArtifactPanel(RegistryPanel registryPanel, String artifactId) {
-        this(registryPanel, artifactId, -1);
-    }
-    
-    public ArtifactPanel(RegistryPanel registryPanel, String artifactId, int selectedTab) {
-        this(registryPanel, selectedTab);
-        
-        registryPanel.getRegistryService().getArtifact(artifactId, new AbstractCallback(registryPanel) { 
-            public void onSuccess(Object o) {
-                group = (ArtifactGroup) o;
-                info = (ExtendedArtifactInfo) group.getRows().get(0);
-                
-                init();
-            }
-        });
     }
 
 }

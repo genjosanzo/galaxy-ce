@@ -27,35 +27,21 @@ public class HistoryPanel extends AbstractComposite {
     private ExtendedArtifactInfo info;
 
     public HistoryPanel(RegistryPanel registryPanel,
-                           ExtendedArtifactInfo info) {
+                        ExtendedArtifactInfo info) {
         super();
         this.registryPanel = registryPanel;
         this.registryService = registryPanel.getRegistryService();
         this.info = info;
         
         panel = new FlowPanel();
-        
-        refresh();
-        
         initWidget(panel);
         
         setTitle("Artifact History");
+        initializePanel();
     }
 
-    private void refresh() {
-        panel.clear();
-        
-        registryService.getArtifactVersions(info.getId(), new AbstractCallback(registryPanel) {
-
-            public void onSuccess(Object o) {
-                initializePanel((Collection) o);
-            } 
-            
-        });
-    }
-
-    protected void initializePanel(Collection avs) {
-        for (Iterator iterator = avs.iterator(); iterator.hasNext();) {
+    protected void initializePanel() {
+        for (Iterator iterator = info.getVersions().iterator(); iterator.hasNext();) {
             final ArtifactVersionInfo av = (ArtifactVersionInfo)iterator.next();
             
             FlowPanel avPanel = new FlowPanel();
@@ -85,26 +71,50 @@ public class HistoryPanel extends AbstractComposite {
             });
             links.add(viewLink);
             
-            if (!av.isActive()) {
+            if (!av.isDefault()) {
                 links.add(new Label(" | "));
                 
-                Hyperlink rollbackLink = new Hyperlink("Set Active", "rollback-version");
+                Hyperlink rollbackLink = new Hyperlink("Set Default", "rollback-version");
                 rollbackLink.addClickListener(new ClickListener() {
 
                     public void onClick(Widget w) {
-                        setActive(av.getVersionLabel());
+                        setDefault(av.getId());
                     }
                     
                 });
                 links.add(rollbackLink);
             }
             
+            links.add(new Label(" | "));
+            
+            if (!av.isEnabled()) {
+                Hyperlink enableLink = new Hyperlink("Reenable", "reenable-version");
+                enableLink.addClickListener(new ClickListener() {
+
+                    public void onClick(Widget w) {
+                        setEnabled(av.getId(), true);
+                    }
+                    
+                });
+                links.add(enableLink);
+            } else {
+                Hyperlink disableLink = new Hyperlink("Disable", "disable-version");
+                disableLink.addClickListener(new ClickListener() {
+
+                    public void onClick(Widget w) {
+                        setEnabled(av.getId(), false);
+                    }
+                    
+                });
+                links.add(disableLink);
+            }
+            
             panel.add(avPanel);
         }
     }
 
-    protected void setActive(String versionLabel) {
-        registryService.setActive(info.getId(), versionLabel, new AbstractCallback(registryPanel) {
+    protected void setDefault(String versionId) {
+        registryService.setDefault(versionId, new AbstractCallback(registryPanel) {
 
             public void onSuccess(Object o) {
                 TransitionResponse tr = (TransitionResponse) o;
@@ -119,6 +129,22 @@ public class HistoryPanel extends AbstractComposite {
         });
     }
 
+    protected void setEnabled(String versionId, boolean enabled) {
+        registryService.setEnabled(versionId, enabled, new AbstractCallback(registryPanel) {
+
+            public void onSuccess(Object o) {
+                TransitionResponse tr = (TransitionResponse) o;
+                
+                if (tr == null || tr.isSuccess()) {
+                    registryPanel.setMain(new ArtifactPanel(registryPanel, info.getId(), 2));
+                } else {
+                    displayMessages(tr);
+                }
+            }
+
+        });
+    }
+    
     protected void displayMessages(TransitionResponse tr) {
         registryPanel.setMessage("Policies were not met!");
     }

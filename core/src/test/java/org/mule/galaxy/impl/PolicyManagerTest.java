@@ -2,11 +2,11 @@ package org.mule.galaxy.impl;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.Phase;
@@ -32,7 +32,7 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
             policyManager.setActivePolicies(workspace, lifecycle, failPolicy);
             fail("Expected policy failure.");
         } catch (ArtifactCollectionPolicyException e) {
-            Map<Artifact, List<ApprovalMessage>> policyFailures = e.getPolicyFailures();
+            Map<ArtifactVersion, List<ApprovalMessage>> policyFailures = e.getPolicyFailures();
             
             assertEquals(1, policyFailures.size());
             // deactivate
@@ -43,12 +43,17 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
             policyManager.setActivePolicies(lifecycle, failPolicy);
             fail("Expected policy failure.");
         } catch (ArtifactCollectionPolicyException e) {
-            Map<Artifact, List<ApprovalMessage>> policyFailures = e.getPolicyFailures();
+            Map<ArtifactVersion, List<ApprovalMessage>> policyFailures = e.getPolicyFailures();
             
             assertEquals(1, policyFailures.size());
             // deactivate
             policyManager.setActivePolicies(lifecycle);
         }
+        
+        registry.setEnabled(artifact.getDefaultVersion(), false, getAdmin());
+
+        // this should work now that the artifact is disabled.
+        policyManager.setActivePolicies(lifecycle, failPolicy);
     }
     
     public void testPM() throws Exception {
@@ -65,7 +70,7 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         Artifact artifact = importHelloWsdl();
         Workspace workspace = artifact.getWorkspace();
         
-        Collection<ArtifactPolicy> active = policyManager.getActivePolicies(artifact);
+        Collection<ArtifactPolicy> active = policyManager.getActivePolicies(artifact.getDefaultVersion());
         assertNotNull(active);
         assertEquals(1, active.size());
         
@@ -74,14 +79,14 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         assertEquals(1, active.size());
         
         policyManager.setActivePolicies(lifecycle);
-        active = policyManager.getActivePolicies(artifact);
+        active = policyManager.getActivePolicies(artifact.getDefaultVersion());
         assertNotNull(active);
         assertEquals(0, active.size());
         
         // Try workspace activations
         policyManager.setActivePolicies(workspace, lifecycle, policy);
         
-        active = policyManager.getActivePolicies(artifact);
+        active = policyManager.getActivePolicies(artifact.getDefaultVersion());
         assertNotNull(active);
         assertEquals(1, active.size());
         
@@ -95,7 +100,7 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         
         policyManager.setActivePolicies(workspace, lifecycle);
         
-        active = policyManager.getActivePolicies(artifact);
+        active = policyManager.getActivePolicies(artifact.getDefaultVersion());
         assertNotNull(active);
         assertEquals(0, active.size());
         
@@ -106,7 +111,7 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         // Try artifact activations
         policyManager.setActivePolicies(artifact, lifecycle, policy);
         
-        active = policyManager.getActivePolicies(artifact);
+        active = policyManager.getActivePolicies(artifact.getDefaultVersion());
         assertNotNull(active);
         assertEquals(1, active.size());
         
@@ -118,7 +123,7 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         
         policyManager.setActivePolicies(artifact, lifecycle);
         
-        active = policyManager.getActivePolicies(artifact);
+        active = policyManager.getActivePolicies(artifact.getDefaultVersion());
         assertNotNull(active);
         assertEquals(0, active.size());
         
@@ -130,7 +135,7 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         
         policyManager.setActivePolicies(phases1, policy);
         
-        active = policyManager.getActivePolicies(artifact);
+        active = policyManager.getActivePolicies(artifact.getDefaultVersion());
         assertNotNull(active);
         assertEquals(1, active.size());
         
@@ -139,7 +144,7 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         assertEquals(1, active.size());
         
         policyManager.setActivePolicies(phases1);
-        active = policyManager.getActivePolicies(artifact);
+        active = policyManager.getActivePolicies(artifact.getDefaultVersion());
         assertNotNull(active);
         assertEquals(0, active.size());
         
@@ -148,7 +153,7 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         
         policyManager.setActivePolicies(phases2, policy);
         
-        active = policyManager.getActivePolicies(artifact);
+        active = policyManager.getActivePolicies(artifact.getDefaultVersion());
         assertNotNull(active);
         assertEquals(0, active.size());
         
@@ -157,7 +162,7 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         // Try phase activations on workspaces
         policyManager.setActivePolicies(workspace, phases1, policy);
         
-        active = policyManager.getActivePolicies(artifact);
+        active = policyManager.getActivePolicies(artifact.getDefaultVersion());
         assertNotNull(active);
         assertEquals(1, active.size());
 
@@ -166,7 +171,7 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         assertEquals(1, active.size());
         
         policyManager.setActivePolicies(workspace, phases1);
-        active = policyManager.getActivePolicies(artifact);
+        active = policyManager.getActivePolicies(artifact.getDefaultVersion());
         assertNotNull(active);
         assertEquals(0, active.size());
         
@@ -177,7 +182,7 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         // Try phase activations on artifacts
         policyManager.setActivePolicies(artifact, phases1, policy);
         
-        active = policyManager.getActivePolicies(artifact);
+        active = policyManager.getActivePolicies(artifact.getDefaultVersion());
         assertNotNull(active);
         assertEquals(1, active.size());
         
@@ -188,7 +193,7 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         assertTrue(policyInfo.getAppliesTo() instanceof Phase);
         
         policyManager.setActivePolicies(artifact, phases1);
-        active = policyManager.getActivePolicies(artifact);
+        active = policyManager.getActivePolicies(artifact.getDefaultVersion());
         assertNotNull(active);
         assertEquals(0, active.size());
     }

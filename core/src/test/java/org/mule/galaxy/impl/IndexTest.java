@@ -109,7 +109,7 @@ public class IndexTest extends AbstractGalaxyTest {
         // Import a document which should now be indexed
         Artifact artifact = importHelloWsdl();
 
-        ArtifactVersion version = artifact.getActiveVersion();
+        ArtifactVersion version = artifact.getDefaultVersion();
         Object property = version.getProperty("wsdl.service");
         assertNotNull(property);
         assertTrue(property instanceof Collection);

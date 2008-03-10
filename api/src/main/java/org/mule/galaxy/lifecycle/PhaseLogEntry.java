@@ -2,7 +2,7 @@ package org.mule.galaxy.lifecycle;
 
 import java.util.Calendar;
 
-import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.security.User;
 
@@ -10,7 +10,7 @@ public class PhaseLogEntry implements Identifiable {
     private String id;
     private User user;
     private Phase phase;
-    private Artifact artifact;
+    private ArtifactVersion artifactVersion;
     private Calendar calendar;
     
     public String getId() {
@@ -31,11 +31,11 @@ public class PhaseLogEntry implements Identifiable {
     public void setPhase(Phase phase) {
         this.phase = phase;
     }
-    public Artifact getArtifact() {
-        return artifact;
+    public ArtifactVersion getArtifactVersion() {
+        return artifactVersion;
     }
-    public void setArtifact(Artifact artifact) {
-        this.artifact = artifact;
+    public void setArtifactVersion(ArtifactVersion artifactVersion) {
+        this.artifactVersion = artifactVersion;
     }
     public Calendar getCalendar() {
         return calendar;

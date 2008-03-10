@@ -167,6 +167,9 @@
         <entry key="org.mule.galaxy.Artifact">
           <bean class="org.mule.galaxy.impl.jcr.ArtifactPersister"/>
         </entry>
+        <entry key="org.mule.galaxy.ArtifactVersion">
+          <bean class="org.mule.galaxy.impl.jcr.ArtifactVersionPersister"/>
+        </entry>
         <entry key="java.util.Map">
           <bean class="org.mule.galaxy.impl.jcr.onm.MapPersister"/>
         </entry>
