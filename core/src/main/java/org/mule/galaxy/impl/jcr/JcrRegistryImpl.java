@@ -1,6 +1,42 @@
 package org.mule.galaxy.impl.jcr;
 
 
+import org.mule.galaxy.ActivityManager;
+import org.mule.galaxy.ActivityManager.EventType;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.ContentService;
+import org.mule.galaxy.Dao;
+import org.mule.galaxy.Dependency;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyDescriptor;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Settings;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.XmlContentHandler;
+import org.mule.galaxy.index.IndexManager;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.query.Restriction.Operator;
+import org.mule.galaxy.query.SearchResults;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.security.UserManager;
+import org.mule.galaxy.util.BundleUtils;
+import org.mule.galaxy.util.DateUtil;
+import org.mule.galaxy.util.Message;
+import org.mule.galaxy.util.UserUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -12,8 +48,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
@@ -32,47 +66,13 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.core.nodetype.NodeTypeDef;
 import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
 import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
 import org.apache.jackrabbit.core.nodetype.xml.NodeTypeReader;
-import org.apache.jackrabbit.name.QName;
 import org.apache.jackrabbit.util.ISO9075;
-import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.ContentService;
-import org.mule.galaxy.Dao;
-import org.mule.galaxy.Dependency;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.PropertyDescriptor;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Settings;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.XmlContentHandler;
-import org.mule.galaxy.ActivityManager.EventType;
-import org.mule.galaxy.index.IndexManager;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactPolicy;
-import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.query.QueryException;
-import org.mule.galaxy.query.Restriction;
-import org.mule.galaxy.query.SearchResults;
-import org.mule.galaxy.query.Restriction.Operator;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.security.UserManager;
-import org.mule.galaxy.util.DateUtil;
-import org.mule.galaxy.util.LogUtils;
-import org.mule.galaxy.util.Message;
-import org.mule.galaxy.util.UserUtils;
 import org.springframework.dao.DataAccessException;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
@@ -84,8 +84,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private static final String REPOSITORY_LAYOUT_VERSION = "version";
     private static final String NAMESPACE = "http://galaxy.mule.org";
 
-    private Logger LOGGER = LogUtils.getL7dLogger(JcrRegistryImpl.class);
-    
+    private final Log log = LogFactory.getLog(getClass());
+
     private Settings settings;
     
     private ContentService contentService;
@@ -234,7 +234,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     Node checked = parentNode;
                     while (checked != null && checked.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
                         if (checked.equals(node)) {
-                            throw new RuntimeException(new RegistryException(new Message("MOVE_ONTO_CHILD", LOGGER)));
+                            throw new RuntimeException(new RegistryException(new Message("MOVE_ONTO_CHILD", BundleUtils.getBundle(getClass()))));
                         }
                         
                         checked = checked.getParent();
@@ -474,7 +474,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         ContentHandler ch = contentService.getContentHandler(data.getClass());
         
         if (ch == null) {
-            throw new RegistryException(new Message("UNKNOWN_TYPE", LOGGER, data.getClass()));
+            throw new RegistryException(new Message("UNKNOWN_TYPE", BundleUtils.getBundle(getClass()), data.getClass()));
         }
         
         MimeType ct = ch.getContentType(data);
@@ -568,8 +568,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     List<ArtifactVersion> versions = new ArrayList<ArtifactVersion>();
                     versions.add(jcrVersion);
                     artifact.setVersions(versions);
-                    
-                    LOGGER.log(Level.FINE, "Created artifact " + artifact.getId());
+
+                    if (log.isDebugEnabled())
+                    {
+                        log.debug("Created artifact " + artifact.getId());
+                    }
                     return approve(session, artifact, null, jcrVersion, user);
                 } catch (RegistryException e) {
                     // gets unwrapped by executeAndDewrap
@@ -717,7 +720,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         ContentHandler ch = contentService.getContentHandler(contentType);
 
         if (ch == null) {
-            throw new RegistryException(new Message("UNSUPPORTED_CONTENT_TYPE", LOGGER, contentType));
+            throw new RegistryException(new Message("UNSUPPORTED_CONTENT_TYPE", BundleUtils.getBundle(getClass()), contentType));
         }
 
         return ch.read(inputStream, workspace);
@@ -977,15 +980,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
         Iterator<String> itr = tokens.iterator(); 
         if (!itr.hasNext()) {
-            throw new QueryException(new Message("EMPTY_QUERY_STRING", LOGGER));
+            throw new QueryException(new Message("EMPTY_QUERY_STRING", BundleUtils.getBundle(getClass())));
         }
         
         if (!itr.next().toLowerCase().equals("select")){
-            throw new QueryException(new Message("EXPECTED_SELECT", LOGGER));
+            throw new QueryException(new Message("EXPECTED_SELECT", BundleUtils.getBundle(getClass())));
         }
         
         if (!itr.hasNext()) {
-            throw new QueryException(new Message("EXPECTED_SELECT_TYPE", LOGGER));
+            throw new QueryException(new Message("EXPECTED_SELECT_TYPE", BundleUtils.getBundle(getClass())));
         }
         
         Class<?> selectTypeCls = null;
@@ -995,7 +998,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         } else if (selectType.equals("artifactVersion")) {
             selectTypeCls = ArtifactVersion.class;
         } else {
-            throw new QueryException(new Message("UNKNOWN_SELECT_TYPE", LOGGER, selectType));
+            throw new QueryException(new Message("UNKNOWN_SELECT_TYPE", BundleUtils.getBundle(getClass()), selectType));
         }
         
         if (!itr.hasNext()){
@@ -1007,19 +1010,19 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         
         String next = itr.next();
         if ("from".equals(next.toLowerCase())) {
-            if (!itr.hasNext()) throw new QueryException(new Message("EXPECTED_FROM", LOGGER));
+            if (!itr.hasNext()) throw new QueryException(new Message("EXPECTED_FROM", BundleUtils.getBundle(getClass())));
             
             q.workspacePath(dequote(itr.next(), itr));
             
             if (!itr.hasNext()) {
-                throw new QueryException(new Message("EXPECTED_WHERE", LOGGER));
+                throw new QueryException(new Message("EXPECTED_WHERE", BundleUtils.getBundle(getClass())));
             }
             
             next = itr.next();
         }
         
         if (!next.toLowerCase().equals("where")) {
-            throw new QueryException(new Message("EXPECTED_WHERE_BUT_FOUND", LOGGER, next));
+            throw new QueryException(new Message("EXPECTED_WHERE_BUT_FOUND", BundleUtils.getBundle(getClass()), next));
         }
         
         boolean firstRestriction = true;
@@ -1028,24 +1031,24 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 firstRestriction = false;
             } else {
                 if (!itr.hasNext()) {
-                    throw new QueryException(new Message("EXPECTED_AND", LOGGER));
+                    throw new QueryException(new Message("EXPECTED_AND", BundleUtils.getBundle(getClass())));
                 }
                 String t = itr.next();
                 if (!"and".equals(t.toLowerCase())) {
-                    throw new QueryException(new Message("EXPECTED_AND", LOGGER));
+                    throw new QueryException(new Message("EXPECTED_AND", BundleUtils.getBundle(getClass())));
                 }
             }
             
             String left = itr.next();
             
             if (!itr.hasNext()) {
-                throw new QueryException(new Message("EXPECTED_COMPARATOR", LOGGER));
+                throw new QueryException(new Message("EXPECTED_COMPARATOR", BundleUtils.getBundle(getClass())));
             }
             
             String compare = itr.next();
             
             if (!itr.hasNext()) {
-                throw new QueryException(new Message("EXPECTED_RIGHT", LOGGER));
+                throw new QueryException(new Message("EXPECTED_RIGHT", BundleUtils.getBundle(getClass())));
             }
             
             Restriction r = null;
@@ -1057,7 +1060,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 r = Restriction.not(Restriction.eq(left, dequote(itr.next(), itr)));
             } else if (compare.equals("in")) {
                 if (!itr.hasNext()) {
-                    throw new QueryException(new Message("EXPECTED_IN_TOKEN", LOGGER));
+                    throw new QueryException(new Message("EXPECTED_IN_TOKEN", BundleUtils.getBundle(getClass())));
                 }
                 
                 ArrayList<String> in = new ArrayList<String>();
@@ -1076,7 +1079,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     }
                     in.add(dequote(first, itr));
                 } else {
-                    throw new QueryException(new Message("EXPECTED_IN_LEFT_PARENS", LOGGER, first));
+                    throw new QueryException(new Message("EXPECTED_IN_LEFT_PARENS", BundleUtils.getBundle(getClass()), first));
                 }
                 
                 while (!end && itr.hasNext()) {
@@ -1090,7 +1093,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 }
                 r = Restriction.in(left, in);
             } else {
-                new QueryException(new Message("UNKNOWN_COMPARATOR", LOGGER, left));
+                new QueryException(new Message("UNKNOWN_COMPARATOR", BundleUtils.getBundle(getClass()), left));
             }
             
             q.add(r);
@@ -1145,7 +1148,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 if (selectType.equals(ArtifactVersion.class)) {
                     av = true;
                 } else if (!selectType.equals(Artifact.class)) {
-                    throw new RuntimeException(new QueryException(new Message("INVALID_SELECT_TYPE", LOGGER, selectType.getName())));
+                    throw new RuntimeException(new QueryException(new Message("INVALID_SELECT_TYPE", BundleUtils.getBundle(getClass()), selectType.getName())));
                 }
                 
                 String qstr = null;
@@ -1155,9 +1158,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     // will be dewrapped later
                     throw new RuntimeException(e);
                 }
-                
-                LOGGER.log(Level.FINE, "Query: " + qstr.toString());
-                
+
+                if (log.isDebugEnabled())
+                {
+                    log.debug("Query: " + qstr.toString());
+                }
+
                 Query jcrQuery = qm.createQuery(qstr, Query.XPATH);
                 
                 QueryResult result = jcrQuery.execute();
@@ -1341,7 +1347,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                                                        boolean not, Operator operator) throws QueryException {
         String[] lp = right.toString().split(":");
         if (lp.length != 2) {
-            throw new QueryException(new Message("INVALID_PHASE_FORMAT", LOGGER, right.toString()));
+            throw new QueryException(new Message("INVALID_PHASE_FORMAT", BundleUtils.getBundle(getClass()), right.toString()));
         }
         // phase = ...
         Lifecycle l = lifecycleManager.getLifecycle(lp[0]);
@@ -1385,7 +1391,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     @SuppressWarnings("unchecked")
     public Set<Dependency> getDependedOnBy(final Artifact artifact) 
-        throws RegistryException, QueryException {
+        throws RegistryException {
         final JcrRegistryImpl registry = this;
         
         return (Set<Dependency>) execute(new JcrCallback() {
