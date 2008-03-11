@@ -102,7 +102,7 @@ class AsmAnnotationsScanner extends EmptyVisitor
         if (log.isDebugEnabled())
         {
             // won't really output nicely with multithreaded parsing
-            log.debug("          : " + name + "s=" + value);
+            log.debug("          : " + name + "=" + value);
         }
     }
 
@@ -110,7 +110,6 @@ class AsmAnnotationsScanner extends EmptyVisitor
     public FieldVisitor visitField(final int access, final String name, final String desc, final String signature, final Object value)
     {
         currentlyProcessing.set(PROCESSING_FIELD);
-        //currentAnnotation = new AnnotationInfo();
         return this;
     }
 
