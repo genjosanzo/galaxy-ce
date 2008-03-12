@@ -2,7 +2,7 @@ package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-import java.util.Date;
+import java.util.Collection;
 
 /**
  * "Web user"
@@ -12,7 +12,7 @@ public class WUser implements IsSerializable  {
     private String id;
     private String username;
     private String email;
-    private boolean admin;
+    private Collection permissions;
     
     public String getName() {
         return name;
@@ -38,10 +38,11 @@ public class WUser implements IsSerializable  {
     public void setEmail(String email) {
         this.email = email;
     }
-    public boolean isAdmin() {
-        return admin;
+    public Collection getPermissions() {
+        return permissions;
     }
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
+    public void setPermissions(Collection permissions) {
+        this.permissions = permissions;
     }
+    
 }

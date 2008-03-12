@@ -13,7 +13,8 @@ public class UserServiceTest extends AbstractGalaxyTest {
     @Override
     protected String[] getConfigLocations() {
         return new String[] { "/META-INF/applicationContext-core.xml", 
-                              "/META-INF/applicationContext-web.xml" };
+                              "/META-INF/applicationContext-web.xml",
+                              "/META-INF/applicationContext-test.xml" };
         
     }
     public void testWorkspaces() throws Exception {

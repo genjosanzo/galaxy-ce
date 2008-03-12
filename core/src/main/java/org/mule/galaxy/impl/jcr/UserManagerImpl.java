@@ -21,14 +21,18 @@ import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserExistsException;
 import org.mule.galaxy.security.UserManager;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.dao.DataAccessException;
 import org.springmodules.jcr.JcrCallback;
 
 public class UserManagerImpl extends AbstractReflectionDao<User> 
-    implements UserManager, UserDetailsService {
+    implements UserManager, UserDetailsService, ApplicationContextAware {
     
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
@@ -38,6 +42,9 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     private static final String ENABLED = "enabled";
     private static final String ROLES = "roles";
 
+    private AccessControlManager accessControlManager;
+    private ApplicationContext applicationContext;
+    
     public UserManagerImpl() throws Exception {
         super(User.class, "users", true);
     }
@@ -50,8 +57,29 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
                     throw new UsernameNotFoundException("Username was not found: " + username);
                 }
                 try {
-                    return new UserDetailsWrapper(build(userNode, session), 
+                    User user = build(userNode, session);
+                    return new UserDetailsWrapper(user, 
+                                                  getAccessControlManager().getGlobalPermissions(user),
                                                   getStringOrNull(userNode, PASSWORD));
+                } catch (Exception e) {
+                    if (e instanceof RepositoryException) {
+                        throw (RepositoryException) e;
+                    }
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
+    public User getByUsername(final String username) {
+        return (User) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node userNode = findUser(username, session);
+                if (userNode == null) {
+                    throw new UsernameNotFoundException("Username was not found: " + username);
+                }
+                try {
+                    return build(userNode, session);
                 } catch (Exception e) {
                     if (e instanceof RepositoryException) {
                         throw (RepositoryException) e;
@@ -141,14 +169,13 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node users = getObjectsNode(session);
                 
-                String id = generateId(null);
+                String id = generateNodeName(null);
                 Node node = users.addNode(id);
                 node.addMixin("mix:referenceable");
                 node.setProperty(PASSWORD, password);
                 node.setProperty(ENABLED, true);
                 
                 user.setId(id);
-                user.getRoles().add(UserManager.ROLE_USER);
                 
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(new Date());
@@ -175,6 +202,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         if (userNode != null) {
             userNode.setProperty(ENABLED, false);
         }
+        
         session.save();
     }
 
@@ -211,7 +239,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
 
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
         if (objects.getNodes().getSize() == 0) {
-            String id = generateId(null);
+            String id = generateNodeName(null);
             Node node = objects.addNode(id);
             node.addMixin("mix:referenceable");
             node.setProperty(PASSWORD, "admin");
@@ -230,4 +258,16 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
             JcrUtil.setProperty(CREATED, cal, node);
         }
     }
+
+    private AccessControlManager getAccessControlManager() {
+        if (accessControlManager == null) {
+            accessControlManager =(AccessControlManager) applicationContext.getBean("accessControlManager");
+        }
+        return accessControlManager;
+    }
+    
+    public void setApplicationContext(ApplicationContext ctx) throws BeansException {
+        this.applicationContext = ctx;
+    }
+
 }

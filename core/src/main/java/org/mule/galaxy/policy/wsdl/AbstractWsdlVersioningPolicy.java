@@ -3,8 +3,6 @@ package org.mule.galaxy.policy.wsdl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.wsdl.WSDLException;
 
@@ -21,13 +19,15 @@ import org.mule.galaxy.wsdl.diff.DifferenceListener;
 import org.mule.galaxy.wsdl.diff.WsdlDiff;
 
 import org.w3c.dom.Document;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Provides means to ensure that WSDL versioning rules are met.
  */
 public abstract class AbstractWsdlVersioningPolicy implements ArtifactPolicy
 {
-    private Logger LOGGER = LogUtils.getL7dLogger(AbstractWsdlVersioningPolicy.class);
+    private final Log log = LogFactory.getLog(getClass());
     private Registry registry;
     
     public boolean applies(Artifact a) {
@@ -55,7 +55,7 @@ public abstract class AbstractWsdlVersioningPolicy implements ArtifactPolicy
         } catch (WSDLException e) {
             messages.add(new ApprovalMessage("There was an error processing the WSDL: " + e.getMessage()));
             
-            LOGGER.log(Level.INFO, "There was an error processing the Artifact " + a.getId(), e);
+            log.error("There was an error processing the Artifact " + a.getId(), e);
         }
         
         return messages;

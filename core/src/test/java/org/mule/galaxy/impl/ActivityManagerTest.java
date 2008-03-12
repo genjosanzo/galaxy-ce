@@ -58,9 +58,4 @@ public class ActivityManagerTest extends AbstractGalaxyTest {
         assertEquals(2, activities.size());
     }
 
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {"/META-INF/applicationContext-core.xml", "/META-INF/applicationContext-test.xml"};
-    }
-
 }

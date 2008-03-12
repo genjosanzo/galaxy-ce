@@ -35,7 +35,9 @@ public class WsdlVersioningAssessorTest extends AbstractGalaxyTest {
     @Override
     protected String[] getConfigLocations() {
         return new String[] {
-            "/META-INF/applicationContext-core.xml"
+            "/META-INF/applicationContext-core.xml",
+            "/META-INF/applicationContext-test.xml"
         };
+        
     }
 }

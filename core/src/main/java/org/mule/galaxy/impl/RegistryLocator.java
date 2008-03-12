@@ -1,24 +1,22 @@
 package org.mule.galaxy.impl;
 
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.Workspace;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.wsdl.xml.WSDLLocator;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.util.LogUtils;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xml.sax.InputSource;
 
 public class RegistryLocator implements WSDLLocator {
 
-    private Logger LOGGER = LogUtils.getL7dLogger(RegistryLocator.class);
+    private final Log log = LogFactory.getLog(getClass());
 
     private Registry registry;
     
@@ -47,7 +45,7 @@ public class RegistryLocator implements WSDLLocator {
                 inputStream.close();
             }
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Could not close wsdl stream.", e);
+            log.warn("Could not close wsdl stream.", e);
         }
     }
 

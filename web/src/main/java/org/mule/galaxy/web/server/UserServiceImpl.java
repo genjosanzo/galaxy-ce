@@ -2,9 +2,12 @@ package org.mule.galaxy.web.server;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserExistsException;
 import org.mule.galaxy.security.UserManager;
@@ -34,12 +37,6 @@ public class UserServiceImpl implements UserService {
         u.setEmail(user.getEmail());
         u.setUsername(user.getUsername());
         
-        if (user.isAdmin()) {
-            u.getRoles().add(UserManager.ROLE_ADMINISTRATOR);
-        } else {
-            u.getRoles().remove(UserManager.ROLE_ADMINISTRATOR);
-        }
-        
         return u;
     }
 
@@ -60,7 +57,7 @@ public class UserServiceImpl implements UserService {
         w.setId(user.getId());
         w.setUsername(user.getUsername());
         w.setEmail(user.getEmail());
-        w.setAdmin(user.getRoles().contains(UserManager.ROLE_ADMINISTRATOR));
+
         return w;
     }
 
@@ -75,13 +72,7 @@ public class UserServiceImpl implements UserService {
             
             u.setName(user.getName());
             u.setEmail(user.getEmail());
-            
-            if (user.isAdmin()) {
-                u.getRoles().add(UserManager.ROLE_ADMINISTRATOR);
-            } else {
-                u.getRoles().remove(UserManager.ROLE_ADMINISTRATOR);
-            }
-            
+
             if (password != null && password.equals(confirm) && !password.equals("")) {
                 userManager.setPassword(u, password);
             }
@@ -91,7 +82,6 @@ public class UserServiceImpl implements UserService {
             throw new ItemNotFoundException();
         }
     }
-    
 
     public void deleteUser(String userId) {
         userManager.delete(userId);
@@ -100,5 +90,4 @@ public class UserServiceImpl implements UserService {
     public void setUserManager(UserManager userManager) {
         this.userManager = userManager;
     }
-    
 }

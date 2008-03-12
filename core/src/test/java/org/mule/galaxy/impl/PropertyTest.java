@@ -35,11 +35,5 @@ public class PropertyTest extends AbstractGalaxyTest {
        Object pd3 = registry.getPropertyDescriptorOrIndex(pd.getProperty());
        assertTrue(pd3 instanceof PropertyDescriptor);
     }
-    
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] { "/META-INF/applicationContext-core.xml", 
-                              "/META-INF/applicationContext-test.xml" };
-    }
 
 }

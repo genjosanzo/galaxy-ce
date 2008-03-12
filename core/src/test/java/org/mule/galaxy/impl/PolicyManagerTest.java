@@ -197,11 +197,5 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         assertNotNull(active);
         assertEquals(0, active.size());
     }
-    
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] { "/META-INF/applicationContext-core.xml", 
-                              "/META-INF/applicationContext-test.xml" };
-    }
 
 }

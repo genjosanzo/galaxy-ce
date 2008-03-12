@@ -407,4 +407,12 @@ public class JcrUtil {
             }
         }
     }
+
+    public static Set<String> asSet(Value[] values) throws RepositoryException {
+        Set<String> valset = new HashSet<String>();
+        for (Value v : values) {
+            valset.add(v.getString());
+        }
+        return valset;
+    }
 }

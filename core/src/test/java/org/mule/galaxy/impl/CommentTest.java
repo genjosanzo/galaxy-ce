@@ -49,11 +49,4 @@ public class CommentTest extends AbstractGalaxyTest {
         assertNotNull(comments2);
         assertEquals(1, comments2.size());
     }
-    
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] { "/META-INF/applicationContext-core.xml", 
-                              "/META-INF/applicationContext-test.xml" };
-    }
-
 }

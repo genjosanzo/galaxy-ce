@@ -17,7 +17,6 @@ import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.index.Indexer;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
-import org.mule.galaxy.util.LogUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -29,8 +28,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -42,6 +39,8 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
@@ -52,24 +51,25 @@ import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.SessionFactory;
 import org.springmodules.jcr.SessionFactoryUtils;
 
-public class IndexManagerImpl extends AbstractReflectionDao<Index> 
+public class IndexManagerImpl extends AbstractReflectionDao<Index>
     implements IndexManager, ApplicationContextAware {
-    private Logger LOGGER = LogUtils.getL7dLogger(IndexManagerImpl.class);
+
+    private final Log log = LogFactory.getLog(getClass());
 
     private ContentService contentService;
 
     private BlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>();
-    
+
     private ThreadPoolExecutor executor;
 
     private Registry registry;
 
     private ApplicationContext context;
-    
+
     private ActivityManager activityManager;
-    
+
     private boolean destroyed = false;
-    
+
     public IndexManagerImpl() throws Exception {
         super(Index.class, "indexes", false);
     }
@@ -81,7 +81,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
     public void save(Index t, boolean block) {
         super.save(t);
-        
+
         if (block) {
             getIndexer(t).run();
         } else {
@@ -112,7 +112,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
             return null;
         }
     }
-    
+
     @Override
     protected String getNodeType() {
         return "galaxy:index";
@@ -124,7 +124,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 QueryManager qm = getQueryManager(session);
                 StringBuilder qstr = new StringBuilder("//element(*, galaxy:index)");
-                
+
                 QName dt = av.getParent().getDocumentType();
                 if (dt == null) {
                     qstr.append("[@mediaType=")
@@ -135,11 +135,11 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                         .append(JcrUtil.stringToXPathLiteral(dt.toString()))
                         .append("]");
                 }
-                
+
                 Query query = qm.createQuery(qstr.toString(), Query.XPATH);
-                
+
                 QueryResult result = query.execute();
-                
+
                 Set<Index> indices = new HashSet<Index>();
                 for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
                     Node node = nodes.nextNode();
@@ -163,35 +163,35 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         return i;
     }
 
-    
+
     @Override
     public void initialize() throws Exception {
         super.initialize();
-        
+
         executor = new ThreadPoolExecutor(1, 1, 1, TimeUnit.SECONDS, queue);
         executor.prestartAllCoreThreads();
     }
 
     public void destroy() throws Exception {
-        LOGGER.log(Level.FINE, "Starting IndexManager.destroy() with " + executor.getQueue().size() + " indexing jobs left");
+        log.debug("Starting IndexManager.destroy() with " + executor.getQueue().size() + " indexing jobs left");
         if (destroyed) return;
-        
+
         executor.shutdown();
         destroyed = true;
 
         executor.awaitTermination(10, TimeUnit.SECONDS);
-        
+
         // TODO finish reindexing on startup?
         List<Runnable> tasks = executor.shutdownNow();
-        
+
         if (tasks.size() > 0) {
-            LOGGER.warning("Could not shut down indexer! Indexing was still going.");
+            log.warn("Could not shut down indexer! Indexing was still going.");
         }
     }
 
     private void reindex(final Index idx) {
         Runnable runnable = getIndexer(idx);
-        
+
         if (!queue.add(runnable)) handleIndexingException(new Exception("Could not add indexer to queue."));
     }
 
@@ -213,7 +213,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 }
 
                 try {
-                    
+
                     findAndReindex(session, idx);
                 } catch (RepositoryException e) {
                     handleIndexingException(e);
@@ -270,12 +270,12 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
 
     private void logActivity(String activity, Exception e) {
-        LOGGER.log(Level.SEVERE, activity, e);
+        log.error(activity, e);
         activityManager.logActivity(activity, EventType.ERROR);
     }
 
     private void logActivity(String activity) {
-        LOGGER.log(Level.FINE, activity);
+        log.info(activity);
         activityManager.logActivity(activity, EventType.INFO);
     }
 
@@ -284,7 +284,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
             t = t.getCause();
         }
         activityManager.logActivity("Could not reindex documents: " + t.getMessage(), EventType.ERROR);
-        LOGGER.log(Level.SEVERE, "Could not index documents.", t);
+        log.error("Could not index documents.", t);
     }
 
     private void handleIndexingException(Index idx, Throwable t) {
@@ -292,7 +292,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
             t = t.getCause();
         }
         activityManager.logActivity("Could not process index " + idx.getId() + ": " + t.getMessage(), EventType.ERROR);
-        LOGGER.log(Level.SEVERE, "Could not process index " + idx.getId(), t);
+        log.error("Could not process index " + idx.getId(), t);
     }
     
     public void index(final ArtifactVersion version) {

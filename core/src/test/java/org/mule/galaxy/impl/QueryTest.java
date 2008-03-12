@@ -10,14 +10,6 @@ import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class QueryTest extends AbstractGalaxyTest {
     
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] { "/META-INF/applicationContext-core.xml", 
-                              "/META-INF/applicationContext-test.xml" };
-        
-        
-    }
-    
     public void testQueries() throws Exception {
         importXmlSchema();
 

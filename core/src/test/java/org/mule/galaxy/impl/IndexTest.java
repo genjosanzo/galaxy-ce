@@ -21,14 +21,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 public class IndexTest extends AbstractGalaxyTest {
-    
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] { "/META-INF/applicationContext-core.xml", 
-                              "/META-INF/applicationContext-test.xml" };
-        
-    }
-    
+
     public void testXmlSchema() throws Exception {
         Artifact a = importXmlSchema();
         
