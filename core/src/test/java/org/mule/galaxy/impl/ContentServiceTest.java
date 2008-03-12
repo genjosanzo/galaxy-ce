@@ -19,13 +19,6 @@ import org.w3c.dom.Element;
 public class ContentServiceTest extends AbstractGalaxyTest {
 
     ContentService contentService;
-    
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] { "/META-INF/applicationContext-core.xml", 
-                              "/META-INF/applicationContext-test.xml" };
-        
-    }
 
     public void testCHs() throws Exception {
         contentService = (ContentService) applicationContext.getBean("contentService");

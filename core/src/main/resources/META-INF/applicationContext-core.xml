@@ -30,9 +30,14 @@
   <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean">
     <!-- normal factory beans params -->
     <property name="configuration" value="classpath:/META-INF/jackrabbit-repo.xml"/>
-    <property name="homeDir" value="file:./jackrabbit"/>
+    <property name="homeDir" value="file:./galaxy-data"/>
   </bean>
 
+  <bean id="jcrInitializer" class="org.mule.galaxy.impl.jcr.JcrInitializer"
+    init-method="initialize" destroy-method="destroy">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
   <bean id="lifecycleManager" parent="txProxyTemplate">
     <property name="target" ref="lifecycleManagerTarget"/>
     <property name="proxyTargetClass" value="true"/>
@@ -43,7 +48,6 @@
         init-method="initialize">
     <property name="phaseLogEntryDao" ref="phaseLogEntryDao"/>
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="persisterManager" ref="persisterManager" />
   </bean>
         
   <bean id="indexManager" parent="txProxyTemplate">
@@ -69,6 +73,19 @@
     <property name="jcrTemplate" ref="jcrTemplate" />
     <property name="lifecycleManager" ref="lifecycleManager"/>
   </bean>
+    
+  <bean id="accessControlManager" parent="txProxyTemplate">
+    <property name="target" ref="accessControlManagerTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="accessControlManagerTarget" 
+        class="org.mule.galaxy.impl.jcr.AccessControlManagerImpl"
+        init-method="initialize"
+        depends-on="jcrInitializer">
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="userManager" ref="userManager" />
+  </bean>
   
   <bean id="jcrTemplate" class="org.springmodules.jcr.JcrTemplate">
     <property name="sessionFactory" ref="sessionFactory" />
@@ -80,7 +97,8 @@
   </bean>
   
   <bean id="registryTarget" class="org.mule.galaxy.impl.jcr.JcrRegistryImpl"
-        init-method="initialize" destroy-method="destroy">
+        init-method="initialize"
+        depends-on="jcrInitializer">
     <property name="activityManager" ref="activityManager" />
     <property name="contentService" ref="contentService" />
     <property name="settings" ref="settings" />

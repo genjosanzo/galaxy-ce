@@ -25,10 +25,6 @@ import org.springmodules.jcr.JcrCallback;
 public abstract class AbstractReflectionDao<T extends Identifiable> extends AbstractDao<T> {
 
     private ClassPersister persister;
-    private String rootNode;
-    private String objectsNodeId;
-    private String idAttributeName;
-    private boolean generateId;
     private String objectNodeName;
     private PersisterManager persisterManager;
     private Class type;
@@ -38,8 +34,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
     }
     
     protected AbstractReflectionDao(Class t, String rootNode,  boolean generateId) throws Exception {
-        this.rootNode = rootNode;
-        this.generateId = generateId;
+        super(rootNode, generateId);
         this.type = t;
         
         objectNodeName = t.getSimpleName();
@@ -51,54 +46,15 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         this.persister = new ClassPersister(type, rootNode, persisterManager);
         persisterManager.getClassPersisters().put(type.getName(), persister);
         
-        JcrUtil.doInTransaction(getSessionFactory(), new JcrCallback() {
-
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node root = session.getRootNode();
-                
-                Node objects = getOrCreate(root, rootNode);
-                objectsNodeId = objects.getUUID();
-
-                doCreateInitialNodes(session, objects); 
-                
-                session.save();
-                return null;
-            }
-            
-        });
-        
-        
+        super.initialize();
     }
 
     public void setPersisterManager(PersisterManager persisterManager) {
         this.persisterManager = persisterManager;
     }
-
-    protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
-    }
     
     protected void persist(T o, Node node, Session session) throws Exception {
         persister.persist(o, node, session);
-    }
-    
-    @Override
-    protected T doGet(String id, Session session) throws RepositoryException {
-        Node node = findNode(id, session);
-        
-        if (node == null) {
-            return null;
-        }
-        
-        try {
-            return build(node, session);
-        } catch (Exception e) {
-            if (e instanceof RepositoryException) {
-                throw ((RepositoryException) e);
-            } else if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            }
-            throw new RuntimeException(e);
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -110,168 +66,7 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         return t;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    protected List<T> doListAll(Session session) throws RepositoryException {
-        ArrayList<T> objs = new ArrayList<T>();
-        for (NodeIterator nodes = findAllNodes(session); nodes.hasNext();) {
-            Node node = nodes.nextNode();
-            
-            try {
-                objs.add((T) build(node, session));
-            } catch (Exception e) {
-                // TODO: not sure what to do here
-                if (e instanceof RepositoryException) {
-                    throw ((RepositoryException) e);
-                } else if (e instanceof RuntimeException) {
-                    throw (RuntimeException) e;
-                }
-                throw new RuntimeException(e);
-            }
-        }
-        return objs;
-    }
-
-    protected NodeIterator findAllNodes(Session session) throws RepositoryException {
-        return getObjectsNode(session).getNodes();
-    }
-
-    protected Node getObjectsNode(Session session) throws RepositoryException {
-        return session.getNodeByUUID(objectsNodeId);
-    }
-    
-    protected void doDelete(String id, Session session) throws RepositoryException {
-        Node node = findNode(id, session);
-        node.remove();
-        session.save();
-    }
-    
-    @Override
-    protected void doSave(T t, Session session) 
-        throws RepositoryException, NotFoundException {
-        String id = t.getId();
-        Node node = null;
-        
-        if (id == null) {
-            String genId = generateId(t);
-            node = getNodeForObject(getObjectsNode(session), t)
-                .addNode(genId, getNodeType());
-            node.addMixin("mix:referenceable");
-            
-            t.setId(ISO9075.decode(getId(t, node, session)));
-        } else {
-            node = findNode(id, session);
-            
-            // the user supplied a new ID
-            if (node == null && !generateId) {
-                node = getNodeForObject(getObjectsNode(session), t).addNode(ISO9075.encode(getObjectNodeName(t)), getNodeType());
-                node.addMixin("mix:referenceable");
-            }
-        }
-        
-        if (node == null) throw new NotFoundException(t.getId());
-        
-        try {
-            persist(t, node, session);
-        } catch (Exception e) {
-            if (e instanceof RepositoryException) {
-                throw ((RepositoryException) e);
-            } else if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            }
-            throw new RuntimeException(e);
-        }
-    }
-
-    protected String generateId(T t) {
-        UUID uuid = UUID.randomUUID();
-        return uuid.toString();
-    }
-
-    protected String getNodeType() {
-        return "nt:unstructured";
-    }
-
-    /**
-     * Allow implementations to segment nodes so that performance doesn't suffer.
-     * @param node 
-     * @param t
-     * @return
-     * @throws RepositoryException 
-     */
-    protected Node getNodeForObject(Node node, T t) throws RepositoryException {
-        return node;
-    }
-
-    protected String getId(T t, Node node, Session session) throws RepositoryException {
-        return node.getName();
-    }
-
     protected String getObjectNodeName(T t) {
         return objectNodeName;
-    }
-
-    protected Node findNode(String id, Session session) throws RepositoryException {
-        QueryManager qm = getQueryManager(session);
-        Query q = null;
-        if (isIdNodeName()) {
-            q = qm.createQuery("/jcr:root/" + rootNode + "/" + ISO9075.encode(id), Query.XPATH);
-        } else {
-            q = qm.createQuery("/jcr:root/" + rootNode + "/*[@" + idAttributeName + "='" + id + "']", Query.XPATH);
-        }
-        QueryResult qr = q.execute();
-        
-        NodeIterator nodes = qr.getNodes();
-        if (!nodes.hasNext()) {
-            return null;
-        }
-        
-        return nodes.nextNode();
-    }
-
-    protected boolean isIdNodeName() {
-        return true;
-    }
-
-    @Override
-    protected List<T> doFind(String property, String value, Session session) throws RepositoryException {
-        String stmt = "/*/" + rootNode + "/*[@" + property + "='" + value + "']";
-        return query(stmt, session);
-    }
-
-    protected List<T> query(String stmt, Session session) throws RepositoryException, InvalidQueryException {
-        return query(stmt, session, -1);
-    }
-    
-    protected List<T> query(String stmt, Session session, int maxResults) throws RepositoryException, InvalidQueryException {
-        QueryManager qm = getQueryManager(session);
-        Query q = qm.createQuery(stmt, Query.XPATH);
-        
-        QueryResult qr = q.execute();
-        
-        List<T> values = new ArrayList<T>();
-        
-        int i = 0;
-        for (NodeIterator nodes = qr.getNodes(); nodes.hasNext();) {
-            try {
-                values.add(build(nodes.nextNode(), session));
-            } catch (Exception e) {
-                if (e instanceof RepositoryException) {
-                    throw ((RepositoryException) e);
-                } else if (e instanceof RuntimeException) {
-                    throw (RuntimeException) e;
-                }
-                throw new RuntimeException(e);
-            }
-            if (maxResults >= 0 && values.size() == i) {
-                break;
-            }
-            i++;
-        }
-
-        return values;
-    }
-
-
-    
+    }    
 }

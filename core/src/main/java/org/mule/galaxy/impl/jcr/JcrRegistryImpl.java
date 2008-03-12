@@ -82,7 +82,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private static final String ARTIFACT_NODE_TYPE = "galaxy:artifact";
     public static final String LATEST = "latest";
     private static final String REPOSITORY_LAYOUT_VERSION = "version";
-    private static final String NAMESPACE = "http://galaxy.mule.org";
 
     private final Log log = LogFactory.getLog(getClass());
 
@@ -105,8 +104,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private String indexesId;
 
     private String artifactTypesId;
-    
-    private Session openSession;
     
     private ActivityManager activityManager;
     private String id;
@@ -1513,44 +1510,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     public void initialize() throws Exception {
-        // Keep a session open so the transient repository doesn't shutdown
-        openSession = getSessionFactory().getSession();
         
         Session session = getSessionFactory().getSession();
         Node root = session.getRootNode();
-        
-        
-        // UGH, Jackrabbit specific code
-        javax.jcr.Workspace workspace = session.getWorkspace();
-        try {
-            workspace.getNamespaceRegistry().getPrefix(NAMESPACE);
-        } catch (NamespaceException e) {
-            workspace.getNamespaceRegistry().registerNamespace("galaxy", NAMESPACE);
-        }
-
-        NodeTypeDef[] nodeTypes = NodeTypeReader.read(getClass()
-            .getResourceAsStream("/org/mule/galaxy/impl/jcr/nodeTypes.xml"));
-
-        // Get the NodeTypeManager from the Workspace.
-        // Note that it must be cast from the generic JCR NodeTypeManager to the
-        // Jackrabbit-specific implementation.
-
-        NodeTypeManagerImpl ntmgr = (NodeTypeManagerImpl)workspace.getNodeTypeManager();
-
-        // Acquire the NodeTypeRegistry
-        NodeTypeRegistry ntreg = ntmgr.getNodeTypeRegistry();        
-
-        // Loop through the prepared NodeTypeDefs
-        for (NodeTypeDef ntd : nodeTypes) {
-            // ...and register it
-            if (!ntreg.isRegistered(ntd.getName())) {
-                ntreg.registerNodeType(ntd);
-            }
-                
-            
-        }
-//        ntreg.dump(System.out);
-
         
         Node workspaces = JcrUtil.getOrCreate(root, "workspaces");
         workspacesId = workspaces.getUUID();
@@ -1583,10 +1545,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
         
         session.logout();
-    }
-    
-    public void destroy() throws Exception {
-        openSession.logout();
     }
 
     public void addDependencies(ArtifactVersion artifactVersion, final Artifact... dependencies)

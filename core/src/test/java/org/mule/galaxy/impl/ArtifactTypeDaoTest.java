@@ -41,11 +41,5 @@ public class ArtifactTypeDaoTest extends AbstractGalaxyTest {
         System.out.println(all);
         assertTrue(all.size() > 5);
     }
-    
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] { "/META-INF/applicationContext-core.xml", 
-                              "/META-INF/applicationContext-test.xml" };
-    }
 
 }

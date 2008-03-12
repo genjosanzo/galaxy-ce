@@ -3,6 +3,7 @@ package org.mule.galaxy.security;
 import java.util.Collection;
 
 import org.mule.galaxy.Dao;
+import org.mule.galaxy.Workspace;
 
 public interface UserManager extends Dao<User> {
     // NOTE: These roles will be customizable in a future release
@@ -17,4 +18,6 @@ public interface UserManager extends Dao<User> {
     boolean setPassword(String username, String oldPassword, String newPassword);
 
     void setPassword(User user, String password);
+
+    User getByUsername(String string);
 }

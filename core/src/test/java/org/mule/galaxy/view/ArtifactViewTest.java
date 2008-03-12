@@ -12,13 +12,7 @@ import org.mule.galaxy.view.ViewLink;
 
 public class ArtifactViewTest extends AbstractGalaxyTest {
     protected ViewManager viewManager;
-    
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] { "/META-INF/applicationContext-core.xml", 
-                              "/META-INF/applicationContext-test.xml" };
-    }
-    
+
     public void testView() throws Exception {
         assertNotNull(viewManager);
         

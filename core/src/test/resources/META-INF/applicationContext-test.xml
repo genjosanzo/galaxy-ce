@@ -4,5 +4,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-   
+  <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean">
+    <!-- normal factory beans params -->
+    <property name="configuration" value="classpath:/META-INF/jackrabbit-repo.xml"/>
+    <property name="homeDir" value="file:./target/galaxy-data"/>
+  </bean>
+  
 </beans>

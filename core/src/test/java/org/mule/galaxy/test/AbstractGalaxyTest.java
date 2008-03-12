@@ -1,11 +1,9 @@
 package org.mule.galaxy.test;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
 
-import javax.activation.MimeTypeParseException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -17,12 +15,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.mule.galaxy.ActivityManager;
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.CommentManager;
-import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.index.IndexManagerImpl;
@@ -31,6 +26,7 @@ import org.mule.galaxy.impl.jcr.PluginRunner;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
@@ -38,7 +34,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springmodules.jcr.SessionFactory;
 import org.springmodules.jcr.SessionFactoryUtils;
 
-public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContextTests {
+public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContextTests {
 
     protected static final Log log = LogFactory.getLog(AbstractGalaxyTest.class);
 
@@ -54,6 +50,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
     protected ActivityManager activityManager;
     protected CommentManager commentManager;
     protected PluginRunner pluginRunner;
+    protected AccessControlManager accessControlManager;
     
     private boolean participate;
     
@@ -81,7 +78,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
     }
     
     protected Artifact importHelloWsdl() 
-        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, DuplicateItemException {
+        throws Exception {
         InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
         
         Collection<Workspace> workspaces = registry.getWorkspaces();
@@ -97,8 +94,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
         return ar.getArtifact();
     }
 
-    protected Artifact importXmlSchema() throws RegistryException, ArtifactPolicyException, IOException,
-        MimeTypeParseException, DuplicateItemException {
+    protected Artifact importXmlSchema() throws Exception {
         InputStream xsd = getResourceAsStream("/schema/test.xsd");
         
         Collection<Workspace> workspaces = registry.getWorkspaces();
@@ -116,8 +112,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
         return a;
     }
 
-    protected Artifact importHelloMule() throws RegistryException, ArtifactPolicyException, IOException,
-        MimeTypeParseException, DuplicateItemException {
+    protected Artifact importHelloMule() throws Exception {
         InputStream helloWsdl = getResourceAsStream("/mule/hello-config.xml");
         
         Collection<Workspace> workspaces = registry.getWorkspaces();
@@ -136,7 +131,7 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
             Session session = repository.login(new SimpleCredentials("username", "password".toCharArray()));
 
             Node node = session.getRootNode();
-//            JcrUtil.dump(node.getNode("workspaces"));
+//            JcrUtil.dump(node.getNode("users"));
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
                 Node child = itr.nextNode();
                 if (!child.getName().startsWith("jcr:")) {
@@ -154,7 +149,8 @@ public class AbstractGalaxyTest extends AbstractDependencyInjectionSpringContext
     @Override
     protected String[] getConfigLocations() {
         return new String[] {
-            "/META-INF/applicationContext-core.xml"
+            "/META-INF/applicationContext-core.xml",
+            "/META-INF/applicationContext-test.xml"
         };
     }
 

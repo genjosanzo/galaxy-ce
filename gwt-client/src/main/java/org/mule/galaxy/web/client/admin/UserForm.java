@@ -92,7 +92,7 @@ public class UserForm extends AbstractComposite {
         table.setWidget(4, 1, confirmTB);
 
         adminCB = new CheckBox();
-        adminCB.setChecked(user.isAdmin());
+//        adminCB.setChecked(user.isAdmin());
         if ("admin".equals(user.getUsername())) {
             adminCB.setEnabled(false);
         }
@@ -164,7 +164,7 @@ public class UserForm extends AbstractComposite {
         
         user.setEmail(emailTB.getText());
         user.setName(nameTB.getText());
-        user.setAdmin(adminCB.isChecked());
+//        user.setAdmin(adminCB.isChecked());
         
         if (add) {
             save(svc, p, c);

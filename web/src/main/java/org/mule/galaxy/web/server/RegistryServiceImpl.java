@@ -54,6 +54,8 @@ import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.query.SearchResults;
+import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.util.LogUtils;
 import org.mule.galaxy.view.ArtifactTypeView;
@@ -95,6 +97,7 @@ public class RegistryServiceImpl implements RegistryService {
     private IndexManager indexManager;
     private ActivityManager activityManager;
     private CommentManager commentManager;
+    private AccessControlManager accessControlManager;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a, MMMM d, yyyy");
 
@@ -1214,9 +1217,23 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     public WUser getUserInfo() throws RPCException {
-        return UserServiceImpl.createWUser(getCurrentUser());
+        User user = getCurrentUser();
+        WUser w = UserServiceImpl.createWUser(user);
+        
+        List<String> perms = new ArrayList<String>();
+        
+        for (Permission p : accessControlManager.getGlobalPermissions(user)) {
+            perms.add(p.getName());
+        }
+        w.setPermissions(perms);
+        
+        return w;
     }
 
+    public void setAccessControlManager(AccessControlManager accessControlManager) {
+        this.accessControlManager = accessControlManager;
+    }
+    
     public void setCommentManager(CommentManager commentManager) {
         this.commentManager = commentManager;
     }

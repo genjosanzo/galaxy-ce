@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.mule.galaxy.web.client.activity.ActivityPanel;
@@ -40,6 +41,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     private PageInfo curInfo;
     private Map history = new HashMap();
     private TabPanel tabPanel;
+    private WUser user;
     protected int oldTab;
     private boolean suppressTabHistory;
     
@@ -112,13 +114,13 @@ public class Galaxy implements EntryPoint, HistoryListener {
         final Galaxy galaxy = this;
         registryService.getUserInfo(new AbstractCallback(registryPanel) {
             public void onSuccess(Object o) {
-                WUser user = (WUser) o;
+                user = (WUser) o;
                 rightPanel.add(new Label(user.getName()));
                 
                 HTML logout = new HTML("<a href=\"" + GWT.getHostPageBaseURL() + "j_logout\">Logout</a>");
                 rightPanel.add(logout);
                 
-                if (user.isAdmin()) {
+                if (showAdminTab(user)) {
                     tabPanel.add(new AdministrationPanel(galaxy), "Administration");
                     createPageInfoForMenuPanel(2);
                     showFirstPage();
@@ -132,6 +134,15 @@ public class Galaxy implements EntryPoint, HistoryListener {
         RootPanel.get().add(base);
     }
     
+    protected boolean showAdminTab(WUser user) {
+        for (Iterator itr = user.getPermissions().iterator(); itr.hasNext();) {
+            String s = (String)itr.next();
+            
+            if (s.startsWith("manage_")) return true;
+        }
+        return false;
+    }
+
     private void createPageInfoForMenuPanel(int i) {
         final AbstractMenuPanel menuPanel = (AbstractMenuPanel) tabPanel.getWidget(i);
         Widget main = menuPanel.getMain();
@@ -154,7 +165,6 @@ public class Galaxy implements EntryPoint, HistoryListener {
         
         history.put(page.getName(), page);
     }
-    
     
     private void createPageInfoForActivity(int i) {
         final AbstractComposite ac = (AbstractComposite) tabPanel.getWidget(i);
@@ -252,5 +262,14 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
     public TabPanel getTabPanel() {
         return tabPanel;
+    }
+
+    public boolean hasPermission(String perm) {
+        for (Iterator itr = user.getPermissions().iterator(); itr.hasNext();) {
+            String s = (String)itr.next();
+            
+            if (s.startsWith(perm)) return true;
+        }
+        return false;
     }
 }

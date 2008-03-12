@@ -165,11 +165,4 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         // todo: invalid nextPhases
     }
     
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-            "/META-INF/applicationContext-core.xml"
-        };
-    }
-    
 }

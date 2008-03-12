@@ -50,7 +50,8 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     protected String[] getConfigLocations() {
         return new String[] { "/META-INF/applicationContext-core.xml", 
                               "/META-INF/applicationContext-acegi-security.xml", 
-                              "/META-INF/applicationContext-web.xml" };
+                              "/META-INF/applicationContext-web.xml",
+                              "/META-INF/applicationContext-test.xml" };
         
     }
 

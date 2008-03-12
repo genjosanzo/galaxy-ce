@@ -31,6 +31,7 @@ import org.mule.galaxy.ActivityManager.EventType;
 import org.mule.galaxy.impl.jcr.JcrArtifact;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.JcrVersion;
+import org.mule.galaxy.impl.jcr.onm.AbstractDao;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
@@ -47,7 +48,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springmodules.jcr.JcrCallback;
 
 
-public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle> 
+public class LifecycleManagerImpl extends AbstractDao<Lifecycle> 
     implements LifecycleManager, ApplicationContextAware {
 
     private static final String INITIAL_PHASE = "initial";
@@ -61,7 +62,7 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
     private ActivityManager activityManager;
     
     public LifecycleManagerImpl() throws Exception {
-        super(Lifecycle.class, "lifecycles", false);
+        super("lifecycles", false);
     }
 
     public Lifecycle getDefaultLifecycle() {
@@ -388,7 +389,7 @@ public class LifecycleManagerImpl extends AbstractReflectionDao<Lifecycle>
     }
 
     @Override
-    protected String generateId(Lifecycle t) {
+    protected String generateNodeName(Lifecycle t) {
         return t.getName();
     }
 

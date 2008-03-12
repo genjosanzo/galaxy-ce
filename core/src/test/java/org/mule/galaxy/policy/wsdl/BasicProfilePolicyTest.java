@@ -60,8 +60,4 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
         }
     }
 
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {"/META-INF/applicationContext-core.xml"};
-    }
 }

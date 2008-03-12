@@ -28,67 +28,61 @@ public class AdministrationPanel extends AbstractMenuPanel {
 
         final AdministrationPanel adminPanel = this;
         
-        Hyperlink link = new Hyperlink("Artifact Types", "artifact-types");
-        createPageInfo(link.getTargetHistoryToken(), new ArtifactTypeListPanel(adminPanel));
+        if (galaxy.hasPermission("manage_artifactTypes")) {
+            Hyperlink link = new Hyperlink("Artifact Types", "artifact-types");
+            createPageInfo(link.getTargetHistoryToken(), new ArtifactTypeListPanel(adminPanel));
+    
+            add = new Hyperlink("Add", "add-artifact-type");
+            createPageInfo(add.getTargetHistoryToken(), new LifecycleForm(adminPanel, new WLifecycle(), true));
+            
+            createDivWithAdd(manageBox, link);
+        }        
 
-        add = new Hyperlink("Add", "add-artifact-type");
-        createPageInfo(add.getTargetHistoryToken(), new LifecycleForm(adminPanel, new WLifecycle(), true));
+        if (galaxy.hasPermission("manage_lifecycles")) {
+            Hyperlink link = new Hyperlink("Lifecycles", "lifecycles");
+            createPageInfo(link.getTargetHistoryToken(), new LifecycleListPanel(adminPanel));
+    
+            add = new Hyperlink("Add", "add-lifecycle");
+            createPageInfo(add.getTargetHistoryToken(), new LifecycleForm(adminPanel, new WLifecycle(), true));
+            
+            createDivWithAdd(manageBox, link);
+        }
         
+        if (galaxy.hasPermission("manage_indexes")) {
+            Hyperlink link = new Hyperlink("Indexes", "indexes");
+            manageBox.add(link);
+            createPageInfo(link.getTargetHistoryToken(), new IndexListPanel(adminPanel));
+    
+            add = new Hyperlink("Add", "add-index");
+            createPageInfo(add.getTargetHistoryToken(), new IndexForm(adminPanel));
+    
+            createDivWithAdd(manageBox, link);
+        }
+        
+        if (galaxy.hasPermission("manage_policies")) {
+            Hyperlink link = new Hyperlink("Policies", "policies");
+            createPageInfo(link.getTargetHistoryToken(), new PolicyPanel(adminPanel, registryService));
+            manageBox.add(link);
+        }
+
+        if (galaxy.hasPermission("manage_users")) {
+            Hyperlink link = new Hyperlink("Users", "users");
+            createPageInfo(link.getTargetHistoryToken(), new UserListPanel(adminPanel));
+            
+            add = new Hyperlink("Add", "add-user-form");
+            createPageInfo(add.getTargetHistoryToken(), new UserForm(adminPanel));
+    
+            createDivWithAdd(manageBox, link);
+        }
+    }
+
+    private void createDivWithAdd(Toolbox manageBox, Hyperlink link) {
         InlineFlowPanel item = new InlineFlowPanel();
         item.add(link);
         item.add(new Label(" ["));
         item.add(add);
         item.add(new Label("]"));
-        
-        manageBox.add(item);
-        
-
-        link = new Hyperlink("Lifecycles", "lifecycles");
-        createPageInfo(link.getTargetHistoryToken(), new LifecycleListPanel(adminPanel));
-
-        add = new Hyperlink("Add", "add-lifecycle");
-        createPageInfo(add.getTargetHistoryToken(), new LifecycleForm(adminPanel, new WLifecycle(), true));
-        
-        item = new InlineFlowPanel();
-        item.add(link);
-        item.add(new Label(" ["));
-        item.add(add);
-        item.add(new Label("]"));
-        
-        manageBox.add(item);
-        
-        
-        link = new Hyperlink("Indexes", "indexes");
-        manageBox.add(link);
-        createPageInfo(link.getTargetHistoryToken(), new IndexListPanel(adminPanel));
-
-        add = new Hyperlink("Add", "add-index");
-        createPageInfo(add.getTargetHistoryToken(), new IndexForm(adminPanel));
-
-        item = new InlineFlowPanel();
-        item.add(link);
-        item.add(new Label(" ["));
-        item.add(add);
-        item.add(new Label("]"));
-
-        manageBox.add(item);
-
-        link = new Hyperlink("Policies", "policies");
-        createPageInfo(link.getTargetHistoryToken(), new PolicyPanel(adminPanel, registryService));
-        manageBox.add(link);
-
-        link = new Hyperlink("Users", "users");
-        createPageInfo(link.getTargetHistoryToken(), new UserListPanel(adminPanel));
-        
-        add = new Hyperlink("Add", "add-user-form");
-        createPageInfo(add.getTargetHistoryToken(), new UserForm(adminPanel));
-
-        item = new InlineFlowPanel();
-        item.add(link);
-        item.add(new Label(" ["));
-        item.add(add);
-        item.add(new Label("]"));
-
+   
         manageBox.add(item);
     }
 

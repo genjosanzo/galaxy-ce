@@ -14,7 +14,6 @@ public class User implements Identifiable {
     private String name;
     private String email;
     private Calendar created;
-    private Set<String> roles;
     private Map<String,Object> properties;
     
     public String getId() {
@@ -64,17 +63,5 @@ public class User implements Identifiable {
 
     public boolean isEnabled() {
         return true;
-    }
-
-    @OneToMany(treatAsField=true)
-    public Set<String> getRoles() {
-        if (roles == null) {
-            roles = new HashSet<String>();
-        }
-        return roles;
-    }
-
-    public void setRoles(Set<String> roles) {
-        this.roles = roles;
     }
 }
