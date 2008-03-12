@@ -339,6 +339,22 @@
                 </dependencies>
             </plugin>
 
+            <!-- Delete test Jackrabbit repos on clean additionally -->
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>Delete Jackrabbit's test repositories</id>
+                    </execution>
+                </executions>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>jackrabbit</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
         </plugins>
 
         <defaultGoal>install</defaultGoal>
