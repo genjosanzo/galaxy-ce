@@ -9,6 +9,20 @@
  */
 package org.mule.galaxy.impl.artifact;
 
+import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.impl.view.CustomArtifactTypeView;
+import org.mule.galaxy.impl.view.MvelColumn;
+import org.mule.galaxy.index.Index;
+import org.mule.galaxy.plugins.config.jaxb.ColumnType;
+import org.mule.galaxy.plugins.config.jaxb.ConfigurationType;
+import org.mule.galaxy.plugins.config.jaxb.GalaxyArtifactType;
+import org.mule.galaxy.plugins.config.jaxb.IndexType;
+import org.mule.galaxy.plugins.config.jaxb.NamespaceType;
+import org.mule.galaxy.plugins.config.jaxb.ViewType;
+import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.util.TemplateParser;
+import org.mule.galaxy.view.Column;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,22 +33,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.impl.view.CustomArtifactTypeView;
-import org.mule.galaxy.impl.view.MvelColumn;
-import org.mule.galaxy.index.Index;
-import org.mule.galaxy.plugins.config.jaxb.ColumnType;
-import org.mule.galaxy.plugins.config.jaxb.ConfigurationType;
-import org.mule.galaxy.plugins.config.jaxb.GalaxyArtifactType;
-import org.mule.galaxy.plugins.config.jaxb.GalaxyType;
-import org.mule.galaxy.plugins.config.jaxb.IndexType;
-import org.mule.galaxy.plugins.config.jaxb.NamespaceType;
-import org.mule.galaxy.plugins.config.jaxb.ViewType;
-import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.util.TemplateParser;
-import org.mule.galaxy.view.Column;
 import org.springframework.util.ClassUtils;
-
 import org.w3c.dom.Node;
 
 /**
@@ -99,21 +98,21 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
         if (pluginXml.getIndexes() != null)
         {
             List<IndexType> indexes = pluginXml.getIndexes().getIndex();
-            for (Iterator<IndexType> iterator = indexes.iterator(); iterator.hasNext();)
+            for (IndexType indexType : indexes)
             {
-                IndexType indexType = iterator.next();
                 ConfigurationType configType = indexType.getConfiguration();
-                HashMap<String, String> config = new HashMap<String,String>();
-                if (configType != null) {
+                HashMap<String, String> config = new HashMap<String, String>();
+                if (configType != null)
+                {
                     populateConfiguration(configType, config, props);
                 }
-                Index idx = new Index(indexType.getFieldName(), 
-                                      indexType.getDisplayName(), 
+                Index idx = new Index(indexType.getFieldName(),
+                                      indexType.getDisplayName(),
                                       pluginXml.getContentType(),
                                       getQName(indexType.getNamespace()),
-                                      ClassUtils.resolveClassName(indexType.getSearchInputType(), 
-                                                                  getClass().getClassLoader()), 
-                                      indexType.getIndexer(), 
+                                      ClassUtils.resolveClassName(indexType.getSearchInputType(),
+                                                                  getClass().getClassLoader()),
+                                      indexType.getIndexer(),
                                       config);
 
                 indexManager.save(idx, true);
@@ -178,20 +177,18 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
 
         List<ViewType> views = pluginXml.getViews().getView();
 
-        for (Iterator<ViewType> iterator = views.iterator(); iterator.hasNext();)
+        for (ViewType viewType : views)
         {
-            ViewType viewType = iterator.next();
             CustomArtifactTypeView view = new CustomArtifactTypeView();
 
             List<ColumnType> columns = viewType.getColumn();
-            for (Iterator<ColumnType> columnTypeIterator = columns.iterator(); columnTypeIterator.hasNext();)
+            for (final ColumnType column : columns)
             {
-                final ColumnType column = columnTypeIterator.next();
                 // Create a custom view
 
                 Integer colNumber = column.getColumn();
                 Column c = new Column(column.getName(), column.isSummary(), column.isDetail(),
-                        new MvelColumn(column.getExpression()));
+                                      new MvelColumn(column.getExpression()));
 
                 if (colNumber == null)
                 {
@@ -199,7 +196,7 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
                 }
                 else
                 {
-                    view.getColumns().add(colNumber.intValue(), c);
+                    view.getColumns().add(colNumber, c);
                 }
             }
 
