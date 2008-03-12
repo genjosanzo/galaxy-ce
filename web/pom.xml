@@ -147,7 +147,7 @@
                         <artifactId>maven-googlewebtoolkit2-plugin</artifactId>
                         <version>2.0-beta6</version>
                         <configuration>
-                            <gwtVersion>1.4.61</gwtVersion>
+                            <gwtVersion>${gwtVersion}</gwtVersion>
                             <runTarget>org.mule.galaxy.web.Galaxy/Galaxy.html</runTarget>
                             <style>OBF</style>
                             <compileTargets>
