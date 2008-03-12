@@ -13,11 +13,13 @@
 
 package com.google.gdata.util.httputil;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.io.*;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.BitSet;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * FastURLEncoder is intended as a replacement for the slow and inefficient
@@ -51,13 +53,15 @@ import java.util.BitSet;
 public class FastURLEncoder {
   private static boolean verifyAgainstJava = false;
 
+    private static final Log log = LogFactory.getLog(FastURLEncoder.class);
+
   /**
    * Set this to 'true' if you are not certain that FastURLEncoder is
    * going to do the right thing for you and want to test for a while.
    * Set to 'false' if you want the speed and memory benefits of
    * FastURLEncoder. If this is set to 'true' and FastURLEncoder disagrees
    * with URLEncoder then FastURLEncoder will log a
-   * java.util.logging.Level.SEVERE message and return the value provided
+   * error message and return the value provided
    * by URLEncoder.
    */
   static void setVerifyAgainstJava(boolean shouldVerify) {
@@ -170,8 +174,7 @@ public class FastURLEncoder {
     if (verifyAgainstJava) {
       String jresult = URLEncoder.encode(s, encoding);
       if (!jresult.equals(result)) {
-        Logger.getLogger(FastURLEncoder.class.getName()).
-          log(Level.SEVERE, "FastURLEncoder does not match java. Java: '" +
+        log.error("FastURLEncoder does not match java. Java: '" +
                             jresult + "'  FastURLEncoder: '" + result + "'");
         return jresult;
       }

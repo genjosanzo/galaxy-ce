@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -17,8 +15,9 @@ import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
 import org.apache.axiom.om.util.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.Bus;
-import org.apache.cxf.common.logging.LogUtils;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.endpoint.Endpoint;
 import org.apache.cxf.endpoint.Server;
@@ -28,16 +27,14 @@ import org.apache.cxf.service.model.ServiceInfo;
 import org.apache.cxf.ws.policy.PolicyBuilder;
 import org.apache.cxf.ws.policy.PolicyEngine;
 import org.apache.neethi.Policy;
-
 import org.xml.sax.SAXException;
 
 public class GalaxyFeature extends AbstractFeature {
-    private static final Logger LOGGER = LogUtils.getL7dLogger(GalaxyFeature.class);
-    
+
     protected AbderaClient client = new AbderaClient();
 
     protected List<String> policyQueries = new ArrayList<String>();
-    
+
     protected String username;
     protected String password;
 
@@ -45,6 +42,8 @@ public class GalaxyFeature extends AbstractFeature {
     
     protected Collection<Policy> loadedPolicies = null;
 
+    private final Log log = LogFactory.getLog(getClass());
+    
     @Override
     public void initialize(Bus bus) {
         PolicyEngine pe = bus.getExtension(PolicyEngine.class);
@@ -73,14 +72,20 @@ public class GalaxyFeature extends AbstractFeature {
             
             for (String qstr : policyQueries) {
                 List<Entry> entries = getQueriedEntries(qstr);
-                LOGGER.log(Level.INFO, "Found " + entries.size() + " policy entries");
+                if (log.isInfoEnabled())
+                {
+                    log.info("Found " + entries.size() + " policy entries");
+                }
                 for (Entry e : entries) {
                     String policyLink = e.getContentSrc().toString();
                     if (policyLink == null) {
                         throw new RuntimeException("Could not find valid content link for " + e.getTitle());
                     }
-                    
-                    LOGGER.log(Level.INFO, "Loading policy at " + policyLink);
+
+                    if (log.isInfoEnabled())
+                    {
+                        log.info("Loading policy at " + policyLink);
+                    }
                     ClientResponse res = client.get(policyLink, opts);
                     
                     // Use this as your handle to the mule configuration
@@ -90,7 +95,10 @@ public class GalaxyFeature extends AbstractFeature {
                         org.w3c.dom.Document policyDoc = DOMUtils.readXml(is);
 
                         Policy policy = builder.getPolicy(policyDoc.getDocumentElement());
-                        LOGGER.log(Level.INFO, "Loaded policy " + policy.getId());
+                        if (log.isInfoEnabled())
+                        {
+                            log.info("Loaded policy " + policy.getId());
+                        }
                         loadedPolicies.add(policy);
                     } catch (SAXException e1) {
                         throw new RuntimeException(e1);
