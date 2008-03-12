@@ -1,252 +1,254 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.mule.galaxy</groupId>
+        <artifactId>galaxy-parent</artifactId>
+        <version>1.0-beta-3-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.galaxy</groupId>
-    <artifactId>galaxy-parent</artifactId>
-    <version>1.0-beta-3-SNAPSHOT</version>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.mule.galaxy</groupId>
-  <artifactId>galaxy-web</artifactId>
-  <name>Galaxy Web Application</name>
-  <dependencies>
+    <artifactId>galaxy-web</artifactId>
+    <name>Galaxy Web Application</name>
+    <dependencies>
 
-    <dependency>
-      <groupId>org.mule.galaxy</groupId>
-      <artifactId>galaxy-core</artifactId>
-      <version>${version}</version>
-    </dependency>
+        <dependency>
+            <groupId>org.mule.galaxy</groupId>
+            <artifactId>galaxy-core</artifactId>
+            <version>${version}</version>
+        </dependency>
 
-    <dependency>
-      <groupId>org.mule.galaxy</groupId>
-      <artifactId>galaxy-core</artifactId>
-      <version>${version}</version>
-      <classifier>tests</classifier>
-    </dependency>
+        <dependency>
+            <groupId>org.mule.galaxy</groupId>
+            <artifactId>galaxy-core</artifactId>
+            <version>${version}</version>
+            <classifier>tests</classifier>
+        </dependency>
 
-    <dependency>
-      <groupId>org.mule.galaxy</groupId>
-      <artifactId>galaxy-feed-model</artifactId>
-      <version>${version}</version>
-    </dependency>
+        <dependency>
+            <groupId>org.mule.galaxy</groupId>
+            <artifactId>galaxy-feed-model</artifactId>
+            <version>${version}</version>
+        </dependency>
 
-    <dependency>
-      <groupId>org.mule.galaxy</groupId>
-      <artifactId>galaxy-server-mule1</artifactId>
-      <version>${version}</version>
-    </dependency>
+        <dependency>
+            <groupId>org.mule.galaxy</groupId>
+            <artifactId>galaxy-server-mule1</artifactId>
+            <version>${version}</version>
+        </dependency>
 
-    <dependency>
-      <groupId>org.mule.galaxy</groupId>
-      <artifactId>galaxy-server-mule2</artifactId>
-      <version>${version}</version>
-    </dependency>
+        <dependency>
+            <groupId>org.mule.galaxy</groupId>
+            <artifactId>galaxy-server-mule2</artifactId>
+            <version>${version}</version>
+        </dependency>
 
-    <dependency>
-      <groupId>org.mule.galaxy</groupId>
-      <artifactId>galaxy-gwt-rpc</artifactId>
-      <version>${version}</version>
-    </dependency>
+        <dependency>
+            <groupId>org.mule.galaxy</groupId>
+            <artifactId>galaxy-gwt-rpc</artifactId>
+            <version>${version}</version>
+        </dependency>
 
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-servlet</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>
+        </dependency>
 
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
-    <dependency>
-      <groupId>org.mule.galaxy</groupId>
-      <artifactId>galaxy-testutils</artifactId>
-      <version>${version}</version>
-    </dependency>
+        <dependency>
+            <groupId>org.mule.galaxy</groupId>
+            <artifactId>galaxy-testutils</artifactId>
+            <version>${version}</version>
+        </dependency>
 
-    <dependency>
-      <groupId>net.sf.gwt-sl</groupId>
-      <artifactId>gwt-sl</artifactId>
-      <version>0.1.4</version>
-    </dependency>
+        <dependency>
+            <groupId>net.sf.gwt-sl</groupId>
+            <artifactId>gwt-sl</artifactId>
+            <version>0.1.4</version>
+        </dependency>
 
-    <dependency>
-      <groupId>org.apache.abdera</groupId>
-      <artifactId>abdera-spring</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>org.apache.abdera</groupId>
+            <artifactId>abdera-spring</artifactId>
+        </dependency>
 
-    <dependency>
-      <groupId>org.apache.abdera</groupId>
-      <artifactId>abdera-client</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>org.apache.abdera</groupId>
+            <artifactId>abdera-client</artifactId>
+        </dependency>
 
-    <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
-      <version>1.2</version>
-      <exclusions>
-        <exclusion>
-          <groupId>portlet-api</groupId>
-          <artifactId>portlet-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>1.3.2</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty</artifactId>
-      <version>6.1.6</version>
-      <optional>true</optional> 
-    </dependency>
-        
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jsp-2.1</artifactId>
-      <version>6.1.6</version>
-      <scope>test</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
-      <version>1.4.3</version>
-      <optional>true</optional>
-    </dependency>
-    
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <optional>true</optional>
-      <scope>compile</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>net.sf.gwt-widget</groupId>
-      <artifactId>gwt-widgets</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>portlet-api</groupId>
+                    <artifactId>portlet-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
-  </dependencies>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.3.2</version>
+        </dependency>
 
-  <profiles>
-    <profile>
-      <id>default</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <build>
+        <dependency>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jetty</artifactId>
+            <version>6.1.6</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jsp-2.1</artifactId>
+            <version>6.1.6</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.4.3</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <optional>true</optional>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.gwt-widget</groupId>
+            <artifactId>gwt-widgets</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.totsp.gwt</groupId>
+                        <artifactId>maven-googlewebtoolkit2-plugin</artifactId>
+                        <version>2.0-beta6</version>
+                        <configuration>
+                            <gwtVersion>1.4.61</gwtVersion>
+                            <runTarget>org.mule.galaxy.web.Galaxy/Galaxy.html</runTarget>
+                            <style>OBF</style>
+                            <compileTargets>
+                                <value>org.mule.galaxy.web.Galaxy</value>
+                            </compileTargets>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <!-- These two goals enable automatic GWT setup, but are expirimental -->
+                                    <goal>setup</goal>
+                                    <goal>extractGwt</goal>
+
+                                    <!-- Compile GWT stuff -->
+                                    <goal>mergewebxml</goal>
+                                    <goal>compile</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>nogwt</id>
+        </profile>
+    </profiles>
+    <build>
         <plugins>
-          <plugin>
-            <groupId>com.totsp.gwt</groupId>
-            <artifactId>maven-googlewebtoolkit2-plugin</artifactId>
-            <version>2.0-beta6</version>
-            <configuration>
-              <gwtVersion>1.4.61</gwtVersion>
-              <runTarget>
-                org.mule.galaxy.web.Galaxy/Galaxy.html
-              </runTarget>
-              <style>OBF</style>
-              <compileTargets>
-                <value>org.mule.galaxy.web.Galaxy</value>
-              </compileTargets>
-            </configuration>
-            <executions>
-              <execution>
-                <goals>
-                  <!-- These two goals enable automatic GWT setup, but are expirimental -->
-                  <goal>setup</goal>
-                  <goal>extractGwt</goal>
-
-                  <!-- Compile GWT stuff -->
-                  <goal>mergewebxml</goal>
-                  <goal>compile</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>maven-jetty-plugin</artifactId>
+                <version>6.1.5</version>
+                <configuration>
+                    <scanIntervalSeconds>5</scanIntervalSeconds>
+                    <contextPath>/</contextPath>
+                    <webDefaultXml>${basedir}/webdefault.xml</webDefaultXml>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.0</version>
+                <configuration>
+                    <classifier>embed</classifier>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-war</id>
+                        <!-- this is used for inheritance merges -->
+                        <phase>package</phase>
+                        <!-- append to the packaging phase. -->
+                        <goals>
+                            <goal>war</goal>
+                            <!-- goals == mojos -->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>nogwt</id>
-    </profile>
-  </profiles>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>maven-jetty-plugin</artifactId>
-        <version>6.1.5</version>
-        <configuration>
-          <scanIntervalSeconds>5</scanIntervalSeconds>
-          <contextPath>/</contextPath>
-          <webDefaultXml>${basedir}/webdefault.xml</webDefaultXml>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>2.0</version>
-        <configuration>
-          <classifier>embed</classifier>
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-war</id> <!-- this is used for inheritance merges -->
-            <phase>package</phase> <!-- append to the packaging phase. -->
-            <goals>
-              <goal>war</goal> <!-- goals == mojos -->
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+    </build>
 
-  
-  <repositories>
-    <repository>
-      <id>gwt-maven</id>
-      <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo</url>
-    </repository>
-    <repository>
-      <id>local</id>
-      <name>Local Repository</name>
-      <url>file://${basedir}/../core/mvn-repo/</url>
-    </repository>
 
-    <!-- For Abdera -->
-    <repository>
-      <id>apache-incubating</id>
-      <name>Apache Incubating Repository</name>
-      <url>http://people.apache.org/repo/m2-incubating-repository</url>
-    </repository>
-    <repository>
-      <id>apache-snapshots</id>
-      <name>Apache Snapshot Repository</name>
-      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </repository>
-    <repository>
-      <id>mule-dependencies</id>
-      <name>Mule Dependencies</name>
-      <url>http://dist.codehaus.org/mule/dependencies/maven2</url>
-    </repository>
-  </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>gwt-maven</id>
-      <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo</url>
-    </pluginRepository>
-  </pluginRepositories>
+    <repositories>
+        <repository>
+            <id>gwt-maven</id>
+            <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo</url>
+        </repository>
+        <repository>
+            <id>local</id>
+            <name>Local Repository</name>
+            <url>file://${basedir}/../core/mvn-repo/</url>
+        </repository>
+
+        <!-- For Abdera -->
+        <repository>
+            <id>apache-incubating</id>
+            <name>Apache Incubating Repository</name>
+            <url>http://people.apache.org/repo/m2-incubating-repository</url>
+        </repository>
+        <repository>
+            <id>apache-snapshots</id>
+            <name>Apache Snapshot Repository</name>
+            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>mule-dependencies</id>
+            <name>Mule Dependencies</name>
+            <url>http://dist.codehaus.org/mule/dependencies/maven2</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>gwt-maven</id>
+            <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo</url>
+        </pluginRepository>
+    </pluginRepositories>
 </project>
