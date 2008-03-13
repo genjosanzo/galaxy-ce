@@ -69,20 +69,36 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
                     log.info("Updated JAR plugin");
                 }
 
-                Map<String, String> config = new HashMap<String, String>();
-                config.put("scriptSource", "JarManifestIndex.groovy");
-
-                // TODO Index revolves too much around XML, needs a serious refactoring
-                Index idx = new Index("jar.manifest", "JAR Manifest", "application/java-archive",
-                                      new QName("application/java-archive"), // the constructor should be overloaded and QName go
-                                      String.class,
-                                      "org.mule.galaxy.impl.index.GroovyIndexer", config);
-
+                // TODO this should probably go, not really used now
                 // dynamically register jar content handler (instead of putting it in core's spring config
                 contentService.registerContentHandler(new JarContentHandler());
+
+                // Configure and register a JarManifestIndex
+                Map<String, String> manifestIndexConfig = new HashMap<String, String>();
+                manifestIndexConfig.put("scriptSource", "JarManifestIndex.groovy");
+
+                // TODO Index revolves too much around XML, needs a serious refactoring
+                Index jarManifestIndex = new Index("jar.manifest", "JAR Manifest", "application/java-archive",
+                                      new QName("application/java-archive"), // the constructor should be overloaded and QName go
+                                      String.class,
+                                      "org.mule.galaxy.impl.index.GroovyIndexer", manifestIndexConfig);
+
+
+
+                // Configure and register Java Annotations indexer
+                Map<String, String> annIndexConfig = new HashMap<String, String>();
+                // TODO no such resource yet
+                manifestIndexConfig.put("scriptSource", "JavaAnnotationsIndex.groovy");
+
+                Index annotationsIndex = new Index("java.annotations", "Java Annotations", "application/java-archive",
+                                       new QName("application/java-archive"), // the constructor should be overloaded and QName go
+                                       String.class,
+                                       "org.mule.galaxy.impl.index.GroovyIndexer", annIndexConfig);
+
                 try
                 {
-                    indexManager.save(idx, true);
+                    indexManager.save(jarManifestIndex, true);
+                    indexManager.save(annotationsIndex, true);
                 }
                 catch (GalaxyException e)
                 {
