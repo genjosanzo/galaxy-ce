@@ -2,18 +2,25 @@ package org.mule.galaxy.impl.artifact;
 
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.ContentService;
+import org.mule.galaxy.GalaxyException;
 import org.mule.galaxy.impl.content.JarContentHandler;
+import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.util.Constants;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springmodules.jcr.JcrCallback;
+import org.springmodules.jcr.JcrTemplate;
 
 /**
  * Java Archive (JAR) artifact plugin.
@@ -25,6 +32,8 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
 
     private ContentService contentService;
 
+    private JcrTemplate jcrTemplate;
+
     public void initializeOnce() throws Exception
     {
         artifactTypeDao.save(new ArtifactType("Java Archives (JARs)", "application/java-archive"));
@@ -33,40 +42,55 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
 
     public void initializeEverytime() throws Exception
     {
-        // TODO figure out a nice way to upgrade, for now just a hack to re-init completely while developing
-        List<ArtifactType> jarHandlers = artifactTypeDao.find("contentType", "application/java-archive");
-
-        if (!jarHandlers.isEmpty())
+        JcrUtil.doInTransaction(jcrTemplate.getSessionFactory(), new JcrCallback()
         {
-            if (log.isDebugEnabled())
+            public Object doInJcr(final Session session) throws IOException, RepositoryException
             {
-                log.debug(String.format("Found %d jar handlers, will remove them and re-register ours", jarHandlers.size()));
+
+                // TODO figure out a nice way to upgrade, for now just a hack to re-init completely while developing
+                List<ArtifactType> jarHandlers = artifactTypeDao.find("contentType", "application/java-archive");
+
+
+                if (!jarHandlers.isEmpty())
+                {
+                    if (log.isDebugEnabled())
+                    {
+                        log.debug(String.format("Found %d jar handlers, will remove them and re-register ours", jarHandlers.size()));
+                    }
+                    for (ArtifactType handler : jarHandlers)
+                    {
+                        artifactTypeDao.delete(handler.getId());
+                    }
+                }
+
+                artifactTypeDao.save(new ArtifactType("Java Archives (JARs)", "application/java-archive", new QName("application/java-archive")));
+                if (log.isDebugEnabled())
+                {
+                    log.info("Updated JAR plugin");
+                }
+
+                Map<String, String> config = new HashMap<String, String>();
+                config.put("scriptSource", "C:\\projects\\mule\\galaxy\\branches\\jar-indexer\\core\\src\\main\\resources\\JarManifestIndex.groovy");
+
+                // TODO Index revolves too much around XML, needs a serious refactoring
+                Index idx = new Index("jar.manifest", "JAR Manifest", "application/java-archive",
+                                      new QName("application/java-archive"), // the constructor should be overloaded and QName go
+                                      String.class,
+                                      "org.mule.galaxy.impl.index.GroovyIndexer", config);
+
+                // dynamically register jar content handler (instead of putting it in core's spring config
+                contentService.registerContentHandler(new JarContentHandler());
+                try
+                {
+                    indexManager.save(idx, true);
+                }
+                catch (GalaxyException e)
+                {
+                    throw new RepositoryException(e);
+                }
+                return null;
             }
-            for (ArtifactType handler : jarHandlers)
-            {
-                artifactTypeDao.delete(handler.getId());
-            }
-        }
-
-        artifactTypeDao.save(new ArtifactType("Java Archives (JARs)", "application/java-archive", new QName("application/java-archive")));
-        if (log.isDebugEnabled())
-        {
-            log.info("Updated JAR plugin");
-        }
-
-        Map<String, String> config = new HashMap<String, String>();
-        config.put("scriptSource", "C:\\projects\\mule\\galaxy\\branches\\jar-indexer\\core\\src\\main\\resources\\JarManifestIndex.groovy");
-
-        // TODO Index revolves too much around XML, needs a serious refactoring
-        Index idx = new Index("jar.manifest", "JAR Manifest", "application/java-archive",
-                              new QName("application/java-archive"), // the constructor should be overloaded and QName go
-                              String.class,
-                              "org.mule.galaxy.impl.index.GroovyIndexer", config);
-
-
-        // dynamically register jar content handler (instead of putting it in core's spring config
-        contentService.registerContentHandler(new JarContentHandler());
-        indexManager.save(idx, true);
+        });
 
     }
 
@@ -78,5 +102,15 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
     public void setContentService(final ContentService contentService)
     {
         this.contentService = contentService;
+    }
+
+    public JcrTemplate getJcrTemplate()
+    {
+        return jcrTemplate;
+    }
+
+    public void setJcrTemplate(final JcrTemplate jcrTemplate)
+    {
+        this.jcrTemplate = jcrTemplate;
     }
 }
