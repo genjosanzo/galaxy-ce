@@ -10,6 +10,7 @@
 
     <properties>
         <slf4jVersion>1.4.3</slf4jVersion>
+        <gwtVersion>1.4.61</gwtVersion>
     </properties>
 
     <licenses>
@@ -224,8 +225,52 @@
                 </exclusions>
             </dependency>
 
+            <dependency>
+                <groupId>com.google.gwt</groupId>
+                <artifactId>gwt-servlet</artifactId>
+                <version>${gwtVersion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.gwt</groupId>
+                <artifactId>gwt-user</artifactId>
+                <version>${gwtVersion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.gwt</groupId>
+                <artifactId>gwt-windows</artifactId>
+                <version>${gwtVersion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.gwt</groupId>
+                <artifactId>gwt-linux</artifactId>
+                <version>${gwtVersion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.gwt</groupId>
+                <artifactId>gwt-mac</artifactId>
+                <version>${gwtVersion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.sf.gwt-widget</groupId>
+                <artifactId>gwt-widgets</artifactId>
+                <version>0.1.5</version>
+                <exclusions>
+                    <exclusion>
+                        <!-- We use a newer version  -->
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-user</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
+
     <dependencies>
         <dependency>
            <groupId>junit</groupId>
@@ -306,6 +351,22 @@
                 </dependencies>
             </plugin>
 
+            <!-- Delete test Jackrabbit repos on clean additionally -->
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>Delete Jackrabbit's test repositories</id>
+                    </execution>
+                </executions>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>jackrabbit</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
         </plugins>
 
         <defaultGoal>install</defaultGoal>

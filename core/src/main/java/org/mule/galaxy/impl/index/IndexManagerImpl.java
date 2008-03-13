@@ -173,7 +173,10 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
 
     public void destroy() throws Exception {
-        log.debug("Starting IndexManager.destroy() with " + executor.getQueue().size() + " indexing jobs left");
+        if (log.isDebugEnabled())
+        {
+            log.debug("Starting IndexManager.destroy() with " + executor.getQueue().size() + " indexing jobs left");
+        }
         if (destroyed) return;
 
         executor.shutdown();
