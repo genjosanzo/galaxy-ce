@@ -234,11 +234,17 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
     protected void findAndReindex(Session session, Index idx) throws RepositoryException
     {
-        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(Artifact.class)
-                // TODO Restriction.in causes an NPE on reindexing?!
-                .add(Restriction.eq("contentType", Arrays.asList(idx.getMediaType())));
-                // TODO documentType lookup won't work for non-xml artifacts
-                //.add(Restriction.in("documentType", idx.getDocumentTypes()));
+        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(Artifact.class);
+
+        if (idx.getDocumentTypes() == null || idx.getDocumentTypes().isEmpty())
+        {
+            // TODO Restriction.in causes an NPE on reindexing?!
+            q.add(Restriction.eq("contentType", Arrays.asList(idx.getMediaType())));
+        }
+        else
+        {
+            q.add(Restriction.in("documentType", idx.getDocumentTypes()));
+        }
 
         try
         {
