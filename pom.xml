@@ -356,13 +356,13 @@
                 <artifactId>maven-clean-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>Delete Jackrabbit's test repositories</id>
+                        <id>Delete Galaxy's test repositories</id>
                     </execution>
                 </executions>
                 <configuration>
                     <filesets>
                         <fileset>
-                            <directory>jackrabbit</directory>
+                            <directory>galaxy-data</directory>
                         </fileset>
                     </filesets>
                 </configuration>
