@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -187,6 +188,12 @@ public class IndexTest extends AbstractGalaxyTest {
 
         Index idx = indexManager.getIndex("jar.manifest");
         assertNotNull(idx);
+
+        Map<String, String> indexConfig = idx.getConfiguration();
+        assertNotNull(indexConfig);
+        assertFalse(indexConfig.isEmpty());
+        String scriptSource = indexConfig.get("scriptSource");
+        assertEquals("Wrong configuration saved to the JCR repo", "JarManifestIndex.groovy", scriptSource);
 
         indexManager.save(idx, true);
 
