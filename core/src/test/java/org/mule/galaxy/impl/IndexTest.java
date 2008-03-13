@@ -12,7 +12,6 @@ import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
@@ -167,7 +166,7 @@ public class IndexTest extends AbstractGalaxyTest {
 
     public void testGroovyIndex() throws Exception
     {
-        InputStream stream = new FileInputStream("c:\\java\\mule\\mule1-netboot-1.0-beta-3-SNAPSHOT\\lib\\boot\\mule1-netboot-launcher-1.0-beta-3-SNAPSHOT.jar");
+        InputStream stream = getResourceAsStream("test.jar");
 
         assertNotNull(stream);
 
@@ -196,29 +195,5 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals("Wrong configuration saved to the JCR repo", "JarManifestIndex.groovy", scriptSource);
 
         indexManager.save(idx, true);
-
-        //assertEquals("http://www.example.org/test/",
-        //             artifact.getProperty("xmlschema.targetNamespace"));
-        //
-        //Object property = artifact.getProperty("xmlschema.element");
-        //assertNotNull(property);
-        //assertTrue(property instanceof Collection);
-        //assertTrue(((Collection) property).contains("testElement"));
-        //
-        //property = artifact.getProperty("xmlschema.complexType");
-        //assertNotNull(property);
-        //assertTrue(property instanceof Collection);
-        //assertTrue(((Collection) property).contains("testComplexType"));
-        //
-        //property = artifact.getProperty("xmlschema.group");
-        //assertNotNull(property);
-        //assertTrue(property instanceof Collection);
-        //assertTrue(((Collection) property).contains("testGroup"));
-        //
-        //property = artifact.getProperty("xmlschema.attributeGroup");
-        //assertNotNull(property);
-        //assertTrue(property instanceof Collection);
-        //assertTrue(((Collection) property).contains("testAttributeGroup"));
-
     }
 }
