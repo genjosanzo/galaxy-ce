@@ -12,18 +12,23 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Java Archive (JAR) artifact plugin.
  */
 public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constants
 {
 
+    private final Log log = LogFactory.getLog(getClass());
+
     private ContentService contentService;
 
     public void initializeOnce() throws Exception
     {
         artifactTypeDao.save(new ArtifactType("Java Archives (JARs)", "application/java-archive"));
-        System.out.println(">>> Installed JAR plugin");
+        log.info(("Installed JAR plugin"));
     }
 
     public void initializeEverytime() throws Exception
@@ -33,7 +38,10 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
 
         if (!jarHandlers.isEmpty())
         {
-            System.out.printf("Found %d jar handlers, will remove them and re-register ours\n", jarHandlers.size());
+            if (log.isDebugEnabled())
+            {
+                log.debug(String.format("Found %d jar handlers, will remove them and re-register ours", jarHandlers.size()));
+            }
             for (ArtifactType handler : jarHandlers)
             {
                 artifactTypeDao.delete(handler.getId());
@@ -41,7 +49,10 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
         }
 
         artifactTypeDao.save(new ArtifactType("Java Archives (JARs)", "application/java-archive", new QName("application/java-archive")));
-        System.out.println(">>> Updated JAR plugin");
+        if (log.isDebugEnabled())
+        {
+            log.info("Updated JAR plugin");
+        }
 
         Map<String, String> config = new HashMap<String, String>();
         config.put("scriptSource", "C:\\projects\\mule\\galaxy\\branches\\jar-indexer\\core\\src\\main\\resources\\JarManifestIndex.groovy");
