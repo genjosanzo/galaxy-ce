@@ -70,7 +70,7 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
                 }
 
                 Map<String, String> config = new HashMap<String, String>();
-                config.put("scriptSource", "C:\\projects\\mule\\galaxy\\branches\\jar-indexer\\core\\src\\main\\resources\\JarManifestIndex.groovy");
+                config.put("scriptSource", "JarManifestIndex.groovy");
 
                 // TODO Index revolves too much around XML, needs a serious refactoring
                 Index idx = new Index("jar.manifest", "JAR Manifest", "application/java-archive",

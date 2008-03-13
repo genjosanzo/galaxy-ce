@@ -23,13 +23,14 @@ import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexException;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
 
 public class GroovyIndexer extends AbstractIndexer
 {
@@ -52,8 +53,10 @@ public class GroovyIndexer extends AbstractIndexer
         b.setVariable("index", index);
         
         GroovyShell shell = new GroovyShell(Thread.currentThread().getContextClassLoader(), b);
+
+        ResourceLoader loader = new DefaultResourceLoader();
         // TODO check it exists first
-        Script script = shell.parse(new File(scriptSource));
+        Script script = shell.parse(loader.getResource(scriptSource).getInputStream());
         // TODO not optimal, cache script
         script.run();
     }
