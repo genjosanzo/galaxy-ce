@@ -1,6 +1,9 @@
 package org.mule.galaxy.test;
 
 
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.impl.index.IndexManagerImpl;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -11,6 +14,7 @@ import javax.jcr.Repository;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 
+import junit.framework.TestCase;
 import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Base;
@@ -19,13 +23,8 @@ import org.apache.abdera.writer.Writer;
 import org.apache.abdera.writer.WriterFactory;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.impl.index.IndexManagerImpl;
-import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import junit.framework.TestCase;
 
 public class AbstractAtomTest extends TestCase {
     
@@ -77,6 +76,7 @@ public class AbstractAtomTest extends TestCase {
             session.save();
             session.logout();
         } catch (PathNotFoundException t) {
+            // ignore
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -110,7 +110,6 @@ public class AbstractAtomTest extends TestCase {
     /**
      * The webapp relative directory varies depending on run from Maven, Eclipse and IDEA
      * this will check each possiblilty to return an existing location
-     * @return
      */
     protected final String getWebappDirectory() 
     {
