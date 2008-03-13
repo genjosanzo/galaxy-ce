@@ -16,6 +16,7 @@ import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
@@ -29,6 +30,8 @@ import javax.jcr.SimpleCredentials;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springmodules.jcr.SessionFactory;
@@ -59,23 +62,19 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         setPopulateProtectedVariables(true);
     }
 
-    public URL getResource(String name) {
-        URL url = Thread.currentThread().getContextClassLoader().getResource(name);
-        if (url == null)
-        {
-            url = getClass().getResource(name);
-        }
+    public URL getResource(String name) throws IOException
+    {
+        ResourceLoader loader = new DefaultResourceLoader();
+        URL url = loader.getResource(name).getURL();
         assertNotNull("Resource not found: " + name, url);
 
         return url;
     }
 
-    public InputStream getResourceAsStream(String name) {
-        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
-        if (is == null)
-        {
-            is = getClass().getResourceAsStream(name);
-        }
+    public InputStream getResourceAsStream(String name) throws IOException
+    {
+        ResourceLoader loader = new DefaultResourceLoader();
+        InputStream is = loader.getResource(name).getInputStream();
         assertNotNull("Resource not found: " + name, is);
 
         return is;
