@@ -43,6 +43,12 @@ public class GroovyIndexer extends AbstractIndexer
     public void index(final ArtifactVersion artifact, final ContentHandler contentHandler, final Index index) throws IOException, IndexException
     {
         Map<String, String> config = index.getConfiguration();
+
+        if (log.isDebugEnabled())
+        {
+            log.debug("Processing: " + index);
+        }
+
         String scriptSource = config.get("scriptSource");
 
         if (scriptSource == null)
