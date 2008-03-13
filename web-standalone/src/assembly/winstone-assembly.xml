@@ -38,6 +38,7 @@
         <include>commons-el:commons-el</include>
         <include>org.eclipse.jdt:core</include>
         <include>javax.servlet:jsp-api</include>
+        <include>commons-logging:commons-logging</include>
       </includes>
     </dependencySet>
     <dependencySet>
