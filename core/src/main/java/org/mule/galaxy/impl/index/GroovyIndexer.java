@@ -24,16 +24,21 @@ import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 
 public class GroovyIndexer extends AbstractIndexer
 {
+
+    private final Log log = LogFactory.getLog(getClass());
 
     public void index(final ArtifactVersion artifact, final ContentHandler contentHandler, final Index index) throws IOException, IndexException
     {
@@ -42,22 +47,36 @@ public class GroovyIndexer extends AbstractIndexer
 
         if (scriptSource == null)
         {
-            // TODO misconfig, log or throw an error
-            return;
+            // TODO proper message after GALAXY-147 is done
+            throw new IndexException(new Exception("scriptSource is not specified"));
         }
+
+        final ResourceLoader loader = new DefaultResourceLoader();
+        InputStream is = loader.getResource(scriptSource).getInputStream();
 
         Binding b = new Binding();
         b.setVariable("artifact", artifact);
         b.setVariable("config", config);
         b.setVariable("contentHandler", contentHandler);
         b.setVariable("index", index);
+        b.setVariable("log", LogFactory.getLog(getClass() + "." + index.getId()));
+
         
         GroovyShell shell = new GroovyShell(Thread.currentThread().getContextClassLoader(), b);
 
-        ResourceLoader loader = new DefaultResourceLoader();
-        // TODO check it exists first
-        Script script = shell.parse(loader.getResource(scriptSource).getInputStream());
-        // TODO not optimal, cache script
-        script.run();
+        Script script;
+        try
+        {
+            script = shell.parse(is);
+            script.run();
+        }
+        catch (Exception ex)
+        {
+            throw new IndexException(ex);
+        }
+        finally
+        {
+            is.close();
+        }
     }
 }
