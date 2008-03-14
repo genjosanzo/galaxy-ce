@@ -2,8 +2,6 @@ import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import org.mule.galaxy.impl.index.osgi.OsgiManifestUtil
 
-log.debug "=================== Executing a groovy index"
-
 def time = System.&currentTimeMillis // method ref
 def long start
 if (log.debugEnabled) {
