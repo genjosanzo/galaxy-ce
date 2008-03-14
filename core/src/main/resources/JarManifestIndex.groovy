@@ -6,6 +6,7 @@ def time = System.&currentTimeMillis // method ref
 def long start
 if (log.debugEnabled) {
     start = time()
+    log.debug "Indexing ${artifact.parent.name}"
 }
 
 // copy to a temp location, not happy :(
@@ -27,7 +28,30 @@ def jarFile
 try {
     jarFile = new JarFile(temp)
 
-    def attrs = jarFile.manifest.mainAttributes 
+    // a list of jar entries
+    def entries = []
+    jarFile.entries().findAll { !it.directory }.each { JarEntry e ->
+        def name = e.name.replaceAll('/', '\\.') // replace / with . for classnames
+        name -= '.class' // drop the trailing .class from the name
+        entries << name
+    }
+
+    def propertyName = "${index.id}.entries"
+    def encodedName = URLEncoder.encode(propertyName)
+    artifact.setProperty encodedName, entries
+    artifact.setLocked encodedName, true
+
+    // check if the jar has a manifest
+    def manifest = jarFile.manifest
+    if (!manifest) {
+        if (log.debugEnabled) {
+            log.debug "[${artifact.parent.name}] doesn't have a manifest, nothing else to index here"
+        }
+
+        return
+    }
+
+    def attrs = manifest.mainAttributes
 
     def osgiAttrs = attrs.findAll {
         osgiHeaders.contains it.key?.toString() // it's Attributes.Name class, thus the need for toString()
@@ -38,8 +62,8 @@ try {
     }
 
     nonOsgiAttrs.each {
-        def propertyName = "${index.id}.${it.key}"
-        def encodedName = URLEncoder.encode(propertyName)
+        propertyName = "${index.id}.${it.key}"
+        encodedName = URLEncoder.encode(propertyName)
 
         artifact.setProperty(encodedName, it.value)
         artifact.setLocked(encodedName, true)
@@ -49,8 +73,8 @@ try {
         // TODO needs to be optimized and refactored most likely
         def List exports = OsgiManifestUtil.parseEntries(it.key.toString(), it.value, false, true, false)
 
-        def propertyName = "${index.id}.${it.key}.packages"
-        def encodedName = URLEncoder.encode(propertyName)
+        propertyName = "${index.id}.${it.key}.packages"
+        encodedName = URLEncoder.encode(propertyName)
 
         def pkgs = exports.collect { it.keys[0] }
         artifact.setProperty encodedName, pkgs
@@ -71,18 +95,6 @@ try {
         }
         */
     }
-
-    def entries = []
-    jarFile.entries().findAll { !it.directory }.each { JarEntry e ->
-        def name = e.name.replaceAll('/', '\\.') // replace / with . for classnames
-        name -= '.class' // drop the trailing .class from the name
-        entries << name
-    }
-
-    def propertyName = "${index.id}.entries"
-    def encodedName = URLEncoder.encode(propertyName)
-    artifact.setProperty encodedName, entries
-    artifact.setLocked encodedName, true
 
 } finally {
     jarFile?.close()
