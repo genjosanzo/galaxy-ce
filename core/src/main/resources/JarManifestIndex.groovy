@@ -1,9 +1,14 @@
+import java.util.jar.JarEntry
+import java.util.jar.JarFile
 import org.mule.galaxy.impl.index.osgi.OsgiManifestUtil
 
-import java.util.jar.JarFile
-import java.util.jar.JarEntry
+log.debug "=================== Executing a groovy index"
 
-println "=================== Executing a groovy index"
+def time = System.&currentTimeMillis // method ref
+def long start
+if (log.debugEnabled) {
+    start = time()
+}
 
 // copy to a temp location, not happy :(
 def temp = File.createTempFile('galaxy-index', 'tmp')
@@ -86,4 +91,7 @@ try {
     temp?.delete()
 }
 
-println "Done"
+if (log.debugEnabled) {
+    def long end = time()
+    log.debug "Time taken to index: ${end - start} ms"
+}
