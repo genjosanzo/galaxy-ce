@@ -88,7 +88,7 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
                 // Configure and register Java Annotations indexer
                 Map<String, String> annIndexConfig = new HashMap<String, String>();
                 // TODO no such resource yet
-                manifestIndexConfig.put("scriptSource", "JavaAnnotationsIndex.groovy");
+                annIndexConfig.put("scriptSource", "JavaAnnotationsIndex.groovy");
 
                 Index annotationsIndex = new Index("java.annotations", "Java Annotations", "application/java-archive",
                                        new QName("application/java-archive"), // the constructor should be overloaded and QName go
