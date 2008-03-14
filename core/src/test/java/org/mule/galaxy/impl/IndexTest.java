@@ -15,6 +15,7 @@ import org.mule.galaxy.util.Constants;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -164,7 +165,8 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, results.size());
     }
 
-    public void testGroovyIndex() throws Exception
+    @SuppressWarnings("unchecked")
+    public void testJarManifestIndex() throws Exception
     {
         InputStream stream = getResourceAsStream("test.jar");
 
@@ -194,6 +196,14 @@ public class IndexTest extends AbstractGalaxyTest {
         String scriptSource = indexConfig.get("scriptSource");
         assertEquals("Wrong configuration saved to the JCR repo", "JarManifestIndex.groovy", scriptSource);
 
-        indexManager.save(idx, true);
+        ArtifactVersion latest = artifact.getDefaultVersion();
+        // normal manifest property
+        assertEquals("andrew", artifact.getDefaultVersion().getProperty("jar.manifest.Built-By"));
+        // OSGi property
+        final List<String> pkgs = (List<String>) artifact.getDefaultVersion().getProperty("jar.manifest.Export-Package.packages");
+        assertNotNull(pkgs);
+        assertFalse(pkgs.isEmpty());
+
+        assertTrue(pkgs.contains("org.mule.api"));
     }
 }
