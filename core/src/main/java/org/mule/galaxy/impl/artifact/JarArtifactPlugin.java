@@ -73,12 +73,12 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
                 // dynamically register jar content handler (instead of putting it in core's spring config
                 contentService.registerContentHandler(new JarContentHandler());
 
-                // Configure and register a JarManifestIndex
+                // Configure and register a JarIndex
                 Map<String, String> manifestIndexConfig = new HashMap<String, String>();
-                manifestIndexConfig.put("scriptSource", "JarManifestIndex.groovy");
+                manifestIndexConfig.put("scriptSource", "JarIndex.groovy");
 
                 // TODO Index revolves too much around XML, needs a serious refactoring
-                Index jarManifestIndex = new Index("jar.manifest", "JAR Manifest", "application/java-archive",
+                Index jarIndex = new Index("jar", "JAR", "application/java-archive",
                                       new QName("application/java-archive"), // the constructor should be overloaded and QName go
                                       String.class,
                                       "org.mule.galaxy.impl.index.GroovyIndexer", manifestIndexConfig);
@@ -87,7 +87,6 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
 
                 // Configure and register Java Annotations indexer
                 Map<String, String> annIndexConfig = new HashMap<String, String>();
-                // TODO no such resource yet
                 annIndexConfig.put("scriptSource", "JavaAnnotationsIndex.groovy");
 
                 Index annotationsIndex = new Index("java.annotations", "Java Annotations", "application/java-archive",
@@ -97,7 +96,7 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
 
                 try
                 {
-                    indexManager.save(jarManifestIndex, true);
+                    indexManager.save(jarIndex, true);
                     indexManager.save(annotationsIndex, true);
                 }
                 catch (GalaxyException e)

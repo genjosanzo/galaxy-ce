@@ -166,7 +166,7 @@ public class IndexTest extends AbstractGalaxyTest {
     }
 
     @SuppressWarnings("unchecked")
-    public void testJarManifestIndex() throws Exception
+    public void testJarIndex() throws Exception
     {
         InputStream stream = getResourceAsStream("test.jar");
 
@@ -187,24 +187,33 @@ public class IndexTest extends AbstractGalaxyTest {
 
         assertNotNull(artifact);
 
-        Index idx = indexManager.getIndex("jar.manifest");
+        Index idx = indexManager.getIndex("jar");
         assertNotNull(idx);
 
         Map<String, String> indexConfig = idx.getConfiguration();
         assertNotNull(indexConfig);
         assertFalse(indexConfig.isEmpty());
         String scriptSource = indexConfig.get("scriptSource");
-        assertEquals("Wrong configuration saved to the JCR repo", "JarManifestIndex.groovy", scriptSource);
+        assertEquals("Wrong configuration saved to the JCR repo", "JarIndex.groovy", scriptSource);
 
         ArtifactVersion latest = artifact.getDefaultVersion();
         // normal manifest property
-        assertEquals("andrew", artifact.getDefaultVersion().getProperty("jar.manifest.Built-By"));
+        assertEquals("andrew", latest.getProperty("jar.manifest.Built-By"));
         // OSGi property
-        final List<String> pkgs = (List<String>) artifact.getDefaultVersion().getProperty("jar.manifest.Export-Package.packages");
+        final List<String> pkgs = (List<String>) latest.getProperty("jar.osgi.Export-Package.packages");
         assertNotNull(pkgs);
         assertFalse(pkgs.isEmpty());
-
         assertTrue(pkgs.contains("org.mule.api"));
+
+        final List<String> entries = (List<String>) latest.getProperty("jar.entries");
+        assertNotNull(entries);
+        assertFalse(entries.isEmpty());
+        assertTrue(entries.contains("org.mule.api.MuleContext"));
+
+        // check that wrong name isn't there, it should be jar.entries instead
+        List e = (List) latest.getProperty("jar.manifest.entries");
+        assertNull(e);
+
     }
 
     public void testJavaAnnotationsIndex() throws Exception
