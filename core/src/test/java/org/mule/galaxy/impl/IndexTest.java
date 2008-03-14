@@ -206,4 +206,53 @@ public class IndexTest extends AbstractGalaxyTest {
 
         assertTrue(pkgs.contains("org.mule.api"));
     }
+
+    public void testJavaAnnotationsIndex() throws Exception
+    {
+        // a compiled java class, but without any package hierarchy, so it can't be
+        // properly loaded by a Java classloader
+        InputStream stream = getResourceAsStream("annotations_as_bytecode.jar");
+
+        assertNotNull(stream);
+
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+
+        ArtifactResult ar = registry.createArtifact(workspace,
+                                                    "application/java-archive",
+                                                    "test.jar",
+                                                    "1",
+                                                    stream,
+                                                    getAdmin());
+
+        Artifact artifact = ar.getArtifact();
+
+        assertNotNull(artifact);
+
+        ArtifactVersion latest = artifact.getDefaultVersion();
+
+        // class
+        List<String> annotations = (List<String>) latest.getProperty("java.annotations.level.class");
+        assertNotNull(annotations);
+        assertFalse(annotations.isEmpty());
+        assertEquals("org.mule.galaxy.impl.index.annotations.Marker(value=ClassLevel)", annotations.get(0));
+
+        // just check for property existance for other levels, annotation parsing is checked in AsmAnnotationsScannerTest
+
+        // field
+        annotations = (List<String>) latest.getProperty("java.annotations.level.field");
+        assertNotNull(annotations);
+        assertFalse(annotations.isEmpty());
+
+        // method
+        annotations = (List<String>) latest.getProperty("java.annotations.level.method");
+        assertNotNull(annotations);
+        assertFalse(annotations.isEmpty());
+
+        // param
+        annotations = (List<String>) latest.getProperty("java.annotations.level.param");
+        assertNotNull(annotations);
+        assertFalse(annotations.isEmpty());
+    }
 }
