@@ -29,7 +29,7 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.commons.EmptyVisitor;
 
-class AsmAnnotationsScanner extends EmptyVisitor
+public class AsmAnnotationsScanner extends EmptyVisitor
 {
     private final Log log = LogFactory.getLog(getClass());
 

@@ -32,7 +32,7 @@ try {
         def classReader = new ClassReader(is)
         def scanner = new AsmAnnotationsScanner()
         classReader.accept scanner, 0
-        classAnnotations += scanner.classAnnotations ? scanner.classAnnotations.collect{ it.toString() } : []
+        classAnnotations += scanner.classAnnotations
         fieldAnnotations += scanner.fieldAnnotations
         methodAnnotations += scanner.methodAnnotations
         paramAnnotations += scanner.paramAnnotations
