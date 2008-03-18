@@ -3,34 +3,43 @@ package org.mule.galaxy.impl.jcr;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+import javax.jcr.AccessDeniedException;
+import javax.jcr.InvalidItemStateException;
+import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
+import javax.jcr.ValueFormatException;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
+import javax.jcr.version.VersionException;
 
+import org.apache.jackrabbit.util.ISO9075;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.onm.AbstractDao;
 import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Group;
 import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
+import org.mule.galaxy.util.UserUtils;
 import org.springmodules.jcr.JcrCallback;
 
 public class AccessControlManagerImpl extends AbstractDao<Group> implements AccessControlManager {
-    private static final String PERMISSIONS = "permissions";
+    private static final String GRANTS = "grants";
+    private static final String REVOCATIONS = "revocations";
     private static final String USER_IDS = "userIds";
-    private Map<String, Permission> permissions = new HashMap<String, Permission>();
     private UserManager userManager;
     
     public AccessControlManagerImpl() throws Exception {
@@ -42,25 +51,6 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         return t.getName();
     }
 
-    public void initialize() throws Exception {
-        add(new Permission("read_artifact", "Read Artifacts", false));
-        add(new Permission("modify_artifact", "Modify Artifacts", false));
-        add(new Permission("delete_artifact", "Delete Artifacts", false));
-    
-        add(new Permission("view_activity", "View Activity Log", true));
-        add(new Permission("manage_users", "Manage Users", true));
-        add(new Permission("manage_policies", "Manage Policies", true));
-        add(new Permission("manage_indexes", "Manage Indexes", true));
-        add(new Permission("manage_lifecycles", "Manage Lifecycles", true));
-        add(new Permission("manage_artifactTypes", "Manage Artifact Types", true));
-        
-        super.initialize();
-    }
-
-    private void add(Permission permission) {
-        permissions.put(permission.getName(), permission);
-    }
-
     @Override
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
         Set<String> userIds = new HashSet<String>();
@@ -69,7 +59,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         try {
             Group group = new Group("Administrators", userIds);
             persist(group, objects, session);
-            grant(group, permissions.values());
+            grant(group, Arrays.asList(Permission.values()));
             
             group = new Group("Users", userIds);
             persist(group, objects, session);
@@ -126,10 +116,10 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
                 try {
                     Node groupNode = findNode(group.getName(), session);
                     
-                    Property property = groupNode.getProperty(PERMISSIONS);
+                    Property property = groupNode.getProperty(GRANTS);
                     
                     for (Value v : property.getValues()) {
-                        permissions.add(getPermission(v.getString()));
+                        permissions.add(Permission.valueOf(v.getString()));
                     }
                 } catch (PathNotFoundException e) {
                 }
@@ -149,18 +139,18 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         });
     }
 
-    public Set<Permission> getPermissions(final Group group, final Workspace w) {
+    public Set<Permission> getPermissions(final Group group, final Item item) {
         final Set<Permission> permissions = new HashSet<Permission>();
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 try {
                     Node groupNode = findNode(group.getName(), session);
-                    Node wkspcNode = groupNode.getNode(w.getId());
+                    Node wkspcNode = groupNode.getNode(item.getId());
                     
-                    Property property = wkspcNode.getProperty(PERMISSIONS);
+                    Property property = wkspcNode.getProperty(GRANTS);
                     
                     for (Value v : property.getValues()) {
-                        permissions.add(getPermission(v.getString()));
+                        permissions.add(Permission.valueOf(v.getString()));
                     }
                 } catch (PathNotFoundException e) {
                 }
@@ -178,14 +168,13 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 NodeIterator nodes = query("//element(*, galaxy:group)[@userIds = '" + user.getId() + "']").getNodes();
 
-
                 while (nodes.hasNext()) {
                     Node node = nodes.nextNode();
                     
                     try {
-                        Property p = node.getProperty(PERMISSIONS);
+                        Property p = node.getProperty(GRANTS);
                         for (Value v : p.getValues()) {
-                            perms.add(getPermission(v.getString()));
+                            perms.add(Permission.valueOf(v.getString()));
                         }
                     } catch (PathNotFoundException e) {
                         // do nothing
@@ -198,15 +187,67 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         return perms;
     }
 
-    protected Permission getPermission(String string) {
-        return permissions.get(string);
+    public Set<Permission> getPermissions(final User user, final Item item) {
+        final Set<Permission> perms = new HashSet<Permission>();
+        final Set<Permission> revocations = new HashSet<Permission>();
+        execute(new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                extractPermissions(user, item, perms, revocations);
+                return null;
+            }
+            
+        });
+        return perms;
     }
 
-    public Set<Permission> getPermissions(final User user, final Workspace w) {
-        return null;
+    protected void extractPermissions(final User user, final Item item, final Set<Permission> perms,
+                                      final Set<Permission> revocations) throws RepositoryException {
+        NodeIterator nodes = query("//element(*, galaxy:group)[@userIds = '" + user.getId() + "']/" 
+                                   + ISO9075.encode(item.getId())).getNodes();
+
+        while (nodes.hasNext()) {
+            Node node = nodes.nextNode();
+            
+            try {
+                Property grantsProperty = node.getProperty(GRANTS);
+                for (Value v : grantsProperty.getValues()) {
+                    Permission perm = Permission.valueOf(v.getString());
+                    if (!revocations.contains(perm)) {
+                        perms.add(perm);
+                    }
+                }
+            } catch (PathNotFoundException e) {
+                // do nothing
+            }
+            
+            try {
+                Property revocationsProperty = node.getProperty(REVOCATIONS);
+                for (Value v : revocationsProperty.getValues()) {
+                    Permission perm = Permission.valueOf(v.getString());
+                    if (!perms.contains(perm)) {
+                        revocations.add(perm);
+                    }
+                }
+            } catch (PathNotFoundException e) {
+                // do nothing
+            }
+        }
+        
+        Item parent = item.getParent();
+        if (parent != null) {
+            extractPermissions(user, parent, perms, revocations);
+        } else {
+            Set<Permission> permissions = getGlobalPermissions(user);
+            for (Permission p : permissions) {
+                if (!revocations.contains(p)) {
+                    perms.add(p);
+                }
+            }
+        }
     }
 
-    public void grant(Group group, Permission p, Workspace w) {
+    public void grant(Group group, Permission p, Item item) {
         // TODO Auto-generated method stub
         
     }
@@ -217,40 +258,137 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
     
     public void grant(final Group group, final Collection<Permission> perms) {
         execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node groupNode = findNode(group.getName(), session);
-                
-                try {
-                    Property property = groupNode.getProperty(PERMISSIONS);
-                    Set<String> values = JcrUtil.asSet(property.getValues());
-                    for (Permission p : perms) {
-                        values.add(p.getName());
-                    }
-                    
-                    property.setValue(values.toArray(new String[values.size()]));
-                } catch (PathNotFoundException e) {
-                    Set<String> values = new HashSet<String>();
-                    for (Permission p : perms) {
-                        values.add(p.getName());
-                    }
-                    groupNode.setProperty(PERMISSIONS, values.toArray(new String[values.size()]));
-                }
-                session.save();
+            public Object doInJcr(Session session) throws IOException, RepositoryException {                
+                modifyPermissions(group, perms, session, GRANTS);
                 return null;
             }
         });
     }
 
-    public void revoke(Group group, Permission p, Workspace w) {
-        // TODO Auto-generated method stub
+    protected void modifyPermissions(final Group group, final Collection<Permission> perms,
+                                     Session session, String propertyName) throws RepositoryException {
+        Node groupNode = findNode(group.getName(), session);
         
+        try {
+            Property property = groupNode.getProperty(propertyName);
+            Set<String> values = JcrUtil.asSet(property.getValues());
+            for (Permission p : perms) {
+                values.add(p.toString());
+            }
+            
+            property.setValue(values.toArray(new String[values.size()]));
+        } catch (PathNotFoundException e) {
+            Set<String> values = new HashSet<String>();
+            for (Permission p : perms) {
+                values.add(p.toString());
+            }
+            groupNode.setProperty(propertyName, values.toArray(new String[values.size()]));
+        }
+        session.save();
     }
 
-    public void revoke(Group group, Permission p) {
-        // TODO Auto-generated method stub
+    protected void modifyPermissions(final Group group, 
+                                     final Collection<Permission> perms,
+                                     final Item item,
+                                     Session session, 
+                                     String propertyName) throws RepositoryException {
+        Node groupNode = findNode(group.getName(), session);
         
+        Node itemNode = JcrUtil.getOrCreate(groupNode, item.getId());
+        
+        try {
+            Property property = itemNode.getProperty(propertyName);
+            Set<String> values = JcrUtil.asSet(property.getValues());
+            for (Permission p : perms) {
+                values.add(p.toString());
+            }
+            
+            property.setValue(values.toArray(new String[values.size()]));
+        } catch (PathNotFoundException e) {
+            Set<String> values = new HashSet<String>();
+            for (Permission p : perms) {
+                values.add(p.toString());
+            }
+            itemNode.setProperty(propertyName, values.toArray(new String[values.size()]));
+        }
+        session.save();
+    }
+    
+    public void clear(final Group group, final Item item) {
+        execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {                
+                Node groupNode = findNode(group.getName(), session);
+                
+                Node itemNode = JcrUtil.getOrCreate(groupNode, item.getId());
+                
+                itemNode.setProperty(GRANTS, (Value[]) null);
+                itemNode.setProperty(REVOCATIONS, (Value[]) null);
+                return null;
+            }
+        });
     }
 
+    public void revoke(Group group, Permission p, Item item) {
+        revoke(group, Arrays.asList(p), item);
+    }
+
+    public void revoke(final Group group, final Collection<Permission> perms, final Item item) {
+        execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {                
+                modifyPermissions(group, perms, item, session, REVOCATIONS);
+                return null;
+            }
+        });
+    }
+    
+    public void revoke(final Group group, final Permission p) {
+        revoke(group, Arrays.asList(p));
+    }
+    
+    public void revoke(final Group group, final Collection<Permission> perms) {
+        execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {                
+                modifyPermissions(group, perms, session, REVOCATIONS);
+                return null;
+            }
+        });
+    }
+
+    public void assertAccess(Permission p) throws AccessException {
+        User currentUser = UserUtils.getCurrentUser();
+        
+        if (currentUser == null) {
+            throw new AccessException();
+        }
+        
+        if (currentUser.equals(UserUtils.SYSTEM_USER)) {
+            return;
+        }
+        
+        Set<Permission> perms = getGlobalPermissions(currentUser);
+        
+        if (!perms.contains(p)) {
+            throw new AccessException();
+        }
+    }
+
+    public void assertAccess(Permission p, Item item) throws AccessException {
+        User currentUser = UserUtils.getCurrentUser();
+
+        if (currentUser == null) {
+            throw new AccessException();
+        }
+        
+        if (currentUser.equals(UserUtils.SYSTEM_USER)) {
+            return;
+        }
+        
+        Set<Permission> perms = getPermissions(currentUser, item);
+        
+        if (!perms.contains(p)) {
+            throw new AccessException();
+        }
+    }
     @Override
     protected String getNodeType() {
         return "galaxy:group";

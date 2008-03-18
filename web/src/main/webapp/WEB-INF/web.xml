@@ -9,6 +9,7 @@
       classpath:/META-INF/applicationContext-core.xml
       classpath:/META-INF/applicationContext-abdera.xml
       classpath:/META-INF/applicationContext-acegi-security.xml
+      classpath:/META-INF/applicationContext-acegi-security-web.xml
       classpath:/META-INF/applicationContext-web.xml
     </param-value>
   </context-param>

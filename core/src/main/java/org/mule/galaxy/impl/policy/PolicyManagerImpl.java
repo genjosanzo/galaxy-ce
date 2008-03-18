@@ -410,7 +410,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Artifact a = v.getParent();
                 String lifecycle = v.getPhase().getLifecycle().getId();
-                String workspace = a.getWorkspace().getId();
+                String workspace = a.getParent().getId();
 
                 addPolicies(activePolicies, a, session, lifecyclesNodeId, lifecycle);
                 addPolicies(activePolicies, a, session, workspaceLifecyclesNodeId, 

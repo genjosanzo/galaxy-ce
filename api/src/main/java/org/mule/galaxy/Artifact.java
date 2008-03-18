@@ -16,12 +16,11 @@ import org.mule.galaxy.lifecycle.Phase;
  * An artifact which can be versioned inside a repository. Can be anything
  * from a configuration file to a wsdl to a jar etc.
  */
-public interface Artifact  {
-    String getId();
+public interface Artifact extends Item<Workspace> {
     
     String getPath();
     
-    Workspace getWorkspace();
+    Workspace getParent();
     
     Calendar getCreated();
     
@@ -52,17 +51,4 @@ public interface Artifact  {
      */
     ArtifactVersion getDefaultVersion();
     
-    public void setProperty(String name, Object value) throws PropertyException;
-    
-    Object getProperty(String name);
-
-    boolean hasProperty(String name);
-
-    Iterator<PropertyInfo> getProperties();
-    
-    PropertyInfo getPropertyInfo(String name);
-
-    void setLocked(String name, boolean locked);
-
-    void setVisible(String property, boolean visible);
 }

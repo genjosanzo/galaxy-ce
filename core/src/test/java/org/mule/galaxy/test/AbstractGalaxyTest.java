@@ -10,6 +10,10 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 
+import org.acegisecurity.Authentication;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.providers.AuthenticationProvider;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.api.JackrabbitRepository;
@@ -29,6 +33,7 @@ import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springmodules.jcr.SessionFactory;
@@ -75,6 +80,12 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
 
     protected User getAdmin() {
         return userManager.authenticate("admin", "admin");
+    }
+    
+    protected void login(final String username, final String password) {
+        AuthenticationProvider provider = (AuthenticationProvider) applicationContext.getBean("daoAuthenticationProvider");
+        Authentication auth = provider.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        SecurityContextHolder.getContext().setAuthentication(auth);
     }
     
     protected Artifact importHelloWsdl() 
@@ -150,6 +161,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     protected String[] getConfigLocations() {
         return new String[] {
             "/META-INF/applicationContext-core.xml",
+            "/META-INF/applicationContext-acegi-security.xml",
             "/META-INF/applicationContext-test.xml"
         };
     }
@@ -170,10 +182,12 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
             TransactionSynchronizationManager.bindResource(sessionFactory, sessionFactory.getSessionHolder(session));
         }
 
+        login("admin", "admin");
     }
 
     @Override
     protected void onTearDown() throws Exception {
+        logout();
         ((IndexManagerImpl) applicationContext.getBean("indexManagerTarget")).destroy();
 
         if (repository != null) {
@@ -187,6 +201,10 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
             SessionFactoryUtils.releaseSession(session, sessionFactory);
         }
         super.onTearDown();
+    }
+
+    protected void logout() {
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
 

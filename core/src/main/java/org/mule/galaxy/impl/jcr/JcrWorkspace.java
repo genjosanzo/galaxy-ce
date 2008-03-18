@@ -19,7 +19,7 @@ import org.mule.galaxy.Workspace;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 
-public class JcrWorkspace extends AbstractJcrObject implements org.mule.galaxy.Workspace {
+public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Workspace {
 
     public static final String NAME = "name";
     public static final String CREATED = "updated";

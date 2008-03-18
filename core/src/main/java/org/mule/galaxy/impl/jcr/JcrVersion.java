@@ -23,7 +23,7 @@ import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.util.DateUtil;
 
-public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
+public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
     public static final String CREATED = "created";
     public static final String DATA = "data";
     public static final String LABEL = "label";
@@ -124,7 +124,7 @@ public class JcrVersion extends AbstractJcrObject implements ArtifactVersion {
     public Object getData() {
         if (data == null) {
             try {
-                data = parent.getContentHandler().read(getStream(), parent.getWorkspace());
+                data = parent.getContentHandler().read(getStream(), parent.getParent());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

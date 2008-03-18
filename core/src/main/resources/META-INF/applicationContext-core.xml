@@ -99,6 +99,7 @@
   <bean id="registryTarget" class="org.mule.galaxy.impl.jcr.JcrRegistryImpl"
         init-method="initialize"
         depends-on="jcrInitializer">
+    <property name="accessControlManager" ref="accessControlManager" />
     <property name="activityManager" ref="activityManager" />
     <property name="contentService" ref="contentService" />
     <property name="settings" ref="settings" />

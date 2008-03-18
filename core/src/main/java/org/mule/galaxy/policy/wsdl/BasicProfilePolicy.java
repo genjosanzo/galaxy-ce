@@ -69,7 +69,7 @@ public class BasicProfilePolicy implements ArtifactPolicy
                 Document doc = (Document) next.getData();
                 Definition def = null;
                 try {
-                    def = wsdlReader.readWSDL(new RegistryLocator(registry, a.getWorkspace()), 
+                    def = wsdlReader.readWSDL(new RegistryLocator(registry, a.getParent()), 
                                               doc.getDocumentElement());
                 } catch (Exception e) {
                     // Ignore - its not parsable

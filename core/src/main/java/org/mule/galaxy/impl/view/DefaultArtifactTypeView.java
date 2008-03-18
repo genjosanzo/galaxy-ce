@@ -20,7 +20,7 @@ public class DefaultArtifactTypeView implements ArtifactTypeView {
         case 0:
             return row.getName();
         case 1:
-            return row.getWorkspace().getPath();
+            return row.getParent().getPath();
         case 2:
             return row.getDefaultVersion().getVersionLabel();
         case 3:

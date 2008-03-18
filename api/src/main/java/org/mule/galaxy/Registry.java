@@ -11,6 +11,7 @@ import javax.activation.MimeTypeParseException;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.SearchResults;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
 public interface Registry {
@@ -57,7 +58,7 @@ public interface Registry {
                                   Object data, 
                                   String versionLabel, 
                                   User user) 
-        throws DuplicateItemException, RegistryException, ArtifactPolicyException, MimeTypeParseException;
+        throws DuplicateItemException, RegistryException, ArtifactPolicyException, MimeTypeParseException, AccessException;
     
     ArtifactResult createArtifact(Workspace workspace, 
                                   String contentType, 
@@ -65,7 +66,7 @@ public interface Registry {
                                   String versionLabel, 
                                   InputStream inputStream, 
                                   User user) 
-        throws DuplicateItemException, RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException;
+        throws DuplicateItemException, RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, AccessException;
     
     /**
      * Create a new ArtifactVersion from a POJOish object.
@@ -82,7 +83,7 @@ public interface Registry {
                               Object data, 
                               String versionLabel, 
                               User user) 
-        throws RegistryException, ArtifactPolicyException, IOException, DuplicateItemException;
+        throws RegistryException, ArtifactPolicyException, IOException, DuplicateItemException, AccessException;
     
     /**
      * Create a new ArtifactVersion its byte form. 
@@ -99,7 +100,7 @@ public interface Registry {
                                InputStream inputStream, 
                                String versionLabel, 
                                User user) 
-        throws RegistryException, ArtifactPolicyException, IOException, DuplicateItemException;
+        throws RegistryException, ArtifactPolicyException, IOException, DuplicateItemException, AccessException;
 
     /**
      * Sets the default version of an artifact to the specified one. It may

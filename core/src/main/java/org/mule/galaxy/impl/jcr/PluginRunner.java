@@ -10,6 +10,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.mule.galaxy.ArtifactPlugin;
+import org.mule.galaxy.util.UserUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -34,25 +35,37 @@ public class PluginRunner implements ApplicationContextAware {
         JcrUtil.doInTransaction(jcrTemplate.getSessionFactory(), new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Map plugins = context.getBeansOfType(ArtifactPlugin.class);
-                try {
-                    if (System.getProperty("initializeOnce") != null) {
-                        for (Object o : plugins.values()) {
-                            ((ArtifactPlugin) o).initializeOnce();
-                        }
-                    }
-                    
-                    for (Object o : plugins.values()) {
-                        ((ArtifactPlugin) o).initializeEverytime();
-                    }
-                } catch (RepositoryException e) {
-                    throw e;
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+                UserUtils.doPriveleged(new PluginInitializer(context));
                 return null;
             }
             
         });
+    }
+    
+    private static final class PluginInitializer implements Runnable {
+
+        private final ApplicationContext context;
+
+        public PluginInitializer(ApplicationContext context) {
+            this.context = context;
+        }
+
+        public void run() {
+            Map plugins = context.getBeansOfType(ArtifactPlugin.class);
+            try {
+                if (System.getProperty("initializeOnce") != null) {
+                    for (Object o : plugins.values()) {
+                        ((ArtifactPlugin) o).initializeOnce();
+                    }
+                }
+                
+                for (Object o : plugins.values()) {
+                    ((ArtifactPlugin) o).initializeEverytime();
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        
     }
 }

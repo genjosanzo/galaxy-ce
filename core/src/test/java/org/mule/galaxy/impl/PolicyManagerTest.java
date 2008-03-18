@@ -26,7 +26,7 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         Lifecycle lifecycle = lifecycleManager.getDefaultLifecycle();
         
         Artifact artifact = importHelloWsdl();
-        Workspace workspace = artifact.getWorkspace();
+        Workspace workspace = artifact.getParent();
 
         try {
             policyManager.setActivePolicies(workspace, lifecycle, failPolicy);
@@ -68,7 +68,7 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         policyManager.setActivePolicies(lifecycle, policy);
         
         Artifact artifact = importHelloWsdl();
-        Workspace workspace = artifact.getWorkspace();
+        Workspace workspace = artifact.getParent();
         
         Collection<ArtifactPolicy> active = policyManager.getActivePolicies(artifact.getDefaultVersion());
         assertNotNull(active);

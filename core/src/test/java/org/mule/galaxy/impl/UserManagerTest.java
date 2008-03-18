@@ -55,11 +55,5 @@ public class UserManagerTest extends AbstractGalaxyTest {
         assertEquals("Dan Diephouse", user.getName());
         assertNotNull(user.getCreated());
     }
-    
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] { "/META-INF/applicationContext-core.xml", 
-                              "/META-INF/applicationContext-test.xml" };
-    }
 
 }

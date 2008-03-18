@@ -23,7 +23,7 @@ import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.UserUtils;
 
 
-public class AbstractJcrObject {
+public abstract class AbstractJcrItem {
 
     public static final String PROPERTIES = "properties";
     public static final String LOCKED = ".locked";
@@ -33,7 +33,7 @@ public class AbstractJcrObject {
     protected Node node;
     private JcrRegistryImpl registry;
 
-    public AbstractJcrObject(Node node, JcrRegistryImpl registry) throws RepositoryException {
+    public AbstractJcrItem(Node node, JcrRegistryImpl registry) throws RepositoryException {
         this.node = node;
         this.registry = registry;
     }
@@ -124,7 +124,7 @@ public class AbstractJcrObject {
     }
 
     private ResourceBundle getBundle() {
-        return BundleUtils.getBundle(AbstractJcrObject.class);
+        return BundleUtils.getBundle(AbstractJcrItem.class);
     }
 
     private void ensureProperty(String name) throws RepositoryException {

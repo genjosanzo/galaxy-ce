@@ -16,6 +16,14 @@ public class User implements Identifiable {
     private Calendar created;
     private Map<String,Object> properties;
     
+    public User(String username) {
+        this.username = username;
+    }
+
+    public User() {
+        super();
+    }
+
     public String getId() {
         return id;
     }

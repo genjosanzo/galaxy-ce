@@ -38,6 +38,7 @@ import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.lifecycle.TransitionException;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
 public class SearchableArtifactCollection extends AbstractArtifactCollection {
@@ -146,7 +147,7 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
                                             InputStream inputStream, 
                                             User user,
                                             RequestContext request)
-        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, ResponseContextException, DuplicateItemException  {
+        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, ResponseContextException, DuplicateItemException, AccessException  {
 
         Workspace workspace = (Workspace) request.getAttribute(Scope.REQUEST, ArtifactResolver.WORKSPACE);
 
@@ -201,6 +202,8 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
             throw new ResponseContextException(500, e);
         } catch (DuplicateItemException e) {
             throw new ResponseContextException(409, e);
+        } catch (AccessException e) {
+            throw new ResponseContextException(401, e);
         }
     }
 
