@@ -16,6 +16,13 @@
             <artifactId>galaxy-core</artifactId>
             <version>${version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.mule.galaxy</groupId>
+            <artifactId>galaxy-core</artifactId>
+            <version>${version}</version>
+            <type>tests-jar</type>
+        </dependency>
 
         <dependency>
             <groupId>org.mule.galaxy</groupId>
