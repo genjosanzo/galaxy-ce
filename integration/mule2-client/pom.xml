@@ -13,7 +13,7 @@
     <name>Galaxy Mule 2 Client</name>
 
     <properties>
-        <muleVersion>2.0.0-RC3-SNAPSHOT</muleVersion>
+        <muleVersion>2.0.0-RC3</muleVersion>
     </properties>
 
     <dependencies>
