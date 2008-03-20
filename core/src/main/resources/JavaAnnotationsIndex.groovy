@@ -21,10 +21,11 @@ def jarFile
 try {
     jarFile = new JarFile(temp)
 
-    def classAnnotations = []
-    def fieldAnnotations = []
-    def methodAnnotations = []
-    def paramAnnotations = []
+    // we don't want any duplicate entries
+    def classAnnotations = new HashSet()
+    def fieldAnnotations = new HashSet()
+    def methodAnnotations = new HashSet()
+    def paramAnnotations = new HashSet()
 
     // a list of jar entries
     jarFile.entries().findAll {!it.directory && it.name.endsWith('.class')}.each { JarEntry e ->
