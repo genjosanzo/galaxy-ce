@@ -82,6 +82,7 @@ public class GroovyIndexer extends AbstractIndexer
         }
         finally
         {
+            shell.resetLoadedClasses();
             is.close();
         }
     }
