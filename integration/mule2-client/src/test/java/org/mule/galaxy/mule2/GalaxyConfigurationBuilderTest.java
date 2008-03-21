@@ -9,6 +9,7 @@ import org.mule.galaxy.test.AbstractAtomTest;
 import org.mule.util.IOUtils;
 
 import java.util.Properties;
+import java.net.URL;
 
 public class GalaxyConfigurationBuilderTest extends AbstractAtomTest
 {
@@ -19,6 +20,11 @@ public class GalaxyConfigurationBuilderTest extends AbstractAtomTest
         String configURL = "http://admin:admin@localhost:9002/api/registry?q=select artifact where mule2.model = 'helloSample'";
 
         GalaxyConfigurationBuilder builder = new GalaxyConfigurationBuilder(configURL);
+
+        // any class from spring-core
+        URL jar = Class.forName("org.springframework.core.AttributeAccessor").getProtectionDomain().getCodeSource().getLocation();
+        System.out.println(">>>\n\n\n\n" + jar);
+
         context = new DefaultMuleContextFactory().createMuleContext(builder);
 
         //Assert components
