@@ -11,6 +11,7 @@
     <properties>
         <slf4jVersion>1.4.3</slf4jVersion>
         <gwtVersion>1.4.61</gwtVersion>
+        <springVersion>2.5.1</springVersion>
     </properties>
 
     <licenses>
@@ -204,7 +205,7 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring</artifactId>
-                <version>2.0.8</version>
+                <version>${springVersion}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-logging</groupId>
@@ -212,6 +213,49 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aop</artifactId>
+                <version>${springVersion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context-support</artifactId>
+                <version>${springVersion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jdbc</artifactId>
+                <version>${springVersion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jms</artifactId>
+                <version>${springVersion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-mock</artifactId>
+                <version>${springVersion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-tx</artifactId>
+                <version>${springVersion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${springVersion}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>com.google.gwt</groupId>
