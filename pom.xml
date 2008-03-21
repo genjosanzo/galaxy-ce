@@ -256,6 +256,11 @@
                 <version>${springVersion}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${springVersion}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.google.gwt</groupId>
