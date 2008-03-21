@@ -1,18 +1,15 @@
 package org.mule.galaxy.impl;
 
-import java.util.List;
-import java.util.Set;
-
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Group;
 import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
-import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.util.Constants;
 import org.mule.galaxy.util.UserUtils;
+
+import java.util.List;
+import java.util.Set;
 
 public class AccessControlManagerTest extends AbstractGalaxyTest {
     public void testDao() throws Exception {
