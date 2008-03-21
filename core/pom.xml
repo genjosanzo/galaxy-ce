@@ -12,11 +12,6 @@
     <name>Galaxy Core</name>
 
     <dependencies>
-        <dependency>
-            <groupId>jparsec</groupId>
-            <artifactId>jparsec</artifactId>
-            <version>0.2.3</version>
-        </dependency>
 
         <dependency>
             <groupId>net.sf.saxon</groupId>
