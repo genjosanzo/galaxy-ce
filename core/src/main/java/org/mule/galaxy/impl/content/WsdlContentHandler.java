@@ -82,7 +82,7 @@ public class WsdlContentHandler extends XmlDocumentContentHandler implements Xml
     private String createWsdlDiff(ArtifactVersion v1, ArtifactVersion v2, Document doc1, Document doc2) {
         WsdlDiff diff = new WsdlDiff();
         // TODO - get a reference to the registry for the locator
-        WSDLLocator l = new RegistryLocator(registry, v1.getParent().getWorkspace());
+        WSDLLocator l = new RegistryLocator(registry, v1.getParent().getParent());
         try {
             diff.setOriginalWSDL(doc1, l);
         } catch (WSDLException e) {

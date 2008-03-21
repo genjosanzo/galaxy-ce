@@ -20,8 +20,6 @@
         an error message to the end user. System error handling logs errors.
     </description>
 
-    <configuration serverId="hello-server"/>
-
     <!--
         The system stream connector is used to send and receive information via the
         System.in and System.out. Note this connector is only really useful for testing

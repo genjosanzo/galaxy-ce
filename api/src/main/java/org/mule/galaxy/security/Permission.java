@@ -2,25 +2,22 @@ package org.mule.galaxy.security;
 
 import org.mule.galaxy.Identifiable;
 
-public class Permission {
-    private String name;
+public enum Permission {
+    READ_ARTIFACT("Read Artifacts", false),
+    MODIFY_ARTIFACT("Modify Artifacts", false),
+    DELETE_ARTIFACT("Delete Artifats", false),
+    VIEW_ACTIVITY("View Activity Log", false),
+    MANAGE_USERS("Manage Users", false),
+    MANAGE_POLICIES("Manage Policies", false),
+    MANAGE_LIFECYCLES("Manage Lifecycles", false),
+    MANAGE_ARTIFACT_types("Manage Artifact Types", false);
+    
     private String description;
     private boolean global;
     
-    public Permission() {
-        super();
-    }
-    public Permission(String name, String description, boolean global) {
-        super();
-        this.name = name;
+    Permission(String description, boolean globalOnly) {
         this.description = description;
-        this.global = global;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
+        this.global = globalOnly;
     }
     public String getDescription() {
         return description;

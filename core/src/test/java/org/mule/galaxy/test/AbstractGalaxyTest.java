@@ -27,6 +27,10 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 
+import org.acegisecurity.Authentication;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.providers.AuthenticationProvider;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.api.JackrabbitRepository;
@@ -54,9 +58,9 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     protected CommentManager commentManager;
     protected PluginRunner pluginRunner;
     protected AccessControlManager accessControlManager;
-    
+
     private boolean participate;
-    
+
     public AbstractGalaxyTest() {
         super();
         setPopulateProtectedVariables(true);
@@ -83,52 +87,58 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     protected User getAdmin() {
         return userManager.authenticate("admin", "admin");
     }
-    
-    protected Artifact importHelloWsdl() 
+
+    protected void login(final String username, final String password) {
+        AuthenticationProvider provider = (AuthenticationProvider) applicationContext.getBean("daoAuthenticationProvider");
+        Authentication auth = provider.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+
+    protected Artifact importHelloWsdl()
         throws Exception {
         InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
-        
+
         Collection<Workspace> workspaces = registry.getWorkspaces();
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
-        
-        ArtifactResult ar = registry.createArtifact(workspace, 
-                                                    "application/xml", 
-                                                    "hello_world.wsdl", 
-                                                    "0.1", 
-                                                    helloWsdl, 
+
+        ArtifactResult ar = registry.createArtifact(workspace,
+                                                    "application/xml",
+                                                    "hello_world.wsdl",
+                                                    "0.1",
+                                                    helloWsdl,
                                                     getAdmin());
         return ar.getArtifact();
     }
 
     protected Artifact importXmlSchema() throws Exception {
         InputStream xsd = getResourceAsStream("/schema/test.xsd");
-        
+
         Collection<Workspace> workspaces = registry.getWorkspaces();
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
-        
-        ArtifactResult ar = registry.createArtifact(workspace, 
-                                                    "application/xml", 
-                                                    "test.xsd", 
-                                                    "0.1", 
-                                                    xsd, 
+
+        ArtifactResult ar = registry.createArtifact(workspace,
+                                                    "application/xml",
+                                                    "test.xsd",
+                                                    "0.1",
+                                                    xsd,
                                                     getAdmin());
-        
+
         Artifact a = ar.getArtifact();
         return a;
     }
 
     protected Artifact importHelloMule() throws Exception {
         InputStream helloWsdl = getResourceAsStream("/mule/hello-config.xml");
-        
+
         Collection<Workspace> workspaces = registry.getWorkspaces();
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
-        
-        ArtifactResult ar = registry.createArtifact(workspace, 
-                                                    "application/xml", 
-                                                    "hello-config.xml", 
+
+        ArtifactResult ar = registry.createArtifact(workspace,
+                                                    "application/xml",
+                                                    "hello-config.xml",
                                                     "0.1", helloWsdl, getAdmin());
         return ar.getArtifact();
     }
@@ -148,6 +158,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
             session.save();
             session.logout();
         } catch (PathNotFoundException t) {
+            // ignore
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -157,15 +168,16 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     protected String[] getConfigLocations() {
         return new String[] {
             "/META-INF/applicationContext-core.xml",
+            "/META-INF/applicationContext-acegi-security.xml",
             "/META-INF/applicationContext-test.xml"
         };
     }
 
-    @Override  
+    @Override
     protected void onSetUp() throws Exception {
         super.onSetUp();
-        
-        Session session = null;
+
+        Session session;
         participate = false;
         if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
             // Do not modify the Session: just set the participate
@@ -177,10 +189,12 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
             TransactionSynchronizationManager.bindResource(sessionFactory, sessionFactory.getSessionHolder(session));
         }
 
+        login("admin", "admin");
     }
 
     @Override
     protected void onTearDown() throws Exception {
+        logout();
         ((IndexManagerImpl) applicationContext.getBean("indexManagerTarget")).destroy();
 
         if (repository != null) {
@@ -194,6 +208,10 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
             SessionFactoryUtils.releaseSession(session, sessionFactory);
         }
         super.onTearDown();
+    }
+
+    protected void logout() {
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
 

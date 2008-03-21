@@ -45,8 +45,8 @@ public abstract class AbstractWsdlVersioningPolicy implements ArtifactPolicy
         try {
             WsdlDiff diff = new WsdlDiff();
             // TODO: make data a Definition object
-            diff.setOriginalWSDL((Document) previous.getData(), new RegistryLocator(registry, a.getWorkspace()));
-            diff.setNewWSDL((Document) next.getData(), new RegistryLocator(registry, a.getWorkspace()));
+            diff.setOriginalWSDL((Document) previous.getData(), new RegistryLocator(registry, a.getParent()));
+            diff.setNewWSDL((Document) next.getData(), new RegistryLocator(registry, a.getParent()));
             diff.check(new DifferenceListener() {
                 public void onEvent(DifferenceEvent event) {
                     check(messages, event);

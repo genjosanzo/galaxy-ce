@@ -1,6 +1,9 @@
 package org.mule.galaxy.security;
 
+import java.util.ResourceBundle;
+
 import org.mule.galaxy.GalaxyException;
+import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.Message;
 
 /**
@@ -9,16 +12,10 @@ import org.mule.galaxy.util.Message;
  */
 public class AccessException extends GalaxyException {
 
-    public AccessException(Message msg, Throwable t) {
-        super(msg, t);
-    }
-
-    public AccessException(Message msg) {
-        super(msg);
-    }
-
-    public AccessException(Throwable cause) {
-        super(cause);
+    private static final ResourceBundle BUNDLE = BundleUtils.getBundle(AccessException.class);
+    
+    public AccessException() {
+        super(new Message("ACCESS_RESTRICTED", BUNDLE));
     }
 
 }

@@ -36,6 +36,7 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -174,6 +175,9 @@ public class ArtifactUploadServlet extends HttpServlet {
         } catch (DuplicateItemException e) {
             resp.setStatus(409);
             writer.write("An artifact with that name already exists.");
+        } catch (AccessException e) {
+            resp.setStatus(401);
+            writer.write("AccessException.");
         }
     }
 

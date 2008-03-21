@@ -23,7 +23,7 @@ public class CustomArtifactTypeView implements ArtifactTypeView {
         
         columns.add(new Column("Workspace", false, true, new ColumnEvaluator() {
             public Object getValue(Object artifact) {
-                return ((Artifact) artifact).getWorkspace().getPath();
+                return ((Artifact) artifact).getParent().getPath();
             }
         }));
 

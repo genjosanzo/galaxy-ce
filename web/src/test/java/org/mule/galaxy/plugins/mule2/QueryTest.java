@@ -26,7 +26,7 @@ public class QueryTest extends AbstractGalaxyTest {
         // Import a document which should now be indexed
         Artifact muleArtifact = importHelloMule2();
 
-        Workspace workspace = muleArtifact.getWorkspace();
+        Workspace workspace = muleArtifact.getParent();
 
         // Try out search!
         Set results = registry.search(new Query(Artifact.class).workspaceId(workspace.getId())).getResults();

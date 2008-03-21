@@ -28,7 +28,7 @@ import javax.xml.namespace.QName;
 
 import org.springmodules.jcr.JcrCallback;
 
-public class JcrArtifact extends AbstractJcrObject implements Artifact {
+public class JcrArtifact extends AbstractJcrItem implements Artifact {
     public static final String CONTENT_TYPE = "contentType";
     public static final String CREATED = "created";
     public static final String DESCRIPTION = "description";
@@ -76,7 +76,7 @@ public class JcrArtifact extends AbstractJcrObject implements Artifact {
         return sb;
     }
     
-    public Workspace getWorkspace() {
+    public Workspace getParent() {
         return workspace;
     }
 

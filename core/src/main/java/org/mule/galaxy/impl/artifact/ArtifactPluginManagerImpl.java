@@ -22,6 +22,7 @@ import org.mule.galaxy.plugins.config.jaxb.GalaxyPoliciesType;
 import org.mule.galaxy.plugins.config.jaxb.GalaxyType;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.util.UserUtils;
 import org.mule.galaxy.view.ViewManager;
 
 import java.io.IOException;
@@ -103,13 +104,22 @@ public class ArtifactPluginManagerImpl implements ArtifactPluginManager, Applica
 
     public void initialize() throws Exception
     {
-        initializeXmPlugins();
-        initializeBeanPlugins();
+        UserUtils.doPriveleged(new Runnable() {
+
+            public void run() {
+                try {
+                    initializeXmPlugins();
+                    initializeBeanPlugins();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            
+        });
     }
 
     protected void initializeXmPlugins() throws Exception
     {
-
         JcrUtil.doInTransaction(jcrTemplate.getSessionFactory(), new JcrCallback()
         {
             public Object doInJcr(Session session) throws IOException, RepositoryException

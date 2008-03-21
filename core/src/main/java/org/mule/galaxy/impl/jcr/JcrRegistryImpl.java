@@ -30,6 +30,9 @@ import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.query.Restriction.Operator;
 import org.mule.galaxy.query.SearchResults;
+import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.util.BundleUtils;
@@ -106,6 +109,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private String artifactTypesId;
     
     private ActivityManager activityManager;
+    
+    private AccessControlManager accessControlManager;
+    
     private String id;
     
     public JcrRegistryImpl() {
@@ -467,7 +473,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     public ArtifactResult createArtifact(Workspace workspace, Object data, String versionLabel, User user) 
-        throws RegistryException, ArtifactPolicyException, MimeTypeParseException, DuplicateItemException {
+        throws RegistryException, ArtifactPolicyException, MimeTypeParseException, DuplicateItemException, AccessException {
+        accessControlManager.assertAccess(Permission.READ_ARTIFACT);
+
         ContentHandler ch = contentService.getContentHandler(data.getClass());
         
         if (ch == null) {
@@ -672,7 +680,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         
         if (previous == null) {
             activityManager.logActivity(user, "Artifact " + artifact.getName() + " was created in workspace "
-                                              + artifact.getWorkspace().getPath() + ".", EventType.INFO);
+                                              + artifact.getParent().getPath() + ".", EventType.INFO);
         } else {
             activityManager.logActivity(user, "Version " + next.getVersionLabel() 
                                         + " of artifact " + artifact.getPath() + " was created.", EventType.INFO);
@@ -705,7 +713,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                                          String versionLabel, 
                                          InputStream inputStream, 
                                          User user) 
-        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, DuplicateItemException {
+        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, DuplicateItemException, AccessException {
+        accessControlManager.assertAccess(Permission.READ_ARTIFACT);
         contentType = trimContentType(contentType);
         MimeType ct = new MimeType(contentType);
 
@@ -783,7 +792,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         versionNode.setProperty(JcrVersion.DATA, inputStream);
                         
                         InputStream s = versionNode.getProperty(JcrVersion.DATA).getStream();
-                        Object data = getData(artifact.getWorkspace(), artifact.getContentType(), s);
+                        Object data = getData(artifact.getParent(), artifact.getContentType(), s);
                         next.setData(data);
                     } else {
                         next.setData(data);
@@ -797,13 +806,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     
                     ((List<ArtifactVersion>)jcrArtifact.getVersions()).add(0, next);
                     
-                    Lifecycle lifecycle = jcrArtifact.getWorkspace().getDefaultLifecycle();
+                    Lifecycle lifecycle = jcrArtifact.getParent().getDefaultLifecycle();
                     next.setPhase(lifecycle.getInitialPhase());        
                     
                     ch.addMetadata(next);
                     
                     try {
-                        Property pNames = previousNode.getProperty(AbstractJcrObject.PROPERTIES);
+                        Property pNames = previousNode.getProperty(AbstractJcrItem.PROPERTIES);
                     
                         for (Value name : pNames.getValues()) {
                             Property prop = previousNode.getProperty(name.getString());
@@ -1591,6 +1600,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     public ActivityManager getActivityManager() {
         return activityManager;
+    }
+
+    public void setAccessControlManager(AccessControlManager accessControlManager) {
+        this.accessControlManager = accessControlManager;
     }
 
     public void setActivityManager(ActivityManager activityManager) {

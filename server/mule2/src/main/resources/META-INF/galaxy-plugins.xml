@@ -44,14 +44,6 @@
                 <!--]]></expression>-->
             <!--</index>-->
             <index>
-                <field-name>mule2.server.id</field-name>
-                <display-name>Mule 2 Server Id</display-name>
-                <description>Indexes the Mule node serverId</description>
-                <indexer>xpath</indexer>
-                <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[/*/*[local-name()='configuration']/@serverId]]></expression></configuration>
-            </index>
-            <index>
                 <field-name>mule2.cluster.id</field-name>
                 <display-name>Mule 2 Cluster Id</display-name>
                 <description>Indexes the Mule node clusterId</description>

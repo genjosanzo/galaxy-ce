@@ -5,9 +5,7 @@ import java.util.Collection;
 
 import org.mule.galaxy.lifecycle.Lifecycle;
 
-public interface Workspace {
-
-    String getId();
+public interface Workspace extends Item<Workspace> {
     
     String getName();
     

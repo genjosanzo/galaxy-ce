@@ -43,7 +43,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     protected void onSetUp() throws Exception {
         super.onSetUp();
 
-        createSecureContext(applicationContext, "admin", "admin");
+        login("admin", "admin");
     }
 
     @Override
@@ -172,13 +172,6 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
 
         // test desc
         gwtRegistry.setDescription(info.getId(), "test desc");
-    }
-    
-    
-    private static void createSecureContext(final ApplicationContext ctx, final String username, final String password) {
-        AuthenticationProvider provider = (AuthenticationProvider) ctx.getBean("daoAuthenticationProvider");
-        Authentication auth = provider.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        SecurityContextHolder.getContext().setAuthentication(auth);
     }
     
     public void testWorkspaces() throws Exception {

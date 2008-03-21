@@ -28,7 +28,7 @@ public class UserDetailsWrapper implements UserDetails {
     public GrantedAuthority[] getAuthorities() {
         ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         for (Permission p : permissions) {
-            authorities.add(new GrantedAuthorityImpl(p.getName()));
+            authorities.add(new GrantedAuthorityImpl(p.toString()));
         }
         authorities.add(new GrantedAuthorityImpl("role_user"));
         return authorities.toArray(new GrantedAuthority[authorities.size()]);

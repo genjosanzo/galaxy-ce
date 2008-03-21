@@ -50,6 +50,7 @@ import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.lifecycle.TransitionException;
 import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
 public abstract class AbstractArtifactCollection 
@@ -165,7 +166,7 @@ public abstract class AbstractArtifactCollection
     protected StringBuilder getBasePath(Artifact a) {
         StringBuilder sb = new StringBuilder();
         
-        Workspace w = a.getWorkspace();
+        Workspace w = a.getParent();
         while (w != null) {
             sb.insert(0, '/');
             sb.insert(0, UrlEncoding.encode(w.getName(), Profile.PATH.filter()));
@@ -206,6 +207,8 @@ public abstract class AbstractArtifactCollection
             throw new ResponseContextException(500, e);
         } catch (ArtifactPolicyException e) {
             throw createArtifactPolicyExceptionResponse(e);
+        } catch (AccessException e) {
+            throw new ResponseContextException(401, e);
         }
     }
 
@@ -265,7 +268,7 @@ public abstract class AbstractArtifactCollection
 
     protected abstract ArtifactResult postMediaEntry(String slug, MimeType mimeType, String version,
                                                      InputStream inputStream, User user, RequestContext ctx)
-        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, ResponseContextException, DuplicateItemException;
+        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, ResponseContextException, DuplicateItemException, AccessException;
     
     @Override
     public boolean isMediaEntry(ArtifactVersion entry) {
@@ -300,7 +303,7 @@ public abstract class AbstractArtifactCollection
         
         return request.getTargetBasePath() 
                + "/registry" 
-               + UrlEncoding.encode(a.getWorkspace().getPath(), Profile.PATH.filter());
+               + UrlEncoding.encode(a.getParent().getPath(), Profile.PATH.filter());
     }
 
     @Override

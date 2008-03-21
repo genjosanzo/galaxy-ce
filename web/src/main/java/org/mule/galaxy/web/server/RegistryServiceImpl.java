@@ -371,7 +371,7 @@ public class RegistryServiceImpl implements RegistryService {
     private BasicArtifactInfo createBasicArtifactInfo(Artifact a, ArtifactTypeView view,
                                                       BasicArtifactInfo info, boolean extended) {
         info.setId(a.getId());
-        info.setWorkspaceId(a.getWorkspace().getId());
+        info.setWorkspaceId(a.getParent().getId());
         info.setPath(a.getPath());
         int column = 0;
         for (int i = 0; i < view.getColumnNames().length; i++) {
@@ -589,7 +589,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     private String getLink(String base, Artifact a) {
         StringBuilder sb = new StringBuilder();
-        Workspace w = a.getWorkspace();
+        Workspace w = a.getParent();
 
         sb.append(base).append(w.getPath()).append(a.getName());
         return sb.toString();
@@ -1152,7 +1152,7 @@ public class RegistryServiceImpl implements RegistryService {
     private String getVersionLink(ArtifactVersion av) {
         Artifact a = av.getParent();
         StringBuilder sb = new StringBuilder();
-        Workspace w = a.getWorkspace();
+        Workspace w = a.getParent();
 
         sb.append("/api/registry").append(w.getPath()).append(a.getName()).append("?version=")
             .append(av.getVersionLabel());
@@ -1224,7 +1224,7 @@ public class RegistryServiceImpl implements RegistryService {
         List<String> perms = new ArrayList<String>();
 
         for (Permission p : accessControlManager.getGlobalPermissions(user)) {
-            perms.add(p.getName());
+            perms.add(p.toString());
         }
         w.setPermissions(perms);
 
