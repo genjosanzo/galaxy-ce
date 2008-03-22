@@ -4,6 +4,7 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Group;
 import org.mule.galaxy.security.Permission;
+import org.mule.galaxy.security.PermissionGrant;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.UserUtils;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 public class AccessControlManagerTest extends AbstractGalaxyTest {
+    
     public void testDao() throws Exception {
         List<Group> groups = accessControlManager.getGroups();
         assertEquals(2, groups.size());
@@ -22,7 +24,7 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
         assertNotNull(group.getUserIds());
         assertTrue(group.getUserIds().contains(getAdmin().getId()));
         
-        Set<Permission> perms = accessControlManager.getGlobalPermissions(group);
+        Set<Permission> perms = accessControlManager.getGrantedPermissions(group);
         assertTrue(perms.size() > 0);
         
         groups = accessControlManager.getGroups(getAdmin());
@@ -31,8 +33,27 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
         group = getGroup("Administrators", groups);
         assertNotNull(group);
         
-        perms = accessControlManager.getGlobalPermissions(getAdmin());
+        perms = accessControlManager.getGrantedPermissions(getAdmin());
         assertTrue(perms.size() > 0);
+        
+        Set<PermissionGrant> pgs = accessControlManager.getPermissionGrants(group);
+        assertEquals(perms.size(), pgs.size());
+        
+        Group g2 = accessControlManager.getGroup(group.getId());
+        assertNotNull(g2);
+        assertEquals(1, g2.getUserIds().size());
+        
+        User dan = new User("dan");
+        userManager.create(dan, "password");
+        
+        g2.getUserIds().add(dan.getId());
+        assertEquals(2, g2.getUserIds().size());
+        
+        accessControlManager.save(g2);
+        
+        Group g3 = accessControlManager.getGroup(g2.getId());
+        assertNotNull(g3);
+        assertEquals(2, g3.getUserIds().size());
     }
     
     public void testAccess() throws Exception {

@@ -80,7 +80,7 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
         userLB.addItem("System", "system");
         userLB.setSelectedIndex(0);
         searchPanel.add(userLB);
-        galaxy.getUserService().getUsers(new AbstractCallback(this) {
+        galaxy.getSecurityService().getUsers(new AbstractCallback(this) {
             public void onSuccess(Object result) {
                 initUsers((Collection)result);
             }

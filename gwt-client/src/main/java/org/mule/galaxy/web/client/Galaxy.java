@@ -24,8 +24,8 @@ import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.rpc.UserService;
-import org.mule.galaxy.web.rpc.UserServiceAsync;
+import org.mule.galaxy.web.rpc.SecurityService;
+import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WUser;
 
 
@@ -36,7 +36,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
     private RegistryPanel registryPanel;
     private RegistryServiceAsync registryService;
-    private UserServiceAsync userService;
+    private SecurityServiceAsync securityService;
     private FlowPanel rightPanel;
     private PageInfo curInfo;
     private Map history = new HashMap();
@@ -56,10 +56,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
         ServiceDefTarget target = (ServiceDefTarget) registryService;
         target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/registry.rpc");
         
-        this.userService = (UserServiceAsync) GWT.create(UserService.class);
+        this.securityService = (SecurityServiceAsync) GWT.create(SecurityService.class);
         
-        target = (ServiceDefTarget) userService;
-        target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/userService.rpc");
+        target = (ServiceDefTarget) securityService;
+        target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/securityService.rpc");
         
         FlowPanel base = new FlowPanel();
         base.setStyleName("base");
@@ -91,11 +91,6 @@ public class Galaxy implements EntryPoint, HistoryListener {
         tabPanel.addTabListener(new TabListener() {
 
             public boolean onBeforeTabSelected(SourcesTabEvents event, int newTab) {
-//                if (oldTab != newTab) {
-//                    if (curInfo != null) {
-//                        history.put("tab-" + oldTab, curInfo);
-//                    }
-//                }
                 return true;
             }
 
@@ -138,7 +133,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         for (Iterator itr = user.getPermissions().iterator(); itr.hasNext();) {
             String s = (String)itr.next();
             
-            if (s.startsWith("manage_")) return true;
+            if (s.startsWith("MANAGE_")) return true;
         }
         return false;
     }
@@ -256,8 +251,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
         return registryService;
     }
 
-    public UserServiceAsync getUserService() {
-        return userService;
+    public SecurityServiceAsync getSecurityService() {
+        return securityService;
     }
 
     public TabPanel getTabPanel() {

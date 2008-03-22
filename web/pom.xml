@@ -170,6 +170,7 @@
                             <compileTargets>
                                 <value>org.mule.galaxy.web.Galaxy</value>
                             </compileTargets>
+                            <extraJvmArgs>-Xmx256M</extraJvmArgs>
                         </configuration>
                         <executions>
                             <execution>

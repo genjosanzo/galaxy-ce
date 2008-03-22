@@ -16,7 +16,7 @@ import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.DeleteDialog.DeleteListener;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
-import org.mule.galaxy.web.rpc.UserServiceAsync;
+import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WUser;
 
 public class UserForm extends AbstractComposite {
@@ -147,7 +147,7 @@ public class UserForm extends AbstractComposite {
         save.setEnabled(false);
         save.setText("Saving...");
         
-        UserServiceAsync svc = adminPanel.getUserService();
+        SecurityServiceAsync svc = adminPanel.getUserService();
         
         String p = passTB.getText();
         String c = confirmTB.getText();
@@ -174,7 +174,7 @@ public class UserForm extends AbstractComposite {
     }
 
 
-    private void update(UserServiceAsync svc, String p, String c) {
+    private void update(SecurityServiceAsync svc, String p, String c) {
         svc.updateUser(user, p, c, new AbstractCallback(adminPanel) {
 
             public void onFailure(Throwable caught) {
@@ -194,7 +194,7 @@ public class UserForm extends AbstractComposite {
         });
     }
 
-    private void save(UserServiceAsync svc, String p, String c) {
+    private void save(SecurityServiceAsync svc, String p, String c) {
         svc.addUser(user, p, new AbstractCallback(adminPanel) {
 
             public void onFailure(Throwable caught) {
@@ -218,7 +218,7 @@ public class UserForm extends AbstractComposite {
         save.setEnabled(false);
         save.setText("Deleting...");
         
-        UserServiceAsync svc = adminPanel.getUserService();
+        SecurityServiceAsync svc = adminPanel.getUserService();
         
         svc.deleteUser(user.getId(), new AbstractCallback(adminPanel) {
 

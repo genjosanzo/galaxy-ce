@@ -146,7 +146,7 @@ public abstract class AbstractMenuPanel extends AbstractComposite implements Err
      * @param composite
      * @return
      */
-    protected PageInfo createPageInfo(String token, final AbstractComposite composite) {
+    public PageInfo createPageInfo(String token, final AbstractComposite composite) {
         PageInfo page = new MenuPanelPageInfo(token, this) {
             public AbstractComposite createInstance() {
                 return composite;

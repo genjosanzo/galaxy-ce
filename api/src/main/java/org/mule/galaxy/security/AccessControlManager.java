@@ -26,10 +26,19 @@ public interface AccessControlManager {
     
     void revoke(Group group, Collection<Permission> perms);
     
-    
-    Set<Permission> getGlobalPermissions(Group user);
+    /**
+     * Get all the global permissions which are available.
+     * @return
+     */
+    List<Permission> getPermissions();
 
-    Set<Permission> getGlobalPermissions(User user);
+    Set<PermissionGrant> getPermissionGrants(Group group);
+    
+    Set<PermissionGrant> getPermissionGrants(Group group, Item item);
+    
+    Set<Permission> getGrantedPermissions(Group user);
+
+    Set<Permission> getGrantedPermissions(User user);
     
     /**
      * Grant a permission on a specific workspace.
@@ -57,6 +66,10 @@ public interface AccessControlManager {
     void assertAccess(Permission permission) throws AccessException;
 
     void assertAccess(Permission permission, Item item) throws AccessException;
+
+    Group getGroup(String id);
+
+    void save(Group group);
     
     
-}
+}       

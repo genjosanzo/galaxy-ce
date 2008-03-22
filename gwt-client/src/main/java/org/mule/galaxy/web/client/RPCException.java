@@ -5,8 +5,6 @@ import com.google.gwt.user.client.rpc.SerializableException;
 
 public class RPCException extends SerializableException {
 
-    private String message;
-
     public RPCException() {
         super();
     }

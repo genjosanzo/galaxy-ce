@@ -12,6 +12,15 @@ public class WUser implements IsSerializable  {
     private String id;
     private String username;
     private String email;
+
+    /*
+     * @gwt.typeArgs <java.lang.String>
+     */
+    private Collection groupIds;
+    
+    /*
+     * @gwt.typeArgs <java.lang.String>
+     */
     private Collection permissions;
     
     public String getName() {
@@ -43,6 +52,12 @@ public class WUser implements IsSerializable  {
     }
     public void setPermissions(Collection permissions) {
         this.permissions = permissions;
+    }
+    public Collection getGroupIds() {
+        return groupIds;
+    }
+    public void setGroupIds(Collection groupIds) {
+        this.groupIds = groupIds;
     }
     
 }

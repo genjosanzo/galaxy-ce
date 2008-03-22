@@ -1219,11 +1219,11 @@ public class RegistryServiceImpl implements RegistryService {
 
     public WUser getUserInfo() throws RPCException {
         User user = getCurrentUser();
-        WUser w = UserServiceImpl.createWUser(user);
+        WUser w = SecurityServiceImpl.createWUser(user);
         
         List<String> perms = new ArrayList<String>();
         
-        for (Permission p : accessControlManager.getGlobalPermissions(user)) {
+        for (Permission p : accessControlManager.getGrantedPermissions(user)) {
             perms.add(p.toString());
         }
         w.setPermissions(perms);
