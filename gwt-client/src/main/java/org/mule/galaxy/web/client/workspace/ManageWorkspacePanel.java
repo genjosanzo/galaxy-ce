@@ -13,9 +13,9 @@ import org.mule.galaxy.web.client.admin.PolicyPanel;
 import org.mule.galaxy.web.client.artifact.ItemGroupPermissionPanel;
 import org.mule.galaxy.web.rpc.WWorkspace;
 
-public class WorkspaceViewPanel extends AbstractComposite {
+public class ManageWorkspacePanel extends AbstractComposite {
 
-    public WorkspaceViewPanel(RegistryPanel registryPanel,
+    public ManageWorkspacePanel(RegistryPanel registryPanel,
                               final Collection workspaces,
                               final String parentWorkspaceId,
                               final WWorkspace workspace) {

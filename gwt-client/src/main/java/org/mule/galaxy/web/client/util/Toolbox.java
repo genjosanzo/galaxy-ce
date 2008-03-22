@@ -27,7 +27,6 @@ public class Toolbox extends Composite {
         }
         titleHolder = new SimplePanel();
         titleHolder.setStyleName("toolbox-title");
-        header.add(titleHolder);
         base.add(header);
         
         buttonPanel = new FlowPanel();
@@ -51,6 +50,9 @@ public class Toolbox extends Composite {
     }
     
     public void setTitle(String title) {
+        if (header.getWidgetIndex(titleHolder) == -1) {
+            header.insert(titleHolder, 0);
+        }
         titleHolder.clear();
         Label titleLbl = new Label(title);
         titleLbl.setStyleName("toolbox-title-label");

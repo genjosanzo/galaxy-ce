@@ -78,7 +78,7 @@ public class ArtifactPanel extends AbstractComposite {
         InlineFlowPanel artifactTitle = new InlineFlowPanel();
         artifactTitle.setStyleName("artifact-title-base");
         artifactTitle.add(newLabel(info.getPath() + " ", "artifact-title")); // add a space to keep the version box away... ugly.
-        artifactTitle.add(newLabel("- Viewing Version: ", "artifact-title-version")); // add a space to keep the version box away... ugly.
+        artifactTitle.add(newLabel("- Version: ", "artifact-title-version")); // add a space to keep the version box away... ugly.
         
         ArtifactVersionInfo defaultVersion = null;
         versionLB = new ListBox();

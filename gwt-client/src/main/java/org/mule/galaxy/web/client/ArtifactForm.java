@@ -34,6 +34,7 @@ public class ArtifactForm extends AbstractTitledComposite {
     private final RegistryPanel registryPanel;
     private final String artifactId;
     private CheckBox disablePrevious;
+    private final boolean add;
 
     public ArtifactForm(final RegistryPanel registryPanel) {
         this(registryPanel, null, true);
@@ -49,7 +50,16 @@ public class ArtifactForm extends AbstractTitledComposite {
         super();
         this.registryPanel = registryPanel;
         this.artifactId = artifactId;
+        this.add = add;
+
         form = new FormPanel();
+        
+        initWidget(form);
+    }
+
+    public void onShow() {
+        form.clear();
+        
         form.setAction(GWT.getModuleBaseURL() + "../artifactUpload");
         form.setEncoding(FormPanel.ENCODING_MULTIPART);
         form.setMethod(FormPanel.METHOD_POST);
@@ -112,8 +122,6 @@ public class ArtifactForm extends AbstractTitledComposite {
         });
         
         styleHeaderColumn(table);
-
-        initWidget(form);
 
         if (add) {
             setTitle("Add Artifact");

@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.Widget;
@@ -17,7 +18,7 @@ import java.util.Set;
 import org.mule.galaxy.web.client.util.ColumnView;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.client.workspace.EditWorkspacePanel;
-import org.mule.galaxy.web.client.workspace.WorkspaceViewPanel;
+import org.mule.galaxy.web.client.workspace.ManageWorkspacePanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WArtifactType;
@@ -46,61 +47,54 @@ public class RegistryPanel extends AbstractMenuPanel {
         workspaceBox.setTitle("Workspaces");
         
         Image addImg = new Image("images/add_obj.gif");
-        final RegistryPanel registryPanel = this;
-        MenuPanelPageInfo page = new MenuPanelPageInfo("add-artifact", this) {
-            public AbstractComposite createInstance() {
-                return new ArtifactForm(registryPanel);
-            }
-        };
-        addPage(page);
+        MenuPanelPageInfo page = createPageInfo("add-artifact", new ArtifactForm(this));
         addImg.addClickListener(createClickListener(page));
         
-        Image addWkspcImg = new Image("images/fldr_obj.gif");
-        page = new MenuPanelPageInfo("add-workspace", this) {
-            public AbstractComposite createInstance() {
-                return new EditWorkspacePanel(registryPanel, 
-                                              workspaces,
-                                              workspaceId);
-            }
-        };
-        addPage(page);
-        addWkspcImg.addClickListener(createClickListener(page));
+        final RegistryPanel registryPanel = this;
         
-        Image editWkspcImg = new Image("images/editor_area.gif");
-        page = new MenuPanelPageInfo("edit-workspace-" + workspaceId, this) {
-            public AbstractComposite createInstance() {
-                return new EditWorkspacePanel(registryPanel, 
-                                              workspaces,
-                                              workspaceId);
-            }
-        };
-        addPage(page);
-        editWkspcImg.addClickListener(new ClickListener() {
+        Image addWkspcImg = new Image("images/fldr_obj.gif");
+        ClickListener addWkspcListener = new ClickListener() {
             public void onClick(Widget w) {
                 final TreeItem item = cv.getSelectedItem();
                 TreeItem parent = item.getParentItem();
                 final String parentId = parent != null ? (String) parent.getUserObject() : null;
 
-                MenuPanelPageInfo page = new MenuPanelPageInfo("edit-workspace-" + workspaceId, registryPanel) {
-                    public AbstractComposite createInstance() {
-                        return new WorkspaceViewPanel(registryPanel, 
-                                                      workspaces,
-                                                      parentId,
-                                                      getWorkspace(workspaceId));
-                    }
-                };
+                MenuPanelPageInfo page = createPageInfo("add-workspace", 
+                               new EditWorkspacePanel(registryPanel, workspaces, parentId));
                 
-                setMain(page);
+                History.newItem(page.getName());
+                errorPosition = 0;
+            }            
+        };
+        addWkspcImg.addClickListener(addWkspcListener);
+
+        Image editWkspcImg = new Image("images/editor_area.gif");
+        ClickListener editWkspcListener = new ClickListener() {
+            public void onClick(Widget w) {
+                MenuPanelPageInfo page = createPageInfo("manage-workspace" + workspaceId, 
+                               new ManageWorkspacePanel(registryPanel, workspaces, workspaceId, getWorkspace(workspaceId)));
+                
+                History.newItem(page.getName());
                 errorPosition = 0;
             }
-            
-        });
+        };
+        editWkspcImg.addClickListener(editWkspcListener);
+
+        Toolbox topMenuLinks = new Toolbox(false);
+        topMenuLinks.add(asHorizontal(addImg, new Label(" "), new Hyperlink("Add Aritfact", "add-artifact")));
+        
+        Hyperlink hl = new Hyperlink("Add Workspace", "add-workspace");
+        hl.addClickListener(addWkspcListener);
+        topMenuLinks.add(asHorizontal(addWkspcImg, new Label(" "), hl));
+        
+        hl = new Hyperlink("Manage Workspace", "manage-workspace");
+        hl.addClickListener(editWkspcListener);
+        topMenuLinks.add(asHorizontal(editWkspcImg, new Label(" "), hl));
+        
+        addMenuItem(topMenuLinks);
         
         FlowPanel browseToolbar = new FlowPanel();
         browseToolbar.setStyleName("toolbar");
-        browseToolbar.add(addImg);
-        browseToolbar.add(addWkspcImg);
-        browseToolbar.add(editWkspcImg);
         
         Hyperlink searchLink = new Hyperlink("Search", "search");
         searchLink.addClickListener(new ClickListener() {
