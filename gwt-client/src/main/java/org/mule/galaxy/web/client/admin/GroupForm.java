@@ -2,39 +2,31 @@ package org.mule.galaxy.web.client.admin;
 
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.AbstractFlowComposite;
-import org.mule.galaxy.web.client.util.QNameListBox;
+import org.mule.galaxy.web.client.AbstractMenuPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ItemNotFoundException;
-import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WGroup;
-import org.mule.galaxy.web.rpc.WIndex;
 
 public class GroupForm extends AbstractFlowComposite {
 
-    private AdministrationPanel adminPanel;
+    private AbstractMenuPanel adminPanel;
     private WGroup group;
     private Button save;
     private TextBox nameTB;
     
-    public GroupForm(AdministrationPanel adminPanel, WGroup u) {
+    public GroupForm(AbstractMenuPanel adminPanel, WGroup u) {
         this (adminPanel, u, false);
     }
     
-    public GroupForm(AdministrationPanel adminPanel) {
+    public GroupForm(AbstractMenuPanel adminPanel) {
         this (adminPanel, new WGroup(), true);
     }
     
-    protected GroupForm(AdministrationPanel adminPanel, WGroup grp, boolean add){
+    protected GroupForm(AbstractMenuPanel adminPanel, WGroup grp, boolean add){
         super();
         this.adminPanel = adminPanel;
         this.group = grp;
@@ -72,7 +64,7 @@ public class GroupForm extends AbstractFlowComposite {
         save.setEnabled(false);
         save.setText("Saving...");
         group.setName(nameTB.getText());
-        adminPanel.getUserService().save(group, new AbstractCallback(adminPanel) {
+        adminPanel.getSecurityService().save(group, new AbstractCallback(adminPanel) {
 
             public void onFailure(Throwable caught) {
                 super.onFailure(caught);

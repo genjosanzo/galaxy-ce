@@ -41,7 +41,7 @@ public interface AccessControlManager {
     Set<Permission> getGrantedPermissions(User user);
     
     /**
-     * Grant a permission on a specific workspace.
+     * Grant a permission on a specific item.
      * @param group
      * @param p
      * @param w
@@ -49,6 +49,16 @@ public interface AccessControlManager {
     void grant(Group group, Permission p, Item item);
     
     void revoke(Group group, Permission p, Item item);
+
+    /**
+     * Grant a permission on a specific workspace.
+     * @param group
+     * @param p
+     * @param w
+     */
+    void grant(Group group, Collection<Permission> perms, Item item);
+    
+    void revoke(Group group, Collection<Permission> perms, Item item);
     
     /**
      * Clear permission grants/revocations on a specific item for a Group. This means 

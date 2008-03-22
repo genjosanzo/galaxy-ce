@@ -1,5 +1,7 @@
 package org.mule.galaxy.web.client;
 
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.DockPanel;
@@ -72,6 +74,15 @@ public abstract class AbstractMenuPanel extends AbstractComposite implements Err
 
     public Galaxy getGalaxy() {
         return galaxy;
+    }
+
+
+    public RegistryServiceAsync getRegistryService() {
+        return galaxy.getRegistryService();
+    }
+
+    public SecurityServiceAsync getSecurityService() {
+        return galaxy.getSecurityService();
     }
     
     public void addMenuItem(Widget widget) {

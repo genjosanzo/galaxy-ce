@@ -15,14 +15,11 @@ import org.mule.galaxy.web.rpc.WLifecycle;
 
 public class AdministrationPanel extends AbstractMenuPanel {
 
-    private SecurityServiceAsync userService;
     private Hyperlink add;
     private RegistryServiceAsync registryService;
 
     public AdministrationPanel(Galaxy galaxy) {
         super(galaxy);
-        this.registryService = galaxy.getRegistryService();
-        this.userService = galaxy.getSecurityService();
 
         Toolbox manageBox = new Toolbox(false);
         manageBox.setTitle("Manage");
@@ -100,13 +97,5 @@ public class AdministrationPanel extends AbstractMenuPanel {
 
     public void showUsers() {
         History.newItem("users");
-    }
-
-    public SecurityServiceAsync getUserService() {
-        return userService;
-    }
-
-    public RegistryServiceAsync getRegistryService() {
-        return registryService;
     }
 }

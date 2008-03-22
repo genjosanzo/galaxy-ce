@@ -52,8 +52,14 @@ public class PolicyPanel extends AbstractComposite {
         this.svc = svc;
 
         panel = new InlineFlowPanel();
+
+        initWidget(panel);
         
-        lsPanel = new LifecycleSelectionPanel(adminPanel, svc);
+    }
+
+    public void onShow() {
+        panel.clear();
+        lsPanel = new LifecycleSelectionPanel(menuPanel, svc);
         
         psPanelContainer = new SimplePanel();
         
@@ -83,8 +89,6 @@ public class PolicyPanel extends AbstractComposite {
         });
         table.setWidget(1, 0, saveButton);
         table.getCellFormatter().setHorizontalAlignment(1, 0, HasHorizontalAlignment.ALIGN_LEFT);
-        
-        initWidget(panel);
         
     }
 

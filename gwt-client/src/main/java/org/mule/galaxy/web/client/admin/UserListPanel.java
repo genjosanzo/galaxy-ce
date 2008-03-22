@@ -39,7 +39,7 @@ public class UserListPanel
         table.setText(0, 1, "Name");
         table.setText(0, 2, "Email");
         
-        adminPanel.getUserService().getUsers(new AbstractCallback(adminPanel) {
+        adminPanel.getSecurityService().getUsers(new AbstractCallback(adminPanel) {
 
             public void onSuccess(Object result) {
                 Collection users = (Collection) result;

@@ -147,7 +147,7 @@ public class UserForm extends AbstractComposite {
         save.setEnabled(false);
         save.setText("Saving...");
         
-        SecurityServiceAsync svc = adminPanel.getUserService();
+        SecurityServiceAsync svc = adminPanel.getSecurityService();
         
         String p = passTB.getText();
         String c = confirmTB.getText();
@@ -218,7 +218,7 @@ public class UserForm extends AbstractComposite {
         save.setEnabled(false);
         save.setText("Deleting...");
         
-        SecurityServiceAsync svc = adminPanel.getUserService();
+        SecurityServiceAsync svc = adminPanel.getSecurityService();
         
         svc.deleteUser(user.getId(), new AbstractCallback(adminPanel) {
 

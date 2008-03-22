@@ -39,6 +39,8 @@ public interface Registry {
     
     Collection<Workspace> getWorkspaces() throws RegistryException;
     
+    Item getRegistryItem(String id) throws NotFoundException, RegistryException;
+    
     /**
      * Creates an artifact from a Java representation of it (as opposed
      * to a byte[] level representation). The artifact must be apporved

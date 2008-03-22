@@ -1,9 +1,12 @@
 package org.mule.galaxy.web.server;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.web.rpc.SecurityService;
 import org.mule.galaxy.web.rpc.WGroup;
@@ -61,6 +64,58 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
         WPermissionGrant pg = (WPermissionGrant) permGrants.iterator().next();
         assertNotNull(pg.getPermission());
         assertEquals(WPermissionGrant.GRANTED, pg.getGrant());
+    }
+    
+
+    public void testItemPermissions() throws Exception {
+        Artifact artifact = importHelloWsdl();
+        Map group2Perm = gwtSecurityService.getGroupPermissions(artifact.getId());
+        
+        assertEquals(2, group2Perm.size());
+        
+        WGroup g = null;
+        Collection permGrants = null;
+        for (Iterator itr = group2Perm.entrySet().iterator(); itr.hasNext();) {
+            Map.Entry e = (Map.Entry) itr.next();
+            g = (WGroup) e.getKey();
+            permGrants = (Collection) e.getValue();
+            if (g.getName().equals("Administrators")) break;
+        }
+        
+        assertNotNull(g.getId());
+        assertNotNull(g.getName());
+        
+        assertEquals(3, permGrants.size());
+        
+        WPermissionGrant pg = (WPermissionGrant) permGrants.iterator().next();
+        assertNotNull(pg.getPermission());
+        assertEquals(WPermissionGrant.INHERITED, pg.getGrant());
+        
+        /* Revoke all the permissions and test things again.
+         * 
+         * Technically we shouldn't allow some of these permissions to be revoked
+         * as hey aren't applicable, but there's little harm at the moment.
+         */
+        accessControlManager.revoke(accessControlManager.getGroup(g.getId()),
+                                    Arrays.asList(Permission.values()),
+                                    artifact);
+        
+        group2Perm = gwtSecurityService.getGroupPermissions(artifact.getId());
+        for (Iterator itr = group2Perm.entrySet().iterator(); itr.hasNext();) {
+            Map.Entry e = (Map.Entry) itr.next();
+            g = (WGroup) e.getKey();
+            permGrants = (Collection) e.getValue();
+            if (g.getName().equals("Administrators")) break;
+        }
+        
+        assertNotNull(g.getId());
+        assertNotNull(g.getName());
+        
+        assertEquals(3, permGrants.size());
+        
+        pg = (WPermissionGrant) permGrants.iterator().next();
+        assertNotNull(pg.getPermission());
+        assertEquals(WPermissionGrant.REVOKED, pg.getGrant());
     }
     
     public void testGroups() {

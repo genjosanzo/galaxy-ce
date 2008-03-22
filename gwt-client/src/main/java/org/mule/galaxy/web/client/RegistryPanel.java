@@ -204,10 +204,6 @@ public class RegistryPanel extends AbstractMenuPanel {
         });
     }
 
-    public RegistryServiceAsync getRegistryService() {
-        return service;
-    }
-
     private void initArtifactTypes() {
         artifactTypes = new HashSet();
         artifactTypesBox.clear();

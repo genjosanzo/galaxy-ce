@@ -1,45 +1,6 @@
 package org.mule.galaxy.impl.jcr;
 
 
-import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.ActivityManager.EventType;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.ContentService;
-import org.mule.galaxy.Dao;
-import org.mule.galaxy.Dependency;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.PropertyDescriptor;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Settings;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.XmlContentHandler;
-import org.mule.galaxy.index.IndexManager;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactPolicy;
-import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.query.QueryException;
-import org.mule.galaxy.query.Restriction;
-import org.mule.galaxy.query.Restriction.Operator;
-import org.mule.galaxy.query.SearchResults;
-import org.mule.galaxy.security.AccessControlManager;
-import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.Permission;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.security.UserManager;
-import org.mule.galaxy.util.BundleUtils;
-import org.mule.galaxy.util.DateUtil;
-import org.mule.galaxy.util.Message;
-import org.mule.galaxy.util.UserUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -54,9 +15,9 @@ import java.util.Set;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
+import javax.jcr.AccessDeniedException;
 import javax.jcr.ItemExistsException;
 import javax.jcr.ItemNotFoundException;
-import javax.jcr.NamespaceException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -71,11 +32,46 @@ import javax.jcr.query.QueryResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jackrabbit.core.nodetype.NodeTypeDef;
-import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
-import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
-import org.apache.jackrabbit.core.nodetype.xml.NodeTypeReader;
 import org.apache.jackrabbit.util.ISO9075;
+import org.mule.galaxy.ActivityManager;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.ContentService;
+import org.mule.galaxy.Dao;
+import org.mule.galaxy.Dependency;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyDescriptor;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Settings;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.XmlContentHandler;
+import org.mule.galaxy.ActivityManager.EventType;
+import org.mule.galaxy.index.IndexManager;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.query.SearchResults;
+import org.mule.galaxy.query.Restriction.Operator;
+import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.security.Permission;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.security.UserManager;
+import org.mule.galaxy.util.BundleUtils;
+import org.mule.galaxy.util.DateUtil;
+import org.mule.galaxy.util.Message;
+import org.mule.galaxy.util.UserUtils;
 import org.springframework.dao.DataAccessException;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
@@ -130,12 +126,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             
             Node node = getNodeByUUID(id);
 
-            return new JcrWorkspace(this, lifecycleManager, node);
+            return buildWorkspace(node);
         } catch (RepositoryException e) {
             throw new RegistryException(e);
         }
     }
 
+    private Workspace buildWorkspace(Node node) throws RepositoryException {
+        return new JcrWorkspace(this, lifecycleManager, node);
+    }
 
     public Workspace getWorkspaceByPath(String path) throws RegistryException, NotFoundException {
         try {
@@ -158,7 +157,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             Node node = wNode.getNode(path);
 
             if (node.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
-                return new JcrWorkspace(this, lifecycleManager, node);
+                return buildWorkspace(node);
             }
             
             throw new NotFoundException(path);
@@ -392,21 +391,38 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     public Artifact getArtifact(final String id) throws NotFoundException, RegistryException {
-        final JcrRegistryImpl registry = this;
         return (Artifact) executeWithNotFound(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node node = session.getNodeByUUID(id);
-                Node wNode = node.getParent();
-                JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(registry, lifecycleManager, wNode), 
-                                                       node, registry);
-
-                setupContentHandler(artifact);
-
-                return artifact;
+                return buildArtifact(node);
             }
         });
     }
 
+    private Artifact buildArtifact(Node node)
+        throws ItemNotFoundException, AccessDeniedException, RepositoryException {
+        Node wNode = node.getParent();
+        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(this, lifecycleManager, wNode), 
+                                               node, this);
+
+        setupContentHandler(artifact);
+
+        return artifact;
+    }
+
+    public Item getRegistryItem(final String id) throws NotFoundException, RegistryException {
+        return (Item) executeWithNotFound(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node node = session.getNodeByUUID(id);
+                
+                if (node.getPrimaryNodeType().getName().equals("galaxy:artifact")) {
+                    return buildArtifact(node);
+                } else {
+                    return buildWorkspace(node);
+                }
+            }
+        });
+    }
     public ArtifactVersion getArtifactVersion(final String id) throws NotFoundException, RegistryException {
         final JcrRegistryImpl registry = this;
         return (ArtifactVersion) executeWithNotFound(new JcrCallback() {

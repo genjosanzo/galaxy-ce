@@ -1,12 +1,16 @@
 package org.mule.galaxy.web.client.workspace;
 
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
 
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.RegistryPanel;
 import org.mule.galaxy.web.client.admin.PolicyPanel;
+import org.mule.galaxy.web.client.artifact.ItemGroupPermissionPanel;
 import org.mule.galaxy.web.rpc.WWorkspace;
 
 public class WorkspaceViewPanel extends AbstractComposite {
@@ -17,15 +21,30 @@ public class WorkspaceViewPanel extends AbstractComposite {
                               final WWorkspace workspace) {
         super();
 
-        TabPanel tabs = new TabPanel();
+        final TabPanel tabs = new TabPanel();
 
         tabs.setStyleName("artifactTabPanel");
         tabs.getDeckPanel().setStyleName("artifactTabDeckPanel");
         
         tabs.add(new EditWorkspacePanel(registryPanel, workspaces, parentWorkspaceId, workspace), "Info");
         tabs.add(new PolicyPanel(registryPanel, registryPanel.getRegistryService(), workspace.getId()), "Governance");
+        tabs.add(new ItemGroupPermissionPanel(registryPanel, workspace.getId()), "Security");
         
         tabs.selectTab(0);
+        
+        tabs.addTabListener(new TabListener() {
+
+            public boolean onBeforeTabSelected(SourcesTabEvents arg0, int arg1) {
+                return true;
+            }
+
+            public void onTabSelected(SourcesTabEvents events, int tab) {
+                AbstractComposite composite = (AbstractComposite) tabs.getWidget(tab);
+                
+                composite.onShow();
+            }
+            
+        });
         
         initWidget(tabs);
     }

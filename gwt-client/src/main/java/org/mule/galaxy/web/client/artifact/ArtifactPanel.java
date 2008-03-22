@@ -8,6 +8,8 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -134,12 +136,28 @@ public class ArtifactPanel extends AbstractComposite {
         artifactTabs.add(new ArtifactInfoPanel(registryPanel, group, info, version), "Info");
         artifactTabs.add(new GovernancePanel(registryPanel, version), "Governance");
         artifactTabs.add(new HistoryPanel(registryPanel, info), "History");
+        artifactTabs.add(new ItemGroupPermissionPanel(registryPanel, info.getId()), "Security");
+        
         
         if (selectedTab > -1) {
             artifactTabs.selectTab(selectedTab);
         } else {
             artifactTabs.selectTab(0);
         }
+
+        artifactTabs.addTabListener(new TabListener() {
+
+            public boolean onBeforeTabSelected(SourcesTabEvents arg0, int arg1) {
+                return true;
+            }
+
+            public void onTabSelected(SourcesTabEvents events, int tab) {
+                AbstractComposite composite = (AbstractComposite) artifactTabs.getWidget(tab);
+                
+                composite.onShow();
+            }
+            
+        });
     }
 
 }
