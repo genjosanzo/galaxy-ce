@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.mule.galaxy.web.client.AbstractFlowComposite;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.SecurityService;
 import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WPermission;
 import org.mule.galaxy.web.rpc.WPermissionGrant;
@@ -45,7 +46,7 @@ public class GroupPanel extends AbstractGroupPanel {
         return cb;
     }
     protected void getPermissions(AbstractCallback callback) {
-        menuPanel.getSecurityService().getPermissions(true, callback);
+        menuPanel.getSecurityService().getPermissions(SecurityService.GLOBAL_PERMISSIONS, callback);
     }
 
     protected void getGroupPermissionGrants(AbstractCallback callback) {

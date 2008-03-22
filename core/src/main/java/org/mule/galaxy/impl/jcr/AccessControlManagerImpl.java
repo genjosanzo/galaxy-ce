@@ -1,6 +1,7 @@
 package org.mule.galaxy.impl.jcr;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,13 +29,12 @@ import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.PermissionGrant;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
-import org.mule.galaxy.util.UserUtils;
+import org.mule.galaxy.util.SecurityUtils;
 import org.springmodules.jcr.JcrCallback;
 
 public class AccessControlManagerImpl extends AbstractDao<Group> implements AccessControlManager {
     private static final String GRANTS = "grants";
     private static final String REVOCATIONS = "revocations";
-    private static final String USER_IDS = "userIds";
     private UserManager userManager;
     
     public AccessControlManagerImpl() throws Exception {
@@ -121,7 +121,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node groupNode = findNode(group.getId(), session);
-                getGrants(groupNode, pgs, true);
+                getGrants(groupNode, pgs, null);
                 return null;
             }
         });
@@ -141,7 +141,8 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         return pgs;
     }
 
-    protected void getPermissionGrants(final Group group, final Item item, 
+    protected void getPermissionGrants(final Group group, 
+                                       final Item item, 
                                        final Set<PermissionGrant> pgs,
                                        Session session) throws RepositoryException, ValueFormatException {
         Node groupNode = findNode(group.getId(), session);
@@ -149,25 +150,25 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         try {
             Node itemNode = groupNode.getNode(item.getId());
 
-            getGrants(itemNode, pgs, false);
+            getGrants(itemNode, pgs, item);
         } catch (PathNotFoundException e) {
             for (Permission p : getPermissions()) {
-                if (!p.isGlobalOnly()) {
+                if (SecurityUtils.appliesTo(p, item.getClass())) {
                     pgs.add(new PermissionGrant(p, PermissionGrant.Grant.INHERITED));
                 }
             }
         }
     }
 
-    protected void getGrants(Node wkspcNode, final Set<PermissionGrant> pgs, boolean global)
+    protected void getGrants(Node itemNode, final Set<PermissionGrant> pgs, Item item)
         throws RepositoryException, ValueFormatException {
         List<Permission> permissions = getPermissions();
         try {   
-            Property property = wkspcNode.getProperty(GRANTS);
+            Property property = itemNode.getProperty(GRANTS);
         
             for (Value v : property.getValues()) {
                 Permission p = Permission.valueOf(v.getString());
-                if (global || !p.isGlobalOnly()) {
+                if (item == null || SecurityUtils.appliesTo(p, item.getClass())) {
                     permissions.remove(p);
                     pgs.add(new PermissionGrant(p, PermissionGrant.Grant.GRANTED));
                 }
@@ -176,11 +177,11 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         }
 
         try {   
-            Property property = wkspcNode.getProperty(REVOCATIONS);
+            Property property = itemNode.getProperty(REVOCATIONS);
             
             for (Value v : property.getValues()) {
                 Permission p = Permission.valueOf(v.getString());
-                if (global || !p.isGlobalOnly()) {
+                if (item == null || SecurityUtils.appliesTo(p, item.getClass())) {
                     permissions.remove(p);
                     pgs.add(new PermissionGrant(p, PermissionGrant.Grant.REVOKED));
                 }
@@ -189,8 +190,8 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         }
         
         for (Permission p : permissions) {
-            if (global || !p.isGlobalOnly()) {
-                if (global) {
+            if (item == null || SecurityUtils.appliesTo(p, item.getClass())) {
+                if (item == null) {
                     // this is a root level permission, so it can't inherit.
                     pgs.add(new PermissionGrant(p, PermissionGrant.Grant.REVOKED));
                 } else {
@@ -523,13 +524,13 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
     }
 
     public void assertAccess(Permission p) throws AccessException {
-        User currentUser = UserUtils.getCurrentUser();
+        User currentUser = SecurityUtils.getCurrentUser();
         
         if (currentUser == null) {
             throw new AccessException();
         }
         
-        if (currentUser.equals(UserUtils.SYSTEM_USER)) {
+        if (currentUser.equals(SecurityUtils.SYSTEM_USER)) {
             return;
         }
         
@@ -541,13 +542,13 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
     }
 
     public void assertAccess(Permission p, Item item) throws AccessException {
-        User currentUser = UserUtils.getCurrentUser();
+        User currentUser = SecurityUtils.getCurrentUser();
 
         if (currentUser == null) {
             throw new AccessException();
         }
         
-        if (currentUser.equals(UserUtils.SYSTEM_USER)) {
+        if (currentUser.equals(SecurityUtils.SYSTEM_USER)) {
             return;
         }
         

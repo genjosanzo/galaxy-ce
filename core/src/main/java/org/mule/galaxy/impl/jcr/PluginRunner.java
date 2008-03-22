@@ -10,7 +10,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.mule.galaxy.ArtifactPlugin;
-import org.mule.galaxy.util.UserUtils;
+import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -35,7 +35,7 @@ public class PluginRunner implements ApplicationContextAware {
         JcrUtil.doInTransaction(jcrTemplate.getSessionFactory(), new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                UserUtils.doPriveleged(new PluginInitializer(context));
+                SecurityUtils.doPriveleged(new PluginInitializer(context));
                 return null;
             }
             

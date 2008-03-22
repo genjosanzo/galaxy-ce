@@ -20,6 +20,7 @@ import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.SecurityService;
 
 /**
  * Contains:
@@ -136,7 +137,7 @@ public class ArtifactPanel extends AbstractComposite {
         artifactTabs.add(new ArtifactInfoPanel(registryPanel, group, info, version), "Info");
         artifactTabs.add(new GovernancePanel(registryPanel, version), "Governance");
         artifactTabs.add(new HistoryPanel(registryPanel, info), "History");
-        artifactTabs.add(new ItemGroupPermissionPanel(registryPanel, info.getId()), "Security");
+        artifactTabs.add(new ItemGroupPermissionPanel(registryPanel, info.getId(), SecurityService.ARTIFACT_PERMISSIONS), "Security");
         
         
         if (selectedTab > -1) {

@@ -7,7 +7,7 @@ import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.PermissionGrant;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.util.UserUtils;
+import org.mule.galaxy.util.SecurityUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -59,7 +59,7 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
             // expected
         }
         
-        UserUtils.doPriveleged(new Runnable() {
+        SecurityUtils.doPriveleged(new Runnable() {
 
             public void run() {
                 try {

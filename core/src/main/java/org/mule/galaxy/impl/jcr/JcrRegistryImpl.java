@@ -71,7 +71,7 @@ import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.DateUtil;
 import org.mule.galaxy.util.Message;
-import org.mule.galaxy.util.UserUtils;
+import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.dao.DataAccessException;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
@@ -193,7 +193,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 session.save();
                 
-                activityManager.logActivity(UserUtils.getCurrentUser(),
+                activityManager.logActivity(SecurityUtils.getCurrentUser(),
                                             "Workspace " + workspace.getPath() + " was created", 
                                             EventType.INFO);
                 return workspace;
@@ -266,7 +266,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     
                     node.remove();
 
-                    activityManager.logActivity(UserUtils.getCurrentUser(),
+                    activityManager.logActivity(SecurityUtils.getCurrentUser(),
                                                 "Workspace " + path + " was deleted", 
                                                 EventType.INFO);
                     session.save();
@@ -311,7 +311,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
                 session.save();
                 
-                activityManager.logActivity(UserUtils.getCurrentUser(),
+                activityManager.logActivity(SecurityUtils.getCurrentUser(),
                                             "Workspace " + workspace.getPath() + " was created", 
                                             EventType.INFO);
                 
@@ -926,7 +926,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 session.move(aNode.getPath(), wNode.getPath() + "/" + aNode.getName());
 
-                activityManager.logActivity(UserUtils.getCurrentUser(),
+                activityManager.logActivity(SecurityUtils.getCurrentUser(),
                                             "Workspace " + p1 + " was moved to " + artifact.getPath(), 
                                             EventType.INFO);
                 
@@ -954,7 +954,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 String path = artifact.getPath();
                 ((JcrArtifact) artifact).getNode().remove();
 
-                activityManager.logActivity(UserUtils.getCurrentUser(),
+                activityManager.logActivity(SecurityUtils.getCurrentUser(),
                                             "Artifact " + path + " was deleted", 
                                             EventType.INFO);
                 

@@ -11,6 +11,7 @@ import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.RegistryPanel;
 import org.mule.galaxy.web.client.admin.PolicyPanel;
 import org.mule.galaxy.web.client.artifact.ItemGroupPermissionPanel;
+import org.mule.galaxy.web.rpc.SecurityService;
 import org.mule.galaxy.web.rpc.WWorkspace;
 
 public class ManageWorkspacePanel extends AbstractComposite {
@@ -28,7 +29,7 @@ public class ManageWorkspacePanel extends AbstractComposite {
         
         tabs.add(new EditWorkspacePanel(registryPanel, workspaces, parentWorkspaceId, workspace), "Info");
         tabs.add(new PolicyPanel(registryPanel, registryPanel.getRegistryService(), workspace.getId()), "Governance");
-        tabs.add(new ItemGroupPermissionPanel(registryPanel, workspace.getId()), "Security");
+        tabs.add(new ItemGroupPermissionPanel(registryPanel, workspace.getId(), SecurityService.WORKSPACE_PERMISSIONS), "Security");
         
         tabs.selectTab(0);
         

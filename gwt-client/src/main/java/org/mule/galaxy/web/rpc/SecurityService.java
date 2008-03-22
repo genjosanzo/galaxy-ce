@@ -11,6 +11,10 @@ import org.mule.galaxy.web.client.admin.PasswordChangeException;
 
 public interface SecurityService extends RemoteService {
     
+    int ARTIFACT_PERMISSIONS = 0;
+    int WORKSPACE_PERMISSIONS = 1;
+    int GLOBAL_PERMISSIONS = 2;
+    
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WUser>
      * @return
@@ -28,7 +32,7 @@ public interface SecurityService extends RemoteService {
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WPermission>
      * @param global TODO
      */
-    Collection getPermissions(boolean global);
+    Collection getPermissions(int permissionType);
     
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WGroup, java.util.Collection<org.mule.galaxy.web.rpc.WPermissionGrant>>

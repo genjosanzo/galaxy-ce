@@ -8,15 +8,18 @@ import com.google.gwt.user.client.ui.Widget;
 import org.mule.galaxy.web.client.RegistryPanel;
 import org.mule.galaxy.web.client.admin.AbstractGroupPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.SecurityService;
 import org.mule.galaxy.web.rpc.WPermissionGrant;
 
 public class ItemGroupPermissionPanel extends AbstractGroupPanel {
 
     private String itemId;
+    private final int permissionType;
 
-    public ItemGroupPermissionPanel(RegistryPanel adminPanel, String itemId) {
+    public ItemGroupPermissionPanel(RegistryPanel adminPanel, String itemId, int PermissionType) {
         super(adminPanel);
         this.itemId = itemId;
+        permissionType = PermissionType;
     }
 
     protected void setGrant(int row, int col, WPermissionGrant pg) {
@@ -37,7 +40,7 @@ public class ItemGroupPermissionPanel extends AbstractGroupPanel {
     }
     
     protected void getPermissions(AbstractCallback callback) {
-        menuPanel.getSecurityService().getPermissions(false, callback);
+        menuPanel.getSecurityService().getPermissions(permissionType, callback);
     }
 
     protected void getGroupPermissionGrants(AbstractCallback callback) {

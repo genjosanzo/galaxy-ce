@@ -10,10 +10,12 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.Group;
 import org.mule.galaxy.security.Permission;
@@ -21,6 +23,7 @@ import org.mule.galaxy.security.PermissionGrant;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserExistsException;
 import org.mule.galaxy.security.UserManager;
+import org.mule.galaxy.util.SecurityUtils;
 import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.client.admin.PasswordChangeException;
 import org.mule.galaxy.web.rpc.ItemExistsException;
@@ -42,8 +45,10 @@ public class SecurityServiceImpl implements SecurityService {
     public String addUser(WUser user, String password) throws ItemExistsException {
         try {
             User u = createUser(user);
-            for (Object o : user.getGroupIds()) {
-                u.addGroup(accessControlManager.getGroup(o.toString()));
+            if (user.getGroupIds() != null) {
+                for (Object o : user.getGroupIds()) {
+                    u.addGroup(accessControlManager.getGroup(o.toString()));
+                }
             }
             userManager.create(u, password);
             return u.getId();
@@ -280,12 +285,14 @@ public class SecurityServiceImpl implements SecurityService {
         return new WGroup(g.getId(), g.getName());
     }
 
-    public Collection getPermissions(boolean global) {
+    public Collection getPermissions(int permissionType) {
         List<Permission> permissions = accessControlManager.getPermissions();
         ArrayList<WPermission> wperms = new ArrayList<WPermission>();
         
         for (Permission p : permissions) {
-            if (global || !p.isGlobalOnly()) {
+            if (permissionType == SecurityService.GLOBAL_PERMISSIONS
+                || (permissionType == SecurityService.ARTIFACT_PERMISSIONS && SecurityUtils.appliesTo(p, Artifact.class))
+                || (permissionType == SecurityService.WORKSPACE_PERMISSIONS && SecurityUtils.appliesTo(p, Workspace.class))) {
                 wperms.add(new WPermission(p.toString(), p.getDescription()));
             }
         }

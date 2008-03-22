@@ -15,7 +15,7 @@ public interface SecurityServiceAsync extends RemoteService {
 
     void deleteUser(String userId, AsyncCallback callback);
 
-    void getPermissions(boolean global, AsyncCallback callback);
+    void getPermissions(int permissionType, AsyncCallback callback);
 
     void save(WGroup group, AsyncCallback callback);
     
