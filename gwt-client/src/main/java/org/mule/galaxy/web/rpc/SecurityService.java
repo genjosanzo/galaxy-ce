@@ -57,4 +57,10 @@ public interface SecurityService extends RemoteService {
      * @gwt.typeArgs group2Permissions <org.mule.galaxy.web.rpc.WGroup, java.util.Collection<org.mule.galaxy.web.rpc.WPermissionGrant>>
      */
     void applyPermissions(String itemId, Map group2Permissions) throws RPCException;
+    
+    /**
+     * @throws RPCException 
+     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WGroup>
+     */
+    Collection getGroups() throws RPCException;
 }

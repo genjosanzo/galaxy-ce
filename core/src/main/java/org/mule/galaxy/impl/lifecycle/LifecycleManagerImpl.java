@@ -62,12 +62,11 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
     private ActivityManager activityManager;
     
     public LifecycleManagerImpl() throws Exception {
-        super("lifecycles", false);
+        super(Lifecycle.class, "lifecycles", false);
     }
 
     public Lifecycle getDefaultLifecycle() {
         return (Lifecycle) execute(new JcrCallback() {
-
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 return build(getDefaultLifecycleNode(session), session);
             }

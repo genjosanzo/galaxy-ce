@@ -11,8 +11,6 @@ public interface AccessControlManager {
 
     List<Group> getGroups();
     
-    List<Group> getGroups(User user);
-    
     /**
      * Grant a global permission.
      * @param role

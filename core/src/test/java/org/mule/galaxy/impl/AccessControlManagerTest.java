@@ -21,39 +21,30 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
         Group group = getGroup("Administrators", groups);
         assertNotNull(group);
         
-        assertNotNull(group.getUserIds());
-        assertTrue(group.getUserIds().contains(getAdmin().getId()));
-        
         Set<Permission> perms = accessControlManager.getGrantedPermissions(group);
         assertTrue(perms.size() > 0);
-        
-        groups = accessControlManager.getGroups(getAdmin());
-        assertEquals(2, groups.size());
         
         group = getGroup("Administrators", groups);
         assertNotNull(group);
         
-        perms = accessControlManager.getGrantedPermissions(getAdmin());
+        User admin = getAdmin();
+        assertNotNull(admin.getGroups());
+        assertEquals(2, admin.getGroups().size());
+        
+        perms = accessControlManager.getGrantedPermissions(admin);
         assertTrue(perms.size() > 0);
         
         Set<PermissionGrant> pgs = accessControlManager.getPermissionGrants(group);
         assertEquals(perms.size(), pgs.size());
         
         Group g2 = accessControlManager.getGroup(group.getId());
-        assertNotNull(g2);
-        assertEquals(1, g2.getUserIds().size());
-        
-        User dan = new User("dan");
-        userManager.create(dan, "password");
-        
-        g2.getUserIds().add(dan.getId());
-        assertEquals(2, g2.getUserIds().size());
+        g2.setName("test");
         
         accessControlManager.save(g2);
         
         Group g3 = accessControlManager.getGroup(g2.getId());
         assertNotNull(g3);
-        assertEquals(2, g3.getUserIds().size());
+        assertEquals("test", g3.getName());
     }
     
     public void testAccess() throws Exception {

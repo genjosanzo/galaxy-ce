@@ -42,6 +42,9 @@ public class SecurityServiceImpl implements SecurityService {
     public String addUser(WUser user, String password) throws ItemExistsException {
         try {
             User u = createUser(user);
+            for (Object o : user.getGroupIds()) {
+                u.addGroup(accessControlManager.getGroup(o.toString()));
+            }
             userManager.create(u, password);
             return u.getId();
         } catch (UserExistsException e) {
@@ -65,10 +68,9 @@ public class SecurityServiceImpl implements SecurityService {
         for (User user : users) {
             WUser w = createWUser(user);
             
-            List<Group> groups = accessControlManager.getGroups(user);
             ArrayList<String> groupIds = new ArrayList<String>();
             
-            for (Group g : groups) {
+            for (Group g : user.getGroups()) {
                 groupIds.add(g.getId());
             }
             
@@ -105,7 +107,13 @@ public class SecurityServiceImpl implements SecurityService {
                 userManager.setPassword(u, password);
             }
             
+            u.getGroups().clear();
+            for (Object o : user.getGroupIds()) {
+                u.getGroups().add(accessControlManager.getGroup(o.toString()));
+            }
             userManager.save(u);
+            
+            
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         }
@@ -294,6 +302,16 @@ public class SecurityServiceImpl implements SecurityService {
 
     public void setRegistry(Registry registry) {
         this.registry = registry;
+    }
+
+    public Collection getGroups() throws RPCException {
+        ArrayList<WGroup> wgroups = new ArrayList<WGroup>();
+        
+        for (Group g : accessControlManager.getGroups()) {
+            wgroups.add(toWeb(g));
+        }
+        
+        return wgroups;
     }
     
 }

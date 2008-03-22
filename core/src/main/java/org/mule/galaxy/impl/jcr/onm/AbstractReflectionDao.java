@@ -24,33 +24,23 @@ import org.springmodules.jcr.JcrCallback;
 
 public abstract class AbstractReflectionDao<T extends Identifiable> extends AbstractDao<T> {
 
-    private ClassPersister persister;
     private String objectNodeName;
-    private PersisterManager persisterManager;
-    private Class type;
     
     protected AbstractReflectionDao(Class t, String rootNode) throws Exception {
         this(t, rootNode, false);
     }
     
     protected AbstractReflectionDao(Class t, String rootNode,  boolean generateId) throws Exception {
-        super(rootNode, generateId);
-        this.type = t;
+        super(t, rootNode, generateId);
         
         objectNodeName = t.getSimpleName();
         objectNodeName = objectNodeName.substring(0, 1).toLowerCase() + objectNodeName.substring(1);
     }
-    
-    public void initialize() throws Exception {
+
+    protected void initalizePersister() throws Exception {
         persisterManager.getPersisters().put(type.getName(), new DaoPersister(this));
         this.persister = new ClassPersister(type, rootNode, persisterManager);
         persisterManager.getClassPersisters().put(type.getName(), persister);
-        
-        super.initialize();
-    }
-
-    public void setPersisterManager(PersisterManager persisterManager) {
-        this.persisterManager = persisterManager;
     }
     
     protected void persist(T o, Node node, Session session) throws Exception {

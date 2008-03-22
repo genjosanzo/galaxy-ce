@@ -35,6 +35,10 @@ public class MapPersister implements FieldPersister {
         return map;
     }
 
+    public Object build(String id, FieldDescriptor fd, Session session) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
     public void persist(Object o, Node n, FieldDescriptor fd, Session session) throws Exception {
         Node mapNode = JcrUtil.getOrCreate(n, fd.getName());
 

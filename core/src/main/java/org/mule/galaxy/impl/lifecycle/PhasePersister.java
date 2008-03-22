@@ -50,6 +50,11 @@ public class PhasePersister implements FieldPersister, ApplicationContextAware {
         
         return p;
     }
+    
+
+    public Object build(String id, FieldDescriptor fd, Session session) throws Exception {
+        throw new UnsupportedOperationException();
+    }
 
     public void persist(Object o, Node n, FieldDescriptor fd, Session session) throws Exception {
         Node child = JcrUtil.getOrCreate(n, fd.getName());

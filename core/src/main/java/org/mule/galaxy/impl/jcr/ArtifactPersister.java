@@ -32,8 +32,13 @@ public class ArtifactPersister implements FieldPersister, ApplicationContextAwar
     public Object build(Node n, FieldDescriptor fd, Session session) throws Exception {
         String val = JcrUtil.getStringOrNull(n, fd.getName());
         if (val == null) return null;
-        
-        return getRegistry().getArtifact(val);
+
+        return build(val, fd, session);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Object build(String id, FieldDescriptor fd, Session session) throws Exception {
+        return getRegistry().getArtifact(id);
     }
 
     public void persist(Object o, Node n, FieldDescriptor fd, Session session) throws Exception {

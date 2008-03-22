@@ -48,6 +48,7 @@
         init-method="initialize">
     <property name="phaseLogEntryDao" ref="phaseLogEntryDao"/>
     <property name="sessionFactory" ref="sessionFactory" />
+    <property name="persisterManager" ref="persisterManager" />
   </bean>
         
   <bean id="indexManager" parent="txProxyTemplate">
@@ -85,6 +86,7 @@
         depends-on="jcrInitializer">
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="userManager" ref="userManager" />
+    <property name="persisterManager" ref="persisterManager" />
   </bean>
   
   <bean id="jcrTemplate" class="org.springmodules.jcr.JcrTemplate">

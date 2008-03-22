@@ -28,15 +28,18 @@ import org.mule.galaxy.util.QNameUtil;
 
 public class EnumPersister implements FieldPersister {
 
-    @SuppressWarnings("unchecked")
     public Object build(Node node, FieldDescriptor fd, Session session) throws Exception {
         String value = (String) JcrUtil.getProperty(fd.getName(), node);
         
         if (value == null) {
             return null;
         }
-        
-       return Enum.valueOf((Class<? extends Enum>)fd.getType(), value);
+        return build(value, fd, session);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Object build(String id, FieldDescriptor fd, Session session) throws Exception {
+       return Enum.valueOf((Class<? extends Enum>)fd.getType(), id);
     }
 
     public void persist(Object o, Node n, FieldDescriptor fd, Session session) throws Exception {

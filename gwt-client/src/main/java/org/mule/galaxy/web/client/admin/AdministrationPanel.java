@@ -16,7 +16,6 @@ import org.mule.galaxy.web.rpc.WLifecycle;
 public class AdministrationPanel extends AbstractMenuPanel {
 
     private Hyperlink add;
-    private RegistryServiceAsync registryService;
 
     public AdministrationPanel(Galaxy galaxy) {
         super(galaxy);
@@ -70,7 +69,7 @@ public class AdministrationPanel extends AbstractMenuPanel {
         
         if (galaxy.hasPermission("MANAGE_POLICIES")) {
             Hyperlink link = new Hyperlink("Policies", "policies");
-            createPageInfo(link.getTargetHistoryToken(), new PolicyPanel(adminPanel, registryService));
+            createPageInfo(link.getTargetHistoryToken(), new PolicyPanel(adminPanel, getRegistryService()));
             manageBox.add(link);
         }
 

@@ -20,7 +20,11 @@ public class DaoPersister implements FieldPersister {
         if (id == null) {
             return null;
         }
-        
+
+        return build(id, fd, session);
+    }
+
+    public Object build(String id, FieldDescriptor fd, Session session) throws Exception {
         return dao.get(id);
     }
 

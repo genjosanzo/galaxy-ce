@@ -12,7 +12,7 @@ public class WUser implements IsSerializable  {
     private String id;
     private String username;
     private String email;
-
+   
     /*
      * @gwt.typeArgs <java.lang.String>
      */

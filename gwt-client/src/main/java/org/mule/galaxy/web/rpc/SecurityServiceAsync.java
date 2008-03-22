@@ -1,10 +1,9 @@
 package org.mule.galaxy.web.rpc;
 
-import java.util.Collection;
-import java.util.Map;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
+
+import java.util.Map;
 
 
 public interface SecurityServiceAsync extends RemoteService {
@@ -27,4 +26,6 @@ public interface SecurityServiceAsync extends RemoteService {
     void getGroupPermissions(String itemId, AsyncCallback callback);
     
     void applyPermissions(String itemId, Map group2Permissions, AsyncCallback callback);
+
+    void getGroups(AsyncCallback abstractCallback);
 }

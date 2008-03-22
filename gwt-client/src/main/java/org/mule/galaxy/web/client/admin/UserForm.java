@@ -2,7 +2,6 @@ package org.mule.galaxy.web.client.admin;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -10,13 +9,19 @@ import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.Collection;
+
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.util.DeleteDialog;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.SelectionPanel;
 import org.mule.galaxy.web.client.util.DeleteDialog.DeleteListener;
+import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
+import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WUser;
 
 public class UserForm extends AbstractComposite {
@@ -30,9 +35,9 @@ public class UserForm extends AbstractComposite {
     private TextBox emailTB;
     private final boolean add;
     private TextBox usernameTB;
-    private CheckBox adminCB;
     private FlowPanel panel;
     private Button delete;
+    private SelectionPanel groupPanel;
 
     public UserForm(AdministrationPanel adminPanel, WUser u) {
         this (adminPanel, u, false);
@@ -68,7 +73,7 @@ public class UserForm extends AbstractComposite {
         table.setText(2, 0, "Email");
         table.setText(3, 0, "Password");
         table.setText(4, 0, "Confirm Password");
-        table.setText(5, 0, "Administrator");
+        table.setText(5, 0, "Groups");
         
         if (add) {
             usernameTB = new TextBox();
@@ -91,13 +96,13 @@ public class UserForm extends AbstractComposite {
         confirmTB = new PasswordTextBox();
         table.setWidget(4, 1, confirmTB);
 
-        adminCB = new CheckBox();
-//        adminCB.setChecked(user.isAdmin());
-        if ("admin".equals(user.getUsername())) {
-            adminCB.setEnabled(false);
-        }
+        adminPanel.getSecurityService().getGroups(new AbstractCallback(adminPanel) {
+            public void onSuccess(Object groups) {
+                receiveGroups((Collection) groups, table);
+            }
+        });
         
-        table.setWidget(5, 1, adminCB);
+        table.setText(5, 1, "Loading Groups...");
         
         save = new Button("Save");
         save.addClickListener(new ClickListener() {
@@ -143,6 +148,22 @@ public class UserForm extends AbstractComposite {
         styleHeaderColumn(table);
     }
 
+    protected void receiveGroups(Collection groups, FlexTable table) {
+        ItemInfo itemInfo = new ItemInfo() {
+            public String getText(Object o) {
+                return ((WGroup) o).getName();
+            }
+
+            public String getValue(Object o) {
+                return ((WGroup) o).getId();
+            }
+        };
+        groupPanel = new SelectionPanel(groups, itemInfo, 
+                                        user.getGroupIds(), 6, 
+                                        "Available Groups", "Joined Groups");
+        table.setWidget(5, 1, groupPanel);
+    }
+
     protected void save() {
         save.setEnabled(false);
         save.setText("Saving...");
@@ -164,7 +185,7 @@ public class UserForm extends AbstractComposite {
         
         user.setEmail(emailTB.getText());
         user.setName(nameTB.getText());
-//        user.setAdmin(adminCB.isChecked());
+        user.setGroupIds(groupPanel.getSelectedValues());
         
         if (add) {
             save(svc, p, c);
