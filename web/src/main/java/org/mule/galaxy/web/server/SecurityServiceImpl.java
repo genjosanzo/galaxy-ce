@@ -213,7 +213,7 @@ public class SecurityServiceImpl implements SecurityService {
                     Permission p = Permission.valueOf(permGrant.getPermission());
                     if (permGrant.getGrant() == WPermissionGrant.GRANTED) {
                         grants.add(p);
-                    } else if (permGrant.getGrant() == WPermissionGrant.INHERITED) {
+                    } else if (permGrant.getGrant() == WPermissionGrant.REVOKED) {
                         revocations.add(p);
                     }
                 }
