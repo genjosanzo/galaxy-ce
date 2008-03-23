@@ -53,6 +53,8 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
     @Override
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
         try {
+            if (objects.getNodes().getSize() > 0) return;
+            
             Group adminGroup = new Group("Administrators");
             Node gNode = objects.addNode(adminGroup.getName(), getNodeType());
             gNode.addMixin("mix:referenceable");
@@ -73,7 +75,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
             toGrant.add(Permission.READ_WORKSPACE);
             toGrant.add(Permission.MODIFY_WORKSPACE);
             toGrant.add(Permission.DELETE_WORKSPACE);
-            grant(adminGroup, toGrant);
+            grant(userGroup, toGrant);
             
             User admin = userManager.getByUsername("admin");
             admin.addGroup(adminGroup);

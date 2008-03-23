@@ -380,14 +380,16 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     public Collection<Workspace> getWorkspaces() throws RegistryException, AccessException {
         try {
-            accessControlManager.assertAccess(Permission.READ_WORKSPACE);
-            
             List<Workspace> workspaceCol = new ArrayList<Workspace>();
             for (NodeIterator itr = getWorkspacesNode().getNodes(); itr.hasNext();) {
                 Node n = itr.nextNode();
 
                 if (!n.getName().equals("jcr:system")) {
-                    workspaceCol.add(new JcrWorkspace(this, lifecycleManager, n));
+
+                    JcrWorkspace wkspc = new JcrWorkspace(this, lifecycleManager, n);
+                    accessControlManager.assertAccess(Permission.READ_WORKSPACE, wkspc);
+                    
+                    workspaceCol.add(wkspc);
                 }
                 
                 Collections.sort(workspaceCol, new WorkspaceComparator());

@@ -30,7 +30,6 @@ import org.mule.galaxy.web.client.admin.PasswordChangeException;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
 import org.mule.galaxy.web.rpc.SecurityService;
-import org.mule.galaxy.web.rpc.WAccessException;
 import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WPermission;
 import org.mule.galaxy.web.rpc.WPermissionGrant;
@@ -157,7 +156,7 @@ public class SecurityServiceImpl implements SecurityService {
                 accessControlManager.grant(group, grants);
                 accessControlManager.revoke(group, revocations);
             } catch (AccessException e1) {
-                throw new WAccessException();
+                throw new RPCException(e1.getMessage());
             }
         }
     }
@@ -230,7 +229,7 @@ public class SecurityServiceImpl implements SecurityService {
             log.error( e.getMessage(), e);
             throw new RPCException(e.getMessage());
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -274,12 +273,12 @@ public class SecurityServiceImpl implements SecurityService {
             log.error( e.getMessage(), e);
             throw new RPCException(e.getMessage());
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
             
     }
     @SuppressWarnings("unchecked")
-    public void save(WGroup wgroup) throws WAccessException {
+    public void save(WGroup wgroup) throws RPCException {
         Group g = null;
         if (wgroup.getId() != null) {
             g = accessControlManager.getGroup(wgroup.getId());
@@ -290,7 +289,7 @@ public class SecurityServiceImpl implements SecurityService {
         try {
             accessControlManager.save(g);
         } catch (AccessException e1) {
-            throw new WAccessException();
+            throw new RPCException(e1.getMessage());
         }
     }
 

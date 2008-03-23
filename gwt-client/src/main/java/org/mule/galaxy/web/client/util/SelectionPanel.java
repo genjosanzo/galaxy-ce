@@ -66,7 +66,7 @@ public class SelectionPanel extends Composite {
         });
         middle.add(button);
         middle.add(new Label(" "));
-        button = new Button("<");
+        button = new Button("<<");
         button.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 move(right, left);

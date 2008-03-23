@@ -138,9 +138,9 @@ public class ArtifactPanel extends AbstractComposite {
         artifactTabs.add(new ArtifactInfoPanel(registryPanel, group, info, version), "Info");
         artifactTabs.add(new GovernancePanel(registryPanel, version), "Governance");
         artifactTabs.add(new HistoryPanel(registryPanel, info), "History");
-//        if (registryPanel.getGalaxy().hasPermission("MANAGE_GROUPS")) {
-        artifactTabs.add(new ItemGroupPermissionPanel(registryPanel, info.getId(), SecurityService.ARTIFACT_PERMISSIONS), "Security");
-//        }
+        if (registryPanel.getGalaxy().hasPermission("MANAGE_GROUPS")) {
+            artifactTabs.add(new ItemGroupPermissionPanel(registryPanel, info.getId(), SecurityService.ARTIFACT_PERMISSIONS), "Security");
+        }
         
         if (selectedTab > -1) {
             artifactTabs.selectTab(selectedTab);

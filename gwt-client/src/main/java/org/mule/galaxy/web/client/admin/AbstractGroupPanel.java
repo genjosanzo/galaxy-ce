@@ -159,6 +159,12 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
         }
         
         AbstractCallback callback = new AbstractCallback(menuPanel) {
+            
+            public void onFailure(Throwable caught) {
+                super.onFailure(caught);
+                setEnabled(true);
+            }
+
             public void onSuccess(Object arg0) {
                 setEnabled(true);
             }

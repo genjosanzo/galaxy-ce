@@ -72,7 +72,6 @@ import org.mule.galaxy.web.rpc.ItemNotFoundException;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.TransitionResponse;
-import org.mule.galaxy.web.rpc.WAccessException;
 import org.mule.galaxy.web.rpc.WActivity;
 import org.mule.galaxy.web.rpc.WApprovalMessage;
 import org.mule.galaxy.web.rpc.WArtifactPolicy;
@@ -118,7 +117,7 @@ public class RegistryServiceImpl implements RegistryService {
             log.error( e.getMessage(), e);
             throw new RPCException(e.getMessage());
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -171,7 +170,7 @@ public class RegistryServiceImpl implements RegistryService {
             log.error(e.getMessage(), e);
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -193,7 +192,7 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -206,7 +205,7 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -594,7 +593,7 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -638,7 +637,7 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -697,7 +696,7 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -716,7 +715,7 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -765,7 +764,7 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -783,7 +782,7 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -798,7 +797,7 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -828,7 +827,7 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -861,7 +860,7 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -936,7 +935,7 @@ public class RegistryServiceImpl implements RegistryService {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
         return getArtifactPolicyIds(pols);
     }
@@ -958,7 +957,7 @@ public class RegistryServiceImpl implements RegistryService {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
 
         return getArtifactPolicyIds(pols);
@@ -1024,7 +1023,7 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -1071,7 +1070,7 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -1104,7 +1103,7 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -1241,7 +1240,7 @@ public class RegistryServiceImpl implements RegistryService {
             }
             return wactivities;
         } catch (AccessException e){
-            throw new WAccessException();
+            throw new RPCException(e.getMessage());
         }
     }
 

@@ -29,9 +29,10 @@ public class ManageWorkspacePanel extends AbstractComposite {
         
         tabs.add(new EditWorkspacePanel(registryPanel, workspaces, parentWorkspaceId, workspace), "Info");
         tabs.add(new PolicyPanel(registryPanel, registryPanel.getRegistryService(), workspace.getId()), "Governance");
-//      if (registryPanel.getGalaxy().hasPermission("MANAGE_GROUPS")) {
-        tabs.add(new ItemGroupPermissionPanel(registryPanel, workspace.getId(), SecurityService.WORKSPACE_PERMISSIONS), "Security");
-//        }
+        if (registryPanel.getGalaxy().hasPermission("MANAGE_GROUPS")) {
+            tabs.add(new ItemGroupPermissionPanel(registryPanel, workspace.getId(),
+                                                  SecurityService.WORKSPACE_PERMISSIONS), "Security");
+        }
         tabs.selectTab(0);
         
         tabs.addTabListener(new TabListener() {
