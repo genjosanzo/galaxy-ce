@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.server;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -91,13 +92,12 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
         assertNotNull(pg.getPermission());
         assertEquals(WPermissionGrant.INHERITED, pg.getGrant());
         
-        /* Revoke all the permissions and test things again.
-         * 
-         * Technically we shouldn't allow some of these permissions to be revoked
-         * as hey aren't applicable, but there's little harm at the moment.
+        /* Revoke all the artifactpermissions and test things again.
          */
+        ArrayList<Permission> toRevoke = new ArrayList<Permission>();
+        toRevoke.add(Permission.DELETE_ARTIFACT);
         accessControlManager.revoke(accessControlManager.getGroup(g.getId()),
-                                    Arrays.asList(Permission.values()),
+                                    toRevoke,
                                     artifact);
         
         group2Perm = gwtSecurityService.getGroupPermissions(artifact.getId());
@@ -113,12 +113,16 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
         
         assertEquals(3, permGrants.size());
         
-        pg = (WPermissionGrant) permGrants.iterator().next();
-        assertNotNull(pg.getPermission());
-        assertEquals(WPermissionGrant.REVOKED, pg.getGrant());
+        for (Object o : permGrants) {
+            pg = (WPermissionGrant) o;
+            if (Permission.DELETE_ARTIFACT.equals(pg.getPermission())) {
+                assertEquals(WPermissionGrant.REVOKED, pg.getGrant());
+            }
+        }
+        
     }
     
-    public void testGroups() {
+    public void testGroups() throws Exception {
         WGroup g = new WGroup();
         g.setName("Test Group");
         gwtSecurityService.save(g);

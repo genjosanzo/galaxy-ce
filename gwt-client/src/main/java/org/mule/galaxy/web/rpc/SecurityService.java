@@ -46,9 +46,10 @@ public interface SecurityService extends RemoteService {
     Map getGroupPermissions(String itemId) throws RPCException;
     
     /**
+     * @throws RPCException 
      * @gwt.typeArgs group <java.lang.String>
      */
-    void save(WGroup group);
+    void save(WGroup group) throws RPCException;
     
 
     /**

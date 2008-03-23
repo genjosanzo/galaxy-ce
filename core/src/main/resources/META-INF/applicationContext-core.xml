@@ -153,6 +153,7 @@
   
   <bean id="activityManagerTarget" class="org.mule.galaxy.impl.jcr.ActivityManagerImpl"
         init-method="initialize">
+    <property name="accessControlManager" ref="accessControlManager" />
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
   </bean>

@@ -1,70 +1,5 @@
 package org.mule.galaxy.web.server;
 
-import org.mule.galaxy.Activity;
-import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.ActivityManager.EventType;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.ArtifactTypeDao;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Comment;
-import org.mule.galaxy.CommentManager;
-import org.mule.galaxy.Dependency;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.PropertyDescriptor;
-import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
-import org.mule.galaxy.index.Index;
-import org.mule.galaxy.index.IndexManager;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.lifecycle.TransitionException;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactCollectionPolicyException;
-import org.mule.galaxy.policy.ArtifactPolicy;
-import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.query.Query;
-import org.mule.galaxy.query.QueryException;
-import org.mule.galaxy.query.Restriction;
-import org.mule.galaxy.query.SearchResults;
-import org.mule.galaxy.security.AccessControlManager;
-import org.mule.galaxy.security.Permission;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.view.ArtifactTypeView;
-import org.mule.galaxy.view.ViewManager;
-import org.mule.galaxy.web.client.RPCException;
-import org.mule.galaxy.web.rpc.ApplyPolicyException;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.BasicArtifactInfo;
-import org.mule.galaxy.web.rpc.DependencyInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
-import org.mule.galaxy.web.rpc.ItemExistsException;
-import org.mule.galaxy.web.rpc.ItemNotFoundException;
-import org.mule.galaxy.web.rpc.RegistryService;
-import org.mule.galaxy.web.rpc.SearchPredicate;
-import org.mule.galaxy.web.rpc.TransitionResponse;
-import org.mule.galaxy.web.rpc.WActivity;
-import org.mule.galaxy.web.rpc.WApprovalMessage;
-import org.mule.galaxy.web.rpc.WArtifactPolicy;
-import org.mule.galaxy.web.rpc.WArtifactType;
-import org.mule.galaxy.web.rpc.WComment;
-import org.mule.galaxy.web.rpc.WGovernanceInfo;
-import org.mule.galaxy.web.rpc.WIndex;
-import org.mule.galaxy.web.rpc.WLifecycle;
-import org.mule.galaxy.web.rpc.WPhase;
-import org.mule.galaxy.web.rpc.WProperty;
-import org.mule.galaxy.web.rpc.WSearchResults;
-import org.mule.galaxy.web.rpc.WUser;
-import org.mule.galaxy.web.rpc.WWorkspace;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,6 +20,72 @@ import javax.xml.namespace.QName;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.Activity;
+import org.mule.galaxy.ActivityManager;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.ArtifactTypeDao;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Comment;
+import org.mule.galaxy.CommentManager;
+import org.mule.galaxy.Dependency;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyDescriptor;
+import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.ActivityManager.EventType;
+import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
+import org.mule.galaxy.index.Index;
+import org.mule.galaxy.index.IndexManager;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.lifecycle.TransitionException;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.ArtifactCollectionPolicyException;
+import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.query.Query;
+import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.query.SearchResults;
+import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.security.Permission;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.view.ArtifactTypeView;
+import org.mule.galaxy.view.ViewManager;
+import org.mule.galaxy.web.client.RPCException;
+import org.mule.galaxy.web.rpc.ApplyPolicyException;
+import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
+import org.mule.galaxy.web.rpc.BasicArtifactInfo;
+import org.mule.galaxy.web.rpc.DependencyInfo;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.ItemExistsException;
+import org.mule.galaxy.web.rpc.ItemNotFoundException;
+import org.mule.galaxy.web.rpc.RegistryService;
+import org.mule.galaxy.web.rpc.SearchPredicate;
+import org.mule.galaxy.web.rpc.TransitionResponse;
+import org.mule.galaxy.web.rpc.WAccessException;
+import org.mule.galaxy.web.rpc.WActivity;
+import org.mule.galaxy.web.rpc.WApprovalMessage;
+import org.mule.galaxy.web.rpc.WArtifactPolicy;
+import org.mule.galaxy.web.rpc.WArtifactType;
+import org.mule.galaxy.web.rpc.WComment;
+import org.mule.galaxy.web.rpc.WGovernanceInfo;
+import org.mule.galaxy.web.rpc.WIndex;
+import org.mule.galaxy.web.rpc.WLifecycle;
+import org.mule.galaxy.web.rpc.WPhase;
+import org.mule.galaxy.web.rpc.WProperty;
+import org.mule.galaxy.web.rpc.WSearchResults;
+import org.mule.galaxy.web.rpc.WUser;
+import org.mule.galaxy.web.rpc.WWorkspace;
 
 public class RegistryServiceImpl implements RegistryService {
 
@@ -116,6 +117,8 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             log.error( e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
     }
 
@@ -167,6 +170,8 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (NotFoundException e) {
             log.error(e.getMessage(), e);
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
     }
 
@@ -187,6 +192,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
     }
 
@@ -198,6 +205,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
     }
 
@@ -584,6 +593,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
     }
 
@@ -626,6 +637,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
     }
 
@@ -683,6 +696,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
     }
 
@@ -700,6 +715,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
     }
 
@@ -747,6 +764,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
     }
 
@@ -763,6 +782,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
     }
 
@@ -776,6 +797,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
     }
 
@@ -804,6 +827,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
     }
 
@@ -835,6 +860,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
     }
 
@@ -908,6 +935,8 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
         return getArtifactPolicyIds(pols);
     }
@@ -928,6 +957,8 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
 
         return getArtifactPolicyIds(pols);
@@ -992,6 +1023,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new ApplyPolicyException(failures);
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
     }
 
@@ -1037,6 +1070,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
     }
 
@@ -1068,6 +1103,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
     }
 
@@ -1193,15 +1230,19 @@ public class RegistryServiceImpl implements RegistryService {
             eventType = EventType.ERROR;
         }
 
-        Collection<Activity> activities = activityManager.getActivities(from, to, user, eventType, start,
-                                                                        results, ascending);
-
-        ArrayList<WActivity> wactivities = new ArrayList<WActivity>();
-
-        for (Activity a : activities) {
-            wactivities.add(createWActivity(a));
+        try {
+            Collection<Activity> activities = activityManager.getActivities(from, to, user, eventType, start,
+                                                                            results, ascending);
+    
+            ArrayList<WActivity> wactivities = new ArrayList<WActivity>();
+    
+            for (Activity a : activities) {
+                wactivities.add(createWActivity(a));
+            }
+            return wactivities;
+        } catch (AccessException e){
+            throw new WAccessException();
         }
-        return wactivities;
     }
 
     protected WActivity createWActivity(Activity a) {

@@ -17,6 +17,7 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Group;
 import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.PermissionGrant;
@@ -29,6 +30,7 @@ import org.mule.galaxy.web.client.admin.PasswordChangeException;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
 import org.mule.galaxy.web.rpc.SecurityService;
+import org.mule.galaxy.web.rpc.WAccessException;
 import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WPermission;
 import org.mule.galaxy.web.rpc.WPermissionGrant;
@@ -128,7 +130,7 @@ public class SecurityServiceImpl implements SecurityService {
         userManager.delete(userId);
     }
 
-    public void applyPermissions(Map groupToPermissionGrant) {
+    public void applyPermissions(Map groupToPermissionGrant) throws RPCException {
         for (Iterator itr = groupToPermissionGrant.entrySet().iterator(); itr.hasNext();) {
             Map.Entry e = (Map.Entry)itr.next();
             
@@ -151,8 +153,12 @@ public class SecurityServiceImpl implements SecurityService {
                 }
             }
             
-            accessControlManager.grant(group, grants);
-            accessControlManager.revoke(group, revocations);
+            try {
+                accessControlManager.grant(group, grants);
+                accessControlManager.revoke(group, revocations);
+            } catch (AccessException e1) {
+                throw new WAccessException();
+            }
         }
     }
 
@@ -223,6 +229,8 @@ public class SecurityServiceImpl implements SecurityService {
         } catch (NotFoundException e) {
             log.error( e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
     }
 
@@ -265,11 +273,13 @@ public class SecurityServiceImpl implements SecurityService {
         } catch (NotFoundException e) {
             log.error( e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (AccessException e) {
+            throw new WAccessException();
         }
             
     }
     @SuppressWarnings("unchecked")
-    public void save(WGroup wgroup) {
+    public void save(WGroup wgroup) throws WAccessException {
         Group g = null;
         if (wgroup.getId() != null) {
             g = accessControlManager.getGroup(wgroup.getId());
@@ -277,8 +287,11 @@ public class SecurityServiceImpl implements SecurityService {
             g = new Group();
         }
         g.setName(wgroup.getName());
-        
-        accessControlManager.save(g);
+        try {
+            accessControlManager.save(g);
+        } catch (AccessException e1) {
+            throw new WAccessException();
+        }
     }
 
     private WGroup toWeb(Group g) {

@@ -20,6 +20,7 @@ import org.mule.galaxy.Dependency;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.util.DateUtil;
 
@@ -257,6 +258,8 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
                         }
                         
                     });
+                } catch (AccessException e) {
+                    // don't list dependencies which the user shouldn't see
                 } catch (NotFoundException e) {
                     dep.remove();
                 } catch (RegistryException e) {

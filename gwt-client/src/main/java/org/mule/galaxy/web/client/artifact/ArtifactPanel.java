@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.RegistryPanel;
+import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
@@ -137,8 +138,9 @@ public class ArtifactPanel extends AbstractComposite {
         artifactTabs.add(new ArtifactInfoPanel(registryPanel, group, info, version), "Info");
         artifactTabs.add(new GovernancePanel(registryPanel, version), "Governance");
         artifactTabs.add(new HistoryPanel(registryPanel, info), "History");
+//        if (registryPanel.getGalaxy().hasPermission("MANAGE_GROUPS")) {
         artifactTabs.add(new ItemGroupPermissionPanel(registryPanel, info.getId(), SecurityService.ARTIFACT_PERMISSIONS), "Security");
-        
+//        }
         
         if (selectedTab > -1) {
             artifactTabs.selectTab(selectedTab);

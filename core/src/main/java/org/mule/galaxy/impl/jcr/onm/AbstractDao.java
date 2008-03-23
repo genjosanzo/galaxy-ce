@@ -22,6 +22,7 @@ import org.mule.galaxy.Dao;
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.util.SecurityUtils;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
@@ -110,6 +111,22 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     public void initialize() throws Exception {
         initalizePersister();
         
+        SecurityUtils.doPriveleged(new Runnable() {
+
+            public void run() {
+                try {
+                    doInitializeInJcrTransaction();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (RepositoryException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            
+        });
+    }
+
+    private void doInitializeInJcrTransaction() throws IOException, RepositoryException {
         JcrUtil.doInTransaction(getSessionFactory(), new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {

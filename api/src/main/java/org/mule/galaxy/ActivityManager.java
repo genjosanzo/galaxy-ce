@@ -3,6 +3,7 @@ package org.mule.galaxy;
 import java.util.Collection;
 import java.util.Date;
 
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
 public interface ActivityManager {
@@ -42,5 +43,5 @@ public interface ActivityManager {
      */
     void logActivity(User user, String activity, EventType eventType);
     
-    Collection<Activity> getActivities(Date from, Date to, String user, EventType eventType, int start, int results, boolean ascending);
+    Collection<Activity> getActivities(Date from, Date to, String user, EventType eventType, int start, int results, boolean ascending) throws AccessException;
 }
