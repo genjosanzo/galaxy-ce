@@ -71,8 +71,6 @@ class Workspace {
                 // close on a local var for it to be accessible in Callable, fixes NPE
                 def node = it
                 def task = {
-                    URL url = new URL("http://${galaxy.host}:$galaxy.port${node.content.@src}")
-
                     def jarName = node.title.text()
 
                     File localJar = new File(dir, jarName)
