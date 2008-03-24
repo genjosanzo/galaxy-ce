@@ -143,7 +143,10 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertNotNull(origUpdated);
         
         assertTrue(testedTNS);
-        
+
+        // This is odd, but otherwise the updates happen too fast, and the lastUpdated tstamp isn't changed
+        Thread.sleep(500);
+
         version.setLocked("wsdl.targetNamespace", true);
         version.setVisible("wsdl.targetNamespace", false);
         PropertyInfo pi = version.getPropertyInfo("wsdl.targetNamespace");
