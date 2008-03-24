@@ -13,6 +13,7 @@ public enum Permission {
     DELETE_WORKSPACE("Delete Workspace", Workspace.class),
     VIEW_ACTIVITY("View Activity Log"),
     MANAGE_USERS("Manage Users"),
+    MANAGE_INDEXES("Manage Indexes"),
     MANAGE_GROUPS("Manage Groups"),
     MANAGE_POLICIES("Manage Policies"),
     MANAGE_LIFECYCLES("Manage Lifecycles"),
