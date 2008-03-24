@@ -8,7 +8,6 @@ import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrVersion;
-import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.IOUtils;
@@ -100,7 +99,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, artifacts.size());
     }
     
-    public void _testAddWsdl() throws Exception {
+    public void testAddWsdl() throws Exception {
         InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
         
         Collection<Workspace> workspaces = registry.getWorkspaces();
