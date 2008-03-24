@@ -381,7 +381,8 @@ public class RegistryServiceImpl implements RegistryService {
                                                       BasicArtifactInfo info, boolean extended) {
         info.setId(a.getId());
         info.setWorkspaceId(a.getParent().getId());
-        info.setPath(a.getPath());
+        info.setName(a.getName());
+        info.setPath(a.getParent().getPath());
         int column = 0;
         for (int i = 0; i < view.getColumnNames().length; i++) {
             if (!extended && view.isSummary(i)) {

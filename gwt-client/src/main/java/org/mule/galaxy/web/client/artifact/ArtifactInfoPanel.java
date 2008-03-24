@@ -57,6 +57,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
         topPanel = new HorizontalPanel();
         topPanel.setStyleName("artifactTopPanel");
         
+        panel.add(createTitle("Details"));
         panel.add(topPanel);
 
         FlexTable table = createColumnTable();
@@ -65,35 +66,23 @@ public class ArtifactInfoPanel extends AbstractComposite {
                                                     (String) info.getValue(0),
                                                     info.getWorkspaceId());
         
-        InlineFlowPanel nameLabelPanel = new InlineFlowPanel();
-        nameLabelPanel.add(new Label("Name ["));
-        Hyperlink editHL = new Hyperlink("Edit", "edit-property");
-        editHL.addClickListener(new ClickListener() {
-
-            public void onClick(Widget arg0) {
-                nep.showEditPanel();
-            }
-            
-        });
-        nameLabelPanel.add(editHL);
-        nameLabelPanel.add(new Label("]"));
-        table.setWidget(0, 0, nameLabelPanel);
+        table.setWidget(0, 0, new Label("Name:"));
         table.setWidget(0, 1, nep);
         
         for (int i = 1; i < group.getColumns().size(); i++) {
-            table.setText(i, 0, (String) group.getColumns().get(i));
+            table.setText(i, 0, (String) group.getColumns().get(i) + ":");
         }
         
         int c = 1;
         for (; c < group.getColumns().size(); c++) {
             table.setText(c, 1, info.getValue(c));
         }
-
-        table.setText(c, 0, "Phase:");
-        table.setText(c, 1, version.getPhase());
-        c++;
         
-        initDescription(table, c);
+        table.setWidget(c, 0, new Label("Description:"));
+        FlowPanel descPanel = new FlowPanel();
+        table.setWidget(c, 1, descPanel);
+        initDescription(descPanel);
+        
         styleHeaderColumn(table);
         topPanel.add(table);
         
@@ -120,12 +109,10 @@ public class ArtifactInfoPanel extends AbstractComposite {
         initWidget(panel);
     }
 
-    private void initDescription(FlexTable table, int c) {
-        final SimplePanel descPanel = new SimplePanel();
+    private void initDescription(final FlowPanel descPanel) {
+        descPanel.clear();
+        descPanel.add(new Label(info.getDescription()));
         
-        InlineFlowPanel descLabelPanel = new InlineFlowPanel();
-        descLabelPanel.setStyleName("artifactDescriptionPanel");
-        descLabelPanel.add(new Label("Description ["));
         Hyperlink hl = new Hyperlink("Edit", "edit-description-" + info.getId());
         hl.addClickListener(new ClickListener() {
 
@@ -134,12 +121,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
             }
             
         });
-        descLabelPanel.add(hl);
-        descLabelPanel.add(new Label("]"));
-        
-        table.setWidget(c, 0, descLabelPanel);
-        descPanel.add(new Label(info.getDescription()));
-        table.setWidget(c, 1, descPanel);
+        descPanel.add(hl);
     }
 
     private void initComments() {
@@ -179,12 +161,15 @@ public class ArtifactInfoPanel extends AbstractComposite {
         
         InlineFlowPanel title = new InlineFlowPanel();
         title.setStyleName("commentTitle");
-        Label userDateLabel = new Label(c.getUser() + " on " + c.getDate());
+        Label userLabel = new Label(c.getUser());
+        Label dateLabel = new Label(" at " + c.getDate());
+        userLabel.setStyleName("user");
         
         Hyperlink replyLink = new Hyperlink("Reply", "reply-" + c.getId());
         replyLink.addClickListener(new AddCommentClickListener(commentPanel, c.getId()));
         title.add(replyLink);
-        title.add(userDateLabel);
+        title.add(userLabel);
+        title.add(dateLabel);
         
         commentPanel.add(title);
         
@@ -305,7 +290,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
     }
 
     private void addArtifactLinks(final RegistryPanel registryPanel) {
-        Hyperlink hl = new Hyperlink("View", "view-artifact");
+        Hyperlink hl = new Hyperlink("View Artifact", "view-artifact");
         hl.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
@@ -390,18 +375,17 @@ public class ArtifactInfoPanel extends AbstractComposite {
         topPanel.add(rightGroup);
     }
 
-    private void initDescriptionForm(final SimplePanel descPanel) {
+    private void initDescriptionForm(final FlowPanel descPanel) {
         descPanel.clear();
         
-        VerticalPanel form = new VerticalPanel();
         final TextArea text = new TextArea();
         text.setCharacterWidth(60);
         text.setVisibleLines(8);
         text.setText(info.getDescription());
-        form.add(text);
+        descPanel.add(text);
 
         HorizontalPanel buttons = new HorizontalPanel();
-        form.add(buttons);
+        descPanel.add(buttons);
         buttons.setWidth("100%");
         buttons.setSpacing(10);
         buttons.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
@@ -409,8 +393,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
         final Button cancelButton = new Button("Cancel");
         cancelButton.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
-                descPanel.clear();
-                descPanel.add(new Label(info.getDescription()));
+                initDescription(descPanel);
             }
         });
         buttons.add(cancelButton);
@@ -424,11 +407,9 @@ public class ArtifactInfoPanel extends AbstractComposite {
            
         });
         buttons.add(addButton);
-        
-        descPanel.add(form);
     }
 
-    protected void saveDescription(final SimplePanel descPanel, final TextArea text,
+    protected void saveDescription(final FlowPanel descPanel, final TextArea text,
                                    final Button cancelButton, final Button addButton) {
         cancelButton.setEnabled(false);
         addButton.setEnabled(false);
@@ -442,9 +423,8 @@ public class ArtifactInfoPanel extends AbstractComposite {
             }
 
             public void onSuccess(Object arg0) {
-                descPanel.clear();
-                descPanel.add(new Label(text.getText()));
                 info.setDescription(text.getText());
+                initDescription(descPanel);
             }
 
         };

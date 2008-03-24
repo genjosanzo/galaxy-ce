@@ -64,14 +64,13 @@ public class ArtifactMetadataPanel extends AbstractComposite {
             
             i++;
         }
-        styleHeaderColumn(table);
         metadata.add(table);
         initWidget(metadata);
     }
     
     private void createPropertyRow(final int row, 
                                    final WProperty p) {
-        table.setText(row, 0, p.getDescription());
+        table.setText(row, 0, p.getDescription() + ":");
         final String name = p.getName();
         final String value = p.getValue();
         final boolean locked = p.isLocked();
@@ -85,13 +84,11 @@ public class ArtifactMetadataPanel extends AbstractComposite {
         Widget w = null;
         if (locked) {
             if ("".equals(txt) || txt == null) {
-                txt = "[no value]";
+                txt = "-----";
             }
-            txt += " ";
-            InlineFlowPanel panel = new InlineFlowPanel();
-            panel.add(new Label(txt));
-            panel.add(new Image("./images/lockedstate.gif"));
-            w = panel;
+            w = new Label(txt);
+            Image img = new Image("./images/lockedstate.gif");
+            table.setWidget(row, 1, img);
         } else {
             txt += " ";
             Hyperlink editHL = new Hyperlink("Edit", "edit-property");
@@ -121,10 +118,11 @@ public class ArtifactMetadataPanel extends AbstractComposite {
             w = valuePanel;
         }
         
-        table.setWidget(row, 1, w);
+        table.setWidget(row, 2, w);
         table.getCellFormatter().setWidth(row, 0, "130px");
         table.getCellFormatter().setStyleName(row, 0, "artifactTableHeader");
-        table.getCellFormatter().setStyleName(row, 1, "artifactTableEntry");
+        table.getCellFormatter().setStyleName(row, 1, "artifactTableLock");
+        table.getCellFormatter().setStyleName(row, 2, "artifactTableEntry");
     }
 
 
@@ -140,7 +138,7 @@ public class ArtifactMetadataPanel extends AbstractComposite {
         cancel.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
-                table.clearCell(row, 1);
+                table.clearCell(row, 2);
                 setRow(row, name, value, false);
             }
             
@@ -160,7 +158,7 @@ public class ArtifactMetadataPanel extends AbstractComposite {
         editPanel.add(cancel);
         editPanel.add(save);
         
-        table.setWidget(row, 1, editPanel);
+        table.setWidget(row, 2, editPanel);
     }
 
     protected void save(final String name, final String value, final int row, 
@@ -175,7 +173,7 @@ public class ArtifactMetadataPanel extends AbstractComposite {
             }
 
             public void onSuccess(Object arg0) {
-                table.clearCell(row, 1);
+                table.clearCell(row, 2);
                 setRow(row, name, value, false);
             }
             

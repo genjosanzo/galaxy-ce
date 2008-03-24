@@ -73,6 +73,9 @@ public abstract class AbstractComposite extends Composite {
 
     protected FlexTable createColumnTable() {
         FlexTable table = createTable();
+        table.setStyleName("columnTable");
+        table.setCellSpacing(0);
+        table.setCellPadding(0);
         
         return table;
     }

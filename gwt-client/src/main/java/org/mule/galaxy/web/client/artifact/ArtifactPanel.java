@@ -5,6 +5,8 @@ import java.util.Iterator;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -77,10 +79,13 @@ public class ArtifactPanel extends AbstractComposite {
     }
     
     private void init() {
-        InlineFlowPanel artifactTitle = new InlineFlowPanel();
+        FlowPanel artifactTitle = new FlowPanel();
         artifactTitle.setStyleName("artifact-title-base");
-        artifactTitle.add(newLabel(info.getPath() + " ", "artifact-title")); // add a space to keep the version box away... ugly.
-        artifactTitle.add(newLabel("- Version: ", "artifact-title-version")); // add a space to keep the version box away... ugly.
+        artifactTitle.add(newLabel(info.getPath(), "artifact-path"));
+        
+        FlexTable titleTable = new FlexTable();
+        titleTable.setStyleName("artifact-title");
+        titleTable.setWidget(0, 0, newLabel(info.getName(), "artifact-name"));
         
         ArtifactVersionInfo defaultVersion = null;
         versionLB = new ListBox();
@@ -100,7 +105,7 @@ public class ArtifactPanel extends AbstractComposite {
             }
             
         });
-        artifactTitle.add(versionLB);
+        titleTable.setWidget(0, 1, versionLB);
         
         Image img = new Image("images/feed-icon-14x14.png");
         img.addClickListener(new ClickListener() {
@@ -110,9 +115,9 @@ public class ArtifactPanel extends AbstractComposite {
             }
             
         });
-        img.setStyleName("feed-icon");
+        titleTable.setWidget(0, 2, img);
         
-        artifactTitle.add(img);
+        artifactTitle.add(titleTable);
         
         panel.insert(artifactTitle, 0);
         

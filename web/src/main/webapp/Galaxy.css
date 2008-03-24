@@ -191,27 +191,17 @@ a:visited {
     margin-top: 8px;
 }
 
-.right-title {
-    padding: 4px 0px 2px;
+.right-title, .rightlinked-title {
+    padding: 6px 0px;
     
-    border-bottom: 1px #fff solid;
     font-family: Helvetica;
-    font-size: 1.2em;
+    font-size: 1.3em;
 }
 
 /* A different right title which allows a link */
 .rightlinked-title-panel {
     width: 100%;
-    margin-top: 6px;
-    border-bottom: 1px black solid; 
-}
-
-.rightlinked-title {
-    font-weight: bold;
-    font-size: 1.5em;
-    padding-left: 4px;
-    padding-top: 2px;
-    padding-bottom: 2px;
+    margin: 15px 0 5px;
 }
 
 .rightlinked-title-link {
@@ -354,19 +344,31 @@ a:visited {
 .feed-icon {
     margin-left: 6px;
 }
+
 .artifact-title-base {
     padding: 6px;
-    margin-bottom: 4px;
     margin-top: 4px;
-    font-size: 1.3em;
+}
+
+.artifact-title-base .artifact-path {
+	display: block;
+	font-size: 1.1em;
+	margin-left: 3px;
+}
+
+.artifact-title-base .artifact-title {
+	vertical-align: middle;
 }
 	
-.artifact-title {
+.artifact-title-base .artifact-name {
+	display: inline;
     font-weight: bold;
+    font-size: 1.4em;
+    padding-top: 4px;
 }
-    
 
-.artifact-panel {
+.artifact-title-base .artifact-version {
+	display: inline;
 }
 
 .artifact-panel-base {
@@ -398,16 +400,12 @@ a:visited {
 }
 
 .comments {
-    width:100%;
-}
-
-.comments-base {
-    padding: 10px;
+	margin-right: 6px;
 }
 
 .comment {
+	margin-top: 5px;
 }
-
     
 .addComment {
     background-color: #ddd;
@@ -415,16 +413,12 @@ a:visited {
 }
 
 .commentTitle {
-    background-image: url("images/nw_maj_rond.gif");
-    background-repeat: no-repeat;
-    font-weight: bold;
-    padding: 6px;
-    color: white;
-    background-color: #4c0000;
-    
+    padding: 4px 8px;
+    background-color: #e8e8e8;   
 }
 
-.commentTitle .gwt-Label {
+.commentTitle .user {
+	font-weight: bold;
 }
 
 .commentTitle .gwt-Hyperlink {
@@ -433,16 +427,12 @@ a:visited {
 }
 
 .commentTitle a, .commentTitle a:visited {
-    color: white;
+    color: black;
 }
 
 .commentText {
     background-color: white;
     padding: 6px;
-    border-left: 2px #4c0000 solid;
-    border-right: 2px #4c0000 solid;
-    border-bottom: 2px #4c0000 solid;
-    margin-bottom: 10px;
 }
 
 .nestedComment {
@@ -457,15 +447,22 @@ a:visited {
     font-weight: bold;
 }
 
+.columnTable .artifactTableHeader {
+	vertical-align: top;
+	text-align: right;
+	padding: 4px;
+	padding-right: 10px;
+	width: 125px;
+}
+
+.columnTable .artifactTableEntry {
+	vertical-align: top;
+	padding: 4px;
+}
+
 .artifactTableFull td {
     border-bottom: 1px #e8e8e8 solid;
 }
-
-.artifactTableHeader {
-    padding: 6px;
-}
-
-
 
 .artifactTableEntry {
     padding: 4px;
@@ -482,10 +479,17 @@ a:visited {
     background: white;
 }
 
-.artifactTableFull {
-    background: white;
-    margin-bottom: 10px;
+.artifactTable td {
+	padding: 3px;
+	vertical-align: top;
 }
+
+.artifactTableLock {
+	width: 15px;
+	padding-top: 1px;
+	vertical-align: top;
+}
+
 .artifactTableFull td {
     padding: 3px;
 }
@@ -795,7 +799,7 @@ a:visited {
 }
 
 .gwt-TabBar .gwt-TabBarItem-selected {
-  padding: 5px 10px 5px 10px;
+  padding: 5px 10px;
   cursor: default;
 
   background-color: #87b3ff;
@@ -1073,7 +1077,7 @@ a:visited {
 
   color: black;
   background-color: white;
-  border-bottom: 2px solid white;
+  border-bottom: 0;
   margin-right: 2px;
 }
 
@@ -1084,7 +1088,7 @@ a:visited {
   color: white;
   
   background-color: #333;
-  border-bottom: 2px solid #333;
+  border-bottom: 0;
   margin-right: 2px;
   background-image: url("images/nw_maj_rond.gif");
   background-repeat: no-repeat;

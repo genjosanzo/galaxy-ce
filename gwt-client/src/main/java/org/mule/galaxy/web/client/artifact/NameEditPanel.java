@@ -35,7 +35,17 @@ public class NameEditPanel extends Composite {
     }
 
     private void initName() {
-        panel.add(new Label(name));
+        panel.add(new Label(name + " "));
+
+        Hyperlink editHL = new Hyperlink("Edit", "edit-property");
+        editHL.addClickListener(new ClickListener() {
+
+            public void onClick(Widget arg0) {
+                showEditPanel();
+            }
+            
+        });
+        panel.add(editHL);
     }
 
     protected void showEditPanel() {
