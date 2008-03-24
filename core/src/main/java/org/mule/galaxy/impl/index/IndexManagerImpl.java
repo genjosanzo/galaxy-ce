@@ -209,9 +209,12 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                     // Do not modify the Session: just set the participate
                     // flag.
                     participate = true;
+                    // get the JCR session from the current TX
+                    session = SessionFactoryUtils.getSession(sf, false);
                 } else {
                     logger.debug("Opening reeindexing session");
                     session = SessionFactoryUtils.getSession(sf, true);
+                    // TODO is this call really required? SFU.getSession() has already bound it to the TX
                     TransactionSynchronizationManager.bindResource(sf, sf.getSessionHolder(session));
                 }
 
