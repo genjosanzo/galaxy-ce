@@ -15,6 +15,12 @@
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-core</artifactId>
             <version>${version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -81,6 +87,12 @@
         <dependency>
             <groupId>org.apache.abdera</groupId>
             <artifactId>abdera-spring</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -111,13 +123,31 @@
             <artifactId>jetty</artifactId>
             <version>6.1.6</version>
             <optional>true</optional>
+            <!--
+                maven-war-plugin erroneously includes all jetty dependencies otherwise
+             -->
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>jsp-2.1</artifactId>
             <version>6.1.6</version>
-            <scope>test</scope>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mortbay.jetty</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ant</groupId>
+                    <artifactId>ant</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
