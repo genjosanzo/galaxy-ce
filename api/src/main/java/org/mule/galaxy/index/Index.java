@@ -1,13 +1,13 @@
 package org.mule.galaxy.index;
 
-import java.util.HashSet;
+import org.mule.galaxy.Identifiable;
+import org.mule.galaxy.mapping.OneToMany;
+
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
-
-import org.mule.galaxy.Identifiable;
-import org.mule.galaxy.mapping.OneToMany;
 
 public class Index implements Identifiable {
 
@@ -18,7 +18,8 @@ public class Index implements Identifiable {
     private Class<?> queryType;
     private String indexer;
     private Map<String,String> configuration;
-    
+
+    @SuppressWarnings("unchecked")
     public Index(String id, 
                  String name, 
                  String mediaType,
@@ -31,12 +32,11 @@ public class Index implements Identifiable {
         this.name = name;
         this.mediaType = mediaType;
         
-        this.documentTypes = new HashSet<QName>();
-        this.documentTypes.add(documentType);
-        
+        this.documentTypes = Collections.singleton(documentType);
+
         this.queryType = queryType;
         this.indexer = indexer;
-        this.configuration = configuration;
+        this.configuration = configuration == null ? Collections.EMPTY_MAP : configuration;
     }
     
    

@@ -6,8 +6,6 @@ import java.io.OutputStream;
 import java.util.Set;
 
 import javax.activation.MimeType;
-import javax.xml.namespace.QName;
-import javax.xml.transform.Source;
 
 public interface ContentHandler {
     

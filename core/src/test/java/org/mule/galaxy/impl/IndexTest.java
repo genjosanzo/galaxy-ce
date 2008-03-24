@@ -1,11 +1,8 @@
 package org.mule.galaxy.impl;
 
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.index.XPathIndexer;
 import org.mule.galaxy.impl.index.XQueryIndexer;
@@ -15,14 +12,13 @@ import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import javax.activation.MimeTypeParseException;
 import javax.xml.namespace.QName;
 
 public class IndexTest extends AbstractGalaxyTest {
@@ -167,5 +163,105 @@ public class IndexTest extends AbstractGalaxyTest {
                                             Restriction.in("contentType", Arrays.asList("application/xml")))).getResults();
     
         assertEquals(1, results.size());
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testJarIndex() throws Exception
+    {
+        InputStream stream = getResourceAsStream("test.jar");
+
+        assertNotNull(stream);
+
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+
+        ArtifactResult ar = registry.createArtifact(workspace,
+                                                    "application/java-archive",
+                                                    "test.jar",
+                                                    "1",
+                                                    stream,
+                                                    getAdmin());
+
+        Artifact artifact = ar.getArtifact();
+
+        assertNotNull(artifact);
+
+        Index idx = indexManager.getIndex("jar");
+        assertNotNull(idx);
+
+        Map<String, String> indexConfig = idx.getConfiguration();
+        assertNotNull(indexConfig);
+        assertFalse(indexConfig.isEmpty());
+        String scriptSource = indexConfig.get("scriptSource");
+        assertEquals("Wrong configuration saved to the JCR repo", "JarIndex.groovy", scriptSource);
+
+        ArtifactVersion latest = artifact.getDefaultVersion();
+        // normal manifest property
+        assertEquals("andrew", latest.getProperty("jar.manifest.Built-By"));
+        // OSGi property
+        final List<String> pkgs = (List<String>) latest.getProperty("jar.osgi.Export-Package.packages");
+        assertNotNull(pkgs);
+        assertFalse(pkgs.isEmpty());
+        assertTrue(pkgs.contains("org.mule.api"));
+
+        final List<String> entries = (List<String>) latest.getProperty("jar.entries");
+        assertNotNull(entries);
+        assertFalse(entries.isEmpty());
+        assertTrue(entries.contains("org.mule.api.MuleContext"));
+
+        // check that wrong name isn't there, it should be jar.entries instead
+        List e = (List) latest.getProperty("jar.manifest.entries");
+        assertNull(e);
+
+    }
+
+    public void testJavaAnnotationsIndex() throws Exception
+    {
+        // a compiled java class, but without any package hierarchy, so it can't be
+        // properly loaded by a Java classloader
+        InputStream stream = getResourceAsStream("annotations_as_bytecode.jar");
+
+        assertNotNull(stream);
+
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+
+        ArtifactResult ar = registry.createArtifact(workspace,
+                                                    "application/java-archive",
+                                                    "test.jar",
+                                                    "1",
+                                                    stream,
+                                                    getAdmin());
+
+        Artifact artifact = ar.getArtifact();
+
+        assertNotNull(artifact);
+
+        ArtifactVersion latest = artifact.getDefaultVersion();
+
+        // class
+        List<String> annotations = (List<String>) latest.getProperty("java.annotations.level.class");
+        assertNotNull(annotations);
+        assertFalse(annotations.isEmpty());
+        assertEquals("org.mule.galaxy.impl.index.annotations.Marker(value=ClassLevel)", annotations.get(0));
+
+        // just check for property existance for other levels, annotation parsing is checked in AsmAnnotationsScannerTest
+
+        // field
+        annotations = (List<String>) latest.getProperty("java.annotations.level.field");
+        assertNotNull(annotations);
+        assertFalse(annotations.isEmpty());
+
+        // method
+        annotations = (List<String>) latest.getProperty("java.annotations.level.method");
+        assertNotNull(annotations);
+        assertFalse(annotations.isEmpty());
+
+        // param
+        annotations = (List<String>) latest.getProperty("java.annotations.level.param");
+        assertNotNull(annotations);
+        assertFalse(annotations.isEmpty());
     }
 }

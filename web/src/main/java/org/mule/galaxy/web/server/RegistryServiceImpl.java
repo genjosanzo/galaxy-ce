@@ -1,27 +1,8 @@
 package org.mule.galaxy.web.server;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
-import org.acegisecurity.context.SecurityContextHolder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.Activity;
 import org.mule.galaxy.ActivityManager;
+import org.mule.galaxy.ActivityManager.EventType;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactType;
@@ -38,7 +19,6 @@ import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.ActivityManager.EventType;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexManager;
@@ -86,6 +66,27 @@ import org.mule.galaxy.web.rpc.WSearchResults;
 import org.mule.galaxy.web.rpc.WUser;
 import org.mule.galaxy.web.rpc.WWorkspace;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
+
+import org.acegisecurity.context.SecurityContextHolder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class RegistryServiceImpl implements RegistryService {
 
     private final Log log = LogFactory.getLog(getClass());
@@ -124,7 +125,7 @@ public class RegistryServiceImpl implements RegistryService {
     private WWorkspace toWeb(Workspace w) {
         WWorkspace ww = new WWorkspace(w.getId(), w.getName(), w.getPath());
         ww.setDefaultLifecycleId(w.getDefaultLifecycle().getId());
-        
+
         Collection<Workspace> children = w.getWorkspaces();
         if (children != null && children.size() > 0) {
             ww.setWorkspaces(new ArrayList());
@@ -262,14 +263,14 @@ public class RegistryServiceImpl implements RegistryService {
 
     private Set<QName> fromWeb(Collection documentTypes) {
         if (documentTypes == null) return null;
-        
+
         Set<QName> s = new HashSet<QName>();
         for (Object o : documentTypes) {
             String qn = o.toString();
             if (qn.startsWith("{}")) {
                 qn = qn.substring(2);
             }
-            
+
             s.add(QName.valueOf(qn));
         }
         return s;
@@ -462,7 +463,7 @@ public class RegistryServiceImpl implements RegistryService {
             idx.setQueryType(QName.class);
         }
 
-        HashSet<QName> docTypes = new HashSet<QName>();
+        Set<QName> docTypes = new HashSet<QName>();
         for (Object o : wi.getDocumentTypes()) {
             try {
                 docTypes.add(QName.valueOf(o.toString()));
@@ -545,12 +546,12 @@ public class RegistryServiceImpl implements RegistryService {
 
             List versions = new ArrayList();
             for (ArtifactVersion av : a.getVersions()) {
-                ArtifactVersionInfo vi = new ArtifactVersionInfo(av.getId(), 
+                ArtifactVersionInfo vi = new ArtifactVersionInfo(av.getId(),
                                                                  av.getVersionLabel(),
-                                                                 getVersionLink(av), 
-                                                                 av.getCreated().getTime(), 
-                                                                 av.isDefault(), 
-                                                                 av.isEnabled(), 
+                                                                 getVersionLink(av),
+                                                                 av.getCreated().getTime(),
+                                                                 av.isDefault(),
+                                                                 av.isEnabled(),
                                                                  av.getAuthor().getName(),
                                                                  av.getAuthor().getUsername(),
                                                                  av.getPhase().getName());
@@ -585,7 +586,7 @@ public class RegistryServiceImpl implements RegistryService {
                 });
             }
             info.setVersions(versions);
-            
+
             return g;
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
@@ -878,31 +879,31 @@ public class RegistryServiceImpl implements RegistryService {
 
     private WLifecycle toWeb(Lifecycle l) {
         WLifecycle lifecycle = new WLifecycle(l.getId(), l.getName());
-        
+
         List<WPhase> wphases = new ArrayList<WPhase>();
         lifecycle.setPhases(wphases);
-        
+
         for (Phase p : l.getPhases().values()) {
             WPhase wp = toWeb(p);
             wphases.add(wp);
-            
+
             if (p.equals(l.getInitialPhase())) {
                 lifecycle.setInitialPhase(wp);
             }
         }
-        
+
         for (Phase p : l.getPhases().values()) {
             WPhase wp = lifecycle.getPhase(p.getName());
             List<WPhase> nextPhases = new ArrayList<WPhase>();
-            
+
             for (Phase next : p.getNextPhases()) {
                 WPhase wnext = lifecycle.getPhase(next.getName());
-                
+
                 nextPhases.add(wnext);
             }
             wp.setNextPhases(nextPhases);
         }
-        
+
         Collections.sort(wphases, new Comparator<WPhase>() {
 
             public int compare(WPhase o1, WPhase o2) {
@@ -1083,11 +1084,11 @@ public class RegistryServiceImpl implements RegistryService {
 
             try {
                 registry.setEnabled(artifact, enabled, getCurrentUser());
-                
+
                 if (!enabled) {
                     return null;
                 }
-                
+
                 tr.setSuccess(true);
             } catch (ArtifactPolicyException e) {
                 tr.setSuccess(false);
@@ -1126,7 +1127,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void saveLifecycle(WLifecycle wl) throws RPCException, ItemExistsException {
         Lifecycle l = fromWeb(wl);
-        
+
         lifecycleManager.save(l);
     }
 
@@ -1143,10 +1144,10 @@ public class RegistryServiceImpl implements RegistryService {
         l.setPhases(new HashMap<String, Phase>());
         l.setName(wl.getName());
         l.setId(wl.getId());
-        
+
         for (Object o : wl.getPhases()) {
             WPhase wp = (WPhase) o;
-            
+
             Phase p = new Phase(l);
             p.setId(wp.getId());
             p.setName(wp.getName());
@@ -1157,12 +1158,12 @@ public class RegistryServiceImpl implements RegistryService {
             WPhase wp = (WPhase) o;
             Phase p = l.getPhase(wp.getName());
             p.setNextPhases(new HashSet<Phase>());
-            
+
             if (wp.getNextPhases() != null) {
                 for (Object oNext : wp.getNextPhases()) {
                     WPhase wNext = (WPhase) oNext;
                     Phase next = l.getPhase(wNext.getName());
-                    
+
                     p.getNextPhases().add(next);
                 }
             }
@@ -1171,7 +1172,7 @@ public class RegistryServiceImpl implements RegistryService {
         if (wl.getInitialPhase() == null) {
             throw new RPCException("You must set a phase as the initial phase.");
         }
-        
+
         l.setInitialPhase(l.getPhase(wl.getInitialPhase().getName()));
         return l;
     }
@@ -1232,9 +1233,9 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             Collection<Activity> activities = activityManager.getActivities(from, to, user, eventType, start,
                                                                             results, ascending);
-    
+
             ArrayList<WActivity> wactivities = new ArrayList<WActivity>();
-    
+
             for (Activity a : activities) {
                 wactivities.add(createWActivity(a));
             }
@@ -1260,21 +1261,21 @@ public class RegistryServiceImpl implements RegistryService {
     public WUser getUserInfo() throws RPCException {
         User user = getCurrentUser();
         WUser w = SecurityServiceImpl.createWUser(user);
-        
+
         List<String> perms = new ArrayList<String>();
-        
+
         for (Permission p : accessControlManager.getGrantedPermissions(user)) {
             perms.add(p.toString());
         }
         w.setPermissions(perms);
-        
+
         return w;
     }
 
     public void setAccessControlManager(AccessControlManager accessControlManager) {
         this.accessControlManager = accessControlManager;
     }
-    
+
     public void setCommentManager(CommentManager commentManager) {
         this.commentManager = commentManager;
     }

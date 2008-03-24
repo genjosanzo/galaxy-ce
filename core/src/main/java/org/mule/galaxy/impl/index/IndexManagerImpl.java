@@ -19,6 +19,7 @@ import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -50,7 +51,7 @@ import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.SessionFactory;
 import org.springmodules.jcr.SessionFactoryUtils;
 
-public class IndexManagerImpl extends AbstractReflectionDao<Index> 
+public class IndexManagerImpl extends AbstractReflectionDao<Index>
     implements IndexManager, ApplicationContextAware {
 
     private final Log log = LogFactory.getLog(getClass());
@@ -58,17 +59,17 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     private ContentService contentService;
 
     private BlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>();
-    
+
     private ThreadPoolExecutor executor;
 
     private Registry registry;
 
     private ApplicationContext context;
-    
+
     private ActivityManager activityManager;
-    
+
     private boolean destroyed = false;
-    
+
     public IndexManagerImpl() throws Exception {
         super(Index.class, "indexes", false);
     }
@@ -80,7 +81,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
     public void save(Index t, boolean block) {
         super.save(t);
-        
+
         if (block) {
             getIndexer(t).run();
         } else {
@@ -111,7 +112,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
             return null;
         }
     }
-    
+
     @Override
     protected String getNodeType() {
         return "galaxy:index";
@@ -123,7 +124,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 QueryManager qm = getQueryManager(session);
                 StringBuilder qstr = new StringBuilder("//element(*, galaxy:index)");
-                
+
                 QName dt = av.getParent().getDocumentType();
                 if (dt == null) {
                     qstr.append("[@mediaType=")
@@ -134,11 +135,11 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                         .append(JcrUtil.stringToXPathLiteral(dt.toString()))
                         .append("]");
                 }
-                
+
                 Query query = qm.createQuery(qstr.toString(), Query.XPATH);
-                
+
                 QueryResult result = query.execute();
-                
+
                 Set<Index> indices = new HashSet<Index>();
                 for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
                     Node node = nodes.nextNode();
@@ -162,11 +163,11 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         return i;
     }
 
-    
+
     @Override
     public void initialize() throws Exception {
         super.initialize();
-        
+
         executor = new ThreadPoolExecutor(1, 1, 1, TimeUnit.SECONDS, queue);
         executor.prestartAllCoreThreads();
     }
@@ -177,15 +178,15 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
             log.debug("Starting IndexManager.destroy() with " + executor.getQueue().size() + " indexing jobs left");
         }
         if (destroyed) return;
-        
+
         executor.shutdown();
         destroyed = true;
 
         executor.awaitTermination(10, TimeUnit.SECONDS);
-        
+
         // TODO finish reindexing on startup?
         List<Runnable> tasks = executor.shutdownNow();
-        
+
         if (tasks.size() > 0) {
             log.warn("Could not shut down indexer! Indexing was still going.");
         }
@@ -193,7 +194,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
     private void reindex(final Index idx) {
         Runnable runnable = getIndexer(idx);
-        
+
         if (!queue.add(runnable)) handleIndexingException(new Exception("Could not add indexer to queue."));
     }
 
@@ -215,7 +216,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 }
 
                 try {
-                    
+
                     findAndReindex(session, idx);
                 } catch (RepositoryException e) {
                     handleIndexingException(e);
@@ -231,21 +232,32 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         return runnable;
     }
 
-    protected void findAndReindex(Session session, Index idx) throws RepositoryException {
-        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(Artifact.class)
-            .add(Restriction.in("documentType", idx.getDocumentTypes()));
-        
-        try {
+    protected void findAndReindex(Session session, Index idx) throws RepositoryException
+    {
+        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(Artifact.class);
+
+        if (idx.getDocumentTypes() == null || idx.getDocumentTypes().isEmpty())
+        {
+            // TODO Restriction.in causes an NPE on reindexing?!
+            q.add(Restriction.eq("contentType", Arrays.asList(idx.getMediaType())));
+        }
+        else
+        {
+            q.add(Restriction.in("documentType", idx.getDocumentTypes()));
+        }
+
+        try
+        {
             Set results = getRegistry().search(q).getResults();
-            
+
             logActivity("Reindexing " + idx.getId() + " for " + results.size() + " artifacts.");
-            
+
             for (Object o : results) {
                 Artifact a = (Artifact) o;
-                
+
                 for (ArtifactVersion v : a.getVersions()) {
                     ContentHandler ch = contentService.getContentHandler(v.getParent().getContentType());
-                    
+
                     try {
                         getIndexer(idx.getIndexer()).index(v, ch, idx);
                     } catch (IndexException e) {
@@ -254,7 +266,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                         handleIndexingException(idx, e);
                     }
                 }
-                
+
                 session.save();
             }
         } catch (QueryException e) {
@@ -262,7 +274,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         } catch (RegistryException e) {
             logActivity("Could not reindex documents for index " + idx.getId(), e);
         }
-        
+
     }
 
 

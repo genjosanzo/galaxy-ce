@@ -1416,7 +1416,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     Collection<?> right = (Collection<?>) r.getRight();
                     for (Object o : right) {
 
-                        String rightVal = o.toString();
+                        String rightVal = o == null ? "" : o.toString();
                         if ("lifecycle".equals(property)) {
                             Lifecycle l = lifecycleManager.getLifecycle(rightVal);
                             if (l == null) {
@@ -1425,9 +1425,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                                 rightVal = l.getId();
                             }
                         }
-                        
-                        first = appendPropertySearch(qstr, propStr, first, 
-                                                     rightVal, property, 
+
+                        first = appendPropertySearch(qstr, propStr, first,
+                                                     rightVal, property,
                                                      not, false, Operator.EQUALS);
                     }
                 } else {

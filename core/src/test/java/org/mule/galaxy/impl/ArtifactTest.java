@@ -100,7 +100,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, artifacts.size());
     }
     
-    public void testAddWsdl() throws Exception {
+    public void _testAddWsdl() throws Exception {
         InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
         
         Collection<Workspace> workspaces = registry.getWorkspaces();
