@@ -115,7 +115,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
                 for (Iterator itr2 = group.getRows().iterator(); itr2.hasNext();)
                 {
                     info = (BasicArtifactInfo)itr2.next();
-                    if(info.getPath().contains("hello.wsdl"))
+                    if(info.getName().equals("hello.wsdl"))
                     {
                         g1 = group;
                         break;
