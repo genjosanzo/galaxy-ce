@@ -50,4 +50,8 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
         this.userManager = userManager;
     }
 
+    public int getVersion() {
+        return 1;
+    }
+
 }

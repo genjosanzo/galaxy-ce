@@ -1,6 +1,6 @@
 package org.mule.galaxy.impl.artifact;
 
-import org.mule.galaxy.ArtifactPlugin;
+import org.mule.galaxy.Plugin;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Registry;
@@ -11,7 +11,7 @@ import org.mule.galaxy.view.ViewManager;
 /**
  * Makes it easy to add indexes and views for a new artifact type.
  */
-public abstract class AbstractArtifactPlugin implements ArtifactPlugin {
+public abstract class AbstractArtifactPlugin implements Plugin {
     protected Registry registry;
     protected Dao<ArtifactType> artifactTypeDao;
     protected ViewManager viewManager;
@@ -31,6 +31,10 @@ public abstract class AbstractArtifactPlugin implements ArtifactPlugin {
 
     public void setIndexManager(IndexManager indexManager) {
         this.indexManager = indexManager;
+    }
+
+    public String getName() {
+        return getClass().getName();
     }
     
 }

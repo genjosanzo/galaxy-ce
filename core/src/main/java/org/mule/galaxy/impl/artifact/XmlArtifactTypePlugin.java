@@ -62,6 +62,11 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
         this.policyManager = policyManager;
     }
 
+    @Override
+    public String getName() {
+        return super.getName() + "-" + pluginXml.getName();
+    }
+
     public void initializeOnce() throws Exception
     {
         // Is there is no namespace we can assume that this is just a
@@ -209,5 +214,9 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
 
 
         }
+    }
+
+    public int getVersion() {
+        return 1;
     }
 }

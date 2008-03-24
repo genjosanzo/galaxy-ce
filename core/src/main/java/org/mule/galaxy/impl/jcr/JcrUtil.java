@@ -27,17 +27,17 @@ import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
 
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springmodules.jcr.JcrCallback;
-import org.springmodules.jcr.SessionFactory;
-import org.springmodules.jcr.SessionFactoryUtils;
-
+import net.sf.saxon.value.IntegerValue;
 import org.apache.jackrabbit.value.BooleanValue;
 import org.apache.jackrabbit.value.DateValue;
 import org.apache.jackrabbit.value.DoubleValue;
 import org.apache.jackrabbit.value.LongValue;
 import org.apache.jackrabbit.value.StringValue;
 import org.mule.galaxy.Identifiable;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springmodules.jcr.JcrCallback;
+import org.springmodules.jcr.SessionFactory;
+import org.springmodules.jcr.SessionFactoryUtils;
 
 public class JcrUtil {
 

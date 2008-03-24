@@ -39,6 +39,9 @@ public class ArtifactTypeDaoTest extends AbstractGalaxyTest {
     public void testRegistration() throws Exception {
         List<ArtifactType> all = artifactTypeDao.listAll();
         System.out.println(all);
+        for (ArtifactType t : all) {
+            System.out.println(t.getContentType() + " " + t.getDocumentTypes());
+        }
         assertTrue(all.size() > 5);
     }
 

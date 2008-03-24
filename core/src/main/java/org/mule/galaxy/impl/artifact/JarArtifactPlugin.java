@@ -109,6 +109,10 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
 
     }
 
+    public int getVersion() {
+        return 1;
+    }
+
     public ContentService getContentService()
     {
         return contentService;

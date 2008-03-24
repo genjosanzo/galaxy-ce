@@ -1,21 +1,5 @@
 package org.mule.galaxy.test;
 
-import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactResult;
-import org.mule.galaxy.CommentManager;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.Settings;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.index.IndexManagerImpl;
-import org.mule.galaxy.impl.jcr.PluginRunner;
-import org.mule.galaxy.index.IndexManager;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.security.AccessControlManager;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.security.UserManager;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -34,6 +18,21 @@ import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.mule.galaxy.ActivityManager;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.CommentManager;
+import org.mule.galaxy.PluginManager;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.Settings;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.index.IndexManagerImpl;
+import org.mule.galaxy.index.IndexManager;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.security.UserManager;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
@@ -56,7 +55,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     protected IndexManager indexManager;
     protected ActivityManager activityManager;
     protected CommentManager commentManager;
-    protected PluginRunner pluginRunner;
+    protected PluginManager pluginManager;
     protected AccessControlManager accessControlManager;
     
     private boolean participate;

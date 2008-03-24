@@ -31,4 +31,8 @@ public class AnnotatedArtifactPlugin extends AbstractArtifactPlugin
        // ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
        // resourcePatternResolver.getResources()
     }
+
+    public int getVersion() {
+        return 1;
+    }
 }

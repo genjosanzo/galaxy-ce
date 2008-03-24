@@ -239,10 +239,17 @@
     <property name="registry" ref="registry"/>
   </bean>
 
-  <bean id="artfactPluginManager" class="org.mule.galaxy.impl.artifact.ArtifactPluginManagerImpl"
+  <bean id="pluginManager" parent="txProxyTemplate">
+    <property name="target" ref="pluginManagerTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="pluginManagerTarget" class="org.mule.galaxy.impl.jcr.PluginManagerImpl"
          parent="abstractArtifactPlugin" init-method="initialize">
     <property name="jcrTemplate" ref="jcrTemplate"/>
     <property name="policyManager" ref="policyManager"/>
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="persisterManager" ref="persisterManager" />
   </bean>
 
   <bean class="org.mule.galaxy.impl.artifact.OtherArtifactPlugin" parent="abstractArtifactPlugin"/>

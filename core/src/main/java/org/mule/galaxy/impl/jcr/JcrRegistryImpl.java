@@ -1645,8 +1645,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             JcrWorkspace w = new JcrWorkspace(this, lifecycleManager, node);
             w.setName(settings.getDefaultWorkspaceName());
 
-            System.setProperty("initializeOnce", "true");
-            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "1");
+            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "2");
         } 
         id = workspaces.getUUID();
         
