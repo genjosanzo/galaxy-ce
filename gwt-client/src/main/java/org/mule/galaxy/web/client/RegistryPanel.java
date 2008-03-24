@@ -81,7 +81,7 @@ public class RegistryPanel extends AbstractMenuPanel {
         editWkspcImg.addClickListener(editWkspcListener);
 
         Toolbox topMenuLinks = new Toolbox(false);
-        topMenuLinks.add(asHorizontal(addImg, new Label(" "), new Hyperlink("Add Aritfact", "add-artifact")));
+        topMenuLinks.add(asHorizontal(addImg, new Label(" "), new Hyperlink("Add Artifact", "add-artifact")));
         
         Hyperlink hl = new Hyperlink("Add Workspace", "add-workspace");
         hl.addClickListener(addWkspcListener);
