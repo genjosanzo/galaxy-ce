@@ -24,8 +24,8 @@ import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.rpc.UserService;
-import org.mule.galaxy.web.rpc.UserServiceAsync;
+import org.mule.galaxy.web.rpc.SecurityService;
+import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WUser;
 
 
@@ -36,7 +36,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
     private RegistryPanel registryPanel;
     private RegistryServiceAsync registryService;
-    private UserServiceAsync userService;
+    private SecurityServiceAsync securityService;
     private FlowPanel rightPanel;
     private PageInfo curInfo;
     private Map history = new HashMap();
@@ -56,10 +56,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
         ServiceDefTarget target = (ServiceDefTarget) registryService;
         target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/registry.rpc");
         
-        this.userService = (UserServiceAsync) GWT.create(UserService.class);
+        this.securityService = (SecurityServiceAsync) GWT.create(SecurityService.class);
         
-        target = (ServiceDefTarget) userService;
-        target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/userService.rpc");
+        target = (ServiceDefTarget) securityService;
+        target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/securityService.rpc");
         
         FlowPanel base = new FlowPanel();
         base.setStyleName("base");
@@ -72,30 +72,18 @@ public class Galaxy implements EntryPoint, HistoryListener {
         rightPanel = new FlowPanel();
         rightPanel.setStyleName("header-right");
 
-        
         FlowPanel header = new FlowPanel();
         header.setStyleName("header");
         header.add(rightPanel);
         header.add(new Image("images/galaxy_small_logo.png"));
 
         base.add(header);
-        base.add(tabPanel);
-        
-        tabPanel.insert(registryPanel, "Registry", 0);
+
         tabPanel.setStyleName("headerTabPanel");
         tabPanel.getDeckPanel().setStyleName("headerTabDeckPanel");
-        
-        final ActivityPanel activityPanel = new ActivityPanel(this);
-        tabPanel.insert(activityPanel, "Activity", 1);
-        
         tabPanel.addTabListener(new TabListener() {
 
             public boolean onBeforeTabSelected(SourcesTabEvents event, int newTab) {
-//                if (oldTab != newTab) {
-//                    if (curInfo != null) {
-//                        history.put("tab-" + oldTab, curInfo);
-//                    }
-//                }
                 return true;
             }
 
@@ -105,11 +93,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
                 }
                 oldTab = tab;
             }
-            
         });
-        
-        createPageInfoForMenuPanel(0);
-        createPageInfoForActivity(1);
+        base.add(tabPanel);
         
         final Galaxy galaxy = this;
         registryService.getUserInfo(new AbstractCallback(registryPanel) {
@@ -120,25 +105,40 @@ public class Galaxy implements EntryPoint, HistoryListener {
                 HTML logout = new HTML("<a href=\"" + GWT.getHostPageBaseURL() + "j_logout\">Logout</a>");
                 rightPanel.add(logout);
                 
-                if (showAdminTab(user)) {
-                    tabPanel.add(new AdministrationPanel(galaxy), "Administration");
-                    createPageInfoForMenuPanel(2);
-                    showFirstPage();
-                }
+                loadTabs(galaxy);
             }
+
         });
+        
         
         Label footer = new Label("Mule Galaxy, Copyright 2008 MuleSource, Inc.");
         footer.setStyleName("footer");
         base.add(footer);
         RootPanel.get().add(base);
     }
+
+    protected void loadTabs(final Galaxy galaxy) {
+        tabPanel.insert(registryPanel, "Registry", 0);
+        createPageInfoForMenuPanel(0);
+        
+        if (hasPermission("VIEW_ACTIVITY")) {
+            final ActivityPanel activityPanel = new ActivityPanel(this);
+            tabPanel.insert(activityPanel, "Activity", tabPanel.getWidgetCount());
+            createPageInfoForActivity(1);
+        }
+        
+        if (showAdminTab(user)) {
+            tabPanel.add(new AdministrationPanel(galaxy), "Administration");
+            createPageInfoForMenuPanel(tabPanel.getWidgetCount() - 1);
+        }
+        showFirstPage();
+    }
     
     protected boolean showAdminTab(WUser user) {
         for (Iterator itr = user.getPermissions().iterator(); itr.hasNext();) {
             String s = (String)itr.next();
             
-            if (s.startsWith("manage_")) return true;
+            if (s.startsWith("MANAGE_")) return true;
         }
         return false;
     }
@@ -256,8 +256,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
         return registryService;
     }
 
-    public UserServiceAsync getUserService() {
-        return userService;
+    public SecurityServiceAsync getSecurityService() {
+        return securityService;
     }
 
     public TabPanel getTabPanel() {

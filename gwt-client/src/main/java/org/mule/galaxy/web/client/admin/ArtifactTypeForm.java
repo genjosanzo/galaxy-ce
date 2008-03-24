@@ -157,15 +157,19 @@ public class ArtifactTypeForm extends AbstractComposite {
     
     public void disable() {
         save.setEnabled(false);
-        delete.setEnabled(false);
+        if (delete != null) {
+            delete.setEnabled(false);
+        }
         docTypesLB.setEnabled(false);
     }
     
     public void reenable() {
         save.setEnabled(true);
         save.setText("Save");
-        delete.setEnabled(true);
-        delete.setText("Delete");
+        if (delete != null) {
+            delete.setEnabled(true);
+            delete.setText("Delete");
+        }
         docTypesLB.setEnabled(true);
     }
 }

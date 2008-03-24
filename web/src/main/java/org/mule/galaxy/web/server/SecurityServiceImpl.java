@@ -1,0 +1,336 @@
+package org.mule.galaxy.web.server;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.security.Group;
+import org.mule.galaxy.security.Permission;
+import org.mule.galaxy.security.PermissionGrant;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.security.UserExistsException;
+import org.mule.galaxy.security.UserManager;
+import org.mule.galaxy.util.SecurityUtils;
+import org.mule.galaxy.web.client.RPCException;
+import org.mule.galaxy.web.client.admin.PasswordChangeException;
+import org.mule.galaxy.web.rpc.ItemExistsException;
+import org.mule.galaxy.web.rpc.ItemNotFoundException;
+import org.mule.galaxy.web.rpc.SecurityService;
+import org.mule.galaxy.web.rpc.WGroup;
+import org.mule.galaxy.web.rpc.WPermission;
+import org.mule.galaxy.web.rpc.WPermissionGrant;
+import org.mule.galaxy.web.rpc.WUser;
+
+public class SecurityServiceImpl implements SecurityService {
+
+    private final Log log = LogFactory.getLog(getClass());
+
+    private UserManager userManager;
+    private AccessControlManager accessControlManager;
+    private Registry registry;
+    
+    public String addUser(WUser user, String password) throws ItemExistsException {
+        try {
+            User u = createUser(user);
+            if (user.getGroupIds() != null) {
+                for (Object o : user.getGroupIds()) {
+                    u.addGroup(accessControlManager.getGroup(o.toString()));
+                }
+            }
+            userManager.create(u, password);
+            return u.getId();
+        } catch (UserExistsException e) {
+            throw new ItemExistsException();
+        }
+    }
+    
+    private User createUser(WUser user) {
+        User u = new User();
+        u.setName(user.getName());
+        u.setEmail(user.getEmail());
+        u.setUsername(user.getUsername());
+        
+        return u;
+    }
+
+    public Collection getUsers() {
+        List<User> users = userManager.listAll();
+        
+        ArrayList<WUser> webUsers = new ArrayList<WUser>();
+        for (User user : users) {
+            WUser w = createWUser(user);
+            
+            ArrayList<String> groupIds = new ArrayList<String>();
+            
+            for (Group g : user.getGroups()) {
+                groupIds.add(g.getId());
+            }
+            
+            w.setGroupIds(groupIds);
+            
+            webUsers.add(w);
+        }
+        return webUsers;
+    }
+
+    public static WUser createWUser(User user) {
+        WUser w = new WUser();
+        w.setName(user.getName());
+        w.setId(user.getId());
+        w.setUsername(user.getUsername());
+        w.setEmail(user.getEmail());
+        
+        return w;
+    }
+
+    public void updateUser(WUser user, String password, String confirm) 
+        throws ItemNotFoundException, PasswordChangeException {
+        try {
+            User u = userManager.get(user.getId());
+            
+            if (u == null) {
+                throw new ItemNotFoundException();
+            }
+            
+            u.setName(user.getName());
+            u.setEmail(user.getEmail());
+
+            if (password != null && password.equals(confirm) && !password.equals("")) {
+                userManager.setPassword(u, password);
+            }
+            
+            u.getGroups().clear();
+            for (Object o : user.getGroupIds()) {
+                u.getGroups().add(accessControlManager.getGroup(o.toString()));
+            }
+            userManager.save(u);
+            
+            
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
+        }
+    }
+
+    public void deleteUser(String userId) {
+        userManager.delete(userId);
+    }
+
+    public void applyPermissions(Map groupToPermissionGrant) throws RPCException {
+        for (Iterator itr = groupToPermissionGrant.entrySet().iterator(); itr.hasNext();) {
+            Map.Entry e = (Map.Entry)itr.next();
+            
+            WGroup wGroup = (WGroup) e.getKey();
+            Collection permGrants = (Collection) e.getValue();
+            
+            Group group = accessControlManager.getGroup(wGroup.getId());
+            
+            List<Permission> grants = new ArrayList<Permission>();
+            List<Permission> revocations = new ArrayList<Permission>();
+            
+            for (Iterator pgItr = permGrants.iterator(); pgItr.hasNext();) {
+                WPermissionGrant permGrant = (WPermissionGrant)pgItr.next();
+                
+                Permission p = Permission.valueOf(permGrant.getPermission());
+                if (permGrant.getGrant() == WPermissionGrant.GRANTED) {
+                    grants.add(p);
+                } else {
+                    revocations.add(p);
+                }
+            }
+            
+            try {
+                accessControlManager.grant(group, grants);
+                accessControlManager.revoke(group, revocations);
+            } catch (AccessException e1) {
+                throw new RPCException(e1.getMessage());
+            }
+        }
+    }
+
+    public Map getGroupPermissions() {
+        Map<WGroup, Collection<WPermissionGrant>> wgroups = new HashMap<WGroup, Collection<WPermissionGrant>>();
+        List<Group> groups = accessControlManager.getGroups();
+        
+        for (Group g : groups) {
+            WGroup wgroup = toWeb(g);
+            List<WPermissionGrant> wpgs = new ArrayList<WPermissionGrant>();
+            
+            Set<PermissionGrant> grants = accessControlManager.getPermissionGrants(g);
+            for (PermissionGrant pg : grants) {
+                WPermissionGrant wpg = new WPermissionGrant();
+                
+                switch (pg.getGrant()) {
+                case REVOKED:
+                    wpg.setGrant(WPermissionGrant.REVOKED);
+                    break;
+                case INHERITED:
+                    wpg.setGrant(WPermissionGrant.INHERITED);
+                    break;
+                case GRANTED:
+                    wpg.setGrant(WPermissionGrant.GRANTED);
+                    break;
+                }
+                wpg.setPermission(pg.getPermission().toString());
+                wpgs.add(wpg);
+            }
+            
+            wgroups.put(wgroup, wpgs);
+        }
+        return wgroups;
+    }
+
+    public void applyPermissions(String itemId, Map groupToPermissionGrant) throws RPCException {
+        try {
+            Item item = registry.getRegistryItem(itemId);
+            for (Iterator itr = groupToPermissionGrant.entrySet().iterator(); itr.hasNext();) {
+                Map.Entry e = (Map.Entry)itr.next();
+                
+                WGroup wGroup = (WGroup) e.getKey();
+                Collection permGrants = (Collection) e.getValue();
+                
+                Group group = accessControlManager.getGroup(wGroup.getId());
+                
+                List<Permission> grants = new ArrayList<Permission>();
+                List<Permission> revocations = new ArrayList<Permission>();
+                
+                for (Iterator pgItr = permGrants.iterator(); pgItr.hasNext();) {
+                    WPermissionGrant permGrant = (WPermissionGrant)pgItr.next();
+                    
+                    Permission p = Permission.valueOf(permGrant.getPermission());
+                    if (permGrant.getGrant() == WPermissionGrant.GRANTED) {
+                        grants.add(p);
+                    } else if (permGrant.getGrant() == WPermissionGrant.REVOKED) {
+                        revocations.add(p);
+                    }
+                }
+                
+                accessControlManager.clear(group, item);
+                accessControlManager.revoke(group, revocations, item);
+                accessControlManager.grant(group, grants, item);
+            }
+        } catch (RegistryException e) {
+            log.error( e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            log.error( e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    public Map getGroupPermissions(String itemId) throws RPCException {
+        Map<WGroup, Collection<WPermissionGrant>> wgroups = new HashMap<WGroup, Collection<WPermissionGrant>>();
+        List<Group> groups = accessControlManager.getGroups();
+        
+        try {
+            Item item = registry.getRegistryItem(itemId);
+            
+            for (Group g : groups) {
+                WGroup wgroup = toWeb(g);
+                List<WPermissionGrant> wpgs = new ArrayList<WPermissionGrant>();
+                
+                Set<PermissionGrant> grants = accessControlManager.getPermissionGrants(g, item);
+                for (PermissionGrant pg : grants) {
+                    WPermissionGrant wpg = new WPermissionGrant();
+                    
+                    switch (pg.getGrant()) {
+                    case REVOKED:
+                        wpg.setGrant(WPermissionGrant.REVOKED);
+                        break;
+                    case INHERITED:
+                        wpg.setGrant(WPermissionGrant.INHERITED);
+                        break;
+                    case GRANTED:
+                        wpg.setGrant(WPermissionGrant.GRANTED);
+                        break;
+                    }
+                    wpg.setPermission(pg.getPermission().toString());
+                    wpgs.add(wpg);
+                }
+                
+                wgroups.put(wgroup, wpgs);
+            }
+            return wgroups;
+        } catch (RegistryException e) {
+            log.error( e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            log.error( e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        }
+            
+    }
+    @SuppressWarnings("unchecked")
+    public void save(WGroup wgroup) throws RPCException {
+        Group g = null;
+        if (wgroup.getId() != null) {
+            g = accessControlManager.getGroup(wgroup.getId());
+        } else {
+            g = new Group();
+        }
+        g.setName(wgroup.getName());
+        try {
+            accessControlManager.save(g);
+        } catch (AccessException e1) {
+            throw new RPCException(e1.getMessage());
+        }
+    }
+
+    private WGroup toWeb(Group g) {
+        return new WGroup(g.getId(), g.getName());
+    }
+
+    public Collection getPermissions(int permissionType) {
+        List<Permission> permissions = accessControlManager.getPermissions();
+        ArrayList<WPermission> wperms = new ArrayList<WPermission>();
+        
+        for (Permission p : permissions) {
+            if (permissionType == SecurityService.GLOBAL_PERMISSIONS
+                || (permissionType == SecurityService.ARTIFACT_PERMISSIONS && SecurityUtils.appliesTo(p, Artifact.class))
+                || (permissionType == SecurityService.WORKSPACE_PERMISSIONS && SecurityUtils.appliesTo(p, Workspace.class))) {
+                wperms.add(new WPermission(p.toString(), p.getDescription()));
+            }
+        }
+        return wperms;
+    }
+
+    public void setUserManager(UserManager userManager) {
+        this.userManager = userManager;
+    }
+
+    public void setAccessControlManager(AccessControlManager accessControlManager) {
+        this.accessControlManager = accessControlManager;
+    }
+
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
+    }
+
+    public Collection getGroups() throws RPCException {
+        ArrayList<WGroup> wgroups = new ArrayList<WGroup>();
+        
+        for (Group g : accessControlManager.getGroups()) {
+            wgroups.add(toWeb(g));
+        }
+        
+        return wgroups;
+    }
+    
+}

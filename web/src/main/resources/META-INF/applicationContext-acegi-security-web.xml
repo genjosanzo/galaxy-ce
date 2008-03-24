@@ -77,7 +77,7 @@
                 /login.css=ROLE_ANONYMOUS,role_user
                 /images/**=ROLE_ANONYMOUS,role_user
                 /favicon.ico*=ROLE_ANONYMOUS,role_user
-                /handler/userservice.rpc=manage_users
+                /handler/userservice.rpc=MANAGE_USERS
                 /j_acegi_switch_user=ROLE_SUPERVISOR
                 /switchuser.jsp=ROLE_SUPERVISOR
                 /**=role_user

@@ -8,16 +8,20 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.RegistryPanel;
+import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.SecurityService;
 
 /**
  * Contains:
@@ -76,7 +80,7 @@ public class ArtifactPanel extends AbstractComposite {
         InlineFlowPanel artifactTitle = new InlineFlowPanel();
         artifactTitle.setStyleName("artifact-title-base");
         artifactTitle.add(newLabel(info.getPath() + " ", "artifact-title")); // add a space to keep the version box away... ugly.
-        artifactTitle.add(newLabel("- Viewing Version: ", "artifact-title-version")); // add a space to keep the version box away... ugly.
+        artifactTitle.add(newLabel("- Version: ", "artifact-title-version")); // add a space to keep the version box away... ugly.
         
         ArtifactVersionInfo defaultVersion = null;
         versionLB = new ListBox();
@@ -134,12 +138,29 @@ public class ArtifactPanel extends AbstractComposite {
         artifactTabs.add(new ArtifactInfoPanel(registryPanel, group, info, version), "Info");
         artifactTabs.add(new GovernancePanel(registryPanel, version), "Governance");
         artifactTabs.add(new HistoryPanel(registryPanel, info), "History");
+        if (registryPanel.getGalaxy().hasPermission("MANAGE_GROUPS")) {
+            artifactTabs.add(new ItemGroupPermissionPanel(registryPanel, info.getId(), SecurityService.ARTIFACT_PERMISSIONS), "Security");
+        }
         
         if (selectedTab > -1) {
             artifactTabs.selectTab(selectedTab);
         } else {
             artifactTabs.selectTab(0);
         }
+
+        artifactTabs.addTabListener(new TabListener() {
+
+            public boolean onBeforeTabSelected(SourcesTabEvents arg0, int arg1) {
+                return true;
+            }
+
+            public void onTabSelected(SourcesTabEvents events, int tab) {
+                AbstractComposite composite = (AbstractComposite) artifactTabs.getWidget(tab);
+                
+                composite.onShow();
+            }
+            
+        });
     }
 
 }

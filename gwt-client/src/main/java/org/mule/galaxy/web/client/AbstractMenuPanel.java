@@ -1,5 +1,7 @@
 package org.mule.galaxy.web.client;
 
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.DockPanel;
@@ -26,10 +28,6 @@ public abstract class AbstractMenuPanel extends AbstractComposite implements Err
         panel = new DockPanel();
         panel.setSpacing(0);
 
-        topPanel = new FlowPanel();
-        topPanel.setStyleName("top-panel");
-        panel.add(topPanel, DockPanel.NORTH);
-        
         leftMenu = new FlowPanel() {
 
             protected void onLoad() {
@@ -66,12 +64,24 @@ public abstract class AbstractMenuPanel extends AbstractComposite implements Err
         
         errorPanel = new FlowPanel();
         errorPanel.setStyleName("error-panel");
+
+        topPanel = new FlowPanel();
+        topPanel.setStyleName("top-panel");
         
         initWidget(panel);
     }
 
     public Galaxy getGalaxy() {
         return galaxy;
+    }
+
+
+    public RegistryServiceAsync getRegistryService() {
+        return galaxy.getRegistryService();
+    }
+
+    public SecurityServiceAsync getSecurityService() {
+        return galaxy.getSecurityService();
     }
     
     public void addMenuItem(Widget widget) {
@@ -92,6 +102,10 @@ public abstract class AbstractMenuPanel extends AbstractComposite implements Err
     }    
     
     public void setTop(Widget widget) {
+        if (mainPanel.getWidgetIndex(topPanel) == -1) {
+            mainPanel.add(topPanel);
+        }
+        
         if (topWidget != null)
             topPanel.remove(topWidget);
         
@@ -146,8 +160,8 @@ public abstract class AbstractMenuPanel extends AbstractComposite implements Err
      * @param composite
      * @return
      */
-    protected PageInfo createPageInfo(String token, final AbstractComposite composite) {
-        PageInfo page = new MenuPanelPageInfo(token, this) {
+    public MenuPanelPageInfo createPageInfo(String token, final AbstractComposite composite) {
+        MenuPanelPageInfo page = new MenuPanelPageInfo(token, this) {
             public AbstractComposite createInstance() {
                 return composite;
             }

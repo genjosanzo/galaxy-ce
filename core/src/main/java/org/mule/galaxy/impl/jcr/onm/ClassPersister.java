@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
+import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.mapping.OneToMany;
 
 /**
@@ -102,6 +103,14 @@ public class ClassPersister {
         return o;
     }
 
+    public Object get(String id, Session session) throws Exception {
+        return build(session.getNodeByUUID(id), session);
+    }
+    
+    public String getId(Object o) {
+        return ((Identifiable) o).getId();
+    }
+    
     public String getPath() {
         return path;
     }

@@ -7,13 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.jcr.InvalidItemStateException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.query.InvalidQueryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
@@ -24,6 +22,7 @@ import org.mule.galaxy.Dao;
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.util.SecurityUtils;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
@@ -33,14 +32,23 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     protected String objectsNodeId;
     protected String idAttributeName;
     protected boolean generateId;
+    protected PersisterManager persisterManager;
+    protected Class type;
+    protected ClassPersister persister;
     
-    protected AbstractDao(String rootNode) throws Exception {
-        this(rootNode, false);
+    protected AbstractDao(Class t, String rootNode) throws Exception {
+        this(t, rootNode, false);
     }
     
-    protected AbstractDao(String rootNode,  boolean generateId) throws Exception {
+    protected AbstractDao(Class t, String rootNode,  boolean generateId) throws Exception {
         this.rootNode = rootNode;
         this.generateId = generateId;
+        this.type = t;
+    }
+
+    
+    public void setPersisterManager(PersisterManager persisterManager) {
+        this.persisterManager = persisterManager;
     }
     
     @SuppressWarnings("unchecked")
@@ -101,6 +109,24 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     }
     
     public void initialize() throws Exception {
+        initalizePersister();
+        
+        SecurityUtils.doPriveleged(new Runnable() {
+
+            public void run() {
+                try {
+                    doInitializeInJcrTransaction();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (RepositoryException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            
+        });
+    }
+
+    private void doInitializeInJcrTransaction() throws IOException, RepositoryException {
         JcrUtil.doInTransaction(getSessionFactory(), new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
@@ -115,6 +141,12 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
                 return null;
             }
         });
+    }
+
+    protected void initalizePersister() throws Exception {
+        persisterManager.getPersisters().put(type.getName(), new DaoPersister(this));
+//        this.persister = new ClassPersister(type, rootNode, persisterManager);
+//        persisterManager.getClassPersisters().put(type.getName(), persister);
     }
 
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {

@@ -59,7 +59,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
                 try {
                     User user = build(userNode, session);
                     return new UserDetailsWrapper(user, 
-                                                  getAccessControlManager().getGlobalPermissions(user),
+                                                  getAccessControlManager().getGrantedPermissions(user),
                                                   getStringOrNull(userNode, PASSWORD));
                 } catch (Exception e) {
                     if (e instanceof RepositoryException) {

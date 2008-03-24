@@ -12,4 +12,5 @@ public interface FieldPersister {
     
     Object build(Node node, FieldDescriptor fd, Session session) throws Exception;
 
+    Object build(String id, FieldDescriptor fd, Session session) throws Exception;
 }

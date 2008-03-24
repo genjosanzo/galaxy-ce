@@ -22,7 +22,7 @@ import org.mule.galaxy.plugins.config.jaxb.GalaxyPoliciesType;
 import org.mule.galaxy.plugins.config.jaxb.GalaxyType;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.util.UserUtils;
+import org.mule.galaxy.util.SecurityUtils;
 import org.mule.galaxy.view.ViewManager;
 
 import java.io.IOException;
@@ -104,7 +104,7 @@ public class ArtifactPluginManagerImpl implements ArtifactPluginManager, Applica
 
     public void initialize() throws Exception
     {
-        UserUtils.doPriveleged(new Runnable() {
+        SecurityUtils.doPriveleged(new Runnable() {
 
             public void run() {
                 try {

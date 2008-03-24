@@ -32,19 +32,12 @@ import org.mule.galaxy.web.rpc.WGovernanceInfo;
 import org.mule.galaxy.web.rpc.WIndex;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WPhase;
+import org.mule.galaxy.web.rpc.WUser;
 import org.mule.galaxy.web.rpc.WWorkspace;
 import org.springframework.context.ApplicationContext;
 
 public class RegistryServiceTest extends AbstractGalaxyTest {
     protected RegistryService gwtRegistry;
-    
-    
-    @Override
-    protected void onSetUp() throws Exception {
-        super.onSetUp();
-
-        login("admin", "admin");
-    }
 
     @Override
     protected String[] getConfigLocations() {
@@ -190,6 +183,17 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals(1, w.getWorkspaces().size());
         
         assertNotNull(w.getPath());
+    }
+    
+    public void testUserInfo() throws Exception {
+        WUser user = gwtRegistry.getUserInfo();
+        
+        assertNotNull(user.getUsername());
+        
+        Collection permissions = user.getPermissions();
+        assertTrue(permissions.size() > 0);
+        
+        assertTrue(permissions.contains("MANAGE_USERS"));
     }
     
     public void testGovernanceOperations() throws Exception {

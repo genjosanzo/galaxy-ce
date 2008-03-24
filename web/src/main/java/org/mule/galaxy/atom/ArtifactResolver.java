@@ -16,6 +16,7 @@ import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.security.AccessException;
 
 public class ArtifactResolver implements Resolver<Target> {
 
@@ -115,6 +116,8 @@ public class ArtifactResolver implements Resolver<Target> {
                 return resolveWorkspace(path, classifier, context);
             } catch (NotFoundException e) {
                 return resolveArtifact(path, classifier, context);
+            } catch (AccessException e) {
+                return returnUnknownLocation(context);
             } 
         } catch (RegistryException e) {
             throw new RuntimeException(e);
@@ -158,6 +161,9 @@ public class ArtifactResolver implements Resolver<Target> {
                 return new DefaultTarget(TargetType.TYPE_MEDIA, context);
             }
         } catch (NotFoundException e1) {
+        } catch (AccessException e) {
+            // don't let the user know there is an artifact/workspace here
+            return returnUnknownLocation(context);
         }
         
         return returnUnknownLocation(context);
@@ -174,7 +180,7 @@ public class ArtifactResolver implements Resolver<Target> {
     }
 
     private Target resolveWorkspace(String path, String classifier, RequestContext context) throws RegistryException,
-        NotFoundException {
+        NotFoundException, AccessException {
         // The user is browsing a workspace
         Workspace workspace = registry.getWorkspaceByPath(path);
         

@@ -1,8 +1,27 @@
 package org.mule.galaxy.web.server;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
+
+import org.acegisecurity.context.SecurityContextHolder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.Activity;
 import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.ActivityManager.EventType;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactType;
@@ -19,6 +38,7 @@ import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.ActivityManager.EventType;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexManager;
@@ -35,6 +55,7 @@ import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.view.ArtifactTypeView;
@@ -65,27 +86,6 @@ import org.mule.galaxy.web.rpc.WSearchResults;
 import org.mule.galaxy.web.rpc.WUser;
 import org.mule.galaxy.web.rpc.WWorkspace;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
-import org.acegisecurity.context.SecurityContextHolder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public class RegistryServiceImpl implements RegistryService {
 
     private final Log log = LogFactory.getLog(getClass());
@@ -115,6 +115,8 @@ public class RegistryServiceImpl implements RegistryService {
             return wis;
         } catch (RegistryException e) {
             log.error( e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (AccessException e) {
             throw new RPCException(e.getMessage());
         }
     }
@@ -167,6 +169,8 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (NotFoundException e) {
             log.error(e.getMessage(), e);
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -187,6 +191,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -198,6 +204,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -584,6 +592,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -626,6 +636,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -683,6 +695,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -700,6 +714,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -747,6 +763,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -763,6 +781,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -776,6 +796,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -804,6 +826,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -835,6 +859,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -908,6 +934,8 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
         }
         return getArtifactPolicyIds(pols);
     }
@@ -927,6 +955,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (AccessException e) {
             throw new RPCException(e.getMessage());
         }
 
@@ -992,6 +1022,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new ApplyPolicyException(failures);
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -1037,6 +1069,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -1068,6 +1102,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -1193,15 +1229,19 @@ public class RegistryServiceImpl implements RegistryService {
             eventType = EventType.ERROR;
         }
 
-        Collection<Activity> activities = activityManager.getActivities(from, to, user, eventType, start,
-                                                                        results, ascending);
-
-        ArrayList<WActivity> wactivities = new ArrayList<WActivity>();
-
-        for (Activity a : activities) {
-            wactivities.add(createWActivity(a));
+        try {
+            Collection<Activity> activities = activityManager.getActivities(from, to, user, eventType, start,
+                                                                            results, ascending);
+    
+            ArrayList<WActivity> wactivities = new ArrayList<WActivity>();
+    
+            for (Activity a : activities) {
+                wactivities.add(createWActivity(a));
+            }
+            return wactivities;
+        } catch (AccessException e){
+            throw new RPCException(e.getMessage());
         }
-        return wactivities;
     }
 
     protected WActivity createWActivity(Activity a) {
@@ -1219,11 +1259,11 @@ public class RegistryServiceImpl implements RegistryService {
 
     public WUser getUserInfo() throws RPCException {
         User user = getCurrentUser();
-        WUser w = UserServiceImpl.createWUser(user);
+        WUser w = SecurityServiceImpl.createWUser(user);
 
         List<String> perms = new ArrayList<String>();
 
-        for (Permission p : accessControlManager.getGlobalPermissions(user)) {
+        for (Permission p : accessControlManager.getGrantedPermissions(user)) {
             perms.add(p.toString());
         }
         w.setPermissions(perms);

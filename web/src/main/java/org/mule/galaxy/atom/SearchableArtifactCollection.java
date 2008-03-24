@@ -172,6 +172,8 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
             registry.delete(artifact);
         } catch (RegistryException e) {
             throw new RuntimeException(e);
+        } catch (AccessException e) {
+            throw new ResponseContextException(405, e);
         }
     }
 
@@ -182,6 +184,8 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
             registry.delete(artifact);
         } catch (RegistryException e) {
             throw new RuntimeException(e);
+        } catch (AccessException e) {
+            throw new ResponseContextException(405, e);
         }
     }
     

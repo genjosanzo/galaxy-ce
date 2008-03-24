@@ -21,7 +21,9 @@
       <property name="accessControlManager" ref="accessControlManager"/>
     </bean>
       
-    <bean id="gwtUserService" class="org.mule.galaxy.web.server.UserServiceImpl">
+    <bean id="gwtSecurityService" class="org.mule.galaxy.web.server.SecurityServiceImpl">
+      <property name="accessControlManager" ref="accessControlManager"/>
+      <property name="registry" ref="registry"/>
       <property name="userManager" ref="userManager"/>
     </bean>
     

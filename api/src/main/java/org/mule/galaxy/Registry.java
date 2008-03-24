@@ -22,22 +22,24 @@ public interface Registry {
      */
     String getUUID();
     
-    Workspace createWorkspace(String name) throws DuplicateItemException, RegistryException;
+    Workspace createWorkspace(String name) throws DuplicateItemException, RegistryException, AccessException;
 
-    Workspace createWorkspace(Workspace parent, String name) throws DuplicateItemException, RegistryException;
+    Workspace createWorkspace(Workspace parent, String name) throws DuplicateItemException, RegistryException, AccessException;
     
-    void deleteWorkspace(String id) throws RegistryException, NotFoundException;
+    void deleteWorkspace(String id) throws RegistryException, NotFoundException, AccessException;
     
-    Workspace getWorkspace(String id) throws RegistryException, NotFoundException;
+    Workspace getWorkspace(String id) throws RegistryException, NotFoundException, AccessException;
     
-    Workspace getWorkspaceByPath(String path) throws RegistryException, NotFoundException;
+    Workspace getWorkspaceByPath(String path) throws RegistryException, NotFoundException, AccessException;
     
     void save(Workspace w, String parentId)
-        throws RegistryException, NotFoundException;
+        throws RegistryException, NotFoundException, AccessException;
 
-    void save(Workspace w);
+    void save(Workspace w) throws AccessException;
     
-    Collection<Workspace> getWorkspaces() throws RegistryException;
+    Collection<Workspace> getWorkspaces() throws RegistryException, AccessException;
+    
+    Item getRegistryItem(String id) throws NotFoundException, RegistryException, AccessException;
     
     /**
      * Creates an artifact from a Java representation of it (as opposed
@@ -130,17 +132,17 @@ public interface Registry {
     void setEnabled(ArtifactVersion version, boolean enabled, User user) 
         throws RegistryException, ArtifactPolicyException;
 
-    void move(Artifact artifact, String workspaceId) throws RegistryException;
+    void move(Artifact artifact, String workspaceId) throws RegistryException, AccessException;
     
     Collection<Artifact> getArtifacts(Workspace workspace) throws RegistryException;
     
-    Artifact getArtifact(String id) throws NotFoundException, RegistryException;
+    Artifact getArtifact(String id) throws NotFoundException, RegistryException, AccessException;
 
-    ArtifactVersion getArtifactVersion(String id) throws NotFoundException, RegistryException;
+    ArtifactVersion getArtifactVersion(String id) throws NotFoundException, RegistryException, AccessException;
     
-    void delete(Artifact artifact) throws RegistryException;
+    void delete(Artifact artifact) throws RegistryException, AccessException;
 
-    void save(Artifact artifact) throws RegistryException;
+    void save(Artifact artifact) throws RegistryException, AccessException;
 
     SearchResults search(String queryString, int start, int maxResults) throws RegistryException, QueryException;
 

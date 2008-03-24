@@ -32,6 +32,10 @@ public class DefaultPersister implements FieldPersister {
         return JcrUtil.getProperty(fd.getName(), node);
     }
 
+    public Object build(String id, FieldDescriptor fd, Session session) throws Exception {
+        return id;
+    }
+
     public void persist(Object o, Node n, FieldDescriptor fd, Session session) throws Exception {
         JcrUtil.setProperty(fd.getName(), o, n);
     }

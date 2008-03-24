@@ -20,7 +20,7 @@ import org.mule.galaxy.ActivityManager.EventType;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.DateUtil;
 import org.mule.galaxy.util.Message;
-import org.mule.galaxy.util.UserUtils;
+import org.mule.galaxy.util.SecurityUtils;
 
 
 public abstract class AbstractJcrItem {
@@ -87,7 +87,7 @@ public abstract class AbstractJcrItem {
                 ensureProperty(name);
             }
             
-            registry.getActivityManager().logActivity(UserUtils.getCurrentUser(), "Property " + name + " was set to: " + value, 
+            registry.getActivityManager().logActivity(SecurityUtils.getCurrentUser(), "Property " + name + " was set to: " + value, 
                                         EventType.INFO);
             update();
         } catch (RepositoryException e) {

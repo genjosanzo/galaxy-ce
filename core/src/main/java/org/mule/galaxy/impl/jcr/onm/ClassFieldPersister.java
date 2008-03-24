@@ -13,8 +13,12 @@ public class ClassFieldPersister implements FieldPersister {
         if (value == null) {
             return null;
         }
-        
-        return getClass().getClassLoader().loadClass(value);
+
+        return build(value, fd, session);
+    }
+
+    public Object build(String id, FieldDescriptor fd, Session session) throws Exception {
+        return getClass().getClassLoader().loadClass(id);
     }
 
     public void persist(Object o, Node n, FieldDescriptor fd, Session session) throws Exception {

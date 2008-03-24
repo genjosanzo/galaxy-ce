@@ -4,14 +4,16 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Group;
 import org.mule.galaxy.security.Permission;
+import org.mule.galaxy.security.PermissionGrant;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.util.UserUtils;
+import org.mule.galaxy.util.SecurityUtils;
 
 import java.util.List;
 import java.util.Set;
 
 public class AccessControlManagerTest extends AbstractGalaxyTest {
+    
     public void testDao() throws Exception {
         List<Group> groups = accessControlManager.getGroups();
         assertEquals(2, groups.size());
@@ -19,20 +21,67 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
         Group group = getGroup("Administrators", groups);
         assertNotNull(group);
         
-        assertNotNull(group.getUserIds());
-        assertTrue(group.getUserIds().contains(getAdmin().getId()));
-        
-        Set<Permission> perms = accessControlManager.getGlobalPermissions(group);
+        Set<Permission> perms = accessControlManager.getGrantedPermissions(group);
         assertTrue(perms.size() > 0);
-        
-        groups = accessControlManager.getGroups(getAdmin());
-        assertEquals(2, groups.size());
         
         group = getGroup("Administrators", groups);
         assertNotNull(group);
         
-        perms = accessControlManager.getGlobalPermissions(getAdmin());
+        User admin = getAdmin();
+        assertNotNull(admin.getGroups());
+        assertEquals(2, admin.getGroups().size());
+        
+        perms = accessControlManager.getGrantedPermissions(admin);
         assertTrue(perms.size() > 0);
+        
+        Set<PermissionGrant> pgs = accessControlManager.getPermissionGrants(group);
+        assertEquals(perms.size(), pgs.size());
+        
+        Group g2 = accessControlManager.getGroup(group.getId());
+        g2.setName("test");
+        
+        accessControlManager.save(g2);
+        
+        Group g3 = accessControlManager.getGroup(g2.getId());
+        assertNotNull(g3);
+        assertEquals("test", g3.getName());
+    }
+    
+
+    public void testItemGrants() throws Exception {
+        Artifact artifact = importHelloWsdl();
+        
+        List<Group> groups = accessControlManager.getGroups();
+        assertEquals(2, groups.size());
+        
+        Group group = getGroup("Administrators", groups);
+        assertNotNull(group);
+        
+        accessControlManager.revoke(group, Permission.DELETE_ARTIFACT, artifact);
+        
+        Set<PermissionGrant> pgs = accessControlManager.getPermissionGrants(group, artifact);
+        
+        for (PermissionGrant pg : pgs) {
+            if (pg.getPermission().equals(Permission.DELETE_ARTIFACT)) {
+                assertEquals(PermissionGrant.Grant.REVOKED, pg.getGrant());
+            } else {
+                assertEquals("Permission for " + pg.getPermission() + " should be inherited.",
+                             PermissionGrant.Grant.INHERITED, pg.getGrant());
+            }
+        }
+        
+        accessControlManager.grant(group, Permission.DELETE_ARTIFACT, artifact);
+        
+        pgs = accessControlManager.getPermissionGrants(group, artifact);
+        
+        for (PermissionGrant pg : pgs) {
+            if (pg.getPermission().equals(Permission.DELETE_ARTIFACT)) {
+                assertEquals(PermissionGrant.Grant.GRANTED, pg.getGrant());
+            } else {
+                assertEquals("Permission for " + pg.getPermission() + " should be inherited.",
+                             PermissionGrant.Grant.INHERITED, pg.getGrant());
+            }
+        }
     }
     
     public void testAccess() throws Exception {
@@ -47,7 +96,7 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
             // expected
         }
         
-        UserUtils.doPriveleged(new Runnable() {
+        SecurityUtils.doPriveleged(new Runnable() {
 
             public void run() {
                 try {
@@ -62,8 +111,10 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
         login("admin", "admin");
         
         accessControlManager.assertAccess(Permission.READ_ARTIFACT);
+        accessControlManager.assertAccess(Permission.MANAGE_GROUPS);
         accessControlManager.assertAccess(Permission.READ_ARTIFACT, artifact);
-        
+        accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, artifact);
+
         // try revoking permission to an artifact
         Group group = getGroup("Administrators", accessControlManager.getGroups());
         assertNotNull(group);

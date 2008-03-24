@@ -8,11 +8,12 @@ import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.runas.RunAsUserToken;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
 
-public final class UserUtils {
+public final class SecurityUtils {
     public static final User SYSTEM_USER = new User("system");
     
     public static User getCurrentUser() {
@@ -49,5 +50,12 @@ public final class UserUtils {
         } finally {
             context.setAuthentication(prevAuth);
         }
+    }
+
+    public static boolean appliesTo(Permission p, Class<? extends Item> itemClass){
+        for (Class<? extends Item> c : p.getAppliesTo()) {
+            if (c.isAssignableFrom(itemClass)) return true;
+        }
+        return false;
     }
 }

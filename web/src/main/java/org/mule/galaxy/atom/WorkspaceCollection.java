@@ -1,7 +1,6 @@
 package org.mule.galaxy.atom;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.abdera.i18n.iri.IRI;
@@ -18,6 +17,7 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.security.AccessException;
 
 /**
  * Manage artifact workspaces through an AtomPub collection.
@@ -55,6 +55,8 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
             throw new ResponseContextException(404);
         } catch (RegistryException e) {
             throw new ResponseContextException(500, e);
+        } catch (AccessException e) {
+            throw new ResponseContextException(405, e);
         }
     }
 
@@ -76,6 +78,8 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
                 return registry.getWorkspaces();
             } catch (RegistryException e) {
                 throw new ResponseContextException(500, e);
+            } catch (AccessException e) {
+                throw new ResponseContextException(405, e);
             }
         }
         
@@ -129,6 +133,8 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
             throw new ResponseContextException(500, e);
         } catch (DuplicateItemException e) {
             throw new ResponseContextException(409);
+        } catch (AccessException e) {
+            throw new ResponseContextException(405, e);
         }
     }
 

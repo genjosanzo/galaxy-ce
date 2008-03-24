@@ -14,6 +14,7 @@ public class User implements Identifiable {
     private String name;
     private String email;
     private Calendar created;
+    private Set<Group> groups;
     private Map<String,Object> properties;
     
     public User(String username) {
@@ -53,6 +54,15 @@ public class User implements Identifiable {
         this.email = email;
     }
 
+    @OneToMany(componentType=Group.class)
+    public Set<Group> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Set<Group> groups) {
+        this.groups = groups;
+    }
+
     public Map<String, Object> getProperties() {
         return properties;
     }
@@ -71,5 +81,12 @@ public class User implements Identifiable {
 
     public boolean isEnabled() {
         return true;
+    }
+
+    public void addGroup(Group g) {
+        if (groups == null) {
+            groups = new HashSet<Group>();
+        }
+        groups.add(g);
     }
 }

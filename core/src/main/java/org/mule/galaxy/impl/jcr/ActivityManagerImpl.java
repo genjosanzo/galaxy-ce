@@ -28,12 +28,16 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.mule.galaxy.Activity;
 import org.mule.galaxy.ActivityManager;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
 import org.springmodules.jcr.JcrCallback;
 
 public class ActivityManagerImpl extends AbstractReflectionDao<Activity> implements ActivityManager {
 
     private DatatypeFactory dataTypeFactory;
+    private AccessControlManager accessControlManager;
     
     public ActivityManagerImpl() throws Exception {
         super(Activity.class, "activities", true);
@@ -48,7 +52,9 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
                                               final EventType eventType, 
                                               final int start, 
                                               final int results, 
-                                              final boolean ascending) {
+                                              final boolean ascending) throws AccessException {
+        accessControlManager.assertAccess(Permission.VIEW_ACTIVITY);
+        
         return (Collection<Activity>) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 QueryManager qm = getQueryManager(session);
@@ -201,6 +207,10 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
         save(new Activity(user, eventType, c, activity));
+    }
+
+    public void setAccessControlManager(AccessControlManager accessControlManager) {
+        this.accessControlManager = accessControlManager;
     }
     
 }

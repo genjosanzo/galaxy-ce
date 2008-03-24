@@ -11,35 +11,53 @@ public interface AccessControlManager {
 
     List<Group> getGroups();
     
-    List<Group> getGroups(User user);
-    
     /**
      * Grant a global permission.
      * @param role
      * @param p
      */
-    void grant(Group group, Permission p);
+    void grant(Group group, Permission p) throws AccessException;
     
-    void grant(Group group, Collection<Permission> perms);
+    void grant(Group group, Collection<Permission> perms) throws AccessException;
     
-    void revoke(Group group, Permission p);
+    void revoke(Group group, Permission p) throws AccessException;
     
-    void revoke(Group group, Collection<Permission> perms);
+    void revoke(Group group, Collection<Permission> perms) throws AccessException;
     
-    
-    Set<Permission> getGlobalPermissions(Group user);
+    /**
+     * Get all the global permissions which are available.
+     * @return
+     */
+    List<Permission> getPermissions();
 
-    Set<Permission> getGlobalPermissions(User user);
+    Set<PermissionGrant> getPermissionGrants(Group group);
     
+    Set<PermissionGrant> getPermissionGrants(Group group, Item item);
+    
+    Set<Permission> getGrantedPermissions(Group user);
+
+    Set<Permission> getGrantedPermissions(User user);
+    
+    /**
+     * Grant a permission on a specific item.
+     * @param group
+     * @param p
+     * @param w
+     * @throws AccessException 
+     */
+    void grant(Group group, Permission p, Item item) throws AccessException;
+    
+    void revoke(Group group, Permission p, Item item) throws AccessException;
+
     /**
      * Grant a permission on a specific workspace.
      * @param group
      * @param p
      * @param w
      */
-    void grant(Group group, Permission p, Item item);
+    void grant(Group group, Collection<Permission> perms, Item item) throws AccessException;
     
-    void revoke(Group group, Permission p, Item item);
+    void revoke(Group group, Collection<Permission> perms, Item item) throws AccessException;
     
     /**
      * Clear permission grants/revocations on a specific item for a Group. This means 
@@ -47,8 +65,9 @@ public interface AccessControlManager {
      * 
      * @param group
      * @param item
+     * @throws AccessException 
      */
-    void clear(Group group, Item item);
+    void clear(Group group, Item item) throws AccessException;
     
     Set<Permission> getPermissions(Group group, Item item);
     
@@ -57,6 +76,10 @@ public interface AccessControlManager {
     void assertAccess(Permission permission) throws AccessException;
 
     void assertAccess(Permission permission, Item item) throws AccessException;
+
+    Group getGroup(String id);
+
+    void save(Group group) throws AccessException;
     
     
-}
+}       

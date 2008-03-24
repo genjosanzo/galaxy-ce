@@ -148,6 +148,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
             Session session = repository.login(new SimpleCredentials("username", "password".toCharArray()));
 
             Node node = session.getRootNode();
+//            JcrUtil.dump(node.getNode("groups"));
 //            JcrUtil.dump(node.getNode("users"));
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
                 Node child = itr.nextNode();

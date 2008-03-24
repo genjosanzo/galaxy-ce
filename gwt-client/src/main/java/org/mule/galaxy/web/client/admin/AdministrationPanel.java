@@ -8,19 +8,17 @@ import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.rpc.UserServiceAsync;
+import org.mule.galaxy.web.rpc.SecurityServiceAsync;
+import org.mule.galaxy.web.rpc.WArtifactType;
+import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WLifecycle;
 
 public class AdministrationPanel extends AbstractMenuPanel {
 
-    private UserServiceAsync userService;
     private Hyperlink add;
-    private RegistryServiceAsync registryService;
 
     public AdministrationPanel(Galaxy galaxy) {
         super(galaxy);
-        this.registryService = galaxy.getRegistryService();
-        this.userService = galaxy.getUserService();
 
         Toolbox manageBox = new Toolbox(false);
         manageBox.setTitle("Manage");
@@ -28,17 +26,27 @@ public class AdministrationPanel extends AbstractMenuPanel {
 
         final AdministrationPanel adminPanel = this;
         
-        if (galaxy.hasPermission("manage_artifactTypes")) {
+        if (galaxy.hasPermission("MANAGE_ARTIFACT_TYPES")) {
             Hyperlink link = new Hyperlink("Artifact Types", "artifact-types");
             createPageInfo(link.getTargetHistoryToken(), new ArtifactTypeListPanel(adminPanel));
     
             add = new Hyperlink("Add", "add-artifact-type");
-            createPageInfo(add.getTargetHistoryToken(), new LifecycleForm(adminPanel, new WLifecycle(), true));
+            createPageInfo(add.getTargetHistoryToken(), new ArtifactTypeForm(adminPanel, new WArtifactType(), true));
             
             createDivWithAdd(manageBox, link);
         }        
 
-        if (galaxy.hasPermission("manage_lifecycles")) {
+        if (galaxy.hasPermission("MANAGE_GROUPS")) {
+            Hyperlink link = new Hyperlink("Groups", "groups");
+            createPageInfo(link.getTargetHistoryToken(), new GroupPanel(adminPanel));
+    
+            add = new Hyperlink("Add", "add-group");
+            createPageInfo(add.getTargetHistoryToken(), new GroupForm(adminPanel, new WGroup(), true));
+            
+            createDivWithAdd(manageBox, link);
+        }
+        
+        if (galaxy.hasPermission("MANAGE_LIFECYCLES")) {
             Hyperlink link = new Hyperlink("Lifecycles", "lifecycles");
             createPageInfo(link.getTargetHistoryToken(), new LifecycleListPanel(adminPanel));
     
@@ -48,7 +56,7 @@ public class AdministrationPanel extends AbstractMenuPanel {
             createDivWithAdd(manageBox, link);
         }
         
-        if (galaxy.hasPermission("manage_indexes")) {
+        if (galaxy.hasPermission("MANAGE_INDEXES")) {
             Hyperlink link = new Hyperlink("Indexes", "indexes");
             manageBox.add(link);
             createPageInfo(link.getTargetHistoryToken(), new IndexListPanel(adminPanel));
@@ -59,13 +67,13 @@ public class AdministrationPanel extends AbstractMenuPanel {
             createDivWithAdd(manageBox, link);
         }
         
-        if (galaxy.hasPermission("manage_policies")) {
+        if (galaxy.hasPermission("MANAGE_POLICIES")) {
             Hyperlink link = new Hyperlink("Policies", "policies");
-            createPageInfo(link.getTargetHistoryToken(), new PolicyPanel(adminPanel, registryService));
+            createPageInfo(link.getTargetHistoryToken(), new PolicyPanel(adminPanel, getRegistryService()));
             manageBox.add(link);
         }
 
-        if (galaxy.hasPermission("manage_users")) {
+        if (galaxy.hasPermission("MANAGE_USERS")) {
             Hyperlink link = new Hyperlink("Users", "users");
             createPageInfo(link.getTargetHistoryToken(), new UserListPanel(adminPanel));
             
@@ -88,13 +96,5 @@ public class AdministrationPanel extends AbstractMenuPanel {
 
     public void showUsers() {
         History.newItem("users");
-    }
-
-    public UserServiceAsync getUserService() {
-        return userService;
-    }
-
-    public RegistryServiceAsync getRegistryService() {
-        return registryService;
     }
 }
