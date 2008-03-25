@@ -66,7 +66,7 @@ public abstract class AbstractArtifactPlugin implements Plugin {
     {
         if (null == previousVersion)
         {
-            log.info(String.format("Installing plugin for the first time, v%d: %s", getVersion(), getName()));
+            log.info(String.format("Installing new plugin v%d: %s", getVersion(), getName()));
             doInstall();
         }
         else if (previousVersion > getVersion())
@@ -88,9 +88,11 @@ public abstract class AbstractArtifactPlugin implements Plugin {
             log.info(String.format("Downgrading plugin from v%d to v%d: %s", previousVersion, getVersion(), getName()));
             doDowngrade();
         }
-
-        // same version, nothing else to do
-        log.info(String.format("Plugin version unchanged, using current v%d: %s", getVersion(), getName()));
+        else
+        {
+            // same version, nothing else to do
+            log.info(String.format("Plugin version unchanged, using current v%d: %s", getVersion(), getName()));
+        }
     }
 
     public void doInstall() throws Exception
