@@ -34,13 +34,13 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
 
     private JcrTemplate jcrTemplate;
 
-    public void initializeOnce() throws Exception
+    public void install() throws Exception
     {
         artifactTypeDao.save(new ArtifactType("Java Archives (JARs)", "application/java-archive"));
         log.info(("Installed JAR plugin"));
     }
 
-    public void initializeEverytime() throws Exception
+    public void initialize() throws Exception
     {
         JcrUtil.doInTransaction(jcrTemplate.getSessionFactory(), new JcrCallback()
         {

@@ -99,24 +99,23 @@ public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo>
             
             for (Plugin p : plugins) {
                 PluginInfo pluginInfo = getPluginInfo(p.getName());
-                
+
+                Integer previousVersion = null;
+
                 if (pluginInfo == null) {
                     pluginInfo = new PluginInfo();
                     pluginInfo.setPlugin(p.getName());
                     pluginInfo.setVersion(p.getVersion());
                     
                     save(pluginInfo);
-                    
-                    p.initializeOnce();
-                } else {
-                    int newVersion = p.getVersion();
-                    
-                    if (newVersion > pluginInfo.getVersion()) {
-                        // TODO upgrade
-                    }
                 }
-                
-                p.initializeEverytime();
+                else
+                {
+                    previousVersion = p.getVersion();
+                }
+
+                p.update(previousVersion);
+                p.initialize();
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
