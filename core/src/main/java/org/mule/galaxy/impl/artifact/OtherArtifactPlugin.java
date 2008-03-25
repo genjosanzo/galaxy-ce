@@ -8,7 +8,7 @@ import org.mule.galaxy.util.Constants;
  */
 public class OtherArtifactPlugin extends AbstractArtifactPlugin implements Constants {
 
-    public void install() throws Exception {
+    public void doInstall() throws Exception {
         artifactTypeDao.save(new ArtifactType("Other Artifacts", "*/*"));
     }
 

@@ -67,7 +67,7 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
         return super.getName() + "-" + pluginXml.getName();
     }
 
-    public void install() throws Exception
+    public void doInstall() throws Exception
     {
         // Is there is no namespace we can assume that this is just a
         // placeholder pluging for a generic

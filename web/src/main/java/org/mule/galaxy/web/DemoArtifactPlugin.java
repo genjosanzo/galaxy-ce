@@ -12,7 +12,7 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
     public void initialize() throws Exception {
     }
 
-    public void install() throws Exception {
+    public void doInstall() throws Exception {
         Workspace w = registry.getWorkspaces().iterator().next();
         
         User user = userManager.find("username", "admin").iterator().next();

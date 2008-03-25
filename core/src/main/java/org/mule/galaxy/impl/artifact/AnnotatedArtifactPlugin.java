@@ -23,7 +23,7 @@ public class AnnotatedArtifactPlugin extends AbstractArtifactPlugin
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void install() throws Exception
+    public void doInstall() throws Exception
     {
        // ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
        // resourcePatternResolver.getResources()

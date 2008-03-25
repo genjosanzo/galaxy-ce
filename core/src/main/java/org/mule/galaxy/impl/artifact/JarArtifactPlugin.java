@@ -34,22 +34,14 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
 
     private JcrTemplate jcrTemplate;
 
-    public void install() throws Exception
-    {
-        artifactTypeDao.save(new ArtifactType("Java Archives (JARs)", "application/java-archive"));
-        log.info(("Installed JAR plugin"));
-    }
-
-    public void initialize() throws Exception
+    public void doInstall() throws Exception
     {
         JcrUtil.doInTransaction(jcrTemplate.getSessionFactory(), new JcrCallback()
         {
             public Object doInJcr(final Session session) throws IOException, RepositoryException
             {
 
-                // TODO figure out a nice way to upgrade, for now just a hack to re-init completely while developing
                 List<ArtifactType> jarHandlers = artifactTypeDao.find("contentType", "application/java-archive");
-
 
                 if (!jarHandlers.isEmpty())
                 {
@@ -109,7 +101,13 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constan
 
     }
 
-    public int getVersion() {
+    public void initialize() throws Exception
+    {
+
+    }
+
+    public int getVersion()
+    {
         return 1;
     }
 

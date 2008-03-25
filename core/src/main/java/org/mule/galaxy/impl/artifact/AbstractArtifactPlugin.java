@@ -27,14 +27,20 @@ import org.mule.galaxy.UpgradeNotSupportedException;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.view.ViewManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Makes it easy to add indexes and views for a new artifact type.
  */
 public abstract class AbstractArtifactPlugin implements Plugin {
+
     protected Registry registry;
     protected Dao<ArtifactType> artifactTypeDao;
     protected ViewManager viewManager;
     protected IndexManager indexManager;
+
+    protected final Log log = LogFactory.getLog(getClass());
 
     public void setRegistry(Registry registry) {
         this.registry = registry;
@@ -60,7 +66,8 @@ public abstract class AbstractArtifactPlugin implements Plugin {
     {
         if (null == previousVersion)
         {
-            install();
+            log.info(String.format("Installing plugin for the first time, v%d: %s", getVersion(), getName()));
+            doInstall();
         }
         else if (previousVersion > getVersion())
         {
@@ -68,7 +75,8 @@ public abstract class AbstractArtifactPlugin implements Plugin {
             {
                 throw new UpgradeNotSupportedException();
             }
-            // upgrade()
+            log.info(String.format("Upgrading plugin from v%d to v%d: %s", previousVersion, getVersion(), getName()));
+            doUpgrade();
         }
         else if (previousVersion < getVersion())
         {
@@ -76,13 +84,19 @@ public abstract class AbstractArtifactPlugin implements Plugin {
             {
                 throw new DowngradeNotSupportedException();
             }
-            // downgrade()
+
+            log.info(String.format("Downgrading plugin from v%d to v%d: %s", previousVersion, getVersion(), getName()));
+            doDowngrade();
         }
 
         // same version, nothing else to do
+        log.info(String.format("Plugin version unchanged, using current v%d: %s", getVersion(), getName()));
     }
 
-    public abstract void install() throws Exception;
+    public void doInstall() throws Exception
+    {
+        // no-op
+    }
 
     public boolean isDowngradeSupported()
     {
@@ -92,6 +106,16 @@ public abstract class AbstractArtifactPlugin implements Plugin {
     public boolean isUpgradeSupported()
     {
         return false;
+    }
+
+    public void doUpgrade() throws Exception
+    {
+        // no-op
+    }
+
+    public void doDowngrade() throws Exception
+    {
+        // no-op
     }
 
 }
