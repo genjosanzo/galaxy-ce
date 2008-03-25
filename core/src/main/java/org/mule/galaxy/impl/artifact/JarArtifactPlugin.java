@@ -6,7 +6,6 @@ import org.mule.galaxy.GalaxyException;
 import org.mule.galaxy.impl.content.JarContentHandler;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.index.Index;
-import org.mule.galaxy.util.Constants;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -25,7 +24,7 @@ import org.springmodules.jcr.JcrTemplate;
 /**
  * Java Archive (JAR) artifact plugin.
  */
-public class JarArtifactPlugin extends AbstractArtifactPlugin implements Constants
+public class JarArtifactPlugin extends AbstractArtifactPlugin
 {
 
     private final Log log = LogFactory.getLog(getClass());

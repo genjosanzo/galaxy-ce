@@ -1,14 +1,9 @@
 package org.mule.galaxy.view;
 
-import java.util.Collection;
-
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.impl.content.WsdlContentHandler;
 import org.mule.galaxy.impl.view.CustomArtifactTypeView;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
-import org.mule.galaxy.view.ArtifactTypeView;
-import org.mule.galaxy.view.ViewLink;
 
 public class ArtifactViewTest extends AbstractGalaxyTest {
     protected ViewManager viewManager;

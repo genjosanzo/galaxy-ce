@@ -1,12 +1,12 @@
 package org.mule.galaxy.impl.artifact;
 
 import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.util.Constants;
 
 /**
  * Does some initialization for other artifact types.
  */
-public class OtherArtifactPlugin extends AbstractArtifactPlugin implements Constants {
+public class OtherArtifactPlugin extends AbstractArtifactPlugin
+{
 
     public void doInstall() throws Exception {
         artifactTypeDao.save(new ArtifactType("Other Artifacts", "*/*"));
