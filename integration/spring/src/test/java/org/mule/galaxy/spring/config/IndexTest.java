@@ -10,7 +10,6 @@ import org.mule.galaxy.index.Index;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.util.Constants;
 
 import java.io.InputStream;
 import java.util.Collection;

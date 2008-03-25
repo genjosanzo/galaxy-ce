@@ -1,13 +1,5 @@
 package org.mule.galaxy.policy.wsdl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.wsdl.Definition;
-import javax.wsdl.factory.WSDLFactory;
-import javax.wsdl.xml.WSDLReader;
-
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
@@ -22,6 +14,14 @@ import org.mule.galaxy.wsi.impl.WSIRuleManagerImpl;
 import org.mule.galaxy.wsi.wsdl.AssertionResult;
 import org.mule.galaxy.wsi.wsdl.ValidationResult;
 import org.mule.galaxy.wsi.wsdl.WsdlRule;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.wsdl.Definition;
+import javax.wsdl.factory.WSDLFactory;
+import javax.wsdl.xml.WSDLReader;
 
 import org.w3c.dom.Document;
 
