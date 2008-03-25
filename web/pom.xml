@@ -28,6 +28,7 @@
             <artifactId>galaxy-core</artifactId>
             <version>${version}</version>
             <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -35,6 +36,7 @@
             <artifactId>galaxy-core</artifactId>
             <version>${version}</version>
             <classifier>tests</classifier>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
