@@ -72,18 +72,16 @@ public class GovernancePanel extends AbstractComposite {
     }
 
     private FlexTable createLifecycleTable() {
-        FlexTable table = new FlexTable();
-        table.setStyleName("artifactTable");
-        table.setCellSpacing(0);
-        table.setCellPadding(0);
+        FlexTable table = createColumnTable();
         
-        initLifecycle(table, governanceInfo);
+        table.setText(0, 0, "Lifecycle:");
+        showLifecycle(table, governanceInfo.getLifecycle());
         
         table.setText(1, 0, "Current Phase:");
         table.setText(1, 1, governanceInfo.getCurrentPhase());
 
         table.setText(2, 0, "Next Phases:");
-        InlineFlowPanel nextPhasesPanel = new InlineFlowPanel();
+        FlowPanel nextPhasesPanel = new FlowPanel();
         nextPhasesPanel.setStyleName("next-phases-panel");
         
         final ListBox nextPhasesList = new ListBox();
@@ -106,9 +104,10 @@ public class GovernancePanel extends AbstractComposite {
         return table;
     }
 
-    private void initLifecycle(final FlexTable table, WGovernanceInfo gov) {
+    private void showLifecycle(final FlexTable table, String lifecycle) {
         InlineFlowPanel lifecycleEdit = new InlineFlowPanel();
-        lifecycleEdit.add(new Label("Lifecycle: ["));
+        lifecycleEdit.add(new Label(lifecycle + " "));
+        
         Hyperlink editHL = new Hyperlink("Edit", "edit-artifact-lifecycle");
         editHL.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
@@ -116,10 +115,8 @@ public class GovernancePanel extends AbstractComposite {
             }
         });
         lifecycleEdit.add(editHL);
-        lifecycleEdit.add(new Label("]"));
         
-        table.setWidget(0, 0, lifecycleEdit);
-        table.setText(0, 1, gov.getLifecycle());
+        table.setWidget(0, 1, lifecycleEdit);
     }
 
     protected void editLifecycle(final FlexTable table) {
@@ -156,13 +153,14 @@ public class GovernancePanel extends AbstractComposite {
         Button cancel = new Button("Cancel");
         cancel.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
-                table.setText(0, 1, governanceInfo.getLifecycle());
+                showLifecycle(table, governanceInfo.getLifecycle());
             }
         });
         
-        InlineFlowPanel lPanel = new InlineFlowPanel();
+        FlowPanel lPanel = new FlowPanel();
         lPanel.add(lifecyclesLB);
         lPanel.add(save);
+        lPanel.add(cancel);
         
         table.setWidget(0, 1, lPanel);
     }
@@ -172,7 +170,7 @@ public class GovernancePanel extends AbstractComposite {
         final WPhase p = lifecycle.getInitialPhase();
         
         if (lifecycle.getName().equals(governanceInfo.getLifecycle())) {
-            table.setText(0, 1, lifecycle.getName());
+            showLifecycle(table, lifecycle.getName());
             return;
         }
         registryPanel.getRegistryService().transition(version.getId(), p.getId(), 
@@ -183,7 +181,7 @@ public class GovernancePanel extends AbstractComposite {
             }
 
             public void onSuccess(Object o) {
-                table.setText(0, 1, lifecycle.getName());
+                showLifecycle(table, lifecycle.getName());
                 
                 displayTransitionResponse((TransitionResponse) o);
             }
