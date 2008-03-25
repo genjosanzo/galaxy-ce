@@ -449,6 +449,10 @@ a:visited {
     font-weight: bold;
 }
 
+.columnTable button { margin-top: -2px; }
+.columnTable input  { margin-top: -1px; }
+.columnTable select { margin-top: -3px; }
+
 .columnTable .artifactTableHeader {
 	vertical-align: top;
 	text-align: right;
@@ -545,10 +549,6 @@ a:visited {
  ** Governance Panel
  **
  **/
- 
-.next-phases-panel {
-    padding: 2px;
-}
  
 .next-phases-panel .gwt-ListBox{
     margin-right: 2px;
