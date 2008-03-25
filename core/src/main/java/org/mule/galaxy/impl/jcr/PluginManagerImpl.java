@@ -102,7 +102,7 @@ public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo>
                 
                 if (pluginInfo == null) {
                     pluginInfo = new PluginInfo();
-                    pluginInfo.setPlugin(p.getClass().getName());
+                    pluginInfo.setPlugin(p.getName());
                     pluginInfo.setVersion(p.getVersion());
                     
                     save(pluginInfo);
