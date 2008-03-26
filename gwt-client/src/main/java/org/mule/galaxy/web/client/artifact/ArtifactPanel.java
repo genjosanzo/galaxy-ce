@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -168,4 +169,15 @@ public class ArtifactPanel extends AbstractComposite {
         });
     }
 
+    public void onShow() {
+        Hyperlink wkspcLink = new Hyperlink();
+        wkspcLink.setHTML("&laquo; Back to Workspace");
+        wkspcLink.addClickListener(new ClickListener() {
+            public void onClick(Widget w) {
+                registryPanel.reloadArtifacts();
+                registryPanel.showSearchOrBrowse();
+            }
+        });
+        registryPanel.setTop(wkspcLink);
+    }
 }

@@ -128,14 +128,15 @@ a:visited {
      padding: 5px;
 }
 
+.top-panel .gwt-Hyperlink a {
+	color: white;
+	text-decoration: underline;
+	margin-left: 5px;
+}
+
 .top-panel .toolbar .gwt-Hyperlink {
 	float: right;
 	padding-right: 10px;
-}
-
-.top-panel .toolbar .gwt-Hyperlink a {
-	color: white;
-	text-decoration: underline;
 }
  
 .top-panel .column-view,

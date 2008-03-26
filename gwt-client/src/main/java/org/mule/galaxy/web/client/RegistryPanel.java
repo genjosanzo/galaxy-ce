@@ -35,6 +35,7 @@ public class RegistryPanel extends AbstractMenuPanel {
     private Toolbox workspaceBox;
     private int errorPosition = 1;
     protected ColumnView cv;
+    private FlowPanel currentTopPanel;
     private FlowPanel browsePanel;
     private FlowPanel searchingPanel;
     private SearchPanel searchPanel;
@@ -99,6 +100,7 @@ public class RegistryPanel extends AbstractMenuPanel {
         Hyperlink searchLink = new Hyperlink("Search", "search");
         searchLink.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
+                currentTopPanel = searchingPanel;
                 setTop(searchingPanel);
             }
         });
@@ -113,6 +115,7 @@ public class RegistryPanel extends AbstractMenuPanel {
         Hyperlink browseLink = new Hyperlink("Browse Workspaces", "browse");
         browseLink.addClickListener(new ClickListener() {
             public void onClick(Widget w){
+                currentTopPanel = browsePanel;
                 setTop(browsePanel);
             }
         });
@@ -125,6 +128,7 @@ public class RegistryPanel extends AbstractMenuPanel {
         cv = new ColumnView();
         browsePanel.add(browseToolbar);
         browsePanel.add(cv);
+        currentTopPanel = browsePanel;
         setTop(browsePanel);
 
         refreshWorkspaces();
@@ -280,6 +284,10 @@ public class RegistryPanel extends AbstractMenuPanel {
     
     public SearchPanel getSearchPanel() {
         return searchPanel;
+    }
+    
+    public void showSearchOrBrowse() {
+        setTop(currentTopPanel);
     }
 
     // TODO
