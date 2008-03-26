@@ -9,9 +9,7 @@ import org.mule.galaxy.security.UserManager;
 public class DemoArtifactPlugin extends AbstractArtifactPlugin {
     private UserManager userManager;
     
-    public void initialize() throws Exception {
-    }
-
+    @Override
     public void doInstall() throws Exception {
         Workspace w = registry.getWorkspaces().iterator().next();
         

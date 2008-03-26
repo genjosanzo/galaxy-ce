@@ -12,9 +12,6 @@ public class OtherArtifactPlugin extends AbstractArtifactPlugin
         artifactTypeDao.save(new ArtifactType("Other Artifacts", "*/*"));
     }
 
-    public void initialize() throws Exception {
-    }
-
     public int getVersion() {
         return 1;
     }

@@ -120,4 +120,8 @@ public abstract class AbstractArtifactPlugin implements Plugin {
         // no-op
     }
 
+    public void initialize() throws Exception
+    {
+        // no-op
+    }
 }

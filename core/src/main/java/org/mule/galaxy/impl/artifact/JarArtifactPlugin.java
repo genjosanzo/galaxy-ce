@@ -33,6 +33,7 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin
 
     private JcrTemplate jcrTemplate;
 
+    @Override
     public void doInstall() throws Exception
     {
         JcrUtil.doInTransaction(jcrTemplate.getSessionFactory(), new JcrCallback()
@@ -97,11 +98,6 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin
                 return null;
             }
         });
-
-    }
-
-    public void initialize() throws Exception
-    {
 
     }
 

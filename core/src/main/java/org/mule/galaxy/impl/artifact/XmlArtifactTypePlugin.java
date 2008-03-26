@@ -67,6 +67,7 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
         return super.getName() + "-" + pluginXml.getName();
     }
 
+    @Override
     public void doInstall() throws Exception
     {
         // Is there is no namespace we can assume that this is just a
@@ -173,6 +174,7 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
         }
     }
 
+    @Override
     public void initialize() throws Exception
     {
         if (pluginXml.getViews() == null || pluginQNames == null)
