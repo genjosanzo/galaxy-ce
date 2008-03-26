@@ -84,12 +84,8 @@ public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo>
     
     public PluginInfo getPluginInfo(String pluginName) {
         List<PluginInfo> plugins = find("plugin", pluginName);
-        
-        for (PluginInfo p : plugins) {
-            return p;
-        }
-        
-        return null;
+
+        return plugins.isEmpty() ? null : plugins.get(0);
     }
     
     public void initializePlugins() {
