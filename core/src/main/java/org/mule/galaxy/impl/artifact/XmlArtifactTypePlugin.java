@@ -160,7 +160,7 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
             else
             {
                 throw new IllegalArgumentException(
-                        "There is more than one Namesapce associated with this plugin, you cannot inherit the namespace.");
+                        "There is more than one Namespace associated with this plugin, you cannot inherit the namespace.");
             }
         }
 
