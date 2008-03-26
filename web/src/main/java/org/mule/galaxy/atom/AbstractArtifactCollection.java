@@ -126,7 +126,10 @@ public abstract class AbstractArtifactCollection
         e.addExtension(buildAvailablePhases(phase));
         
         Element version = factory.newElement(new QName(NAMESPACE, "version"));
-        version.setText(entryObj.getVersionLabel());
+        version.setAttributeValue("label", entryObj.getVersionLabel());
+        version.setAttributeValue("enabled", (String) new Boolean(entryObj.isEnabled()).toString());
+        version.setAttributeValue("default",(String) new Boolean(entryObj.isDefault()).toString());
+        
         e.addExtension(version);
         
         return link;
@@ -371,6 +374,8 @@ public abstract class AbstractArtifactCollection
                         updateLifecycle(av, e);
                     } else if ("metadata".equals(q.getLocalPart())) {
                         updateMetadata(av, e);
+                    } else if ("version".equals(q.getLocalPart())) {
+                        updateVersion(av, e);
                     }
                 }
             }
@@ -378,6 +383,42 @@ public abstract class AbstractArtifactCollection
             throw new ResponseContextException(500, e);
         } catch (IOException e) {
             throw new ResponseContextException(500, e);
+        } catch (RegistryException e) {
+            throw new ResponseContextException(500, e);
+        } catch (ArtifactPolicyException e) {
+            throw createArtifactPolicyExceptionResponse(e);
+        }
+    }
+
+    private void updateVersion(ArtifactVersion av, Element e) 
+        throws RegistryException, ArtifactPolicyException, ResponseContextException {
+        String label = e.getAttributeValue("label");
+        
+        if (label != null && !av.getVersionLabel().equals(label)) {
+            // TODO: provide way to rename versions
+        }
+        
+        String def = e.getAttributeValue("default");
+        if (def != null) {
+            boolean defBool = BooleanUtils.toBoolean(def);
+            
+            if (defBool != av.isDefault()) 
+            {
+                if (defBool) {
+                    registry.setDefaultVersion(av, getUser());
+                } else {
+                    throwMalformed("You can only set an artifact default version to true!");
+                }
+            }
+        }
+        
+        String enabled = e.getAttributeValue("enabled");
+        if (enabled != null) {
+            boolean enabledBool = BooleanUtils.toBoolean(enabled);
+            
+            if (enabledBool != av.isEnabled()) {
+                registry.setEnabled(av, enabledBool, getUser());
+            }
         }
     }
 

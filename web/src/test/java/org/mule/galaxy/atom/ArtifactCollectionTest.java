@@ -219,7 +219,9 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
 
         Element versionEl = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "version"));
         assertNotNull(lifecycleEl);
-        assertEquals("0.2", versionEl.getText());
+        assertEquals("0.2", versionEl.getAttributeValue("label"));
+        assertEquals("true", versionEl.getAttributeValue("default"));
+        assertEquals("true", versionEl.getAttributeValue("enabled"));
         
         ExtensibleElement metadata = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "metadata"));
         List<Element> properties = metadata.getExtensions(new QName(AbstractArtifactCollection.NAMESPACE, "property"));
@@ -227,7 +229,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         res.release();
         
-        // update metadata/lifecycle
+        // update metadata/lifecycle/enabled/default
         lifecycleEl.setAttributeValue("phase", "Developed");
         
         for (Element propEl : properties) {
@@ -249,6 +251,10 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         prop.setAttributeValue("name", "test3");
         prop.setAttributeValue("value", "test3");
         prop.setAttributeValue("visible", "false");
+        
+        // GALAXY-162 no way to change version labels now
+//        versionEl.setAttributeValue("label", "3.0");
+        versionEl.setAttributeValue("enabled", "false");
         
         res = client.put(v2Uri, e, defaultOpts);
         assertEquals(204, res.getStatus());
@@ -279,6 +285,12 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertNotNull(lifecycleEl);
         assertEquals("Default", lifecycleEl.getAttributeValue("name"));
         assertEquals("Developed", lifecycleEl.getAttributeValue("phase"));
+        
+        versionEl = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "version"));
+        assertNotNull(lifecycleEl);
+//        assertEquals("3.0", versionEl.getAttributeValue("label"));
+        
+        assertEquals("false", versionEl.getAttributeValue("enabled"));
         
         res.release();
         
