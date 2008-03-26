@@ -176,8 +176,10 @@ public class ArtifactPanel extends AbstractComposite {
             public void onClick(Widget w) {
                 registryPanel.reloadArtifacts();
                 registryPanel.showSearchOrBrowse();
+                registryPanel.showArtifactTypes();
             }
         });
         registryPanel.setTop(wkspcLink);
+        registryPanel.hideArtifactTypes();
     }
 }

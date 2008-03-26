@@ -289,6 +289,14 @@ public class RegistryPanel extends AbstractMenuPanel {
     public void showSearchOrBrowse() {
         setTop(currentTopPanel);
     }
+    
+    public void showArtifactTypes() {
+        addMenuItem(artifactTypesBox);
+    }
+    
+    public void hideArtifactTypes() {
+        removeMenuItem(artifactTypesBox);
+    }
 
     // TODO
     protected int getErrorPanelPosition() {

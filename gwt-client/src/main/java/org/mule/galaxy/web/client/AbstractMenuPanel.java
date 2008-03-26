@@ -91,6 +91,10 @@ public abstract class AbstractMenuPanel extends AbstractComposite implements Err
         leftMenuContainer.add(widget);
     }
     
+    public void removeMenuItem(Widget widget) {
+        leftMenuContainer.remove(widget);
+    }
+    
     public void setMain(Widget widget) {
         if (mainWidget != null) {
             mainPanel.remove(mainWidget);
