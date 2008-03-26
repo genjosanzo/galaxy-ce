@@ -56,8 +56,10 @@ public class ArtifactTypeDaoImpl extends AbstractReflectionDao<ArtifactType>
                     if (documentType != null) {
                         // fall back to content type
                         return getArtifactType(contentType, null);
-                    } else {
+                    } else if (!"*/*".equals(contentType)) {
                         return getDefaultArtifactType();
+                    } else {
+                        return null;
                     }
                 }
 
