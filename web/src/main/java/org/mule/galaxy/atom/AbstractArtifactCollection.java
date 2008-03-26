@@ -34,6 +34,7 @@ import org.apache.abdera.protocol.server.context.EmptyResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.protocol.server.context.SimpleResponseContext;
 import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
+import org.apache.commons.lang.BooleanUtils;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
@@ -83,12 +84,18 @@ public abstract class AbstractArtifactCollection
 
         Element metadata = factory.newElement(new QName(NAMESPACE, "metadata"));
         
+        boolean showHidden = BooleanUtils.toBoolean(request.getParameter("showHiddenProperties"));
+       
         for (Iterator<PropertyInfo> props = entryObj.getProperties(); props.hasNext();) {
             PropertyInfo p = props.next();
-            if (p.isVisible()) {
+            if (p.isVisible() || showHidden) {
                 Element prop = factory.newElement(new QName(NAMESPACE, "property"), metadata);
                 prop.setAttributeValue("name", p.getName());
                 prop.setAttributeValue("locked", new Boolean(p.isLocked()).toString());
+                
+                if (p.isVisible()) {
+                    prop.setAttributeValue("visible", new Boolean(p.isVisible()).toString());
+                }
                 
                 Object value = p.getValue();
                 if (value == null) {
@@ -117,6 +124,11 @@ public abstract class AbstractArtifactCollection
         e.addExtension(lifecycle);
         
         e.addExtension(buildAvailablePhases(phase));
+        
+        Element version = factory.newElement(new QName(NAMESPACE, "version"));
+        version.setText(entryObj.getVersionLabel());
+        e.addExtension(version);
+        
         return link;
     }
 
@@ -441,6 +453,7 @@ public abstract class AbstractArtifactCollection
                 throwMalformed("You must specify name attributes on metadata properties.");
             
             String value = propEl.getAttributeValue("value");
+            String visible = propEl.getAttributeValue("visible");
             if (value != null) {
                 try {
                     av.setProperty(name, value);
@@ -460,6 +473,10 @@ public abstract class AbstractArtifactCollection
                 } catch (PropertyException e1) {
                     // Ignore as its probably because its locked
                 }
+            }
+            
+            if (visible != null) {
+                av.setVisible(name, BooleanUtils.toBoolean(visible));
             }
         }
     }

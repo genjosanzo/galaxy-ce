@@ -216,6 +216,11 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals("Default", lifecycleEl.getAttributeValue("name"));
         assertEquals("Created", lifecycleEl.getAttributeValue("phase"));
         
+
+        Element versionEl = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "version"));
+        assertNotNull(lifecycleEl);
+        assertEquals("0.2", versionEl.getText());
+        
         ExtensibleElement metadata = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "metadata"));
         List<Element> properties = metadata.getExtensions(new QName(AbstractArtifactCollection.NAMESPACE, "property"));
         assertEquals(5, properties.size());
@@ -240,9 +245,26 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         valueEl = factory.newElement(new QName(AbstractArtifactCollection.NAMESPACE, "value"), prop);
         valueEl.setText("test2");
         
-        prettyPrint(e);
+        prop = factory.newElement(new QName(AbstractArtifactCollection.NAMESPACE, "property"), metadata);
+        prop.setAttributeValue("name", "test3");
+        prop.setAttributeValue("value", "test3");
+        prop.setAttributeValue("visible", "false");
+        
         res = client.put(v2Uri, e, defaultOpts);
         assertEquals(204, res.getStatus());
+        res.release();
+        
+        // Try to show the hidden metadata
+        res = client.get(v2Uri + "&showHiddenMetadata=true", defaultOpts);
+        
+        entryDoc = res.getDocument();
+        prettyPrint(entryDoc);
+        e = entryDoc.getRoot();
+        
+        metadata = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "metadata"));
+        properties = metadata.getExtensions(new QName(AbstractArtifactCollection.NAMESPACE, "property"));
+        assertEquals(7, properties.size());
+        
         res.release();
         
         // check the metadata

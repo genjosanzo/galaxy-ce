@@ -36,7 +36,7 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
                 }
                 qstr.append("@artifact='")
                     .append(artifactId)
-                    .append("'] order by @date descending");
+                    .append("'] order by @date ascending");
                 return query(qstr.toString(), session);
             }
         });
