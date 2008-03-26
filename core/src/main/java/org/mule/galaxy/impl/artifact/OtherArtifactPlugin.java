@@ -8,6 +8,7 @@ import org.mule.galaxy.ArtifactType;
 public class OtherArtifactPlugin extends AbstractArtifactPlugin
 {
 
+    @Override
     public void doInstall() throws Exception {
         artifactTypeDao.save(new ArtifactType("Other Artifacts", "*/*"));
     }
