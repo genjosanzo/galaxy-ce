@@ -95,7 +95,7 @@ public abstract class AbstractArtifactPlugin implements Plugin {
         }
     }
 
-    public void doInstall() throws Exception
+    protected void doInstall() throws Exception
     {
         // no-op
     }
@@ -110,18 +110,24 @@ public abstract class AbstractArtifactPlugin implements Plugin {
         return false;
     }
 
-    public void doUpgrade() throws Exception
+    protected void doUpgrade() throws Exception
     {
         // no-op
     }
 
-    public void doDowngrade() throws Exception
+    protected void doDowngrade() throws Exception
+    {
+        // no-op
+    }
+
+    protected void doInitialize() throws Exception
     {
         // no-op
     }
 
     public void initialize() throws Exception
     {
-        // no-op
+        log.info(String.format("Initializing v%d of plugin: %s", getVersion(), getName()));
+        doInitialize();
     }
 }

@@ -175,7 +175,7 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
     }
 
     @Override
-    public void initialize() throws Exception
+    protected void doInitialize() throws Exception
     {
         if (pluginXml.getViews() == null || pluginQNames == null)
         {
