@@ -9,9 +9,6 @@
  */
 package org.mule.galaxy.impl.artifact;
 
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
-
 /**
  * TODO
  */
@@ -21,12 +18,12 @@ public class AnnotatedArtifactPlugin extends AbstractArtifactPlugin
     {
     }
 
-    public void initializeEverytime() throws Exception
+    public void initialize() throws Exception
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void initializeOnce() throws Exception
+    public void doInstall() throws Exception
     {
        // ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
        // resourcePatternResolver.getResources()

@@ -1,5 +1,5 @@
 /*
- * $Id: LicenseHeader-GPLv2.txt 288 2008-01-29 00:59:35Z andrew $
+ * $Id$
  * --------------------------------------------------------------------------------------
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,23 +18,7 @@
 
 package org.mule.galaxy;
 
-public interface Plugin {
+public class DowngradeNotSupportedException extends UnsupportedOperationException
+{
 
-    void setRegistry(Registry r);
-
-    /**
-     * Previous version will be <code>null</code> if previous plugin version detected,
-     * otherwise a version number of the installed plugin.
-     * @param previousVersion currently installed plugin version or null
-     * @throws UpgradeNotSupportedException
-     * @throws DowngradeNotSupportedException
-     */
-    void update(Integer previousVersion) throws Exception;
-    boolean isDowngradeSupported();
-    boolean isUpgradeSupported();
-    
-    String getName();
-    int getVersion();
-
-    void initialize() throws Exception;
 }
