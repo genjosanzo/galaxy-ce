@@ -58,7 +58,6 @@ public class AdministrationPanel extends AbstractMenuPanel {
         
         if (galaxy.hasPermission("MANAGE_INDEXES")) {
             Hyperlink link = new Hyperlink("Indexes", "indexes");
-            manageBox.add(link);
             createPageInfo(link.getTargetHistoryToken(), new IndexListPanel(adminPanel));
     
             add = new Hyperlink("Add", "add-index");

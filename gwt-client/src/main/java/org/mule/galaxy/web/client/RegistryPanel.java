@@ -33,7 +33,6 @@ public class RegistryPanel extends AbstractMenuPanel {
     private RegistryServiceAsync service;
     private WorkspacePanel workspacePanel;
     private Toolbox workspaceBox;
-    private int errorPosition = 1;
     protected ColumnView cv;
     private FlowPanel currentTopPanel;
     private FlowPanel browsePanel;
@@ -57,14 +56,15 @@ public class RegistryPanel extends AbstractMenuPanel {
         ClickListener addWkspcListener = new ClickListener() {
             public void onClick(Widget w) {
                 final TreeItem item = cv.getSelectedItem();
-                TreeItem parent = item.getParentItem();
-                final String parentId = parent != null ? (String) parent.getUserObject() : null;
+                final String parentId = item != null ? (String) item.getUserObject() : null;
 
-                MenuPanelPageInfo page = createPageInfo("add-workspace", 
-                               new EditWorkspacePanel(registryPanel, workspaces, parentId));
+                String id = "add-workspace";
+                if (parentId != null) {
+                    id += "-" + workspaceId;
+                }
+                ((Hyperlink) w).setTargetHistoryToken(id);
                 
-                History.newItem(page.getName());
-                errorPosition = 0;
+                registryPanel.setMain(new EditWorkspacePanel(registryPanel, workspaces, parentId));
             }            
         };
         addWkspcImg.addClickListener(addWkspcListener);
@@ -72,11 +72,9 @@ public class RegistryPanel extends AbstractMenuPanel {
         Image editWkspcImg = new Image("images/editor_area.gif");
         ClickListener editWkspcListener = new ClickListener() {
             public void onClick(Widget w) {
-                MenuPanelPageInfo page = createPageInfo("manage-workspace" + workspaceId, 
-                               new ManageWorkspacePanel(registryPanel, workspaces, workspaceId, getWorkspace(workspaceId)));
-                
-                History.newItem(page.getName());
-                errorPosition = 0;
+                String id = "manage-workspace-" + workspaceId;
+                ((Hyperlink) w).setTargetHistoryToken(id);
+                createPageInfo(id, new ManageWorkspacePanel(registryPanel, workspaces, workspaceId, getWorkspace(workspaceId)));
             }
         };
         editWkspcImg.addClickListener(editWkspcListener);
@@ -177,7 +175,6 @@ public class RegistryPanel extends AbstractMenuPanel {
         return new ClickListener() {
             public void onClick(Widget w) {
                 History.newItem(page.getName());
-                errorPosition = 0;
             }
             
         };
@@ -195,8 +192,7 @@ public class RegistryPanel extends AbstractMenuPanel {
                 initWorkspaces(treeItem, workspaces);
 
                 TreeItem child = treeItem.getChild(0);
-                workspaceId    = (String) child.getUserObject();
-                
+                workspaceId = (String) child.getUserObject();
                 cv.setRootItem(treeItem);
             }
         });
@@ -266,7 +262,6 @@ public class RegistryPanel extends AbstractMenuPanel {
     
     public void reloadArtifacts() {
         setMain(workspacePanel);
-        errorPosition = 1;
         workspacePanel.reloadArtifacts();
     }
 

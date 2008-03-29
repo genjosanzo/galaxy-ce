@@ -19,7 +19,7 @@ public abstract class AbstractComposite extends Composite {
         
     }
 
-    protected Widget newLabel(String name, String style) {
+    protected Label newLabel(String name, String style) {
         Label label = new Label(name);
         label.setStyleName(style);
         return label;
