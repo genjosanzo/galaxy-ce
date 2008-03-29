@@ -124,19 +124,23 @@ public class JcrUtil {
         }
     }
 
-    public static Node getOrCreate(Node node, String name) throws RepositoryException, ItemExistsException,
-        PathNotFoundException, VersionException, ConstraintViolationException, LockException,
-        NoSuchNodeTypeException {
-        
+    public static Node getOrCreate(Node node, String name) throws RepositoryException {
+        return getOrCreate(node, name, null);
+    }
+    
+    public static Node getOrCreate(Node node, String name, String nodeType) throws RepositoryException {
         Node child = null;
         try {
             child = node.getNode(name);
         } catch (PathNotFoundException e) {
-    
         }
     
         if (child == null) {
-            child = node.addNode(name);
+            if (nodeType == null) {
+                child = node.addNode(name);
+            } else {
+                child = node.addNode(name, nodeType);
+            }
             child.addMixin("mix:referenceable");
         }
         return child;

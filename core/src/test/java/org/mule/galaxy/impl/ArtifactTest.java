@@ -54,6 +54,12 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals("New Workspace", newWork.getName());
         assertNotNull(newWork.getId());
         
+        try {
+            registry.createWorkspace("New Workspace");
+            fail("Two workspaces with the same name");
+        } catch (DuplicateItemException e) {
+        }
+        
         Workspace child = registry.createWorkspace(newWork, "Child");
         assertEquals("Child", child.getName());
         assertNotNull(child.getId());

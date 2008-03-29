@@ -3,6 +3,15 @@
   xmlns:galaxy="http://galaxy.mule.org"
   xmlns:mix="http://www.jcp.org/jcr/mix/1.0">
 
+  <nodeType name="galaxy:noSiblings" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+  </nodeType>
+  
   <nodeType name="galaxy:workspace" 
     isMixin="false" 
     hasOrderableChildNodes="false"
@@ -56,7 +65,6 @@
     
   </nodeType>
 
-  
   <nodeType name="galaxy:group" 
     isMixin="false" 
     hasOrderableChildNodes="false"

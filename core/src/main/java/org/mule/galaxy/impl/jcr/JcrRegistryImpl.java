@@ -174,14 +174,14 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
     
-    public Workspace createWorkspace(final String name) throws RegistryException, AccessException {
+    public Workspace createWorkspace(final String name) throws RegistryException, AccessException, DuplicateItemException {
         // we should throw an error, but lets be defensive for now
         final String escapedName = JcrUtil.escape(name);
         final JcrRegistryImpl registry = this;
         
         accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE);
 
-        return (Workspace) executeWithRegistryException(new JcrCallback() {
+        return (Workspace) executeAndDewrapWithDuplicate(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node node;
                 try {
@@ -311,7 +311,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
         final JcrRegistryImpl registry = this;
         
-        return (Workspace) executeWithRegistryException(new JcrCallback() {
+        return (Workspace) executeAndDewrapWithDuplicate(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Collection<Workspace> workspaces = parent.getWorkspaces();
                 
@@ -684,6 +684,21 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 throw (DuplicateItemException) cause;
             } else if (cause instanceof ArtifactPolicyException) {
                 throw (ArtifactPolicyException) cause;
+            } else {
+                throw e;
+            }
+        }
+    }
+    private Object executeAndDewrapWithDuplicate(JcrCallback jcrCallback) 
+        throws RegistryException, DuplicateItemException {
+        try {
+            return execute(jcrCallback);
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RegistryException) {
+                throw (RegistryException) cause;
+            } else if (cause instanceof DuplicateItemException) {
+                throw (DuplicateItemException) cause;
             } else {
                 throw e;
             }
@@ -1630,7 +1645,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         Session session = getSessionFactory().getSession();
         Node root = session.getRootNode();
         
-        Node workspaces = JcrUtil.getOrCreate(root, "workspaces");
+        Node workspaces = JcrUtil.getOrCreate(root, "workspaces", "galaxy:noSiblings");
+        
         workspacesId = workspaces.getUUID();
         indexesId = JcrUtil.getOrCreate(root, "indexes").getUUID();
         artifactTypesId = JcrUtil.getOrCreate(root, "artifactTypes").getUUID();

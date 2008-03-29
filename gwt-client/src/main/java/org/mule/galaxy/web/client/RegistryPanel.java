@@ -63,7 +63,6 @@ public class RegistryPanel extends AbstractMenuPanel {
                     id += "-" + workspaceId;
                 }
                 ((Hyperlink) w).setTargetHistoryToken(id);
-                
                 registryPanel.setMain(new EditWorkspacePanel(registryPanel, workspaces, parentId));
             }            
         };
@@ -114,6 +113,7 @@ public class RegistryPanel extends AbstractMenuPanel {
         browseLink.addClickListener(new ClickListener() {
             public void onClick(Widget w){
                 currentTopPanel = browsePanel;
+                refreshWorkspaces();
                 setTop(browsePanel);
             }
         });
@@ -176,7 +176,6 @@ public class RegistryPanel extends AbstractMenuPanel {
             public void onClick(Widget w) {
                 History.newItem(page.getName());
             }
-            
         };
     }
 
