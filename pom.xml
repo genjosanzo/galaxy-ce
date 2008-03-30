@@ -12,6 +12,11 @@
         <slf4jVersion>1.4.3</slf4jVersion>
         <gwtVersion>1.4.61</gwtVersion>
         <springVersion>2.5.1</springVersion>
+        <!--
+            Well, it's broken too, and some assemblies override it to
+            fallback to 2.1.
+        -->
+        <mavenAssemblyPluginVersion>2.2-beta-2</mavenAssemblyPluginVersion>
     </properties>
 
     <licenses>
