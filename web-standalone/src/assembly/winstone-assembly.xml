@@ -15,12 +15,12 @@
   </fileSets>
   <files>
     <file>
-      <source>../LICENSE.txt</source>
+      <source>${basedir}/../LICENSE.txt</source>
       <outputDirectory></outputDirectory>
       <destName>galaxy-LICENSE.txt</destName>
     </file>
     <file>
-      <source>../NOTICE.txt</source>
+      <source>${basedir}/../NOTICE.txt</source>
       <outputDirectory></outputDirectory>
       <destName>galaxy-NOTICE.txt</destName>
     </file>
