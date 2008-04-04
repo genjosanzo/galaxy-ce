@@ -82,7 +82,41 @@ public class WorkspaceCollectionTest extends AbstractAtomTest {
         assertEquals(204, res.getStatus());
         
         res.release();        
+    }    
+    public void testWorkspaceDoesntExist() throws Exception {
+        AbderaClient client = new AbderaClient(abdera);
+        RequestOptions defaultOpts = client.getDefaultRequestOptions();
+        defaultOpts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
+        
+        String base = "http://localhost:9002/api/registry/Doesntexist";
+        // Grab workspaces & collections
+        ClientResponse res = client.get(base, defaultOpts);
+        
+        assertEquals(404, res.getStatus());
+        res.release();
     }
+    
+    public void testCreationOfAnExistingWorkspace() throws Exception {
+        AbderaClient client = new AbderaClient(abdera);
+        RequestOptions defaultOpts = client.getDefaultRequestOptions();
+        defaultOpts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
+        
+        // Create a workspace which already exists
+        Entry entry = factory.newEntry();
+        entry.setTitle("Default Workspace");
+        entry.setUpdated(new Date());
+        entry.addAuthor("Ignored");
+        entry.setId(factory.newUuidUri());
+        // Once we support workspace descriptions, the description will go here
+        entry.setContent("");
+        
+        ClientResponse res = client.post("http://localhost:9002/api/registry;workspaces", entry, defaultOpts);
+        
+        assertEquals(409, res.getStatus());
+        
+        res.release();
+    }
+    
 
     private InputStream getWsdl() {
         return getClass().getResourceAsStream("/wsdl/hello.wsdl");

@@ -25,20 +25,7 @@ import org.mule.galaxy.test.AbstractAtomTest;
 import org.mule.galaxy.util.IOUtils;
 
 public class ArtifactCollectionTest extends AbstractAtomTest {
-    
-    public void testWorkspace() throws Exception {
-        AbderaClient client = new AbderaClient(abdera);
-        RequestOptions defaultOpts = client.getDefaultRequestOptions();
-        defaultOpts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
-        
-        String base = "http://localhost:9002/api/registry/Doesntexist";
-        // Grab workspaces & collections
-        ClientResponse res = client.get(base, defaultOpts);
-        
-        assertEquals(404, res.getStatus());
-        res.release();
-    }
-    
+
     public void testAddWsdl() throws Exception {
         AbderaClient client = new AbderaClient(abdera);
         RequestOptions defaultOpts = client.getDefaultRequestOptions();
