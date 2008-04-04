@@ -40,6 +40,7 @@ try {
     def encodedName = URLEncoder.encode(propertyName)
     artifact.setProperty encodedName, entries
     artifact.setLocked encodedName, true
+    artifact.setVisible encodedName, false
 
     // check if the jar has a manifest
     def manifest = jarFile.manifest

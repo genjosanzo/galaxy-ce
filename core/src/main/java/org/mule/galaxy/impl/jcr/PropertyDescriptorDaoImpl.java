@@ -9,5 +9,10 @@ public class PropertyDescriptorDaoImpl extends AbstractReflectionDao<PropertyDes
         super(PropertyDescriptor.class, "propertyDescriptors");
     }
 
+    @Override
+    protected String getObjectNodeName(PropertyDescriptor t) {
+        return t.getProperty();
+    }
+
 
 }

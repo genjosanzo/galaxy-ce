@@ -132,7 +132,7 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node root = session.getRootNode();
                 
-                Node objects = getOrCreate(root, rootNode);
+                Node objects = getOrCreate(root, rootNode, "galaxy:noSiblings");
                 objectsNodeId = objects.getUUID();
 
                 doCreateInitialNodes(session, objects); 
@@ -271,7 +271,9 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
         return node.getName();
     }
 
-    protected abstract String getObjectNodeName(T t);
+    protected String getObjectNodeName(T t) {
+        throw new UnsupportedOperationException();
+    }
 
     protected Node findNode(String id, Session session) throws RepositoryException {
         if (isIdNodeName()) {

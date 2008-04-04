@@ -113,7 +113,6 @@ public class RegistryPanel extends AbstractMenuPanel {
         browseLink.addClickListener(new ClickListener() {
             public void onClick(Widget w){
                 currentTopPanel = browsePanel;
-                refreshWorkspaces();
                 setTop(browsePanel);
             }
         });

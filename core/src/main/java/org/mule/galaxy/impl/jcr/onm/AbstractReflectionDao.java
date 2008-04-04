@@ -24,17 +24,12 @@ import org.springmodules.jcr.JcrCallback;
 
 public abstract class AbstractReflectionDao<T extends Identifiable> extends AbstractDao<T> {
 
-    private String objectNodeName;
-    
     protected AbstractReflectionDao(Class t, String rootNode) throws Exception {
         this(t, rootNode, false);
     }
     
     protected AbstractReflectionDao(Class t, String rootNode,  boolean generateId) throws Exception {
         super(t, rootNode, generateId);
-        
-        objectNodeName = t.getSimpleName();
-        objectNodeName = objectNodeName.substring(0, 1).toLowerCase() + objectNodeName.substring(1);
     }
 
     protected void initalizePersister() throws Exception {
@@ -56,7 +51,4 @@ public abstract class AbstractReflectionDao<T extends Identifiable> extends Abst
         return t;
     }
 
-    protected String getObjectNodeName(T t) {
-        return objectNodeName;
-    }    
 }

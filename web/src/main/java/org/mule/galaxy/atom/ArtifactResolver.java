@@ -7,9 +7,8 @@ import org.apache.abdera.protocol.server.CollectionAdapter;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.Target;
 import org.apache.abdera.protocol.server.TargetType;
-import org.apache.abdera.protocol.server.context.ResponseContextException;
-import org.apache.abdera.protocol.server.impl.DefaultTarget;
 import org.apache.abdera.protocol.server.impl.DefaultWorkspaceManager;
+import org.apache.abdera.protocol.server.impl.SimpleTarget;
 import org.apache.commons.lang.StringUtils;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.NotFoundException;
@@ -65,7 +64,7 @@ public class ArtifactResolver implements Resolver<Target> {
         // find where this is going to - comments, registry, etc
         int sIdx = path.indexOf('/');
         if (sIdx == -1 && path.length() == 0) {
-            return new DefaultTarget(TargetType.TYPE_SERVICE, context);
+            return new SimpleTarget(TargetType.TYPE_SERVICE, context);
         }
         
         String atomWorkspace = null;
@@ -81,9 +80,9 @@ public class ArtifactResolver implements Resolver<Target> {
             context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, commentCollection);
             sIdx = path.indexOf('/');
             if (sIdx != -1 && sIdx != path.length()) {
-                return new DefaultTarget(TargetType.TYPE_ENTRY, context);
+                return new SimpleTarget(TargetType.TYPE_ENTRY, context);
             } else {
-                return new DefaultTarget(TargetType.TYPE_COLLECTION, context);
+                return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
             }
         }
         
@@ -97,11 +96,11 @@ public class ArtifactResolver implements Resolver<Target> {
                 // the user is listing out the root workspaces
                 // the user is going to the searchable, main registry URL
                 context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, workspaceCollection);
-                return new DefaultTarget(TargetType.TYPE_COLLECTION, context);
+                return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
             } else if (StringUtils.isEmpty(classifier)) {
                 // the user is going to the searchable, main registry URL
                 context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, searchableCollection);
-                return new DefaultTarget(TargetType.TYPE_COLLECTION, context);
+                return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
             } else {
                 return returnUnknownLocation(context);
             }
@@ -125,7 +124,7 @@ public class ArtifactResolver implements Resolver<Target> {
     }
 
     private Target returnUnknownLocation(RequestContext context) {
-        return new DefaultTarget(TargetType.TYPE_NOT_FOUND, context);
+        return new SimpleTarget(TargetType.TYPE_NOT_FOUND, context);
     }
 
     private Target resolveArtifact(String path, String classifier, RequestContext context)
@@ -149,16 +148,16 @@ public class ArtifactResolver implements Resolver<Target> {
             CollectionAdapter collection = (context.getParameter("version") != null) ? historyCollection : searchableCollection;
             if ("atom".equals(classifier)) {
                 context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, collection);
-                return new DefaultTarget(TargetType.TYPE_ENTRY, context);
+                return new SimpleTarget(TargetType.TYPE_ENTRY, context);
             } else if ("categories".equals(classifier)) {
                 context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, collection);
-                return new DefaultTarget(TargetType.TYPE_CATEGORIES, context);
+                return new SimpleTarget(TargetType.TYPE_CATEGORIES, context);
             }  else if ("history".equals(classifier)) {
                 context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, historyCollection);
-                return new DefaultTarget(TargetType.TYPE_COLLECTION, context);
+                return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
             } else if (classifier == null) {
                 context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, collection);
-                return new DefaultTarget(TargetType.TYPE_MEDIA, context);
+                return new SimpleTarget(TargetType.TYPE_MEDIA, context);
             }
         } catch (NotFoundException e1) {
         } catch (AccessException e) {
@@ -194,12 +193,12 @@ public class ArtifactResolver implements Resolver<Target> {
         }
          
         if ("GET".equals(context.getMethod()) || "POST".equals(context.getMethod())) {
-            return new DefaultTarget(TargetType.TYPE_COLLECTION, context);
+            return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
         } else {
             // TODO: not sure if this is what we should be doing.
             // maybe we should be deleting to /workspace;atom instead of just /workspace 
             context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, workspaceCollection);
-            return new DefaultTarget(TargetType.TYPE_ENTRY, context);
+            return new SimpleTarget(TargetType.TYPE_ENTRY, context);
         }
     }
 
