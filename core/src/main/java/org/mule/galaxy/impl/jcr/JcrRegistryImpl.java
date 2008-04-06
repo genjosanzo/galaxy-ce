@@ -1565,7 +1565,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 try {
                     return indexManager.getIndex(propertyName);
                 } catch (NotFoundException e) {
-                    return getPropertyDescriptor(propertyName);
+                    try {
+                        return getPropertyDescriptor(propertyName);
+                    } catch (NotFoundException e1) {
+                        return null;
+                    }
                 }
             }
 
@@ -1573,21 +1577,16 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         });
     }
 
-    public PropertyDescriptor getPropertyDescriptor(final String propertyName) {
-        List<PropertyDescriptor> results = propertyDescriptorDao.find("property", propertyName);
-        
-        if (results.size() == 0) {
-            return null;
-        }
-        
-        return results.get(0);
+    public PropertyDescriptor getPropertyDescriptor(final String id) throws NotFoundException {
+        return propertyDescriptorDao.get(id);
     }
     
     public Collection<PropertyDescriptor> getPropertyDescriptors() throws RegistryException {
         return propertyDescriptorDao.listAll();
     }
 
-    public void savePropertyDescriptor(PropertyDescriptor pd) throws RegistryException {
+    public void savePropertyDescriptor(PropertyDescriptor pd) throws RegistryException, AccessException {
+        accessControlManager.assertAccess(Permission.MANAGE_PROPERTIES);
         propertyDescriptorDao.save(pd);
     }
     

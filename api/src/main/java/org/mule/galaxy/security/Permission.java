@@ -16,6 +16,7 @@ public enum Permission {
     MANAGE_INDEXES("Manage Indexes"),
     MANAGE_GROUPS("Manage Groups"),
     MANAGE_POLICIES("Manage Policies"),
+    MANAGE_PROPERTIES("Manage Properties"),
     MANAGE_LIFECYCLES("Manage Lifecycles"),
     MANAGE_ARTIFACT_TYPES("Manage Artifact Types");
     

@@ -62,6 +62,7 @@ import org.mule.galaxy.web.rpc.WIndex;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WPhase;
 import org.mule.galaxy.web.rpc.WProperty;
+import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 import org.mule.galaxy.web.rpc.WSearchResults;
 import org.mule.galaxy.web.rpc.WUser;
 import org.mule.galaxy.web.rpc.WWorkspace;
@@ -679,6 +680,8 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -749,6 +752,59 @@ public class RegistryServiceImpl implements RegistryService {
             return props;
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    public void deletePropertyDescriptor(String id) throws RPCException {
+        try {
+            registry.deletePropertyDescriptor(id);
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    public Collection getPropertyDescriptors() throws RPCException {
+        try {
+            List<WPropertyDescriptor> pds = new ArrayList<WPropertyDescriptor>();
+            for (PropertyDescriptor pd : registry.getPropertyDescriptors()) {
+                pds.add(toWeb(pd));
+            }
+            return pds;
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    private WPropertyDescriptor toWeb(PropertyDescriptor pd) {
+        return new WPropertyDescriptor(pd.getId(), pd.getProperty(), pd.getDescription(), pd.isMultivalued());
+    }
+
+    public void savePropertyDescriptor(WPropertyDescriptor wpd) throws RPCException, ItemNotFoundException {
+        try {
+            PropertyDescriptor pd;
+            
+            if (wpd.getId() == null) {
+                pd = new PropertyDescriptor();
+            } else {
+                pd = registry.getPropertyDescriptor(wpd.getId());
+            }
+            
+            pd.setProperty(wpd.getName());
+            pd.setDescription(wpd.getDescription());
+            pd.setMultivalued(wpd.isMultiValued());
+            
+            registry.savePropertyDescriptor(pd);
+            
+            wpd.setId(pd.getId());
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
+        } catch (AccessException e) {
             throw new RPCException(e.getMessage());
         }
     }

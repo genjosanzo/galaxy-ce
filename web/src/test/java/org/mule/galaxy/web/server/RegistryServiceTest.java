@@ -15,6 +15,7 @@ import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.policy.ApprovalMessage;
@@ -32,6 +33,7 @@ import org.mule.galaxy.web.rpc.WGovernanceInfo;
 import org.mule.galaxy.web.rpc.WIndex;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WPhase;
+import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 import org.mule.galaxy.web.rpc.WUser;
 import org.mule.galaxy.web.rpc.WWorkspace;
 import org.springframework.context.ApplicationContext;
@@ -297,6 +299,18 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals("newname", wl.getName());
     }
     
+    public void testPDs() throws Exception {
+        WPropertyDescriptor wpd = new WPropertyDescriptor();
+        
+        wpd.setName("test");
+        wpd.setDescription("test");
+        
+        gwtRegistry.savePropertyDescriptor(wpd);
+        
+        PropertyDescriptor pd = registry.getPropertyDescriptor(wpd.getId());
+        
+        assertNotNull(pd);
+    }
     private final class FauxPolicy implements ArtifactPolicy {
         public String getDescription() {
             return "Faux policy description";

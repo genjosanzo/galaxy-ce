@@ -156,9 +156,9 @@ public interface Registry {
      
     Collection<PropertyDescriptor> getPropertyDescriptors() throws RegistryException;
 
-    PropertyDescriptor getPropertyDescriptor(String propertyName) throws RegistryException;
+    PropertyDescriptor getPropertyDescriptor(String propertyId) throws RegistryException, NotFoundException;
 
-    void savePropertyDescriptor(PropertyDescriptor pd) throws RegistryException;
+    void savePropertyDescriptor(PropertyDescriptor pd) throws RegistryException, AccessException;
     
     void deletePropertyDescriptor(String id) throws RegistryException;
     

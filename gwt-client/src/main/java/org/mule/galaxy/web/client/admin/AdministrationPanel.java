@@ -12,6 +12,7 @@ import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WArtifactType;
 import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WLifecycle;
+import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 
 public class AdministrationPanel extends AbstractMenuPanel {
 
@@ -72,6 +73,16 @@ public class AdministrationPanel extends AbstractMenuPanel {
             manageBox.add(link);
         }
 
+        if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
+            Hyperlink link = new Hyperlink("Properties", "properties");
+            createPageInfo(link.getTargetHistoryToken(), new PropertyDescriptorListPanel(adminPanel));
+    
+            add = new Hyperlink("Add", "add-property");
+            createPageInfo(add.getTargetHistoryToken(), new PropertyDescriptorForm(adminPanel, new WPropertyDescriptor(), true));
+            
+            createDivWithAdd(manageBox, link);
+        }
+
         if (galaxy.hasPermission("MANAGE_USERS")) {
             Hyperlink link = new Hyperlink("Users", "users");
             createPageInfo(link.getTargetHistoryToken(), new UserListPanel(adminPanel));
@@ -95,5 +106,9 @@ public class AdministrationPanel extends AbstractMenuPanel {
 
     public void showUsers() {
         History.newItem("users");
+    }
+
+    public void showPropertyDescriptors() {
+        History.newItem("properties");
     }
 }

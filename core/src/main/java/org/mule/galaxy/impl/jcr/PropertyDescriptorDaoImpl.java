@@ -6,13 +6,7 @@ import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 public class PropertyDescriptorDaoImpl extends AbstractReflectionDao<PropertyDescriptor>{
 
     public PropertyDescriptorDaoImpl() throws Exception {
-        super(PropertyDescriptor.class, "propertyDescriptors");
+        super(PropertyDescriptor.class, "propertyDescriptors", true);
     }
-
-    @Override
-    protected String getObjectNodeName(PropertyDescriptor t) {
-        return t.getProperty();
-    }
-
 
 }
