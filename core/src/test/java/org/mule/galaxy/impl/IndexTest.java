@@ -197,6 +197,9 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals("Wrong configuration saved to the JCR repo", "JarIndex.groovy", scriptSource);
 
         ArtifactVersion latest = artifact.getDefaultVersion();
+
+        assertEquals(latest.getProperty("jar.entries.visible"), false);
+
         // normal manifest property
         assertEquals("andrew", latest.getProperty("jar.manifest.Built-By"));
         // OSGi property
