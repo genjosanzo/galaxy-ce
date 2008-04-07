@@ -100,7 +100,11 @@ def galaxy = new Galaxy(username: username,
 
 int totalCount = 0
 def upload = { libFolder ->
-    new File(lib, libFolder).eachFileMatch( ~/.*\.jar$/ ) { file ->
+    File localDir = new File(lib, libFolder)
+    if (!localDir.exists()) {
+        return
+    }
+    localDir.eachFileMatch( ~/.*\.jar$/ ) { file ->
         def task = {
             println file.name
             galaxy.create("$workspace/lib/$libFolder", mimeType, file.name, file.newInputStream())
