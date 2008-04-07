@@ -74,7 +74,7 @@ Assembly descriptor for the full Mule distribution.
         <dependencySet>
             <outputDirectory>lib/boot</outputDirectory>
             <includes>
-                <include>org.mule.galaxy.netboot:mule1-netboot-launcher</include>
+                <include>org.mule.galaxy.netboot:mule-netboot-launcher</include>
                 <include>commons-cli:commons-cli</include>
                 <include>tanukisoft:wrapper</include>
             </includes>
@@ -91,7 +91,7 @@ Assembly descriptor for the full Mule distribution.
         <dependencySet>
             <outputDirectory>lib/galaxy</outputDirectory>
             <includes>
-                <include>org.mule.galaxy.netboot:mule1-netboot-support</include>
+                <include>org.mule.galaxy.netboot:mule-netboot-support</include>
                 <include>commons-httpclient:commons-httpclient</include>
                 <include>commons-codec:commons-codec</include>
                 <include>org.slf4j:jcl104-over-slf4j</include>

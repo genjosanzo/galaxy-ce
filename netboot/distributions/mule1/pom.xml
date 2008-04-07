@@ -95,13 +95,13 @@
     <dependencies>
         <dependency>
             <groupId>org.mule.galaxy.netboot</groupId>
-            <artifactId>mule1-netboot-support</artifactId>
+            <artifactId>mule-netboot-support</artifactId>
             <version>${version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.mule.galaxy.netboot</groupId>
-            <artifactId>mule1-netboot-launcher</artifactId>
+            <artifactId>mule-netboot-launcher</artifactId>
             <version>${version}</version>
         </dependency>
 
