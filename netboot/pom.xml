@@ -13,8 +13,10 @@
     <name>Mule NetBoot</name>
 
     <modules>
+        <module>launcher</module>
         <module>mule1</module>
         <module>mule2</module>
+        <module>support</module>
     </modules>
 
 </project>

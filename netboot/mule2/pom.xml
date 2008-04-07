@@ -13,8 +13,6 @@
     <name>Mule 2 NetBoot Parent</name>
 
     <modules>
-        <module>launcher</module>
-        <module>support</module>
         <module>distribution</module>
     </modules>
 

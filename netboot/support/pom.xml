@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.mule.galaxy.netboot</groupId>
-        <artifactId>mule1-netboot-parent</artifactId>
+        <artifactId>netboot-parent</artifactId>
         <version>1.0-beta-3-SNAPSHOT</version>
     </parent>
-    <artifactId>mule1-netboot-support</artifactId>
+    <artifactId>netboot-support</artifactId>
     <packaging>jar</packaging>
-    <name>Mule 1 NetBoot Support</name>
+    <name>Mule NetBoot Support</name>
 
     <build>
         <plugins>
