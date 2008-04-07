@@ -14,8 +14,7 @@
 
     <modules>
         <module>mule1</module>
-        <!-- doesn't exist yet :)
-        <module>mule2</module -->
+        <module>mule2</module>
     </modules>
 
 </project>

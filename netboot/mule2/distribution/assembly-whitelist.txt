@@ -1,0 +1,11 @@
+commons-cli-1.0
+commons-codec-1.3
+commons-httpclient-3.1
+mule1-netboot-support
+mule1-netboot-launcher
+groovy-all-1.5.4
+jcl104-over-slf4j-1.4.3
+log4j-1.2.14
+slf4j-api-1.4.3
+slf4j-log4j12-1.4.3
+wrapper-3.2.3
