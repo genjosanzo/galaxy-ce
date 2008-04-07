@@ -116,6 +116,9 @@ public abstract class AbstractMenuPanel extends AbstractComposite implements Err
         if (topWidget != null)
             topPanel.remove(topWidget);
         
+        if (widget instanceof AbstractComposite) {
+            ((AbstractComposite)widget).onShow();
+        }
         topWidget = widget;
         topPanel.add(widget);
     }

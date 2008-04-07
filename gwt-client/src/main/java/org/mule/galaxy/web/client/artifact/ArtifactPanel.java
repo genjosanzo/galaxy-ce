@@ -173,12 +173,11 @@ public class ArtifactPanel extends AbstractComposite {
         Hyperlink wkspcLink = new Hyperlink();
         wkspcLink.setHTML("&laquo; Back to Workspace");
         wkspcLink.addClickListener(new ClickListener() {
-            public void onClick(Widget w) {
-                registryPanel.reloadArtifacts();
-                registryPanel.showSearchOrBrowse();
-                registryPanel.showArtifactTypes();
+            public void onClick(Widget arg0) {
+                registryPanel.onShow();
             }
         });
+        
         registryPanel.setTop(wkspcLink);
         registryPanel.hideArtifactTypes();
     }

@@ -141,9 +141,6 @@ public class RegistryPanel extends AbstractMenuPanel {
         
         artifactTypesBox = new Toolbox(false);
         artifactTypesBox.setTitle("By Artifact Type");
-        addMenuItem(artifactTypesBox);
-        
-        initArtifactTypes();
     }
 
     protected WWorkspace getWorkspace(String workspaceId) {
@@ -164,10 +161,18 @@ public class RegistryPanel extends AbstractMenuPanel {
         return null;
     }
 
+    /**
+     * We've gone back, or browsed to this tab again.
+     * {@inheritDoc}
+     */
     public void onShow() {
         super.onShow();
+
+        refreshArtifacts();
         refreshWorkspaces();
-        initArtifactTypes();
+        showArtifactTypes();
+        refreshArtifactTypes();
+        showSearchOrBrowse();
     }
 
     private ClickListener createClickListener(final MenuPanelPageInfo page) {
@@ -196,13 +201,15 @@ public class RegistryPanel extends AbstractMenuPanel {
         });
     }
 
-    private void initArtifactTypes() {
+    private void refreshArtifactTypes() {
         artifactTypes = new HashSet();
         artifactTypesBox.clear();
+        artifactTypesBox.add(new Label("Loading..."));
         
         service.getArtifactTypes(new AbstractCallback(this) {
 
             public void onSuccess(Object o) {
+                artifactTypesBox.clear();
                 Collection workspaces = (Collection) o;
                 
                 for (Iterator itr = workspaces.iterator(); itr.hasNext();) {
@@ -245,20 +252,20 @@ public class RegistryPanel extends AbstractMenuPanel {
     
     public void addArtifactTypeFilter(String id) {
         artifactTypes.add(id);
-        reloadArtifacts();
+        refreshArtifacts();
     }
 
     public void removeArtifactTypeFilter(String id) {
         artifactTypes.remove(id);
-        reloadArtifacts();
+        refreshArtifacts();
     }
 
     public void setActiveWorkspace(String workspaceId) {
         this.workspaceId = workspaceId;
-        reloadArtifacts();
+        refreshArtifacts();
     }
     
-    public void reloadArtifacts() {
+    public void refreshArtifacts() {
         setMain(workspacePanel);
         workspacePanel.reloadArtifacts();
     }

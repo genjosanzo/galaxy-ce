@@ -1,9 +1,5 @@
 package org.mule.galaxy.web.client;
 
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
-import org.mule.galaxy.web.rpc.WSearchResults;
-
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -15,6 +11,10 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Iterator;
 import java.util.Set;
+
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.WSearchResults;
 
 public class WorkspacePanel
     extends Composite
@@ -119,6 +119,8 @@ public class WorkspacePanel
 
     public void reloadArtifacts() {
         artifactPanel.clear();
+        artifactPanel.add(new Label("Loading..."));
+        
         SearchPanel searchPanel = registryPanel.getSearchPanel();
         
         String workspaceId   = registryPanel.getWorkspaceId();
@@ -131,6 +133,7 @@ public class WorkspacePanel
                                                         new AbstractCallback(registryPanel) {
 
             public void onSuccess(Object o) {
+                artifactPanel.clear();
                 initArtifacts((WSearchResults) o);
             }
             public void onFailure(Throwable caught) {

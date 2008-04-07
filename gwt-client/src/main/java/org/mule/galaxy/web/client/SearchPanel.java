@@ -65,7 +65,7 @@ public class SearchPanel
         
         searchButton = new Button("Search", new ClickListener() {
            public void onClick(Widget sender) {
-               registryPanel.reloadArtifacts();
+               registryPanel.refreshArtifacts();
            }
         });
         
