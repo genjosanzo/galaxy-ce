@@ -114,6 +114,8 @@ public class RegistryPanel extends AbstractMenuPanel {
             public void onClick(Widget w){
                 currentTopPanel = browsePanel;
                 setTop(browsePanel);
+                searchPanel.clear();
+                refreshArtifacts();
             }
         });
         searchToolbar.add(browseLink);

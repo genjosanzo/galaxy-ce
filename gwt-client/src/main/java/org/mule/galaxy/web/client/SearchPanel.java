@@ -71,7 +71,7 @@ public class SearchPanel
         
         clearButton = new Button("Clear", new ClickListener() {
             public void onClick(Widget sender) {
-                rows.clear();
+                clear();
                 panel.clear();
                 freeformQueryArea.setText("");
                 
@@ -83,7 +83,11 @@ public class SearchPanel
         
         initWidget(panel);
     }
-    
+
+
+    public void clear() {
+        rows.clear();
+    }
     public void initArtifactIndices(Collection c) {
         artifactIndexes = c;
         for (Iterator itr = rows.iterator(); itr.hasNext();) {
