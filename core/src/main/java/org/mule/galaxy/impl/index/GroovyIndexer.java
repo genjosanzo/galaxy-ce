@@ -24,12 +24,13 @@ import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexException;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URL;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
-import groovy.lang.Script;
+import groovy.util.GroovyScriptEngine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -37,6 +38,7 @@ import org.springframework.core.io.ResourceLoader;
 
 public class GroovyIndexer extends AbstractIndexer
 {
+    protected static final ConcurrentMap<String, GroovyScriptEngine> scriptCache = new ConcurrentHashMap<String, GroovyScriptEngine>();
 
     private final Log log = LogFactory.getLog(getClass());
 
@@ -57,9 +59,6 @@ public class GroovyIndexer extends AbstractIndexer
             throw new IndexException(new Exception("scriptSource is not specified"));
         }
 
-        final ResourceLoader loader = new DefaultResourceLoader();
-        InputStream is = loader.getResource(scriptSource).getInputStream();
-
         Binding b = new Binding();
         b.setVariable("artifact", artifact);
         b.setVariable("config", config);
@@ -67,23 +66,41 @@ public class GroovyIndexer extends AbstractIndexer
         b.setVariable("index", index);
         b.setVariable("log", LogFactory.getLog(getClass().getName() + "." + index.getId()));
 
-        
-        GroovyShell shell = new GroovyShell(Thread.currentThread().getContextClassLoader(), b);
-
-        Script script;
         try
         {
-            script = shell.parse(is);
-            script.run();
+            // scriptSource is the key
+            GroovyScriptEngine engine = scriptCache.get(scriptSource);
+            if (engine == null)
+            {
+                if (log.isDebugEnabled())
+                {
+                    log.debug("Cache miss for " + scriptSource);
+                }
+                final ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                final ResourceLoader loader = new DefaultResourceLoader();
+                engine = new GroovyScriptEngine(new URL[] {loader.getResource(scriptSource).getURL()}, cl);
+
+                // in case processed it already, use the cached version instead
+                final GroovyScriptEngine alreadyCachedEngine = scriptCache.putIfAbsent(scriptSource, engine);
+                if (alreadyCachedEngine != null)
+                {
+                    if (log.isDebugEnabled())
+                    {
+                        log.debug("Someone was faster, use their's result for " + scriptSource);
+                    }
+                    engine = alreadyCachedEngine;
+                }
+            }
+            else if (log.isDebugEnabled())
+            {
+                log.debug("Using a cached engine for " + scriptSource);
+            }
+
+            engine.run(scriptSource, b);
         }
-        catch (Exception ex)
+        catch (Throwable ex)
         {
             throw new IndexException(ex);
-        }
-        finally
-        {
-            shell.resetLoadedClasses();
-            is.close();
         }
     }
 }
