@@ -1,10 +1,11 @@
 package org.mule.galaxy.security;
 
-import java.util.Set;
-
 import org.mule.galaxy.Identifiable;
 
-public class Group implements Identifiable {
+import java.io.Serializable;
+
+public class Group implements Identifiable, Serializable
+{
     private String id;
     private String name;
     
