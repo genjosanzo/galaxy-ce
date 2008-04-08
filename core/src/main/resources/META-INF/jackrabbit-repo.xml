@@ -23,8 +23,11 @@
         virtual file system where the repository stores global state
         (e.g. registered namespaces, custom node types, etc.)
     -->
-    <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
+    <FileSystem class="org.apache.jackrabbit.core.fs.db.DerbyFileSystem">
+    <!--<FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">-->
         <param name="path" value="${rep.home}/repository"/>
+        <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
+        <param name="schemaObjectPrefix" value="repo_"/>
     </FileSystem>
 
     <!--
@@ -63,15 +66,22 @@
             virtual file system of the workspace:
             class: FQN of class implementing the FileSystem interface
         -->
-        <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
+        <FileSystem class="org.apache.jackrabbit.core.fs.db.DerbyFileSystem">
+        <!--<FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">-->
             <param name="path" value="${wsp.home}"/>
+            <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
+            <param name="schemaObjectPrefix" value="workspace_"/>
+            <param name="shutdownOnClose" value="false"/>
         </FileSystem>
         <!--
             persistence manager of the workspace:
             class: FQN of class implementing the PersistenceManager interface
         -->
-        <PersistenceManager class="org.apache.jackrabbit.core.persistence.mem.InMemPersistenceManager">
+        <PersistenceManager class="org.apache.jackrabbit.core.persistence.db.DerbyPersistenceManager">
+        <!--<PersistenceManager class="org.apache.jackrabbit.core.persistence.mem.InMemPersistenceManager">-->
           <param name="schemaObjectPrefix" value="Jackrabbit Core_"/>
+          <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
+          <param name="shutdownOnClose" value="false"/>
         </PersistenceManager>
         <!--
             Search index and the file system it uses.
@@ -79,6 +89,11 @@
         -->
         <SearchIndex class="org.apache.jackrabbit.core.query.lucene.SearchIndex">
             <param name="path" value="${wsp.home}/index"/>
+            <FileSystem class="org.apache.jackrabbit.core.fs.db.DerbyFileSystem">
+                <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
+                <param name="schemaObjectPrefix" value="search_index_w_"/>
+                <param name="shutdownOnClose" value="false"/>
+            </FileSystem>
         </SearchIndex>
     </Workspace>
 
@@ -90,8 +105,12 @@
             Configures the filesystem to use for versioning for the respective
             persistence manager
         -->
-        <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
+        <FileSystem class="org.apache.jackrabbit.core.fs.db.DerbyFileSystem">
+        <!--<FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">-->
             <param name="path" value="${rep.home}/version" />
+            <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
+            <param name="schemaObjectPrefix" value="filesystem_version_"/>
+            <param name="shutdownOnClose" value="false"/>
         </FileSystem>
 
         <!--
@@ -100,8 +119,11 @@
             a 'normal' persistence manager, but this could change in future
             implementations.
         -->
-        <PersistenceManager class="org.apache.jackrabbit.core.persistence.mem.InMemPersistenceManager">
+        <PersistenceManager class="org.apache.jackrabbit.core.persistence.db.DerbyPersistenceManager">
+        <!--<PersistenceManager class="org.apache.jackrabbit.core.persistence.mem.InMemPersistenceManager">-->
           <param name="schemaObjectPrefix" value="version_"/>
+          <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
+          <param name="shutdownOnClose" value="false"/>
         </PersistenceManager>
     </Versioning>
 
@@ -112,5 +134,10 @@
         -->
     <SearchIndex class="org.apache.jackrabbit.core.query.lucene.SearchIndex">
         <param name="path" value="${rep.home}/repository/index"/>
+        <FileSystem class="org.apache.jackrabbit.core.fs.db.DerbyFileSystem">
+            <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
+            <param name="schemaObjectPrefix" value="search_index_"/>
+            <param name="shutdownOnClose" value="false"/>
+        </FileSystem>
     </SearchIndex>
 </Repository>
