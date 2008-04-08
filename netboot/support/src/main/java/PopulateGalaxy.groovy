@@ -35,7 +35,7 @@ cli.w(longOpt: 'workspace', args: 1, 'Galaxy workspace to configure, escaped \'L
 cli.d(longOpt: 'deleteWorkspace', 'If specified, a workspace will be deleted first and re-created from scratch')
 cli.m(longOpt: 'muleHome', args: 1, 'Override MULE_HOME (default: value of the MULE_HOME env property)')
 cli.X(longOpt: 'debug', 'If enabled, prints debug info at runtime')
-cli.t(longOpt: 'threads', args: 1, 'Number of processing threads (default: number of CPU cores')
+cli.t(longOpt: 'threads', args: 1, 'Number of processing threads (default: CPU cores x 4')
 
 def opts = cli.parse(args)
 
@@ -59,7 +59,7 @@ def password = opts.p ?: 'admin'
 def workspace = opts.w ?: 'Mule'
 def deleteWorkspace = opts.d
 def debug = opts.X
-def numUnits = new Integer(opts.t ?: Runtime.runtime.availableProcessors())
+def numUnits = new Integer(opts.t ?: Runtime.runtime.availableProcessors() * 4)
 
 // Passed in as -Dmule.home
 def muleHome = opts.m ?: System.properties.'mule.home'
