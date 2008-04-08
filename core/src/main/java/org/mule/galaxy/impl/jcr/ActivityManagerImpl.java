@@ -1,5 +1,13 @@
 package org.mule.galaxy.impl.jcr;
 
+import org.mule.galaxy.Activity;
+import org.mule.galaxy.ActivityManager;
+import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.security.Permission;
+import org.mule.galaxy.security.User;
+
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -25,13 +33,6 @@ import javax.jcr.version.VersionException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.mule.galaxy.Activity;
-import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
-import org.mule.galaxy.security.AccessControlManager;
-import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.Permission;
-import org.mule.galaxy.security.User;
 import org.springmodules.jcr.JcrCallback;
 
 public class ActivityManagerImpl extends AbstractReflectionDao<Activity> implements ActivityManager {
@@ -203,7 +204,7 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
         logActivity(null, activity, eventType);
     }
 
-    public synchronized void logActivity(User user, String activity, EventType eventType) {
+    public void logActivity(User user, String activity, EventType eventType) {
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
         save(new Activity(user, eventType, c, activity));
