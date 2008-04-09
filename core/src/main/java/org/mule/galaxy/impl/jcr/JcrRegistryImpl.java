@@ -427,6 +427,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     public Artifact getArtifact(final String id) throws NotFoundException, RegistryException, AccessException {
+        if (id == null) {
+            throw new NotFoundException("No id specified.");
+        }
         return (Artifact) executeWithNotFound(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node node = session.getNodeByUUID(id);

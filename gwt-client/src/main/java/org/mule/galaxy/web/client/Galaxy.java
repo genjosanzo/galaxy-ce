@@ -160,6 +160,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
             public void show() {
                 menuPanel.setMain(fMain);
+                menuPanel.onShow();
             }
         };
         
@@ -174,6 +175,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
             }
 
             public void show() {
+                ac.onShow();
             }
         };
         
@@ -187,6 +189,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
             onHistoryChanged(initToken);
         } else {
             tabPanel.selectTab(0);
+            ((AbstractComposite) tabPanel.getWidget(0)).onShow();
         }
     }
 

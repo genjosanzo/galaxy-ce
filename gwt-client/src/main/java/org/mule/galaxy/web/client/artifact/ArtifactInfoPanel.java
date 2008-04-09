@@ -102,7 +102,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
             
         });
         
-        panel.add(new ArtifactMetadataPanel(registryPanel, version));
+        panel.add(new ArtifactMetadataPanel(registryPanel, info, version));
         
         initComments();
         

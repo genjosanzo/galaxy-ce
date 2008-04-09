@@ -30,14 +30,12 @@ public abstract class AbstractMenuPanel extends AbstractComposite implements Err
         panel.setSpacing(0);
 
         leftMenu = new FlowPanel() {
-
             protected void onLoad() {
 
                 Element br = DOM.createElement("br");
                 DOM.setElementAttribute(br, "class", "clearit");
                 DOM.appendChild(DOM.getParent(this.getElement()), br);
             }
-            
         };
         leftMenu.setStyleName("left-menu");
         

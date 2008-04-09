@@ -562,6 +562,8 @@ public class RegistryServiceImpl implements RegistryService {
                 for (Iterator<PropertyInfo> props = av.getProperties(); props.hasNext();) {
                     PropertyInfo p = props.next();
 
+                    if (!p.isVisible()) continue;
+                    
                     Object val = p.getValue();
                     if (val instanceof Collection) {
                         String s = val.toString();
