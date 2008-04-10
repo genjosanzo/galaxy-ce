@@ -1286,8 +1286,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 QueryResult result = jcrQuery.execute();
                 NodeIterator nodes = result.getNodes(); 
+               
                 if (query.getStart() != -1) {
-                    nodes.skip(query.getStart());
+                    if (nodes.getSize() <= query.getStart()) {
+                        return new SearchResults(0, artifacts);
+                    } else {
+                        nodes.skip(query.getStart());
+                    }
                 }
                 
                 int max = query.getMaxResults();

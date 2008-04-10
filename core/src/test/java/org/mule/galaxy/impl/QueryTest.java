@@ -21,6 +21,14 @@ public class QueryTest extends AbstractGalaxyTest {
 
         assertEquals(1, results.size());
 
+        q.setStart(1);
+        results = registry.search(q).getResults();
+        assertEquals(0, results.size());
+        
+        q.setStart(2);
+        results = registry.search(q).getResults();
+        assertEquals(0, results.size());
+        
         q = new Query(Artifact.class).add(Restriction.eq("phase", "Default:Created"));
         results = registry.search(q).getResults();
     
