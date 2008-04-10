@@ -6,7 +6,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
-  <artifactId>galaxy-gwt-rpc</artifactId>
+  <artifactId>galaxy-gwt-client</artifactId>
   <packaging>jar</packaging>
   <name>Galaxy GWT RPC Web Client</name>
 

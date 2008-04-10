@@ -62,8 +62,8 @@ public class RegistryPanel extends AbstractMenuPanel {
                 if (parentId != null) {
                     id += "-" + workspaceId;
                 }
-                ((Hyperlink) w).setTargetHistoryToken(id);
                 registryPanel.setMain(new EditWorkspacePanel(registryPanel, workspaces, parentId));
+                ((Hyperlink) w).setTargetHistoryToken(id);
             }            
         };
         addWkspcImg.addClickListener(addWkspcListener);
@@ -72,8 +72,8 @@ public class RegistryPanel extends AbstractMenuPanel {
         ClickListener editWkspcListener = new ClickListener() {
             public void onClick(Widget w) {
                 String id = "manage-workspace-" + workspaceId;
-                ((Hyperlink) w).setTargetHistoryToken(id);
                 createPageInfo(id, new ManageWorkspacePanel(registryPanel, workspaces, workspaceId, getWorkspace(workspaceId)));
+                ((Hyperlink) w).setTargetHistoryToken(id);
             }
         };
         editWkspcImg.addClickListener(editWkspcListener);
@@ -150,6 +150,8 @@ public class RegistryPanel extends AbstractMenuPanel {
     }
 
     private WWorkspace getWorkspace(String workspaceId2, Collection workspaces2) {
+        if (workspaces2 == null) return null;
+        
         for (Iterator itr = workspaces2.iterator(); itr.hasNext();) {
             WWorkspace w = (WWorkspace)itr.next();
             
