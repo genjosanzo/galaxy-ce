@@ -198,9 +198,11 @@ public class RegistryPanel extends AbstractMenuPanel {
                 
                 initWorkspaces(treeItem, workspaces);
 
-                TreeItem child = treeItem.getChild(0);
-                workspaceId = (String) child.getUserObject();
-                cv.setRootItem(treeItem);
+                if (workspaceId == null) {
+                    TreeItem child = treeItem.getChild(0);
+                    workspaceId = (String) child.getUserObject();
+                    cv.setRootItem(treeItem);
+                }
             }
         });
     }
@@ -246,6 +248,10 @@ public class RegistryPanel extends AbstractMenuPanel {
             
             TreeItem treeItem = ti.addItem(wi.getName());
             treeItem.setUserObject(wi.getId());
+            
+            if (workspaceId == wi.getId()) {
+                cv.setRootItem(treeItem);
+            }
             
             Collection children = wi.getWorkspaces();
             if (children != null) {
