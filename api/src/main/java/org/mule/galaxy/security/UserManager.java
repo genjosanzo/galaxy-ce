@@ -3,6 +3,7 @@ package org.mule.galaxy.security;
 import java.util.Collection;
 
 import org.mule.galaxy.Dao;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Workspace;
 
 public interface UserManager extends Dao<User> {
@@ -19,5 +20,5 @@ public interface UserManager extends Dao<User> {
 
     void setPassword(User user, String password);
 
-    User getByUsername(String string);
+    User getByUsername(String string) throws NotFoundException;
 }

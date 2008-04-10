@@ -1,0 +1,41 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+    <bean id="initialDirContextFactory"
+            class="org.acegisecurity.ldap.DefaultInitialDirContextFactory">
+      <constructor-arg value="ldap://localhost:10389/"/>
+      <property name="managerDn"><value>uid=admin,ou=system</value></property>
+      <property name="managerPassword"><value>secret</value></property>
+    </bean>
+
+    <bean id="userSearch"
+            class="org.acegisecurity.ldap.search.FilterBasedLdapUserSearch">
+      <constructor-arg index="0">
+        <value>ou=system</value>
+      </constructor-arg>
+      <constructor-arg index="1">
+        <value>(uid={0})</value>
+      </constructor-arg>
+      <constructor-arg index="2" ref="initialDirContextFactory" />
+      <property name="searchSubtree" value="true"/>
+    </bean>
+    
+    <bean id="ldapTemplate" class="org.acegisecurity.ldap.LdapTemplate">
+      <constructor-arg ref="initialDirContextFactory"/>
+    </bean>
+    
+    <bean id="userManager"
+          class="org.mule.galaxy.security.ldap.LdapUserManager">
+      <property name="ldapTemplate" ref="ldapTemplate"/>
+      <property name="userSearch" ref="userSearch"/>
+      <property name="groupSearchBase" value="ou=groups,ou=system"/>
+      <property name="groupSearchFilter" value="(uniqueMember={0})"/>
+    </bean>
+    
+</beans>

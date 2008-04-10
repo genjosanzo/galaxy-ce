@@ -13,7 +13,7 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
     public void doInstall() throws Exception {
         Workspace w = registry.getWorkspaces().iterator().next();
         
-        User user = userManager.find("username", "admin").iterator().next();
+        User user = userManager.getByUsername("admin");
         
         add(w, user, "hello-config.xml", "/mule/hello-config.xml");
         add(w, user, "applicationContext.xml", "/spring/test-applicationContext.xml");

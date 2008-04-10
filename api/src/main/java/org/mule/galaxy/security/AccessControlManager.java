@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.mule.galaxy.Item;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Workspace;
 
 public interface AccessControlManager {
@@ -80,6 +81,8 @@ public interface AccessControlManager {
     Group getGroup(String id);
 
     void save(Group group) throws AccessException;
+
+    Group getGroupByName(String name) throws NotFoundException;
     
     
 }       

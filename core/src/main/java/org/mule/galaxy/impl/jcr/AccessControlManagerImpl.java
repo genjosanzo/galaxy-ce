@@ -20,6 +20,7 @@ import javax.jcr.ValueFormatException;
 import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Item;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.onm.AbstractDao;
 import org.mule.galaxy.security.AccessControlManager;
@@ -78,9 +79,12 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
             grant(userGroup, toGrant);
             
             User admin = userManager.getByUsername("admin");
-            admin.addGroup(adminGroup);
-            admin.addGroup(userGroup);
-            userManager.save(admin);
+            if (admin != null)
+            {
+                admin.addGroup(adminGroup);
+                admin.addGroup(userGroup);
+                userManager.save(admin);
+            }
         } catch (Exception e) {
             if (e instanceof RepositoryException) {
                 throw (RepositoryException) e;
@@ -117,6 +121,26 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
 
     public Group getGroup(String id) {
         return get(id);
+    }
+    
+
+    @SuppressWarnings("unchecked")
+    public Group getGroupByName(final String name) throws NotFoundException {
+        List<Group> groups = (List<Group>) execute(new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                String stmt = "/jcr:root/groups/" + ISO9075.encode(name);
+                
+                return query(stmt, session);
+            }
+            
+        });
+        
+        if (groups.size() == 0) {
+            throw new NotFoundException(name);
+        }
+        
+        return groups.get(0);
     }
 
     public List<Permission> getPermissions() {

@@ -18,7 +18,7 @@
    <bean id="authenticationManager" class="org.acegisecurity.providers.ProviderManager">
       <property name="providers">
          <list>
-           <ref local="daoAuthenticationProvider"/>
+           <ref bean="authenticationProvider"/>
            <ref local="anonymousAuthenticationProvider"/>
            <ref local="rememberMeAuthenticationProvider"/>
          </list>
@@ -26,7 +26,8 @@
    </bean>
    <bean id="passwordEncoder" class="org.acegisecurity.providers.encoding.PlaintextPasswordEncoder"/>
 
-   <bean id="daoAuthenticationProvider" class="org.acegisecurity.providers.dao.DaoAuthenticationProvider">
+   
+   <bean id="authenticationProvider" class="org.acegisecurity.providers.dao.DaoAuthenticationProvider">
       <property name="userDetailsService" ref="userManager"/>
 <!--      <property name="userCache"><ref local="userCache"/></property> -->
       <property name="passwordEncoder"><ref local="passwordEncoder"/></property>

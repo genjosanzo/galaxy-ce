@@ -27,6 +27,7 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.index.IndexManagerImpl;
+import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.PolicyManager;
@@ -84,11 +85,15 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     }
 
     protected User getAdmin() {
-        return userManager.authenticate("admin", "admin");
+        return userManager.authenticate("admin", getPassword());
+    }
+
+    protected String getPassword() {
+        return "admin";
     }
 
     protected void login(final String username, final String password) {
-        AuthenticationProvider provider = (AuthenticationProvider) applicationContext.getBean("daoAuthenticationProvider");
+        AuthenticationProvider provider = (AuthenticationProvider) applicationContext.getBean("authenticationProvider");
         Authentication auth = provider.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
@@ -147,7 +152,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
             Session session = repository.login(new SimpleCredentials("username", "password".toCharArray()));
 
             Node node = session.getRootNode();
-//            JcrUtil.dump(node.getNode("groups"));
+            JcrUtil.dump(node.getNode("groups"));
 //            JcrUtil.dump(node.getNode("users"));
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
                 Node child = itr.nextNode();
@@ -189,7 +194,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
             TransactionSynchronizationManager.bindResource(sessionFactory, sessionFactory.getSessionHolder(session));
         }
 
-        login("admin", "admin");
+        login("admin", getPassword());
     }
 
     @Override

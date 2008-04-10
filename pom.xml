@@ -30,6 +30,7 @@
         <module>buildtools</module>
         <module>api</module>
         <module>core</module>
+        <module>ldap</module>
         <module>wsdldiff</module>
         <module>wsi</module>
         <module>feed-model</module>
