@@ -8,16 +8,20 @@ import java.util.Set;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 
+import org.acegisecurity.ldap.InitialDirContextFactory;
 import org.acegisecurity.ldap.LdapTemplate;
 import org.acegisecurity.ldap.LdapUserSearch;
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.acegisecurity.userdetails.ldap.LdapUserDetails;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.Group;
+import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserExistsException;
 import org.mule.galaxy.security.UserManager;
@@ -28,6 +32,8 @@ import org.springframework.dao.DataAccessException;
 
 public class LdapUserManager 
     implements UserManager, UserDetailsService, ApplicationContextAware {
+
+    private final Log log = LogFactory.getLog(getClass());
 
     private String emailAttribute = "email";
     private String groupSearchBase;
@@ -40,18 +46,15 @@ public class LdapUserManager
     
     private LdapUserSearch userSearch;
     private LdapTemplate ldapTemplate;
-
+    private InitialDirContextFactory initialDirContextFactory;
     private AccessControlManager accessControlManager;
+
     private ApplicationContext applicationContext;
     
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException,
         DataAccessException {
         try {
-            User user = get(username);
-            
-            return new UserDetailsWrapper(user, 
-                                          getAccessControlManager().getGrantedPermissions(user), 
-                                          "secret");
+            return getUserDetails(username, true);
         } catch (NotFoundException e) {
             throw new UsernameNotFoundException(username);
         }
@@ -70,33 +73,39 @@ public class LdapUserManager
     }
 
     public User get(String id) throws NotFoundException {
-        LdapUserDetails d = userSearch.searchForUser(id);
-        
-        Set groupNames = 
-            ldapTemplate.searchForSingleAttributeValues(groupSearchBase, 
-                                                        groupSearchFilter,
-                                                        new String[] {d.getDn(), 
-                                                                       id}, 
-                                                        groupRoleAttribute);
+        return getUserDetails(id, false).getUser();
+    }
+    
+    public UserDetailsWrapper getUserDetails(String username, boolean fillInGroups) throws NotFoundException {
+        LdapUserDetails d = userSearch.searchForUser(username);
 
-        Set<Group> groups = new HashSet<Group>();
-        for (Object o : groupNames) {
-            try {
-                groups.add(getAccessControlManager().getGroupByName(o.toString()));
-            } catch (NotFoundException e) {
-                System.out.println("Didn't find group " + o.toString());
-            }
-        }
-        
         if (d == null) {
-            throw new NotFoundException(id);
+            throw new NotFoundException(username);
         }
         
         User user = new User();
-        user.setId(id);
-        user.setUsername(id);
-        user.setGroups(groups);
+        if (fillInGroups) {
+            Set groupNames = 
+                getLdapTemplate().searchForSingleAttributeValues(groupSearchBase, 
+                                                                 groupSearchFilter,
+                                                                 new String[] {d.getDn(), username}, 
+                                                                 groupRoleAttribute);
+    
+            Set<Group> groups = new HashSet<Group>();
+            for (Object o : groupNames) {
+                try {
+                    groups.add(getAccessControlManager().getGroupByName(o.toString()));
+                } catch (NotFoundException e) {
+                    log.info("Could not find group " + o.toString() + " for user " + username);
+                }
+            }
+            
+            user.setGroups(groups);
+        }
         
+        user.setId(username);
+        user.setUsername(username);
+         
         Attributes atts = d.getAttributes();
         if (atts != null)
         {
@@ -107,7 +116,17 @@ public class LdapUserManager
             }
             
         }
-        return user;
+        
+        Set<Permission> grantedPermissions;
+        if (fillInGroups) {
+            grantedPermissions = getAccessControlManager().getGrantedPermissions(user);
+        } else {
+            grantedPermissions = new HashSet<Permission>();
+        }
+        
+        return new UserDetailsWrapper(user, 
+                                      grantedPermissions, 
+                                      d.getPassword());
     }
 
     public List<User> listAll() {
@@ -143,17 +162,32 @@ public class LdapUserManager
         throw new UnsupportedOperationException();
     }
 
+    public synchronized LdapTemplate getLdapTemplate() {
+        if (ldapTemplate == null) {
+            ldapTemplate = new LdapTemplate(initialDirContextFactory);
+        }
+        return ldapTemplate;
+    }
+
+    public void setAccessControlManager(AccessControlManager accessControlManager) {
+        this.accessControlManager = accessControlManager;
+    }
+
     private AccessControlManager getAccessControlManager() {
         if (accessControlManager == null) {
-            accessControlManager =(AccessControlManager) applicationContext.getBean("accessControlManager");
+            accessControlManager = (AccessControlManager) applicationContext.getBean("accessControlManager");
         }
         return accessControlManager;
     }
     
-    public void setApplicationContext(ApplicationContext ctx) throws BeansException {
-        this.applicationContext = ctx;
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
-    
+
+    public void setInitialDirContextFactory(InitialDirContextFactory initialDirContextFactory) {
+        this.initialDirContextFactory = initialDirContextFactory;
+    }
+
     public void setEmailAttribute(String emailAttribute) {
         this.emailAttribute = emailAttribute;
     }
@@ -168,10 +202,6 @@ public class LdapUserManager
 
     public void setGroupRoleAttribute(String groupRoleAttribute) {
         this.groupRoleAttribute = groupRoleAttribute;
-    }
-
-    public void setLdapTemplate(LdapTemplate ldapTemplate) {
-        this.ldapTemplate = ldapTemplate;
     }
 
 }

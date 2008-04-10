@@ -6,7 +6,7 @@
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
-
+    
     <bean id="initialDirContextFactory"
             class="org.acegisecurity.ldap.DefaultInitialDirContextFactory">
       <constructor-arg value="ldap://localhost:10389/"/>
@@ -26,13 +26,9 @@
       <property name="searchSubtree" value="true"/>
     </bean>
     
-    <bean id="ldapTemplate" class="org.acegisecurity.ldap.LdapTemplate">
-      <constructor-arg ref="initialDirContextFactory"/>
-    </bean>
-    
     <bean id="userManager"
           class="org.mule.galaxy.security.ldap.LdapUserManager">
-      <property name="ldapTemplate" ref="ldapTemplate"/>
+      <property name="initialDirContextFactory" ref="initialDirContextFactory"/>
       <property name="userSearch" ref="userSearch"/>
       <property name="groupSearchBase" value="ou=groups,ou=system"/>
       <property name="groupSearchFilter" value="(uniqueMember={0})"/>

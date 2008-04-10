@@ -10,6 +10,7 @@ import org.acegisecurity.providers.ldap.LdapAuthenticationProvider;
 import org.acegisecurity.userdetails.UserDetails;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.security.ldap.LdapUserManager;
@@ -30,13 +31,14 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
         User user = userManager.get("admin");
         assertNotNull(user);
         
-        assertEquals(1, user.getGroups().size());
-        
         UserDetails details = lUserManager.loadUserByUsername("admin");
         GrantedAuthority[] authorities = details.getAuthorities();
         System.out.println(authorities.length);
         
         assertTrue(authorities.length > 5);
+        
+        UserDetailsWrapper wrapper = (UserDetailsWrapper) details;
+        assertEquals(1, wrapper.getUser().getGroups().size());
         
         importHelloWsdl();
         
