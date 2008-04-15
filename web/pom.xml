@@ -59,7 +59,7 @@
 
         <dependency>
             <groupId>org.mule.galaxy</groupId>
-            <artifactId>galaxy-gwt-rpc</artifactId>
+            <artifactId>galaxy-gwt-client</artifactId>
             <version>${version}</version>
         </dependency>
 
@@ -189,9 +189,9 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <configuration>
                     <tasks>
-                      <echo>Copying to ${project.build.directory}/${project.build.finalName} from ${basedir}/../gwt-client/target/galaxy-gwt-rpc-${project.version/}/</echo>
+                      <echo>Copying to ${project.build.directory}/${project.build.finalName} from ${basedir}/../gwt-client/target/galaxy-gwt-client-${project.version/}/</echo>
                       <copy todir="${project.build.directory}/${project.build.finalName}">
-                         <fileset dir="${basedir}/../gwt-client/target/galaxy-gwt-rpc-${project.version/}/" />
+                         <fileset dir="${basedir}/../gwt-client/target/galaxy-gwt-client-${project.version/}/" />
                       </copy>
                     </tasks>
                 </configuration>
@@ -254,17 +254,6 @@
             <id>apache-incubating</id>
             <name>Apache Incubating Repository</name>
             <url>http://people.apache.org/repo/m2-incubating-repository</url>
-        </repository>
-        <repository>
-            <id>apache-snapshots</id>
-            <name>Apache Snapshot Repository</name>
-            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
         </repository>
         <repository>
             <id>mule-dependencies</id>

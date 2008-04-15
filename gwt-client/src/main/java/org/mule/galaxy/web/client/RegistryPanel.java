@@ -62,7 +62,7 @@ public class RegistryPanel extends AbstractMenuPanel {
                 if (parentId != null) {
                     id += "-" + workspaceId;
                 }
-                registryPanel.setMain(new EditWorkspacePanel(registryPanel, workspaces, parentId));
+                createPageInfo(id, new EditWorkspacePanel(registryPanel, workspaces, parentId));
                 ((Hyperlink) w).setTargetHistoryToken(id);
             }            
         };
@@ -129,8 +129,6 @@ public class RegistryPanel extends AbstractMenuPanel {
         browsePanel.add(cv);
         currentTopPanel = browsePanel;
         setTop(browsePanel);
-
-        refreshWorkspaces();
         
         cv.addTreeListener(new TreeListener() {
             public void onTreeItemSelected(TreeItem ti) {
@@ -198,11 +196,11 @@ public class RegistryPanel extends AbstractMenuPanel {
                 
                 initWorkspaces(treeItem, workspaces);
 
-                if (workspaceId == null) {
+//                if (workspaceId == null) {
                     TreeItem child = treeItem.getChild(0);
                     workspaceId = (String) child.getUserObject();
                     cv.setRootItem(treeItem);
-                }
+//                }
             }
         });
     }
@@ -249,9 +247,9 @@ public class RegistryPanel extends AbstractMenuPanel {
             TreeItem treeItem = ti.addItem(wi.getName());
             treeItem.setUserObject(wi.getId());
             
-            if (workspaceId == wi.getId()) {
-                cv.setRootItem(treeItem);
-            }
+//            if (workspaceId != null && workspaceId.equals(wi.getId())) {
+//                cv.setRootItem(treeItem);
+//            }
             
             Collection children = wi.getWorkspaces();
             if (children != null) {

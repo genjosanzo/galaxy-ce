@@ -17,6 +17,7 @@ import java.util.Iterator;
 import org.mule.galaxy.web.client.AbstractTitledComposite;
 import org.mule.galaxy.web.client.RegistryPanel;
 import org.mule.galaxy.web.client.WorkspacePanel;
+import org.mule.galaxy.web.client.util.ColumnView;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.WorkspacesListBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -30,31 +31,45 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
     private boolean edit;
     private ListBox lifecyclesLB;
     private final WWorkspace workspace;
+    private FlowPanel panel;
+    private Collection workspaces;
+    private String parentWorkspaceId;
 
     public EditWorkspacePanel(final RegistryPanel registryPanel,
                               final Collection workspaces,
                               final String parentWorkspaceId) {
-        this(registryPanel, workspaces, parentWorkspaceId, new WWorkspace(), false);
+        this(registryPanel, workspaces, new WWorkspace(), false);
+        
+        this.parentWorkspaceId = parentWorkspaceId;
     }
 
     public EditWorkspacePanel(final RegistryPanel registryPanel,
                               final Collection workspaces,
                               final String parentWorkspaceId,
                               final WWorkspace workspace) {
-        this(registryPanel, workspaces, parentWorkspaceId, workspace, true);
+        this(registryPanel, workspaces, workspace, true);
+        
+        this.parentWorkspaceId = parentWorkspaceId;
     }
     
     protected EditWorkspacePanel(final RegistryPanel registryPanel,
                                  final Collection workspaces,
-                                 final String parentWorkspaceId,
                                  final WWorkspace workspace,
                                  boolean edit) {
         super();
         this.workspace = workspace;
         this.edit = edit;
         this.registryPanel = registryPanel;
+        this.workspaces = workspaces;
         
-        FlowPanel panel = new FlowPanel();
+        panel = new FlowPanel();
+        
+        initWidget(panel);
+    }
+    
+    public void onShow() {
+        panel.clear();
+        
         final FlexTable table = createColumnTable();
         
         final WorkspacesListBox workspacesLB = 
@@ -105,8 +120,6 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
             buttonPanel.add(deleteButton);
         }
         table.setWidget(3, 1, buttonPanel);
-        
-        initWidget(panel);
 
         if (edit) {
             setTitle("Edit Workspace " + workspace.getName());
@@ -149,8 +162,8 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
         AbstractCallback callback = new AbstractCallback(registryPanel) {
 
             public void onSuccess(Object arg0) {
-                registryPanel.refreshWorkspaces();
                 registryPanel.setMain(new WorkspacePanel(registryPanel));
+                registryPanel.onShow();
             }
             
         };
@@ -181,7 +194,6 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
             }
             
         });
-        
     }
 
     private static class DeleteDialog extends DialogBox {
