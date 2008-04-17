@@ -239,7 +239,7 @@ declare variable $document external;
         </namespace>
         <indexes>
             <index>
-                <description>The description for the Spring configuration</description>
+                <description>Spring configuration description</description>
                 <indexer>xpath</indexer>
                 <search-input-type>java.lang.String</search-input-type>
                 <configuration>

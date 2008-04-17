@@ -26,18 +26,17 @@ public class IndexTest extends AbstractGalaxyTest
         Index idx = null;
         for (final Index index : indices)
         {
-            idx = index;
-            if ("spring.bean".equals(idx.getId()))
+            if (index.getDescription().contains("Spring Beans"))
             {
+                idx = index;
                 break;
             }
         }
-        assertNotNull(idx);
-        assertEquals("spring.bean", idx.getId());
         assertEquals("Spring Beans", idx.getDescription());
         assertEquals("xquery", idx.getIndexer());
         assertEquals(String.class, idx.getQueryType());
         assertNotNull(idx.getConfiguration().get("expression"));
+        assertNotNull(idx.getConfiguration().get("property"));
         assertEquals(1, idx.getDocumentTypes().size());
 
         // Import a document which should now be indexed

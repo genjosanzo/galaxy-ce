@@ -41,6 +41,7 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
         this(registryPanel, workspaces, new WWorkspace(), false);
         
         this.parentWorkspaceId = parentWorkspaceId;
+        onShow();
     }
 
     public EditWorkspacePanel(final RegistryPanel registryPanel,
@@ -50,6 +51,7 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
         this(registryPanel, workspaces, workspace, true);
         
         this.parentWorkspaceId = parentWorkspaceId;
+        onShow();
     }
     
     protected EditWorkspacePanel(final RegistryPanel registryPanel,
@@ -98,13 +100,10 @@ public class EditWorkspacePanel extends AbstractTitledComposite {
         InlineFlowPanel buttonPanel = new InlineFlowPanel();
         Button saveButton = new Button("Save");
         saveButton.addClickListener(new ClickListener() {
-
             public void onClick(Widget arg0) {
                 save(workspacesLB.getSelectedValue(), 
                      workspaceTextBox.getText());
-                
             }
-            
         });
         buttonPanel.add(saveButton);
         
