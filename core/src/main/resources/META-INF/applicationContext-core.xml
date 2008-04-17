@@ -27,7 +27,7 @@
   <bean id="indexer.xpath" class="org.mule.galaxy.impl.index.XPathIndexer"/>
   <bean id="indexer.xquery" class="org.mule.galaxy.impl.index.XQueryIndexer"/>
   
-  <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean">
+  <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean" destroy-method="destroy">
     <!-- normal factory beans params -->
     <property name="configuration" value="classpath:/META-INF/jackrabbit-repo.xml"/>
     <property name="homeDir" value="file:./galaxy-data"/>

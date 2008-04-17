@@ -6,7 +6,7 @@
 
   <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean">
     <!-- normal factory beans params -->
-    <property name="configuration" value="classpath:/META-INF/jackrabbit-repo.xml"/>
+    <property name="configuration" value="classpath:/META-INF/jackrabbit-repo-test.xml"/>
     <property name="homeDir" value="file:./target/galaxy-data"/>
   </bean>
   

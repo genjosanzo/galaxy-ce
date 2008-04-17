@@ -172,8 +172,24 @@
 
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>jackrabbit-core</artifactId>
+            <version>1.4.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xmlParserAPIs</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xmlParserAPIs</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-server</artifactId>
-            <version>1.3.1</version>
+            <version>1.4</version>
             <exclusions>
                 <exclusion>
                     <groupId>xerces</groupId>
@@ -192,8 +208,8 @@
 
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-core</artifactId>
-            <version>1.3.1</version>
+            <artifactId>jackrabbit-api</artifactId>
+            <version>1.4</version>
             <exclusions>
                 <exclusion>
                     <groupId>xerces</groupId>
@@ -207,21 +223,11 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-api</artifactId>
-            <version>1.3.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>xerces</groupId>
-                    <artifactId>xmlParserAPIs</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>xml-apis</groupId>
-                    <artifactId>xmlParserAPIs</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>2.2.0</version>
         </dependency>
-
+        
         <dependency>
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
@@ -384,11 +390,6 @@
             <id>local</id>
             <name>Local Repository</name>
             <url>file://${basedir}/mvn-repo/</url>
-        </repository>
-        <repository>
-            <id>jackrabbit</id>
-            <name>Jackrabbit RC1 Repo</name>
-            <url>http://people.apache.org/~jukka/jackrabbit/1.4-rc1/repository/</url>
         </repository>
     </repositories>
 
