@@ -98,7 +98,7 @@ public class SearchPanelRow
         propertyList.addItem(setName + ":", "");
         for (Iterator itr = indexes.iterator(); itr.hasNext();) {
             WIndex wi = (WIndex)itr.next();
-            String name = (String) wi.getName();
+            String name = (String) wi.getDescription();
             String id   = (String) wi.getId();
             
             propertyList.addItem("- " + name, id);

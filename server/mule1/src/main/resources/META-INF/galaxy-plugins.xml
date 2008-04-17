@@ -16,35 +16,37 @@
         </namespace>
         <indexes>
             <index>
-                <field-name>mule.description</field-name>
-                <display-name>Mule Description</display-name>
+                <description>Mule Description</description>
                 <description>The description for the Mule configuration</description>
                 <indexer>xpath</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[/mule-configuration/description]]></expression></configuration>
+                <configuration>
+                    <property>mule.description</property>
+                    <expression><![CDATA[/mule-configuration/description]]></expression>
+                </configuration>
                 <namespace>
                     <local-name>mule-configuration</local-name>
                 </namespace>
             </index>
             <index>
-                <field-name>mule.server.id</field-name>
-                <display-name>Mule Server Id</display-name>
-                <description>Indexes &lt;mule-configuration id&gt; attribute</description>
+                <description>Mule Server Id</description>
                 <indexer>xpath</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[/mule-configuration/@id]]>
+                <configuration>
+                  <property>mule.server.id</property>
+                  <expression><![CDATA[/mule-configuration/@id]]>
                 </expression></configuration>
                 <namespace>
                     <local-name>mule-configuration</local-name>
                 </namespace>
             </index>
             <index>
-                <field-name>mule.endpoint</field-name>
-                <display-name>Mule Endpoints</display-name>
-                <description>Indexes Mule 1 Global Endpoints</description>
+                <description>Mule Endpoints</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[
+                <configuration>
+                  <property>mule.endpoint</property>
+                  <expression><![CDATA[
 declare variable $document external;
 <values> {
 for $e in $document//global-endpoints/endpoint
@@ -57,12 +59,12 @@ for $e in $document//global-endpoints/endpoint
                 </namespace>
             </index>
             <index>
-                <field-name>mule.transformer</field-name>
-                <display-name>Mule Transformers</display-name>
-                <description>Indexes Mule 1 Transformers</description>
+                <description>Mule Transformers</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[
+                <configuration>
+                 <property>mule.transformer</property>
+                 <expression><![CDATA[
 declare variable $document external;
 <values> {
 for $e in $document/transformers/transformer
@@ -75,12 +77,12 @@ for $e in $document/transformers/transformer
                 </namespace>
             </index>
             <index>
-                <field-name>mule.model</field-name>
-                <display-name>Mule Models</display-name>
-                <description>Indexes Mule 1 Models</description>
+                <description>Mule Models</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[
+                <configuration>
+                  <property>mule.model</property>
+                  <expression><![CDATA[
 declare variable $document external;
 <values> {
    for $e in $document//model
@@ -93,12 +95,12 @@ declare variable $document external;
                 </namespace>
             </index>
             <index>
-                <field-name>mule.descriptor</field-name>
-                <display-name>Mule Descriptors</display-name>
-                <description>Indexes Mule 1 service descriptors</description>
+                <description>Mule Descriptors</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[
+                <configuration>
+                  <property>mule.descriptor</property>
+                  <expression><![CDATA[
 declare variable $document external;
 <values> {
    for $e in $document//mule-descriptor

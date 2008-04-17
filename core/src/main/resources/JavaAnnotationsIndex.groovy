@@ -47,7 +47,7 @@ try {
             log.debug "Saving $level annotations: $annotations"
         }
 
-        def propertyName = "${index.id}.level.$level"
+        def propertyName = "java.annotations.level.$level"
         def encodedName = URLEncoder.encode(propertyName)
         if (annotations) {
             // JCR doesn't save non-string objects by default, transform

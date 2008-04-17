@@ -19,6 +19,7 @@ import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.index.GroovyIndexer;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexManager;
@@ -424,7 +425,13 @@ public class RegistryServiceImpl implements RegistryService {
             qt = "QName";
         }
 
-        return new WIndex(idx.getId(), idx.getName(), idx.getConfiguration().get("expression"), idx.getIndexer(), qt,
+        return new WIndex(idx.getId(), 
+                          idx.getDescription(), 
+                          idx.getMediaType(),
+                          idx.getConfiguration().get("property"),
+                          idx.getConfiguration().get("expression"), 
+                          idx.getIndexer(), 
+                          qt,
                           docTypes);
     }
 
@@ -447,7 +454,7 @@ public class RegistryServiceImpl implements RegistryService {
             indexManager.save(idx);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new RPCException("Could save index.");
+            throw new RPCException("Couldn't save index.");
         }
     }
 
@@ -455,10 +462,18 @@ public class RegistryServiceImpl implements RegistryService {
         Index idx = new Index();
         idx.setId(wi.getId());
         idx.setConfiguration(new HashMap<String,String>());
-        idx.getConfiguration().put("expression", wi.getExpression());
         idx.setIndexer(wi.getIndexer());
-        idx.setName(wi.getName());
-
+        
+        if (idx.getIndexer().contains("Groovy")) {
+            idx.getConfiguration().put("script", wi.getExpression());
+        } else {
+            idx.getConfiguration().put("property", wi.getProperty());
+            idx.getConfiguration().put("expression", wi.getExpression());
+        }
+        idx.setIndexer(wi.getIndexer());
+        idx.setDescription(wi.getDescription());
+        idx.setMediaType(wi.getMediaType());
+        
         if (wi.getResultType().equals("String")) {
             idx.setQueryType(String.class);
         } else {

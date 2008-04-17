@@ -7,23 +7,29 @@ import java.util.Collection;
 public class WIndex implements IsSerializable {
     
     private String id;
-    private String name;
+    private String description;
     private String expression;
     private String indexer;
     private String resultType;
+    private String property;
+    private String mediaType;
     
     /**
      * @gwt.typeArgs <java.lang.String> 
      */
     private Collection documentTypes;
     
-    public WIndex(String id, String name, 
+    public WIndex(String id, String description, 
+                  String mediaType,
+                  String property,
                   String expression, 
                   String indexer, String resultType,
                   Collection documentTypes) {
         super();
         this.id = id;
-        this.name = name;
+        this.description = description;
+        this.property = property;
+        this.mediaType = mediaType;
         this.expression = expression;
         this.indexer = indexer;
         this.resultType = resultType;
@@ -46,11 +52,11 @@ public class WIndex implements IsSerializable {
     public void setId(String id) {
         this.id = id;
     }
-    public String getName() {
-        return name;
+    public String getDescription() {
+        return description;
     }
-    public void setName(String name) {
-        this.name = name;
+    public void setDescription(String description) {
+        this.description = description;
     }
     public String getExpression() {
         return expression;
@@ -70,5 +76,22 @@ public class WIndex implements IsSerializable {
     public void setResultType(String resultType) {
         this.resultType = resultType;
     }
+
+    public String getProperty() {
+        return property;
+    }
+
+    public void setProperty(String property) {
+        this.property = property;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
+    }
+    
     
 }

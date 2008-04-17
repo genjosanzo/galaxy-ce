@@ -71,7 +71,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     private boolean destroyed = false;
 
     public IndexManagerImpl() throws Exception {
-        super(Index.class, "indexes", false);
+        super(Index.class, "indexes", true);
     }
 
     @Override
@@ -94,23 +94,10 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
 
     @Override
-    protected String getObjectNodeName(Index t) {
-        return t.getId();
-    }
-
-    @Override
     public Index build(Node node, Session session) throws Exception {
         Index i = super.build(node, session);
         i.setId(node.getName());
         return i;
-    }
-
-    protected Node findNode(String id, Session session) throws RepositoryException {
-        try {
-            return getObjectsNode(session).getNode(id);
-        } catch (PathNotFoundException e) {
-            return null;
-        }
     }
 
     @Override
@@ -253,7 +240,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         {
             Set results = getRegistry().search(q).getResults();
 
-            logActivity("Reindexing " + idx.getId() + " for " + results.size() + " artifacts.");
+            logActivity("Reindexing the \"" + idx.getDescription() + "\" index for " + results.size() + " artifacts.");
 
             for (Object o : results) {
                 Artifact a = (Artifact) o;

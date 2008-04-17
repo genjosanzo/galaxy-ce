@@ -70,21 +70,21 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin
                 manifestIndexConfig.put("scriptSource", "JarIndex.groovy");
 
                 // TODO Index revolves too much around XML, needs a serious refactoring
-                Index jarIndex = new Index("jar", "JAR", "application/java-archive",
-                                      new QName("application/java-archive"), // the constructor should be overloaded and QName go
-                                      String.class,
-                                      "org.mule.galaxy.impl.index.GroovyIndexer", manifestIndexConfig);
-
-
+                Index jarIndex = new Index("JAR Indexes", 
+                                           "application/java-archive",
+                                           String.class,
+                                           "org.mule.galaxy.impl.index.GroovyIndexer", 
+                                           manifestIndexConfig);
 
                 // Configure and register Java Annotations indexer
                 Map<String, String> annIndexConfig = new HashMap<String, String>();
                 annIndexConfig.put("scriptSource", "JavaAnnotationsIndex.groovy");
 
-                Index annotationsIndex = new Index("java.annotations", "Java Annotations", "application/java-archive",
-                                       new QName("application/java-archive"), // the constructor should be overloaded and QName go
-                                       String.class,
-                                       "org.mule.galaxy.impl.index.GroovyIndexer", annIndexConfig);
+                Index annotationsIndex = new Index("Java Annotation Indexes", 
+                                                   "application/java-archive",
+                                                   String.class,
+                                                   "org.mule.galaxy.impl.index.GroovyIndexer", 
+                                                   annIndexConfig);
 
                 try
                 {

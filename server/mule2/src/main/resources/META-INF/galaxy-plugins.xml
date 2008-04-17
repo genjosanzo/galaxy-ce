@@ -17,17 +17,17 @@
         </namespace>
         <indexes>
             <index>
-                <field-name>mule2.description</field-name>
-                <display-name>Mule 2 Description</display-name>
-                <description>The description for the Mule configuration</description>
+                <description>Mule 2 Description</description>
                 <indexer>xpath</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[/*[local-name()='${namespace.local-name}' and namespace-uri()='${namespace.uri}']/*[local-name()='description']
-                ]]></expression></configuration>
+                <configuration>
+                  <property>mule2.description</property>
+                  <expression><![CDATA[/*[local-name()='${namespace.local-name}' and namespace-uri()='${namespace.uri}']/*[local-name()='description']]]></expression>
+                </configuration>
             </index>
             <!--<index>-->
-                <!--<field-name>mule2.model.description</field-name>-->
-                <!--<display-name>Mule 2 Model Description</display-name>-->
+                <!--<property>mule2.model.description</property>-->
+                <!--<description>Mule 2 Model Description</description>-->
                 <!--<description>The description for a Mule Model in the configuration</description>-->
                 <!--<indexer>xpath</indexer>-->
                 <!--<search-input-type>java.lang.String</search-input-type>-->
@@ -35,8 +35,8 @@
                 <!--]]></expression>-->
             <!--</index>-->
             <!--<index>-->
-                <!--<field-name>mule2.service.description</field-name>-->
-                <!--<display-name>Mule 2 Service Description</display-name>-->
+                <!--<property>mule2.service.description</property>-->
+                <!--<description>Mule 2 Service Description</description>-->
                 <!--<description>The description for a Mule Service in the configuration</description>-->
                 <!--<indexer>xpath</indexer>-->
                 <!--<search-input-type>java.lang.String</search-input-type>-->
@@ -44,30 +44,30 @@
                 <!--]]></expression>-->
             <!--</index>-->
             <index>
-                <field-name>mule2.cluster.id</field-name>
-                <display-name>Mule 2 Cluster Id</display-name>
-                <description>Indexes the Mule node clusterId</description>
+                <description>Mule 2 Cluster Id</description>
                 <indexer>xpath</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[/*/*[local-name()='configuration']/@clusterId]]>
-                </expression></configuration>
+                <configuration>
+                  <property>mule2.cluster.id</property>
+                  <expression><![CDATA[/*/*[local-name()='configuration']/@clusterId]]></expression>
+                </configuration>
             </index>
             <index>
-                <field-name>mule2.domain.id</field-name>
-                <display-name>Mule 2 Domain Id</display-name>
-                <description>Indexes the Mule node domainId</description>
+                <description>Mule 2 Domain Id</description>
                 <indexer>xpath</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[/*/*[local-name()='configuration']/@domainId]]>
-                </expression></configuration>
+                <configuration>
+                  <property>mule2.domain.id</property>
+                  <expression><![CDATA[/*/*[local-name()='configuration']/@domainId]]></expression>
+                </configuration>
             </index>
             <index>
-                <field-name>mule2.service</field-name>
-                <display-name>Mule 2 Services</display-name>
-                <description>Indexes Mule 2 Service elements</description>
+                <description>Mule 2 Services</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[
+                <configuration>
+                  <property>mule2.service</property>
+                  <expression><![CDATA[
 declare default element namespace "${namespace.uri}";
 declare variable $document external;
 <values> {
@@ -77,12 +77,12 @@ declare variable $document external;
 ]]></expression></configuration>
             </index>
             <index>
-                <field-name>mule2.endpoint</field-name>
-                <display-name>Mule 2 Global Endpoints</display-name>
-                <description>Indexes Mule 2 Global (Top Level) endpoints</description>
+                <description>Mule 2 Global Endpoints</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[
+                <configuration>
+                  <property>mule2.endpoint</property>
+                  <expression><![CDATA[
 declare default element namespace "${namespace.uri}";
 declare variable $document external;
 <values> {
@@ -93,12 +93,12 @@ declare variable $document external;
                 </expression></configuration>
             </index>
             <index>
-                <field-name>mule2.model</field-name>
-                <display-name>Mule 2 Models</display-name>
-                <description>Indexes Mule 2 service models</description>
+                <description>Mule 2 Models</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[
+                <configuration>
+                  <property>mule2.model</property>
+                  <expression><![CDATA[
 declare default element namespace "${namespace.uri}";
 declare variable $document external;
 <values> {

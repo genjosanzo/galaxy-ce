@@ -64,7 +64,7 @@ public class GroovyIndexer extends AbstractIndexer
         b.setVariable("config", config);
         b.setVariable("contentHandler", contentHandler);
         b.setVariable("index", index);
-        b.setVariable("log", LogFactory.getLog(getClass().getName() + "." + index.getId()));
+        b.setVariable("log", LogFactory.getLog(getClass().getName()));
 
         try
         {

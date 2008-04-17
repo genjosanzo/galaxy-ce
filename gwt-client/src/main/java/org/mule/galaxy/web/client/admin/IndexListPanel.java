@@ -33,9 +33,8 @@ public class IndexListPanel
         final FlexTable table = createTitledRowTable(panel, "Indexes");
         
         table.setText(0, 0, "Index");
-        table.setText(0, 1, "Id");
-        table.setText(0, 2, "Language");
-        table.setText(0, 3, "Query Type");
+        table.setText(0, 1, "Language");
+        table.setText(0, 2, "Query Type");
         
         adminPanel.getRegistryService().getIndexes(new AbstractCallback(adminPanel) {
 
@@ -46,36 +45,43 @@ public class IndexListPanel
                 for (Iterator itr = indexes.iterator(); itr.hasNext();) {
                     final WIndex idx = (WIndex) itr.next();
                     
-                    Hyperlink hyperlink = new Hyperlink(idx.getName(), 
-                                                        "user-" + idx.getId());
-                    MenuPanelPageInfo page = new MenuPanelPageInfo(hyperlink, adminPanel) {
-                        public AbstractComposite createInstance() {
-                            return new IndexForm(adminPanel, idx, false);
-                        }
-                        
-                    };
-                    adminPanel.addPage(page);
-                    
-                    table.setWidget(i, 0, hyperlink);
-                    table.setText(i, 1, idx.getId());
                     String type = idx.getIndexer();
+                    if ("org.mule.galaxy.impl.index.GroovyIndexer".equalsIgnoreCase(type))
+                    {
+                        table.setText(i, 0, idx.getDescription());
+                    }
+                    else 
+                    {
+                        Hyperlink hyperlink = new Hyperlink(idx.getDescription(), 
+                                                            "user-" + idx.getId());
+                        MenuPanelPageInfo page = new MenuPanelPageInfo(hyperlink, adminPanel) {
+                            public AbstractComposite createInstance() {
+                                return new IndexForm(adminPanel, idx, false);
+                            }
+                            
+                        };
+                        adminPanel.addPage(page);
+                        
+                        table.setWidget(i, 0, hyperlink);
+                    }
+                    
                     if ("xpath".equalsIgnoreCase(type))
                     {
-                        table.setText(i, 2, "XPath");
+                        table.setText(i, 1, "XPath");
                     }
                     else if ("xquery".equalsIgnoreCase(type))
                     {
-                        table.setText(i, 2, "XQuery");
+                        table.setText(i, 1, "XQuery");
                     }
                     else if ("groovy".equalsIgnoreCase(type))
                     {
-                        table.setText(i, 2, "Groovy");
+                        table.setText(i, 1, "Groovy");
                     }
                     else
                     {
-                        table.setText(i, 2, type);
+                        table.setText(i, 1, type);
                     }
-                    table.setText(i, 3, idx.getResultType());
+                    table.setText(i, 2, idx.getResultType());
                     table.getRowFormatter().setStyleName(i, "artifactTableEntry");
                     i++;
                 }

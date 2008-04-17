@@ -32,51 +32,51 @@
         </namespace>
         <indexes>
             <index>
-                <field-name>xmlschema.targetNamespace</field-name>
-                <display-name>XML Schema Target Namespace</display-name>
                 <description>XML Schema Target Namespace</description>
                 <indexer>xpath</indexer>
                 <search-input-type>java.lang.String</search-input-type>
                 <configuration>
+                  <property>xmlschema.targetNamespace</property>
                   <expression><![CDATA[/*/@targetNamespace]]></expression>
                 </configuration>
             </index>
             <index>
-                <field-name>xmlschema.element</field-name>
-                <display-name>XML Schema Elements</display-name>
                 <description>XML Schema Elements</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[
+                <configuration>
+                  <property>xmlschema.element</property>
+                  <expression><![CDATA[
 declare namespace xsd="${namespace.uri}";
 declare variable $document external;
 <values> {
     for $b in $document/xsd:schema/xsd:element
         return <value>{data($b/@name)}</value>
 } </values>]]></expression>
-</configuration>
+              </configuration>
             </index>
             <index>
-                <field-name>xmlschema.complexType</field-name>
-                <display-name>XML Schema Complex Types</display-name>
                 <description>XML Schema Complex Types</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[
+                <configuration>
+                  <property>xmlschema.complexType</property>
+                  <expression><![CDATA[
 declare namespace xsd="${namespace.uri}";
 declare variable $document external;
 <values> {
     for $b in $document/xsd:schema/xsd:complexType
         return <value>{data($b/@name)}</value>
-} </values>]]></expression></configuration>
+} </values>]]></expression>
+               </configuration>
             </index>
             <index>
-                <field-name>xmlschema.group</field-name>
-                <display-name>XML Schema Groups</display-name>
                 <description>XML Schema Groups</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[
+                <configuration>
+                  <property>xmlschema.group</property>
+                  <expression><![CDATA[
 declare namespace xsd="${namespace.uri}";
 declare variable $document external;
 <values> {
@@ -85,12 +85,12 @@ declare variable $document external;
 } </values>]]></expression></configuration>
             </index>
             <index>
-                <field-name>xmlschema.attributeGroup</field-name>
-                <display-name>XML Schema Attribute Group</display-name>
                 <description>XML Schema Attribute Group</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[
+                <configuration>
+                  <property>xmlschema.attributeGroup</property>
+                  <expression><![CDATA[
 declare namespace xsd="${namespace.uri}";
 declare variable $document external;
 <values> {
@@ -127,12 +127,12 @@ declare variable $document external;
         </namespace>
         <indexes>
             <index>
-                <field-name>wsdl.service</field-name>
-                <display-name>WSDL Services</display-name>
                 <description>WSDL Service Definitions</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[
+                <configuration>
+                  <property>wsdl.service</property>
+                  <expression><![CDATA[
 declare namespace wsdl="${namespace.uri}";
 declare variable $document external;
 <values> {
@@ -144,12 +144,12 @@ declare variable $document external;
                 </expression></configuration>
             </index>
             <index>
-                <field-name>wsdl.endpoint</field-name>
-                <display-name>WSDL Endpoints</display-name>
-                <description>WSDL Endpoint Definitions</description>
+                <description>WSDL Endpoint</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[
+                <configuration>
+                  <property>wsdl.endpoint</property>
+                  <expression><![CDATA[
 declare namespace wsdl="${namespace.uri}";
 declare variable $document external;
 <values> {
@@ -161,12 +161,12 @@ declare variable $document external;
                 </expression></configuration>
             </index>
             <index>
-                <field-name>wsdl.binding</field-name>
-                <display-name>WSDL Bindings</display-name>
-                <description>WSDL Binding Definitions</description>
+                <description>WSDL Binding</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[
+                <configuration>
+                  <property>wsdl.binding</property>
+                  <expression><![CDATA[
 declare namespace wsdl="${namespace.uri}";
 declare variable $document external;
 <values> {
@@ -178,29 +178,27 @@ declare variable $document external;
                 </expression></configuration>
             </index>
             <index>
-                <field-name>wsdl.portType</field-name>
-                <display-name>WSDL PortTypes</display-name>
                 <description>WSDL PortType Definitions</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[
+                <configuration>
+                  <property>wsdl.portType</property>
+                  <expression><![CDATA[
 declare namespace wsdl="${namespace.uri}";
 declare variable $document external;
 <values> {
     for $pt in $document//wsdl:portType
     let $ns := $document/wsdl:definition/@targetNamespace
     return <value>{data($pt/@name)}</value>
-} </values>
-                    ]]>
-                </expression></configuration>
+} </values>]]></expression>
+                </configuration>
             </index>
             <index>
-                <field-name>wsdl.targetNamespace</field-name>
-                <display-name>WSDL Target Namespace</display-name>
                 <description>WSDL Target Namespace</description>
                 <indexer>xpath</indexer>
                 <search-input-type>java.lang.String</search-input-type>
                 <configuration>
+                  <property>wsdl.targetNamespace</property>
                   <expression><![CDATA[/*/@targetNamespace]]></expression>
                 </configuration>
             </index>
@@ -241,21 +239,21 @@ declare variable $document external;
         </namespace>
         <indexes>
             <index>
-                <field-name>spring.description</field-name>
-                <display-name>Spring Description</display-name>
                 <description>The description for the Spring configuration</description>
                 <indexer>xpath</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[/*[local-name()='${namespace.local-name}' and namespace-uri()='${namespace.uri}']/*[local-name()='description']
-                ]]></expression></configuration>
+                <configuration>
+                  <property>spring.description</property>
+                  <expression><![CDATA[/*[local-name()='${namespace.local-name}' and namespace-uri()='${namespace.uri}']/*[local-name()='description']]]></expression>
+                </configuration>
             </index>
             <index>
-                <field-name>spring.bean</field-name>
-                <display-name>Spring Beans</display-name>
-                <description>Indexes all bean elements in a Spring Configuration. The beans will be indexed by name first, then by id</description>
+                <description>Spring Beans</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
-                <configuration><expression><![CDATA[
+                <configuration>
+                  <property>spring.bean</property>
+                  <expression><![CDATA[
 declare default element namespace "http://www.springframework.org/schema/beans";
 declare variable $document external;
 <values> {
@@ -264,8 +262,8 @@ declare variable $document external;
                then <value>{data($e/@name)}</value>
                else <value>{data($e/@id)}</value>
    }</values>
-]]>
-                </expression></configuration>
+]]></expression>
+              </configuration>
             </index>
         </indexes>
         <views>

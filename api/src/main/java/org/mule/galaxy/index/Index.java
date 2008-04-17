@@ -12,7 +12,7 @@ import javax.xml.namespace.QName;
 public class Index implements Identifiable {
 
     private String id;
-    private String name;
+    private String description;
     private String mediaType;
     private Set<QName> documentTypes;
     private Class<?> queryType;
@@ -20,43 +20,38 @@ public class Index implements Identifiable {
     private Map<String,String> configuration;
 
     @SuppressWarnings("unchecked")
-    public Index(String id, 
-                 String name, 
+    public Index(String description, 
+                 String mediaType,
+                 Class<?> queryType,
+                 String indexer,
+                 Map<String, String> configuration) {
+        this(description, mediaType, (Set<QName>) null, queryType, indexer, configuration);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public Index(String description, 
                  String mediaType,
                  QName documentType, 
                  Class<?> queryType,
                  String indexer,
                  Map<String, String> configuration) {
-        super();
-        this.id = id;
-        this.name = name;
-        this.mediaType = mediaType;
-        
-        this.documentTypes = Collections.singleton(documentType);
-
-        this.queryType = queryType;
-        this.indexer = indexer;
-        this.configuration = configuration == null ? Collections.EMPTY_MAP : configuration;
+        this(description, mediaType, Collections.singleton(documentType), queryType, indexer, configuration);    
     }
     
-   
-    public Index(String id, 
-                 String name, 
+    public Index(String description, 
                  String mediaType,
                  Set<QName> documentTypes, 
                  Class<?> queryType,
                  String indexer,
                  Map<String, String> configuration) {
         super();
-        this.id = id;
-        this.name = name;
+        this.description = description;
         this.mediaType = mediaType;
         this.documentTypes = documentTypes;
         this.queryType = queryType;
         this.indexer = indexer;
         this.configuration = configuration;
     }
-
 
     public Index() {
         super();
@@ -78,18 +73,6 @@ public class Index implements Identifiable {
         this.mediaType = mediaType;
     }
 
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getId() {
-        return id;
-    }
-    public void setId(String id) {
-        this.id = id;
-    }
     @OneToMany(treatAsField=true)
     public Set<QName> getDocumentTypes() {
         return documentTypes;
@@ -112,12 +95,28 @@ public class Index implements Identifiable {
         this.configuration = configuration;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String toString()
     {
         final StringBuffer sb = new StringBuffer();
         sb.append("Index");
         sb.append(", id='").append(id).append('\'');
-        sb.append(", name='").append(name).append('\'');
+        sb.append(", description='").append(description).append('\'');
         sb.append(", queryType=").append(queryType);
         sb.append(", configuration='").append(configuration).append('\'');        
         sb.append('}');

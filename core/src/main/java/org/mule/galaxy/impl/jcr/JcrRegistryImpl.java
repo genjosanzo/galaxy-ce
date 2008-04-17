@@ -1566,22 +1566,17 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     @SuppressWarnings("unchecked")
-    public Object getPropertyDescriptorOrIndex(final String propertyName) {
+    public PropertyDescriptor getPropertyDescriptorByName(final String propertyName) {
         
-        return execute(new JcrCallback() {
+        return (PropertyDescriptor) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                try {
-                    return indexManager.getIndex(propertyName);
-                } catch (NotFoundException e) {
-                    try {
-                        return getPropertyDescriptor(propertyName);
-                    } catch (NotFoundException e1) {
-                        return null;
-                    }
+                List<PropertyDescriptor> pds = propertyDescriptorDao.find("property", propertyName);
+                
+                if (pds.size() == 0) {
+                    return null;
                 }
+                return pds.get(0);
             }
-
-
         });
     }
 

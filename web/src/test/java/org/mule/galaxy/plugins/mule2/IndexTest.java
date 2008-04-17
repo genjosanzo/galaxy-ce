@@ -28,17 +28,18 @@ public class IndexTest extends AbstractGalaxyTest {
         for (Iterator<Index> iterator = indices.iterator(); iterator.hasNext();)
         {
             idx = iterator.next();
-            if("mule2.service".equals(idx.getId()))
+            String prop = idx.getConfiguration().get("property");
+            if("mule2.service".equals(prop))
             {
                 break;
             }
         }
         assertNotNull(idx);
-        assertEquals("mule2.service", idx.getId());
-        assertEquals("Mule 2 Services", idx.getName());
+        assertEquals("Mule 2 Services", idx.getDescription());
         assertEquals("xquery", idx.getIndexer());
         assertEquals(String.class, idx.getQueryType());
         assertNotNull(idx.getConfiguration().get(XQueryIndexer.XQUERY_EXPRESSION));
+        assertEquals("mule2.service", idx.getConfiguration().get(XQueryIndexer.PROPERTY_NAME));
         assertEquals(1, idx.getDocumentTypes().size());
 
         // Import a document which should now be indexed

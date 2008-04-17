@@ -162,7 +162,7 @@ public interface Registry {
     
     void deletePropertyDescriptor(String id) throws RegistryException;
     
-    Object getPropertyDescriptorOrIndex(final String propertyName);
+    PropertyDescriptor getPropertyDescriptorByName(final String propertyName);
     
 
     /* Dependency related operations */

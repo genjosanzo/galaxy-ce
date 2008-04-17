@@ -30,10 +30,11 @@ public class PropertyTest extends AbstractGalaxyTest {
        assertEquals(pd.getDescription(), pd2.getDescription());
        
        Collection<PropertyDescriptor> pds = registry.getPropertyDescriptors();
-       assertEquals(1, pds.size());
+       // 12 of these are index related
+       assertEquals(13, pds.size());
        
-       Object pd3 = registry.getPropertyDescriptorOrIndex(pd.getId());
-       assertTrue(pd3 instanceof PropertyDescriptor);
+       PropertyDescriptor pd3 = registry.getPropertyDescriptorByName(pd.getProperty());
+       assertNotNull(pd3);
     }
 
 }

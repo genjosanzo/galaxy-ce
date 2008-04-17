@@ -33,6 +33,7 @@ import org.w3c.dom.NamedNodeMap;
 
 public class XQueryIndexer extends AbstractIndexer {
     public static final String XQUERY_EXPRESSION = "expression";
+    public static final String PROPERTY_NAME = "property";
     private static final ResourceBundle BUNDLE = BundleUtils.getBundle(XQueryIndexer.class);
     
     private XQDataSource ds = new SaxonXQDataSource();
@@ -45,6 +46,7 @@ public class XQueryIndexer extends AbstractIndexer {
         try {
             XQConnection conn = ds.getConnection();
             
+            String property = getValue(index.getConfiguration(), PROPERTY_NAME, new Message("NO_PROPERTY", BUNDLE));
             XQPreparedExpression ex = conn.prepareExpression(getValue(index.getConfiguration(), XQUERY_EXPRESSION, new Message("NO_XQUERY", BUNDLE)));
             XmlContentHandler ch = (XmlContentHandler) contentHandler;
             Document doc = ch.getDocument(artifact.getData());
@@ -82,9 +84,9 @@ public class XQueryIndexer extends AbstractIndexer {
                 }
             }
     
-            artifact.setProperty(index.getId(), results);
-            artifact.setLocked(index.getId(), true);
-            artifact.setVisible(index.getId(), visible);
+            artifact.setProperty(property, results);
+            artifact.setLocked(property, true);
+            artifact.setVisible(property, visible);
             
             conn.close();
         } catch(PropertyException e) {

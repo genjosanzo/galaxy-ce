@@ -1,17 +1,5 @@
 package org.mule.galaxy.impl;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactResult;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.index.XPathIndexer;
-import org.mule.galaxy.impl.index.XQueryIndexer;
-import org.mule.galaxy.index.Index;
-import org.mule.galaxy.query.Query;
-import org.mule.galaxy.query.Restriction;
-import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.util.Constants;
-
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,6 +8,20 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
+
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.index.XPathIndexer;
+import org.mule.galaxy.impl.index.XQueryIndexer;
+import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.impl.jcr.JcrVersion;
+import org.mule.galaxy.index.Index;
+import org.mule.galaxy.query.Query;
+import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.test.AbstractGalaxyTest;
+import org.mule.galaxy.util.Constants;
 
 public class IndexTest extends AbstractGalaxyTest {
 
@@ -76,27 +78,32 @@ public class IndexTest extends AbstractGalaxyTest {
         Index tnsIdx = null;
         Index epIdx = null;
         for (Index i : indices) {
-            if (i.getId().equals("wsdl.service")) {
+            String prop = i.getConfiguration().get(XQueryIndexer.PROPERTY_NAME);
+            if (prop == null) {
+                continue;
+            }
+            
+            if (prop.equals("wsdl.service")) {
                 idx = i;
-            } else if (i.getId().equals("wsdl.endpoint")) {
+            } else if (prop.equals("wsdl.endpoint")) {
                 epIdx = i;
-            } else if (i.getId().equals("wsdl.targetNamespace")) {
+            } else if (prop.equals("wsdl.targetNamespace")) {
                 tnsIdx = i;
             }
         }
         
-        assertEquals("wsdl.service", idx.getId());
-        assertEquals("WSDL Services", idx.getName());
         assertEquals("xquery", idx.getIndexer());
         assertEquals(String.class, idx.getQueryType());
         assertNotNull(idx.getConfiguration());
+        assertEquals("wsdl.service", idx.getConfiguration().get(XQueryIndexer.PROPERTY_NAME));
         assertNotNull(idx.getConfiguration().get(XQueryIndexer.XQUERY_EXPRESSION));
         assertEquals(1, idx.getDocumentTypes().size());
         
-        assertEquals("wsdl.targetNamespace", tnsIdx.getId());
+        assertNotNull(tnsIdx.getId());
         assertEquals("xpath", tnsIdx.getIndexer());
         assertEquals(String.class, tnsIdx.getQueryType());
         assertNotNull(tnsIdx.getConfiguration());
+        assertEquals("wsdl.targetNamespace", tnsIdx.getConfiguration().get(XQueryIndexer.PROPERTY_NAME));
         assertNotNull(tnsIdx.getConfiguration().get(XPathIndexer.XPATH_EXPRESSION));
         assertEquals(1, tnsIdx.getDocumentTypes().size());
         
@@ -115,7 +122,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertNotNull(property);
         assertEquals("http://mule.org/hello_world", property);
         
-        property = version.getProperty(epIdx.getId());
+        property = version.getProperty("wsdl.endpoint");
         assertNotNull(property);
         assertTrue(property instanceof Collection);
         Collection endpoints = (Collection) property;
@@ -187,7 +194,13 @@ public class IndexTest extends AbstractGalaxyTest {
 
         assertNotNull(artifact);
 
-        Index idx = indexManager.getIndex("jar");
+        Collection<Index> indexes = indexManager.getIndexes();
+        Index idx = null;
+        for (Index i : indexes) {
+            if ("JAR Indexes".equals(i.getDescription())) {
+                idx = i;
+            }
+        }
         assertNotNull(idx);
 
         Map<String, String> indexConfig = idx.getConfiguration();
@@ -198,8 +211,7 @@ public class IndexTest extends AbstractGalaxyTest {
 
         ArtifactVersion latest = artifact.getDefaultVersion();
 
-        assertEquals(latest.getProperty("jar.entries.visible"), false);
-
+        assertEquals(false, latest.getPropertyInfo("jar.entries").isVisible());
         // normal manifest property
         assertEquals("andrew", latest.getProperty("jar.manifest.Built-By"));
         // OSGi property

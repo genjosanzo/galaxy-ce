@@ -36,7 +36,7 @@ try {
         entries << name
     }
 
-    def propertyName = "${index.id}.entries"
+    def propertyName = "jar.entries"
     def encodedName = URLEncoder.encode(propertyName)
     artifact.setProperty encodedName, entries
     artifact.setLocked encodedName, true
@@ -63,7 +63,7 @@ try {
     }
 
     nonOsgiAttrs.each {
-        propertyName = "${index.id}.manifest.${it.key}"
+        propertyName = "jar.manifest.${it.key}"
         encodedName = URLEncoder.encode(propertyName)
 
         artifact.setProperty(encodedName, it.value)
@@ -74,7 +74,7 @@ try {
         // TODO needs to be optimized and refactored most likely
         def List exports = OsgiManifestUtil.parseEntries(it.key.toString(), it.value, false, true, false)
 
-        propertyName = "${index.id}.osgi.${it.key}.packages"
+        propertyName = "jar.osgi.${it.key}.packages"
         encodedName = URLEncoder.encode(propertyName)
 
         def pkgs = exports.collect { it.keys[0] }

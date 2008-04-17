@@ -9,8 +9,6 @@ public interface PropertyInfo {
     
     PropertyDescriptor getPropertyDescriptor();
     
-    boolean isIndex();
-    
     boolean isLocked();
     
     boolean isVisible();

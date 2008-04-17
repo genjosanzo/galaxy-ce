@@ -139,8 +139,6 @@ public class ArtifactTest extends AbstractGalaxyTest {
                 assertTrue(next.isVisible());
                 
                 assertEquals("WSDL Target Namespace", next.getDescription());
-                assertTrue(next.isIndex());
-                
                 testedTNS = true;
             }
         }

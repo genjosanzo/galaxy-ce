@@ -9,7 +9,18 @@
  */
 package org.mule.galaxy.impl.artifact;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
+import javax.xml.namespace.QName;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.impl.view.CustomArtifactTypeView;
 import org.mule.galaxy.impl.view.MvelColumn;
 import org.mule.galaxy.index.Index;
@@ -22,18 +33,8 @@ import org.mule.galaxy.plugins.config.jaxb.ViewType;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.util.TemplateParser;
 import org.mule.galaxy.view.Column;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-
-import javax.xml.namespace.QName;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.util.ClassUtils;
+
 import org.w3c.dom.Node;
 
 /**
@@ -112,8 +113,8 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
                 {
                     populateConfiguration(configType, config, props);
                 }
-                Index idx = new Index(indexType.getFieldName(),
-                                      indexType.getDisplayName(),
+                
+                Index idx = new Index(indexType.getDescription(),
                                       pluginXml.getContentType(),
                                       getQName(indexType.getNamespace()),
                                       ClassUtils.resolveClassName(indexType.getSearchInputType(),
@@ -123,6 +124,15 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
 
                 indexManager.save(idx, true);
 
+                String property = config.get("property");
+                if (property != null) {
+                    PropertyDescriptor pd = new PropertyDescriptor();
+                    pd.setProperty(property);
+                    pd.setDescription(indexType.getDescription());
+                    
+                    registry.savePropertyDescriptor(pd);
+                }
+                
                 if (logger.isDebugEnabled())
                 {
                     logger.debug("Created index: " + idx);

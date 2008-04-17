@@ -47,7 +47,6 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
                               "/META-INF/applicationContext-acegi-security.xml", 
                               "/META-INF/applicationContext-web.xml",
                               "/META-INF/applicationContext-test.xml" };
-        
     }
 
     protected Artifact importHelloTestWSDL() throws Exception
@@ -274,9 +273,11 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         assertTrue(indexes.size() > 0);
         
-        WIndex idx = gwtRegistry.getIndex("wsdl.service");
-        assertNotNull(idx);
+        WIndex idx = gwtRegistry.getIndex(((WIndex)indexes.iterator().next()).getId());
+        assertNotNull(idx.getId());
         assertNotNull(idx.getResultType());
+        assertNotNull(idx.getIndexer());
+        gwtRegistry.saveIndex(idx);
     }
     
     public void testLifecycles() throws Exception {

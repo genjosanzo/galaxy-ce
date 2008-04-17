@@ -47,11 +47,11 @@ public class PropertyInfoImpl implements PropertyInfo {
     private void loadPropertyOrIndex() {
         if (loadedDescriptor) return;
         
-        desc = registry.getPropertyDescriptorOrIndex(getName());
+        desc = registry.getPropertyDescriptorByName(getName());
         
         if (desc instanceof Index) {
             index = true;
-            description = ((Index) desc).getName();
+            description = ((Index) desc).getDescription();
         } else if (desc != null) {
             description = ((PropertyDescriptor) desc).getDescription();
         }

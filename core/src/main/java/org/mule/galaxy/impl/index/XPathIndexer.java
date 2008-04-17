@@ -23,6 +23,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 public class XPathIndexer extends AbstractIndexer {
+    public static final String PROPERTY_NAME = "property";
     public static final String XPATH_EXPRESSION = "expression";
     private static XPathFactory factory = XPathFactory.newInstance();
     private static final ResourceBundle BUNDLE = BundleUtils.getBundle(XPathIndexer.class);
@@ -34,13 +35,14 @@ public class XPathIndexer extends AbstractIndexer {
 
         XPath xpath = factory.newXPath();
         try {
+            String property = getValue(index.getConfiguration(), PROPERTY_NAME, new Message("NO_PROPERTY", BUNDLE));
             XPathExpression expr = xpath.compile(getValue(index.getConfiguration(), XPATH_EXPRESSION, new Message("NO_XPATH", BUNDLE)));
 
             NodeList nodes = (NodeList)expr.evaluate(document, XPathConstants.NODESET);
 
             if (nodes.getLength() >= 1) {
-                jcrVersion.setProperty(index.getId(), DOMUtils.getContent(nodes.item(0)));
-                jcrVersion.setLocked(index.getId(), true);
+                jcrVersion.setProperty(property, DOMUtils.getContent(nodes.item(0)));
+                jcrVersion.setLocked(property, true);
             }
         } catch (XPathExpressionException e) {
             throw new IndexException(e);
