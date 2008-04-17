@@ -13,7 +13,6 @@ import org.mule.galaxy.test.AbstractGalaxyTest;
 
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Set;
 
 public class IndexTest extends AbstractGalaxyTest
@@ -25,17 +24,17 @@ public class IndexTest extends AbstractGalaxyTest
         assertNotNull(indices);
 //        assertEquals(2, indices.size());
         Index idx = null;
-        for (Iterator<Index> iterator = indices.iterator(); iterator.hasNext();)
+        for (final Index index : indices)
         {
-            idx = iterator.next();
-            if("spring.bean".equals(idx.getId()))
+            idx = index;
+            if ("spring.bean".equals(idx.getId()))
             {
                 break;
             }
         }
         assertNotNull(idx);
         assertEquals("spring.bean", idx.getId());
-        assertEquals("Spring Beans", idx.getName());
+        assertEquals("Spring Beans", idx.getDescription());
         assertEquals("xquery", idx.getIndexer());
         assertEquals(String.class, idx.getQueryType());
         assertNotNull(idx.getConfiguration().get("expression"));
