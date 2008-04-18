@@ -172,6 +172,7 @@ public class ArtifactPanel extends AbstractComposite {
     public void onShow() {
         Hyperlink wkspcLink = new Hyperlink();
         wkspcLink.setHTML("&laquo; Back to Workspace");
+        wkspcLink.setStyleName("gwt-Hyperlink");
         wkspcLink.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 registryPanel.onShow();
