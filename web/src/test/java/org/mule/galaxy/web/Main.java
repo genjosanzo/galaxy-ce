@@ -7,8 +7,6 @@ import java.util.Map;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.nio.SelectChannelConnector;
-import org.mortbay.jetty.webapp.Configuration;
-import org.mortbay.jetty.webapp.JettyWebXmlConfiguration;
 import org.mortbay.jetty.webapp.WebAppContext;
 
 public class Main {
@@ -17,7 +15,7 @@ public class Main {
         
         Server server = new Server();
         Connector connector = new SelectChannelConnector();
-        connector.setPort(8080);
+        connector.setPort(9002);
         connector.setHost("0.0.0.0");
         server.addConnector(connector);
 
