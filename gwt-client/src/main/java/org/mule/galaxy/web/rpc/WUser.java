@@ -13,12 +13,12 @@ public class WUser implements IsSerializable  {
     private String username;
     private String email;
    
-    /*
+    /**
      * @gwt.typeArgs <java.lang.String>
      */
     private Collection groupIds;
     
-    /*
+    /**
      * @gwt.typeArgs <java.lang.String>
      */
     private Collection permissions;
