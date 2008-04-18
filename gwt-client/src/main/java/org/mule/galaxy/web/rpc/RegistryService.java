@@ -39,7 +39,6 @@ public interface RegistryService extends RemoteService {
     
     /**
      * @gwt.typeArgs searchPredicates <org.mule.galaxy.web.rpc.SearchPredicate>
-     * @gwt.typeArgs artifactTypes <org.mule.galaxy.web.rpc.WArtifactType>
      * @param start TODO
      * @param maxResults TODO
      * @return 
@@ -81,7 +80,10 @@ public interface RegistryService extends RemoteService {
                         String propertyName) throws RPCException, ItemNotFoundException;
     
     /**
-     * @throws ItemNotFoundException
+     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WPropertyDescriptor>
+     * @return
+     * @throws ItemNotFoundException 
+     * @throws Exception 
      */
     void savePropertyDescriptor(WPropertyDescriptor property) throws RPCException, ItemNotFoundException;
     
