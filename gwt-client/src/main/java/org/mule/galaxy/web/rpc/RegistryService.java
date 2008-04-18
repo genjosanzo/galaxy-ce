@@ -1,14 +1,13 @@
 package org.mule.galaxy.web.rpc;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import org.mule.galaxy.web.client.RPCException;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
-
-import org.mule.galaxy.web.client.RPCException;
 
 public interface RegistryService extends RemoteService {
     
@@ -40,6 +39,7 @@ public interface RegistryService extends RemoteService {
     
     /**
      * @gwt.typeArgs searchPredicates <org.mule.galaxy.web.rpc.SearchPredicate>
+     * @gwt.typeArgs artifactTypes <org.mule.galaxy.web.rpc.WArtifactType>
      * @param start TODO
      * @param maxResults TODO
      * @return 
@@ -81,10 +81,8 @@ public interface RegistryService extends RemoteService {
                         String propertyName) throws RPCException, ItemNotFoundException;
     
     /**
-     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WPropertyDescriptor>
-     * @return
-     * @throws ItemNotFoundException 
-     * @throws Exception 
+     * @gwt.typeArgs property <org.mule.galaxy.web.rpc.WPropertyDescriptor>
+     * @throws ItemNotFoundException
      */
     void savePropertyDescriptor(WPropertyDescriptor property) throws RPCException, ItemNotFoundException;
     
