@@ -736,6 +736,7 @@ a:visited {
 
 .gwt-Hyperlink {
     cursor: hand;
+    cursor: pointer;
 }
 
 .gwt-Image {
