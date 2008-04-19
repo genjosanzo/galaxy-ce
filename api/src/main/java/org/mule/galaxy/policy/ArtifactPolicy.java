@@ -1,13 +1,10 @@
 package org.mule.galaxy.policy;
 
-import java.util.Collection;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
+
+import java.util.Collection;
 
 /**
  * An ArtifactPolicy allows custom criteria to be setting a new Active ArtifactVersion. 
