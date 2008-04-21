@@ -55,11 +55,11 @@ public class IndexForm extends AbstractComposite {
         
         table = createTitledColumnTable(panel, title);
         
-        table.setText(0, 0, "Description");
-        table.setText(1, 0, "Result Type");
-        table.setText(2, 0, "Media Type");
-        table.setText(3, 0, "Document Types");
-        table.setText(4, 0, "Language");
+        table.setText(0, 0, "Description:");
+        table.setText(1, 0, "Result Type:");
+        table.setText(2, 0, "Media Type:");
+        table.setText(3, 0, "Document Types:");
+        table.setText(4, 0, "Language:");
         
         descriptionTB = new TextBox();
         descriptionTB.setText(idx.getDescription());
@@ -136,7 +136,7 @@ public class IndexForm extends AbstractComposite {
         
         propertyTB = new TextBox();
         propertyTB.setText(index.getProperty());
-        table.setText(5, 0, "Property Name");
+        table.setText(5, 0, "Property Name:");
         table.setWidget(5, 1, propertyTB);
         
         xqueryExpressionTA = new TextArea();
@@ -145,7 +145,7 @@ public class IndexForm extends AbstractComposite {
         
         languageList.setSelectedIndex(1);
         xqueryExpressionTA.setText(index.getExpression());
-        table.setText(6, 0, "XQuery Expression");
+        table.setText(6, 0, "XQuery Expression:");
         table.setWidget(6, 1, xqueryExpressionTA);
         
         addSaveButton(7);
@@ -162,7 +162,7 @@ public class IndexForm extends AbstractComposite {
         groovyExpressionTA.setVisibleLines(15);
         groovyExpressionTA.setCharacterWidth(80);
         xqueryExpressionTA.setText(index.getExpression());
-        table.setText(5, 0, "Groovy Script");
+        table.setText(5, 0, "Groovy Script:");
         table.setWidget(5, 1, xqueryExpressionTA);
         
         addSaveButton(6);
@@ -171,7 +171,7 @@ public class IndexForm extends AbstractComposite {
     protected void setupXPath() {
         propertyTB = new TextBox();
         propertyTB.setText(index.getProperty());
-        table.setText(5, 0, "Property Name");
+        table.setText(5, 0, "Property Name:");
         table.setWidget(5, 1, propertyTB);
 
         xpathExpressionTB = new TextBox();
@@ -179,7 +179,7 @@ public class IndexForm extends AbstractComposite {
         
         languageList.setSelectedIndex(0);
         xpathExpressionTB.setText(index.getExpression());
-        table.setText(6, 0, "XPath Expression");
+        table.setText(6, 0, "XPath Expression:");
         table.setWidget(6, 1, xpathExpressionTB);
 
         addSaveButton(7);

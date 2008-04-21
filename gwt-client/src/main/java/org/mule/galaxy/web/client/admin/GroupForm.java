@@ -40,7 +40,7 @@ public class GroupForm extends AbstractFlowComposite {
         
         final FlexTable table = createTitledColumnTable(panel, title);
         
-        table.setText(0, 0, "Name");
+        table.setText(0, 0, "Name:");
         
         nameTB = new TextBox();
         nameTB.setText(grp.getName());

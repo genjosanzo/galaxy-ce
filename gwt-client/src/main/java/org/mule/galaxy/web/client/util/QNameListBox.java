@@ -1,21 +1,20 @@
 package org.mule.galaxy.web.client.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
-
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class QNameListBox extends Composite {
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import org.mule.galaxy.web.client.AbstractComposite;
+
+public class QNameListBox extends AbstractComposite {
 
     private ListBox listBox;
     private Button rmButton;
@@ -33,8 +32,7 @@ public class QNameListBox extends Composite {
                 listBox.addItem(q);
             }
         }
-        FlexTable table = new FlexTable();
-        table.setWidget(0, 0, listBox);
+        FlowPanel table = new FlowPanel();
         
         rmButton = new Button("Remove");
         rmButton.addClickListener(new ClickListener() {
@@ -45,7 +43,7 @@ public class QNameListBox extends Composite {
                 }
             }
         });
-        table.setWidget(0, 1, rmButton);
+        table.add(asHorizontal(listBox, rmButton));
         
         InlineFlowPanel addPanel = new InlineFlowPanel();
         final TextBox addDocTypeTB = new TextBox();
@@ -79,8 +77,9 @@ public class QNameListBox extends Composite {
         });
         addPanel.add(addButton);
         
-        table.setWidget(1, 0, addPanel);
-        table.getFlexCellFormatter().setRowSpan(1, 0, 2);
+        InlineFlowPanel addRow = asHorizontal(addDocTypeTB, addButton);
+        addRow.setStyleName("qnameListBox-add-row");
+        table.add(addRow);
         
         initWidget(table);
     }

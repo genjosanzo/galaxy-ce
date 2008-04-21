@@ -58,9 +58,9 @@ public class ArtifactTypeForm extends AbstractComposite {
         
         final FlexTable table = createTitledColumnTable(panel, title);
         
-        table.setText(0, 0, "Description");
-        table.setText(1, 0, "Media Type");
-        table.setText(2, 0, "Document Types");
+        table.setText(0, 0, "Description:");
+        table.setText(1, 0, "Media Type:");
+        table.setText(2, 0, "Document Types:");
         
         descriptionTB = new TextBox();
         descriptionTB.setText(artifactType.getDescription());

@@ -649,6 +649,10 @@ a:visited {
     padding-top: 10px;
 }
 
+.qnameListBox-add-row {
+	padding-top: 8px;
+}
+
 /**
  **
  ** Lifecycle

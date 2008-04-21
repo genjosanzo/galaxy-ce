@@ -79,12 +79,6 @@ public interface RegistryService extends RemoteService {
     void deleteProperty(String artifactId, 
                         String propertyName) throws RPCException, ItemNotFoundException;
     
-    /**
-     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WPropertyDescriptor>
-     * @return
-     * @throws ItemNotFoundException 
-     * @throws Exception 
-     */
     void savePropertyDescriptor(WPropertyDescriptor property) throws RPCException, ItemNotFoundException;
     
     void deletePropertyDescriptor(String id) throws RPCException;

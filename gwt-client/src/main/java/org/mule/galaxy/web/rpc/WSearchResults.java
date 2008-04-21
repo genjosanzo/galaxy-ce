@@ -6,6 +6,10 @@ import java.util.Collection;
 
 public class WSearchResults implements IsSerializable {
     private long total;
+    
+    /**
+     * @gwt.typeArgs <org.mule.galaxy.web.rpc.ArtifactGroup>
+     */
     private Collection results;
     
     public long getTotal() {

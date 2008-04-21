@@ -58,9 +58,9 @@ public class PropertyDescriptorForm extends AbstractComposite {
         
         final FlexTable table = createTitledColumnTable(panel, title);
         
-        table.setText(0, 0, "Name");
-        table.setText(1, 0, "Description");
-        table.setText(2, 0, "Multivalued");
+        table.setText(0, 0, "Name:");
+        table.setText(1, 0, "Description:");
+//        table.setText(2, 0, "Multivalued");
         
         nameTB = new TextBox();
         nameTB.setText(property.getName());
@@ -78,7 +78,7 @@ public class PropertyDescriptorForm extends AbstractComposite {
         });
         
         if (add) {
-            table.setWidget(3, 1, save);
+            table.setWidget(2, 1, save);
         } else {
             InlineFlowPanel buttons = new InlineFlowPanel();
             buttons.add(save);
@@ -105,7 +105,7 @@ public class PropertyDescriptorForm extends AbstractComposite {
             });
             buttons.add(delete);
             
-            table.setWidget(3, 1, buttons);
+            table.setWidget(2, 1, buttons);
             
         }
         

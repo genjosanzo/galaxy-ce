@@ -68,12 +68,12 @@ public class UserForm extends AbstractComposite {
         
         final FlexTable table = createTitledColumnTable(panel, title);
         
-        table.setText(0, 0, "Username");
-        table.setText(1, 0, "Name");
-        table.setText(2, 0, "Email");
-        table.setText(3, 0, "Password");
-        table.setText(4, 0, "Confirm Password");
-        table.setText(5, 0, "Groups");
+        table.setText(0, 0, "Username:");
+        table.setText(1, 0, "Name:");
+        table.setText(2, 0, "Email:");
+        table.setText(3, 0, "Password:");
+        table.setText(4, 0, "Confirm Password:");
+        table.setText(5, 0, "Groups:");
         
         if (add) {
             usernameTB = new TextBox();
@@ -167,6 +167,9 @@ public class UserForm extends AbstractComposite {
     protected void save() {
         save.setEnabled(false);
         save.setText("Saving...");
+        if (delete != null) {
+            delete.setEnabled(false);
+        }
         
         SecurityServiceAsync svc = adminPanel.getSecurityService();
         
@@ -237,7 +240,8 @@ public class UserForm extends AbstractComposite {
 
     protected void delete() {
         save.setEnabled(false);
-        save.setText("Deleting...");
+        delete.setEnabled(false);
+        delete.setText("Deleting...");
         
         SecurityServiceAsync svc = adminPanel.getSecurityService();
         
@@ -261,6 +265,10 @@ public class UserForm extends AbstractComposite {
     }
     
     private void reenable() {
+        if (delete != null) {
+            delete.setEnabled(true);
+            delete.setText("Delete");
+        }
         save.setEnabled(true);
         save.setText("Save");
     }

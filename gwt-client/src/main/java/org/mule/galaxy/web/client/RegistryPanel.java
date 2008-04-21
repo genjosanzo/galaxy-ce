@@ -170,7 +170,6 @@ public class RegistryPanel extends AbstractMenuPanel {
     public void onShow() {
         super.onShow();
 
-        refreshArtifacts();
         refreshWorkspaces();
         showArtifactTypes();
         refreshArtifactTypes();
@@ -198,13 +197,14 @@ public class RegistryPanel extends AbstractMenuPanel {
 
 //                if (workspaceId == null) {
                     TreeItem child = treeItem.getChild(0);
-                    workspaceId = (String) child.getUserObject();
+                    
+                    setActiveWorkspace((String) child.getUserObject());
                     cv.setRootItem(treeItem);
 //                }
             }
         });
     }
-
+    
     private void refreshArtifactTypes() {
         artifactTypes = new HashSet();
         artifactTypesBox.clear();
