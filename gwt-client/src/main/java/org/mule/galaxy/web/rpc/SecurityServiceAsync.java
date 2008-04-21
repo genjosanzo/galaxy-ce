@@ -1,12 +1,11 @@
 package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.RemoteService;
 
 import java.util.Map;
 
 
-public interface SecurityServiceAsync extends RemoteService {
+public interface SecurityServiceAsync {
     void getUsers(AsyncCallback callback);
     
     void addUser(WUser user, String password, AsyncCallback callback);

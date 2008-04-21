@@ -1,12 +1,12 @@
 package org.mule.galaxy.web.rpc;
 
+import org.mule.galaxy.web.client.RPCException;
+import org.mule.galaxy.web.client.admin.PasswordChangeException;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 
 import java.util.Collection;
 import java.util.Map;
-
-import org.mule.galaxy.web.client.RPCException;
-import org.mule.galaxy.web.client.admin.PasswordChangeException;
 
 
 public interface SecurityService extends RemoteService {
@@ -30,7 +30,6 @@ public interface SecurityService extends RemoteService {
     
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WPermission>
-     * @param global TODO
      */
     Collection getPermissions(int permissionType);
     

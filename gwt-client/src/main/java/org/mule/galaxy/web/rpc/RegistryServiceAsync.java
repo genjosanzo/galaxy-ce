@@ -1,13 +1,12 @@
 package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.RemoteService;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
-public interface RegistryServiceAsync extends RemoteService {
+public interface RegistryServiceAsync {
     void getWorkspaces(AsyncCallback callback);
     
     void addWorkspace(String parentWorkspaceId, 
