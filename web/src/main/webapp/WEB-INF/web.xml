@@ -98,10 +98,10 @@
     <url-pattern>/artifactUpload</url-pattern>
   </servlet-mapping>
   
-  <error-page>
-    <error-code>403</error-code>
-    <location>/error.html</location>
-  </error-page>
+  <!--<error-page>-->
+    <!--<error-code>403</error-code>-->
+    <!--<location>/error.html</location>-->
+  <!--</error-page>-->
   
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
