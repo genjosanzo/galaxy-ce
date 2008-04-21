@@ -36,7 +36,7 @@ public class LifecycleForm extends AbstractComposite {
     private final WLifecycle lifecycle;
     private final boolean add;
     private TextBox nameTB;
-    private FlowPanel nextPhasesPanel;
+    private FlexTable nextPhasesPanel;
     private Button save;
     private ListBox phases;
     private ListBox nextPhases;
@@ -61,18 +61,22 @@ public class LifecycleForm extends AbstractComposite {
 
     public void onShow() {
         panel.clear();
+        String title;
         if (add) {
-            panel.add(createTitle("Add Lifecycle"));
+            title = "Add Lifecycle";
             lifecycle.setPhases(new ArrayList());
         } else {
-            panel.add(createTitle("Edit Lifecycle " + lifecycle.getName()));
+            title = "Edit Lifecycle " + lifecycle.getName();
         }
 
-        FlowPanel nameAndPhases = new FlowPanel();
+        panel.add(createTitle(title));
+        
+        FlexTable nameAndPhases = createColumnTable();
         
         nameTB = new TextBox();
         nameTB.setText(lifecycle.getName());
-        nameAndPhases.add(asHorizontal(new Label("Name: "), nameTB));
+        nameAndPhases.setText(0, 0, "Lifecycle Name:");
+        nameAndPhases.setWidget(0, 1, nameTB);
         
         phases = new ListBox();
         phases.setVisibleItemCount(10);
@@ -83,7 +87,6 @@ public class LifecycleForm extends AbstractComposite {
                 phases.addItem(p.getName(), p.getId());
             }
         }
-        nameAndPhases.add(phases);
         
         addBtn = new Button("Add Phase");
         addBtn.addClickListener(new ClickListener() {
@@ -99,8 +102,15 @@ public class LifecycleForm extends AbstractComposite {
             }
         });
         
-        nameAndPhases.add(asHorizontal(addBtn, deletePhase));
         
+        FlowPanel addDelPhase = new FlowPanel();
+        addDelPhase.add(asDiv(phases));
+        addDelPhase.add(asDiv(addBtn));
+        addDelPhase.add(asDiv(deletePhase));
+
+        nameAndPhases.setText(1, 0, "Phases:");
+        nameAndPhases.setWidget(1, 1, addDelPhase);
+
         save = new Button("Save");
         save.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
@@ -114,10 +124,9 @@ public class LifecycleForm extends AbstractComposite {
                 delete();
             }
         });
-        nameAndPhases.add(asHorizontal(save, delete));
         
         // right side of the panel
-        nextPhasesPanel = new FlowPanel();
+        nextPhasesPanel = createColumnTable();
         phases.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
@@ -127,6 +136,8 @@ public class LifecycleForm extends AbstractComposite {
         });
         
         // add to main panel
+        styleHeaderColumn(nameAndPhases);
+        
         FlexTable table = new FlexTable();
         table.setWidget(0, 0, nameAndPhases);
         table.setWidget(0, 1, nextPhasesPanel);
@@ -135,8 +146,15 @@ public class LifecycleForm extends AbstractComposite {
         table.getFlexCellFormatter().setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_TOP);
         
         panel.add(table);
+        panel.add(asHorizontal(save, delete));
     }
     
+    private Widget asDiv(Widget w) {
+        FlowPanel p = new FlowPanel();
+        p.add(w);
+        return p;
+    }
+
     protected void addPhase() {
         AddDialog dlg = new AddDialog(this);
         dlg.show();
@@ -204,7 +222,8 @@ public class LifecycleForm extends AbstractComposite {
                 phase.setName(newName);
             }
         });
-        nextPhasesPanel.add(asHorizontal(new Label("Phase Name: "), phaseNameTB));
+        nextPhasesPanel.setText(0, 0, "Phase Name:");
+        nextPhasesPanel.setWidget(0, 1, phaseNameTB);
         
         final CheckBox initialPhaseCB = new CheckBox();
         initialPhaseCB.addClickListener(new ClickListener() {
@@ -213,9 +232,10 @@ public class LifecycleForm extends AbstractComposite {
             }
         });
         initialPhaseCB.setChecked(initialPhase == phase);
-        nextPhasesPanel.add(asHorizontal(new Label("Initial Phase: "), initialPhaseCB));
 
-        nextPhasesPanel.add(new Label("Next Phases:"));
+        nextPhasesPanel.setText(1, 0, "Initial Phase:");
+        nextPhasesPanel.setWidget(1, 1, initialPhaseCB);
+
         int i = 0;
         for (Iterator itr = lifecycle.getPhases().iterator(); itr.hasNext();) {
             WPhase p = (WPhase)itr.next();
@@ -229,13 +249,16 @@ public class LifecycleForm extends AbstractComposite {
             }
             i++;
         }
-        nextPhasesPanel.add(nextPhases);
+
+        nextPhasesPanel.setText(2, 0, "Next Phases:");
+        nextPhasesPanel.setWidget(2, 1, nextPhases);
         
         nextPhases.addChangeListener(new ChangeListener() {
             public void onChange(Widget arg0) {
                 updateNextPhases(phase, nextPhases);
             }
         });
+        styleHeaderColumn(nextPhasesPanel);
     }
 
     private WPhase getSelectedPhase() {
