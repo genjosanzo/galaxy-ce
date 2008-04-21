@@ -7,7 +7,8 @@
     
     <source path="rpc"/>
     <source path="client"/>
-    
-    <!-- Specify the app entry point class.                   -->
+
+    <stylesheet src="Galaxy.css"/>
+
     <entry-point class='org.mule.galaxy.web.client.Galaxy'/>
 </module>
