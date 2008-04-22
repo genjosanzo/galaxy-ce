@@ -91,14 +91,14 @@ a:visited {
 }
 
 .left-menu-button a {
-	background-color: #ddd;
-	font-weight: bold;
-	display: block;
-	color: black;
-	padding: 4px 8px;
-	margin: 5px auto;
-	width: 125px;
-	text-align: center;
+    background-color: #ddd;
+    font-weight: bold;
+    display: block;
+    color: black;
+    padding: 4px 8px;
+    margin: 5px auto;
+    width: 125px;
+    text-align: center;
 }
 
 .workspaces {
@@ -129,19 +129,19 @@ a:visited {
 }
 
 .top-panel .gwt-Hyperlink a {
-	color: white;
-	text-decoration: underline;
-	margin-left: 5px;
+    color: white;
+    text-decoration: underline;
+    margin-left: 5px;
 }
 
 .top-panel .toolbar .gwt-Hyperlink {
-	float: right;
-	padding-right: 10px;
+    float: right;
+    padding-right: 10px;
 }
  
 .top-panel .column-view,
 .top-panel .search-panel {
- 	margin: 0 auto 5px;
+     margin: 0 auto 5px;
 }
 
 /**
@@ -151,7 +151,7 @@ a:visited {
  **/
 
 .search-panel {
-	padding-top: 1.5em;
+    padding-top: 1.5em;
     width: 603px;
 }
 
@@ -167,12 +167,12 @@ a:visited {
 }
 
 .search-button-panel .gwt-Hyperlink {
-	float: left;
+    float: left;
 }
 
 .search-button-panel .gwt-Hyperlink a {
-	color: white;
-	font-size: 0.9em;
+    color: white;
+    font-size: 0.9em;
 }
 
 
@@ -262,9 +262,9 @@ a:visited {
     display: inline;
 }
 .toolbox-header {
-	font-weight: bold;
-  	color: black;
-  	padding: 3px;
+    font-weight: bold;
+      color: black;
+      padding: 3px;
 }
 .toolbox-header-onwhite {
   font-weight: bold;
@@ -278,22 +278,22 @@ a:visited {
 
 .toolbox .selected-link,
 .toolbox .unselected-link {
-	font-size: 0.9em;
-	margin-left: 4px;
-	padding-left: 4px;
+    font-size: 0.9em;
+    margin-left: 4px;
+    padding-left: 4px;
 }
 
 .toolbox .selected-link a,
 .toolbox .unselected-link a {
-	text-decoration: none;
+    text-decoration: none;
 }
 
 .toolbox .unselected-link {
-	border-left: solid 4px transparent;
+    border-left: solid 4px transparent;
 }
 
 .toolbox .selected-link {
-	border-left: solid 4px #bbb;
+    border-left: solid 4px #bbb;
 }
 
 
@@ -355,24 +355,24 @@ a:visited {
 }
 
 .artifact-title-base .artifact-path {
-	display: block;
-	font-size: 1.1em;
-	margin-left: 3px;
+    display: block;
+    font-size: 1.1em;
+    margin-left: 3px;
 }
 
 .artifact-title-base .artifact-title {
-	vertical-align: middle;
+    vertical-align: middle;
 }
-	
+
 .artifact-title-base .artifact-name {
-	display: inline;
+    display: inline;
     font-weight: bold;
     font-size: 1.4em;
     padding-top: 4px;
 }
 
 .artifact-title-base .artifact-version {
-	display: inline;
+    display: inline;
 }
 
 .artifact-panel-base {
@@ -404,11 +404,11 @@ a:visited {
 }
 
 .comments {
-	margin-right: 6px;
+    margin-right: 6px;
 }
 
 .comment {
-	margin-top: 5px;
+    margin-top: 5px;
 }
     
 .addComment {
@@ -422,7 +422,7 @@ a:visited {
 }
 
 .commentTitle .user {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 .commentTitle .gwt-Hyperlink {
@@ -456,16 +456,16 @@ a:visited {
 .columnTable select { margin-top: -3px; }
 
 .columnTable .artifactTableHeader {
-	vertical-align: top;
-	text-align: right;
-	padding: 4px;
-	padding-right: 10px;
-	width: 125px;
+    vertical-align: top;
+    text-align: right;
+    padding: 4px;
+    padding-right: 10px;
+    width: 125px;
 }
 
 .columnTable .artifactTableEntry {
-	vertical-align: top;
-	padding: 4px;
+    vertical-align: top;
+    padding: 4px;
 }
 
 .artifactTableFull td {
@@ -488,14 +488,14 @@ a:visited {
 }
 
 .artifactTable td {
-	padding: 3px;
-	vertical-align: top;
+    padding: 3px;
+    vertical-align: top;
 }
 
 .artifactTableLock {
-	width: 15px;
-	padding-top: 1px;
-	vertical-align: top;
+    width: 15px;
+    padding-top: 1px;
+    vertical-align: top;
 }
 
 .artifactTableFull td {
@@ -503,7 +503,7 @@ a:visited {
 }
 
 .artifact-list-container {
-	margin-bottom: 20px;
+    margin-bottom: 20px;
     width: 100%;
 }
 
@@ -616,18 +616,18 @@ a:visited {
  **
  **/
 .policy-failure-panel {
-	padding: 4px;
+    padding: 4px;
 }
 
 .policy-result-artifact-panel {
-	margin: 4px;
-	padding: 4px;
-	background-color: #ddd;
+    margin: 4px;
+    padding: 4px;
+    background-color: #ddd;
 }
 
 .policy-result-section-header {
-	padding-top: 4px;
-	font-weight: bold;
+    padding-top: 4px;
+    font-weight: bold;
 }
 
 .policy-result-warning-label {
@@ -652,7 +652,7 @@ a:visited {
 }
 
 .qnameListBox-add-row {
-	padding-top: 8px;
+    padding-top: 8px;
 }
 
 /**
@@ -662,7 +662,7 @@ a:visited {
  **/
 
 .lifecycle-form-base {
-	margin: 4px;
+    margin: 4px;
 }
 .next-phases {
     font-size: 1.1em;
