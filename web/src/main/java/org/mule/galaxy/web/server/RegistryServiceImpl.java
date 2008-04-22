@@ -19,7 +19,6 @@ import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.index.GroovyIndexer;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexManager;
@@ -558,7 +557,7 @@ public class RegistryServiceImpl implements RegistryService {
             g.getRows().add(info);
 
             info.setArtifactLink(getLink("/api/registry", a));
-            info.setArtifactFeedLink(getLink("/api/registry", a) + "?view=history");
+            info.setArtifactFeedLink(getLink("/api/registry", a) + ";history");
             info.setCommentsFeedLink("/api/comments");
 
             List versions = new ArrayList();
