@@ -3,9 +3,12 @@ package org.mule.galaxy.impl.artifact;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.ContentService;
 import org.mule.galaxy.GalaxyException;
+import org.mule.galaxy.PropertyDescriptor;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.impl.content.JarContentHandler;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.index.Index;
+import org.mule.galaxy.security.AccessException;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -56,10 +59,6 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin
                 }
 
                 artifactTypeDao.save(new ArtifactType("Java Archives (JARs)", "application/java-archive", new QName("application/java-archive")));
-                if (log.isDebugEnabled())
-                {
-                    log.info("Updated JAR plugin");
-                }
 
                 // TODO this should probably go, not really used now
                 // dynamically register jar content handler (instead of putting it in core's spring config
@@ -70,26 +69,28 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin
                 manifestIndexConfig.put("scriptSource", "JarIndex.groovy");
 
                 // TODO Index revolves too much around XML, needs a serious refactoring
-                Index jarIndex = new Index("JAR Indexes", 
+                Index jarIndex = new Index("JAR Indexes",
                                            "application/java-archive",
                                            String.class,
-                                           "org.mule.galaxy.impl.index.GroovyIndexer", 
+                                           "org.mule.galaxy.impl.index.GroovyIndexer",
                                            manifestIndexConfig);
 
                 // Configure and register Java Annotations indexer
                 Map<String, String> annIndexConfig = new HashMap<String, String>();
                 annIndexConfig.put("scriptSource", "JavaAnnotationsIndex.groovy");
 
-                Index annotationsIndex = new Index("Java Annotation Indexes", 
+                Index annotationsIndex = new Index("Java Annotation Indexes",
                                                    "application/java-archive",
                                                    String.class,
-                                                   "org.mule.galaxy.impl.index.GroovyIndexer", 
+                                                   "org.mule.galaxy.impl.index.GroovyIndexer",
                                                    annIndexConfig);
 
                 try
                 {
                     indexManager.save(jarIndex, true);
                     indexManager.save(annotationsIndex, true);
+                    registerJarPropertyDescriptors();
+                    registerJavaAnnotationsPropertyDescriptors();
                 }
                 catch (GalaxyException e)
                 {
@@ -124,5 +125,28 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin
     public void setJcrTemplate(final JcrTemplate jcrTemplate)
     {
         this.jcrTemplate = jcrTemplate;
+    }
+
+    protected void registerJarPropertyDescriptors()
+            throws RegistryException, AccessException
+    {
+        registry.savePropertyDescriptor(new PropertyDescriptor("jar.entries", "JAR Contents List", true));
+        registry.savePropertyDescriptor(new PropertyDescriptor("jar.manifest.foo",
+                                                               "A placeholder property. Actual MANIFEST.MF " +
+                                                               "keys are prefixed with 'jar.manifest.'",
+                                                               false));
+        registry.savePropertyDescriptor(new PropertyDescriptor("jar.osgi.Export-Package", "OSGi Package Exports", true));
+        registry.savePropertyDescriptor(new PropertyDescriptor("jar.osgi.Import-Package", "OSGi Package Imports", true));
+        registry.savePropertyDescriptor(new PropertyDescriptor("jar.osgi.Ignore-Package", "OSGi Ignore Packages", true));
+        registry.savePropertyDescriptor(new PropertyDescriptor("jar.osgi.Private-Package", "OSGi Private Packages", true));
+    }
+
+    protected void registerJavaAnnotationsPropertyDescriptors()
+            throws RegistryException, AccessException
+    {
+        registry.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.class", "Java Class-Level Annotations", true));
+        registry.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.field", "Java Field-Level Annotations", true));
+        registry.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.method", "Java Method-Level Annotations", true));
+        registry.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.param", "Java Param-Level Annotations", true));
     }
 }
