@@ -1,16 +1,11 @@
 package org.mule.galaxy.impl;
 
 
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.PropertyDescriptor;
-import org.mule.galaxy.Workspace;
 import org.mule.galaxy.test.AbstractGalaxyTest;
+
+import java.util.Collection;
 
 public class PropertyTest extends AbstractGalaxyTest {
     protected Dao<PropertyDescriptor> propertyDescriptorDao;
@@ -31,7 +26,7 @@ public class PropertyTest extends AbstractGalaxyTest {
        
        Collection<PropertyDescriptor> pds = registry.getPropertyDescriptors();
        // 12 of these are index related
-       assertEquals(13, pds.size());
+       assertEquals(23, pds.size());
        
        PropertyDescriptor pd3 = registry.getPropertyDescriptorByName(pd.getProperty());
        assertNotNull(pd3);
