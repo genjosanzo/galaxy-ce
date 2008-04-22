@@ -1,6 +1,12 @@
 package org.mule.galaxy.web.client.artifact;
 
-import java.util.Iterator;
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.RegistryPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.SecurityService;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -9,22 +15,14 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.RegistryPanel;
-import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
-import org.mule.galaxy.web.rpc.SecurityService;
+
+import java.util.Iterator;
 
 /**
  * Contains:
@@ -112,7 +110,7 @@ public class ArtifactPanel extends AbstractComposite {
         img.addClickListener(new ClickListener() {
 
             public void onClick(Widget sender) {
-                Window.open(info.getArtifactFeedLink(), null, null);
+                Window.open(info.getArtifactFeedLink(), null, "scrollbars=yes");
             }
             
         });

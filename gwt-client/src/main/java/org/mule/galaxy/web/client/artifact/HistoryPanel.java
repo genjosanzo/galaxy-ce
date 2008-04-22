@@ -16,7 +16,6 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 public class HistoryPanel extends AbstractComposite {
@@ -65,7 +64,7 @@ public class HistoryPanel extends AbstractComposite {
             viewLink.addClickListener(new ClickListener() {
 
                 public void onClick(Widget arg0) {
-                    Window.open(av.getLink(), null, null);
+                    Window.open(av.getLink(), null, "scrollbars=yes");
                 }
                 
             });

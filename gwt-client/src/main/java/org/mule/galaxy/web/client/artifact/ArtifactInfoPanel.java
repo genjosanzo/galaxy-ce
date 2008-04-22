@@ -1,5 +1,19 @@
 package org.mule.galaxy.web.client.artifact;
 
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.ArtifactForm;
+import org.mule.galaxy.web.client.MenuPanelPageInfo;
+import org.mule.galaxy.web.client.RegistryPanel;
+import org.mule.galaxy.web.client.WorkspacePanel;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
+import org.mule.galaxy.web.rpc.DependencyInfo;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.WComment;
+
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -18,20 +32,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
 import java.util.Iterator;
-
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.ArtifactForm;
-import org.mule.galaxy.web.client.MenuPanelPageInfo;
-import org.mule.galaxy.web.client.RegistryPanel;
-import org.mule.galaxy.web.client.WorkspacePanel;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.Toolbox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.DependencyInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
-import org.mule.galaxy.web.rpc.WComment;
 
 public class ArtifactInfoPanel extends AbstractComposite {
 
@@ -140,7 +140,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
         img.addClickListener(new ClickListener() {
 
             public void onClick(Widget sender) {
-                Window.open(info.getCommentsFeedLink(), null, null);
+                Window.open(info.getCommentsFeedLink(), null, "scrollbars=yes");
             }
             
         });
@@ -294,7 +294,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
         hl.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
-                Window.open(".." + info.getArtifactLink(), null, null);
+                Window.open(".." + info.getArtifactLink(), null, "scrollbars=yes");
             }
             
         });
