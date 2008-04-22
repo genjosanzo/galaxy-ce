@@ -1,5 +1,9 @@
 package org.mule.galaxy.web.client;
 
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.SearchPredicate;
+
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -13,10 +17,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.SearchPredicate;
 
 public class SearchPanel
     extends Composite
@@ -148,6 +148,7 @@ public class SearchPanel
             panel.insert(freeformQueryArea, 0);
             freeformQueryArea.setText("Add a custom query...");
             freeformQueryArea.selectAll();
+            freeformQueryArea.setFocus(true);
             freeformQueryLink.setText("Use Structured Query");
             
             // Remove all the structured query rows
