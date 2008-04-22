@@ -345,6 +345,8 @@ a:visited {
  
 .feed-icon {
     margin-left: 6px;
+    cursor: pointer;
+    cursor: hand;
 }
 
 .artifact-title-base {
