@@ -6,10 +6,10 @@ public class PropertyDescriptor implements Identifiable {
     private String description;
     private boolean multivalued;
 
-    public PropertyDescriptor(String property, String name, boolean multivalued) {
+    public PropertyDescriptor(String property, String description, boolean multivalued) {
         super();
         this.property = property;
-        this.description = name;
+        this.description = description;
         this.multivalued = multivalued;
     }
 
@@ -37,8 +37,8 @@ public class PropertyDescriptor implements Identifiable {
         return description;
     }
 
-    public void setDescription(String name) {
-        this.description = name;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public boolean isMultivalued() {
