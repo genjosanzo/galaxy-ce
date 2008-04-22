@@ -108,6 +108,7 @@ public class ArtifactPanel extends AbstractComposite {
         
         Image img = new Image("images/feed-icon-14x14.png");
         img.setStyleName("feed-icon");
+        img.setTitle("Versions Atom Feed");
         img.addClickListener(new ClickListener() {
 
             public void onClick(Widget sender) {

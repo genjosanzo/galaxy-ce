@@ -137,6 +137,8 @@ public class ArtifactInfoPanel extends AbstractComposite {
         
         InlineFlowPanel commentTitlePanel = createTitleWithLink("Comments", addComment);
         Image img = new Image("images/feed-icon-14x14.png");
+        img.setStyleName("feed-icon");
+        img.setTitle("Comments Atom Feed");
         img.addClickListener(new ClickListener() {
 
             public void onClick(Widget sender) {
@@ -144,7 +146,6 @@ public class ArtifactInfoPanel extends AbstractComposite {
             }
             
         });
-        img.setStyleName("feed-icon");
         commentTitlePanel.add(img);
         
         panel.add(commentTitlePanel);
