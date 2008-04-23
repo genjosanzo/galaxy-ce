@@ -191,7 +191,7 @@
                     <tasks>
                       <echo>Copying to ${project.build.directory}/${project.build.finalName} from ${basedir}/../gwt-client/target/galaxy-gwt-client-${project.version/}/</echo>
                       <copy todir="${project.build.directory}/${project.build.finalName}">
-                         <fileset dir="${basedir}/../gwt-client/target/galaxy-gwt-client-${project.version/}/" />
+                         <fileset dir="${basedir}/../gwt-client/target/galaxy-gwt-client-${project.version}/" />
                       </copy>
                     </tasks>
                 </configuration>
