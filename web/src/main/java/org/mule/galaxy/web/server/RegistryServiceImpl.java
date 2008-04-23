@@ -87,6 +87,7 @@ import javax.xml.namespace.QName;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.web.context.ContextLoader;
 
 public class RegistryServiceImpl implements RegistryService {
 
@@ -556,9 +557,12 @@ public class RegistryServiceImpl implements RegistryService {
 
             g.getRows().add(info);
 
+            // TODO this will be replaced with a clean injection to never depend on spring-web
+            final String context = ContextLoader.getCurrentWebApplicationContext().getServletContext().getServletContextName();
+
             info.setArtifactLink(getLink("/api/registry", a));
-            info.setArtifactFeedLink(getLink("/api/registry", a) + ";history");
-            info.setCommentsFeedLink("/api/comments");
+            info.setArtifactFeedLink(getLink(context + "/api/registry", a) + ";history");
+            info.setCommentsFeedLink(context + "/api/comments");
 
             List versions = new ArrayList();
             for (ArtifactVersion av : a.getVersions()) {
@@ -1266,7 +1270,9 @@ public class RegistryServiceImpl implements RegistryService {
         StringBuilder sb = new StringBuilder();
         Workspace w = a.getParent();
 
-        sb.append("/api/registry").append(w.getPath()).append(a.getName()).append("?version=")
+        // TODO this will be replaced with a clean injection to never depend on spring-web
+        final String context = ContextLoader.getCurrentWebApplicationContext().getServletContext().getServletContextName();
+        sb.append(context).append("/api/registry").append(w.getPath()).append(a.getName()).append("?version=")
             .append(av.getVersionLabel());
         return sb.toString();
     }
