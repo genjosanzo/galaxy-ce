@@ -87,7 +87,6 @@ import javax.xml.namespace.QName;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.web.context.ContextLoader;
 
 public class RegistryServiceImpl implements RegistryService {
 
@@ -104,6 +103,8 @@ public class RegistryServiceImpl implements RegistryService {
     private AccessControlManager accessControlManager;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a, MMMM d, yyyy");
+
+    private ContextPathResolver contextPathResolver;
 
     @SuppressWarnings("unchecked")
     public Collection getWorkspaces() throws RPCException {
@@ -557,8 +558,7 @@ public class RegistryServiceImpl implements RegistryService {
 
             g.getRows().add(info);
 
-            // TODO this will be replaced with a clean injection to never depend on spring-web
-            final String context = ContextLoader.getCurrentWebApplicationContext().getServletContext().getServletContextName();
+            final String context = contextPathResolver.getContextPath();
 
             info.setArtifactLink(getLink("/api/registry", a));
             info.setArtifactFeedLink(getLink(context + "/api/registry", a) + ";history");
@@ -1270,8 +1270,7 @@ public class RegistryServiceImpl implements RegistryService {
         StringBuilder sb = new StringBuilder();
         Workspace w = a.getParent();
 
-        // TODO this will be replaced with a clean injection to never depend on spring-web
-        final String context = ContextLoader.getCurrentWebApplicationContext().getServletContext().getServletContextName();
+        final String context = contextPathResolver.getContextPath();
         sb.append(context).append("/api/registry").append(w.getPath()).append(a.getName()).append("?version=")
             .append(av.getVersionLabel());
         return sb.toString();
@@ -1389,4 +1388,13 @@ public class RegistryServiceImpl implements RegistryService {
         this.indexManager = indexManager;
     }
 
+    public ContextPathResolver getContextPathResolver()
+    {
+        return contextPathResolver;
+    }
+
+    public void setContextPathResolver(final ContextPathResolver contextPathResolver)
+    {
+        this.contextPathResolver = contextPathResolver;
+    }
 }
