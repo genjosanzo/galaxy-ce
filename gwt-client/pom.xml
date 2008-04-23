@@ -46,7 +46,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <source>1.4</source>
@@ -63,6 +62,10 @@
           <include>**/*.html</include>
           <include>**/*.css</include>
         </includes>
+         <excludes>
+             <!-- Required for better IDE support of GWT (avoid looped symlinks). -->
+            <exclude>**/org/mule/galaxy/web/public/**</exclude>
+        </excludes>
       </resource>
     </resources>
   </build>
@@ -87,6 +90,11 @@
                                 <value>org.mule.galaxy.web.Galaxy</value>
                             </compileTargets>
                             <extraJvmArgs>-Xmx256M</extraJvmArgs>
+                            <!--
+                                CRITICAL: This should be false so that filtered resources are used instead.
+                                Also required for better IDE support of GWT (avoid looped symlinks).
+                            -->
+                            <sourcesOnPath>false</sourcesOnPath>
                         </configuration>
                         <executions>
                             <execution>
