@@ -561,7 +561,7 @@ public class RegistryServiceImpl implements RegistryService {
 
             final String context = contextPathResolver.getContextPath();
 
-            info.setArtifactLink(getLink("/api/registry", a));
+            info.setArtifactLink(getLink(context + "/api/registry", a));
             info.setArtifactFeedLink(getLink(context + "/api/registry", a) + ";history");
             info.setCommentsFeedLink(context + "/api/comments");
 
