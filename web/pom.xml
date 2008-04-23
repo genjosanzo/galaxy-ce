@@ -33,14 +33,6 @@
 
         <dependency>
             <groupId>org.mule.galaxy</groupId>
-            <artifactId>galaxy-core</artifactId>
-            <version>${version}</version>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-feed-model</artifactId>
             <version>${version}</version>
         </dependency>
