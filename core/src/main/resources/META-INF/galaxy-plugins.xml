@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <galaxy xmlns="http://www.mulesource.org/schema/galaxy-plugins"
-                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:schemaLocation="
-       http://www.mulesource.org/schema/galaxy-plugins http://www.mulesource.org/schema/artifact-type/galaxy-plugins-1.0.xsd">
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.mulesource.org/schema/galaxy-plugins http://www.mulesource.org/schema/galaxy-plugin/galaxy-plugins-1.0.xsd">
     
     <artifact-type>
         <name>WS-Policy Documents</name>

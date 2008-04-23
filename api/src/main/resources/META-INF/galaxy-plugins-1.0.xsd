@@ -15,7 +15,7 @@
 
     <xs:complexType name="galaxyType">
         <xs:sequence>
-            <xs:element name="artifact-type" type="galaxyArtifactType" minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="artifact-type" type="galaxyArtifactType" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation>A Galaxy plugin defines Indexes, views and policies that apply to an artifact managed by
                         Galaxy. There is on plugin per artifact. For example The plug in for Mule 1 configuration files defines
@@ -25,14 +25,14 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="properties" type="galaxyPropertiesType">
+            <xs:element name="properties" type="galaxyPropertiesType" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>
                       Property descriptions which should be registered.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="policies" type="galaxyPoliciesType">
+            <xs:element name="policies" type="galaxyPoliciesType" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>A Galaxy plugin defines Indexes, views and policies that apply to an artifact managed by
                         Galaxy. There is on plugin per artifact. For example The plug in for Mule 1 configuration files defines
@@ -107,7 +107,6 @@
 
     <xs:complexType name="indexType">
         <xs:sequence>
-            <xs:element name="id" type="xs:string"/>
             <xs:element name="description" type="xs:string"/>
             <xs:element name="indexer" type="xs:string"/>
             <xs:element name="search-input-type" type="xs:NMTOKEN"/>
@@ -132,7 +131,8 @@
 
     <xs:complexType name="configurationType">
         <xs:sequence>
-            <xs:any minOccurs="0" maxOccurs="unbounded"/>
+            <xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" namespace="##any"/>
+            
         </xs:sequence>
     </xs:complexType>
 

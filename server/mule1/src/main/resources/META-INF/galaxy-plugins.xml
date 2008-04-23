@@ -2,7 +2,7 @@
 <galaxy xmlns="http://www.mulesource.org/schema/galaxy-plugins"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.mulesource.org/schema/galaxy-plugins http://www.mulesource.org/schema/galaxy-plugin/galaxy-plugins-1.0.xsd">
-    
+
     <artifact-type>
         <name>Mule 1 Configurations</name>
         <description>Allows Mule 1 cofiguration files to be managed by Galaxy. Users can register, query and view Mule 1
