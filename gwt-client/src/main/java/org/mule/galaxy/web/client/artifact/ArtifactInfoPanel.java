@@ -295,7 +295,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
         hl.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
-                Window.open(".." + info.getArtifactLink(), null, "scrollbars=yes");
+                Window.open(info.getArtifactLink(), null, "scrollbars=yes");
             }
             
         });
