@@ -27,9 +27,28 @@ import org.springframework.web.context.WebApplicationContext;
  */
 public class ContextPathResolver
 {
+    /**
+     * Returns:
+     * <ul>
+     *  <li>"" (empty) string when no servlet container is available (e.g. a test run)
+     *  <li>"" (empty) string when deployed to a servlet container root context
+     *  <li>context path name otherwise
+     * </ul>
+     * @return path
+     */
     public String getContextPath()
     {
+        String path = "";
         WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
-        return context == null ? "" : context.getServletContext().getServletContextName();
+        if (context != null)
+        {
+            path = context.getServletContext().getServletContextName();
+            // when deployed in a servlet container under the server root
+            if ("/".equals(path))
+            {
+                path = "";
+            }
+        }
+        return path;
     }
 }
