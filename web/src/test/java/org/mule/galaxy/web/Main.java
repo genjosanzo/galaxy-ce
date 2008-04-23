@@ -15,7 +15,7 @@ public class Main {
         
         Server server = new Server();
         Connector connector = new SelectChannelConnector();
-        connector.setPort(8080);
+        connector.setPort(9002);
         connector.setHost("0.0.0.0");
         server.addConnector(connector);
 
