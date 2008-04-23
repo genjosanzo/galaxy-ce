@@ -90,6 +90,8 @@ import org.apache.commons.logging.LogFactory;
 
 public class RegistryServiceImpl implements RegistryService {
 
+    protected static final String DEFAULT_DATE_FORMAT = "h:mm a, MMMM d, yyyy";
+
     private final Log log = LogFactory.getLog(getClass());
 
     private Registry registry;
@@ -101,8 +103,6 @@ public class RegistryServiceImpl implements RegistryService {
     private ActivityManager activityManager;
     private CommentManager commentManager;
     private AccessControlManager accessControlManager;
-
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a, MMMM d, yyyy");
 
     private ContextPathResolver contextPathResolver;
 
@@ -546,6 +546,7 @@ public class RegistryServiceImpl implements RegistryService {
 
             List<Comment> comments = commentManager.getComments(a.getId());
             for (Comment c : comments) {
+                final SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
                 WComment wc = new WComment(c.getId(), c.getUser().getUsername(), dateFormat.format(c
                     .getDate().getTime()), c.getText());
                 wcs.add(wc);
@@ -654,6 +655,7 @@ public class RegistryServiceImpl implements RegistryService {
             }
             commentManager.addComment(comment);
 
+            SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
             return new WComment(comment.getId(), comment.getUser().getUsername(), dateFormat.format(comment
                 .getDate().getTime()), comment.getText());
         } catch (RegistryException e) {
@@ -678,6 +680,7 @@ public class RegistryServiceImpl implements RegistryService {
     @SuppressWarnings("unchecked")
     private void addComments(WComment parent, Set<Comment> comments) {
         for (Comment c : comments) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
             WComment child = new WComment(c.getId(), c.getUser().getUsername(), dateFormat.format(c.getDate()
                 .getTime()), c.getText());
             parent.getComments().add(child);
@@ -1334,6 +1337,7 @@ public class RegistryServiceImpl implements RegistryService {
             wa.setName(a.getUser().getName());
         }
         wa.setMessage(a.getMessage());
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
         wa.setDate(dateFormat.format(a.getDate().getTime()));
         return wa;
     }
