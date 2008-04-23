@@ -84,24 +84,12 @@ public class SearchPanelRow
         Arrays.sort(names);
         
         propertyList.addItem("", "");
-        propertyList.addItem(setName + ":", "");
+        propertyList.addItem(setName, "");
         for (int i=0; i<names.length; i++) {
             String name = (String) names[i];
             String id   = (String) nameIdMap.get(name);
             
-            propertyList.addItem("- " + name, id);
-        }
-    }
-
-    public void addPropertySet(String setName, Collection indexes) {
-        propertyList.addItem("", "");
-        propertyList.addItem(setName + ":", "");
-        for (Iterator itr = indexes.iterator(); itr.hasNext();) {
-            WIndex wi = (WIndex)itr.next();
-            String name = (String) wi.getDescription();
-            String id   = (String) wi.getId();
-            
-            propertyList.addItem("- " + name, id);
+            propertyList.addItem(name, id);
         }
     }
     

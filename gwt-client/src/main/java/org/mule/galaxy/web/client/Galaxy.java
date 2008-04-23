@@ -230,6 +230,12 @@ public class Galaxy implements EntryPoint, HistoryListener {
             token = "tab-0";
         }
         
+        if ("nohistory".equals(token) && curInfo != null)
+        {
+            suppressTabHistory = false;
+            return;
+        }
+        
         PageInfo page = (PageInfo) history.get(token);
         
         if (page == null) {

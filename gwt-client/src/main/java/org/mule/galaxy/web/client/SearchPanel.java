@@ -23,7 +23,6 @@ public class SearchPanel
 {
     private FlowPanel panel;
     private Set rows;
-    private Collection artifactIndexes;
     private Map artifactPropertyMap;
     private Button searchButton;
     private RegistryPanel registryPanel;
@@ -39,13 +38,6 @@ public class SearchPanel
         panel = new FlowPanel();
         panel.setStyleName("search-panel");
         
-        registryPanel.getRegistryService().getIndexes(new AbstractCallback(registryPanel) {
-
-            public void onSuccess(Object o) {
-                initArtifactIndices((Collection) o);
-            }
-            
-        });
         registryPanel.getRegistryService().getPropertyList(new AbstractCallback(registryPanel) {
             
             public void onSuccess(Object o) {
@@ -88,26 +80,17 @@ public class SearchPanel
     public void clear() {
         rows.clear();
     }
-    public void initArtifactIndices(Collection c) {
-        artifactIndexes = c;
-        for (Iterator itr = rows.iterator(); itr.hasNext();) {
-            SearchPanelRow row = (SearchPanelRow) itr.next();
-            row.addPropertySet("Indexes", artifactIndexes);
-        }
-    }
     
     public void initArtifactProperties(Map map) {
         artifactPropertyMap = map;
         for (Iterator itr = rows.iterator(); itr.hasNext();) {
             SearchPanelRow row = (SearchPanelRow) itr.next();
-            row.addPropertySet("Properties", artifactPropertyMap);
+            row.addPropertySet("----", artifactPropertyMap);
         }
     }
     
     public void addPredicate() {
         SearchPanelRow pred = new SearchPanelRow(this);
-        if (artifactIndexes != null)
-            pred.addPropertySet("Indexes", artifactIndexes);
         if (artifactPropertyMap != null)
             pred.addPropertySet("Properties", artifactPropertyMap);
         

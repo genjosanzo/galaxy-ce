@@ -126,7 +126,7 @@ declare variable $document external;
         </namespace>
         <indexes>
             <index>
-                <description>WSDL Service Definitions</description>
+                <description>WSDL Service</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
                 <configuration>
@@ -177,7 +177,7 @@ declare variable $document external;
                 </expression></configuration>
             </index>
             <index>
-                <description>WSDL PortType Definitions</description>
+                <description>WSDL PortType</description>
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
                 <configuration>

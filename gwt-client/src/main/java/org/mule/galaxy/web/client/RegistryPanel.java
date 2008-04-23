@@ -38,6 +38,7 @@ public class RegistryPanel extends AbstractMenuPanel {
     private FlowPanel browsePanel;
     private FlowPanel searchingPanel;
     private SearchPanel searchPanel;
+    protected TreeItem workspaceTreeItem;
     
     public RegistryPanel(Galaxy galaxy) {
         super(galaxy);
@@ -109,12 +110,14 @@ public class RegistryPanel extends AbstractMenuPanel {
         searchingPanel = new FlowPanel();
         FlowPanel searchToolbar = new FlowPanel();
         searchToolbar.setStyleName("toolbar");
-        Hyperlink browseLink = new Hyperlink("Browse Workspaces", "browse");
+        Hyperlink browseLink = new Hyperlink("Browse Workspaces", "nohistory");
         browseLink.addClickListener(new ClickListener() {
             public void onClick(Widget w){
                 currentTopPanel = browsePanel;
                 setTop(browsePanel);
-                searchPanel.clear();
+                searchingPanel.remove(searchPanel);
+                searchPanel = new SearchPanel(registryPanel);
+                searchingPanel.add(searchPanel);
                 refreshArtifacts();
             }
         });
@@ -195,12 +198,13 @@ public class RegistryPanel extends AbstractMenuPanel {
                 
                 initWorkspaces(treeItem, workspaces);
 
-//                if (workspaceId == null) {
+                if (workspaceId == null) {
                     TreeItem child = treeItem.getChild(0);
+                    workspaceTreeItem = child;
                     
                     setActiveWorkspace((String) child.getUserObject());
-                    cv.setRootItem(treeItem);
-//                }
+                }
+                cv.setRootItem(treeItem, workspaceTreeItem);
             }
         });
     }
@@ -214,9 +218,9 @@ public class RegistryPanel extends AbstractMenuPanel {
 
             public void onSuccess(Object o) {
                 artifactTypesBox.clear();
-                Collection workspaces = (Collection) o;
+                Collection artifactTypes = (Collection) o;
                 
-                for (Iterator itr = workspaces.iterator(); itr.hasNext();) {
+                for (Iterator itr = artifactTypes.iterator(); itr.hasNext();) {
                     final WArtifactType at = (WArtifactType) itr.next();
                     
                     Hyperlink hl = new Hyperlink(at.getDescription(), at.getId());
@@ -247,9 +251,10 @@ public class RegistryPanel extends AbstractMenuPanel {
             TreeItem treeItem = ti.addItem(wi.getName());
             treeItem.setUserObject(wi.getId());
             
-//            if (workspaceId != null && workspaceId.equals(wi.getId())) {
-//                cv.setRootItem(treeItem);
-//            }
+            if (workspaceId != null && workspaceId.equals(wi.getId())) {
+                setActiveWorkspace(workspaceId);
+                workspaceTreeItem = treeItem;
+            }
             
             Collection children = wi.getWorkspaces();
             if (children != null) {

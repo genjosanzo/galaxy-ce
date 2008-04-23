@@ -1,7 +1,5 @@
 package org.mule.galaxy.web.client.util;
 
-import java.util.Iterator;
-
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -9,6 +7,10 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class ColumnView
     extends Composite
@@ -32,19 +34,27 @@ public class ColumnView
         initWidget(panel);
     }
 
-    public void setRootItem(TreeItem treeItem)
+    public void setRootItem(TreeItem root, TreeItem selected)
     {
         container.clear();
         
-        addColumnWithItem(treeItem);
+        List selections = new ArrayList();
+        TreeItem parent = selected;
+        while (parent != null) {
+            selections.add(0, parent);
+            parent = parent.getParentItem();
+        }
         
-        // Set the initial selection
-        FlowPanel column = (FlowPanel)container.getWidget(0);
-        Hyperlink first  = (Hyperlink)column.getWidget(0);
-        selectItemInColumn(treeItem.getChild(0), first, column);
+        addColumnWithItem(root, selections);
+        
+        
+//        // Set the initial selection
+//        FlowPanel column = (FlowPanel)container.getWidget(0);
+//        Widget first  = (Widget)column.getWidget(0);
+//        selectItemInColumn(root.getChild(0), first, column);
     }
 
-    private void addColumnWithItem(TreeItem item) {
+    private void addColumnWithItem(TreeItem item, List selections) {
         // Create the column and add it to the container
         final FlowPanel column = new FlowPanel();
         column.setStyleName("column");
@@ -64,17 +74,21 @@ public class ColumnView
         for (int idx=0; idx < item.getChildCount(); idx++) {
             final TreeItem child  = item.getChild(idx);
             
-            Hyperlink link = new Hyperlink(child.getText(), "workspace-" + child.getUserObject().toString());
+            Hyperlink link = new Hyperlink(child.getText(), "nohistory");
             column.add(link);
             link.addClickListener(new ClickListener() {
                 public void onClick(Widget w) {
-                    selectItemInColumn(child, (Hyperlink)w, column);
+                    selectItemInColumn(child, w, column, null, true);
                 }
             });
+            
+            if (selections != null && selections.contains(child)) {
+                selectItemInColumn(child, link, column, selections, false);
+            }
         }
     }
 
-    private void selectItemInColumn(TreeItem treeItem, Hyperlink link, FlowPanel column) {
+    private void selectItemInColumn(TreeItem treeItem, Widget link, FlowPanel column, List selections, boolean fire) {
         // 1. Remove columns to the right of the column we're looking at
         int idx = 1 + container.getWidgetIndex(column);
         while (container.getWidgetCount() != idx)
@@ -83,7 +97,7 @@ public class ColumnView
         // 2. Change the visible selection
         // First, find and remove the old selection.
         for (Iterator iter = column.iterator(); iter.hasNext();) {
-            Hyperlink l = (Hyperlink)iter.next();
+            Widget l = (Widget)iter.next();
             l.removeStyleName("selected");
         }
         // Then add the new selection
@@ -91,10 +105,10 @@ public class ColumnView
         selectedItem = treeItem;
         
         // 3. Add the new column
-        addColumnWithItem(treeItem);
+        addColumnWithItem(treeItem, selections);
         
         // 4. Fire the "itemSelected" event
-        if (treeListener != null)
+        if (treeListener != null && fire)
             treeListener.onTreeItemSelected(treeItem);
     }
 
