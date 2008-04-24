@@ -52,7 +52,7 @@ if (opts.h) {
 // some definitions and constants
 def httpScheme = opts.S ?: 'http'
 def host = opts.H ?: 'localhost'
-def port = opts.P ?: 8080
+def port = new Integer(opts.P ?: 8080)
 def apiUrl = opts.U ?: '/api/registry'
 def username = opts.u ?: 'admin'
 def password = opts.p ?: 'admin'
