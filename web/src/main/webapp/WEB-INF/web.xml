@@ -2,7 +2,9 @@
 <web-app xmlns="http://java.sun.com/xml/ns/j2ee"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.4"
   xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee   http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
-  
+
+    <!-- $Id$ -->
+
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
@@ -32,8 +34,12 @@
       <param-value>org.acegisecurity.util.FilterChainProxy</param-value>
     </init-param>
   </filter>
+    <filter>
+        <filter-name>ContextPathSaver</filter-name>
+        <filter-class>org.mule.galaxy.web.ContextPathSaverFilter</filter-class>
+    </filter>
 
-  <filter-mapping>
+    <filter-mapping>
       <filter-name>Acegi Filter Chain Proxy</filter-name>
       <url-pattern>/*</url-pattern>
     </filter-mapping>
@@ -47,13 +53,18 @@
     <filter-name>jcr</filter-name>
     <url-pattern>/api/*</url-pattern>
   </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>ContextPathSaver</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
   
   <filter-mapping>
     <filter-name>jcr</filter-name>
     <url-pattern>/artifactUpload</url-pattern>
   </filter-mapping>
-  
-  
+
+
   <listener>
     <listener-class>
       org.springframework.web.context.ContextLoaderListener
