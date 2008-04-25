@@ -300,7 +300,8 @@ public class ArtifactInfoPanel extends AbstractComposite {
             }
             
         });
-        
+        hl.addStyleName("hyperlink-NewWindow");
+
         rightGroup.add(hl);
 
         ExternalHyperlink permalink = new ExternalHyperlink("Permalink", info.getArtifactLink());

@@ -744,6 +744,10 @@ a:visited {
     cursor: hand;
     cursor: pointer;
 }
+.hyperlink-NewWindow {
+    background: transparent url(images/external.png) no-repeat scroll right center;
+    padding-right: 14px;
+}
 
 .gwt-Image {
 }

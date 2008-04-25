@@ -69,6 +69,7 @@ public class HistoryPanel extends AbstractComposite {
                 }
                 
             });
+            viewLink.addStyleName("hyperlink-NewWindow");
             links.add(viewLink);
 
             links.add(new Label(" | "));
