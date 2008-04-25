@@ -5,6 +5,7 @@ import org.mule.galaxy.web.client.ArtifactForm;
 import org.mule.galaxy.web.client.MenuPanelPageInfo;
 import org.mule.galaxy.web.client.RegistryPanel;
 import org.mule.galaxy.web.client.WorkspacePanel;
+import org.mule.galaxy.web.client.util.ExternalHyperlink;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -301,6 +302,11 @@ public class ArtifactInfoPanel extends AbstractComposite {
         });
         
         rightGroup.add(hl);
+
+        ExternalHyperlink permalink = new ExternalHyperlink("Permalink", info.getArtifactLink());
+        permalink.setTitle("Direct artifact link for inclusion in email, etc.");
+        rightGroup.add(permalink);
+        
         hl = new Hyperlink("New Version", "new-artifact-version-"+info.getId());
         MenuPanelPageInfo newVersionPage = new MenuPanelPageInfo(hl, registryPanel) {
             public AbstractComposite createInstance() {

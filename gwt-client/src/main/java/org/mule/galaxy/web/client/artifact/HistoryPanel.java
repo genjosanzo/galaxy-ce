@@ -2,6 +2,7 @@ package org.mule.galaxy.web.client.artifact;
 
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.RegistryPanel;
+import org.mule.galaxy.web.client.util.ExternalHyperlink;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
@@ -69,6 +70,12 @@ public class HistoryPanel extends AbstractComposite {
                 
             });
             links.add(viewLink);
+
+            links.add(new Label(" | "));
+
+            ExternalHyperlink permalink = new ExternalHyperlink("Permalink", av.getLink());
+            permalink.setTitle("Direct artifact link for inclusion in email, etc.");
+            links.add(permalink);
             
             if (!av.isDefault()) {
                 links.add(new Label(" | "));
