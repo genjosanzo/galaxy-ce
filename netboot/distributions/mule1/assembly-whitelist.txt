@@ -4,8 +4,8 @@ commons-httpclient-3.1
 mule-netboot-support
 mule-netboot-launcher
 groovy-all-1.5.4
-jcl104-over-slf4j-1.4.3
+jcl104-over-slf4j-1.5.0
 log4j-1.2.14
-slf4j-api-1.4.3
-slf4j-log4j12-1.4.3
+slf4j-api-1.5.0
+slf4j-log4j12-1.5.0
 wrapper-3.2.3

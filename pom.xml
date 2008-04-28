@@ -8,7 +8,7 @@
     <name>Galaxy</name>
 
     <properties>
-        <slf4jVersion>1.4.3</slf4jVersion>
+        <slf4jVersion>1.5.0</slf4jVersion>
         <gwtVersion>1.4.61</gwtVersion>
         <springVersion>2.5.1</springVersion>
         <!--
