@@ -67,6 +67,9 @@ public interface RegistryService extends RemoteService {
     
     ArtifactGroup getArtifact(String artifactId) throws RPCException, ItemNotFoundException;
     
+    ArtifactVersionInfo getArtifactVersionInfo(String artifactVersionId,
+                                               boolean showHidden) throws RPCException, ItemNotFoundException;
+    
     void newPropertyDescriptor(String name, 
                                String description, 
                                boolean multivalued) throws RPCException;

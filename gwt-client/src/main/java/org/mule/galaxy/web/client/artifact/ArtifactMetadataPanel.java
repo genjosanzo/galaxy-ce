@@ -18,6 +18,7 @@ import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WProperty;
 
 public class ArtifactMetadataPanel extends AbstractComposite {
@@ -26,6 +27,8 @@ public class ArtifactMetadataPanel extends AbstractComposite {
     private RegistryPanel registryPanel;
     private ArtifactVersionInfo info;
     private FlexTable table;
+    private boolean showHidden = false;
+    private Hyperlink showAll;
     
     public ArtifactMetadataPanel(final RegistryPanel registryPanel,
                                  final ExtendedArtifactInfo artifactInfo,
@@ -39,7 +42,7 @@ public class ArtifactMetadataPanel extends AbstractComposite {
         
         table = createColumnTable();
         
-        Hyperlink addMetadata = new Hyperlink("Add", "add-metadata");
+        Hyperlink addMetadata = new Hyperlink("Add", "no-history");
         final ArtifactMetadataPanel amPanel = this;
         addMetadata.addClickListener(new ClickListener() {
 
@@ -54,10 +57,47 @@ public class ArtifactMetadataPanel extends AbstractComposite {
             
         });
         
-        InlineFlowPanel metadataTitle = createTitleWithLink("Metadata", addMetadata);
+
+        showAll = new Hyperlink("Show All", "no-history");
+        showAll.addClickListener(new ClickListener() {
+
+            public void onClick(Widget arg0) {
+                table.clear();
+                
+                updateArtifactInfo();
+            }
+        });
+        
+        
+        
+        InlineFlowPanel metadataTitle = createTitleWithLink("Metadata", asHorizontal(showAll, new Label(" "), addMetadata));
         metadata.add(metadataTitle);
 
+        initializeProperties(info);
+        metadata.add(table);
+        initWidget(metadata);
+    }
+
+    protected void updateArtifactInfo() {
+        showHidden  = !showHidden;
         
+        if (showHidden) {
+            showAll.setText("Show Summary");
+        } else {
+            showAll.setText("Show All");
+        }
+        RegistryServiceAsync svc = registryPanel.getRegistryService();
+        svc.getArtifactVersionInfo(info.getId(), showHidden, new AbstractCallback(registryPanel) {
+
+            public void onSuccess(Object o) {
+                info = (ArtifactVersionInfo) o;
+                
+                initializeProperties(info);
+            }
+        });
+    }
+
+    private void initializeProperties(final ArtifactVersionInfo info) {
         int i = 0;
         for (Iterator itr = info.getProperties().iterator(); itr.hasNext();) {
             WProperty p = (WProperty) itr.next();
@@ -66,8 +106,6 @@ public class ArtifactMetadataPanel extends AbstractComposite {
             
             i++;
         }
-        metadata.add(table);
-        initWidget(metadata);
     }
     
     private void createPropertyRow(final int row, 

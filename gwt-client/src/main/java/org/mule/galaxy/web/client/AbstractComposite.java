@@ -99,17 +99,17 @@ public abstract class AbstractComposite extends Composite {
     }
 
     
-    protected InlineFlowPanel createTitleWithLink(String name, Hyperlink link) {
+    protected InlineFlowPanel createTitleWithLink(String name, Widget rightWidget) {
         InlineFlowPanel commentTitlePanel = new InlineFlowPanel();
         commentTitlePanel.setStyleName("rightlinked-title-panel");
 
-        commentTitlePanel.add(link);
+        commentTitlePanel.add(rightWidget);
         
         Label label = new Label(name);
         label.setStyleName("rightlinked-title");
         commentTitlePanel.add(label);
         
-        link.setStyleName("rightlinked-title-link");
+        rightWidget.setStyleName("rightlinked-title-link");
         return commentTitlePanel;
     }
 }

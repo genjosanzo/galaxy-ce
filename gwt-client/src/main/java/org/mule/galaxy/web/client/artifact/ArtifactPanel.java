@@ -51,7 +51,8 @@ public class ArtifactPanel extends AbstractComposite {
     public ArtifactPanel(RegistryPanel registryPanel, String artifactId, int selectedTab) {
         this(registryPanel, selectedTab);
         
-        registryPanel.getRegistryService().getArtifact(artifactId, new AbstractCallback(registryPanel) { 
+        registryPanel.getRegistryService().getArtifact(artifactId, 
+                                                       new AbstractCallback(registryPanel) { 
             public void onSuccess(Object o) {
                 group = (ArtifactGroup) o;
                 info = (ExtendedArtifactInfo) group.getRows().get(0);

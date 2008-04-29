@@ -585,48 +585,7 @@ public class RegistryServiceImpl implements RegistryService {
 
             List versions = new ArrayList();
             for (ArtifactVersion av : a.getVersions()) {
-                ArtifactVersionInfo vi = new ArtifactVersionInfo(av.getId(),
-                                                                 av.getVersionLabel(),
-                                                                 getVersionLink(av),
-                                                                 av.getCreated().getTime(),
-                                                                 av.isDefault(),
-                                                                 av.isEnabled(),
-                                                                 av.getAuthor().getName(),
-                                                                 av.getAuthor().getUsername(),
-                                                                 av.getPhase().getName());
-                versions.add(vi);
-
-                for (Iterator<PropertyInfo> props = av.getProperties(); props.hasNext();) {
-                    PropertyInfo p = props.next();
-
-                    if (!p.isVisible()) {
-                        continue;
-                    }
-                    
-                    Object val = p.getValue();
-                    if (val instanceof Collection) {
-                        String s = val.toString();
-                        val = s.substring(1, s.length() - 1);
-                    } else if (val != null) {
-                        val = val.toString();
-                    } else {
-                        val = "";
-                    }
-
-                    String desc = p.getDescription();
-                    if (desc == null) {
-                        desc = p.getName();
-                    }
-                    vi.getProperties().add(new WProperty(p.getName(), desc, val.toString(), p.isLocked()));
-                }
-
-                Collections.sort(vi.getProperties(), new Comparator() {
-
-                    public int compare(Object o1, Object o2) {
-                        return ((WProperty)o1).getDescription().compareTo(((WProperty)o2).getDescription());
-                    }
-
-                });
+                versions.add(toWeb(av, false));
             }
             info.setVersions(versions);
 
@@ -639,6 +598,68 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
         }
+    }
+
+    public ArtifactVersionInfo getArtifactVersionInfo(String artifactVersionId, boolean showHidden) throws RPCException,
+        ItemNotFoundException {
+        try {
+            ArtifactVersion av = registry.getArtifactVersion(artifactVersionId);
+            
+            return toWeb(av, showHidden);
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private ArtifactVersionInfo toWeb(ArtifactVersion av, boolean showHidden) {
+        ArtifactVersionInfo vi = new ArtifactVersionInfo(av.getId(),
+                                                         av.getVersionLabel(),
+                                                         getVersionLink(av),
+                                                         av.getCreated().getTime(),
+                                                         av.isDefault(),
+                                                         av.isEnabled(),
+                                                         av.getAuthor().getName(),
+                                                         av.getAuthor().getUsername(),
+                                                         av.getPhase().getName());
+        for (Iterator<PropertyInfo> props = av.getProperties(); props.hasNext();) {
+            PropertyInfo p = props.next();
+
+            if (!showHidden && !p.isVisible()) {
+                continue;
+            }
+            
+            Object val = p.getValue();
+            if (val instanceof Collection) {
+                String s = val.toString();
+                val = s.substring(1, s.length() - 1);
+            } else if (val != null) {
+                val = val.toString();
+            } else {
+                val = "";
+            }
+
+            String desc = p.getDescription();
+            if (desc == null) {
+                desc = p.getName();
+            }
+            vi.getProperties().add(new WProperty(p.getName(), desc, val.toString(), p.isLocked()));
+        }
+
+        Collections.sort(vi.getProperties(), new Comparator() {
+
+            public int compare(Object o1, Object o2) {
+                return ((WProperty)o1).getDescription().compareTo(((WProperty)o2).getDescription());
+            }
+
+        });
+        
+        return vi;
     }
 
     private String getLink(String base, Artifact a) {

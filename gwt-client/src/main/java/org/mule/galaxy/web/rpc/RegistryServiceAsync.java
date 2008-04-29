@@ -46,7 +46,10 @@ public interface RegistryServiceAsync {
 
     void getArtifact(String artifactId, AsyncCallback callback);
     
-
+    void getArtifactVersionInfo(String artifactVersionId,
+                                boolean showHidden, 
+                                AsyncCallback callback);
+    
     void newPropertyDescriptor(String name, 
                                String description, 
                                boolean multivalued, 

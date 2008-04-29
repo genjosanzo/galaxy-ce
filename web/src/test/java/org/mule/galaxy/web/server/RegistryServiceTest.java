@@ -33,6 +33,7 @@ import org.mule.galaxy.web.rpc.WGovernanceInfo;
 import org.mule.galaxy.web.rpc.WIndex;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WPhase;
+import org.mule.galaxy.web.rpc.WProperty;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 import org.mule.galaxy.web.rpc.WUser;
 import org.mule.galaxy.web.rpc.WWorkspace;
@@ -72,7 +73,8 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
 
         Collection artifactTypes = gwtRegistry.getArtifactTypes();
         assertTrue(artifactTypes.size() > 0);
-
+        
+        // Grab a group of artifacts
         Collection artifacts = gwtRegistry.getArtifacts(null, null, new HashSet(), null, 0, 20).getResults();
 
         assertTrue(artifacts.size() > 0);
@@ -133,10 +135,38 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals(2, rows.size());
 
         gwtRegistry.setProperty(info.getId(), "location", "Grand Rapids");
-
+        
         Artifact artifact = registry.getArtifact(info.getId());
         assertEquals("Grand Rapids", artifact.getProperty("location"));
-
+        artifact.setProperty("hidden", "value");
+        artifact.setVisible("hidden", false);
+        registry.save(artifact);
+        
+        // see if the hidden property shows up
+        g1 = gwtRegistry.getArtifact(info.getId());
+        for (Iterator itr2 = g1.getRows().iterator(); itr2.hasNext();) {
+            info = (BasicArtifactInfo)itr2.next();
+            if (info.getName().equals("hello.wsdl"))
+            {
+                break;
+            }
+        }
+        assertNotNull(info);
+        ExtendedArtifactInfo exInfo = (ExtendedArtifactInfo) info;
+        ArtifactVersionInfo av = (ArtifactVersionInfo) exInfo.getVersions().iterator().next();
+        
+        WProperty hiddenProp = null;
+        for (Object o : av.getProperties()) {
+            WProperty prop = (WProperty) o;
+            
+            if (prop.getName().equals("hidden")) {
+                hiddenProp = prop;
+                break;
+            }
+        }
+            
+        assertNotNull(hiddenProp);
+        
         // try adding a comment
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         assertNotNull(auth);
