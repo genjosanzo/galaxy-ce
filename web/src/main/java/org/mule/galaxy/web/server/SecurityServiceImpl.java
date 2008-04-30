@@ -19,6 +19,7 @@
 package org.mule.galaxy.web.server;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
@@ -117,7 +118,7 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     public void updateUser(WUser user, String password, String confirm) 
-        throws ItemNotFoundException, PasswordChangeException {
+        throws ItemNotFoundException, PasswordChangeException, RPCException {
         try {
             User u = userManager.get(user.getId());
             
@@ -139,6 +140,8 @@ public class SecurityServiceImpl implements SecurityService {
             userManager.save(u);
             
             
+        } catch (DuplicateItemException e) {
+            throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         }
@@ -309,6 +312,10 @@ public class SecurityServiceImpl implements SecurityService {
             accessControlManager.save(g);
         } catch (AccessException e1) {
             throw new RPCException(e1.getMessage());
+        } catch (DuplicateItemException e) {
+            throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 

@@ -169,7 +169,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void addWorkspace(String parentWorkspaceId, String workspaceName, String lifecycleId) throws RPCException, ItemNotFoundException {
+    public void addWorkspace(String parentWorkspaceId, String workspaceName, String lifecycleId) throws RPCException, ItemNotFoundException, ItemExistsException {
         try {
             Workspace w;
             if (parentWorkspaceId == null || "[No parent]".equals(parentWorkspaceId)) {
@@ -183,8 +183,7 @@ public class RegistryServiceImpl implements RegistryService {
                 registry.save(w);
             }
         } catch (DuplicateItemException e) {
-            log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new ItemExistsException();
         }  catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -263,12 +262,16 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void saveArtifactType(WArtifactType artifactType) throws RPCException {
+    public void saveArtifactType(WArtifactType artifactType) throws RPCException, ItemExistsException {
         try {
             ArtifactType at = fromWeb(artifactType);
             artifactTypeDao.save(at);
         } catch (RuntimeException e) {
             log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (DuplicateItemException e) {
+            throw new ItemExistsException();
+        } catch (NotFoundException e) {
             throw new RPCException(e.getMessage());
         }
     }
@@ -732,7 +735,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     public void newPropertyDescriptor(String name, String description, boolean multivalued)
-        throws RPCException {
+        throws RPCException, ItemExistsException {
         if (name.contains(" ")) {
             throw new RPCException("The property name cannot contain a space.");
         }
@@ -745,6 +748,10 @@ public class RegistryServiceImpl implements RegistryService {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
         } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        } catch (DuplicateItemException e) {
+            throw new ItemExistsException();
+        } catch (NotFoundException e) {
             throw new RPCException(e.getMessage());
         }
     }
@@ -846,7 +853,7 @@ public class RegistryServiceImpl implements RegistryService {
         return new WPropertyDescriptor(pd.getId(), pd.getProperty(), pd.getDescription(), pd.isMultivalued());
     }
 
-    public void savePropertyDescriptor(WPropertyDescriptor wpd) throws RPCException, ItemNotFoundException {
+    public void savePropertyDescriptor(WPropertyDescriptor wpd) throws RPCException, ItemNotFoundException, ItemExistsException {
         try {
             PropertyDescriptor pd;
             
@@ -866,8 +873,10 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
+        } catch (DuplicateItemException e) {
+            throw new ItemExistsException();
         } catch (NotFoundException e) {
-            throw new ItemNotFoundException();
+            throw new RPCException(e.getMessage());
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
         }
@@ -1249,7 +1258,13 @@ public class RegistryServiceImpl implements RegistryService {
     public void saveLifecycle(WLifecycle wl) throws RPCException, ItemExistsException {
         Lifecycle l = fromWeb(wl);
 
-        lifecycleManager.save(l);
+        try {
+            lifecycleManager.save(l);
+        } catch (DuplicateItemException e) {
+            throw new ItemExistsException();
+        } catch (NotFoundException e) {
+            throw new RPCException(e.getMessage());
+        }
     }
 
     public void deleteLifecycle(String id) throws RPCException {

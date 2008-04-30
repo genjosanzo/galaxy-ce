@@ -24,7 +24,7 @@ public interface SecurityService extends RemoteService {
     String addUser(WUser user, String password) throws ItemExistsException;
     
     void updateUser(WUser user, String password, String confirm) 
-        throws PasswordChangeException, ItemNotFoundException;
+        throws PasswordChangeException, ItemNotFoundException, RPCException;
     
     void deleteUser(String userId);
     

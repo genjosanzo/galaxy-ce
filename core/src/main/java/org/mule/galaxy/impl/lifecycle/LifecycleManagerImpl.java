@@ -25,6 +25,7 @@ import org.mule.galaxy.ActivityManager;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Dao;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.ActivityManager.EventType;
@@ -238,7 +239,15 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
                 cal.setTime(new Date());
                 entry.setCalendar(cal);
                 
-                entryDao.save(entry);
+                try {
+                    entryDao.save(entry);
+                } catch (DuplicateItemException e1) {
+                    // should never happen
+                    throw new RuntimeException(e1);
+                } catch (NotFoundException e1) {
+                    // should never happen
+                    throw new RuntimeException(e1);
+                }
 
                 getActivityManager().logActivity(user,
                                                  "Artifact " + ja.getParent().getPath() 

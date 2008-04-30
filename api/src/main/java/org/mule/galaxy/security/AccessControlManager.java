@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Workspace;
@@ -80,7 +81,7 @@ public interface AccessControlManager {
 
     Group getGroup(String id);
 
-    void save(Group group) throws AccessException;
+    void save(Group group) throws AccessException, DuplicateItemException, NotFoundException;
 
     Group getGroupByName(String name) throws NotFoundException;
     

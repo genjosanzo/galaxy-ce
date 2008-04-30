@@ -6,6 +6,7 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
@@ -75,11 +76,11 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
 
     @Override
-    public void save(Index t) {
+    public void save(Index t) throws DuplicateItemException, NotFoundException {
         save(t, false);
     }
 
-    public void save(Index t, boolean block) {
+    public void save(Index t, boolean block) throws DuplicateItemException, NotFoundException {
         super.save(t);
 
         if (block) {

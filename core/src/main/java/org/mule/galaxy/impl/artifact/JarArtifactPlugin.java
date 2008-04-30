@@ -1,15 +1,5 @@
 package org.mule.galaxy.impl.artifact;
 
-import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.ContentService;
-import org.mule.galaxy.GalaxyException;
-import org.mule.galaxy.PropertyDescriptor;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.impl.content.JarContentHandler;
-import org.mule.galaxy.impl.jcr.JcrUtil;
-import org.mule.galaxy.index.Index;
-import org.mule.galaxy.security.AccessException;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +11,17 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.ContentService;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.GalaxyException;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyDescriptor;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.impl.content.JarContentHandler;
+import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.index.Index;
+import org.mule.galaxy.security.AccessException;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
@@ -58,7 +59,15 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin
                     }
                 }
 
-                artifactTypeDao.save(new ArtifactType("Java Archives (JARs)", "application/java-archive", new QName("application/java-archive")));
+                try {
+                    artifactTypeDao.save(new ArtifactType("Java Archives (JARs)", "application/java-archive", new QName("application/java-archive")));
+                } catch (DuplicateItemException e1) {
+                    // should never happen
+                    throw new RuntimeException(e1);
+                } catch (NotFoundException e1) {
+                    // should never happen
+                    throw new RuntimeException(e1);
+                }
 
                 // TODO this should probably go, not really used now
                 // dynamically register jar content handler (instead of putting it in core's spring config
@@ -128,7 +137,7 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin
     }
 
     protected void registerJarPropertyDescriptors()
-            throws RegistryException, AccessException
+            throws RegistryException, AccessException, DuplicateItemException, NotFoundException
     {
         registry.savePropertyDescriptor(new PropertyDescriptor("jar.entries", "JAR Contents List", true));
         registry.savePropertyDescriptor(new PropertyDescriptor("jar.manifest.foo",
@@ -142,7 +151,7 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin
     }
 
     protected void registerJavaAnnotationsPropertyDescriptors()
-            throws RegistryException, AccessException
+            throws RegistryException, AccessException, DuplicateItemException, NotFoundException
     {
         registry.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.class", "Java Class-Level Annotations", true));
         registry.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.field", "Java Field-Level Annotations", true));

@@ -18,7 +18,7 @@ public interface RegistryService extends RemoteService {
      */
     Collection getWorkspaces() throws RPCException;
     
-    void addWorkspace(String parentWorkspaceId, String workspaceName, String lifecycleId) throws RPCException, ItemNotFoundException;
+    void addWorkspace(String parentWorkspaceId, String workspaceName, String lifecycleId) throws RPCException, ItemNotFoundException, ItemExistsException;
 
     void updateWorkspace(String workspaceId, 
                          String parentWorkspaceId, 
@@ -33,7 +33,7 @@ public interface RegistryService extends RemoteService {
      */
     Collection getArtifactTypes();
 
-    void saveArtifactType(WArtifactType artifactType) throws RPCException;
+    void saveArtifactType(WArtifactType artifactType) throws RPCException, ItemExistsException;
     
     void deleteArtifactType(String id) throws RPCException;
     
@@ -72,7 +72,7 @@ public interface RegistryService extends RemoteService {
     
     void newPropertyDescriptor(String name, 
                                String description, 
-                               boolean multivalued) throws RPCException;
+                               boolean multivalued) throws RPCException, ItemExistsException;
     
     void setProperty(String artifactId, 
                      String propertyName, 
@@ -82,7 +82,7 @@ public interface RegistryService extends RemoteService {
     void deleteProperty(String artifactId, 
                         String propertyName) throws RPCException, ItemNotFoundException;
     
-    void savePropertyDescriptor(WPropertyDescriptor property) throws RPCException, ItemNotFoundException;
+    void savePropertyDescriptor(WPropertyDescriptor property) throws RPCException, ItemNotFoundException, ItemExistsException;
     
     void deletePropertyDescriptor(String id) throws RPCException;
 

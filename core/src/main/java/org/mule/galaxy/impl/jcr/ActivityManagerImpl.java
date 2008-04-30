@@ -2,6 +2,8 @@ package org.mule.galaxy.impl.jcr;
 
 import org.mule.galaxy.Activity;
 import org.mule.galaxy.ActivityManager;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.AccessException;
@@ -207,7 +209,15 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
     public void logActivity(User user, String activity, EventType eventType) {
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
-        save(new Activity(user, eventType, c, activity));
+        try {
+            save(new Activity(user, eventType, c, activity));
+        } catch (DuplicateItemException e1) {
+            // should never happen
+            throw new RuntimeException(e1);
+        } catch (NotFoundException e1) {
+            // should never happen
+            throw new RuntimeException(e1);
+        }
     }
 
     public void setAccessControlManager(AccessControlManager accessControlManager) {

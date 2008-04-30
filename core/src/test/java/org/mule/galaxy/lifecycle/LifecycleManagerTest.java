@@ -8,6 +8,7 @@ import java.util.Set;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Dao;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.test.AbstractGalaxyTest;
@@ -118,6 +119,16 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         
         lcs = lifecycleManager.getLifecycles();
         assertEquals(2, lcs.size());
+        
+        // try saving a lifecycle with a duplicate name
+        newLc.setId(null);
+        
+        try {
+            lifecycleManager.save(newLc);
+            fail("Duplicate lifecycles should not be allowed.");
+        } catch (DuplicateItemException e) {
+            // this is expected
+        }
     }
     
     public void testWorkspaceInteraction() throws Exception {

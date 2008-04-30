@@ -1588,7 +1588,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return propertyDescriptorDao.listAll();
     }
 
-    public void savePropertyDescriptor(PropertyDescriptor pd) throws RegistryException, AccessException {
+    public void savePropertyDescriptor(PropertyDescriptor pd) throws RegistryException, AccessException, DuplicateItemException, NotFoundException {
         accessControlManager.assertAccess(Permission.MANAGE_PROPERTIES);
         propertyDescriptorDao.save(pd);
     }

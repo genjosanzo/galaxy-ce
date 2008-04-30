@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -19,6 +20,7 @@ import javax.jcr.query.QueryResult;
 
 import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Dao;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.impl.jcr.JcrUtil;
@@ -60,14 +62,15 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
         });
     }
 
-    public void save(final T t) {
-        execute(new JcrCallback() {
+    public void save(final T t) throws DuplicateItemException, NotFoundException {
+        executeAndDewrap(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 try {
                     doSave(t, session);
                 } catch (NotFoundException e) {
-                    // TODO Auto-generated catch block
                     throw new RuntimeException(e);
+                } catch (ItemExistsException e) {
+                    throw new RuntimeException(new DuplicateItemException(e));
                 }
                 session.save();
                 
@@ -76,6 +79,20 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
         });
     }
     
+    private void executeAndDewrap(JcrCallback jcrCallback) throws DuplicateItemException, NotFoundException {
+        try {
+            execute(jcrCallback);
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            
+            if (cause instanceof DuplicateItemException) {
+                throw (DuplicateItemException) cause;
+            } else if (cause instanceof NotFoundException) {
+                throw (NotFoundException) cause;
+            }
+        }
+    }
+
     public void delete(final String id) {
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
@@ -242,7 +259,7 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
                 throw ((RepositoryException) e);
             } else if (e instanceof RuntimeException) {
                 throw (RuntimeException) e;
-            }
+            } 
             throw new RuntimeException(e);
         }
     }

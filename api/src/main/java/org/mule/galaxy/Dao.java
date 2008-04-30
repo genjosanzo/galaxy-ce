@@ -6,7 +6,7 @@ public interface Dao<T extends Identifiable> {
     
     T get(String id) throws NotFoundException;
     
-    void save(T t);
+    void save(T t) throws DuplicateItemException, NotFoundException;
     
     void delete(String id);
     

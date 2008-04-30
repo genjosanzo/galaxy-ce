@@ -11,6 +11,7 @@ import org.springmodules.jcr.JcrCallback;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Comment;
 import org.mule.galaxy.CommentManager;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 
@@ -52,7 +53,15 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
     }
 
     public void addComment(Comment c) {
-        save(c);
+        try {
+            save(c);
+        } catch (DuplicateItemException e1) {
+            // should never happen
+            throw new RuntimeException(e1);
+        } catch (NotFoundException e1) {
+            // should never happen
+            throw new RuntimeException(e1);
+        }
     }
 
     public Comment getComment(String commentId) throws NotFoundException {

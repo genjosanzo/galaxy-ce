@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.security.User;
 
@@ -28,7 +29,7 @@ public interface LifecycleManager {
      * Save/update a lifecycle.
      * @param newLc
      */
-    void save(Lifecycle newLc);
+    void save(Lifecycle newLc) throws DuplicateItemException, NotFoundException;
     
     /**
      * 
