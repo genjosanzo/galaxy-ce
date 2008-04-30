@@ -1,6 +1,7 @@
 package org.mule.galaxy.web.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -57,9 +58,11 @@ public class ArtifactForm extends AbstractTitledComposite {
         initWidget(form);
     }
 
-    public void onShow() {
+    public void onHide() {
         form.clear();
-        
+    }
+
+    public void onShow() {
         form.setAction(GWT.getModuleBaseURL() + "../artifactUpload");
         form.setEncoding(FormPanel.ENCODING_MULTIPART);
         form.setMethod(FormPanel.METHOD_POST);
@@ -108,11 +111,13 @@ public class ArtifactForm extends AbstractTitledComposite {
                     if (last == -1) last = msg.indexOf("</pre>");
                     if (last == -1) last = msg.length();
                     
+                    String artifactId2 = artifactId;
                     if (add) {
-                        registryPanel.setMain(new ArtifactPanel(registryPanel, msg.substring(8, last)));
-                    } else {
-                        registryPanel.setMain(new ArtifactPanel(registryPanel, artifactId));
+                        artifactId2 = msg.substring(8, last);
                     }
+                    String token = "artifact-" + artifactId2;
+                    registryPanel.createPageInfo(token, new ArtifactPanel(registryPanel, artifactId2));
+                    History.newItem(token);
                 } else if (msg.startsWith("<PRE>ArtifactPolicyException") || msg.startsWith("<pre>ArtifactPolicyException")) {
                     parseAndShowPolicyMessages(msg);
                 } else {

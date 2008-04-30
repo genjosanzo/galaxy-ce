@@ -48,6 +48,7 @@ public class RegistryPanel extends AbstractMenuPanel {
         workspaceBox.setTitle("Workspaces");
         
         Image addImg = new Image("images/add_obj.gif");
+        
         MenuPanelPageInfo page = createPageInfo("add-artifact", new ArtifactForm(this));
         addImg.addClickListener(createClickListener(page));
         
