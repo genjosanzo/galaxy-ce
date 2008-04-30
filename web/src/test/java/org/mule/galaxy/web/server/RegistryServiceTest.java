@@ -143,17 +143,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         registry.save(artifact);
         
         // see if the hidden property shows up
-        g1 = gwtRegistry.getArtifact(info.getId());
-        for (Iterator itr2 = g1.getRows().iterator(); itr2.hasNext();) {
-            info = (BasicArtifactInfo)itr2.next();
-            if (info.getName().equals("hello.wsdl"))
-            {
-                break;
-            }
-        }
-        assertNotNull(info);
-        ExtendedArtifactInfo exInfo = (ExtendedArtifactInfo) info;
-        ArtifactVersionInfo av = (ArtifactVersionInfo) exInfo.getVersions().iterator().next();
+        ArtifactVersionInfo av = gwtRegistry.getArtifactVersionInfo(artifact.getDefaultVersion().getId(), true);
         
         WProperty hiddenProp = null;
         for (Object o : av.getProperties()) {
