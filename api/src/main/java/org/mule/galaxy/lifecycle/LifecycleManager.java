@@ -33,12 +33,12 @@ public interface LifecycleManager {
     
     /**
      * 
-     * @param lifecycleName The name of the lifecycle to delete.
+     * @param lifecycleName The id of the lifecycle to delete.
      * @param fallbackLifecycle The lifecycle to move artifacts to
      * if they use the deleted lifecycle.
      * @throws NotFoundException 
      */
-    void delete(String lifecycleName, String fallbackLifecycle) throws NotFoundException;
+    void delete(String lifecycleId, String fallbackLifecycleId) throws NotFoundException;
 
     Phase getPhaseById(String phase);
     

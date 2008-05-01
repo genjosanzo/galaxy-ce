@@ -49,7 +49,13 @@ public class LifecycleListPanel extends AbstractComposite {
          for (Iterator itr = lifecycles.iterator(); itr.hasNext();) {
              final WLifecycle l = (WLifecycle)itr.next();
              
-             Hyperlink lifecycleLink = new Hyperlink(l.getName(), "lifecycle-" + l.getName());
+             String text = l.getName();
+             
+             if (l.isDefaultLifecycle()) {
+                 text += " (Default)";
+             }
+             
+             Hyperlink lifecycleLink = new Hyperlink(text, "lifecycle-" + l.getName());
              MenuPanelPageInfo page = new MenuPanelPageInfo(lifecycleLink, adminPanel) {
                  public AbstractComposite createInstance() {
                      return new LifecycleForm(adminPanel, l, false);

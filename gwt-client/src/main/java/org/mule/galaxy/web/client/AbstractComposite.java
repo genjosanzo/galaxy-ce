@@ -2,6 +2,7 @@ package org.mule.galaxy.web.client;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -19,6 +20,12 @@ public abstract class AbstractComposite extends Composite {
         
     }
 
+    protected Widget asDiv(Widget w) {
+        FlowPanel p = new FlowPanel();
+        p.add(w);
+        return p;
+    }
+    
     protected Label newLabel(String name, String style) {
         Label label = new Label(name);
         label.setStyleName(style);

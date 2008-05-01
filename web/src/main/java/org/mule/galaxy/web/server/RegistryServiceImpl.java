@@ -998,17 +998,19 @@ public class RegistryServiceImpl implements RegistryService {
     @SuppressWarnings("unchecked")
     public Collection getLifecycles() throws RPCException {
         Collection<Lifecycle> lifecycles = lifecycleManager.getLifecycles();
+        Lifecycle defaultLifecycle = lifecycleManager.getDefaultLifecycle();
+        
         ArrayList<WLifecycle> wls = new ArrayList<WLifecycle>();
         for (Lifecycle l : lifecycles) {
-            WLifecycle lifecycle = toWeb(l);
+            WLifecycle lifecycle = toWeb(l, defaultLifecycle.equals(l));
             wls.add(lifecycle);
         }
 
         return wls;
     }
 
-    private WLifecycle toWeb(Lifecycle l) {
-        WLifecycle lifecycle = new WLifecycle(l.getId(), l.getName());
+    private WLifecycle toWeb(Lifecycle l, boolean defaultLifecycle) {
+        WLifecycle lifecycle = new WLifecycle(l.getId(), l.getName(), defaultLifecycle);
 
         List<WPhase> wphases = new ArrayList<WPhase>();
         lifecycle.setPhases(wphases);
@@ -1260,6 +1262,14 @@ public class RegistryServiceImpl implements RegistryService {
 
         try {
             lifecycleManager.save(l);
+            
+            if (wl.isDefaultLifecycle()) {
+                Lifecycle defaultLifecycle = lifecycleManager.getDefaultLifecycle();
+                
+                if (!defaultLifecycle.equals(l)) {
+                    lifecycleManager.setDefaultLifecycle(l);
+                }
+            }
         } catch (DuplicateItemException e) {
             throw new ItemExistsException();
         } catch (NotFoundException e) {
@@ -1269,7 +1279,14 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void deleteLifecycle(String id) throws RPCException {
         try {
-            lifecycleManager.delete(id, lifecycleManager.getDefaultLifecycle().getName());
+            String fallback = lifecycleManager.getDefaultLifecycle().getId();
+            
+            if (id.equals(fallback)) {
+                throw new RPCException("The default lifecycle cannot be deleted. Please assign " +
+                                       "another lifecycle to be the default before deleting this one.");
+            }
+            
+            lifecycleManager.delete(id, fallback);
         } catch (NotFoundException e) {
             throw new RPCException(e.getMessage());
         }

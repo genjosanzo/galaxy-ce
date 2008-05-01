@@ -94,7 +94,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
                 Node lNode = getDefaultLifecycleNode(session);
                 lNode.setProperty(DEFAULT, false);
                 
-                Node newDefaultNode = findNode(l.getName(), session);
+                Node newDefaultNode = getNodeByUUID(l.getId());
                 newDefaultNode.setProperty(DEFAULT, true);
                 
                 session.save();
@@ -111,24 +111,25 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
     public Collection<Lifecycle> getLifecycles() {
         return listAll();
     }
-    public void delete(final String lifecycleName, 
-                       final String fallbackLifecycleName) throws NotFoundException {
+    public void delete(final String lifecycleId, 
+                       final String fallbackLifecycleId) throws NotFoundException {
         final Lifecycle fallbackLifecycle;
-        if (fallbackLifecycleName != null) {
-            fallbackLifecycle = getLifecycle(fallbackLifecycleName);
+        if (fallbackLifecycleId != null) {
+            fallbackLifecycle = getLifecycleById(fallbackLifecycleId);
         } else {
             fallbackLifecycle = null;
         }
         
         if (fallbackLifecycle == null) {
-            throw new NotFoundException(fallbackLifecycleName);
+            throw new NotFoundException(fallbackLifecycleId);
         }
         
-        if (fallbackLifecycle.getName().equals(lifecycleName)) {
+        if (fallbackLifecycleId.equals(lifecycleId)) {
             throw new IllegalArgumentException("The fallback lifecycle cannot be the same as the lifecycle being deleted.");
         }
+        System.out.println("deleting " + lifecycleId + " and falling back to " + fallbackLifecycleId);
         
-        final Lifecycle lifecycle = getLifecycle(lifecycleName);
+        final Lifecycle lifecycle = getLifecycleById(lifecycleId);
         
         execute(new JcrCallback() {
 
@@ -141,24 +142,24 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
                 while (nodes.hasNext()) {
                     Node n = nodes.nextNode();
                     
-                    n.setProperty(JcrVersion.LIFECYCLE, fallbackLifecycle.getName());
-                    n.setProperty(JcrVersion.PHASE, p.getName());
+                    n.setProperty(JcrVersion.LIFECYCLE, fallbackLifecycle.getId());
+                    n.setProperty(JcrVersion.PHASE, p.getId());
                 }
 
                 // switch the default lifecycle for workspaces
-                nodes = getWorkspacesInLifecycle(lifecycleName, session);
+                nodes = getWorkspacesInLifecycle(lifecycleId, session);
                 
                 while (nodes.hasNext()) {
                     Node n = nodes.nextNode();
                     
-                    n.setProperty(JcrVersion.LIFECYCLE, fallbackLifecycle.getName());
+                    n.setProperty(JcrVersion.LIFECYCLE, fallbackLifecycle.getId());
                 }
 
                 // technically we should clean up the policy manager too
                 // but we can do that lazily inside the LM :-)
                 
                 // actually delete the lifecycle
-                doDelete(lifecycleName, session);
+                doDelete(lifecycleId, session);
                 
                 return false;
             }
@@ -324,7 +325,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
                     return build(node, session);
                 } catch (PathNotFoundException e) {
                     return null;
-                }
+                } 
             }
         });
     }

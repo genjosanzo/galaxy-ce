@@ -77,7 +77,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         assertNotNull(e.getPhase());
     }
     
-    public void testSave() throws Exception {
+    public void testSave() throws Exception {    
         Lifecycle l = lifecycleManager.getDefaultLifecycle();
         l.setName("test");
         assertNotNull(l.getId());
@@ -100,7 +100,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         assertEquals(l, a.getDefaultVersion().getPhase().getLifecycle());
         
         try {
-            lifecycleManager.delete(l.getName(), "bad");
+            lifecycleManager.delete(l.getId(), null);
             fail("Expected not found exception");
         } catch (NotFoundException e) {
             
@@ -120,6 +120,12 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         lcs = lifecycleManager.getLifecycles();
         assertEquals(2, lcs.size());
         
+        lifecycleManager.delete(l.getId(), newLc.getId());
+        
+        Workspace wkspc = registry.getWorkspaceByPath("Default Workspace");
+        Artifact artifact = registry.getArtifact(wkspc, "hello_world.wsdl");
+        assertEquals(newLc, artifact.getDefaultVersion().getPhase().getLifecycle());
+        
         // try saving a lifecycle with a duplicate name
         newLc.setId(null);
         
@@ -129,6 +135,8 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         } catch (DuplicateItemException e) {
             // this is expected
         }
+        
+        
     }
     
     public void testWorkspaceInteraction() throws Exception {

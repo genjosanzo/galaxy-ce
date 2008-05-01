@@ -15,13 +15,15 @@ public class WLifecycle implements IsSerializable {
      */
     private Collection phases;
     private WPhase initialPhase;
+    private boolean defaultLifecycle;
     
     public WLifecycle() {
     }
 
-    public WLifecycle(String id, String name) {
+    public WLifecycle(String id, String name, boolean defaultLifecyle) {
         this.id = id;
         this.name = name;
+        defaultLifecycle = defaultLifecyle;
     }
     
     public String getId() {
@@ -30,6 +32,14 @@ public class WLifecycle implements IsSerializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public boolean isDefaultLifecycle() {
+        return defaultLifecycle;
+    }
+
+    public void setDefaultLifecycle(boolean defaultLifecycle) {
+        this.defaultLifecycle = defaultLifecycle;
     }
 
     public String getName() {

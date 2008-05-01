@@ -2,6 +2,7 @@ package org.mule.galaxy.web.client.admin;
 
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.util.AbstractForm;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WLifecycle;
@@ -30,14 +32,11 @@ import org.mule.galaxy.web.rpc.WPhase;
  * I apologize for the ugliness of this class in advance - there
  * is no way to develop a good UI for this without spaghetti code. - DD
  */
-public class LifecycleForm extends AbstractComposite {
+public class LifecycleForm extends AbstractForm {
 
-    private FlowPanel panel;
     private final WLifecycle lifecycle;
-    private final boolean add;
     private TextBox nameTB;
     private FlexTable nextPhasesPanel;
-    private Button save;
     private ListBox phases;
     private ListBox nextPhases;
     private TextBox phaseNameTB;
@@ -45,38 +44,37 @@ public class LifecycleForm extends AbstractComposite {
     private Button deletePhase;
     private Button addBtn;
     private WPhase initialPhase;
-    private Button delete;
+    private CheckBox defaultLifecycleCB;
 
     public LifecycleForm(AdministrationPanel adminPanel, 
                          WLifecycle l, 
-                         boolean add) {
+                         boolean newItem) {
+        super(adminPanel, newItem, "lifecycles", "Lifecycle was saved.", "Lifecycle was deleted.");
+        
         this.adminPanel = adminPanel;
         this.lifecycle = l;
-        this.add = add;
-        panel = new FlowPanel();
+        
         panel.setStyleName("lifecycle-form-base");
         
-        initWidget(panel);
+        initialPhase = l.getInitialPhase();
     }
 
-    public void onShow() {
-        panel.clear();
-        String title;
-        if (add) {
-            title = "Add Lifecycle";
-            lifecycle.setPhases(new ArrayList());
-        } else {
-            title = "Edit Lifecycle " + lifecycle.getName();
-        }
-
-        panel.add(createTitle(title));
-        
+    protected void addFields(FlexTable table) {
         FlexTable nameAndPhases = createColumnTable();
         
         nameTB = new TextBox();
         nameTB.setText(lifecycle.getName());
         nameAndPhases.setText(0, 0, "Lifecycle Name:");
         nameAndPhases.setWidget(0, 1, nameTB);
+        
+        defaultLifecycleCB = new CheckBox();
+        if (lifecycle.isDefaultLifecycle()) {
+            nameAndPhases.setText(1, 0, "Is Default Lifecycle:");
+            nameAndPhases.setText(1, 1, "Yes");
+        } else {
+            nameAndPhases.setText(1, 0, "Make Default Lifecycle:");
+            nameAndPhases.setWidget(1, 1, defaultLifecycleCB);
+        }
         
         phases = new ListBox();
         phases.setVisibleItemCount(10);
@@ -108,22 +106,8 @@ public class LifecycleForm extends AbstractComposite {
         addDelPhase.add(asDiv(addBtn));
         addDelPhase.add(asDiv(deletePhase));
 
-        nameAndPhases.setText(1, 0, "Phases:");
-        nameAndPhases.setWidget(1, 1, addDelPhase);
-
-        save = new Button("Save");
-        save.addClickListener(new ClickListener() {
-            public void onClick(Widget arg0) {
-                save();
-            }
-        });
-        
-        delete = new Button("Delete");
-        delete.addClickListener(new ClickListener() {
-            public void onClick(Widget arg0) {
-                delete();
-            }
-        });
+        nameAndPhases.setText(2, 0, "Phases:");
+        nameAndPhases.setWidget(2, 1, addDelPhase);
         
         // right side of the panel
         nextPhasesPanel = createColumnTable();
@@ -137,23 +121,21 @@ public class LifecycleForm extends AbstractComposite {
         
         // add to main panel
         styleHeaderColumn(nameAndPhases);
-        
-        FlexTable table = new FlexTable();
         table.setWidget(0, 0, nameAndPhases);
         table.setWidget(0, 1, nextPhasesPanel);
-        table.setCellSpacing(5);
-        table.getFlexCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP);
-        table.getFlexCellFormatter().setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_TOP);
-        
-        panel.add(table);
-        panel.add(asHorizontal(save, delete));
     }
     
-    private Widget asDiv(Widget w) {
-        FlowPanel p = new FlowPanel();
-        p.add(w);
-        return p;
+    public String getTitle() {
+        String title;
+        if (newItem) {
+            title = "Add Lifecycle";
+            lifecycle.setPhases(new ArrayList());
+        } else {
+            title = "Edit Lifecycle " + lifecycle.getName();
+        }
+        return title;
     }
+    
 
     protected void addPhase() {
         AddDialog dlg = new AddDialog(this);
@@ -302,68 +284,33 @@ public class LifecycleForm extends AbstractComposite {
             return;
         }
         
-        disable();
+        super.save();
         
+        if (defaultLifecycleCB.isChecked()) {
+            lifecycle.setDefaultLifecycle(true);
+        }
         lifecycle.setName(nameTB.getText());
         lifecycle.setInitialPhase(initialPhase);
         
-        adminPanel.getRegistryService().saveLifecycle(lifecycle, new AbstractCallback(adminPanel) {
+        adminPanel.getRegistryService().saveLifecycle(lifecycle, getSaveCallback());
+    }
 
-            public void onFailure(Throwable caught) {
-                reenable();
-                super.onFailure(caught);
-            }
-
-            public void onSuccess(Object arg0) {
-                reenable();
-                History.newItem("lifecycles");
-                adminPanel.setMessage("Lifecycle was saved.");
-            }
-            
-        });
+    protected void delete() {
+        super.delete();
+        
+        adminPanel.getRegistryService().deleteLifecycle(lifecycle.getId(), getDeleteCallback());
     }
     
-    protected void delete() {
-        disable();
-        
-        adminPanel.getRegistryService().deleteLifecycle(lifecycle.getId(), new AbstractCallback(adminPanel) {
-
-            public void onFailure(Throwable caught) {
-                reenable();
-                super.onFailure(caught);
-            }
-
-            public void onSuccess(Object arg0) {
-                reenable();
-                History.newItem("lifecycles");
-                adminPanel.setMessage("Lifecycle was deleted.");
-            }
-            
-        });
-    }
-
-    private void disable() {
-        nameTB.setEnabled(false);
-        phases.setEnabled(false);
+    protected void setEnabled(boolean enabled) {
+        nameTB.setEnabled(enabled);
+        phases.setEnabled(enabled);
         
         if (nextPhases != null) {
-            nextPhases.setEnabled(false);
-            phaseNameTB.setEnabled(false);
+            nextPhases.setEnabled(enabled);
+            phaseNameTB.setEnabled(enabled);
         }
         
-        save.setText("Saving...");
-        save.setEnabled(false);
-    }
-
-    protected void reenable() {
-        nameTB.setEnabled(true);
-        phases.setEnabled(true);
-        
-        nextPhases.setEnabled(true);
-        phaseNameTB.setEnabled(true);
-        
-        save.setText("Save");
-        save.setEnabled(true);
+        super.setEnabled(enabled);
     }
     
     public static final class AddDialog extends DialogBox {
