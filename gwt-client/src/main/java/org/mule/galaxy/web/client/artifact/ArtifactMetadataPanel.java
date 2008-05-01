@@ -1,5 +1,14 @@
 package org.mule.galaxy.web.client.artifact;
 
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.RegistryPanel;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.WProperty;
+
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -11,15 +20,6 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Iterator;
-
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.RegistryPanel;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
-import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.rpc.WProperty;
 
 public class ArtifactMetadataPanel extends AbstractComposite {
 
@@ -109,19 +109,22 @@ public class ArtifactMetadataPanel extends AbstractComposite {
     }
     
     private void createPropertyRow(final int row, 
-                                   final WProperty p) {
-        table.setText(row, 0, p.getDescription() + ":");
+                                   final WProperty p)
+    {
+        Label label = new Label(p.getDescription() + ":");
+        label.setTitle(p.getName());
+        table.setWidget(row, 0, label);
         final String name = p.getName();
         final String value = p.getValue();
         final boolean locked = p.isLocked();
-        
+
         setRow(row, name, value, locked);
-        
+
     }
 
     private void setRow(final int row, final String name, final String value, final boolean locked) {
         String txt = value;
-        Widget w = null;
+        Widget w;
         if (locked) {
             if ("".equals(txt) || txt == null) {
                 txt = "-----";
@@ -233,7 +236,10 @@ public class ArtifactMetadataPanel extends AbstractComposite {
 
     public void addProperty(String name, String desc, String value) {
         int rows = table.getRowCount();
-        table.setText(rows, 0, desc);
+
+        Label label = new Label(desc);
+        label.setTitle(name);
+        table.setWidget(rows, 0, label);
         
         setRow(rows, name, value, false);
     }
