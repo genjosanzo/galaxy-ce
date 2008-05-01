@@ -8,6 +8,7 @@ import java.util.Collection;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 
@@ -21,6 +22,7 @@ import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.mule.galaxy.ActivityManager;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.CommentManager;
 import org.mule.galaxy.PluginManager;
 import org.mule.galaxy.Registry;
@@ -28,6 +30,7 @@ import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.index.IndexManagerImpl;
 import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.PolicyManager;
@@ -97,6 +100,27 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         Authentication auth = provider.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
+    
+    protected boolean waitForIndexing(ArtifactVersion av) {
+        int count = 0;
+        while (count < 5000) {
+            if (av.isIndexedPropertiesStale()) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
+                count += 100;
+            } else {
+                try {
+                    ((JcrVersion) av).getNode().refresh(true);
+                } catch (RepositoryException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+        }
+        return false;
+    }
 
     protected Artifact importHelloWsdl() 
         throws Exception {
@@ -153,7 +177,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
 
             Node node = session.getRootNode();
 //            JcrUtil.dump(node.getNode("groups"));
-//            JcrUtil.dump(node.getNode("users"));
+//            JcrUtil.dump(node.getNode("workspaces"));
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
                 Node child = itr.nextNode();
                 if (!child.getName().startsWith("jcr:")) {

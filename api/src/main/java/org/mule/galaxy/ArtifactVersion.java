@@ -68,4 +68,6 @@ public interface ArtifactVersion {
     boolean isEnabled();
     
     void setEnabled(boolean enabled);
+    
+    boolean isIndexedPropertiesStale();
 }

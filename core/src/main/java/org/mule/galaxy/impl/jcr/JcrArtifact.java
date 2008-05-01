@@ -1,15 +1,5 @@
 package org.mule.galaxy.impl.jcr;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.util.QNameUtil;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,6 +16,13 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.xml.namespace.QName;
 
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.util.QNameUtil;
 import org.springmodules.jcr.JcrCallback;
 
 public class JcrArtifact extends AbstractJcrItem implements Artifact {
@@ -45,7 +42,6 @@ public class JcrArtifact extends AbstractJcrItem implements Artifact {
         super(node, registry);
         this.workspace = w;
         this.registry = registry;
-        
     }
 
     public String getId() {
@@ -168,7 +164,7 @@ public class JcrArtifact extends AbstractJcrItem implements Artifact {
                 for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
                     Node node = itr.nextNode();
                     
-                    if ("version".equals(node.getName())) {
+                    if (node.getPrimaryNodeType().getName().equals(JcrRegistryImpl.ARTIFACT_VERSION_NODE_TYPE)) {
                         versions.add(new JcrVersion(this, node));
                     }
                 }

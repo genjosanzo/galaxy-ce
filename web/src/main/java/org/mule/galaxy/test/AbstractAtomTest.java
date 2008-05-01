@@ -117,19 +117,23 @@ public class AbstractAtomTest extends TestCase {
         
         context = new WebAppContext();
         context.setContextPath("/");
-
-        context.setWar(getWebappDirectory());
+        context.setDescriptor(getWebXml());
+        context.setWar(getWebappDirectory().getAbsolutePath());
         server.setHandler(context);
         server.setStopAtShutdown(true);
         
         server.start();
     }
 
+    protected String getWebXml() {
+        return new File(getWebappDirectory(), "../../test/resources/web.xml").getAbsolutePath();
+    }
+
     /**
      * The webapp relative directory varies depending on run from Maven, Eclipse and IDEA
      * this will check each possiblilty to return an existing location
      */
-    protected final String getWebappDirectory() 
+    protected final File getWebappDirectory() 
     {
         File f = new File("./src/main/webapp");
         if(!f.exists())
@@ -144,7 +148,7 @@ public class AbstractAtomTest extends TestCase {
                 }
             }
         }
-        return f.getAbsolutePath();
+        return f;
     }
     
 }

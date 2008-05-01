@@ -509,7 +509,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
         throws RepositoryException, InvalidQueryException {
         QueryManager qm = getQueryManager(session);
         javax.jcr.query.Query query = 
-            qm.createQuery("//element(*, galaxy:artifact)/version[@lifecycle = '" + lifecycleId + "']", 
+            qm.createQuery("//element(*, galaxy:artifactVersion)[@lifecycle = '" + lifecycleId + "']", 
                            javax.jcr.query.Query.XPATH);
         
         QueryResult qr = query.execute();

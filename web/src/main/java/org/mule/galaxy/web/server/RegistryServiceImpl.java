@@ -629,7 +629,8 @@ public class RegistryServiceImpl implements RegistryService {
                                                          av.isEnabled(),
                                                          av.getAuthor().getName(),
                                                          av.getAuthor().getUsername(),
-                                                         av.getPhase().getName());
+                                                         av.getPhase().getName(),
+                                                         av.isIndexedPropertiesStale());
         for (Iterator<PropertyInfo> props = av.getProperties(); props.hasNext();) {
             PropertyInfo p = props.next();
 

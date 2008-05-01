@@ -74,6 +74,10 @@ public class ArtifactMetadataPanel extends AbstractComposite {
         metadata.add(metadataTitle);
 
         initializeProperties(info);
+        
+        if (info.isIndexInformationStale()) {
+            metadata.add(new Label("NOTE: Indexed metadata for this artifact is currently in the process of being updated."));
+        }
         metadata.add(table);
         initWidget(metadata);
     }

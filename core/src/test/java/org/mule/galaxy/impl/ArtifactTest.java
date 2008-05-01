@@ -45,7 +45,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         assertEquals("test.wsdl", a2.getName());
     }
-    
+
     public void testWorkspaces() throws Exception {
         Collection<Workspace> workspaces = registry.getWorkspaces();
         assertEquals(1, workspaces.size());
@@ -116,7 +116,8 @@ public class ArtifactTest extends AbstractGalaxyTest {
                                                     "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
         
         Artifact artifact = ar.getArtifact();
-        
+
+        assertTrue(waitForIndexing(ar.getArtifactVersion()));
         assertNotNull(artifact.getId());
         assertEquals("application/wsdl+xml", artifact.getContentType().toString());
         assertNotNull(artifact.getDocumentType());
@@ -165,7 +166,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         // Test the version history
         Node node = version.getNode();
-        assertEquals("version", node.getName());
+        assertEquals("0.1", node.getName());
         
         assertTrue(version.getData() instanceof Document);
         assertEquals("0.1", version.getVersionLabel());
@@ -185,6 +186,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         InputStream helloWsdl2 = getResourceAsStream("/wsdl/hello.wsdl");
         
         ar = registry.newVersion(artifact, helloWsdl2, "0.2", getAdmin());
+        assertTrue(waitForIndexing(ar.getArtifactVersion()));
         JcrVersion newVersion = (JcrVersion) ar.getArtifactVersion();
         assertTrue(newVersion.isLatest());
         assertFalse(version.isLatest());

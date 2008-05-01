@@ -16,6 +16,8 @@ public class ArtifactVersionInfo implements IsSerializable {
     private boolean _default;
     private boolean enabled;
     private String phase;
+    private boolean indexInformationStale;
+    
     /*
      * @gwt typeArgs org.mule.galaxy.rpc.WProperty
      */
@@ -25,7 +27,8 @@ public class ArtifactVersionInfo implements IsSerializable {
                                boolean enabled,
                                String authorName, 
                                String authorUsername,
-                               String phase) {
+                               String phase,
+                               boolean indexInformationStale) {
         super();
         this.id = id;
         this.versionLabel = versionLabel;
@@ -36,11 +39,20 @@ public class ArtifactVersionInfo implements IsSerializable {
         this.authorName = authorName;
         this.authorUsername = authorUsername;
         this.phase = phase;
+        this.indexInformationStale = indexInformationStale;
     }
 
     public ArtifactVersionInfo() {
         super();
         // TODO Auto-generated constructor stub
+    }
+
+    public boolean isIndexInformationStale() {
+        return indexInformationStale;
+    }
+
+    public void setIndexInformationStale(boolean indexInformationStale) {
+        this.indexInformationStale = indexInformationStale;
     }
 
     /**

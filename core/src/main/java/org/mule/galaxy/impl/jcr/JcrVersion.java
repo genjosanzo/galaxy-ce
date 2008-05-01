@@ -27,13 +27,13 @@ import org.mule.galaxy.util.DateUtil;
 public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
     public static final String CREATED = "created";
     public static final String DATA = "data";
-    public static final String LABEL = "label";
     public static final String LATEST = "latest";
     public static final String DEFAULT = "default";
     public static final String ENABLED = "enabled";
     public static final String AUTHOR_ID = "authorId";
     public static final String DEPENDENCIES = "dependencies";
     public static final String USER_SPECIFIED = "userSpecified";
+    public static final String INDEX_PROPERTIES_STALE = "indexedPropertiesStale";
 
     public static final String LIFECYCLE = "lifecycle";
     public static final String PHASE = "phase";
@@ -108,6 +108,23 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
             throw new RuntimeException(e);
         }
     }
+    
+    public boolean isIndexedPropertiesStale() {
+        return JcrUtil.getBooleanOrNull(node, INDEX_PROPERTIES_STALE);
+    }
+
+    public void setIndexedPropertiesStale(boolean stale) {
+        try {
+            if (!stale) {
+                JcrUtil.setProperty(JcrVersion.INDEX_PROPERTIES_STALE, Boolean.FALSE, node);
+            } else {
+                JcrUtil.setProperty(JcrVersion.INDEX_PROPERTIES_STALE, Boolean.TRUE, node);
+            }
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     public boolean isDefault() {
         return JcrUtil.getBooleanOrNull(node, DEFAULT);
@@ -138,16 +155,15 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
     }
 
     public String getVersionLabel() {
-        return getStringOrNull(LABEL);
+        try {
+            return node.getName();
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setData(Object data) {
         this.data = data;
-    }
-
-    public void setVersionLabel(String vname) {
-        setNodeProperty(LABEL, vname);
-        update();
     }
 
     public Calendar getCreated() {

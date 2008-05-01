@@ -11,6 +11,7 @@ import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexException;
@@ -18,6 +19,8 @@ import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.index.Indexer;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.util.SecurityUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -30,14 +33,21 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.jcr.AccessDeniedException;
+import javax.jcr.InvalidItemStateException;
+import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
+import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
@@ -71,6 +81,8 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
     private boolean destroyed = false;
 
+    private boolean indexArtifactsAsynchronously = true;
+    
     public IndexManagerImpl() throws Exception {
         super(Index.class, "indexes", true);
     }
@@ -183,9 +195,72 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     private void reindex(final Index idx) {
         Runnable runnable = getIndexer(idx);
 
+        addToQueue(runnable);
+    }
+
+    private void addToQueue(Runnable runnable) {
         if (!queue.add(runnable)) handleIndexingException(new Exception("Could not add indexer to queue."));
     }
 
+    private Runnable getIndexer(ArtifactVersion av) {
+        final String artifactVersionId = av.getId();
+        Runnable runnable = new Runnable() {
+
+            public void run() {
+                final Session session;
+                boolean participate = false;
+                SessionFactory sf = getSessionFactory();
+                if (TransactionSynchronizationManager.hasResource(sf)) {
+                    // Do not modify the Session: just set the participate
+                    // flag.
+                    participate = true;
+                    // get the JCR session from the current TX
+                    session = SessionFactoryUtils.getSession(sf, false);
+                } else {
+                    logger.debug("Opening reeindexing session");
+                    session = SessionFactoryUtils.getSession(sf, true);
+                    // TODO is this call really required? SFU.getSession() has already bound it to the TX
+                    TransactionSynchronizationManager.bindResource(sf, sf.getSessionHolder(session));
+                }
+
+                try {
+                    SecurityUtils.doPriveleged(new Runnable() {
+                        public void run() {
+                            try {
+                                // lookup a version associated with this session
+                                final ArtifactVersion version = getRegistry().getArtifactVersion(artifactVersionId);
+                                ((JcrVersion) version).setIndexedPropertiesStale(true);
+                                session.save();
+                                
+                                doIndex(version);
+
+                                ((JcrVersion) version).setIndexedPropertiesStale(false);
+                                session.save();
+                            } catch (RepositoryException e) {
+                                handleIndexingException(e);
+                            } catch (NotFoundException e) {
+                                handleIndexingException(e);
+                            } catch (RegistryException e) {
+                                handleIndexingException(e);
+                            } catch (AccessException e) {
+                                // this can't happen
+                                handleIndexingException(e);
+                            } 
+                        }
+                    });
+                } finally {
+                    if (!participate) {
+                        TransactionSynchronizationManager.unbindResource(sf);
+                        logger.debug("Closing reindexing session");
+                        SessionFactoryUtils.releaseSession(session, sf);
+                    }
+                }
+            }
+        };
+        return runnable;
+    }
+
+    
     private Runnable getIndexer(final Index idx) {
         Runnable runnable = new Runnable() {
 
@@ -207,7 +282,6 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 }
 
                 try {
-
                     findAndReindex(session, idx);
                 } catch (RepositoryException e) {
                     handleIndexingException(e);
@@ -296,19 +370,34 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
     
     public void index(final ArtifactVersion version) {
-        Collection<Index> indices = getIndexes(version);
+        Runnable indexer = getIndexer(version);
         
-        for (Index idx : indices) {
-            ContentHandler ch = contentService.getContentHandler(version.getParent().getContentType());
-            
-            try {
-                getIndexer(idx.getIndexer()).index(version, ch, idx);
-            } catch (IndexException e) {
-                handleIndexingException(idx, e);
-            } catch (IOException e) {
-                handleIndexingException(idx, e);
-            }
+        if (indexArtifactsAsynchronously) {
+            addToQueue(indexer);
+        } else {
+            doIndex(version);
         }
+    }
+
+    private void doIndex(final ArtifactVersion version) {
+        final Collection<Index> indices = getIndexes(version);
+        
+        SecurityUtils.doPriveleged(new Runnable() {
+            public void run() {
+                for (Index idx : indices) {
+                    ContentHandler ch = contentService.getContentHandler(version.getParent().getContentType());
+                    
+                    try {
+                        getIndexer(idx.getIndexer()).index(version, ch, idx);
+                    } catch (IndexException e) {
+                        handleIndexingException(idx, e);
+                    } catch (IOException e) {
+                        handleIndexingException(idx, e);
+                    }
+                }
+            }
+        });
+       
     }
 
     public Indexer getIndexer(String id) {
@@ -340,6 +429,14 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
     public void setActivityManager(ActivityManager activityManager) {
         this.activityManager = activityManager;
+    }
+
+    public boolean isIndexArtifactsAsynchronously() {
+        return indexArtifactsAsynchronously;
+    }
+
+    public void setIndexArtifactsAsynchronously(boolean indexArtifactsAsynchronously) {
+        this.indexArtifactsAsynchronously = indexArtifactsAsynchronously;
     }
 
 

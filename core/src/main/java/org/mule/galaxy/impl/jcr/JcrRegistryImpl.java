@@ -78,7 +78,8 @@ import org.springmodules.jcr.JcrTemplate;
 
 public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistry {
 
-    private static final String ARTIFACT_NODE_TYPE = "galaxy:artifact";
+    public static final String ARTIFACT_NODE_TYPE = "galaxy:artifact";
+    public static final String ARTIFACT_VERSION_NODE_TYPE = "galaxy:artifactVersion";
     public static final String LATEST = "latest";
     private static final String REPOSITORY_LAYOUT_VERSION = "version";
 
@@ -501,7 +502,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 setupContentHandler(artifact);
 
-                ArtifactVersion av = artifact.getVersion(JcrUtil.getStringOrNull(node, JcrVersion.LABEL));
+                ArtifactVersion av = artifact.getVersion(node.getName());
                 if (av == null) {
                     throw new RuntimeException(new NotFoundException(id));
                 }
@@ -603,7 +604,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 }
                 
                 artifactNode.addMixin("mix:referenceable");
-                Node versionNode = artifactNode.addNode("version");
+                Node versionNode = artifactNode.addNode(versionLabel, ARTIFACT_VERSION_NODE_TYPE);
                 versionNode.addMixin("mix:referenceable");
                 if (is != null) {
                     versionNode.setProperty(JcrVersion.DATA, is);
@@ -644,7 +645,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     ch = contentService.getContentHandler(artifact.getDocumentType());
                 }
     
-                jcrVersion.setVersionLabel(versionLabel);
                 jcrVersion.setAuthor(user);
                 jcrVersion.setLatest(true);
                 jcrVersion.setDefault(true);
@@ -778,9 +778,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         throws RegistryException, RepositoryException {
         List<ApprovalMessage> approvals = approve(previous, next);
 
-        indexManager.index(next);
-        
         session.save();
+        
+        // index in a separate thread
+        indexManager.index(next);
         
         if (previous == null) {
             activityManager.logActivity(user, "Artifact " + artifact.getName() + " was created in workspace "
@@ -879,7 +880,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 ContentHandler ch = contentService.getContentHandler(jcrArtifact.getContentType());
                 
                 // create a new version node
-                Node versionNode = artifactNode.addNode("version");
+                Node versionNode = artifactNode.addNode(versionLabel, ARTIFACT_VERSION_NODE_TYPE);
                 versionNode.addMixin("mix:referenceable");
                 
                 Calendar now = Calendar.getInstance();
@@ -904,7 +905,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         versionNode.setProperty(JcrVersion.DATA, ch.read(data));
                     }
                     
-                    next.setVersionLabel(versionLabel);
                     next.setAuthor(user);
                     next.setLatest(true);
                     next.setEnabled(true);
@@ -1304,11 +1304,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     // so we need to traverse the hierarchy to find the right node
                     if (av) {
                         Node artifactNode = node;
-                        if (!artifactNode.getPrimaryNodeType().getName().equals(ARTIFACT_NODE_TYPE)) {
-                            while (!node.getName().equals("version")) {
-                                node = node.getParent();
-                            }
-                            artifactNode = node.getParent(); 
+                        while (!artifactNode.getPrimaryNodeType().getName().equals(ARTIFACT_NODE_TYPE)) {
+                            artifactNode = node.getParent();
                         }
                         JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(registry, lifecycleManager, artifactNode.getParent()), 
                                                                artifactNode, 
@@ -1380,9 +1377,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         // Search the latest if we're searching for artifacts, otherwise
         // search all versions
         if (!av) {
-            propStr.append("/version[@latest='true']");
+            propStr.append("/*[@latest='true']");
         } else {
-            propStr.append("/version");
+            propStr.append("/*");
         }
         
         boolean first = true;
@@ -1536,7 +1533,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 QueryManager qm = getQueryManager(session);
                 
                 StringBuilder qstr = new StringBuilder();
-                qstr.append("//element(*, galaxy:artifact)/version/")
+                qstr.append("//element(*, galaxy:artifact)/*/")
                     .append(JcrVersion.DEPENDENCIES)
                     .append("/")
                     .append(ISO9075.encode(artifact.getId()))
