@@ -32,22 +32,15 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.jcr.AccessDeniedException;
-import javax.jcr.InvalidItemStateException;
-import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
@@ -79,7 +72,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
     private ActivityManager activityManager;
 
-    private boolean destroyed = false;
+    private AtomicBoolean destroyed = new AtomicBoolean(false);
 
     private boolean indexArtifactsAsynchronously = true;
     
@@ -177,10 +170,13 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         {
             log.debug("Starting IndexManager.destroy() with " + executor.getQueue().size() + " indexing jobs left");
         }
-        if (destroyed) return;
+        if (destroyed.get())
+        {
+            return;
+        }
 
         executor.shutdown();
-        destroyed = true;
+        destroyed.compareAndSet(false, true);
 
         executor.awaitTermination(10, TimeUnit.SECONDS);
 
@@ -199,7 +195,10 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
 
     private void addToQueue(Runnable runnable) {
-        if (!queue.add(runnable)) handleIndexingException(new Exception("Could not add indexer to queue."));
+        if (!queue.add(runnable))
+        {
+            handleIndexingException(new Exception("Could not add indexer to queue."));
+        }
     }
 
     private Runnable getIndexer(ArtifactVersion av) {
