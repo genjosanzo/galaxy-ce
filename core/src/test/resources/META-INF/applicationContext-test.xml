@@ -19,6 +19,4 @@
     <property name="indexArtifactsAsynchronously" value="false"/>
   </bean>
   
-  <bean id="removeOddCharsFn" class="org.mule.galaxy.query.RemoveArtifactsWithOddNumberOfCharsFunction"/>
-  
 </beans>
