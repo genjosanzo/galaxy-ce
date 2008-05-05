@@ -145,6 +145,12 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertNotNull(versionCollection);
         res.release();
         
+        
+        res = client.put(e.getEditLinkResolvedHref().toString(), e, defaultOpts);
+        System.out.println("Got " + res.getStatus());
+        prettyPrint(res.getDocument());
+        res.release();
+        
         // try getting the version history
         res = client.get(e.getContentSrc().toString() + ";history", defaultOpts);
 //        prettyPrint(res.getDocument());

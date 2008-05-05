@@ -778,10 +778,14 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         throws RegistryException, RepositoryException {
         List<ApprovalMessage> approvals = approve(previous, next);
 
+        // save this so the indexer will work
         session.save();
         
         // index in a separate thread
         indexManager.index(next);
+        
+        // save the "we're indexing" flag
+        session.save();
         
         if (previous == null) {
             activityManager.logActivity(user, "Artifact " + artifact.getName() + " was created in workspace "

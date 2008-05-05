@@ -228,8 +228,6 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                             try {
                                 // lookup a version associated with this session
                                 final ArtifactVersion version = getRegistry().getArtifactVersion(artifactVersionId);
-                                ((JcrVersion) version).setIndexedPropertiesStale(true);
-                                session.save();
                                 
                                 doIndex(version);
 
@@ -369,9 +367,11 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
     
     public void index(final ArtifactVersion version) {
-        Runnable indexer = getIndexer(version);
-        
         if (indexArtifactsAsynchronously) {
+            Runnable indexer = getIndexer(version);
+            
+            ((JcrVersion) version).setIndexedPropertiesStale(true);
+
             addToQueue(indexer);
         } else {
             doIndex(version);
