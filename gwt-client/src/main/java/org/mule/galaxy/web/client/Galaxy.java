@@ -1,12 +1,21 @@
 package org.mule.galaxy.web.client;
 
+import org.mule.galaxy.web.client.activity.ActivityPanel;
+import org.mule.galaxy.web.client.admin.AdministrationPanel;
+import org.mule.galaxy.web.client.util.ExternalHyperlink;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.RegistryService;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.SecurityService;
+import org.mule.galaxy.web.rpc.SecurityServiceAsync;
+import org.mule.galaxy.web.rpc.WUser;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -18,15 +27,6 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import org.mule.galaxy.web.client.activity.ActivityPanel;
-import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.RegistryService;
-import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.rpc.SecurityService;
-import org.mule.galaxy.web.rpc.SecurityServiceAsync;
-import org.mule.galaxy.web.rpc.WUser;
 
 
 /**
@@ -101,8 +101,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
             public void onSuccess(Object o) {
                 user = (WUser) o;
                 rightPanel.add(new Label(user.getName()));
-                
-                HTML logout = new HTML("<a href=\"" + GWT.getHostPageBaseURL() + "j_logout\">Logout</a>");
+
+                ExternalHyperlink logout = new ExternalHyperlink("Logout", GWT.getHostPageBaseURL() + "j_logout");
                 rightPanel.add(logout);
                 
                 loadTabs(galaxy);
