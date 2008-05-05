@@ -24,7 +24,6 @@
         <module>cxf</module>
         <module>spring</module>
         <module>maven/publish-plugin</module>
-        <module>maven/policy-plugin</module>
         <module>distribution</module>
     </modules>
 
