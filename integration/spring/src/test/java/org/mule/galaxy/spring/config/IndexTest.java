@@ -1,5 +1,9 @@
 package org.mule.galaxy.spring.config;
 
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Set;
+
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
@@ -7,13 +11,9 @@ import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.index.Index;
+import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.Query;
-import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.test.AbstractGalaxyTest;
-
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Set;
 
 public class IndexTest extends AbstractGalaxyTest
 {
@@ -65,7 +65,7 @@ public class IndexTest extends AbstractGalaxyTest
 
         // Try out search!
         Set results = registry.search(new Query(Artifact.class,
-                                                Restriction.eq("spring.bean", "TestObject1"))).getResults();
+                                                OpRestriction.eq("spring.bean", "TestObject1"))).getResults();
 
         assertEquals(1, results.size());
 
@@ -73,7 +73,7 @@ public class IndexTest extends AbstractGalaxyTest
         assertEquals(1, next.getVersions().size());
 
         results = registry.search(new Query(ArtifactVersion.class,
-                                            Restriction.eq("spring.bean", "TestObject1"))).getResults();
+                                            OpRestriction.eq("spring.bean", "TestObject1"))).getResults();
 
         assertEquals(1, results.size());
 
