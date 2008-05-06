@@ -3,7 +3,7 @@ package org.mule.galaxy.plugins.mule1;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.query.Query;
-import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
 
@@ -26,13 +26,13 @@ public class QueryTest extends AbstractGalaxyTest {
         assertEquals(2, results.size());
         results = registry.search(new Query(Artifact.class)
             .workspaceId(workspace.getId())
-                 .add(Restriction.eq("mule.descriptor", "GreeterUMO"))
-                 .add(Restriction.eq("documentType", Constants.MULE_QNAME))).getResults();
+                 .add(OpRestriction.eq("mule.descriptor", "GreeterUMO"))
+                 .add(OpRestriction.eq("documentType", Constants.MULE_QNAME))).getResults();
         assertEquals(1, results.size());
 
         results = registry.search(new Query(Artifact.class)
             .workspacePath(workspace.getPath())
-                 .add(Restriction.like("mule.descriptor", "Greeter"))).getResults();
+                 .add(OpRestriction.like("mule.descriptor", "Greeter"))).getResults();
         assertEquals(1, results.size());
 
         results = registry.search("select artifact where mule.descriptor in ('GreeterUMO', 'FooUMO')", 0, 100).getResults();
@@ -65,12 +65,12 @@ public class QueryTest extends AbstractGalaxyTest {
 
         results = registry.search(new Query(Artifact.class)
             .workspaceId(workspace.getId())
-                 .add(Restriction.not(Restriction.eq("documentType", Constants.MULE_QNAME)))).getResults();
+                 .add(OpRestriction.not(OpRestriction.eq("documentType", Constants.MULE_QNAME)))).getResults();
         assertEquals(1, results.size());
 
         results = registry.search(new Query(Artifact.class)
             .workspaceId(workspace.getId())
-                 .add(Restriction.like("mule.descriptor", "Greeter"))).getResults();
+                 .add(OpRestriction.like("mule.descriptor", "Greeter"))).getResults();
         assertEquals(1, results.size());
 
     }

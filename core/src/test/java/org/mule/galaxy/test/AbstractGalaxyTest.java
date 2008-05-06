@@ -33,6 +33,7 @@ import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.query.FunctionRegistry;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
@@ -50,6 +51,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     protected JackrabbitRepository repository;
     protected Registry registry;
     protected Settings settings;
+    protected FunctionRegistry functionRegistry;
     protected SessionFactory sessionFactory;
     protected LifecycleManager lifecycleManager;
     protected UserManager userManager;

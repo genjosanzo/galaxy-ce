@@ -38,6 +38,10 @@
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
   
+  <bean id="functionRegistry" 
+        class="org.mule.galaxy.impl.query.FunctionRegistryImpl"
+        init-method="initialize"/>
+        
   <bean id="lifecycleManager" parent="txProxyTemplate">
     <property name="target" ref="lifecycleManagerTarget"/>
     <property name="proxyTargetClass" value="true"/>
@@ -104,6 +108,7 @@
     <property name="accessControlManager" ref="accessControlManager" />
     <property name="activityManager" ref="activityManager" />
     <property name="contentService" ref="contentService" />
+    <property name="functionRegistry" ref="functionRegistry" />
     <property name="settings" ref="settings" />
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="propertyDescriptorDao" ref="propertyDescriptorDao" />

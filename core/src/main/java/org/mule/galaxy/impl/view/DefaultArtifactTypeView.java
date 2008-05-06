@@ -2,7 +2,6 @@ package org.mule.galaxy.impl.view;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.view.ArtifactTypeView;
-import org.mule.galaxy.view.ViewLink;
 
 public class DefaultArtifactTypeView implements ArtifactTypeView {
 
@@ -27,10 +26,6 @@ public class DefaultArtifactTypeView implements ArtifactTypeView {
             return row.getDefaultVersion().getPhase().getName();
         }
         
-        return null;
-    }
-
-    public ViewLink getLink(Artifact row, int i) {
         return null;
     }
 

@@ -50,7 +50,7 @@ import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
-import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.AccessException;
@@ -300,16 +300,16 @@ public class RegistryServiceImpl implements RegistryService {
         return s;
     }
 
-    private Restriction getRestrictionForPredicate(SearchPredicate pred) {
+    private OpRestriction getRestrictionForPredicate(SearchPredicate pred) {
         String property = pred.getProperty();
         String value = pred.getValue();
         switch (pred.getMatchType()) {
         case SearchPredicate.HAS_VALUE:
-            return Restriction.eq(property, value);
+            return OpRestriction.eq(property, value);
         case SearchPredicate.LIKE:
-            return Restriction.like(property, value);
+            return OpRestriction.like(property, value);
         case SearchPredicate.DOES_NOT_HAVE_VALUE:
-            return Restriction.not(Restriction.eq(property, value));
+            return OpRestriction.not(OpRestriction.eq(property, value));
         default:
             return null;
         }

@@ -4,7 +4,7 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.query.Query;
-import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
 
@@ -30,13 +30,13 @@ public class QueryTest extends AbstractGalaxyTest {
 
         results = registry.search(new Query(Artifact.class)
             .workspaceId(workspace.getId())
-                 .add(Restriction.eq("mule2.service", "GreeterUMO"))
-                 .add(Restriction.eq("documentType", Constants.MULE2_QNAME))).getResults();
+                 .add(OpRestriction.eq("mule2.service", "GreeterUMO"))
+                 .add(OpRestriction.eq("documentType", Constants.MULE2_QNAME))).getResults();
         assertEquals(1, results.size());
 
         results = registry.search(new Query(Artifact.class)
             .workspacePath(workspace.getPath())
-                 .add(Restriction.like("mule2.service", "Greeter"))).getResults();
+                 .add(OpRestriction.like("mule2.service", "Greeter"))).getResults();
         assertEquals(1, results.size());
 
         results = registry.search("select artifact where mule2.service in ('GreeterUMO', 'FooUMO')", 0, 100).getResults();
@@ -57,12 +57,12 @@ public class QueryTest extends AbstractGalaxyTest {
 
         results = registry.search(new Query(Artifact.class)
             .workspaceId(workspace.getId())
-                 .add(Restriction.not(Restriction.eq("documentType", Constants.MULE2_QNAME)))).getResults();
+                 .add(OpRestriction.not(OpRestriction.eq("documentType", Constants.MULE2_QNAME)))).getResults();
         assertEquals(1, results.size());
 
         results = registry.search(new Query(Artifact.class)
             .workspaceId(workspace.getId())
-                 .add(Restriction.like("mule2.service", "Greeter"))).getResults();
+                 .add(OpRestriction.like("mule2.service", "Greeter"))).getResults();
         assertEquals(1, results.size());
 
     }

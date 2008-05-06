@@ -4,8 +4,8 @@ import java.util.Set;
 
 public class SearchResults {
     private long total;
-    private Set<Object> results;
-    public SearchResults(long total, Set<Object> results) {
+    private Set<? extends Object> results;
+    public SearchResults(long total, Set<? extends Object> results) {
         super();
         this.total = total;
         this.results = results;
@@ -15,7 +15,7 @@ public class SearchResults {
         return total;
     }
     
-    public Set<Object> getResults() {
+    public Set<? extends Object> getResults() {
         return results;
     }
     

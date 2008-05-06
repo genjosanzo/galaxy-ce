@@ -8,9 +8,11 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.activation.MimeType;
@@ -59,10 +61,14 @@ import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.query.AbstractFunction;
+import org.mule.galaxy.query.FunctionCall;
+import org.mule.galaxy.query.FunctionRegistry;
+import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.query.SearchResults;
-import org.mule.galaxy.query.Restriction.Operator;
+import org.mule.galaxy.query.OpRestriction.Operator;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Permission;
@@ -89,6 +95,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     private ContentService contentService;
 
+    private FunctionRegistry functionRegistry;
+    
     private LifecycleManager lifecycleManager;
     
     private PolicyManager policyManager;
@@ -1173,13 +1181,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 throw new QueryException(new Message("EXPECTED_RIGHT", BundleUtils.getBundle(getClass())));
             }
             
-            Restriction r = null;
+            OpRestriction r = null;
             if (compare.equals("=")) {
-                r = Restriction.eq(left, dequote(itr.next(), itr));
+                r = OpRestriction.eq(left, dequote(itr.next(), itr));
             } else if (compare.equals("like")) {
-                r = Restriction.like(left, dequote(itr.next(), itr));
+                r = OpRestriction.like(left, dequote(itr.next(), itr));
             } else if (compare.equals("!=")) {
-                r = Restriction.not(Restriction.eq(left, dequote(itr.next(), itr)));
+                r = OpRestriction.not(OpRestriction.eq(left, dequote(itr.next(), itr)));
             } else if (compare.equals("in")) {
                 if (!itr.hasNext()) {
                     throw new QueryException(new Message("EXPECTED_IN_TOKEN", BundleUtils.getBundle(getClass())));
@@ -1213,7 +1221,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         in.add(dequote(nextIn, itr));
                     }
                 }
-                r = Restriction.in(left, in);
+                r = OpRestriction.in(left, in);
             } else {
                 new QueryException(new Message("UNKNOWN_COMPARATOR", BundleUtils.getBundle(getClass()), left));
             }
@@ -1273,9 +1281,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     throw new RuntimeException(new QueryException(new Message("INVALID_SELECT_TYPE", BundleUtils.getBundle(getClass()), selectType.getName())));
                 }
                 
+                Map<FunctionCall, AbstractFunction> functions = new HashMap<FunctionCall, AbstractFunction>();
+                
                 String qstr = null;
                 try {
-                    qstr = createQueryString(query, av);
+                    qstr = createQueryString(query, av, functions);
                 } catch (QueryException e) {
                     // will be dewrapped later
                     throw new RuntimeException(e);
@@ -1346,13 +1356,32 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     }
                 }                                                   
                 
-                return new SearchResults(nodes.getSize(), artifacts);
+                for (Map.Entry<FunctionCall, AbstractFunction> e : functions.entrySet()) {
+                    if (av) {
+                        Set<ArtifactVersion> artifacts2 = new HashSet<ArtifactVersion>();
+                        for (Object o : artifacts) {
+                            artifacts2.add((ArtifactVersion) o);
+                        }
+                        e.getValue().modifyArtifactVersions(e.getKey().getArguments(), artifacts2);
+                        return new SearchResults(artifacts2.size(), artifacts2);
+                    } else {
+                        Set<Artifact> artifacts2 = new HashSet<Artifact>();
+                        for (Object o : artifacts) {
+                            artifacts2.add((Artifact) o);
+                        }
+                        e.getValue().modifyArtifacts(e.getKey().getArguments(), artifacts2);
+                        return new SearchResults(artifacts2.size(), artifacts2);
+                    }
+                }
+                return new SearchResults(artifacts.size(), artifacts);
             }
 
         });
     }
 
-    protected String createQueryString(final org.mule.galaxy.query.Query query, boolean av) throws QueryException {
+    protected String createQueryString(final org.mule.galaxy.query.Query query, 
+                                       boolean av, 
+                                       Map<FunctionCall, AbstractFunction> functions) throws QueryException {
         StringBuilder qstr = new StringBuilder();
         if (query.getWorkspaceId() != null) {
             qstr.append("//*[@jcr:uuid='")
@@ -1388,84 +1417,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         
         boolean first = true;
         for (Restriction r : query.getRestrictions()) {
-
-            // TODO: NOT, LIKE, OR, etc
-            String property = (String) r.getLeft();
-            boolean not = false;
-            Operator operator = r.getOperator();
-            
-            if (operator.equals(Operator.NOT)) {
-                not = true;
-                r = (Restriction) r.getRight();
-                operator = r.getOperator();
-                property = r.getLeft().toString();
-            }
-            
-            if ("phase".equals(property)) {
-                if (operator.equals(Operator.IN)) {
-                    if (first) {
-                        first = false;
-                        propStr.append("[");
-                    } else {
-                        propStr.append(" and ");
-                    }
-                    
-                    Collection<?> right = (Collection<?>) r.getRight();
-                    boolean firstPhase = true;
-                    for (Object o : right) {
-                        
-                        if (firstPhase) {
-                            propStr.append("(");
-                            firstPhase = false;
-                        } else {
-                            propStr.append(" or ");
-                        }
-                        
-                        createLifecycleAndPhasePropertySearch(propStr, property, o, not, operator);
-                    }
-                    
-                    if (!firstPhase) {
-                        propStr.append(")");
-                    }
-                } else {
-                    String right = r.getRight().toString();
-                    
-                    propStr.append("[");
-                    createLifecycleAndPhasePropertySearch(propStr, property, right, not, operator);
-                    propStr.append("]");
-                }
-            } else {
-                // this is a normal property
-                if (operator.equals(Operator.IN)) {
-                    Collection<?> right = (Collection<?>) r.getRight();
-                    for (Object o : right) {
-
-                        String rightVal = o == null ? "" : o.toString();
-                        if ("lifecycle".equals(property)) {
-                            Lifecycle l = lifecycleManager.getLifecycle(rightVal);
-                            if (l == null) {
-                                continue;
-                            } else {
-                                rightVal = l.getId();
-                            }
-                        }
-
-                        first = appendPropertySearch(qstr, propStr, first,
-                                                     rightVal, property,
-                                                     not, false, Operator.EQUALS);
-                    }
-                } else {
-                    String right = r.getRight().toString();
-
-                    if ("lifecycle".equals(property)) {
-                        Lifecycle l = lifecycleManager.getLifecycle(right);
-                        
-                        right = l.getId();
-                    }
-                    
-                    first = appendPropertySearch(qstr, propStr, first, right, 
-                                                  property, not, true, operator);
-                }
+            if (r instanceof OpRestriction) {
+                first = handleOperator((OpRestriction) r, qstr, propStr, first);
+            } else if (r instanceof FunctionCall) {
+                first = handleFunction((FunctionCall) r, functions, qstr, propStr, first);
             }
         }
         
@@ -1478,6 +1433,106 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             qstr.append(propStr);
         }
         return qstr.toString();
+    }
+
+    private boolean handleFunction(FunctionCall r, Map<FunctionCall, AbstractFunction> functions, StringBuilder qstr, StringBuilder propStr, boolean first) throws QueryException {
+        AbstractFunction fn = functionRegistry.getFunction(r.getModule(), r.getName());
+        
+        functions.put(r, fn);
+        
+        // Narrow down query if possible
+        List<OpRestriction> restrictions = fn.getRestrictions(r.getArguments());
+        
+        if (restrictions != null && restrictions.size() > 0) {
+            for (OpRestriction opR : restrictions) {
+                first = handleOperator(opR, qstr, propStr, first);
+            }
+        }
+        
+        return first;
+    }
+
+    private boolean handleOperator(OpRestriction or, StringBuilder qstr, StringBuilder propStr, boolean first)
+        throws QueryException {
+        // TODO: NOT, LIKE, OR, etc
+        String property = (String) or.getLeft();
+        boolean not = false;
+        Operator operator = or.getOperator();
+        
+        if (operator.equals(Operator.NOT)) {
+            not = true;
+            or = (OpRestriction) or.getRight();
+            operator = or.getOperator();
+            property = or.getLeft().toString();
+        }
+        
+        if ("phase".equals(property)) {
+            if (operator.equals(Operator.IN)) {
+                if (first) {
+                    first = false;
+                    propStr.append("[");
+                } else {
+                    propStr.append(" and ");
+                }
+                
+                Collection<?> right = (Collection<?>) or.getRight();
+                boolean firstPhase = true;
+                for (Object o : right) {
+                    
+                    if (firstPhase) {
+                        propStr.append("(");
+                        firstPhase = false;
+                    } else {
+                        propStr.append(" or ");
+                    }
+                    
+                    createLifecycleAndPhasePropertySearch(propStr, property, o, not, operator);
+                }
+                
+                if (!firstPhase) {
+                    propStr.append(")");
+                }
+            } else {
+                String right = or.getRight().toString();
+                
+                propStr.append("[");
+                createLifecycleAndPhasePropertySearch(propStr, property, right, not, operator);
+                propStr.append("]");
+            }
+        } else {
+            // this is a normal property
+            if (operator.equals(Operator.IN)) {
+                Collection<?> right = (Collection<?>) or.getRight();
+                for (Object o : right) {
+
+                    String rightVal = o == null ? "" : o.toString();
+                    if ("lifecycle".equals(property)) {
+                        Lifecycle l = lifecycleManager.getLifecycle(rightVal);
+                        if (l == null) {
+                            continue;
+                        } else {
+                            rightVal = l.getId();
+                        }
+                    }
+
+                    first = appendPropertySearch(qstr, propStr, first,
+                                                 rightVal, property,
+                                                 not, false, Operator.EQUALS);
+                }
+            } else {
+                String right = or.getRight().toString();
+
+                if ("lifecycle".equals(property)) {
+                    Lifecycle l = lifecycleManager.getLifecycle(right);
+                    
+                    right = l.getId();
+                }
+                
+                first = appendPropertySearch(qstr, propStr, first, right, 
+                                              property, not, true, operator);
+            }
+        }
+        return first;
     }
 
     private void createLifecycleAndPhasePropertySearch(StringBuilder qstr, String property, Object right,
@@ -1733,6 +1788,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public void setActivityManager(ActivityManager activityManager) {
         this.activityManager = activityManager;
+    }
+
+    public void setFunctionRegistry(FunctionRegistry functionRegistry) {
+        this.functionRegistry = functionRegistry;
     }
 
     public void setSettings(Settings settings) {

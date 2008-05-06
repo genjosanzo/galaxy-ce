@@ -12,8 +12,6 @@ public interface ArtifactTypeView {
     String[] getColumnNames();
 
     String getColumnValue(Artifact row, int column);
-
-    ViewLink getLink(Artifact row, int column);
     
     boolean isSummary(int column);
     

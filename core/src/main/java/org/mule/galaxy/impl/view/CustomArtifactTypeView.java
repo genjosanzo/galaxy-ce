@@ -8,7 +8,6 @@ import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.view.ArtifactTypeView;
 import org.mule.galaxy.view.Column;
 import org.mule.galaxy.view.ColumnEvaluator;
-import org.mule.galaxy.view.ViewLink;
 
 public class CustomArtifactTypeView implements ArtifactTypeView {
     private List<Column> columns = new ArrayList<Column>();
@@ -76,10 +75,6 @@ public class CustomArtifactTypeView implements ArtifactTypeView {
         }
         
         return value.toString();
-    }
-
-    public ViewLink getLink(Artifact row, int column) {
-        return null;
     }
 
     public boolean isSummary(int column) {

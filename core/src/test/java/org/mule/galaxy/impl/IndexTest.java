@@ -19,7 +19,7 @@ import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.query.Query;
-import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
 
@@ -136,7 +136,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, next.getVersions().size());
         
         results = registry.search(new Query(Artifact.class, 
-                                                Restriction.eq("wsdl.service", 
+                                                OpRestriction.eq("wsdl.service", 
                                                                new QName("HelloWorldService")))).getResults();
         
         assertEquals(1, results.size());
@@ -145,7 +145,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, next.getVersions().size());
         
         results = registry.search(new Query(ArtifactVersion.class, 
-                                            Restriction.eq("wsdl.service", 
+                                            OpRestriction.eq("wsdl.service", 
                                                            new QName("HelloWorldService")))).getResults();
     
         assertEquals(1, results.size());
@@ -156,18 +156,18 @@ public class IndexTest extends AbstractGalaxyTest {
         // TODO test data
         
         results = registry.search(new Query(ArtifactVersion.class, 
-                                            Restriction.eq("documentType", Constants.WSDL_DEFINITION_QNAME.toString()))).getResults();
+                                            OpRestriction.eq("documentType", Constants.WSDL_DEFINITION_QNAME.toString()))).getResults();
     
         assertEquals(1, results.size());
         
         results = registry.search(new Query(ArtifactVersion.class, 
-                                            Restriction.eq("contentType", "application/xml"))).getResults();
+                                            OpRestriction.eq("contentType", "application/xml"))).getResults();
     
         assertEquals(1, results.size());
         
 
         results = registry.search(new Query(ArtifactVersion.class, 
-                                            Restriction.in("contentType", Arrays.asList("application/xml")))).getResults();
+                                            OpRestriction.in("contentType", Arrays.asList("application/xml")))).getResults();
     
         assertEquals(1, results.size());
     }

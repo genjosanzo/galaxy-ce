@@ -9,7 +9,7 @@ import org.mule.galaxy.impl.index.XQueryIndexer;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.query.Query;
-import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 import java.io.InputStream;
@@ -68,7 +68,7 @@ public class IndexTest extends AbstractGalaxyTest {
 
         // Try out search!
         Set results = registry.search(new Query(Artifact.class,
-                                                Restriction.eq("mule2.service", "GreeterUMO"))).getResults();
+                                                OpRestriction.eq("mule2.service", "GreeterUMO"))).getResults();
 
         assertEquals(1, results.size());
 
@@ -76,7 +76,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, next.getVersions().size());
 
         results = registry.search(new Query(ArtifactVersion.class,
-                                            Restriction.eq("mule2.service", "GreeterUMO"))).getResults();
+                                            OpRestriction.eq("mule2.service", "GreeterUMO"))).getResults();
 
         assertEquals(1, results.size());
 

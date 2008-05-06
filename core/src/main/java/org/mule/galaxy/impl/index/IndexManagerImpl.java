@@ -18,7 +18,7 @@ import org.mule.galaxy.index.IndexException;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.index.Indexer;
 import org.mule.galaxy.query.QueryException;
-import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.util.SecurityUtils;
 
@@ -300,12 +300,12 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
         if (idx.getDocumentTypes() == null || idx.getDocumentTypes().isEmpty())
         {
-            // TODO Restriction.in causes an NPE on reindexing?!
-            q.add(Restriction.eq("contentType", Arrays.asList(idx.getMediaType())));
+            // TODO OpRestriction.in causes an NPE on reindexing?!
+            q.add(OpRestriction.eq("contentType", Arrays.asList(idx.getMediaType())));
         }
         else
         {
-            q.add(Restriction.in("documentType", idx.getDocumentTypes()));
+            q.add(OpRestriction.in("documentType", idx.getDocumentTypes()));
         }
 
         try

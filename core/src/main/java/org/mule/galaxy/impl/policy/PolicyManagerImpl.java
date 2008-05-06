@@ -39,7 +39,7 @@ import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyInfo;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.QueryException;
-import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.SearchResults;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -182,7 +182,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     public void setActivePolicies(Collection<Phase> phases, ArtifactPolicy... policies) 
         throws ArtifactCollectionPolicyException, RegistryException {
         org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(ArtifactVersion.class);
-        q.add(Restriction.in("phase", phases));
+        q.add(OpRestriction.in("phase", phases));
         
         approveArtifacts(q, policies);
         
@@ -192,7 +192,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     private void approveArtifacts(org.mule.galaxy.query.Query q, ArtifactPolicy... policies)
         throws RegistryException, ArtifactCollectionPolicyException {
         try {
-            q.add(Restriction.eq("enabled", true));
+            q.add(OpRestriction.eq("enabled", true));
             SearchResults results = getRegistry().search(q);
             Map<ArtifactVersion, List<ApprovalMessage>> approvals = null;
             
@@ -220,7 +220,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     public void setActivePolicies(Lifecycle lifecycle, ArtifactPolicy... policies) 
         throws RegistryException, ArtifactCollectionPolicyException {
         org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(ArtifactVersion.class);
-        q.add(Restriction.eq("lifecycle", lifecycle.getName()));
+        q.add(OpRestriction.eq("lifecycle", lifecycle.getName()));
         
         approveArtifacts(q, policies);
         
@@ -235,7 +235,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         throws RegistryException, ArtifactCollectionPolicyException {
         org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(ArtifactVersion.class);
         q.workspaceId(w.getId())
-         .add(Restriction.eq("lifecycle", lifecycle.getName()));
+         .add(OpRestriction.eq("lifecycle", lifecycle.getName()));
         
         approveArtifacts(q, policies);
         
