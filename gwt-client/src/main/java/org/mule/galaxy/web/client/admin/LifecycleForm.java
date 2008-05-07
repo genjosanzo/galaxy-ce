@@ -1,15 +1,15 @@
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.util.AbstractForm;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.WLifecycle;
+import org.mule.galaxy.web.rpc.WPhase;
+
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import org.mule.galaxy.web.client.util.AbstractForm;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.WLifecycle;
-import org.mule.galaxy.web.rpc.WPhase;
 
 /**
  * I apologize for the ugliness of this class in advance - there
