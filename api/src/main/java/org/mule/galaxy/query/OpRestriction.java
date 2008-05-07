@@ -37,6 +37,47 @@ public class OpRestriction extends Restriction {
         return operator;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        toString(sb);
+        return sb.toString();
+    }
+    
+    public void toString(StringBuilder sb) {
+        sb.append(left);
+        switch (operator) {
+        case EQUALS:
+            sb.append(" = '");
+            sb.append(value);
+            sb.append("'");
+            break;
+        case LIKE:
+            sb.append(" like '");
+            sb.append(value);
+            sb.append("'");
+            break;
+        case IN:
+            sb.append(" in ('");
+            
+            boolean first = true;
+            for (Object val : ((Collection) value)) {
+                if (first) {
+                    first = false;
+                } else {
+                    sb.append(", ");
+                }
+                sb.append(val)
+                  .append("'");
+                
+            }
+            sb.append(")");
+            
+            break;
+        
+        }
+    }
+
     public static OpRestriction eq(String property, Object value) {
         return new OpRestriction(Operator.EQUALS, property, value);
     }

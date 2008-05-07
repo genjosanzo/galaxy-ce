@@ -21,8 +21,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.PropertyDescriptor;
-import org.mule.galaxy.impl.view.CustomArtifactTypeView;
-import org.mule.galaxy.impl.view.MvelColumn;
+import org.mule.galaxy.impl.render.CustomArtifactRenderer;
+import org.mule.galaxy.impl.render.MvelColumn;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.plugins.config.jaxb.ColumnType;
 import org.mule.galaxy.plugins.config.jaxb.ConfigurationType;
@@ -31,8 +31,8 @@ import org.mule.galaxy.plugins.config.jaxb.IndexType;
 import org.mule.galaxy.plugins.config.jaxb.NamespaceType;
 import org.mule.galaxy.plugins.config.jaxb.ViewType;
 import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.render.Column;
 import org.mule.galaxy.util.TemplateParser;
-import org.mule.galaxy.view.Column;
 import org.springframework.util.ClassUtils;
 
 import org.w3c.dom.Node;
@@ -196,7 +196,7 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
 
         for (ViewType viewType : views)
         {
-            CustomArtifactTypeView view = new CustomArtifactTypeView();
+            CustomArtifactRenderer view = new CustomArtifactRenderer();
 
             List<ColumnType> columns = viewType.getColumn();
             for (final ColumnType column : columns)
@@ -222,7 +222,7 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
                 throw new IllegalArgumentException(
                         "Unabled to select Namespace for view, there is either none or more than one namespace set on the plugin");
             }
-            viewManager.addView(view, pluginQNames);
+            rendererManager.addRenderer(view, pluginQNames);
 
 
         }

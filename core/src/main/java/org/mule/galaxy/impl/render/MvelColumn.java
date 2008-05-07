@@ -1,10 +1,10 @@
-package org.mule.galaxy.impl.view;
+package org.mule.galaxy.impl.render;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mule.galaxy.view.ColumnEvaluator;
+import org.mule.galaxy.render.ColumnEvaluator;
 import org.mvel.MVEL;
 
 /**

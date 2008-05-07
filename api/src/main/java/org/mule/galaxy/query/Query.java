@@ -3,6 +3,8 @@ package org.mule.galaxy.query;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.mule.galaxy.ArtifactVersion;
+
 public class Query {
     List<Restriction> restrictions = new LinkedList<Restriction>();
     boolean searchLatestVersionOnly = true;
@@ -99,4 +101,38 @@ public class Query {
         return workspaceChildren;
     }
     
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append("select ");
+        
+        if (selectType.equals(ArtifactVersion.class)) {
+            sb.append("artifactVersion ");
+        } else {
+            sb.append("artifact ");
+        }
+        
+        if (workspaceId != null) {
+            
+        }
+        
+        if (workspacePath != null) {
+            sb.append("from '")
+              .append(workspacePath)
+              .append("' ");
+        }
+        
+        sb.append("where ");
+        
+        boolean first = true;
+        
+        for (Restriction r : restrictions) {
+            sb.append(r.toString());
+            
+            if (first) first = false;
+            else sb.append(" ");
+        }
+
+        return sb.toString();
+    }
 }

@@ -14,7 +14,7 @@
       <property name="commentManager" ref="commentManager"/>
       <property name="artifactTypeDao" ref="artifactTypeDao"/>
       <property name="indexManager" ref="indexManager"/>
-      <property name="viewManager" ref="viewManager"/>
+      <property name="rendererManager" ref="rendererManager"/>
       <property name="lifecycleManager" ref="lifecycleManager"/>
       <property name="policyManager" ref="policyManager"/>
       <property name="activityManager" ref="activityManager"/>

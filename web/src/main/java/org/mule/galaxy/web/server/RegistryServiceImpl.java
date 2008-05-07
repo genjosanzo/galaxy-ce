@@ -52,12 +52,12 @@ import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.SearchResults;
+import org.mule.galaxy.render.ArtifactRenderer;
+import org.mule.galaxy.render.RendererManager;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
-import org.mule.galaxy.view.ArtifactTypeView;
-import org.mule.galaxy.view.ViewManager;
 import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.rpc.ApplyPolicyException;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
@@ -114,7 +114,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     private Registry registry;
     private ArtifactTypeDao artifactTypeDao;
-    private ViewManager viewManager;
+    private RendererManager rendererManager;
     private PolicyManager policyManager;
     private LifecycleManager lifecycleManager;
     private IndexManager indexManager;
@@ -335,7 +335,7 @@ public class RegistryServiceImpl implements RegistryService {
                 results = registry.search(q);
 
             Map<String, ArtifactGroup> name2group = new HashMap<String, ArtifactGroup>();
-            Map<String, ArtifactTypeView> name2view = new HashMap<String, ArtifactTypeView>();
+            Map<String, ArtifactRenderer> name2view = new HashMap<String, ArtifactRenderer>();
 
             for (Object o : results.getResults()) {
                 Artifact a = (Artifact)o;
@@ -349,16 +349,16 @@ public class RegistryServiceImpl implements RegistryService {
                 }
 
                 ArtifactGroup g = name2group.get(type.getDescription());
-                ArtifactTypeView view = name2view.get(type.getDescription());
+                ArtifactRenderer view = name2view.get(type.getDescription());
 
                 if (g == null) {
                     g = new ArtifactGroup();
                     g.setName(type.getDescription());
                     name2group.put(type.getDescription(), g);
 
-                    view = viewManager.getArtifactTypeView(a.getDocumentType());
+                    view = rendererManager.getArtifactRenderer(a.getDocumentType());
                     if (view == null) {
-                        view = viewManager.getArtifactTypeView(a.getContentType().toString());
+                        view = rendererManager.getArtifactRenderer(a.getContentType().toString());
                     }
                     name2view.put(type.getDescription(), view);
 
@@ -396,12 +396,12 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    private BasicArtifactInfo createBasicArtifactInfo(Artifact a, ArtifactTypeView view) {
+    private BasicArtifactInfo createBasicArtifactInfo(Artifact a, ArtifactRenderer view) {
         BasicArtifactInfo info = new BasicArtifactInfo();
         return createBasicArtifactInfo(a, view, info, false);
     }
 
-    private BasicArtifactInfo createBasicArtifactInfo(Artifact a, ArtifactTypeView view,
+    private BasicArtifactInfo createBasicArtifactInfo(Artifact a, ArtifactRenderer view,
                                                       BasicArtifactInfo info, boolean extended) {
         info.setId(a.getId());
         info.setWorkspaceId(a.getParent().getId());
@@ -547,9 +547,9 @@ public class RegistryServiceImpl implements RegistryService {
 
             ArtifactGroup g = new ArtifactGroup();
             g.setName(type.getDescription());
-            ArtifactTypeView view = viewManager.getArtifactTypeView(a.getDocumentType());
+            ArtifactRenderer view = rendererManager.getArtifactRenderer(a.getDocumentType());
             if (view == null) {
-                view = viewManager.getArtifactTypeView(a.getContentType().toString());
+                view = rendererManager.getArtifactRenderer(a.getContentType().toString());
             }
 
             for (int i = 0; i < view.getColumnNames().length; i++) {
@@ -1139,9 +1139,9 @@ public class RegistryServiceImpl implements RegistryService {
                 List<ApprovalMessage> approvals = entry.getValue();
 
                 Artifact a = av.getParent();
-                ArtifactTypeView view = viewManager.getArtifactTypeView(a.getDocumentType());
+                ArtifactRenderer view = rendererManager.getArtifactRenderer(a.getDocumentType());
                 if (view == null) {
-                    view = viewManager.getArtifactTypeView(a.getContentType().toString());
+                    view = rendererManager.getArtifactRenderer(a.getContentType().toString());
                 }
 
                 BasicArtifactInfo info = createBasicArtifactInfo(a, view);
@@ -1452,8 +1452,8 @@ public class RegistryServiceImpl implements RegistryService {
         this.policyManager = policyManager;
     }
 
-    public void setViewManager(ViewManager viewManager) {
-        this.viewManager = viewManager;
+    public void setRendererManager(RendererManager viewManager) {
+        this.rendererManager = viewManager;
     }
 
     public void setActivityManager(ActivityManager activityManager) {

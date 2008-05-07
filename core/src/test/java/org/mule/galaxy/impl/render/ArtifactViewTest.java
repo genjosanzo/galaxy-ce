@@ -1,17 +1,18 @@
-package org.mule.galaxy.view;
+package org.mule.galaxy.impl.render;
 
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.impl.view.CustomArtifactTypeView;
+import org.mule.galaxy.impl.render.CustomArtifactRenderer;
+import org.mule.galaxy.render.RendererManager;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
 
 public class ArtifactViewTest extends AbstractGalaxyTest {
-    protected ViewManager viewManager;
+    protected RendererManager rendererManager;
 
     public void testView() throws Exception {
-        assertNotNull(viewManager);
+        assertNotNull(rendererManager);
         
-        CustomArtifactTypeView view = (CustomArtifactTypeView) viewManager.getArtifactTypeView(Constants.WSDL_DEFINITION_QNAME);
+        CustomArtifactRenderer view = (CustomArtifactRenderer) rendererManager.getArtifactRenderer(Constants.WSDL_DEFINITION_QNAME);
         
         assertEquals(9, view.getColumns().size());
         

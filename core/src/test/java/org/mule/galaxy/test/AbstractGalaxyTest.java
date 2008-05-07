@@ -37,6 +37,7 @@ import org.mule.galaxy.query.FunctionRegistry;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
+import org.mule.galaxy.view.ArtifactViewManager;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
@@ -62,6 +63,8 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     protected CommentManager commentManager;
     protected PluginManager pluginManager;
     protected AccessControlManager accessControlManager;
+    protected ArtifactViewManager artifactViewManager;
+    
     private boolean participate;
     
     public AbstractGalaxyTest() {

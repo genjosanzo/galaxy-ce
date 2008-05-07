@@ -25,7 +25,7 @@ import org.mule.galaxy.Plugin;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.UpgradeNotSupportedException;
 import org.mule.galaxy.index.IndexManager;
-import org.mule.galaxy.view.ViewManager;
+import org.mule.galaxy.render.RendererManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,7 +37,7 @@ public abstract class AbstractArtifactPlugin implements Plugin {
 
     protected Registry registry;
     protected Dao<ArtifactType> artifactTypeDao;
-    protected ViewManager viewManager;
+    protected RendererManager rendererManager;
     protected IndexManager indexManager;
 
     protected final Log log = LogFactory.getLog(getClass());
@@ -50,8 +50,8 @@ public abstract class AbstractArtifactPlugin implements Plugin {
         this.artifactTypeDao = artifactTypeDao;
     }
 
-    public void setViewManager(ViewManager viewManager) {
-        this.viewManager = viewManager;
+    public void setRendererManager(RendererManager viewManager) {
+        this.rendererManager = viewManager;
     }
 
     public void setIndexManager(IndexManager indexManager) {

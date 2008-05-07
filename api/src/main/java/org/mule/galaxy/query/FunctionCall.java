@@ -25,4 +25,11 @@ public class FunctionCall extends Restriction {
     public Object[] getArguments() {
         return arguments;
     }
+
+    @Override
+    public void toString(StringBuilder sb) {
+        // TODO Auto-generated method stub
+        
+    }
+    
 }

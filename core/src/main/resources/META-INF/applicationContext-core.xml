@@ -185,6 +185,18 @@
     <property name="persisterManager" ref="persisterManager" />
   </bean>
   
+  <bean id="artifactViewManager" parent="txProxyTemplate">
+    <property name="target" ref="artifactViewManagerTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="artifactViewManagerTarget" 
+        class="org.mule.galaxy.impl.view.ArtifactViewManagerImpl"
+        init-method="initialize">
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="persisterManager" ref="persisterManager" />
+  </bean>
+  
   <bean id="persisterManager" class="org.mule.galaxy.impl.jcr.onm.PersisterManager">
     <property name="persisters">
       <map>
@@ -216,7 +228,7 @@
     </constructor-arg>
   </bean>
 
-  <bean id="viewManager" class="org.mule.galaxy.impl.view.ViewManagerImpl"/>
+  <bean id="rendererManager" class="org.mule.galaxy.impl.render.RendererManagerImpl"/>
   
   <bean id="jcrTransactionManager"
    class="org.springmodules.jcr.jackrabbit.LocalTransactionManager">
@@ -239,7 +251,7 @@
     
   <bean id="abstractArtifactPlugin" abstract="true">
     <property name="artifactTypeDao" ref="artifactTypeDao"/>
-    <property name="viewManager" ref="viewManager"/>
+    <property name="rendererManager" ref="rendererManager"/>
     <property name="indexManager" ref="indexManager"/>
     <property name="registry" ref="registry"/>
   </bean>

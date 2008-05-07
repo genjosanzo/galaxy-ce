@@ -10,6 +10,14 @@ import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class QueryTest extends AbstractGalaxyTest {
     
+    public void testToString() throws Exception {
+        Query q = new Query(Artifact.class)
+                .add(OpRestriction.eq("phase",  "Default:Created"));
+        
+        assertEquals("select artifact where phase = 'Default:Created'",
+                     q.toString());
+    }
+    
     public void testQueries() throws Exception {
         importXmlSchema();
 
