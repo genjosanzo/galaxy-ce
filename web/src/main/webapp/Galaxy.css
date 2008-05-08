@@ -1111,3 +1111,27 @@ a:visited {
 .artifactTabDeckPanel {
     background-color: white;
 }
+
+.padding {
+    margin: 8px;
+}
+
+.buttonRow {
+    margin: 8px;
+    text-align: center;
+}
+
+.sessionKilledDialogBox {
+    width: 30em;
+    border: 2px outset;
+    background-color: white;
+}
+
+
+.sessionKilledDialogBox .Caption {
+    background-color: #C3D9FF;
+    padding: 3px;
+    margin: 2px;
+    font-weight: bold;
+    cursor: default;
+}

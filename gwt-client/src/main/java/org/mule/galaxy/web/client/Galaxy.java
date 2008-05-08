@@ -4,6 +4,8 @@ import org.mule.galaxy.web.client.activity.ActivityPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.HeartbeatService;
+import org.mule.galaxy.web.rpc.HeartbeatServiceAsync;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.SecurityService;
@@ -37,6 +39,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     private RegistryPanel registryPanel;
     private RegistryServiceAsync registryService;
     private SecurityServiceAsync securityService;
+    private HeartbeatServiceAsync heartbeatService;
     private FlowPanel rightPanel;
     private PageInfo curInfo;
     private Map history = new HashMap();
@@ -60,7 +63,11 @@ public class Galaxy implements EntryPoint, HistoryListener {
         
         target = (ServiceDefTarget) securityService;
         target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/securityService.rpc");
-        
+
+        this.heartbeatService = (HeartbeatServiceAsync) GWT.create(HeartbeatService.class);
+        target = (ServiceDefTarget) heartbeatService;
+        target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/heartbeat.rpc");
+
         FlowPanel base = new FlowPanel();
         base.setStyleName("base");
         base.setWidth("100%");
@@ -104,7 +111,35 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
                 ExternalHyperlink logout = new ExternalHyperlink("Logout", GWT.getHostPageBaseURL() + "j_logout");
                 rightPanel.add(logout);
-                
+
+                // temp code while working on GALAXY-245
+                /*Hyperlink forTest = new Hyperlink("Kill session", null);
+                forTest.addClickListener(new ClickListener()
+                {
+                    public void onClick(final Widget widget)
+                    {
+                        securityService.logout(new AbstractCallback(menuPanel)
+                        {
+                            public void onSuccess(final Object o)
+                            {
+                                // nothing for now
+                            }
+                        });
+                    }
+                });
+
+                Hyperlink testPopup = new Hyperlink("Popup", null);
+                testPopup.addClickListener(new ClickListener()
+                {
+                    public void onClick(final Widget widget)
+                    {
+                        new SessionKilledDialog(galaxy, new HeartbeatTimer(Galaxy.this));
+                    }
+                });
+                rightPanel.add(testPopup);
+
+                rightPanel.add(forTest);
+*/
                 loadTabs(galaxy);
             }
 
@@ -115,6 +150,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
         footer.setStyleName("footer");
         base.add(footer);
         RootPanel.get().add(base);
+
+        new HeartbeatTimer(Galaxy.this);
     }
 
     protected void loadTabs(final Galaxy galaxy) {
@@ -269,6 +306,11 @@ public class Galaxy implements EntryPoint, HistoryListener {
         return securityService;
     }
 
+    public HeartbeatServiceAsync getHeartbeatService()
+    {
+        return this.heartbeatService;
+    }
+
     public TabPanel getTabPanel() {
         return tabPanel;
     }
@@ -281,4 +323,5 @@ public class Galaxy implements EntryPoint, HistoryListener {
         }
         return false;
     }
+
 }
