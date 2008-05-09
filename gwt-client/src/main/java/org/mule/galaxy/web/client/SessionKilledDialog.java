@@ -60,7 +60,8 @@ public class SessionKilledDialog extends DialogBox
             public void onClick(final Widget widget)
             {
                 close();
-                Window.open(GWT.getHostPageBaseURL(), "_self", null);
+                // just pointing to root doesn't always work, use the logout trick
+                Window.open(GWT.getHostPageBaseURL() + "j_logout", "_self", null);
             }
         });
 

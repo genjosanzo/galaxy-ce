@@ -1,3 +1,8 @@
+<%
+    response.setHeader("Pragma", "no-cache");
+    response.setHeader("Cache-Control", "no-cache");
+    response.addHeader("Cache-Control","no-store");
+%>
 <html>
     <head>
         <title>Mule Galaxy Login</title>
@@ -10,9 +15,9 @@
      <form action="./j_acegi_security_check" method="post">
         <div class="loginBox">
                 <div class="loginTop"><img src="images/galaxy_small_logo.png" style="float: right; margin-top: 1px; " border="0"/></div>
-                
+
                 <div class="loginLeft"></div>
-                  
+
                 <div class="loginRight">
                     <div class="loginContent">
                     <%
@@ -40,12 +45,12 @@
                     </div>
                     </div>
                 </div>
-                  
+
                 <div class="loginBottom">
                   Powered by MuleSource
                 </div>
         </div>
-        
+
     </form>
     </div>
     </body>
