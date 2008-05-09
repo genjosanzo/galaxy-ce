@@ -20,7 +20,9 @@ package org.mule.galaxy.web.client;
 
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -39,19 +41,35 @@ public class SessionKilledDialog extends DialogBox
     private Timer reconnectTimerUI;
     protected Label timerLabel;
     protected HTML trailingText;
+    protected Button loginNowBtn;
 
-    public SessionKilledDialog(final Galaxy galaxy, final HeartbeatTimer heartbeatTimer)
+    private HeartbeatTimer heartbeatTimer;
+
+    public SessionKilledDialog(final Galaxy galaxy, final HeartbeatTimer timer)
     {
+        heartbeatTimer = timer;
+
         setText("Connection Terminated by Server");
         setStyleName("sessionKilledDialogBox");
+
+        loginNowBtn = new Button("Login Now");
+        //loginNowBtn.setTitle("Ignore and try to login now (will not work if the server is down)");
+        loginNowBtn.setEnabled(heartbeatTimer.isServerUp());
+        loginNowBtn.addClickListener(new ClickListener()
+        {
+            public void onClick(final Widget widget)
+            {
+                close();
+                Window.open(GWT.getHostPageBaseURL(), "_self", null);
+            }
+        });
+
         final Button closeBtn = new Button("Close");
         closeBtn.addClickListener(new ClickListener()
         {
             public void onClick(Widget sender)
             {
-                reconnectTimerUI.cancel();
-                heartbeatTimer.onDialogDismissed();
-                hide();
+                close();
             }
         });
 
@@ -59,6 +77,7 @@ public class SessionKilledDialog extends DialogBox
 
         InlineFlowPanel buttonRow = new InlineFlowPanel();
         buttonRow.addStyleName("buttonRow");
+        buttonRow.add(loginNowBtn);
         buttonRow.add(closeBtn);
 
         main.add(buttonRow, DockPanel.SOUTH);
@@ -109,5 +128,23 @@ public class SessionKilledDialog extends DialogBox
         reconnectTimerUI.scheduleRepeating(1000); // every second
     }
 
+    /**
+     * Close, cleanup and send all signals.
+     */
+    protected void close()
+    {
+        reconnectTimerUI.cancel();
+        heartbeatTimer.onDialogDismissed();
+        hide();
+    }
 
+    public void onServerUp()
+    {
+        loginNowBtn.setEnabled(true);
+    }
+
+    public void onServerDown()
+    {
+        loginNowBtn.setEnabled(false);
+    }
 }

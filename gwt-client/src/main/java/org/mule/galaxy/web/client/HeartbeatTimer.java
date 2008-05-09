@@ -30,6 +30,8 @@ class HeartbeatTimer extends Timer
 
     // TODO get it from some more global config value?
     private int intervalSeconds = 5;
+    protected SessionKilledDialog dialog;
+    protected boolean serverUp = true;
 
     public HeartbeatTimer(final Galaxy galaxy)
     {
@@ -44,18 +46,27 @@ class HeartbeatTimer extends Timer
 
             public void onFailure(final Throwable throwable)
             {
+                serverUp = isSessionKilled(throwable);
+
                 if (!dialogVisible)
                 {
-                    SessionKilledDialog panel = new SessionKilledDialog(galaxy, HeartbeatTimer.this);
-                } else {
+                    dialog = new SessionKilledDialog(galaxy, HeartbeatTimer.this);
+                }
+                else
+                {
                     // cancel, the dialog will trigger this heartbeat timer again periodically
-                    cancel();    
+                    cancel();
                 }
 
-                /*
-                    The dialog will call us back to reconnect, cancel this one, otherwise UI values are off.
-                    Once the dialog is dismissed, heartbeat will be resumed.
-                 */
+                if (serverUp)
+                {
+                    dialog.onServerUp();
+                }
+                else
+                {
+                    dialog.onServerDown();
+                }
+
                 dialogVisible = true;
 
                 // problem
@@ -83,5 +94,25 @@ class HeartbeatTimer extends Timer
     public void onDialogDismissed()
     {
         dialogVisible = false;
+    }
+
+    /**
+     * A small hack to workaround GWT 1.4.x limitations. Try to guess from the stacktrace if
+     * the server is still up and client session has got killed only.
+     */
+    protected boolean isSessionKilled(Throwable t)
+    {
+        final String msg = t.getMessage();
+        if (msg.indexOf("<title>Mule Galaxy Login</title>") > -1)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isServerUp()
+    {
+        return serverUp;
     }
 }
