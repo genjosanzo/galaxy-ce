@@ -64,6 +64,12 @@ def numUnits = new Integer(opts.t ?: Runtime.runtime.availableProcessors() * 4)
 // Passed in as -Dmule.home
 def muleHome = opts.m ?: System.properties.'mule.home'
 
+if (!muleHome) {
+    println '''\nMULE_HOME is not set\n'''
+    cli.usage()
+    System.exit(-1)
+}
+
 def lib = "$muleHome/lib"
 def libMule = "$lib/mule"
 def libOpt = "$lib/opt"
