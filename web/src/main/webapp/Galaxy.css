@@ -6,7 +6,7 @@
 
 body {
   color: black;
-  font-family: Helvetica, Arial, sans-serif;
+  /*font-family: Helvetica, Arial, sans-serif;*/
   font-size: 10pt;
   margin: 0;
   padding: 0;
@@ -193,16 +193,19 @@ a:visited {
 }
 
 .right-title, .rightlinked-title {
-    padding: 6px 0px;
-
-    font-family: Helvetica;
-    font-size: 1.3em;
+    padding: 6px;
+    font-family: serif;
+    font-weight: bold;
+    color: #777;
 }
 
 /* A different right title which allows a link */
 .rightlinked-title-panel {
     width: 100%;
     margin: 15px 0 5px;
+    padding: 3px;
+    background-image: url("images/tab_gradient.jpg");
+    background-repeat: repeat-x;
 }
 
 .rightlinked-title-link {
@@ -820,7 +823,7 @@ a:visited {
 .gwt-TextArea {
 }
 
-.gwt-TextBox {    
+.gwt-TextBox {
 }
 
 .gwt-TextBox-readonly {
