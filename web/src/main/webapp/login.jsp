@@ -8,7 +8,7 @@
         <title>Mule Galaxy Login</title>
         <link type="text/css" rel="stylesheet" href="login.css" />
     </head>
-    <body>
+    <body onload="document.getElementById('j_username').focus()">
     <div id="body">
 
 
