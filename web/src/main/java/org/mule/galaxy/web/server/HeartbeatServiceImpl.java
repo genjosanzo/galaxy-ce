@@ -24,9 +24,8 @@ public class HeartbeatServiceImpl implements HeartbeatService
 {
     public void ping(final String clientId)
     {
-        // TODO cleanup after GALAXY-245 is done
         // do nothing for now, but potentially track web clients in the future
-        System.out.println("\n\n\n\n>>>");
-        System.out.println("Heartbeat from " + clientId);
+        //System.out.println("\n\n\n\n>>>");
+        //System.out.println("Heartbeat from " + clientId);
     }
 }
