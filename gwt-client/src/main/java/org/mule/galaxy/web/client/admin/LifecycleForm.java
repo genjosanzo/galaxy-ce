@@ -6,7 +6,19 @@ import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WPhase;
 
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusListener;
+import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -69,14 +81,14 @@ public class LifecycleForm extends AbstractForm {
             }
         }
 
-        addBtn = new Button("Add Phase");
+        addBtn = new Button("Add");
         addBtn.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 addPhase();
             }
         });
 
-        deletePhase = new Button("Delete Phase");
+        deletePhase = new Button("Delete");
         deletePhase.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 deletePhase();
