@@ -1,4 +1,24 @@
+/*
+ * $Id: LicenseHeader-GPLv2.txt 288 2008-01-29 00:59:35Z andrew $
+ * --------------------------------------------------------------------------------------
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 package org.mule.galaxy.web.client.registry;
+
+import org.mule.galaxy.web.rpc.SearchPredicate;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -11,12 +31,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
-
-import org.mule.galaxy.web.rpc.SearchPredicate;
-import org.mule.galaxy.web.rpc.WIndex;
 
 public class SearchFormRow
     extends Composite
