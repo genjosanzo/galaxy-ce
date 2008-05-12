@@ -116,6 +116,14 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
 
         form.addFormHandler(new FormHandler() {
             public void onSubmit(FormSubmitEvent event) {
+
+                // whitespace will throw an invalid path exception
+                // on the server -- so trim it
+                String name = nameBox.getText().trim();
+                if (name != null || !"".equals(name)) {
+                    nameBox.setText(name);
+                }
+
                 if (artifactUpload.getFilename().length() == 0) {
                     Window.alert("You did not specify a filename!");
                     event.setCancelled(true);
