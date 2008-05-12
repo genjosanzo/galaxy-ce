@@ -151,10 +151,12 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
             
             Collection<ApprovalMessage> approved = p.isApproved(a.getParent(), a.getPrevious(), a);
             boolean failed = false;
-            for (ApprovalMessage m : approved) {
-                if (!m.isWarning()) {
-                    failed = true;
-                    break;
+            if (approved != null) {
+                for (ApprovalMessage m : approved) {
+                    if (!m.isWarning()) {
+                        failed = true;
+                        break;
+                    }
                 }
             }
             
