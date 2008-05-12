@@ -1,9 +1,9 @@
 package org.mule.galaxy.web.client.admin;
 
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -16,7 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.mule.galaxy.web.client.AbstractFlowComposite;
-import org.mule.galaxy.web.client.AbstractMenuPanel;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WPermission;
@@ -24,25 +25,29 @@ import org.mule.galaxy.web.rpc.WPermissionGrant;
 
 public abstract class AbstractGroupPanel extends AbstractFlowComposite {
 
-    protected final AbstractMenuPanel menuPanel;
+    protected final ErrorPanel errorPanel;
     protected FlexTable table;
     private Collection permissions;
     private Button applyButton;
     private List rows;
     private Map groups2Permissions;
     private Button resetButton;
-
-    public AbstractGroupPanel(AbstractMenuPanel adminPanel) {
+    protected final Galaxy galaxy;
+    protected FlowPanel mainPanel;
+    
+    public AbstractGroupPanel(Galaxy galaxy, ErrorPanel errorPanel) {
         super();
-        this.menuPanel = adminPanel;
+        this.galaxy = galaxy;
+        this.errorPanel = errorPanel;
+        mainPanel = panel;
     }
 
     public void onShow() {
         // table.setStyleName("permission-grant-table");
-        panel.clear();
-        panel.add(new Label("Loading..."));
+        mainPanel.clear();
+        mainPanel.add(new Label("Loading..."));
         
-        AbstractCallback callback = new AbstractCallback(menuPanel) {
+        AbstractCallback callback = new AbstractCallback(errorPanel) {
             public void onSuccess(Object permissions) {
                 receivePermissions((Collection) permissions);
             }
@@ -52,7 +57,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
 
     protected void receivePermissions(Collection permissions) {
         this.permissions = permissions;
-        AbstractCallback callback = new AbstractCallback(menuPanel) {
+        AbstractCallback callback = new AbstractCallback(errorPanel) {
             public void onSuccess(Object groups) {
                 receiveGroups((Map) groups);
             }
@@ -67,9 +72,9 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
     
     protected void receiveGroups(Map groups2Permissions) {
         this.groups2Permissions = groups2Permissions;
-        panel.clear();
+        mainPanel.clear();
         
-        table = createTitledRowTable(panel, "Manage Group Permissions");
+        table = createTitledRowTable(mainPanel, "Manage Group Permissions");
         int col = 1;
         for (Iterator itr = permissions.iterator(); itr.hasNext();) {
             WPermission p = (WPermission)itr.next();
@@ -89,14 +94,8 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
             
             final WGroup group = (WGroup) e.getKey();
 
-            final Hyperlink hl = new Hyperlink(group.getName(), "edit-group-" + group.getId());
-            hl.addClickListener(new ClickListener() {
-                public void onClick(Widget arg0) {
-                    GroupForm form = new GroupForm(menuPanel, group, false);
-                    menuPanel.createPageInfo(hl.getTargetHistoryToken(), form); 
-                }
-            });
-            
+            final Hyperlink hl = new Hyperlink(group.getName(), "group/" + group.getId());
+
             int row = rows.indexOf(group.getName()) + 1;
             table.setWidget(row, 0, hl);
             
@@ -158,7 +157,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
             }
         }
         
-        AbstractCallback callback = new AbstractCallback(menuPanel) {
+        AbstractCallback callback = new AbstractCallback(errorPanel) {
             
             public void onFailure(Throwable caught) {
                 super.onFailure(caught);

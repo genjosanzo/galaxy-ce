@@ -84,6 +84,8 @@ public interface AccessControlManager {
     void save(Group group) throws AccessException, DuplicateItemException, NotFoundException;
 
     Group getGroupByName(String name) throws NotFoundException;
+
+    void deleteGroup(String id);
     
     
 }       

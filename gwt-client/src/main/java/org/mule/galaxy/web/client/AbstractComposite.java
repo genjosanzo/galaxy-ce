@@ -1,5 +1,7 @@
 package org.mule.galaxy.web.client;
 
+import java.util.List;
+
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -118,5 +120,9 @@ public abstract class AbstractComposite extends Composite {
         
         rightWidget.setStyleName("rightlinked-title-link");
         return commentTitlePanel;
+    }
+
+    public void onShow(List params) {
+        onShow();
     }
 }

@@ -1,5 +1,7 @@
-package org.mule.galaxy.web.client;
+package org.mule.galaxy.web.client.registry;
 
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SearchPredicate;
@@ -18,27 +20,27 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class SearchPanel
-    extends Composite
+public class SearchForm
+    extends AbstractErrorShowingComposite
 {
     private FlowPanel panel;
     private Set rows;
     private Map artifactPropertyMap;
     private Button searchButton;
-    private RegistryPanel registryPanel;
+    private Galaxy galaxy;
     private Button clearButton;
     private InlineFlowPanel buttonPanel;
     private Hyperlink freeformQueryLink;
     private TextArea freeformQueryArea;
 
-    public SearchPanel(RegistryPanel rp) {
-        registryPanel = rp;
+    public SearchForm(Galaxy galaxy) {
+        this.galaxy = galaxy;
         rows = new HashSet();
         
         panel = new FlowPanel();
         panel.setStyleName("search-panel");
         
-        registryPanel.getRegistryService().getPropertyList(new AbstractCallback(registryPanel) {
+        galaxy.getRegistryService().getPropertyList(new AbstractCallback(this) {
             
             public void onSuccess(Object o) {
                 initArtifactProperties((Map) o);
@@ -57,7 +59,7 @@ public class SearchPanel
         
         searchButton = new Button("Search", new ClickListener() {
            public void onClick(Widget sender) {
-               registryPanel.refreshArtifacts();
+//               registryPanel.refreshArtifacts();
            }
         });
         
@@ -84,13 +86,13 @@ public class SearchPanel
     public void initArtifactProperties(Map map) {
         artifactPropertyMap = map;
         for (Iterator itr = rows.iterator(); itr.hasNext();) {
-            SearchPanelRow row = (SearchPanelRow) itr.next();
+            SearchFormRow row = (SearchFormRow) itr.next();
             row.addPropertySet("----", artifactPropertyMap);
         }
     }
     
     public void addPredicate() {
-        SearchPanelRow pred = new SearchPanelRow(this);
+        SearchFormRow pred = new SearchFormRow(this);
         if (artifactPropertyMap != null)
             pred.addPropertySet("Properties", artifactPropertyMap);
         
@@ -108,7 +110,7 @@ public class SearchPanel
         rows.add(pred);
     }
     
-    public void removePredicate(SearchPanelRow pred) {
+    public void removePredicate(SearchFormRow pred) {
         panel.remove(pred);
         rows.remove(pred);
         
@@ -146,7 +148,7 @@ public class SearchPanel
         Set predicates = new HashSet();
         
         for (Iterator itr = rows.iterator(); itr.hasNext();) {
-            SearchPanelRow row = (SearchPanelRow) itr.next();
+            SearchFormRow row = (SearchFormRow) itr.next();
             SearchPredicate pred = row.getPredicate();
             if (pred != null)
                 predicates.add(pred);

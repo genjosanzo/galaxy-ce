@@ -16,8 +16,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.AbstractMenuPanel;
-import org.mule.galaxy.web.client.MenuPanelPageInfo;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.artifact.ArtifactCollectionPolicyResultsPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LifecycleSelectionPanel;
@@ -32,7 +33,7 @@ public class PolicyPanel extends AbstractComposite {
     private RegistryServiceAsync svc;
     private LifecycleSelectionPanel lsPanel;
     private SimplePanel psPanelContainer;
-    private final AbstractMenuPanel menuPanel;
+    private final ErrorPanel menuPanel;
 
     private Map lifecycle2Phase2Panel = new HashMap();
     private PolicySelectionPanel currentPsPanel;
@@ -40,16 +41,18 @@ public class PolicyPanel extends AbstractComposite {
     private boolean finishedSave;
     private int saveCount;
     private String workspaceId;
+    private final Galaxy galaxy;
     
-    public PolicyPanel(AbstractMenuPanel adminPanel, RegistryServiceAsync svc) {
-        this(adminPanel, svc, null);
+    public PolicyPanel(ErrorPanel adminPanel, Galaxy galaxy) {
+        this(adminPanel, galaxy, null);
     }
     
-    public PolicyPanel(AbstractMenuPanel adminPanel, RegistryServiceAsync svc, String workspaceId) {
+    public PolicyPanel(ErrorPanel adminPanel, Galaxy galaxy, String workspaceId) {
         super();
         this.menuPanel = adminPanel;
+        this.galaxy = galaxy;
         this.workspaceId = workspaceId;
-        this.svc = svc;
+        this.svc = galaxy.getRegistryService();
 
         panel = new InlineFlowPanel();
 
@@ -158,14 +161,11 @@ public class PolicyPanel extends AbstractComposite {
     }
 
     protected void handlePolicyFailure(final ApplyPolicyException caught) {
-        MenuPanelPageInfo page = new MenuPanelPageInfo("policy-failure-" + caught.hashCode(), menuPanel) {
-
-            public AbstractComposite createInstance() {
-                return new ArtifactCollectionPolicyResultsPanel(caught.getPolicyFailures());
-            }
-            
-        };
-        menuPanel.addPage(page);
+        PageInfo page = 
+            galaxy.createPageInfo("policy-failure-" + caught.hashCode(), 
+                                  new ArtifactCollectionPolicyResultsPanel(caught.getPolicyFailures()),
+                                  0);
+        
         History.newItem(page.getName());
     }
 

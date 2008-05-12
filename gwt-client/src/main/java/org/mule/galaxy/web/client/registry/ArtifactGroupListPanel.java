@@ -1,20 +1,23 @@
-package org.mule.galaxy.web.client;
+package org.mule.galaxy.web.client.registry;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Widget;
+import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.artifact.ArtifactPanel;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.BasicArtifactInfo;
 
-public class ArtifactListPanel
+/**
+ * Lists a group of artifacts.
+ */
+public class ArtifactGroupListPanel
     extends AbstractComposite
 {
     private ArtifactGroup group;
 
-    public ArtifactListPanel(final RegistryPanel registryPanel, 
-                             final ArtifactGroup group) {
+    public ArtifactGroupListPanel(final ArtifactGroup group) {
         super();
         this.group = group;
         
@@ -28,13 +31,13 @@ public class ArtifactListPanel
             final BasicArtifactInfo info = (BasicArtifactInfo) group.getRows().get(i);
             for (int c = 0; c < group.getColumns().size(); c++) {
                 if (c == 0) {
-                    Hyperlink hl = new Hyperlink(info.getValue(c), "artifact-" + info.getId());
-                    MenuPanelPageInfo page = new MenuPanelPageInfo(hl.getTargetHistoryToken(), registryPanel) {
-                        public AbstractComposite createInstance() {
-                            return new ArtifactPanel(registryPanel, info.getId());
-                        }
-                    };
-                    registryPanel.addPage(page);
+                    Hyperlink hl = new Hyperlink(info.getValue(c), "artifact/" + info.getId());
+//                    MenuPanelPageInfo page = new MenuPanelPageInfo(hl.getTargetHistoryToken(), registryPanel) {
+//                        public AbstractComposite createInstance() {
+//                            return new ArtifactPanel(registryPanel, info.getId());
+//                        }
+//                    };
+//                    registryPanel.addPage(page);
                     
                     table.setWidget(i+1, c, hl);
                 } else {

@@ -1,10 +1,5 @@
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.MenuPanelPageInfo;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WIndex;
-
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -12,23 +7,20 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WIndex;
+
 public class IndexListPanel
-    extends AbstractComposite
+    extends AbstractAdministrationComposite
 {
-    private AdministrationPanel adminPanel;
-    private FlowPanel panel;
 
     public IndexListPanel(AdministrationPanel a) {
-        super();
-        
-        this.adminPanel = a;
-        
-        panel = new FlowPanel();
-        initWidget(panel);
+        super(a);
     }
     
     public void onShow() {
-        panel.clear();
+        super.onShow();
         
         final FlexTable table = createTitledRowTable(panel, "Indexes");
         
@@ -53,14 +45,7 @@ public class IndexListPanel
                     else 
                     {
                         Hyperlink hyperlink = new Hyperlink(idx.getDescription(), 
-                                                            "user-" + idx.getId());
-                        MenuPanelPageInfo page = new MenuPanelPageInfo(hyperlink, adminPanel) {
-                            public AbstractComposite createInstance() {
-                                return new IndexForm(adminPanel, idx, false);
-                            }
-                            
-                        };
-                        adminPanel.addPage(page);
+                                                            "indexes/" + idx.getId());
                         
                         table.setWidget(i, 0, hyperlink);
                     }

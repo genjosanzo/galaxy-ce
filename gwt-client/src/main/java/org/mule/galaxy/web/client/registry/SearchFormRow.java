@@ -1,4 +1,4 @@
-package org.mule.galaxy.web.client;
+package org.mule.galaxy.web.client.registry;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -18,16 +18,16 @@ import java.util.Map;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.WIndex;
 
-public class SearchPanelRow
+public class SearchFormRow
     extends Composite
 {
-    private SearchPanel searchPanel;
+    private SearchForm searchPanel;
     private ListBox     propertyList;
     private HorizontalPanel contents;
     private ListBox matchTypeList;
     private TextBox valueTextBox;
     
-    public SearchPanelRow(SearchPanel sp) {
+    public SearchFormRow(SearchForm sp) {
         super();
         
         searchPanel = sp;
@@ -59,7 +59,7 @@ public class SearchPanelRow
         processTypeChange();
         
         HorizontalPanel buttons = new HorizontalPanel();
-        final SearchPanelRow pred = this;
+        final SearchFormRow pred = this;
         Button del = new Button("-", new ClickListener() {
             public void onClick(Widget sender) {
                 searchPanel.removePredicate(pred);

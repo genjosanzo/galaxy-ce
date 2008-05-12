@@ -1,5 +1,7 @@
 package org.mule.galaxy.web.client.admin;
 
+import java.util.List;
+
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -17,47 +19,21 @@ import org.mule.galaxy.web.client.util.DeleteDialog.DeleteListener;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WArtifactType;
 
-public class ArtifactTypeForm extends AbstractComposite {
+public class ArtifactTypeForm extends AbstractAdministrationForm {
 
-    private AdministrationPanel adminPanel;
     private WArtifactType artifactType;
-    private Button save;
     private TextBox descriptionTB;
-    private final boolean add;
-    private FlowPanel panel;
-    private Button delete;
     private QNameListBox docTypesLB;
     private TextBox mediaTypeTB;
+    
+    public ArtifactTypeForm(AdministrationPanel adminPanel){
+        super(adminPanel, 
+              "artifact-types", 
+              "Artifact type was saved.", 
+              "Artifact type was deleted.");
+    }
 
-    public ArtifactTypeForm(AdministrationPanel adminPanel, WArtifactType u) {
-        this (adminPanel, u, false);
-    }
-    
-    public ArtifactTypeForm(AdministrationPanel adminPanel) {
-        this (adminPanel, new WArtifactType(), true);
-    }
-    
-    protected ArtifactTypeForm(AdministrationPanel adminPanel, WArtifactType u, boolean add){
-        this.adminPanel = adminPanel;
-        this.artifactType = u;
-        this.add = add;
-        
-        panel = new FlowPanel();
-        initWidget(panel);
-    }
-    
-    public void onShow() {
-        panel.clear();
-        
-        String title;
-        if (add) {
-            title = "Add Artifact Type";
-        } else {
-            title = "Edit Artifact Type" ;
-        }
-        
-        final FlexTable table = createTitledColumnTable(panel, title);
-        
+    protected void addFields(FlexTable table) {
         table.setText(0, 0, "Description:");
         table.setText(1, 0, "Media Type:");
         table.setText(2, 0, "Document Types:");
@@ -72,104 +48,49 @@ public class ArtifactTypeForm extends AbstractComposite {
         
         docTypesLB = new QNameListBox(artifactType.getDocumentTypes());
         table.setWidget(2, 1, docTypesLB);
-
-        save = new Button("Save");
-        save.addClickListener(new ClickListener() {
-
-            public void onClick(Widget sender) {
-                save();
-            }
-            
-        });
-        
-        if (add) {
-            table.setWidget(3, 1, save);
-        } else {
-            InlineFlowPanel buttons = new InlineFlowPanel();
-            buttons.add(save);
-            
-            final DeleteDialog popup = new DeleteDialog("artifact type", new DeleteListener() {
-                public void onYes() {
-                    delete();
-                }
-            });
-            
-            delete = new Button("Delete");
-            delete.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
-                    popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-                        public void setPosition(int offsetWidth, int offsetHeight) {
-                            int left = (Window.getClientWidth() - offsetWidth) / 3;
-                            int top = (Window.getClientHeight() - offsetHeight) / 3;
-                            popup.setPopupPosition(left, top);
-                        }
-                    });
-                }
-            });
-            buttons.add(delete);
-            
-            table.setWidget(3, 1, buttons);
-            
-        }
         
         styleHeaderColumn(table);
     }
 
+    public String getTitle() {
+        if (newItem) {
+            return "Add Artifact Type";
+        } else {
+            return "Edit Artifact Type" ;
+        }
+    }
+
+    protected void fetchItem(String id) {
+        adminPanel.getRegistryService().getArtifactType(id, getFetchCallback());
+    }
+
+    protected void initializeItem(Object o) {
+        this.artifactType = (WArtifactType) o;
+    }
+
+    protected void initializeNewItem() {
+        this.artifactType = new WArtifactType();
+    }
+
     protected void save() {
-        disable();
-        save.setText("Saving...");
+        super.save();
 
         artifactType.setMediaType(mediaTypeTB.getText());
         artifactType.setDocumentTypes(docTypesLB.getItems());
         artifactType.setDescription(descriptionTB.getText());
         
-        adminPanel.getRegistryService().saveArtifactType(artifactType, new AbstractCallback(adminPanel) {
-
-            public void onFailure(Throwable caught) {
-                reenable();
-                super.onFailure(caught);
-            }
-
-            public void onSuccess(Object arg0) {
-                History.newItem("artifact-types");
-            }
-            
-        });
+        adminPanel.getRegistryService().saveArtifactType(artifactType, getSaveCallback());
     }
 
     protected void delete() {
-        disable();
-        delete.setText("Deleting...");
+        super.delete();
         
-        adminPanel.getRegistryService().deleteArtifactType(artifactType.getId(), new AbstractCallback(adminPanel) {
-
-            public void onFailure(Throwable caught) {
-                reenable();
-                super.onFailure(caught);
-            }
-
-            public void onSuccess(Object arg0) {
-                History.newItem("artifact-types");
-            }
-            
-        });
+        adminPanel.getRegistryService().deleteArtifactType(artifactType.getId(), getDeleteCallback());
     }
     
-    public void disable() {
-        save.setEnabled(false);
-        if (delete != null) {
-            delete.setEnabled(false);
-        }
-        docTypesLB.setEnabled(false);
-    }
-    
-    public void reenable() {
-        save.setEnabled(true);
-        save.setText("Save");
-        if (delete != null) {
-            delete.setEnabled(true);
-            delete.setText("Delete");
-        }
-        docTypesLB.setEnabled(true);
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        
+        docTypesLB.setEnabled(enabled);
     }
 }

@@ -14,12 +14,10 @@ public abstract class PageInfo {
     public PageInfo(String name) {
         this(name, -1);
     }
-
-    public abstract void show();
-
+    
     public abstract AbstractComposite createInstance();
 
-    public final AbstractComposite getInstance() {
+    public AbstractComposite getInstance() {
         if (instance != null) {
             return instance;
         }

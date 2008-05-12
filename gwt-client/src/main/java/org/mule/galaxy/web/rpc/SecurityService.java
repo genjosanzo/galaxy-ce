@@ -15,6 +15,8 @@ public interface SecurityService extends RemoteService {
     int WORKSPACE_PERMISSIONS = 1;
     int GLOBAL_PERMISSIONS = 2;
     
+    WUser getUser(String id) throws RPCException;
+    
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WUser>
      * @return
@@ -50,7 +52,10 @@ public interface SecurityService extends RemoteService {
      */
     void save(WGroup group) throws RPCException;
     
-
+    WGroup getGroup(String id) throws RPCException;
+    
+    void deleteGroup(String id) throws RPCException;
+    
     /**
      * @gwt.typeArgs group2Permissions <org.mule.galaxy.web.rpc.WGroup, java.util.Collection<org.mule.galaxy.web.rpc.WPermissionGrant>>
      */

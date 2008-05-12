@@ -1,5 +1,7 @@
 package org.mule.galaxy.web.client.util;
 
+import java.util.List;
+
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -11,6 +13,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WArtifactType;
 
 public abstract class AbstractForm extends AbstractComposite {
 
@@ -23,22 +26,42 @@ public abstract class AbstractForm extends AbstractComposite {
     private final ErrorPanel errorPanel;
     private final String deleteMessage;
     
-    public AbstractForm(ErrorPanel errorPanel, boolean newItem, String successToken, 
+    public AbstractForm(ErrorPanel errorPanel, String successToken, 
                         String successMessage, String deleteMessage) {
         super();
         this.errorPanel = errorPanel;
-        this.newItem = newItem;
         this.successToken = successToken;
         this.successMessage = successMessage;
         this.deleteMessage = deleteMessage;
+        
         panel = new FlowPanel();
         
         initWidget(panel);
     }
+    
+    public void onShow(List params) {
+        super.onShow();
 
-    public void onShow() {
+        if (params.size() > 0) {
+            String param = (String) params.get(0);
+            
+            if ("new".equals(param)) {
+                newItem = true;
+                initializeNewItem();
+                onShowPostInitialize();
+            } else {
+                newItem = false;
+                fetchItem(param);
+            }
+        } else {
+            newItem = true;
+            initializeNewItem();
+            onShowPostInitialize();
+        }
+    }
+    
+    protected void onShowPostInitialize() {
         panel.clear();
-
         panel.add(createTitle(getTitle()));
         
         save = new Button("Save");
@@ -55,13 +78,9 @@ public abstract class AbstractForm extends AbstractComposite {
             }
         });
         
-        FlexTable table = new FlexTable();
-        
+        FlexTable table = createFormTable();
+
         addFields(table);
-        
-        table.setCellSpacing(5);
-        table.getFlexCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP);
-        table.getFlexCellFormatter().setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_TOP);
         
         panel.add(table);
         
@@ -72,6 +91,30 @@ public abstract class AbstractForm extends AbstractComposite {
         }
     }
 
+    protected abstract void fetchItem(String id);
+
+    protected abstract void initializeItem(Object o);
+
+    protected abstract void initializeNewItem();
+
+    protected AsyncCallback getFetchCallback() {
+        return new AbstractCallback(errorPanel) {
+
+            public void onFailure(Throwable caught) {
+                super.onFailure(caught);
+            }
+
+            public void onSuccess(Object o) {
+                initializeItem(o);
+                onShowPostInitialize();
+            }
+            
+        };
+    }
+
+    protected FlexTable createFormTable() {
+        return createColumnTable();
+    }
 
     protected abstract void addFields(FlexTable table);
 

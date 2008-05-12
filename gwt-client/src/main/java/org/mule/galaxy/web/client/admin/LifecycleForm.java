@@ -1,10 +1,5 @@
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.util.AbstractForm;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.WLifecycle;
-import org.mule.galaxy.web.rpc.WPhase;
-
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -14,6 +9,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusListener;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -23,37 +19,53 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-/**
- * I apologize for the ugliness of this class in advance - there
- * is no way to develop a good UI for this without spaghetti code. - DD
- */
-public class LifecycleForm extends AbstractForm {
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.WLifecycle;
+import org.mule.galaxy.web.rpc.WPhase;
 
-    private final WLifecycle lifecycle;
+public class LifecycleForm extends AbstractAdministrationForm {
+
+    private WLifecycle lifecycle;
     private TextBox nameTB;
     private FlexTable nextPhasesPanel;
     private ListBox phases;
     private ListBox nextPhases;
     private TextBox phaseNameTB;
-    private final AdministrationPanel adminPanel;
     private Button deletePhase;
     private Button addBtn;
     private WPhase initialPhase;
     private CheckBox defaultLifecycleCB;
 
-    public LifecycleForm(AdministrationPanel adminPanel,
-                         WLifecycle l,
-                         boolean newItem) {
-        super(adminPanel, newItem, "lifecycles", "Lifecycle was saved.", "Lifecycle was deleted.");
-
-        this.adminPanel = adminPanel;
-        this.lifecycle = l;
+    public LifecycleForm(AdministrationPanel adminPanel) {
+        super(adminPanel, "lifecycles", "Lifecycle was saved.", "Lifecycle was deleted.");
 
         panel.setStyleName("lifecycle-form-base");
-
-        initialPhase = l.getInitialPhase();
+    }
+    
+    protected void fetchItem(String id) {
+        adminPanel.getRegistryService().getLifecycle(id, getFetchCallback());
     }
 
+    protected void initializeItem(Object o) {
+        lifecycle = (WLifecycle) o;
+        
+        initialPhase = lifecycle.getInitialPhase();
+    }
+
+    protected void initializeNewItem() {
+        lifecycle = new WLifecycle();
+    }
+    
+    protected FlexTable createFormTable() {
+        FlexTable table = new FlexTable();
+        
+        table.setCellSpacing(5);
+        table.getFlexCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP);
+        table.getFlexCellFormatter().setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_TOP);
+        
+        return table;
+    }
+    
     protected void addFields(FlexTable table) {
         FlexTable nameAndPhases = createColumnTable();
 

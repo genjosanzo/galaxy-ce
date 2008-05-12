@@ -7,13 +7,14 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 
-public class ArtifactPolicyResultsPanel extends AbstractComposite {
+public class ArtifactPolicyResultsPanel extends AbstractErrorShowingComposite {
 
     public ArtifactPolicyResultsPanel(Collection warnings, Collection failures) {
         super();
         
-        FlowPanel panel = new FlowPanel();
+        FlowPanel panel = getMainPanel();
         if (warnings.size() > 0) {
             panel.add(createTitle("Warnings"));
             

@@ -1,4 +1,4 @@
-package org.mule.galaxy.web.client;
+package org.mule.galaxy.web.client.registry;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -12,22 +12,26 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.WSearchResults;
 
-public class WorkspacePanel
+public class ArtifactListPanel
     extends Composite
 {
-    private RegistryPanel registryPanel;
     private FlowPanel panel;
     private FlowPanel artifactPanel;
     private int resultStart = 0;
     // TODO make it a configurable parameter, maybe per-user?
     private int maxResults = 15;
+    private final AbstractBrowsePanel browsePanel;
+    private final Galaxy galaxy;
     
-    public WorkspacePanel(RegistryPanel rp) {
+    public ArtifactListPanel(Galaxy galaxy, AbstractBrowsePanel browsePanel) {
         super();
+        this.galaxy = galaxy;
+        this.browsePanel = browsePanel;
         
         panel = new FlowPanel();
 
@@ -39,16 +43,18 @@ public class WorkspacePanel
         artifactPanel.setStyleName("artifact-panel");
         artifactPanelBase.add(artifactPanel);
 
-        registryPanel = rp;
         initWidget(panel);
+        
+        artifactPanel.clear();
+        artifactPanel.add(new Label("Loading..."));
     }
     
-    protected void initArtifacts(WSearchResults o) {
+    public void initArtifacts(WSearchResults o) {
         createNavigationPanel(o);
         for (Iterator groups = o.getResults().iterator(); groups.hasNext();) {
             ArtifactGroup group = (ArtifactGroup) groups.next();
             
-            ArtifactListPanel list = new ArtifactListPanel(registryPanel, group);
+            ArtifactGroupListPanel list = new ArtifactGroupListPanel(group);
             
             SimplePanel rightTitlePanel = new SimplePanel();
             rightTitlePanel.setStyleName("right-title-panel");
@@ -118,26 +124,21 @@ public class WorkspacePanel
     }
 
     public void reloadArtifacts() {
-        artifactPanel.clear();
-        artifactPanel.add(new Label("Loading..."));
-        
-        SearchPanel searchPanel = registryPanel.getSearchPanel();
-        
-        String workspaceId   = registryPanel.getWorkspaceId();
-        Set    artifactTypes = registryPanel.getArtifactTypes();
-        Set    predicates    = searchPanel.getPredicates();
-        String freeformQuery = searchPanel.getFreeformQuery();
-        registryPanel.getRegistryService().getArtifacts(workspaceId, artifactTypes, 
+        String workspaceId   = browsePanel.getWorkspaceId();
+        Set    artifactTypes = browsePanel.getArtifactTypes();
+        Set    predicates    = browsePanel.getPredicates();
+        String freeformQuery = browsePanel.getFreeformQuery();
+        galaxy.getRegistryService().getArtifacts(workspaceId, artifactTypes, 
                                                         predicates, freeformQuery, 
                                                         resultStart, maxResults,
-                                                        new AbstractCallback(registryPanel) {
+                                                        new AbstractCallback(browsePanel) {
 
             public void onSuccess(Object o) {
                 artifactPanel.clear();
                 initArtifacts((WSearchResults) o);
             }
             public void onFailure(Throwable caught) {
-                registryPanel.setMessage(caught.getMessage());
+                browsePanel.setMessage(caught.getMessage());
             }
         });
     }

@@ -115,6 +115,10 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         }
     }
 
+    public void deleteGroup(String id) {
+        delete(id);
+    }
+
     public List<Group> getGroups() {
         return listAll();
     }

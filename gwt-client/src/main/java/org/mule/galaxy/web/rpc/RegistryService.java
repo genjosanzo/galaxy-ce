@@ -27,6 +27,8 @@ public interface RegistryService extends RemoteService {
     
     void deleteWorkspace(String workspaceId) throws RPCException, ItemNotFoundException;
     
+    WArtifactType getArtifactType(String id) throws RPCException;
+    
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WArtifactType>
      * @return
@@ -120,6 +122,8 @@ public interface RegistryService extends RemoteService {
      * @throws Exception 
      */
     Collection getPolicies() throws RPCException;
+    
+    WLifecycle getLifecycle(String id) throws RPCException;
     
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WArtifactPolicy>

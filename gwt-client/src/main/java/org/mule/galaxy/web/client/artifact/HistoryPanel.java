@@ -1,15 +1,6 @@
 package org.mule.galaxy.web.client.artifact;
 
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.RegistryPanel;
-import org.mule.galaxy.web.client.util.ExternalHyperlink;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
-import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.rpc.TransitionResponse;
-
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -19,18 +10,30 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Iterator;
 
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.ExternalHyperlink;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.TransitionResponse;
+
 public class HistoryPanel extends AbstractComposite {
 
-    private RegistryPanel registryPanel;
     private RegistryServiceAsync registryService;
     private FlowPanel panel;
     private ExtendedArtifactInfo info;
+    private final ErrorPanel errorPanel;
 
-    public HistoryPanel(RegistryPanel registryPanel,
+    public HistoryPanel(Galaxy galaxy,
+                        ErrorPanel errorPanel,
                         ExtendedArtifactInfo info) {
         super();
-        this.registryPanel = registryPanel;
-        this.registryService = registryPanel.getRegistryService();
+        this.errorPanel = errorPanel;
+        this.registryService = galaxy.getRegistryService();
         this.info = info;
         
         panel = new FlowPanel();
@@ -121,13 +124,13 @@ public class HistoryPanel extends AbstractComposite {
     }
 
     protected void setDefault(String versionId) {
-        registryService.setDefault(versionId, new AbstractCallback(registryPanel) {
+        registryService.setDefault(versionId, new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object o) {
                 TransitionResponse tr = (TransitionResponse) o;
                 
                 if (tr.isSuccess()) {
-                    registryPanel.setMain(new ArtifactPanel(registryPanel, info.getId(), 2));
+                    History.newItem("artifact/" + info.getId() + "/2");
                 } else {
                     displayMessages(tr);
                 }
@@ -137,13 +140,13 @@ public class HistoryPanel extends AbstractComposite {
     }
 
     protected void setEnabled(String versionId, boolean enabled) {
-        registryService.setEnabled(versionId, enabled, new AbstractCallback(registryPanel) {
+        registryService.setEnabled(versionId, enabled, new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object o) {
                 TransitionResponse tr = (TransitionResponse) o;
                 
                 if (tr == null || tr.isSuccess()) {
-                    registryPanel.setMain(new ArtifactPanel(registryPanel, info.getId(), 2));
+                    History.newItem("artifact/" + info.getId() + "/2");
                 } else {
                     displayMessages(tr);
                 }
@@ -153,7 +156,7 @@ public class HistoryPanel extends AbstractComposite {
     }
     
     protected void displayMessages(TransitionResponse tr) {
-        registryPanel.setMessage("Policies were not met!");
+        errorPanel.setMessage("Policies were not met!");
     }
 
     

@@ -242,6 +242,14 @@ public class RegistryServiceImpl implements RegistryService {
         return atis;
     }
 
+    public WArtifactType getArtifactType(String id) throws RPCException {
+        try {
+            return toWeb(artifactTypeDao.get(id));
+        } catch (Exception e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
+
     private WArtifactType toWeb(ArtifactType a) {
         Set<QName> docTypes = a.getDocumentTypes();
         List<String> docTypesAsStr = new ArrayList<String>();
@@ -1008,6 +1016,18 @@ public class RegistryServiceImpl implements RegistryService {
         }
 
         return wls;
+    }
+    
+    public WLifecycle getLifecycle(String id) throws RPCException {
+        try {
+            Lifecycle defaultLifecycle = lifecycleManager.getDefaultLifecycle();
+            
+            Lifecycle l = lifecycleManager.getLifecycleById(id);
+            
+            return toWeb(l, defaultLifecycle.equals(l));
+        } catch (Exception e) {
+            throw new RPCException(e.getMessage());
+        }
     }
 
     private WLifecycle toWeb(Lifecycle l, boolean defaultLifecycle) {

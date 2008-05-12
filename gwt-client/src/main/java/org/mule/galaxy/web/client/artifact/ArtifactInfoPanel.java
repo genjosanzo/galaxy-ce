@@ -1,20 +1,6 @@
 package org.mule.galaxy.web.client.artifact;
 
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.ArtifactForm;
-import org.mule.galaxy.web.client.MenuPanelPageInfo;
-import org.mule.galaxy.web.client.RegistryPanel;
-import org.mule.galaxy.web.client.WorkspacePanel;
-import org.mule.galaxy.web.client.util.ExternalHyperlink;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.Toolbox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.DependencyInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
-import org.mule.galaxy.web.rpc.WComment;
-
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -34,24 +20,38 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
+import org.mule.galaxy.web.rpc.DependencyInfo;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.WComment;
+
 public class ArtifactInfoPanel extends AbstractComposite {
 
 
     private HorizontalPanel topPanel;
-    private RegistryPanel registryPanel;
+    private Galaxy galaxy;
     private VerticalPanel rightGroup;
     private VerticalPanel panel;
     private FlowPanel commentsPanel;
     private ExtendedArtifactInfo info;
-    private ArtifactVersionInfo version;
-
-    public ArtifactInfoPanel(final RegistryPanel registryPanel, 
+    private final ErrorPanel errorPanel;
+    
+    public ArtifactInfoPanel(final Galaxy galaxy, 
+                             ErrorPanel errorPanel,
                              ArtifactGroup group,
                              ExtendedArtifactInfo info, 
                              ArtifactVersionInfo version) {
-        this.registryPanel = registryPanel;
+        this.galaxy = galaxy;
+        this.errorPanel = errorPanel;
         this.info = info;
-        this.version = version;
         
         panel = new VerticalPanel();
         
@@ -63,7 +63,9 @@ public class ArtifactInfoPanel extends AbstractComposite {
 
         FlexTable table = createColumnTable();
         
-        final NameEditPanel nep = new NameEditPanel(registryPanel, info.getId(), 
+        final NameEditPanel nep = new NameEditPanel(galaxy, 
+                                                    errorPanel,
+                                                    info.getId(), 
                                                     (String) info.getValue(0),
                                                     info.getWorkspaceId());
         
@@ -86,16 +88,14 @@ public class ArtifactInfoPanel extends AbstractComposite {
         
         styleHeaderColumn(table);
         topPanel.add(table);
-        
+
         rightGroup = new VerticalPanel();
         rightGroup.setStyleName("artifactInfoRightGroup");
         rightGroup.setSpacing(6);
         
-        addArtifactLinks(registryPanel);
-        
         topPanel.add(rightGroup);
         
-        registryPanel.getRegistryService().getDependencyInfo(info.getId(), new AbstractCallback(registryPanel) {
+        galaxy.getRegistryService().getDependencyInfo(info.getId(), new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object o) {
                 initDependencies((Collection) o);
@@ -103,7 +103,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
             
         });
         
-        panel.add(new ArtifactMetadataPanel(registryPanel, info, version));
+        panel.add(new ArtifactMetadataPanel(galaxy, errorPanel, info, version));
         
         initComments();
         
@@ -263,7 +263,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
         addButton.setEnabled(false);
         text.setEnabled(false);
         
-        registryPanel.getRegistryService().addComment(info.getId(), parentId, text.getText(), new AbstractCallback(registryPanel) {
+        galaxy.getRegistryService().addComment(info.getId(), parentId, text.getText(), new AbstractCallback(errorPanel) {
 
             public void onFailure(Throwable caught) {
                 super.onFailure(caught);
@@ -290,57 +290,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
             
         });
     }
-
-    private void addArtifactLinks(final RegistryPanel registryPanel) {
-        Hyperlink hl = new Hyperlink("View Artifact", "view-artifact");
-        hl.addClickListener(new ClickListener() {
-
-            public void onClick(Widget arg0) {
-                Window.open(info.getArtifactLink(), null, "scrollbars=yes");
-            }
-            
-        });
-        hl.addStyleName("hyperlink-NewWindow");
-
-        rightGroup.add(hl);
-
-        ExternalHyperlink permalink = new ExternalHyperlink("Permalink", info.getArtifactLink());
-        permalink.setTitle("Direct artifact link for inclusion in email, etc.");
-        rightGroup.add(permalink);
-        
-        hl = new Hyperlink("New Version", "new-artifact-version-"+info.getId());
-        MenuPanelPageInfo newVersionPage = new MenuPanelPageInfo(hl, registryPanel) {
-            public AbstractComposite createInstance() {
-                return new ArtifactForm(registryPanel, info.getId());
-            }
-        };
-        registryPanel.addPage(newVersionPage);
-        rightGroup.add(hl);
-        
-        hl = new Hyperlink("Delete", "delete-artifact");
-        hl.addClickListener(new ClickListener() {
-
-            public void onClick(Widget arg0) {
-                warnDelete();
-            }
-            
-        });
-        rightGroup.add(hl);
-    }
     
-    protected void warnDelete() {
-        if (Window.confirm("Are you sure you want to delete this artifact")) {
-            registryPanel.getRegistryService().delete(info.getId(), new AbstractCallback(registryPanel) {
-
-                public void onSuccess(Object arg0) {
-                    registryPanel.setMain(new WorkspacePanel(registryPanel));
-                    registryPanel.setMessage("Artifact was deleted.");
-                }
-                
-            });
-        }
-    }
-
     protected void initDependencies(Collection o) {
         Toolbox depPanel = new Toolbox(true);
         depPanel.setTitle("Dependencies");
@@ -359,8 +309,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
             hl.addClickListener(new ClickListener() {
 
                 public void onClick(Widget arg0) {
-                    registryPanel.setMain(new ArtifactPanel(registryPanel, 
-                                                            info.getArtifactId()));
+                    History.newItem("artifact/" + info.getArtifactId());
                 }
             });
             
@@ -422,7 +371,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
         cancelButton.setEnabled(false);
         addButton.setEnabled(false);
        
-        AbstractCallback callback = new AbstractCallback(registryPanel) {
+        AbstractCallback callback = new AbstractCallback(errorPanel) {
 
             public void onFailure(Throwable caught) {
                 super.onFailure(caught);
@@ -436,7 +385,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
             }
 
         };
-        registryPanel.getRegistryService().setDescription(info.getId(), text.getText(), callback);
+        galaxy.getRegistryService().setDescription(info.getId(), text.getText(), callback);
           
     }
     private final class AddCommentClickListener implements ClickListener {

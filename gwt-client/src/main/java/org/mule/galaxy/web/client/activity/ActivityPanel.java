@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.GWTCDatePicker;
@@ -27,13 +28,12 @@ import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WActivity;
 import org.mule.galaxy.web.rpc.WUser;
 
-public class ActivityPanel extends AbstractComposite implements ErrorPanel {
+public class ActivityPanel extends AbstractErrorShowingComposite {
 
     private FlowPanel panel;
     private TextBox fromTB;
     private TextBox toTB;
     private ListBox userLB;
-    private FlowPanel errorPanel;
     private ListBox eventLB;
     private ListBox resultsLB;
     private final Galaxy galaxy;
@@ -46,7 +46,7 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
         super();
         this.galaxy = galaxy;
 
-        SimplePanel mainPanel = new SimplePanel();
+        FlowPanel mainPanel = getMainPanel();
         mainPanel.setStyleName("main-panel");
 
         FlowPanel base = new FlowPanel();
@@ -118,9 +118,6 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
         resultsPanel = new FlowPanel();
         panel.add(resultsPanel);
 
-        errorPanel = new FlowPanel();
-        errorPanel.setStyleName("error-panel");
-
         initWidget(mainPanel);
     }
 
@@ -133,7 +130,7 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
     }
 
     public void onShow() {
-        panel.remove(errorPanel);
+        clearErrorMessage();
 
         resultsPanel.clear();
         resultsPanel.add(new Label("Loading..."));
@@ -290,17 +287,4 @@ public class ActivityPanel extends AbstractComposite implements ErrorPanel {
 
         return tb;
     }
-
-    public void setMessage(Label label) {
-        errorPanel.clear();
-
-        errorPanel.add(label);
-
-        panel.insert(errorPanel, 0);
-    }
-
-    public void setMessage(String string) {
-        setMessage(new Label(string));
-    }
-
 }

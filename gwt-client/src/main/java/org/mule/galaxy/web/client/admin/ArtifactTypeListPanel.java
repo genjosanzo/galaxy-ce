@@ -5,32 +5,25 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 import java.util.Collection;
 import java.util.Iterator;
 
 import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.MenuPanelPageInfo;
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WArtifactType;
 
-public class ArtifactTypeListPanel extends AbstractComposite {
-    private AdministrationPanel adminPanel;
-    private FlowPanel panel;
-
+public class ArtifactTypeListPanel extends AbstractAdministrationComposite {
+    
     public ArtifactTypeListPanel(AdministrationPanel a) {
-        super();
-
-        this.adminPanel = a;
-
-        panel = new FlowPanel();
-
-        initWidget(panel);
+        super(a);
     }
 
     public void onShow() {
-        panel.clear();
-
+        super.onShow();
+        
         final FlexTable table = createTitledRowTable(panel, "Artifact Types");
 
         table.setText(0, 0, "Description");
@@ -51,13 +44,7 @@ public class ArtifactTypeListPanel extends AbstractComposite {
          for (Iterator itr = lifecycles.iterator(); itr.hasNext();) {
              final WArtifactType at = (WArtifactType)itr.next();
 
-             Hyperlink atLink = new Hyperlink(at.getDescription(), "artifact-type-" + at.getId());
-             MenuPanelPageInfo page = new MenuPanelPageInfo(atLink, adminPanel) {
-                 public AbstractComposite createInstance() {
-                     return new ArtifactTypeForm(adminPanel, at, false);
-                 }
-             };
-             adminPanel.addPage(page);
+             Hyperlink atLink = new Hyperlink(at.getDescription(), "artifact-types/" + at.getId());
              
              table.setWidget(i, 0, atLink);
              table.setText(i, 1, at.getMediaType());

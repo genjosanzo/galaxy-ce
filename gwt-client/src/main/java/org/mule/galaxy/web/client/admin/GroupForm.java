@@ -7,80 +7,60 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import org.mule.galaxy.web.client.AbstractFlowComposite;
-import org.mule.galaxy.web.client.AbstractMenuPanel;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WGroup;
 
-public class GroupForm extends AbstractFlowComposite {
+public class GroupForm extends AbstractAdministrationForm {
 
-    private AbstractMenuPanel adminPanel;
     private WGroup group;
-    private Button save;
     private TextBox nameTB;
     
-    public GroupForm(AbstractMenuPanel adminPanel, WGroup u) {
-        this (adminPanel, u, false);
+    public GroupForm(AdministrationPanel adminPanel) {
+        super(adminPanel, "groups", "Group was saved.", "Group was deleted.");
     }
-    
-    public GroupForm(AbstractMenuPanel adminPanel) {
-        this (adminPanel, new WGroup(), true);
-    }
-    
-    protected GroupForm(AbstractMenuPanel adminPanel, WGroup grp, boolean add){
-        super();
-        this.adminPanel = adminPanel;
-        this.group = grp;
-        
-        String title;
-        if (add) {
-            title = "Add Group";
-        } else {
-            title = "Edit Group: " + grp.getName();
-        }
-        
-        final FlexTable table = createTitledColumnTable(panel, title);
-        
+
+    protected void addFields(FlexTable table) {
         table.setText(0, 0, "Name:");
         
         nameTB = new TextBox();
-        nameTB.setText(grp.getName());
+        nameTB.setText(group.getName());
         table.setWidget(0, 1, nameTB);
-        
-        save = new Button("Save");
-        table.setWidget(1, 1, save);
-        save.addClickListener(new ClickListener() {
-
-            public void onClick(Widget sender) {
-                save();
-            }
-            
-        });
         
         styleHeaderColumn(table);
     }
 
+    protected void fetchItem(String id) {
+        getSecurityService().getGroup(group.getId(), getFetchCallback());
+    }
+
+    public String getTitle() {
+        if (newItem) {
+            return "Add Group";
+        } else {
+            return "Edit Group: " + group.getName();
+        }
+    }
+
+    protected void initializeItem(Object o) {
+        group = (WGroup) o;
+    }
+
+    protected void initializeNewItem() {
+        group = new WGroup();
+    }
 
     protected void save() {
-        save.setEnabled(false);
-        save.setText("Saving...");
+        super.save();
+        
         group.setName(nameTB.getText());
-        adminPanel.getSecurityService().save(group, new AbstractCallback(adminPanel) {
-
-            public void onFailure(Throwable caught) {
-                super.onFailure(caught);
-                
-                reenable();
-            }
-
-            public void onSuccess(Object arg0) {
-                History.newItem("groups");
-            }
-        });
+        getSecurityService().save(group, getSaveCallback());
     }
 
-    private void reenable() {
-        save.setEnabled(true);
-        save.setText("Save");
+    protected void delete() {
+        super.delete();
+        
+        getSecurityService().deleteGroup(group.getId(), getDeleteCallback());
     }
-
 }

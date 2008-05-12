@@ -1,23 +1,28 @@
 package org.mule.galaxy.web.client.artifact;
 
-import java.util.Map;
-
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
-import org.mule.galaxy.web.client.RegistryPanel;
+
+import java.util.Map;
+
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.admin.AbstractGroupPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.SecurityService;
 import org.mule.galaxy.web.rpc.WPermissionGrant;
 
 public class ItemGroupPermissionPanel extends AbstractGroupPanel {
 
     private String itemId;
     private final int permissionType;
+    private final Galaxy galaxy;
 
-    public ItemGroupPermissionPanel(RegistryPanel adminPanel, String itemId, int PermissionType) {
-        super(adminPanel);
+    public ItemGroupPermissionPanel(Galaxy galaxy, 
+                                    ErrorPanel adminPanel, 
+                                    String itemId, 
+                                    int PermissionType) {
+        super(galaxy, adminPanel);
+        this.galaxy = galaxy;
         this.itemId = itemId;
         permissionType = PermissionType;
     }
@@ -40,15 +45,15 @@ public class ItemGroupPermissionPanel extends AbstractGroupPanel {
     }
     
     protected void getPermissions(AbstractCallback callback) {
-        menuPanel.getSecurityService().getPermissions(permissionType, callback);
+        galaxy.getSecurityService().getPermissions(permissionType, callback);
     }
 
     protected void getGroupPermissionGrants(AbstractCallback callback) {
-        menuPanel.getSecurityService().getGroupPermissions(itemId, callback);
+        galaxy.getSecurityService().getGroupPermissions(itemId, callback);
     }
 
     protected void applyPermissions(Map groups2Permissions, AbstractCallback callback) {
-        menuPanel.getSecurityService().applyPermissions(itemId, groups2Permissions, callback);
+        galaxy.getSecurityService().applyPermissions(itemId, groups2Permissions, callback);
     }
 
 }

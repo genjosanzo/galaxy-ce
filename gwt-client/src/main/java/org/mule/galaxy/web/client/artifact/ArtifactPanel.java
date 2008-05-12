@@ -1,13 +1,5 @@
 package org.mule.galaxy.web.client.artifact;
 
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.RegistryPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
-import org.mule.galaxy.web.rpc.SecurityService;
-
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -15,6 +7,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
@@ -23,6 +16,19 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Iterator;
+import java.util.List;
+
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
+import org.mule.galaxy.web.client.util.ExternalHyperlink;
+import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.SecurityService;
 
 /**
  * Contains:
@@ -34,25 +40,52 @@ import java.util.Iterator;
  *   (with history)
  * - View Artiact
  */
-public class ArtifactPanel extends AbstractComposite {
+public class ArtifactPanel extends AbstractErrorShowingComposite {
 
-    private RegistryPanel registryPanel;
+    private Galaxy galaxy;
     private TabPanel artifactTabs;
     private ExtendedArtifactInfo info;
     private ArtifactGroup group;
     private VerticalPanel panel;
-    private int selectedTab;
+    private int selectedTab = -1;
     private ListBox versionLB;
+    private RegistryMenuPanel menuPanel;
+    protected FlowPanel linkBox;
 
-    public ArtifactPanel(RegistryPanel registryPanel, String artifactId) {
-        this(registryPanel, artifactId, -1);
+    public ArtifactPanel(Galaxy galaxy) {
+        this.galaxy = galaxy;
+        
+        menuPanel = new RegistryMenuPanel() {
+
+            protected void addOtherLinks(Toolbox topMenuLinks) {
+                linkBox = new FlowPanel();
+                topMenuLinks.add(linkBox);
+            }
+            
+        };
+        
+        panel = new VerticalPanel();
+        panel.setWidth("100%");
+        menuPanel.setMain(panel);
+
+        artifactTabs = new TabPanel();
+        artifactTabs.setStyleName("artifactTabPanel");
+        artifactTabs.getDeckPanel().setStyleName("artifactTabDeckPanel");
+        
+        panel.add(artifactTabs);
+        
+        initWidget(menuPanel);
     }
     
-    public ArtifactPanel(RegistryPanel registryPanel, String artifactId, int selectedTab) {
-        this(registryPanel, selectedTab);
+    public void onShow(List params) {
+        String artifactId = (String) params.get(0);
+        if (params.size() >= 2) {
+            selectedTab = new Integer((String)params.get(1)).intValue();
+        } else {
+            selectedTab = 0;
+        }
         
-        registryPanel.getRegistryService().getArtifact(artifactId, 
-                                                       new AbstractCallback(registryPanel) { 
+        galaxy.getRegistryService().getArtifact(artifactId, new AbstractCallback(this) { 
             public void onSuccess(Object o) {
                 group = (ArtifactGroup) o;
                 info = (ExtendedArtifactInfo) group.getRows().get(0);
@@ -61,23 +94,7 @@ public class ArtifactPanel extends AbstractComposite {
             }
         });
     }
-    
-    protected ArtifactPanel(RegistryPanel registryPanel, int selectedTab) {
-        this.registryPanel = registryPanel;
-        this.selectedTab = selectedTab;
-        
-        panel = new VerticalPanel();
-        panel.setWidth("100%");
-        
-        artifactTabs = new TabPanel();
-        artifactTabs.setStyleName("artifactTabPanel");
-        artifactTabs.getDeckPanel().setStyleName("artifactTabDeckPanel");
-        
-        panel.add(artifactTabs);
-        
-        initWidget(panel);
-    }
-    
+
     private void init() {
         FlowPanel artifactTitle = new FlowPanel();
         artifactTitle.setStyleName("artifact-title-base");
@@ -142,11 +159,11 @@ public class ArtifactPanel extends AbstractComposite {
     }
 
     private void initTabs(ArtifactVersionInfo version) {
-        artifactTabs.add(new ArtifactInfoPanel(registryPanel, group, info, version), "Info");
-        artifactTabs.add(new GovernancePanel(registryPanel, version), "Governance");
-        artifactTabs.add(new HistoryPanel(registryPanel, info), "History");
-        if (registryPanel.getGalaxy().hasPermission("MANAGE_GROUPS")) {
-            artifactTabs.add(new ItemGroupPermissionPanel(registryPanel, info.getId(), SecurityService.ARTIFACT_PERMISSIONS), "Security");
+        artifactTabs.add(new ArtifactInfoPanel(galaxy, this, group, info, version), "Info");
+        artifactTabs.add(new GovernancePanel(galaxy, this, version), "Governance");
+        artifactTabs.add(new HistoryPanel(galaxy, this, info), "History");
+        if (galaxy.hasPermission("MANAGE_GROUPS")) {
+            artifactTabs.add(new ItemGroupPermissionPanel(galaxy, this, info.getId(), SecurityService.ARTIFACT_PERMISSIONS), "Security");
         }
         
         if (selectedTab > -1) {
@@ -168,19 +185,49 @@ public class ArtifactPanel extends AbstractComposite {
             }
             
         });
+
+        linkBox.add(new Label(" "));
+
+        Hyperlink hl = new Hyperlink("View Artifact", "artifact/" + info.getId());
+        hl.addClickListener(new ClickListener() {
+
+            public void onClick(Widget arg0) {
+                Window.open(info.getArtifactLink(), null, "scrollbars=yes");
+            }
+            
+        });
+        linkBox.add(asHorizontal(hl, new Label(" "), new Image("images/external.png")));
+
+        ExternalHyperlink permalink = new ExternalHyperlink("Permalink", info.getArtifactLink());
+        permalink.setTitle("Direct artifact link for inclusion in email, etc.");
+        linkBox.add(permalink);
+        
+        String token = "new-artifact-version/" + info.getId();
+        hl = new Hyperlink("New Version", token);
+        linkBox.add(hl);
+        
+        hl = new Hyperlink("Delete", "artifact/" + info.getId());
+        hl.addClickListener(new ClickListener() {
+
+            public void onClick(Widget arg0) {
+                warnDelete();
+            }
+            
+        });
+        linkBox.add(hl);
+    }
+    
+    protected void warnDelete() {
+        if (Window.confirm("Are you sure you want to delete this artifact")) {
+            galaxy.getRegistryService().delete(info.getId(), new AbstractCallback(this) {
+
+                public void onSuccess(Object arg0) {
+                    galaxy.setMessageAndGoto("browse", "Artifact was deleted.");
+                }
+                
+            });
+        }
     }
 
-    public void onShow() {
-        Hyperlink wkspcLink = new Hyperlink();
-        wkspcLink.setHTML("&laquo; Back to Workspace");
-        wkspcLink.setStyleName("gwt-Hyperlink");
-        wkspcLink.addClickListener(new ClickListener() {
-            public void onClick(Widget arg0) {
-                registryPanel.onShow();
-            }
-        });
-        
-        registryPanel.setTop(wkspcLink);
-        registryPanel.hideArtifactTypes();
-    }
+
 }

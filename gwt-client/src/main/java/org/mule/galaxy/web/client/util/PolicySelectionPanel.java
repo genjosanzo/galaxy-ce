@@ -14,7 +14,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.AbstractMenuPanel;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.MenuPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WArtifactPolicy;
@@ -24,7 +25,7 @@ public class PolicySelectionPanel extends AbstractComposite{
     private ListBox unselectedPolicies;
     private ListBox selectedPolicies;
     private RegistryServiceAsync registryService;
-    private final AbstractMenuPanel menuPanel;
+    private final ErrorPanel errorPanel;
     protected Collection policies;
     private SimplePanel descriptionPanel;
     private FlowPanel panel;
@@ -33,9 +34,9 @@ public class PolicySelectionPanel extends AbstractComposite{
     private Button left;
     private Button right;
 
-    public PolicySelectionPanel(AbstractMenuPanel menuPanel, RegistryServiceAsync svc) {
+    public PolicySelectionPanel(ErrorPanel errorPanel, RegistryServiceAsync svc) {
         super();
-        this.menuPanel = menuPanel;
+        this.errorPanel = errorPanel;
         this.registryService = svc;
         panel = new FlowPanel();
         
@@ -137,7 +138,7 @@ public class PolicySelectionPanel extends AbstractComposite{
         unselectedPolicies.clear();
         selectedPolicies.clear();
         
-        registryService.getPolicies(new AbstractCallback(menuPanel) {
+        registryService.getPolicies(new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object o) {
                 policies = (Collection) o;

@@ -8,12 +8,10 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.AbstractMenuPanel;
+import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WLifecycle;
@@ -25,7 +23,7 @@ public class LifecycleSelectionPanel extends AbstractComposite {
     private ListBox phasesLB;
     private Collection lifecycles;
     
-    public LifecycleSelectionPanel(AbstractMenuPanel menuPanel, RegistryServiceAsync svc) {
+    public LifecycleSelectionPanel(ErrorPanel menuPanel, RegistryServiceAsync svc) {
         super();
         
         FlowPanel panel = new FlowPanel();

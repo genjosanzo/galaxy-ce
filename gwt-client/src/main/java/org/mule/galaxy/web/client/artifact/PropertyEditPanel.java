@@ -18,7 +18,7 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.mule.galaxy.web.client.RegistryPanel;
+import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 
@@ -28,7 +28,7 @@ public class PropertyEditPanel extends Composite {
     private TextBox valueTextBox;
     private FlowPanel propertyPanel;
     private FlexTable newPropertyTable;
-    private RegistryPanel registryPanel;
+    private ErrorPanel errorPanel;
     private String artifactId;
     private ArtifactMetadataPanel metadataPanel;
     private RegistryServiceAsync svc;
@@ -37,16 +37,17 @@ public class PropertyEditPanel extends Composite {
     private CheckBox mvCheckBox;
     private Panel propertiesPanel;
 
-    public PropertyEditPanel(final RegistryPanel registryPanel, 
+    public PropertyEditPanel(final ErrorPanel registryPanel, 
+                             final RegistryServiceAsync registryService,
                              final String artifactId,
                              final Panel propertiesPanel,
                              final ArtifactMetadataPanel metadataPanel,
                              final FlexTable table) {
-        this.registryPanel = registryPanel;
+        this.errorPanel = registryPanel;
         this.artifactId = artifactId;
         this.propertiesPanel = propertiesPanel; 
         this.metadataPanel = metadataPanel;
-        this.svc = registryPanel.getRegistryService();
+        this.svc = registryService;
         
         HorizontalPanel panel = new HorizontalPanel();
         panel.setStyleName("add-property-panel");
@@ -118,7 +119,7 @@ public class PropertyEditPanel extends Composite {
             
             propertyDesc = propertiesBox.getItemText(index);
         } else {
-            registryPanel.setMessage("No property was selected!");
+            errorPanel.setMessage("No property was selected!");
             return;
         }
         
@@ -128,7 +129,7 @@ public class PropertyEditPanel extends Composite {
     private void saveProperty(final String propertyName, final String propertyDesc) {
         final String propertyValue = valueTextBox.getText();
         
-        svc.setProperty(artifactId, propertyName, propertyValue, new AbstractCallback(registryPanel) {
+        svc.setProperty(artifactId, propertyName, propertyValue, new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object o) {
                 clearPanelAndAddProperty(propertyName, propertyDesc, propertyValue);
@@ -146,17 +147,17 @@ public class PropertyEditPanel extends Composite {
     private void createPropertyAndSave() {
         final String id = idTextBox.getText();
         if (id == null || "".equals(id)) {
-            registryPanel.setMessage("A property id must be supplied;");
+            errorPanel.setMessage("A property id must be supplied;");
             return;
         }
         final String desc = descTextBox.getText();
         if (desc == null || "".equals(desc)) {
-            registryPanel.setMessage("A property description must be supplied;");
+            errorPanel.setMessage("A property description must be supplied;");
             return;
         }
         boolean mv = mvCheckBox.isChecked();
         
-        svc.newPropertyDescriptor(id, desc, mv, new AbstractCallback(registryPanel) {
+        svc.newPropertyDescriptor(id, desc, mv, new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object arg0) {
                 saveProperty(id, desc);

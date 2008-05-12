@@ -7,7 +7,11 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import org.mule.galaxy.web.client.RegistryPanel;
+
+import java.util.Collection;
+
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.WorkspacesListBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -15,14 +19,20 @@ import org.mule.galaxy.web.rpc.AbstractCallback;
 public class NameEditPanel extends Composite {
 
     private InlineFlowPanel panel;
-    private final RegistryPanel registryPanel;
     private final String artifactId;
     private final String name;
     private final String workspaceId;
+    private final Galaxy galaxy;
+    private final ErrorPanel errorPanel;
 
-    public NameEditPanel(RegistryPanel registryPanel, String artifactId, String name, String workspaceId) {
+    public NameEditPanel(Galaxy galaxy, 
+                         ErrorPanel errorPanel, 
+                         String artifactId, 
+                         String name, 
+                         String workspaceId) {
         super();
-        this.registryPanel = registryPanel;
+        this.galaxy = galaxy;
+        this.errorPanel = errorPanel;
         this.artifactId = artifactId;
         this.name = name;
         this.workspaceId = workspaceId;
@@ -50,9 +60,20 @@ public class NameEditPanel extends Composite {
 
     protected void showEditPanel() {
         panel.clear();
+        panel.add(new Label("Loading workspaces..."));
+        
+        galaxy.getRegistryService().getWorkspaces(new AbstractCallback(errorPanel) {
+            public void onSuccess(Object workspaces) {
+                showEditPanel((Collection) workspaces);
+            }
+        });
+    }
+
+    protected void showEditPanel(Collection workspaces) {
+        panel.clear();
         
         
-        final WorkspacesListBox workspacesLB = new WorkspacesListBox(registryPanel.getWorkspaces(), 
+        final WorkspacesListBox workspacesLB = new WorkspacesListBox(workspaces, 
                                                                      null,
                                                                      workspaceId,
                                                                      false);
@@ -85,7 +106,7 @@ public class NameEditPanel extends Composite {
     }
 
     protected void save(String workspaceId, String name) {
-        registryPanel.getRegistryService().move(artifactId, workspaceId, name, new AbstractCallback(registryPanel) {
+        galaxy.getRegistryService().move(artifactId, workspaceId, name, new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object arg0) {
                 panel.clear();

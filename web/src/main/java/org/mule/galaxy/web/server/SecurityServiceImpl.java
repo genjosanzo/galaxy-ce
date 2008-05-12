@@ -78,6 +78,29 @@ public class SecurityServiceImpl implements SecurityService {
         }
     }
     
+    public WUser getUser(String id) throws RPCException {
+        try {
+            User user = userManager.get(id);
+            return toWeb(user);
+        } catch (NotFoundException e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    private WUser toWeb(User user) {
+        WUser w = createWUser(user);
+        
+        ArrayList<String> groupIds = new ArrayList<String>();
+        
+        for (Group g : user.getGroups()) {
+            groupIds.add(g.getId());
+        }
+        
+        w.setGroupIds(groupIds);
+        
+        return w;
+    }
+
     private User createUser(WUser user) {
         User u = new User();
         u.setName(user.getName());
@@ -93,14 +116,6 @@ public class SecurityServiceImpl implements SecurityService {
         ArrayList<WUser> webUsers = new ArrayList<WUser>();
         for (User user : users) {
             WUser w = createWUser(user);
-            
-            ArrayList<String> groupIds = new ArrayList<String>();
-            
-            for (Group g : user.getGroups()) {
-                groupIds.add(g.getId());
-            }
-            
-            w.setGroupIds(groupIds);
             
             webUsers.add(w);
         }
@@ -315,6 +330,18 @@ public class SecurityServiceImpl implements SecurityService {
         } catch (DuplicateItemException e) {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
+ 
+    public void deleteGroup(String id) throws RPCException {
+        accessControlManager.deleteGroup(id);
+    }
+
+    public WGroup getGroup(String id) throws RPCException {
+        try {
+            return toWeb(accessControlManager.getGroup(id));
+        } catch (Exception e) {
             throw new RPCException(e.getMessage());
         }
     }

@@ -1,14 +1,5 @@
 package org.mule.galaxy.web.client.artifact;
 
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.RegistryPanel;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
-import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.rpc.WProperty;
-
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -21,21 +12,34 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Iterator;
 
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.WProperty;
+
 public class ArtifactMetadataPanel extends AbstractComposite {
 
     private FlowPanel metadata;
-    private RegistryPanel registryPanel;
+    private ErrorPanel errorPanel;
     private ArtifactVersionInfo info;
     private FlexTable table;
     private boolean showHidden = false;
     private Hyperlink showAll;
+    private final Galaxy galaxy;
     
-    public ArtifactMetadataPanel(final RegistryPanel registryPanel,
+    public ArtifactMetadataPanel(final Galaxy galaxy,
+                                 final ErrorPanel registryPanel,
                                  final ExtendedArtifactInfo artifactInfo,
                                  final ArtifactVersionInfo info) {
         super();
+        this.galaxy = galaxy;
         this.info = info;
-        this.registryPanel = registryPanel;
+        this.errorPanel = registryPanel;
         
         metadata = new FlowPanel();
         metadata.setStyleName("metadata-panel");
@@ -47,7 +51,8 @@ public class ArtifactMetadataPanel extends AbstractComposite {
         addMetadata.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
-                PropertyEditPanel edit = new PropertyEditPanel(registryPanel, 
+                PropertyEditPanel edit = new PropertyEditPanel(errorPanel,
+                                                               galaxy.getRegistryService(),
                                                                artifactInfo.getId(),
                                                                metadata,
                                                                amPanel,
@@ -90,8 +95,8 @@ public class ArtifactMetadataPanel extends AbstractComposite {
         } else {
             showAll.setText("Show All");
         }
-        RegistryServiceAsync svc = registryPanel.getRegistryService();
-        svc.getArtifactVersionInfo(info.getId(), showHidden, new AbstractCallback(registryPanel) {
+        RegistryServiceAsync svc = galaxy.getRegistryService();
+        svc.getArtifactVersionInfo(info.getId(), showHidden, new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object o) {
                 info = (ArtifactVersionInfo) o;
@@ -210,7 +215,7 @@ public class ArtifactMetadataPanel extends AbstractComposite {
 
     protected void save(final String name, final String value, final int row, 
                         final Button cancel, final Button save) {
-        registryPanel.getRegistryService().setProperty(info.getId(), name, value, new AbstractCallback(registryPanel) {
+        galaxy.getRegistryService().setProperty(info.getId(), name, value, new AbstractCallback(errorPanel) {
 
             public void onFailure(Throwable caught) {
                 cancel.setEnabled(true);
@@ -229,7 +234,7 @@ public class ArtifactMetadataPanel extends AbstractComposite {
 
 
     protected void delete(String name, final int row) {
-        registryPanel.getRegistryService().deleteProperty(info.getId(), name, new AbstractCallback(registryPanel) {
+        galaxy.getRegistryService().deleteProperty(info.getId(), name, new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object arg0) {
                 table.removeRow(row);

@@ -27,4 +27,10 @@ public interface SecurityServiceAsync {
     void applyPermissions(String itemId, Map group2Permissions, AsyncCallback callback);
 
     void getGroups(AsyncCallback abstractCallback);
+
+    void deleteGroup(String itemId, AsyncCallback deleteCallback);
+
+    void getGroup(String id, AsyncCallback fetchCallback);
+
+    void getUser(String id, AsyncCallback fetchCallback);
 }

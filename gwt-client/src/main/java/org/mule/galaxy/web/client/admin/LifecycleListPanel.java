@@ -7,29 +7,19 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.MenuPanelPageInfo;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WPhase;
 
-public class LifecycleListPanel extends AbstractComposite {
-    private AdministrationPanel adminPanel;
-    private FlowPanel panel;
-
+public class LifecycleListPanel extends AbstractAdministrationComposite {
+    
     public LifecycleListPanel(AdministrationPanel a) {
-        super();
-
-        this.adminPanel = a;
-
-        panel = new FlowPanel();
-
-        initWidget(panel);
+        super(a);
     }
 
     public void onShow() {
-        panel.clear();
-
+        super.onShow();
+        
         final FlexTable table = createTitledRowTable(panel, "Lifecycles");
 
         table.setText(0, 0, "Lifecycle");
@@ -55,15 +45,7 @@ public class LifecycleListPanel extends AbstractComposite {
                  text += " (Default)";
              }
              
-             Hyperlink lifecycleLink = new Hyperlink(text, "lifecycle-" + l.getName());
-             MenuPanelPageInfo page = new MenuPanelPageInfo(lifecycleLink, adminPanel) {
-                 public AbstractComposite createInstance() {
-                     return new LifecycleForm(adminPanel, l, false);
-                 }
-             };
-             adminPanel.addPage(page);
-             
-             table.setWidget(i, 0, lifecycleLink);
+             table.setWidget(i, 0, new Hyperlink(text, "lifecycles/" + l.getId()));
              table.setText(i, 1, getPhaseList(l));
              
              i++;

@@ -1,4 +1,4 @@
-package org.mule.galaxy.web.client;
+package org.mule.galaxy.web.client.registry;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
@@ -19,76 +19,82 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import org.mule.galaxy.web.client.artifact.ArtifactPanel;
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.artifact.ArtifactPolicyResultsPanel;
 import org.mule.galaxy.web.client.util.WorkspacesListBox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
 
-public class ArtifactForm extends AbstractTitledComposite {
+public class ArtifactForm extends AbstractErrorShowingComposite {
     private TextBox nameBox;
     private FlexTable table;
     private FormPanel form;
     private FileUpload artifactUpload;
     private TextBox versionBox;
     private WorkspacesListBox workspacesLB;
-    private final RegistryPanel registryPanel;
-    private final String artifactId;
+    private final Galaxy galaxy;
+    private String artifactId;
     private CheckBox disablePrevious;
-    private final boolean add;
+    private boolean add;
+    private Button addButton;
 
-    public ArtifactForm(final RegistryPanel registryPanel) {
-        this(registryPanel, null, true);
-    }
-    
-    public ArtifactForm(final RegistryPanel registryPanel, String artifactId) {
-        this(registryPanel, artifactId, false);
-    }
-    
-    protected ArtifactForm(final RegistryPanel registryPanel, 
-                           final String artifactId, 
-                           final boolean add) {
-        super();
-        this.registryPanel = registryPanel;
-        this.artifactId = artifactId;
-        this.add = add;
+    public ArtifactForm(final Galaxy galaxy) {
+        this.galaxy = galaxy;
 
+        RegistryMenuPanel menuPanel = new RegistryMenuPanel();
         form = new FormPanel();
+        menuPanel.setMain(form);
         
-        initWidget(form);
+        initWidget(menuPanel);
     }
 
     public void onHide() {
         form.clear();
     }
 
-    public void onShow() {
+    public void onShow(List params) {
+        if (params.size() > 0) {
+            artifactId = (String) params.get(0);
+        } else {
+            add = true;
+        }
+        
         form.setAction(GWT.getModuleBaseURL() + "../artifactUpload");
         form.setEncoding(FormPanel.ENCODING_MULTIPART);
         form.setMethod(FormPanel.METHOD_POST);
 
         FlowPanel panel = new FlowPanel();
         form.add(panel);
+
+        panel.add(createTitle("Add Artifact"));
         
         table = createColumnTable();
         panel.add(table);
         
-        int row = 0;
         if (add) {
-            row = setupAddForm(registryPanel);
+            setupAddForm();
         } else {
-            row = setupAddVersionForm(registryPanel, panel);
+            setupAddVersionForm(panel);
         }
+    }
 
+    private void setupRemainingTable(int row) {
         artifactUpload = new FileUpload();
         artifactUpload.setName("artifactFile");
         table.setWidget(row, 1, artifactUpload);
 
-        table.setWidget(row+1, 1, new Button("Add", new ClickListener() {
+        addButton = new Button("Add");
+        addButton.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
+                addButton.setText("Uploading...");
+                addButton.setEnabled(false);
                 form.submit();
             }
-        }));
+        });
+        table.setWidget(row+1, 1, addButton);
 
         form.addFormHandler(new FormHandler() {
             public void onSubmit(FormSubmitEvent event) {
@@ -99,9 +105,12 @@ public class ArtifactForm extends AbstractTitledComposite {
                 
                 String version = versionBox.getText();
                 if (version == null || "".equals(version)) {
-                    registryPanel.setMessage("You must specify a version label.");
+                    setMessage("You must specify a version label.");
                     event.setCancelled(true);
                 }
+                
+                addButton.setText("Add");
+                addButton.setEnabled(true);
             }
 
             public void onSubmitComplete(FormSubmitCompleteEvent event) {
@@ -115,13 +124,12 @@ public class ArtifactForm extends AbstractTitledComposite {
                     if (add) {
                         artifactId2 = msg.substring(8, last);
                     }
-                    String token = "artifact-" + artifactId2;
-                    registryPanel.createPageInfo(token, new ArtifactPanel(registryPanel, artifactId2));
-                    History.newItem(token);
+                    
+                    History.newItem("artifact/" + artifactId2);
                 } else if (msg.startsWith("<PRE>ArtifactPolicyException") || msg.startsWith("<pre>ArtifactPolicyException")) {
                     parseAndShowPolicyMessages(msg);
                 } else {
-                    registryPanel.setMessage(msg);
+                    setMessage(msg);
                 }
             }
         });
@@ -150,8 +158,11 @@ public class ArtifactForm extends AbstractTitledComposite {
             }
         }
         
-        registryPanel.setMain(new ArtifactPolicyResultsPanel(warnings, failures));
-        registryPanel.setMessage("The artifact did not meet all the necessary policies!");
+        String token = "policy-failures-" + artifactId;
+        ArtifactPolicyResultsPanel failurePanel = new ArtifactPolicyResultsPanel(warnings, failures);
+        failurePanel.setMessage("The artifact did not meet all the necessary policies!");
+        galaxy.createPageInfo(token, failurePanel, 0);
+        History.newItem(token);
     }
 
     private String getMessage(String s) {
@@ -162,12 +173,22 @@ public class ArtifactForm extends AbstractTitledComposite {
         return s;
     }
 
-    private int setupAddForm(final RegistryPanel registryPanel) {
+    private void setupAddForm() {
+        galaxy.getRegistryService().getWorkspaces(new AbstractCallback(this) {
+
+            public void onSuccess(Object workspaces) {
+                setupAddForm((Collection) workspaces);
+            }
+            
+        });
+    }
+    
+    private void setupAddForm(Collection workspaces) {
         table.setWidget(0, 0, new Label("Workspace"));
 
-        workspacesLB = new WorkspacesListBox(registryPanel.getWorkspaces(),
+        workspacesLB = new WorkspacesListBox(workspaces,
                                              null,
-                                             registryPanel.getWorkspaceId(),
+                                             BrowsePanel.getLastWorkspaceId(),
                                              false);
         workspacesLB.setName("workspaceId");
         table.setWidget(0, 1, workspacesLB);
@@ -189,10 +210,10 @@ public class ArtifactForm extends AbstractTitledComposite {
         Label artifactLabel = new Label("Artifact");
         table.setWidget(3, 0, artifactLabel);
         
-        return 3;
+        setupRemainingTable(3);
     }
 
-    private int setupAddVersionForm(final RegistryPanel registryPanel, FlowPanel panel) {
+    private void setupAddVersionForm(FlowPanel panel) {
         table.setText(0, 0, "Version Label");
 
         versionBox = new TextBox();
@@ -209,7 +230,7 @@ public class ArtifactForm extends AbstractTitledComposite {
         table.setWidget(2, 0, artifactLabel);
         
         panel.add(new Hidden("artifactId", artifactId));
-        
-        return 2;
+
+        setupRemainingTable(2);
     }
 }
