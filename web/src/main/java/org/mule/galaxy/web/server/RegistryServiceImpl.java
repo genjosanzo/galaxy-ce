@@ -326,7 +326,12 @@ public class RegistryServiceImpl implements RegistryService {
     @SuppressWarnings("unchecked")
     public WSearchResults getArtifacts(String workspaceId, Set artifactTypes, Set searchPredicates,
                                        String freeformQuery, int start, int maxResults) throws RPCException {
-        Query q = new Query(Artifact.class).workspaceId(workspaceId).orderBy("artifactType");
+        Query q = new Query(Artifact.class).orderBy("artifactType");
+        
+        if (workspaceId != null) {
+            q.workspaceId(workspaceId);
+        }
+        
         q.setMaxResults(maxResults);
         q.setStart(start);
         // Filter based on our search terms
