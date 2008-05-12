@@ -104,7 +104,6 @@ public class PolicySelectionPanel extends AbstractComposite{
             }
         });
         mid.add(right);
-        mid.set
         
         table.setWidget(0, 1, mid);
         
