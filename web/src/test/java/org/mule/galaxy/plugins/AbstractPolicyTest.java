@@ -46,6 +46,7 @@ public abstract class AbstractPolicyTest extends AbstractGalaxyTest
             if (!fail)
             {
                 Collection<ApprovalMessage> approvals = e.getApprovals();
+                assertNotNull("Returned approval messages can't be null", approvals);
                 for (ApprovalMessage a : approvals)
                 {
                     System.out.println(a.getMessage());
