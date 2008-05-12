@@ -43,7 +43,7 @@ public class GroupForm extends AbstractAdministrationForm {
     }
 
     protected void fetchItem(String id) {
-        getSecurityService().getGroup(group.getId(), getFetchCallback());
+        getSecurityService().getGroup(id, getFetchCallback());
     }
 
     public String getTitle() {

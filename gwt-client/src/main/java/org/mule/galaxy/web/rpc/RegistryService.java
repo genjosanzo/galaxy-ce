@@ -106,6 +106,8 @@ public interface RegistryService extends RemoteService {
     
     void deletePropertyDescriptor(String id) throws RPCException;
 
+    WPropertyDescriptor getPropertyDescriptor(String id) throws RPCException, ItemNotFoundException;
+    
     Collection getPropertyDescriptors() throws RPCException;
     
     void move(String artifactId, String workspaceId, String name) throws RPCException, ItemNotFoundException;

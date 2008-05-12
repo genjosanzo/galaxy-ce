@@ -129,4 +129,6 @@ public interface RegistryServiceAsync {
     void deleteLifecycle(String id, AsyncCallback abstractCallback);
 
     void setEnabled(String versionId, boolean enabled, AsyncCallback callback);
+
+    void getPropertyDescriptor(String id, AsyncCallback fetchCallback);
 }

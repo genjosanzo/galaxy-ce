@@ -52,7 +52,7 @@ public class PropertyDescriptorListPanel
                     final WPropertyDescriptor prop = (WPropertyDescriptor) itr.next();
                     
                     Hyperlink hyperlink = new Hyperlink(prop.getName(), 
-                                                        "properties/" + prop.getName());
+                                                        "properties/" + prop.getId());
                     
                     table.setWidget(i, 0, hyperlink);
                     table.setText(i, 1, prop.getDescription());

@@ -51,7 +51,7 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
     }
 
     protected void fetchItem(String id) {
-//      adminPanel.getRegistryService().getPropertyDescriptors(abstractCallback)
+        adminPanel.getRegistryService().getPropertyDescriptor(id, getFetchCallback());
     }
 
     public String getTitle() {

@@ -850,6 +850,17 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
+    public WPropertyDescriptor getPropertyDescriptor(String id) throws RPCException, ItemNotFoundException {
+        try {
+            return toWeb(registry.getPropertyDescriptor(id));
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
+    }
+
     public Collection getPropertyDescriptors() throws RPCException {
         try {
             List<WPropertyDescriptor> pds = new ArrayList<WPropertyDescriptor>();

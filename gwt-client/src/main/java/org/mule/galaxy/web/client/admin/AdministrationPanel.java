@@ -18,6 +18,9 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Label;
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.MenuPanel;
@@ -26,10 +29,6 @@ import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
-
-import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Label;
 
 public class AdministrationPanel extends MenuPanel {
 
@@ -136,15 +135,7 @@ public class AdministrationPanel extends MenuPanel {
    
         manageBox.add(item);
     }
-
-    public void showUsers() {
-        History.newItem("users");
-    }
-
-    public void showPropertyDescriptors() {
-        History.newItem("properties");
-    }
-
+    
     public Galaxy getGalaxy() {
         return galaxy;
     }
