@@ -115,11 +115,11 @@ public class PolicySelectionPanel extends AbstractComposite{
     }
 
     protected void move(ListBox from, ListBox to) {
-        int idx = from.getSelectedIndex();
-        
-        if (idx == -1) return;
-        
-        move(from, to, idx);
+        int idx;
+        while ((idx = from.getSelectedIndex()) != -1)
+        {
+            move(from, to, idx);
+        }
     }
 
     private void move(ListBox from, ListBox to, int idx) {
