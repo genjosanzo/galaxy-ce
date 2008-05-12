@@ -77,6 +77,7 @@ public class SelectionPanel extends Composite {
         
         FlowPanel middle = new FlowPanel();
         Button button = new Button(">");
+        button.setStyleName("smallButton");
         button.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 move(left, right);
@@ -85,6 +86,7 @@ public class SelectionPanel extends Composite {
         middle.add(button);
         middle.add(new Label(" "));
         button = new Button("<<");
+        button.setStyleName("smallButton");
         button.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 move(right, left);

@@ -80,14 +80,14 @@ public class SearchFormRow
                 searchPanel.removePredicate(pred);
               }
             });
-        del.setWidth("20px");
+        del.setStyleName("smallButton");
         buttons.add(del);
         Button add = new Button("+", new ClickListener() {
             public void onClick(Widget sender) {
                 searchPanel.addPredicate();
               }
             });
-        add.setWidth("20px");
+        add.setStyleName("smallButton");
         buttons.add(add);
         dock.add(buttons, DockPanel.EAST);
         

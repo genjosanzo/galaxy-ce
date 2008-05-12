@@ -89,19 +89,22 @@ public class PolicySelectionPanel extends AbstractComposite{
         
         FlowPanel mid = new FlowPanel();
         left = new Button("&lt;");
+        left.setStyleName("smallButton");
         left.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 move(selectedPolicies, unselectedPolicies);
             }
         });
         mid.add(left);
-        right = new Button("&gt;");
+        right = new Button(">");
+        right.setStyleName("smallButton");
         right.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 move(unselectedPolicies, selectedPolicies);
             }
         });
         mid.add(right);
+        mid.set
         
         table.setWidget(0, 1, mid);
         

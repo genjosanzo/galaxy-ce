@@ -1132,3 +1132,13 @@ a:visited {
     font-weight: bold;
     cursor: default;
 }
+
+.smallButton {
+  background:#f5f5f5;
+  border:1px solid #aaa;
+  border-top:1px solid #ddd;
+  border-left:1px solid #ddd;
+  padding: 2px;
+  width: 2em;
+  vertical-align: middle;
+}
