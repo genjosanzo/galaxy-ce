@@ -46,7 +46,7 @@ public class AdministrationPanel extends MenuPanel {
         if (galaxy.hasPermission("MANAGE_ARTIFACT_TYPES")) {
             createLinkWithAdd(manageBox, 
                               "Artifact Types", 
-                              "aritfact-types", 
+                              "artifact-types", 
                               new ArtifactTypeListPanel(this),
                               new ArtifactTypeForm(this));
         }        

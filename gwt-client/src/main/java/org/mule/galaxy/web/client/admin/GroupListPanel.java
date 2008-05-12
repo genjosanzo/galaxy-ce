@@ -35,7 +35,6 @@ public class GroupListPanel extends AbstractGroupPanel {
     public GroupListPanel(AdministrationPanel a) {
         super(a.getGalaxy(), a);
         this.adminPanel = a;
-        a.getGalaxy().createPageInfo("groups/*", new GroupForm(adminPanel), a.getGalaxy().getAdminTab());
     }
     
     protected void setGrant(int row, int col, WPermissionGrant pg) {
