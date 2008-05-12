@@ -1,5 +1,23 @@
 package org.mule.galaxy.web.client;
 
+import org.mule.galaxy.web.client.activity.ActivityPanel;
+import org.mule.galaxy.web.client.admin.AdministrationPanel;
+import org.mule.galaxy.web.client.artifact.ArtifactPanel;
+import org.mule.galaxy.web.client.registry.ArtifactForm;
+import org.mule.galaxy.web.client.registry.BrowsePanel;
+import org.mule.galaxy.web.client.registry.SearchPanel;
+import org.mule.galaxy.web.client.util.ExternalHyperlink;
+import org.mule.galaxy.web.client.workspace.ManageWorkspacePanel;
+import org.mule.galaxy.web.client.workspace.WorkspaceForm;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.HeartbeatService;
+import org.mule.galaxy.web.rpc.HeartbeatServiceAsync;
+import org.mule.galaxy.web.rpc.RegistryService;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.SecurityService;
+import org.mule.galaxy.web.rpc.SecurityServiceAsync;
+import org.mule.galaxy.web.rpc.WUser;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
@@ -20,24 +38,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.mule.galaxy.web.client.activity.ActivityPanel;
-import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.client.artifact.ArtifactPanel;
-import org.mule.galaxy.web.client.registry.ArtifactForm;
-import org.mule.galaxy.web.client.registry.BrowsePanel;
-import org.mule.galaxy.web.client.registry.SearchPanel;
-import org.mule.galaxy.web.client.util.ExternalHyperlink;
-import org.mule.galaxy.web.client.workspace.WorkspaceForm;
-import org.mule.galaxy.web.client.workspace.ManageWorkspacePanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.HeartbeatService;
-import org.mule.galaxy.web.rpc.HeartbeatServiceAsync;
-import org.mule.galaxy.web.rpc.RegistryService;
-import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.rpc.SecurityService;
-import org.mule.galaxy.web.rpc.SecurityServiceAsync;
-import org.mule.galaxy.web.rpc.WUser;
 
 
 /**
@@ -134,34 +134,6 @@ public class Galaxy implements EntryPoint, HistoryListener {
                 ExternalHyperlink logout = new ExternalHyperlink("Logout", GWT.getHostPageBaseURL() + "j_logout");
                 rightPanel.add(logout);
 
-                // temp code while working on GALAXY-245
-                /*Hyperlink forTest = new Hyperlink("Kill session", null);
-                forTest.addClickListener(new ClickListener()
-                {
-                    public void onClick(final Widget widget)
-                    {
-                        securityService.logout(new AbstractCallback(menuPanel)
-                        {
-                            public void onSuccess(final Object o)
-                            {
-                                // nothing for now
-                            }
-                        });
-                    }
-                });
-
-                Hyperlink testPopup = new Hyperlink("Popup", null);
-                testPopup.addClickListener(new ClickListener()
-                {
-                    public void onClick(final Widget widget)
-                    {
-                        new SessionKilledDialog(galaxy, new HeartbeatTimer(Galaxy.this));
-                    }
-                });
-                rightPanel.add(testPopup);
-
-                rightPanel.add(forTest);
-*/
                 loadTabs(galaxy);
             }
 
@@ -271,7 +243,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     }
     public void onHistoryChanged(String token) {
         suppressTabHistory = true;
-        if (token == "") {
+        if ("".equals(token)) {
             token = DEFAULT_PAGE;
         }
         
