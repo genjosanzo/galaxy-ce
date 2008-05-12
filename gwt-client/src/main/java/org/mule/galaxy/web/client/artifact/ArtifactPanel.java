@@ -76,7 +76,9 @@ public class ArtifactPanel extends AbstractErrorShowingComposite {
         menuPanel = new RegistryMenuPanel() {
 
             protected void addOtherLinks(Toolbox topMenuLinks) {
-                linkBox = new FlowPanel();
+                if (linkBox == null) {
+                    linkBox = new FlowPanel();
+                }
                 topMenuLinks.add(linkBox);
             }
             
@@ -86,16 +88,14 @@ public class ArtifactPanel extends AbstractErrorShowingComposite {
         panel.setWidth("100%");
         menuPanel.setMain(panel);
 
-        artifactTabs = new TabPanel();
-        artifactTabs.setStyleName("artifactTabPanel");
-        artifactTabs.getDeckPanel().setStyleName("artifactTabDeckPanel");
-        
-        panel.add(artifactTabs);
         
         initWidget(menuPanel);
     }
     
     public void onShow(List params) {
+        panel.clear();
+        panel.add(new Label("Loading..."));
+        
         String artifactId = (String) params.get(0);
         if (params.size() >= 2) {
             selectedTab = new Integer((String)params.get(1)).intValue();
@@ -114,6 +114,13 @@ public class ArtifactPanel extends AbstractErrorShowingComposite {
     }
 
     private void init() {
+        panel.clear();
+        artifactTabs = new TabPanel();
+        artifactTabs.setStyleName("artifactTabPanel");
+        artifactTabs.getDeckPanel().setStyleName("artifactTabDeckPanel");
+        
+        panel.add(artifactTabs);
+        
         FlowPanel artifactTitle = new FlowPanel();
         artifactTitle.setStyleName("artifact-title-base");
         artifactTitle.add(newLabel(info.getPath(), "artifact-path"));
@@ -204,6 +211,7 @@ public class ArtifactPanel extends AbstractErrorShowingComposite {
             
         });
 
+        linkBox.clear();
         linkBox.add(new Label(" "));
 
         Hyperlink hl = new Hyperlink("View Artifact", "artifact/" + info.getId());
