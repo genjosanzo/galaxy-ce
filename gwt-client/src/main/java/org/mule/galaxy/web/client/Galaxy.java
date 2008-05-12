@@ -1,5 +1,5 @@
 /*
- * $Id: LicenseHeader-GPLv2.txt 288 2008-01-29 00:59:35Z andrew $
+ * $Id$
  * --------------------------------------------------------------------------------------
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
