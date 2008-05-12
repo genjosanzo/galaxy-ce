@@ -29,9 +29,11 @@ import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
@@ -86,16 +88,9 @@ public class PolicySelectionPanel extends AbstractComposite{
         
         table.setWidget(0, 0, unselectedPolicies);       
         table.setWidget(0, 2, selectedPolicies);
-        
-        FlowPanel mid = new FlowPanel();
-        left = new Button("&lt;");
-        left.setStyleName("smallButton");
-        left.addClickListener(new ClickListener() {
-            public void onClick(Widget arg0) {
-                move(selectedPolicies, unselectedPolicies);
-            }
-        });
-        mid.add(left);
+
+        VerticalPanel mid = new VerticalPanel();
+
         right = new Button(">");
         right.setStyleName("smallButton");
         right.addClickListener(new ClickListener() {
@@ -105,8 +100,19 @@ public class PolicySelectionPanel extends AbstractComposite{
         });
         mid.add(right);
         
-        table.setWidget(0, 1, mid);
+        left = new Button("&lt;");
+        left.setStyleName("smallButton");
+        left.addClickListener(new ClickListener() {
+            public void onClick(Widget arg0) {
+                move(selectedPolicies, unselectedPolicies);
+            }
+        });
+        mid.add(left);
+
+        table.getCellFormatter().setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_MIDDLE);
         
+        table.setWidget(0, 1, mid);
+
         panel.add(table);
         
         panel.add(descriptionPanel);
