@@ -103,16 +103,16 @@ public class SelectionPanel extends Composite {
     }
     
     protected void move(ListBox from, ListBox to) {
-        for (int i = 0; i < from.getItemCount(); i++)  {
-            if (from.isItemSelected(i)) {
-                String text = from.getItemText(i);
-                String val = from.getValue(i);
-                
-                int dest = getDestination(to, text);
-                
-                to.insertItem(text, val, dest);
-                from.removeItem(i);
-            }
+        int i;
+        while ((i = from.getSelectedIndex()) != -1)
+        {
+            String text = from.getItemText(i);
+            String val = from.getValue(i);
+
+            int dest = getDestination(to, text);
+
+            to.insertItem(text, val, dest);
+            from.removeItem(i);
         }
     }
 
