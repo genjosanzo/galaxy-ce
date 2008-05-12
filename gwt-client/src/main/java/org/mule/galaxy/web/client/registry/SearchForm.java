@@ -1,24 +1,22 @@
 package org.mule.galaxy.web.client.registry;
 
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.SearchPredicate;
-
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.SearchPredicate;
 
 public class SearchForm
     extends AbstractErrorShowingComposite
@@ -27,14 +25,12 @@ public class SearchForm
     private Set rows;
     private Map artifactPropertyMap;
     private Button searchButton;
-    private Galaxy galaxy;
     private Button clearButton;
     private InlineFlowPanel buttonPanel;
     private Hyperlink freeformQueryLink;
     private TextArea freeformQueryArea;
 
     public SearchForm(Galaxy galaxy) {
-        this.galaxy = galaxy;
         rows = new HashSet();
         
         panel = new FlowPanel();
@@ -57,11 +53,7 @@ public class SearchForm
             }
         });
         
-        searchButton = new Button("Search", new ClickListener() {
-           public void onClick(Widget sender) {
-//               registryPanel.refreshArtifacts();
-           }
-        });
+        searchButton = new Button("Search");
         
         clearButton = new Button("Clear", new ClickListener() {
             public void onClick(Widget sender) {
@@ -78,9 +70,12 @@ public class SearchForm
         initWidget(panel);
     }
 
-
     public void clear() {
         rows.clear();
+    }
+
+    public void addSearchListener(ClickListener listener) {
+        searchButton.addClickListener(listener);
     }
     
     public void initArtifactProperties(Map map) {

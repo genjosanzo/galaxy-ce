@@ -124,6 +124,9 @@ public class ArtifactListPanel
     }
 
     public void reloadArtifacts() {
+        artifactPanel.clear();
+        artifactPanel.add(new Label("Loading..."));
+        
         String workspaceId   = browsePanel.getWorkspaceId();
         Set    artifactTypes = browsePanel.getArtifactTypes();
         Set    predicates    = browsePanel.getPredicates();

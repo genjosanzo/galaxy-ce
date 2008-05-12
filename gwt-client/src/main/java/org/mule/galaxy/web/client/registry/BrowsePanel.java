@@ -1,6 +1,5 @@
 package org.mule.galaxy.web.client.registry;
 
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
@@ -78,7 +77,6 @@ public class BrowsePanel extends AbstractBrowsePanel {
 
     private InlineFlowPanel createManageWorkspaceLinks() {
         manageWkspcImg = new Image("images/editor_area.gif");
-        String token = "manage-workspace";
         
         manageWkspcLink = new Hyperlink("Manage Workspace", "");
         InlineFlowPanel manageLinks = asHorizontal(manageWkspcImg, new Label(" "), manageWkspcLink);
@@ -172,7 +170,6 @@ public class BrowsePanel extends AbstractBrowsePanel {
     public static String getLastWorkspaceId() {
         return lastWorkspaceId;
     }
-
 
     public Collection getWorkspaces() {
         return workspaces;

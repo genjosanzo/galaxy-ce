@@ -25,7 +25,7 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
     private TextBox descriptionTB;
 
     public PropertyDescriptorForm(AdministrationPanel adminPanel){
-        super(adminPanel, "property-descriptors", "Property was saved.", "Property was deleted.");
+        super(adminPanel, "properties", "Property was saved.", "Property was deleted.");
     }
     
     protected void addFields(FlexTable table) {

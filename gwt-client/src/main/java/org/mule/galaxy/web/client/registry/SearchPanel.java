@@ -51,6 +51,12 @@ public class SearchPanel extends AbstractBrowsePanel {
         searchPanel.add(searchForm);
         currentTopPanel = searchPanel;
         menuPanel.setTop(searchPanel);
+        
+        searchForm.addSearchListener(new ClickListener() {
+            public void onClick(Widget arg0) {
+                refreshArtifacts();
+            }
+        });
     }
 
     public String getFreeformQuery() {

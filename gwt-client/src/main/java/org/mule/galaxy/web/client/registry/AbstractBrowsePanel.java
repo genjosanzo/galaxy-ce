@@ -149,7 +149,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
     // TODO: refactor ArtifactListPanel so these methods are not needed
 
     public String getWorkspaceId() {
-        return "";
+        return null;
     }
 
     public Set getPredicates() {
