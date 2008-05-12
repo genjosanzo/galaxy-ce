@@ -9,6 +9,7 @@ import org.mule.galaxy.util.Constants;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -49,7 +50,7 @@ public class RequireNoClientRemotingPolicy implements ArtifactPolicy
     public Collection<ApprovalMessage> isApproved(Artifact a, ArtifactVersion previous, ArtifactVersion next) {
         try {
 
-            if(!((Boolean)xpath.evaluate((Document) next.getData(), XPathConstants.BOOLEAN)).booleanValue())
+            if(!(Boolean) xpath.evaluate((Document) next.getData(), XPathConstants.BOOLEAN))
             {
                 return Arrays.asList(new ApprovalMessage("The Mule configuration has the serverUrl set for client remoting. set /mule-configuration/mule-environment-properties/@serverUrl to \"\"", false));
             }
@@ -57,7 +58,7 @@ public class RequireNoClientRemotingPolicy implements ArtifactPolicy
         } catch (XPathExpressionException e) {
             return Arrays.asList(new ApprovalMessage("Could not evaluate Mule configuration: " + e.getMessage(), false));
         }
-        return null;
+        return Collections.emptyList();
     }
 
     public void setRegistry(Registry registry) {

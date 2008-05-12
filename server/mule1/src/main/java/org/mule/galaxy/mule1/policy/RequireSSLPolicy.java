@@ -60,7 +60,7 @@ public class RequireSSLPolicy implements ArtifactPolicy
         } catch (XPathExpressionException e) {
             return Arrays.asList(new ApprovalMessage("Could not evaluate Mule configuration: " + e.getMessage(), false));
         }
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     public void setRegistry(Registry registry) {

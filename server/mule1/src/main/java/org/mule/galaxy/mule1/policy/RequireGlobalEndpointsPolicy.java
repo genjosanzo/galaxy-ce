@@ -9,6 +9,7 @@ import org.mule.galaxy.util.Constants;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -59,7 +60,7 @@ public class RequireGlobalEndpointsPolicy implements ArtifactPolicy
         } catch (XPathExpressionException e) {
             return Arrays.asList(new ApprovalMessage("Could not evaluate Mule configuration: " + e.getMessage(), false));
         }
-        return null;
+        return Collections.emptyList();
     }
 
     public void setRegistry(Registry registry) {
