@@ -20,6 +20,7 @@ package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.rpc.WGroup;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -27,18 +28,18 @@ public class GroupForm extends AbstractAdministrationForm {
 
     private WGroup group;
     private TextBox nameTB;
-    
+
     public GroupForm(AdministrationPanel adminPanel) {
         super(adminPanel, "groups", "Group was saved.", "Group was deleted.");
     }
 
     protected void addFields(FlexTable table) {
         table.setText(0, 0, "Name:");
-        
+
         nameTB = new TextBox();
         nameTB.setText(group.getName());
         table.setWidget(0, 1, nameTB);
-        
+
         styleHeaderColumn(table);
     }
 
@@ -64,14 +65,27 @@ public class GroupForm extends AbstractAdministrationForm {
 
     protected void save() {
         super.save();
-        
         group.setName(nameTB.getText());
         getSecurityService().save(group, getSaveCallback());
     }
 
     protected void delete() {
         super.delete();
-        
+
         getSecurityService().deleteGroup(group.getId(), getDeleteCallback());
     }
+
+    protected boolean validate() {
+        String groupName = this.nameTB.getText();
+        if (groupName == null || "".equals(groupName)) {
+            Window.alert("Group name is required.");
+            return false;
+        }
+        return true;
+    }
+
+    protected void onSave() {
+
+    }
+
 }

@@ -42,26 +42,26 @@ public abstract class AbstractForm extends AbstractComposite {
     private final String successMessage;
     private final ErrorPanel errorPanel;
     private final String deleteMessage;
-    
-    public AbstractForm(ErrorPanel errorPanel, String successToken, 
+
+    public AbstractForm(ErrorPanel errorPanel, String successToken,
                         String successMessage, String deleteMessage) {
         super();
         this.errorPanel = errorPanel;
         this.successToken = successToken;
         this.successMessage = successMessage;
         this.deleteMessage = deleteMessage;
-        
+
         panel = new FlowPanel();
-        
+
         initWidget(panel);
     }
-    
+
     public void onShow(List params) {
         super.onShow();
 
         if (params.size() > 0) {
             String param = (String) params.get(0);
-            
+
             if ("new".equals(param)) {
                 newItem = true;
                 initializeNewItem();
@@ -76,31 +76,32 @@ public abstract class AbstractForm extends AbstractComposite {
             onShowPostInitialize();
         }
     }
-    
+
     protected void onShowPostInitialize() {
         panel.clear();
         panel.add(createTitle(getTitle()));
-        
+
         save = new Button("Save");
         save.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
-                save();
+                // call the validate method first!
+                if(validate()) save();
             }
         });
-        
+
         delete = new Button("Delete");
         delete.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 delete();
             }
         });
-        
+
         FlexTable table = createFormTable();
 
         addFields(table);
-        
+
         panel.add(table);
-        
+
         if (newItem) {
             panel.add(save);
         } else {
@@ -125,7 +126,7 @@ public abstract class AbstractForm extends AbstractComposite {
                 initializeItem(o);
                 onShowPostInitialize();
             }
-            
+
         };
     }
 
@@ -143,7 +144,7 @@ public abstract class AbstractForm extends AbstractComposite {
     protected void setEnabled(boolean enabled) {
         save.setEnabled(enabled);
         delete.setEnabled(enabled);
-        
+
         if (enabled) {
             save.setText("Save");
             delete.setText("Delete");
@@ -170,10 +171,10 @@ public abstract class AbstractForm extends AbstractComposite {
                 History.newItem(successToken);
                 errorPanel.setMessage(successMessage);
             }
-            
+
         };
     }
-    
+
     protected AsyncCallback getDeleteCallback() {
         return new AbstractCallback(errorPanel) {
 
@@ -187,7 +188,12 @@ public abstract class AbstractForm extends AbstractComposite {
                 History.newItem(successToken);
                 errorPanel.setMessage(deleteMessage);
             }
-            
+
         };
     }
+
+    protected abstract boolean validate();
+
+    protected abstract void onSave(); 
+
 }

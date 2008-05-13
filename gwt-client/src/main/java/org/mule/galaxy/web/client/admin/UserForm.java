@@ -164,4 +164,13 @@ public class UserForm extends AbstractAdministrationForm {
         
         getSecurityService().deleteUser(user.getId(),getDeleteCallback());
     }
+
+    protected  boolean validate(){
+        return true;
+    }
+
+    protected void onSave() {
+
+    }
+    
 }

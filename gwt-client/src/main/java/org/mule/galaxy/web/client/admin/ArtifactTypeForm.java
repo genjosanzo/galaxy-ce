@@ -98,4 +98,14 @@ public class ArtifactTypeForm extends AbstractAdministrationForm {
         
         docTypesLB.setEnabled(enabled);
     }
+
+    protected  boolean validate(){
+        return true;
+    }
+
+    protected void onSave() {
+
+    }
+    
+
 }
