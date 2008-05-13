@@ -65,7 +65,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
         RegistryMenuPanel menuPanel = new RegistryMenuPanel();
         form = new FormPanel();
         menuPanel.setMain(form);
-        
+
         initWidget(menuPanel);
     }
 
@@ -79,7 +79,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
         } else {
             add = true;
         }
-        
+
         form.setAction(GWT.getModuleBaseURL() + "../artifactUpload");
         form.setEncoding(FormPanel.ENCODING_MULTIPART);
         form.setMethod(FormPanel.METHOD_POST);
@@ -88,10 +88,10 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
         form.add(panel);
 
         panel.add(createTitle("Add Artifact"));
-        
+
         table = createColumnTable();
         panel.add(table);
-        
+
         if (add) {
             setupAddForm();
         } else {
@@ -112,13 +112,13 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
                 form.submit();
             }
         });
-        table.setWidget(row+1, 1, addButton);
+        table.setWidget(row + 1, 1, addButton);
 
         form.addFormHandler(new FormHandler() {
             public void onSubmit(FormSubmitEvent event) {
 
                 // whitespace will throw an invalid path exception
-                // on the server -- so trim it
+                // on the server -- so trim this optional value
                 String name = nameBox.getText().trim();
                 if (name != null || !"".equals(name)) {
                     nameBox.setText(name);
@@ -128,13 +128,15 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
                     Window.alert("You did not specify a filename!");
                     event.setCancelled(true);
                 }
-                
-                String version = versionBox.getText();
+
+                // trim version to prevent path error
+                String version = versionBox.getText().trim();
+                versionBox.setText(version);
                 if (version == null || "".equals(version)) {
                     setMessage("You must specify a version label.");
                     event.setCancelled(true);
                 }
-                
+
                 addButton.setText("Add");
                 addButton.setEnabled(true);
             }
@@ -145,21 +147,22 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
                     int last = msg.indexOf("</PRE>");
                     if (last == -1) last = msg.indexOf("</pre>");
                     if (last == -1) last = msg.length();
-                    
+
                     String artifactId2 = artifactId;
                     if (add) {
                         artifactId2 = msg.substring(8, last);
                     }
-                    
+
                     History.newItem("artifact/" + artifactId2);
-                } else if (msg.startsWith("<PRE>ArtifactPolicyException") || msg.startsWith("<pre>ArtifactPolicyException")) {
+                } else
+                if (msg.startsWith("<PRE>ArtifactPolicyException") || msg.startsWith("<pre>ArtifactPolicyException")) {
                     parseAndShowPolicyMessages(msg);
                 } else {
                     setMessage(msg);
                 }
             }
         });
-        
+
         styleHeaderColumn(table);
 
         if (add) {
@@ -171,19 +174,19 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
 
     protected void parseAndShowPolicyMessages(String msg) {
         String[] split = msg.split("\n");
-        
+
         List warnings = new ArrayList();
         List failures = new ArrayList();
         for (int i = 1; i < split.length; i++) {
             String s = split[i];
-            
+
             if (s.startsWith("WARNING: ")) {
                 warnings.add(getMessage(s));
             } else if (s.startsWith("FAILURE: ")) {
                 failures.add(getMessage(s));
             }
         }
-        
+
         String token = "policy-failures-" + artifactId;
         ArtifactPolicyResultsPanel failurePanel = new ArtifactPolicyResultsPanel(warnings, failures);
         failurePanel.setMessage("The artifact did not meet all the necessary policies!");
@@ -205,10 +208,10 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
             public void onSuccess(Object workspaces) {
                 setupAddForm((Collection) workspaces);
             }
-            
+
         });
     }
-    
+
     private void setupAddForm(Collection workspaces) {
         table.setWidget(0, 0, new Label("Workspace"));
 
@@ -218,7 +221,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
                                              false);
         workspacesLB.setName("workspaceId");
         table.setWidget(0, 1, workspacesLB);
-        
+
         Label nameLabel = new Label("Artifact Name");
         table.setWidget(1, 0, nameLabel);
 
@@ -232,10 +235,10 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
         versionBox = new TextBox();
         table.setWidget(2, 1, versionBox);
         versionBox.setName("versionLabel");
-        
+
         Label artifactLabel = new Label("Artifact");
         table.setWidget(3, 0, artifactLabel);
-        
+
         setupRemainingTable(3);
     }
 
@@ -245,16 +248,16 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
         versionBox = new TextBox();
         table.setWidget(0, 1, versionBox);
         versionBox.setName("versionLabel");
-        
+
         table.setText(1, 0, "Disable Previous");
 
         disablePrevious = new CheckBox();
         disablePrevious.setName("disablePrevious");
         table.setWidget(1, 1, disablePrevious);
-        
+
         Label artifactLabel = new Label("Artifact");
         table.setWidget(2, 0, artifactLabel);
-        
+
         panel.add(new Hidden("artifactId", artifactId));
 
         setupRemainingTable(2);
