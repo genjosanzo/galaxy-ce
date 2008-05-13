@@ -127,7 +127,10 @@ public class ManageWorkspacePanel extends AbstractErrorShowingComposite {
                 return new Object[] { parent, w };
             }
             
-            return getWorkspace(id, w, w.getWorkspaces());
+            Object[] child = getWorkspace(id, w, w.getWorkspaces());
+            if (child != null) {
+                return child; 
+            }
         }
         return null;
     }
