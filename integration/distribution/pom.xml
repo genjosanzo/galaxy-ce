@@ -21,11 +21,11 @@
       <artifactId>galaxy-client-mule1</artifactId>
       <version>${version}</version>
     </dependency>
-    <!-- dependency>
+    <dependency>
       <groupId>org.mule.galaxy</groupId>
-      <artifactId>galaxy-integration-mule2</artifactId>
+      <artifactId>galaxy-client-mule2</artifactId>
       <version>${version}</version>
-    </dependency -->
+    </dependency>
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-integration-spring</artifactId>
