@@ -58,7 +58,7 @@ import java.util.List;
  *   (with history)
  * - View Artiact
  */
-public class ArtifactPanel extends AbstractErrorShowingComposite {
+public class ArtifactPanel extends AbstractComposite {
 
     private Galaxy galaxy;
     private TabPanel artifactTabs;
@@ -103,7 +103,7 @@ public class ArtifactPanel extends AbstractErrorShowingComposite {
             selectedTab = 0;
         }
         
-        galaxy.getRegistryService().getArtifact(artifactId, new AbstractCallback(this) { 
+        galaxy.getRegistryService().getArtifact(artifactId, new AbstractCallback(menuPanel) { 
             public void onSuccess(Object o) {
                 group = (ArtifactGroup) o;
                 info = (ExtendedArtifactInfo) group.getRows().get(0);
@@ -184,11 +184,11 @@ public class ArtifactPanel extends AbstractErrorShowingComposite {
     }
 
     private void initTabs(ArtifactVersionInfo version) {
-        artifactTabs.add(new ArtifactInfoPanel(galaxy, this, group, info, version), "Info");
-        artifactTabs.add(new GovernancePanel(galaxy, this, version), "Governance");
-        artifactTabs.add(new HistoryPanel(galaxy, this, info), "History");
+        artifactTabs.add(new ArtifactInfoPanel(galaxy, menuPanel, group, info, version), "Info");
+        artifactTabs.add(new GovernancePanel(galaxy, menuPanel, version), "Governance");
+        artifactTabs.add(new HistoryPanel(galaxy, menuPanel, info), "History");
         if (galaxy.hasPermission("MANAGE_GROUPS")) {
-            artifactTabs.add(new ItemGroupPermissionPanel(galaxy, this, info.getId(), SecurityService.ARTIFACT_PERMISSIONS), "Security");
+            artifactTabs.add(new ItemGroupPermissionPanel(galaxy, menuPanel, info.getId(), SecurityService.ARTIFACT_PERMISSIONS), "Security");
         }
         
         if (selectedTab > -1) {
@@ -204,6 +204,7 @@ public class ArtifactPanel extends AbstractErrorShowingComposite {
             }
 
             public void onTabSelected(SourcesTabEvents events, int tab) {
+                menuPanel.clearErrorMessage();
                 AbstractComposite composite = (AbstractComposite) artifactTabs.getWidget(tab);
                 
                 composite.onShow();
@@ -245,7 +246,7 @@ public class ArtifactPanel extends AbstractErrorShowingComposite {
     
     protected void warnDelete() {
         if (Window.confirm("Are you sure you want to delete this artifact")) {
-            galaxy.getRegistryService().delete(info.getId(), new AbstractCallback(this) {
+            galaxy.getRegistryService().delete(info.getId(), new AbstractCallback(menuPanel) {
 
                 public void onSuccess(Object arg0) {
                     galaxy.setMessageAndGoto("browse", "Artifact was deleted.");
