@@ -183,6 +183,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
             }
 
             public void onSuccess(Object arg0) {
+                errorPanel.setMessage("Permissions Saved");
                 setEnabled(true);
             }
         };
