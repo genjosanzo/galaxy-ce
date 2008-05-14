@@ -19,7 +19,6 @@
 package org.mule.galaxy.web.client.artifact;
 
 import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
@@ -93,6 +92,7 @@ public class ArtifactPanel extends AbstractComposite {
     }
     
     public void onShow(List params) {
+        menuPanel.clearErrorMessage();
         panel.clear();
         panel.add(new Label("Loading..."));
         
