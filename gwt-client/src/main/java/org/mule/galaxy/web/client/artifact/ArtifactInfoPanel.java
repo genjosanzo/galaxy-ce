@@ -82,14 +82,13 @@ public class ArtifactInfoPanel extends AbstractComposite {
         
         final NameEditPanel nep = new NameEditPanel(galaxy, 
                                                     errorPanel,
-                                                    info.getId(),
+                                                    info.getId(), 
                                                     (String) info.getValue(0),
                                                     info.getWorkspaceId());
-        nep.addStyleName("buttonRow");
         
         table.setWidget(0, 0, new Label("Name:"));
         table.setWidget(0, 1, nep);
-
+        
         for (int i = 1; i < group.getColumns().size(); i++) {
             table.setText(i, 0, (String) group.getColumns().get(i) + ":");
         }
