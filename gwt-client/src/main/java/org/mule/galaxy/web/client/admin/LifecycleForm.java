@@ -349,13 +349,13 @@ public class LifecycleForm extends AbstractAdministrationForm {
             final TextBox tb = new TextBox();
             buttonPanel.add(tb);
 
+
             Button cancel = new Button("Cancel");
             cancel.addClickListener(new ClickListener() {
                 public void onClick(Widget sender) {
                     AddDialog.this.hide();
                 }
             });
-
             Button ok = new Button("OK");
             ok.addClickListener(new ClickListener() {
                 public void onClick(Widget sender) {
@@ -378,8 +378,8 @@ public class LifecycleForm extends AbstractAdministrationForm {
             });
 
             buttonPanel.add(tb);
-            buttonPanel.add(cancel);
             buttonPanel.add(ok);
+            buttonPanel.add(cancel);
 
             setWidget(buttonPanel);
         }
