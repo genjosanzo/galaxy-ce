@@ -74,11 +74,12 @@ public class ArtifactPanel extends AbstractComposite {
         
         menuPanel = new RegistryMenuPanel() {
 
-            protected void addOtherLinks(Toolbox topMenuLinks) {
+            protected void addTopLinks(Toolbox topMenuLinks) {
                 if (linkBox == null) {
                     linkBox = new FlowPanel();
                 }
                 topMenuLinks.add(linkBox);
+                topMenuLinks.add(new Label(" "));
             }
             
         };
@@ -213,7 +214,6 @@ public class ArtifactPanel extends AbstractComposite {
         });
 
         linkBox.clear();
-        linkBox.add(new Label(" "));
 
         Hyperlink hl = new Hyperlink("View Artifact", "artifact/" + info.getId());
         hl.addClickListener(new ClickListener() {

@@ -46,7 +46,6 @@ public class BrowsePanel extends AbstractBrowsePanel {
     protected ColumnView cv;
     protected TreeItem workspaceTreeItem;
     private FlowPanel browsePanel;
-    private SimplePanel manageWorkspacePanel;
     private Image manageWkspcImg;
     private Hyperlink manageWkspcLink;
     
@@ -65,9 +64,14 @@ public class BrowsePanel extends AbstractBrowsePanel {
     protected RegistryMenuPanel createRegistryMenuPanel() {
         return new RegistryMenuPanel(false, true) {
 
-            protected void addOtherLinks(Toolbox topMenuLinks) {
-                manageWorkspacePanel = new SimplePanel();
-                topMenuLinks.add(manageWorkspacePanel);
+            protected void addBottomLinks(Toolbox topMenuLinks) {
+                manageWkspcImg = new Image("images/editor_area.gif");
+                
+                manageWkspcLink = new Hyperlink("Manage Workspace", "");
+                
+                InlineFlowPanel manageLinks = asHorizontal(manageWkspcImg, new Label(" "), manageWkspcLink);
+                
+                topMenuLinks.add(manageLinks);
             }
         };
     }
@@ -93,19 +97,8 @@ public class BrowsePanel extends AbstractBrowsePanel {
         });
     }
 
-    private InlineFlowPanel createManageWorkspaceLinks() {
-        manageWkspcImg = new Image("images/editor_area.gif");
-        
-        manageWkspcLink = new Hyperlink("Manage Workspace", "");
-        InlineFlowPanel manageLinks = asHorizontal(manageWkspcImg, new Label(" "), manageWkspcLink);
-        return manageLinks;
-    }
-    
     public void refresh() {
         refreshWorkspaces();
-        
-        manageWorkspacePanel.clear();
-        manageWorkspacePanel.add(createManageWorkspaceLinks());
         
         super.refresh();
     }

@@ -37,6 +37,10 @@ public class RegistryMenuPanel extends MenuPanel {
 
     public RegistryMenuPanel(boolean showBrowse, boolean showSearch) {
         super();
+
+        Toolbox menuLinks = new Toolbox(false);
+        
+        addTopLinks(menuLinks);
         
         Image addImg = new Image("images/add_obj.gif");
         addImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-artifact"));
@@ -44,28 +48,31 @@ public class RegistryMenuPanel extends MenuPanel {
         Image addWkspcImg = new Image("images/fldr_obj.gif");
         addWkspcImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-workspace"));
 
-        Toolbox topMenuLinks = new Toolbox(false);
-        topMenuLinks.add(asHorizontal(addImg, new Label(" "), new Hyperlink("Add Artifact", "add-artifact")));
+        menuLinks.add(asHorizontal(addImg, new Label(" "), new Hyperlink("Add Artifact", "add-artifact")));
         
         Hyperlink hl = new Hyperlink("Add Workspace", "add-workspace");
-        topMenuLinks.add(asHorizontal(addWkspcImg, new Label(" "), hl));
+        menuLinks.add(asHorizontal(addWkspcImg, new Label(" "), hl));
         
-        addOtherLinks(topMenuLinks);
+        addBottomLinks(menuLinks);
         
         if (showBrowse) {
             hl = new Hyperlink("Browse Workspaces", "browse");
-            topMenuLinks.add(hl);
+            menuLinks.add(hl);
         }
 
         if (showSearch) {
             hl = new Hyperlink("Search Workspaces", "search");
-            topMenuLinks.add(hl);
+            menuLinks.add(hl);
         }
         
-        addMenuItem(topMenuLinks);
+        addMenuItem(menuLinks);
     }
 
-    protected void addOtherLinks(Toolbox topMenuLinks) {
+    protected void addTopLinks(Toolbox topMenuLinks) {
+        
+    }
+
+    protected void addBottomLinks(Toolbox topMenuLinks) {
         
     }
 
