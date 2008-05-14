@@ -40,6 +40,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -48,6 +49,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -117,7 +119,17 @@ public class Galaxy implements EntryPoint, HistoryListener {
         FlowPanel header = new FlowPanel();
         header.setStyleName("header");
         header.add(rightPanel);
-        header.add(new Image("images/galaxy_small_logo.png"));
+        final Image logo = new Image("images/galaxy_small_logo.png");
+        logo.setTitle("Home");
+        logo.addStyleName("gwt-Hyperlink");
+        logo.addClickListener(new ClickListener()
+        {
+            public void onClick(final Widget widget)
+            {
+                tabPanel.selectTab(0);
+            }
+        });
+        header.add(logo);
 
         base.add(header);
 
