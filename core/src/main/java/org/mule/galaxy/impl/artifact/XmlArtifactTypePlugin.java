@@ -80,19 +80,13 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
             return;
         }
 
-        pluginQNames = new ArrayList<QName>(pluginXml.getNamespace().size());
-        int i = 0;
-        for (Iterator<NamespaceType> iterator = pluginXml.getNamespace().iterator(); iterator.hasNext(); i++)
-        {
-            NamespaceType ns = iterator.next();
-            pluginQNames.add(getQName(ns));
-        }
-
         artifactTypeDao.save(new ArtifactType(pluginXml.getName(), pluginXml.getContentType(), pluginQNames));
 
+        loadQNames();
+        
         Properties props = new Properties(System.getProperties());
         String prefix = "";
-        i = 2;
+        int i = pluginQNames.size();
         for (Iterator<QName> iterator = pluginQNames.iterator(); iterator.hasNext(); i++)
         {
             QName qName = iterator.next();
@@ -187,7 +181,9 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
     @Override
     protected void doInitialize() throws Exception
     {
-        if (pluginXml.getViews() == null || pluginQNames == null)
+        loadQNames();
+        
+        if (pluginXml.getViews() == null)
         {
             return;
         }
@@ -225,6 +221,22 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
             rendererManager.addRenderer(view, pluginQNames);
 
 
+        }
+    }
+
+    private void loadQNames() 
+    {
+        if (pluginQNames != null) 
+        {
+            return;
+        }
+        
+        pluginQNames = new ArrayList<QName>(pluginXml.getNamespace().size());
+        int i = 0;
+        for (Iterator<NamespaceType> iterator = pluginXml.getNamespace().iterator(); iterator.hasNext(); i++)
+        {
+            NamespaceType ns = iterator.next();
+            pluginQNames.add(getQName(ns));
         }
     }
 
