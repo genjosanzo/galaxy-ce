@@ -32,7 +32,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
 
-public abstract class AbstractForm extends AbstractComposite {
+public abstract class AbstractForm extends AbstractComposite implements ClickListener {
 
     protected FlowPanel panel;
     protected boolean newItem;
@@ -82,22 +82,12 @@ public abstract class AbstractForm extends AbstractComposite {
         panel.add(createPrimaryTitle(getTitle()));
 
         save = new Button("Save");
-        save.addClickListener(new ClickListener() {
-            public void onClick(Widget arg0) {
-                // call the validate method first!
-                if(validate()) save();
-            }
-        });
+        save.addClickListener(this);
 
         delete = new Button("Delete");
-        delete.addClickListener(new ClickListener() {
-            public void onClick(Widget arg0) {
-                delete();
-            }
-        });
+        delete.addClickListener(this);
 
         FlexTable table = createFormTable();
-
         addFields(table);
 
         panel.add(table);
@@ -106,6 +96,21 @@ public abstract class AbstractForm extends AbstractComposite {
             panel.add(save);
         } else {
             panel.add(asHorizontal(save, delete));
+        }
+    }
+
+    /**
+     * Too many anonymous inner classes will create a listener object overhead.
+     * This will allow a single listener to distinguish between multiple event publishers.
+     * Also,those anonymous inner classes will eventually make your eyes bug out.
+     *
+     * @param sender
+     */
+    public void onClick(Widget sender) {
+        if (sender == save) {
+            save();
+        } else if (sender == delete) {
+            delete();
         }
     }
 
@@ -191,9 +196,5 @@ public abstract class AbstractForm extends AbstractComposite {
 
         };
     }
-
-    protected abstract boolean validate();
-
-    protected abstract void onSave(); 
 
 }

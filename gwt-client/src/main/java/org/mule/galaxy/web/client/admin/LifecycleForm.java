@@ -396,12 +396,4 @@ public class LifecycleForm extends AbstractAdministrationForm {
         }
     }
 
-    protected  boolean validate(){
-        return true;
-    }
-
-    protected void onSave() {
-
-    }
-    
 }

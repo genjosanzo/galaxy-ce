@@ -89,12 +89,4 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
         svc.deletePropertyDescriptor(property.getId(), getDeleteCallback());
     }
 
-    protected  boolean validate(){
-        return true;
-    }
-
-    protected void onSave() {
-
-    }
-    
 }

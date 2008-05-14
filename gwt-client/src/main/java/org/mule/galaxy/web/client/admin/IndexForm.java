@@ -208,11 +208,4 @@ public class IndexForm extends AbstractAdministrationForm {
         return true;
     }
 
-    protected  boolean validate(){
-        return true;
-    }
-
-    protected void onSave() {
-    }
-    
 }
