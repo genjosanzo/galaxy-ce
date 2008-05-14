@@ -80,13 +80,13 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
             return;
         }
 
-        artifactTypeDao.save(new ArtifactType(pluginXml.getName(), pluginXml.getContentType(), pluginQNames));
-
         loadQNames();
         
+        artifactTypeDao.save(new ArtifactType(pluginXml.getName(), pluginXml.getContentType(), pluginQNames));
+
         Properties props = new Properties(System.getProperties());
         String prefix = "";
-        int i = pluginQNames.size();
+        int i = 2;
         for (Iterator<QName> iterator = pluginQNames.iterator(); iterator.hasNext(); i++)
         {
             QName qName = iterator.next();
@@ -232,8 +232,7 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
         }
         
         pluginQNames = new ArrayList<QName>(pluginXml.getNamespace().size());
-        int i = 0;
-        for (Iterator<NamespaceType> iterator = pluginXml.getNamespace().iterator(); iterator.hasNext(); i++)
+        for (Iterator<NamespaceType> iterator = pluginXml.getNamespace().iterator(); iterator.hasNext();)
         {
             NamespaceType ns = iterator.next();
             pluginQNames.add(getQName(ns));
