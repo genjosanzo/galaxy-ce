@@ -367,29 +367,27 @@ public class ArtifactInfoPanel extends AbstractComposite {
         text.setText(info.getDescription());
         descPanel.add(text);
 
-        HorizontalPanel buttons = new HorizontalPanel();
+        InlineFlowPanel buttons = new InlineFlowPanel();
         descPanel.add(buttons);
-        buttons.setWidth("100%");
-        buttons.setSpacing(10);
-        buttons.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        
+        buttons.addStyleName("buttonRow");
+
         final Button cancelButton = new Button("Cancel");
         cancelButton.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
                 initDescription(descPanel);
             }
         });
-        buttons.add(cancelButton);
-        
+
         final Button addButton = new Button("Save");
         addButton.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
                 saveDescription(descPanel, text, cancelButton, addButton);
             }
 
-           
+
         });
         buttons.add(addButton);
+        buttons.add(cancelButton);
     }
 
     protected void saveDescription(final FlowPanel descPanel, final TextArea text,
