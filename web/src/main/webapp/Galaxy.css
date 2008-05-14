@@ -183,6 +183,14 @@ a:visited {
  **/
 .title {
     font-weight: bold;
+    padding: 4px;
+    margin-top: 8px;
+    font-size: 1.2em;
+}
+
+
+.artifactTitle {
+    font-weight: bold;
     padding: 6px;
     margin-top: 4px;
     font-size: 1.5em;
@@ -194,18 +202,16 @@ a:visited {
 
 .right-title, .rightlinked-title {
     padding: 6px;
-    font-family: serif;
     font-weight: bold;
-    color: #777;
+    color: black;
 }
 
 /* A different right title which allows a link */
 .rightlinked-title-panel {
     width: 100%;
-    margin: 15px 0 5px;
-    padding: 3px;
-    background-image: url("images/tab_gradient.jpg");
-    background-repeat: repeat-x;
+    padding: 4px 3px;
+    color: black;
+    background-color: #EEEEEE;
 }
 
 .rightlinked-title-link {
@@ -215,7 +221,6 @@ a:visited {
     padding-top: 2px;
     padding-bottom: 2px;
 }
-
 
 
 .base {
@@ -308,7 +313,6 @@ a:visited {
 
 .main-panel {
     background-color: white;
-    padding-left: 5px;
 }
 
 .error-panel {
@@ -385,6 +389,11 @@ a:visited {
 .artifactTopPanel {
     width: 100%;
 }
+
+.spacer {
+	margin: 5px;
+}
+
 .dependencyPanelHeader {
   font-weight: bold;
   background-color: #C3D9FF;
@@ -639,8 +648,8 @@ a:visited {
  ** Administration
  **
  **/
-.lifecycle-phases-label {
-    font-size: 1.1em;
+.lifecycle-selection-header {
+    font-size: 1.0em;
     font-weight: bold;
     padding-top: 10px;
 }

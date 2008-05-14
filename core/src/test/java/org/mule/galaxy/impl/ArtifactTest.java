@@ -105,6 +105,21 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, artifacts.size());
     }
     
+    public void testAddWsdlWithApplicationOctetStream() throws Exception {
+        InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
+        
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+        
+        ArtifactResult ar = registry.createArtifact(workspace, "application/octet-stream", 
+                                                    "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
+        
+        Artifact artifact = ar.getArtifact();
+        
+        assertEquals("application/wsdl+xml", artifact.getContentType().toString());
+    }
+    
     public void testAddWsdl() throws Exception {
         InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
         

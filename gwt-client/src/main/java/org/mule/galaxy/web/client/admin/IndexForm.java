@@ -99,9 +99,9 @@ public class IndexForm extends AbstractAdministrationForm {
 
     public String getTitle() {
         if (newItem) {
-            return "Add index";
+            return "Add Index";
         } else {
-            return "Edit index: " + index.getDescription();
+            return "Edit Index: " + index.getDescription();
         }
     }
 

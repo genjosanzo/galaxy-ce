@@ -45,7 +45,9 @@ public class LifecycleSelectionPanel extends AbstractComposite {
         super();
         
         FlowPanel panel = new FlowPanel();
-        panel.add(createTitle("Lifecycle"));
+        Label label = new Label("Lifecycle:");
+        label.setStyleName("lifecycle-selection-header");
+        panel.add(label);
         lifecyclesLB = new ListBox();
         lifecyclesLB.setVisibleItemCount(4);
         
@@ -66,8 +68,8 @@ public class LifecycleSelectionPanel extends AbstractComposite {
             
         });
 
-        Label label = new Label("Phases:");
-        label.setStyleName("lifecycle-phases-label");
+        label = new Label("Phases:");
+        label.setStyleName("lifecycle-selection-header");
         
         panel.add(lifecyclesLB);
         panel.add(label);

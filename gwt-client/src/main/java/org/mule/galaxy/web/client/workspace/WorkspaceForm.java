@@ -115,7 +115,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
         this.workspaces = workspaces;
         
         if (!edit) {
-            panel.add(createTitle("Add Workspace"));
+            panel.add(createPrimaryTitle("Add Workspace"));
         }
         
         final FlexTable table = createColumnTable();

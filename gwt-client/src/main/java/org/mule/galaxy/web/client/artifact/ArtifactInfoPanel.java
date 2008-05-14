@@ -120,11 +120,20 @@ public class ArtifactInfoPanel extends AbstractComposite {
             
         });
         
+        panel.add(newSpacer());
         panel.add(new ArtifactMetadataPanel(galaxy, errorPanel, info, version));
+        panel.add(newSpacer());
         
         initComments();
         
         initWidget(panel);
+    }
+
+    private Widget newSpacer() {
+        FlowPanel p = new FlowPanel();
+//        p.setStyleName("spacer");
+        p.add(new Label(" "));
+        return p;
     }
 
     private void initDescription(final FlowPanel descPanel) {

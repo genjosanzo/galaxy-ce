@@ -66,7 +66,7 @@ public abstract class AbstractComposite extends Composite {
     }
     
     protected FlexTable createTitledRowTable(Panel panel, String title) {
-        panel.add(createTitle(title));
+        panel.add(createPrimaryTitle(title));
         FlexTable table = createRowTable();
         panel.add(table);
         return table;
@@ -114,6 +114,12 @@ public abstract class AbstractComposite extends Composite {
         return table;
     }
 
+    protected Widget createPrimaryTitle(String title) {
+        Label label = new Label(title);
+        label.setStyleName("title");
+        return label;
+    }
+    
     protected InlineFlowPanel createTitle(String title) {
         InlineFlowPanel titlePanel = new InlineFlowPanel();
         titlePanel.setStyleName("rightlinked-title-panel");

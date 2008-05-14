@@ -618,12 +618,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     versionNode.setProperty(JcrVersion.DATA, is);
                 }
                 
-                ContentHandler ch = contentService.getContentHandler(contentType);
-                
                 JcrArtifact artifact = new JcrArtifact(workspace, artifactNode, registry);
-                artifact.setContentType(contentType);
                 artifact.setName(name);
-                artifact.setContentHandler(ch);
+                
+                ContentHandler ch = initializeContentHandler(artifact, name, contentType);
                 
                 // set up the initial version
                 
@@ -681,6 +679,38 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
 
         });
+    }
+
+    protected ContentHandler initializeContentHandler(JcrArtifact artifact, final String name,
+                                                      MimeType contentType) {
+        ContentHandler ch;
+        if ("application/octet-stream".equals(contentType.toString())) {
+            ch = contentService.getContentHandler(getExtension(name));
+            
+            Set<MimeType> types = ch.getSupportedContentTypes();
+            if (types.size() > 0) {
+                try {
+                    contentType = new MimeType(types.iterator().next().toString());
+                } catch (MimeTypeParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } else {
+            ch = contentService.getContentHandler(contentType);
+        }
+        
+        artifact.setContentType(contentType);
+        artifact.setContentHandler(ch);
+        return ch;
+    }
+
+    private String getExtension(String name) {
+        int idx = name.lastIndexOf('.');
+        if (idx > 0) {
+            return name.substring(idx+1);
+        }
+        
+        return "";
     }
 
     private Object executeAndDewrap(JcrCallback jcrCallback) 

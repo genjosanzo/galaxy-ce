@@ -79,7 +79,7 @@ public abstract class AbstractForm extends AbstractComposite {
 
     protected void onShowPostInitialize() {
         panel.clear();
-        panel.add(createTitle(getTitle()));
+        panel.add(createPrimaryTitle(getTitle()));
 
         save = new Button("Save");
         save.addClickListener(new ClickListener() {

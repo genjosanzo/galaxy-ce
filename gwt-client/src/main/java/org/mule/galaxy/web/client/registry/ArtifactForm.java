@@ -87,7 +87,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
         FlowPanel panel = new FlowPanel();
         form.add(panel);
 
-        panel.add(createTitle("Add Artifact"));
+        panel.add(createPrimaryTitle("Add Artifact"));
 
         table = createColumnTable();
         panel.add(table);

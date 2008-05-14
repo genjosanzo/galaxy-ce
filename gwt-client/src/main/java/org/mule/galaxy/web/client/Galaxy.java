@@ -131,7 +131,11 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
             public void onTabSelected(SourcesTabEvents tabPanel, int tab) {
                 if (oldTab != tab && !suppressTabHistory) {
-                    History.newItem("tab-" + tab);
+                    if (tab == 0) {
+                        History.newItem("browse");
+                    } else {
+                        History.newItem("tab-" + tab);
+                    }
                 }
                 oldTab = tab;
             }

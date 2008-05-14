@@ -63,7 +63,6 @@ public class ArtifactUploadServlet extends HttpServlet {
 
     private WebApplicationContext context;
     private Registry registry;
-    private ContentService contentService;
     
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
@@ -143,15 +142,7 @@ public class ArtifactUploadServlet extends HttpServlet {
                     name = name.substring(idx+1);
                 }
                 
-                ContentHandler ch = contentService.getContentHandler(getExtension(uploadItem.getName()));
-                
-                Set<MimeType> types = ch.getSupportedContentTypes();
-                String ct = uploadItem.getContentType();
-                if (types.size() > 0) {
-                    ct = types.iterator().next().toString();
-                }
-                
-                result = registry.createArtifact(wkspc, ct, name, versionLabel, uploadItem.getInputStream(), user);
+                result = registry.createArtifact(wkspc, req.getContentType(), name, versionLabel, uploadItem.getInputStream(), user);
             } else {
                 Artifact a = registry.getArtifact(artifactId);
                 
@@ -199,15 +190,6 @@ public class ArtifactUploadServlet extends HttpServlet {
         }
     }
 
-    private String getExtension(String name) {
-        int idx = name.lastIndexOf('.');
-        if (idx > 0) {
-            return name.substring(idx+1);
-        }
-        
-        return "";
-    }
-
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -215,7 +197,6 @@ public class ArtifactUploadServlet extends HttpServlet {
         context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 
         registry = (Registry)context.getBean("registry");
-        contentService = (ContentService)context.getBean("contentService");
     }
 
 }
