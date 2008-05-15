@@ -22,6 +22,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import org.gwtwidgets.client.ui.LightBox;
+
 class HeartbeatTimer extends Timer
 {
     private Galaxy galaxy;
@@ -51,6 +53,7 @@ class HeartbeatTimer extends Timer
                 if (!dialogVisible)
                 {
                     dialog = new SessionKilledDialog(galaxy, HeartbeatTimer.this);
+                    new LightBox(dialog).show();
                 }
                 else
                 {

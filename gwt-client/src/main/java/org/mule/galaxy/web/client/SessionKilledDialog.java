@@ -35,8 +35,6 @@ public class SessionKilledDialog extends DialogBox
 {
     protected Galaxy galaxy;
 
-    private DockPanel panel = new DockPanel();
-
     // used for UI updates only
     private Timer reconnectTimerUI;
     protected Label timerLabel;
@@ -98,8 +96,6 @@ public class SessionKilledDialog extends DialogBox
         main.add(mainMessage, DockPanel.CENTER);
 
         setWidget(main);
-
-        center();
 
         reconnectTimerUI = new Timer()
         {
