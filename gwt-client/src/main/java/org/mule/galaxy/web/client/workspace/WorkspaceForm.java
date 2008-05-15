@@ -28,7 +28,6 @@ import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WWorkspace;
 
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -36,13 +35,14 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import org.gwtwidgets.client.ui.LightBox;
 
 public class WorkspaceForm extends AbstractErrorShowingComposite {
 
@@ -193,14 +193,8 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
     }
 
     protected void showDeleteDialog(String workspaceId) {
-        final DeleteDialog popup = new DeleteDialog(this, workspaceId);
-        popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-            public void setPosition(int offsetWidth, int offsetHeight) {
-                int left = (Window.getClientWidth() - offsetWidth) / 3;
-                int top = (Window.getClientHeight() - offsetHeight) / 3;
-                popup.setPopupPosition(left, top);
-            }
-        });
+        new LightBox(new DeleteDialog(this, workspaceId)).show();
+
     }
 
     protected void save(String parentWorkspaceId, final String text) {
@@ -243,27 +237,27 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
 
         public DeleteDialog(final WorkspaceForm panel, final String workspaceId) {
           // Set the dialog box's caption.
-          setText("Are you sure you want to delete this workspace and all it's artifacts?");
+          setText("Are you sure you want to delete this workspace and all its artifacts?");
 
           InlineFlowPanel buttonPanel = new InlineFlowPanel();
 
-          Button no = new Button("No");
-          no.addClickListener(new ClickListener() {
+          Button cancelButton = new Button("Cancel");
+          cancelButton.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
                 DeleteDialog.this.hide();
             }
           });
           
-          Button yes = new Button("Yes");
-          yes.addClickListener(new ClickListener() {
+          Button okButton = new Button("OK");
+          okButton.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
                 DeleteDialog.this.hide();
                 panel.delete(workspaceId);
             }
           });
-          buttonPanel.add(no);
-          buttonPanel.add(yes);
-          
+          buttonPanel.add(okButton);
+          buttonPanel.add(cancelButton);
+
           setWidget(buttonPanel);
         }
       }
