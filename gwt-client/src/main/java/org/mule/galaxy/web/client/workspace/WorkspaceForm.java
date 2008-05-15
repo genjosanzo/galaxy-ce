@@ -21,6 +21,7 @@ package org.mule.galaxy.web.client.workspace;
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
+import org.mule.galaxy.web.client.util.ConfirmDialog;
 import org.mule.galaxy.web.client.util.ConfirmDialogListener;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.WorkspacesListBox;
@@ -31,7 +32,6 @@ import org.mule.galaxy.web.rpc.WWorkspace;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -193,7 +193,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
     }
 
     protected void showDeleteDialog(final String workspaceId) {
-        new LightBox(new DeleteDialog(new ConfirmDialogListener()
+        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogListener()
         {
             public void onConfirm()
             {
@@ -204,7 +204,8 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
             {
                 // nothing to do ;)
             }
-        })).show();
+        }, "Are you sure you want to delete this workspace and all its artifacts?");
+        new LightBox(dialog).show();
 
     }
 
@@ -244,33 +245,4 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
         });
     }
 
-    private static class DeleteDialog extends DialogBox {
-
-        public DeleteDialog(final ConfirmDialogListener confirmListener) {
-          // Set the dialog box's caption.
-          setText("Are you sure you want to delete this workspace and all its artifacts?");
-
-          InlineFlowPanel buttonPanel = new InlineFlowPanel();
-
-          Button cancelButton = new Button("Cancel");
-          cancelButton.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
-                DeleteDialog.this.hide();
-                confirmListener.onCancel();
-            }
-          });
-          
-          Button okButton = new Button("OK");
-          okButton.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
-                DeleteDialog.this.hide();
-                confirmListener.onConfirm();
-            }
-          });
-          buttonPanel.add(okButton);
-          buttonPanel.add(cancelButton);
-
-          setWidget(buttonPanel);
-        }
-      }
 }
