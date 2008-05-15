@@ -26,6 +26,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
@@ -75,7 +76,7 @@ public class SelectionPanel extends Composite {
         leftCol.add(left);
         table.setWidget(0, 0, leftCol);
         
-        FlowPanel middle = new FlowPanel();
+        VerticalPanel middle = new VerticalPanel();
         Button button = new Button(">");
         button.setStyleName("smallButton");
         button.addClickListener(new ClickListener() {
@@ -85,7 +86,7 @@ public class SelectionPanel extends Composite {
         });
         middle.add(button);
         middle.add(new Label(" "));
-        button = new Button("<<");
+        button = new Button("&lt;");
         button.setStyleName("smallButton");
         button.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
