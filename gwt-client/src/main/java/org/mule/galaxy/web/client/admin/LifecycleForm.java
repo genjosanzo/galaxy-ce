@@ -41,6 +41,8 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.gwtwidgets.client.ui.LightBox;
+
 public class LifecycleForm extends AbstractAdministrationForm {
 
     private WLifecycle lifecycle;
@@ -162,10 +164,9 @@ public class LifecycleForm extends AbstractAdministrationForm {
     }
 
 
-    protected void addPhase() {
-        AddDialog dlg = new AddDialog(this);
-        dlg.show();
-        dlg.center();
+    protected void addPhase()
+    {
+        new LightBox(new AddDialog(this)).show();
     }
 
     protected void addPhase(String name) {
