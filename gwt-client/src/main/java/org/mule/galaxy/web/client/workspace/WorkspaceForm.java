@@ -22,7 +22,7 @@ import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
 import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogListener;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.WorkspacesListBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -193,17 +193,13 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
     }
 
     protected void showDeleteDialog(final String workspaceId) {
-        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogListener()
+        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter()
         {
             public void onConfirm()
             {
                 delete(workspaceId);
             }
 
-            public void onCancel()
-            {
-                // nothing to do ;)
-            }
         }, "Are you sure you want to delete this workspace and all its artifacts?");
         new LightBox(dialog).show();
 

@@ -19,11 +19,13 @@
 package org.mule.galaxy.web.client.util;
 
 /**
- * An OK/Cancel confirmation dialog callback.
+ * An implementation of {@link org.mule.galaxy.web.client.util.ConfirmDialogListener} with
+ * {@link #onCancel()} as a no-op.
  */
-public interface ConfirmDialogListener
+public abstract class ConfirmDialogAdapter implements ConfirmDialogListener
 {
-    void onConfirm();
-
-    void onCancel();
+    public void onCancel()
+    {
+        // no-op
+    }
 }

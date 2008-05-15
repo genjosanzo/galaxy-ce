@@ -21,6 +21,8 @@ package org.mule.galaxy.web.client.artifact;
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -46,6 +48,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Iterator;
 import java.util.List;
+
+import org.gwtwidgets.client.ui.LightBox;
 
 /**
  * Contains:
@@ -244,16 +248,21 @@ public class ArtifactPanel extends AbstractComposite {
         linkBox.add(hl);
     }
     
-    protected void warnDelete() {
-        if (Window.confirm("Are you sure you want to delete this artifact")) {
-            galaxy.getRegistryService().delete(info.getId(), new AbstractCallback(menuPanel) {
-
-                public void onSuccess(Object arg0) {
-                    galaxy.setMessageAndGoto("browse", "Artifact was deleted.");
-                }
-                
-            });
-        }
+    protected void warnDelete()
+    {
+        new LightBox(new ConfirmDialog(new ConfirmDialogAdapter()
+        {
+            public void onConfirm()
+            {
+                galaxy.getRegistryService().delete(info.getId(), new AbstractCallback(menuPanel)
+                {
+                    public void onSuccess(Object arg0)
+                    {
+                        galaxy.setMessageAndGoto("browse", "Artifact was deleted.");
+                    }
+                });
+            }
+        }, "Are you sure you want to delete this artifact?")).show();
     }
 
 
