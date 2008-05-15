@@ -21,6 +21,7 @@ package org.mule.galaxy.web.client.workspace;
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
+import org.mule.galaxy.web.client.util.ConfirmDialogListener;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.WorkspacesListBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -73,7 +74,6 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
     
     /**
      * Set up the form for editing a workspace.
-     * @param parentId 
      */
     public WorkspaceForm(Galaxy galaxy, 
                          Collection workspaces, 
@@ -192,8 +192,19 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
         table.setWidget(2, 1, lifecyclesLB);
     }
 
-    protected void showDeleteDialog(String workspaceId) {
-        new LightBox(new DeleteDialog(this, workspaceId)).show();
+    protected void showDeleteDialog(final String workspaceId) {
+        new LightBox(new DeleteDialog(new ConfirmDialogListener()
+        {
+            public void onConfirm()
+            {
+                delete(workspaceId);
+            }
+
+            public void onCancel()
+            {
+                // nothing to do ;)
+            }
+        })).show();
 
     }
 
@@ -235,7 +246,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
 
     private static class DeleteDialog extends DialogBox {
 
-        public DeleteDialog(final WorkspaceForm panel, final String workspaceId) {
+        public DeleteDialog(final ConfirmDialogListener confirmListener) {
           // Set the dialog box's caption.
           setText("Are you sure you want to delete this workspace and all its artifacts?");
 
@@ -245,6 +256,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
           cancelButton.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
                 DeleteDialog.this.hide();
+                confirmListener.onCancel();
             }
           });
           
@@ -252,7 +264,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
           okButton.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
                 DeleteDialog.this.hide();
-                panel.delete(workspaceId);
+                confirmListener.onConfirm();
             }
           });
           buttonPanel.add(okButton);
