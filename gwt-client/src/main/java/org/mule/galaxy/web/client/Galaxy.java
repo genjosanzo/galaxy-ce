@@ -126,7 +126,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         {
             public void onClick(final Widget widget)
             {
-                tabPanel.selectTab(0);
+                History.newItem("browse");
             }
         });
         header.add(logo);
