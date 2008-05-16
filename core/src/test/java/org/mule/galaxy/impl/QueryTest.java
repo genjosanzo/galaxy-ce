@@ -7,15 +7,37 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.test.AbstractGalaxyTest;
+import static org.mule.galaxy.query.OpRestriction.not;
+import static org.mule.galaxy.query.OpRestriction.eq;
+import static org.mule.galaxy.query.OpRestriction.like;
 
 public class QueryTest extends AbstractGalaxyTest {
     
     public void testToString() throws Exception {
         Query q = new Query(Artifact.class)
-                .add(OpRestriction.eq("phase",  "Default:Created"));
+                .add(eq("phase",  "Default:Created"));
         
         assertEquals("select artifact where phase = 'Default:Created'",
                      q.toString());
+        
+        q = new Query(Artifact.class)
+            .add(not(eq("name",  "foo")));
+    
+        assertEquals("select artifact where name != 'foo'",
+                 q.toString());
+
+        q = new Query(Artifact.class)
+            .add(like("name",  "foo"));
+    
+        assertEquals("select artifact where name like 'foo'",
+                 q.toString());
+
+        q = new Query(Artifact.class)
+            .add(like("name", "foo"))
+            .add(eq("phase", "bar"));
+    
+        assertEquals("select artifact where name like 'foo' and phase = 'bar'",
+                 q.toString());
     }
     
     public void testQueries() throws Exception {

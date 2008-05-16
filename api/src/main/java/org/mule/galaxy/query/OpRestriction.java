@@ -45,14 +45,25 @@ public class OpRestriction extends Restriction {
     }
     
     public void toString(StringBuilder sb) {
+        toString(sb, false);
+    }
+    
+    private void toString(StringBuilder sb, boolean not) {
         sb.append(left);
         switch (operator) {
         case EQUALS:
-            sb.append(" = '");
+            if (not) {
+                sb.append(" != '");
+            } else {
+                sb.append(" = '");
+            }
             sb.append(value);
             sb.append("'");
             break;
         case LIKE:
+            if (not) {
+                sb.append(" not");
+            } 
             sb.append(" like '");
             sb.append(value);
             sb.append("'");
@@ -74,7 +85,9 @@ public class OpRestriction extends Restriction {
             sb.append(")");
             
             break;
-        
+        case NOT:
+            ((OpRestriction) value).toString(sb, true);
+            break;
         }
     }
 
