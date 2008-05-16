@@ -87,6 +87,11 @@ public class Galaxy implements EntryPoint, HistoryListener {
      * This is the entry point method.
      */
     public void onModuleLoad() {
+
+        // prefetch the image, so that e.g. SessionKilled dialog can be properly displayed for the first time
+        // when the server is already down and cannot serve it.
+        Image.prefetch("images/lightbox.png");
+
         History.addHistoryListener(this);
         
         this.registryService = (RegistryServiceAsync) GWT.create(RegistryService.class);
