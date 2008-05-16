@@ -68,14 +68,17 @@ public class Toolbox extends Composite {
     }
     
     public void setTitle(String title) {
+        Label titleLbl = new Label(title);
+        titleLbl.setStyleName("toolbox-title-label");
+        setTitle(titleLbl);
+    }
+
+    public void setTitle(Widget titleWidget) {
         if (header.getWidgetIndex(titleHolder) == -1) {
             header.insert(titleHolder, 0);
         }
         titleHolder.clear();
-        Label titleLbl = new Label(title);
-        titleLbl.setStyleName("toolbox-title-label");
-        titleHolder.add(titleLbl);
-        super.setTitle(title);
+        titleHolder.add(titleWidget);
     }
 
     public void add(Widget w) {

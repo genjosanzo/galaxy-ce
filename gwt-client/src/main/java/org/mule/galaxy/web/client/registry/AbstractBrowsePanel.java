@@ -21,6 +21,7 @@ package org.mule.galaxy.web.client.registry;
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.MenuPanel;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
@@ -70,8 +71,22 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
             artifactListPanel = new ArtifactListPanel(galaxy, this);
             
             artifactTypesBox = new Toolbox(false);
-            artifactTypesBox.setTitle("By Artifact Type");
-            
+            InlineFlowPanel titlePanel = new InlineFlowPanel();
+            titlePanel.add(new Label("By Artifact Type"));
+            titlePanel.add(new Label(" "));
+            final Hyperlink h = new Hyperlink("[show all]", "browse");
+            h.addClickListener(new ClickListener()
+            {
+                public void onClick(final Widget widget)
+                {
+                    artifactTypes.clear();
+                    refreshArtifactTypes();
+                    refreshArtifacts();
+                }
+            });
+            titlePanel.add(h);
+            artifactTypesBox.setTitle(titlePanel);
+
             initializeMenuAndTop();
             showArtifactTypes();
             first = false;
