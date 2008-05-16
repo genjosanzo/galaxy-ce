@@ -19,11 +19,13 @@
 package org.mule.galaxy.web.client.registry;
 
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class SearchPanel extends AbstractBrowsePanel {
@@ -36,7 +38,7 @@ public class SearchPanel extends AbstractBrowsePanel {
     }
 
     protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(true, false);
+        return new RegistryMenuPanel(galaxy, true, false);
     }
     
     protected void initializeMenuAndTop() {
@@ -44,7 +46,7 @@ public class SearchPanel extends AbstractBrowsePanel {
         browseToolbar.setStyleName("toolbar");
         
         searchPanel = new FlowPanel(); 
-        searchForm = new SearchForm(galaxy);
+        searchForm = new SearchForm(galaxy, "Search");
         searchPanel.add(searchForm);
         currentTopPanel = searchPanel;
         menuPanel.setTop(searchPanel);
@@ -56,13 +58,11 @@ public class SearchPanel extends AbstractBrowsePanel {
         });
     }
 
-    public String getFreeformQuery() {
-        return searchForm.getFreeformQuery();
+    protected void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback) {
+        galaxy.getRegistryService().getArtifacts(null, 
+                                                 getArtifactTypes(), 
+                                                 searchForm.getPredicates(), 
+                                                 searchForm.getFreeformQuery(), 
+                                                 resultStart, maxResults, callback);
     }
-
-    public Set getPredicates() {
-        return searchForm.getPredicates();
-    }
-    
-    
 }

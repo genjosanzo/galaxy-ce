@@ -50,7 +50,7 @@ public class ManageWorkspacePanel extends AbstractErrorShowingComposite {
         super();
         this.galaxy = galaxy;
         
-        RegistryMenuPanel menuPanel = new RegistryMenuPanel();
+        RegistryMenuPanel menuPanel = new RegistryMenuPanel(galaxy);
         
         panel = new FlowPanel();
         menuPanel.setMain(panel);

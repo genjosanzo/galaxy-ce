@@ -62,7 +62,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
     public ArtifactForm(final Galaxy galaxy) {
         this.galaxy = galaxy;
 
-        RegistryMenuPanel menuPanel = new RegistryMenuPanel();
+        RegistryMenuPanel menuPanel = new RegistryMenuPanel(galaxy);
         form = new FormPanel();
         menuPanel.setMain(form);
 

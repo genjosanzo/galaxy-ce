@@ -131,4 +131,15 @@ public interface RegistryServiceAsync {
     void setEnabled(String versionId, boolean enabled, AsyncCallback callback);
 
     void getPropertyDescriptor(String id, AsyncCallback fetchCallback);
+
+    void getArtifactsForView(String viewId, int resultStart, int maxResults, AsyncCallback callback);
+    
+    void getArtifactViews(AsyncCallback callback);
+    
+    void getArtifactView(String id, AsyncCallback callback);
+    
+    void saveArtifactView(WArtifactView view, AsyncCallback callback);
+    
+    void deleteArtifactView(String id, AsyncCallback callback);
+    
 }

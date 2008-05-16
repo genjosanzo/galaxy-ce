@@ -66,7 +66,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
         this.edit = false;
         
         panel = new FlowPanel();
-        RegistryMenuPanel menuPanel = new RegistryMenuPanel();
+        RegistryMenuPanel menuPanel = new RegistryMenuPanel(galaxy);
         menuPanel.setMain(panel);
         
         initWidget(menuPanel);

@@ -18,6 +18,18 @@
 
 package org.mule.galaxy.web.client.registry;
 
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.TreeListener;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.ColumnView;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
@@ -25,18 +37,6 @@ import org.mule.galaxy.web.client.util.NavigationUtil;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WWorkspace;
-
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.TreeListener;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 public class BrowsePanel extends AbstractBrowsePanel {
 
@@ -62,7 +62,7 @@ public class BrowsePanel extends AbstractBrowsePanel {
     }
 
     protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(false, true) {
+        return new RegistryMenuPanel(galaxy, false, true) {
 
             protected void addBottomLinks(Toolbox topMenuLinks) {
                 manageWkspcImg = new Image("images/editor_area.gif");
@@ -172,6 +172,12 @@ public class BrowsePanel extends AbstractBrowsePanel {
         BrowsePanel.lastWorkspaceId = workspaceId;
         this.workspaceId = workspaceId;
         refreshArtifacts();
+    }
+
+    protected void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback) {
+        galaxy.getRegistryService().getArtifacts(workspaceId, getArtifactTypes(), 
+                                                 new HashSet(), null, 
+                                                 resultStart, maxResults, callback);
     }
     
     public String getWorkspaceId() {

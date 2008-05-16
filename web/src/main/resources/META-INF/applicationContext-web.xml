@@ -18,6 +18,7 @@
       <property name="lifecycleManager" ref="lifecycleManager"/>
       <property name="policyManager" ref="policyManager"/>
       <property name="activityManager" ref="activityManager"/>
+      <property name="artifactViewManager" ref="artifactViewManager"/>
       <property name="accessControlManager" ref="accessControlManager"/>
       <property name="contextPathResolver">
           <bean class="org.mule.galaxy.web.server.ContextPathResolver"/>

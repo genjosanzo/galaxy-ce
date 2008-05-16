@@ -44,11 +44,9 @@ public class ArtifactListPanel
     // TODO make it a configurable parameter, maybe per-user?
     private int maxResults = 15;
     private final AbstractBrowsePanel browsePanel;
-    private final Galaxy galaxy;
     
-    public ArtifactListPanel(Galaxy galaxy, AbstractBrowsePanel browsePanel) {
+    public ArtifactListPanel(AbstractBrowsePanel browsePanel) {
         super();
-        this.galaxy = galaxy;
         this.browsePanel = browsePanel;
         
         panel = new FlowPanel();
@@ -63,11 +61,16 @@ public class ArtifactListPanel
 
         initWidget(panel);
         
-        artifactPanel.clear();
+        clear();
         artifactPanel.add(new Label("Loading..."));
     }
     
+    public int getMaxResults() {
+        return maxResults;
+    }
+
     public void initArtifacts(WSearchResults o) {
+        clear();
         createNavigationPanel(o);
         for (Iterator groups = o.getResults().iterator(); groups.hasNext();) {
             ArtifactGroup group = (ArtifactGroup) groups.next();
@@ -88,6 +91,10 @@ public class ArtifactListPanel
             
             artifactPanel.add(listContainer);
         }
+    }
+
+    public void clear() {
+        artifactPanel.clear();
     }
     
     private void createNavigationPanel(WSearchResults o) {
@@ -110,7 +117,7 @@ public class ArtifactListPanel
                     public void onClick(Widget arg0) {
                         resultStart += maxResults;
                         
-                        reloadArtifacts();
+                        browsePanel.refreshArtifacts(resultStart, maxResults);
                     }
                     
                 });
@@ -126,7 +133,7 @@ public class ArtifactListPanel
                         resultStart = resultStart - maxResults;
                         if (resultStart < 0) resultStart = 0;
                         
-                        reloadArtifacts();
+                        browsePanel.refreshArtifacts(resultStart, maxResults);
                     }
                     
                 });
@@ -141,26 +148,13 @@ public class ArtifactListPanel
         }
     }
 
-    public void reloadArtifacts() {
-        artifactPanel.clear();
-        artifactPanel.add(new Label("Loading..."));
-        
-        String workspaceId   = browsePanel.getWorkspaceId();
-        Set    artifactTypes = browsePanel.getArtifactTypes();
-        Set    predicates    = browsePanel.getPredicates();
-        String freeformQuery = browsePanel.getFreeformQuery();
-        galaxy.getRegistryService().getArtifacts(workspaceId, artifactTypes, 
-                                                        predicates, freeformQuery, 
-                                                        resultStart, maxResults,
-                                                        new AbstractCallback(browsePanel) {
-
-            public void onSuccess(Object o) {
-                artifactPanel.clear();
-                initArtifacts((WSearchResults) o);
-            }
-            public void onFailure(Throwable caught) {
-                browsePanel.setMessage(caught.getMessage());
-            }
-        });
+    public int getResultStart() {
+        return resultStart;
     }
+
+    public void showLoadingMessage() {
+        clear();
+        artifactPanel.add(new Label("Loading..."));
+    }
+
 }

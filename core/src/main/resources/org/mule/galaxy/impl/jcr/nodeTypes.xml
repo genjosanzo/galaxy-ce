@@ -53,7 +53,18 @@
     <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
     
   </nodeType>
+      
+  <nodeType name="galaxy:artifactView"
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
     
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+    
+  </nodeType>
+  
   <nodeType name="galaxy:index" 
     isMixin="false" 
     hasOrderableChildNodes="false"

@@ -21,10 +21,13 @@ public class ArtifactViewTest extends AbstractGalaxyTest {
         assertNotNull(view.getId());
         
         User admin = getAdmin();
+        List<ArtifactView> views = artifactViewManager.getArtifactViews(admin);
+        assertEquals(1, views.size());
+        
         view.setUser(admin);
         artifactViewManager.save(view);
         
-        List<ArtifactView> views = artifactViewManager.getArtifactViews(admin);
+        views = artifactViewManager.getArtifactViews(admin);
         assertEquals(1, views.size());
         
         Query query = new Query(Artifact.class);

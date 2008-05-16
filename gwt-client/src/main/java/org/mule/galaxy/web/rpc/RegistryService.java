@@ -18,14 +18,14 @@
 
 package org.mule.galaxy.web.rpc;
 
-import org.mule.galaxy.web.client.RPCException;
-
 import com.google.gwt.user.client.rpc.RemoteService;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+
+import org.mule.galaxy.web.client.RPCException;
 
 public interface RegistryService extends RemoteService {
     
@@ -64,9 +64,30 @@ public interface RegistryService extends RemoteService {
      * @return 
      * @throws RPCException 
      */
-     WSearchResults getArtifacts(String workspace, Set artifactTypes, 
-                                 Set searchPredicates, String freeformQuery, 
-                                 int start, int maxResults) throws RPCException;
+    WSearchResults getArtifacts(String workspace, Set artifactTypes, 
+                                Set searchPredicates, String freeformQuery, 
+                                int start, int maxResults) throws RPCException;
+    
+    WSearchResults getArtifactsForView(String viewId, int resultStart, int maxResults) throws RPCException;
+    
+    /**
+     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WArtifactView>
+     * @return
+     * @throws RPCException 
+     */
+    public Collection getArtifactViews() throws RPCException;
+    
+    public WArtifactView getArtifactView(String id) throws RPCException;
+    
+    /**
+     * Save an artifact view and return the id.
+     * @param view
+     * @return
+     * @throws RPCException
+     */
+    public String saveArtifactView(WArtifactView view) throws RPCException;
+    
+    public void deleteArtifactView(String id) throws RPCException;
     
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WIndex>

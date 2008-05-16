@@ -9,9 +9,9 @@ import org.mule.galaxy.security.User;
 public interface ArtifactViewManager {
     List<ArtifactView> getArtifactViews(User user);
     
-    ArtifactView get(String id);
-    
     void save(ArtifactView view) throws DuplicateItemException, NotFoundException;
     
     void delete(String id);
+
+    ArtifactView getArtifactView(String id);
 }

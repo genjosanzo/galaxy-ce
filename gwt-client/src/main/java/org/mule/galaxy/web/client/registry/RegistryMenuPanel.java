@@ -18,25 +18,42 @@
 
 package org.mule.galaxy.web.client.registry;
 
-import org.mule.galaxy.web.client.MenuPanel;
-import org.mule.galaxy.web.client.util.NavigationUtil;
-import org.mule.galaxy.web.client.util.Toolbox;
-
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Widget;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.MenuPanel;
+import org.mule.galaxy.web.client.util.NavigationUtil;
+import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WArtifactView;
 
 /**
  * Forms the basis of any pages which do not list artifacts.
  */
 public class RegistryMenuPanel extends MenuPanel {
 
-    public RegistryMenuPanel() {
-        this(true, true);
+    private final Galaxy galaxy;
+    private ListBox viewBox;
+    private String selectedViewId;
+
+    public RegistryMenuPanel(Galaxy galaxy) {
+        this(galaxy, true, true);
     }
 
-    public RegistryMenuPanel(boolean showBrowse, boolean showSearch) {
+    public RegistryMenuPanel(Galaxy galaxy, boolean showBrowse, boolean showSearch) {
         super();
+        this.galaxy = galaxy;
 
         Toolbox menuLinks = new Toolbox(false);
         
@@ -66,6 +83,64 @@ public class RegistryMenuPanel extends MenuPanel {
         }
         
         addMenuItem(menuLinks);
+        
+
+        Toolbox viewToolbox = new Toolbox(false);
+        
+        viewToolbox.add(asHorizontal(newLabel("Views ", "toolbox-header"), 
+                                     new Hyperlink("New", "view/new"),
+                                     new Label("...")));
+        
+        viewBox = new ListBox();
+        viewBox.setStyleName("view-ListBox");
+        viewBox.setSize("195", "1");
+        viewToolbox.add(viewBox);
+        viewBox.addChangeListener(new ChangeListener() {
+            public void onChange(Widget arg0) {
+                int idx = viewBox.getSelectedIndex();
+                if (idx != -1) {
+                    String id = viewBox.getValue(idx);
+                    
+                    if (id.length() > 0) {
+                        History.newItem("view/" + id);
+                    }
+                }
+            }
+        });
+        addMenuItem(viewToolbox);
+    }
+    
+    public void loadViews() {
+        loadViews(null, null);
+    }
+    
+    public void loadViews(String viewId, final AsyncCallback callback) {
+        this.selectedViewId = viewId;
+        galaxy.getRegistryService().getArtifactViews(new AbstractCallback(this) {
+
+            public void onSuccess(Object views) {
+                initializeViews((Collection) views, callback);
+            }
+            
+        });
+    }
+
+    protected void initializeViews(Collection views, AsyncCallback callback) {
+        viewBox.clear();
+        viewBox.addItem("Select...", "");
+        for (Iterator itr = views.iterator(); itr.hasNext();) {
+            WArtifactView wv = (WArtifactView) itr.next();
+            
+            viewBox.addItem(wv.getName(), wv.getId());
+            
+            if (wv.getId().equals(selectedViewId)) {
+                viewBox.setSelectedIndex(viewBox.getItemCount()-1);
+
+                if (callback != null) {
+                    callback.onSuccess(wv);
+                }
+            }
+        }
     }
 
     protected void addTopLinks(Toolbox topMenuLinks) {

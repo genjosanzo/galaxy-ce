@@ -28,6 +28,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -39,7 +40,7 @@ import java.util.Set;
 public class SearchForm
     extends AbstractErrorShowingComposite
 {
-    private FlowPanel panel;
+    protected FlowPanel panel;
     private Set rows;
     private Map artifactPropertyMap;
     private Button searchButton;
@@ -48,7 +49,7 @@ public class SearchForm
     private Hyperlink freeformQueryLink;
     private TextArea freeformQueryArea;
 
-    public SearchForm(Galaxy galaxy) {
+    public SearchForm(Galaxy galaxy, String searchText) {
         rows = new HashSet();
         
         panel = new FlowPanel();
@@ -61,17 +62,32 @@ public class SearchForm
             }
         });
 
+        initializeFields();
+        
+        buttonPanel = new InlineFlowPanel();
+        buttonPanel.setStyleName("search-button-panel");
+        
+        initializeButtons(buttonPanel, searchText);
+        
+        addPredicate();
+        
+        initWidget(panel);
+    }
+
+    protected void initializeFields() {
         freeformQueryArea = new TextArea();
         freeformQueryArea.setCharacterWidth(83);
         freeformQueryArea.setVisibleLines(7);
-        freeformQueryLink = new Hyperlink("Use Freeform Query", "customQuery");
+        freeformQueryLink = new Hyperlink("Use Freeform Query", "no-history");
         freeformQueryLink.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
                 showHideFreeformQuery();
             }
         });
-        
-        searchButton = new Button("Search");
+    }
+
+    protected void initializeButtons(Panel buttonPanel, String searchText) {
+        searchButton = new Button(searchText);
         
         clearButton = new Button("Clear", new ClickListener() {
             public void onClick(Widget sender) {
@@ -83,11 +99,15 @@ public class SearchForm
             }
          });
         
-        addPredicate();
-        
-        initWidget(panel);
+        buttonPanel.add(freeformQueryLink);
+        buttonPanel.add(searchButton);
+        buttonPanel.add(clearButton);
     }
 
+    public FlowPanel getPanel() {
+        return panel;   
+    }
+    
     public void clear() {
         rows.clear();
     }
@@ -111,11 +131,6 @@ public class SearchForm
         
         // Add the search button if we're adding our first row
         if (rows.size() == 0) {
-            buttonPanel = new InlineFlowPanel();
-            buttonPanel.setStyleName("search-button-panel");
-            buttonPanel.add(freeformQueryLink);
-            buttonPanel.add(searchButton);
-            buttonPanel.add(clearButton);
             panel.add(buttonPanel);
         }
         
@@ -173,5 +188,10 @@ public class SearchForm
     public String getFreeformQuery()
     {
         return freeformQueryArea.getText();
+    }
+
+    public void setPredicates(Set predicates) {
+        // TODO Auto-generated method stub
+        
     }
 }

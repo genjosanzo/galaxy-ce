@@ -120,7 +120,9 @@ public class MenuPanel extends AbstractErrorShowingComposite {
             ((AbstractComposite)widget).onShow();
         }
         topWidget = widget;
-        topPanel.add(widget);
+        if (widget != null) {
+            topPanel.add(widget);
+        }
     }
     
     public Widget getMain() {

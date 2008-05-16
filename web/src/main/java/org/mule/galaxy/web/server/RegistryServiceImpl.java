@@ -18,73 +18,6 @@
 
 package org.mule.galaxy.web.server;
 
-import org.mule.galaxy.Activity;
-import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.ActivityManager.EventType;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.ArtifactTypeDao;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Comment;
-import org.mule.galaxy.CommentManager;
-import org.mule.galaxy.Dependency;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.PropertyDescriptor;
-import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
-import org.mule.galaxy.index.Index;
-import org.mule.galaxy.index.IndexManager;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.lifecycle.TransitionException;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactCollectionPolicyException;
-import org.mule.galaxy.policy.ArtifactPolicy;
-import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.query.Query;
-import org.mule.galaxy.query.QueryException;
-import org.mule.galaxy.query.OpRestriction;
-import org.mule.galaxy.query.SearchResults;
-import org.mule.galaxy.render.ArtifactRenderer;
-import org.mule.galaxy.render.RendererManager;
-import org.mule.galaxy.security.AccessControlManager;
-import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.Permission;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.web.client.RPCException;
-import org.mule.galaxy.web.rpc.ApplyPolicyException;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.BasicArtifactInfo;
-import org.mule.galaxy.web.rpc.DependencyInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
-import org.mule.galaxy.web.rpc.ItemExistsException;
-import org.mule.galaxy.web.rpc.ItemNotFoundException;
-import org.mule.galaxy.web.rpc.RegistryService;
-import org.mule.galaxy.web.rpc.SearchPredicate;
-import org.mule.galaxy.web.rpc.TransitionResponse;
-import org.mule.galaxy.web.rpc.WActivity;
-import org.mule.galaxy.web.rpc.WApprovalMessage;
-import org.mule.galaxy.web.rpc.WArtifactPolicy;
-import org.mule.galaxy.web.rpc.WArtifactType;
-import org.mule.galaxy.web.rpc.WComment;
-import org.mule.galaxy.web.rpc.WGovernanceInfo;
-import org.mule.galaxy.web.rpc.WIndex;
-import org.mule.galaxy.web.rpc.WLifecycle;
-import org.mule.galaxy.web.rpc.WPhase;
-import org.mule.galaxy.web.rpc.WProperty;
-import org.mule.galaxy.web.rpc.WPropertyDescriptor;
-import org.mule.galaxy.web.rpc.WSearchResults;
-import org.mule.galaxy.web.rpc.WUser;
-import org.mule.galaxy.web.rpc.WWorkspace;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -105,6 +38,75 @@ import javax.xml.namespace.QName;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.Activity;
+import org.mule.galaxy.ActivityManager;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.ArtifactTypeDao;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Comment;
+import org.mule.galaxy.CommentManager;
+import org.mule.galaxy.Dependency;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyDescriptor;
+import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.ActivityManager.EventType;
+import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
+import org.mule.galaxy.index.Index;
+import org.mule.galaxy.index.IndexManager;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.lifecycle.TransitionException;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.ArtifactCollectionPolicyException;
+import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.Query;
+import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.SearchResults;
+import org.mule.galaxy.render.ArtifactRenderer;
+import org.mule.galaxy.render.RendererManager;
+import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.security.Permission;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.view.ArtifactView;
+import org.mule.galaxy.view.ArtifactViewManager;
+import org.mule.galaxy.web.client.RPCException;
+import org.mule.galaxy.web.rpc.ApplyPolicyException;
+import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
+import org.mule.galaxy.web.rpc.BasicArtifactInfo;
+import org.mule.galaxy.web.rpc.DependencyInfo;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.ItemExistsException;
+import org.mule.galaxy.web.rpc.ItemNotFoundException;
+import org.mule.galaxy.web.rpc.RegistryService;
+import org.mule.galaxy.web.rpc.SearchPredicate;
+import org.mule.galaxy.web.rpc.TransitionResponse;
+import org.mule.galaxy.web.rpc.WActivity;
+import org.mule.galaxy.web.rpc.WApprovalMessage;
+import org.mule.galaxy.web.rpc.WArtifactPolicy;
+import org.mule.galaxy.web.rpc.WArtifactType;
+import org.mule.galaxy.web.rpc.WArtifactView;
+import org.mule.galaxy.web.rpc.WComment;
+import org.mule.galaxy.web.rpc.WGovernanceInfo;
+import org.mule.galaxy.web.rpc.WIndex;
+import org.mule.galaxy.web.rpc.WLifecycle;
+import org.mule.galaxy.web.rpc.WPhase;
+import org.mule.galaxy.web.rpc.WProperty;
+import org.mule.galaxy.web.rpc.WPropertyDescriptor;
+import org.mule.galaxy.web.rpc.WSearchResults;
+import org.mule.galaxy.web.rpc.WUser;
+import org.mule.galaxy.web.rpc.WWorkspace;
 
 public class RegistryServiceImpl implements RegistryService {
 
@@ -121,7 +123,8 @@ public class RegistryServiceImpl implements RegistryService {
     private ActivityManager activityManager;
     private CommentManager commentManager;
     private AccessControlManager accessControlManager;
-
+    private ArtifactViewManager artifactViewManager;
+    
     private ContextPathResolver contextPathResolver;
 
     @SuppressWarnings("unchecked")
@@ -326,20 +329,11 @@ public class RegistryServiceImpl implements RegistryService {
     @SuppressWarnings("unchecked")
     public WSearchResults getArtifacts(String workspaceId, Set artifactTypes, Set searchPredicates,
                                        String freeformQuery, int start, int maxResults) throws RPCException {
-        Query q = new Query(Artifact.class).orderBy("artifactType");
-        
+        Query q = getQuery(searchPredicates, start, maxResults);
+
         if (workspaceId != null) {
             q.workspaceId(workspaceId);
         }
-        
-        q.setMaxResults(maxResults);
-        q.setStart(start);
-        // Filter based on our search terms
-        for (Object predObj : searchPredicates) {
-            SearchPredicate pred = (SearchPredicate)predObj;
-            q.add(getRestrictionForPredicate(pred));
-        }
-
         try {
             SearchResults results;
             if (freeformQuery != null && !freeformQuery.equals(""))
@@ -347,66 +341,88 @@ public class RegistryServiceImpl implements RegistryService {
             else
                 results = registry.search(q);
 
-            Map<String, ArtifactGroup> name2group = new HashMap<String, ArtifactGroup>();
-            Map<String, ArtifactRenderer> name2view = new HashMap<String, ArtifactRenderer>();
-
-            for (Object o : results.getResults()) {
-                Artifact a = (Artifact)o;
-                ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), a
-                    .getDocumentType());
-
-                // If we want to filter based on the artifact type, filter!
-                if (artifactTypes != null && artifactTypes.size() != 0
-                    && !artifactTypes.contains(type.getId())) {
-                    continue;
-                }
-
-                ArtifactGroup g = name2group.get(type.getDescription());
-                ArtifactRenderer view = name2view.get(type.getDescription());
-
-                if (g == null) {
-                    g = new ArtifactGroup();
-                    g.setName(type.getDescription());
-                    name2group.put(type.getDescription(), g);
-
-                    view = rendererManager.getArtifactRenderer(a.getDocumentType());
-                    if (view == null) {
-                        view = rendererManager.getArtifactRenderer(a.getContentType().toString());
-                    }
-                    name2view.put(type.getDescription(), view);
-
-                    int i = 0;
-                    for (String col : view.getColumnNames()) {
-                        if (view.isSummary(i)) {
-                            g.getColumns().add(col);
-                        }
-                        i++;
-                    }
-                }
-
-                BasicArtifactInfo info = createBasicArtifactInfo(a, view);
-
-                g.getRows().add(info);
-            }
-
-            List values = new ArrayList();
-            List<String> keys = new ArrayList<String>();
-            keys.addAll(name2group.keySet());
-            Collections.sort(keys);
-
-            for (String key : keys) {
-                values.add(name2group.get(key));
-            }
-
-            WSearchResults wsr = new WSearchResults();
-            wsr.setResults(values);
-            wsr.setTotal(results.getTotal());
-            return wsr;
+            return getSearchResults(artifactTypes, results);
         } catch (QueryException e) {
             throw new RPCException(e.getMessage());
         } catch (RegistryException e) {
-            throw new RuntimeException(e);
+            log.error("Could not query the registry.", e);
+            throw new RPCException(e.getMessage());
         }
+    }
+
+    private Query getQuery(Set searchPredicates, int start, int maxResults) {
+        Query q = new Query(Artifact.class).orderBy("artifactType");
+        
+        q.setMaxResults(maxResults);
+        q.setStart(start);
+        // Filter based on our search terms
+        
+        if (searchPredicates != null) {
+            for (Object predObj : searchPredicates) {
+                SearchPredicate pred = (SearchPredicate)predObj;
+                q.add(getRestrictionForPredicate(pred));
+            }
+        }
+        return q;
+    }
+
+    @SuppressWarnings("unchecked")
+    private WSearchResults getSearchResults(Set artifactTypes, SearchResults results) {
+        Map<String, ArtifactGroup> name2group = new HashMap<String, ArtifactGroup>();
+        Map<String, ArtifactRenderer> name2view = new HashMap<String, ArtifactRenderer>();
+
+        for (Object o : results.getResults()) {
+            Artifact a = (Artifact)o;
+            ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), a
+                .getDocumentType());
+
+            // If we want to filter based on the artifact type, filter!
+            if (artifactTypes != null && artifactTypes.size() != 0
+                && !artifactTypes.contains(type.getId())) {
+                continue;
+            }
+
+            ArtifactGroup g = name2group.get(type.getDescription());
+            ArtifactRenderer view = name2view.get(type.getDescription());
+
+            if (g == null) {
+                g = new ArtifactGroup();
+                g.setName(type.getDescription());
+                name2group.put(type.getDescription(), g);
+
+                view = rendererManager.getArtifactRenderer(a.getDocumentType());
+                if (view == null) {
+                    view = rendererManager.getArtifactRenderer(a.getContentType().toString());
+                }
+                name2view.put(type.getDescription(), view);
+
+                int i = 0;
+                for (String col : view.getColumnNames()) {
+                    if (view.isSummary(i)) {
+                        g.getColumns().add(col);
+                    }
+                    i++;
+                }
+            }
+
+            BasicArtifactInfo info = createBasicArtifactInfo(a, view);
+
+            g.getRows().add(info);
+        }
+
+        List values = new ArrayList();
+        List<String> keys = new ArrayList<String>();
+        keys.addAll(name2group.keySet());
+        Collections.sort(keys);
+
+        for (String key : keys) {
+            values.add(name2group.get(key));
+        }
+
+        WSearchResults wsr = new WSearchResults();
+        wsr.setResults(values);
+        wsr.setTotal(results.getTotal());
+        return wsr;
     }
 
     private BasicArtifactInfo createBasicArtifactInfo(Artifact a, ArtifactRenderer view) {
@@ -431,6 +447,78 @@ public class RegistryServiceImpl implements RegistryService {
             }
         }
         return info;
+    }
+
+    public WSearchResults getArtifactsForView(String viewId, 
+                                              int resultStart, 
+                                              int maxResults)
+        throws RPCException {
+        ArtifactView view = artifactViewManager.getArtifactView(viewId);
+        
+        try {
+            return getSearchResults(null, registry.search(view.getQuery(), resultStart, maxResults));
+        } catch (QueryException e) {
+            throw new RPCException(e.getMessage());
+        } catch (RegistryException e) {
+            log.error("Could not query the registry.", e);
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    public void deleteArtifactView(String id) throws RPCException {
+        artifactViewManager.delete(id);
+    }
+
+    public WArtifactView getArtifactView(String id) throws RPCException {
+        return toWeb(artifactViewManager.getArtifactView(id), getCurrentUser());
+    }
+
+    public Collection getArtifactViews() throws RPCException {
+        List<WArtifactView> views = new ArrayList<WArtifactView>();
+        User currentUser = getCurrentUser();
+        for (ArtifactView v : artifactViewManager.getArtifactViews(currentUser)) {
+            views.add(toWeb(v, currentUser));
+        }
+        return views;
+    }
+
+    private WArtifactView toWeb(ArtifactView v, User currentUser) {
+        WArtifactView wv = new WArtifactView();
+        wv.setName(v.getName());
+        wv.setId(v.getId());
+        wv.setPredicates(getPredicates(v.getQuery()));
+        wv.setShared(v.getUser() == null);
+        return wv;
+    }
+
+    private Set getPredicates(String query) {
+        return new HashSet<SearchPredicate>();
+    }
+
+    public String saveArtifactView(WArtifactView wv) throws RPCException {
+        ArtifactView v = fromWeb(wv);
+        
+        try {
+            artifactViewManager.save(v);
+            return v.getId();
+        } catch (DuplicateItemException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException("Couldn't save view.");
+        } catch (NotFoundException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException("The view being saved has been deleted.");
+        }
+    }
+
+    private ArtifactView fromWeb(WArtifactView wv) throws RPCException {
+        ArtifactView v = new ArtifactView();
+        v.setId(wv.getId());
+        v.setName(wv.getName());
+        if (!wv.isShared()) {
+            v.setUser(getCurrentUser());
+        }
+        v.setQuery(getQuery(wv.getPredicates(), 0, 0).toString());
+        return v;
     }
 
     @SuppressWarnings("unchecked")
@@ -1498,6 +1586,10 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void setIndexManager(IndexManager indexManager) {
         this.indexManager = indexManager;
+    }
+
+    public void setArtifactViewManager(ArtifactViewManager artifactViewManager) {
+        this.artifactViewManager = artifactViewManager;
     }
 
     public ContextPathResolver getContextPathResolver()

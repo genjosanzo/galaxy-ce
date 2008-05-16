@@ -76,7 +76,7 @@ public class ArtifactPanel extends AbstractComposite {
     public ArtifactPanel(Galaxy galaxy) {
         this.galaxy = galaxy;
         
-        menuPanel = new RegistryMenuPanel() {
+        menuPanel = new RegistryMenuPanel(galaxy) {
 
             protected void addTopLinks(Toolbox topMenuLinks) {
                 if (linkBox == null) {

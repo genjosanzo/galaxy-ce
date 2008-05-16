@@ -26,6 +26,7 @@ import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WArtifactType;
+import org.mule.galaxy.web.rpc.WSearchResults;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -49,7 +50,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
     protected ArtifactListPanel artifactListPanel;
     protected FlowPanel currentTopPanel;
     protected final Galaxy galaxy;
-    protected MenuPanel menuPanel;
+    protected RegistryMenuPanel menuPanel;
     private boolean first = true;
     
     public AbstractBrowsePanel(Galaxy galaxy) {
@@ -63,12 +64,12 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
     }
 
     protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(false, true);
+        return new RegistryMenuPanel(galaxy, false, true);
     }
     
     public void onShow() {
         if (first) {
-            artifactListPanel = new ArtifactListPanel(galaxy, this);
+            artifactListPanel = new ArtifactListPanel(this);
             
             artifactTypesBox = new Toolbox(false);
             InlineFlowPanel titlePanel = new InlineFlowPanel();
@@ -94,7 +95,9 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
         
         refresh();
 
-        menuPanel.setTop(currentTopPanel);
+        if (currentTopPanel != null) {
+            menuPanel.setTop(currentTopPanel);
+        }
     }
 
     protected void initializeMenuAndTop() {
@@ -102,9 +105,11 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
 
     public void refresh() {
         refreshArtifactTypes();
+        
+        menuPanel.loadViews();
     }
 
-    private void refreshArtifactTypes() {
+    protected void refreshArtifactTypes() {
         artifactTypes = new HashSet();
         artifactTypesBox.clear();
         artifactTypesBox.add(new Label("Loading..."));
@@ -151,9 +156,26 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
 
     public void refreshArtifacts() {
         menuPanel.setMain(artifactListPanel);
-        artifactListPanel.reloadArtifacts();
+        refreshArtifacts(artifactListPanel.getResultStart(), 
+                        artifactListPanel.getMaxResults());
     }
 
+    public void refreshArtifacts(int resultStart, int maxResults) {
+        artifactListPanel.showLoadingMessage();
+        AbstractCallback callback = new AbstractCallback(this) {
+
+            public void onSuccess(Object o) {
+                artifactListPanel.initArtifacts((WSearchResults) o);
+            }
+            public void onFailure(Throwable caught) {
+                menuPanel.setMessage(caught.getMessage());
+            }
+        };
+        
+        fetchArtifacts(resultStart, maxResults, callback);
+    }
+
+    
     public Set getArtifactTypes() {
         return artifactTypes;
     }
@@ -171,17 +193,5 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
         return 0;
     }
     
-    // TODO: refactor ArtifactListPanel so these methods are not needed
-
-    public String getWorkspaceId() {
-        return null;
-    }
-
-    public Set getPredicates() {
-        return new HashSet();
-    }
-
-    public String getFreeformQuery() {
-        return null;
-    }
+    protected abstract void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback);
 }
