@@ -58,11 +58,12 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
     private CheckBox disablePrevious;
     private boolean add;
     private Button addButton;
+    private RegistryMenuPanel menuPanel;
 
     public ArtifactForm(final Galaxy galaxy) {
         this.galaxy = galaxy;
 
-        RegistryMenuPanel menuPanel = new RegistryMenuPanel(galaxy);
+        menuPanel = new RegistryMenuPanel(galaxy);
         form = new FormPanel();
         menuPanel.setMain(form);
 
@@ -97,6 +98,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
         } else {
             setupAddVersionForm(panel);
         }
+        menuPanel.onShow();
     }
 
     private void setupRemainingTable(int row) {

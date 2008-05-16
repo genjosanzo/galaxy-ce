@@ -45,12 +45,13 @@ public class ManageWorkspacePanel extends AbstractErrorShowingComposite {
     private String workspaceId;
     private final Galaxy galaxy;
     private WWorkspace workspace;
+    private RegistryMenuPanel menuPanel;
 
     public ManageWorkspacePanel(final Galaxy galaxy) {
         super();
         this.galaxy = galaxy;
         
-        RegistryMenuPanel menuPanel = new RegistryMenuPanel(galaxy);
+        menuPanel = new RegistryMenuPanel(galaxy);
         
         panel = new FlowPanel();
         menuPanel.setMain(panel);
@@ -71,6 +72,7 @@ public class ManageWorkspacePanel extends AbstractErrorShowingComposite {
                 loadWorkspaces((Collection) workspaces);
             }
         });
+        menuPanel.onShow();
     }
     
     public void loadWorkspaces(Collection workspaces) {

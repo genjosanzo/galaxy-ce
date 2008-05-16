@@ -46,15 +46,38 @@ public class RegistryMenuPanel extends MenuPanel {
     private final Galaxy galaxy;
     private ListBox viewBox;
     private String selectedViewId;
-
+    private final boolean loadViewsOnShow;
+    private final boolean showBrowse;
+    private final boolean showSearch;
+    private boolean first = true;
+    
     public RegistryMenuPanel(Galaxy galaxy) {
-        this(galaxy, true, true);
+        this(galaxy, true, true, true);
     }
 
-    public RegistryMenuPanel(Galaxy galaxy, boolean showBrowse, boolean showSearch) {
+    public RegistryMenuPanel(Galaxy galaxy, 
+                             boolean showBrowse, 
+                             boolean showSearch,
+                             boolean loadViewsOnShow) {
         super();
         this.galaxy = galaxy;
+        this.showBrowse = showBrowse;
+        this.showSearch = showSearch;
+        this.loadViewsOnShow = loadViewsOnShow;
+    }
+    
+    public void onShow() {
+        createLinks();
+        
+        if (loadViewsOnShow) {
+            loadViews();
+        }
+    }
 
+    private void createLinks() {
+        if (!first) {
+            return;
+        }
         Toolbox menuLinks = new Toolbox(false);
         
         addTopLinks(menuLinks);
@@ -82,9 +105,8 @@ public class RegistryMenuPanel extends MenuPanel {
             menuLinks.add(hl);
         }
         
-        addMenuItem(menuLinks);
+        addMenuItem(menuLinks, 0);
         
-
         Toolbox viewToolbox = new Toolbox(false);
         
         viewToolbox.add(asHorizontal(newLabel("Views ", "toolbox-header"), 
@@ -107,7 +129,8 @@ public class RegistryMenuPanel extends MenuPanel {
                 }
             }
         });
-        addMenuItem(viewToolbox);
+        addMenuItem(viewToolbox, 1);
+        first = false;
     }
     
     public void loadViews() {

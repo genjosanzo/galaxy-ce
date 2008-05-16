@@ -56,6 +56,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
     private String parentWorkspaceId;
     private WWorkspace workspace;
     private String workspaceId;
+    private RegistryMenuPanel menuPanel;
 
     /**
      * Set up the form for adding a workspace.
@@ -66,7 +67,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
         this.edit = false;
         
         panel = new FlowPanel();
-        RegistryMenuPanel menuPanel = new RegistryMenuPanel(galaxy);
+        menuPanel = new RegistryMenuPanel(galaxy);
         menuPanel.setMain(panel);
         
         initWidget(menuPanel);
@@ -95,6 +96,9 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
         panel.clear();
         panel.add(new Label("Loading..."));
         
+        if (menuPanel != null) {
+            menuPanel.onShow();
+        }
         if (params.size() > 0 && !edit) {
             parentWorkspaceId = (String) params.get(0);
         }

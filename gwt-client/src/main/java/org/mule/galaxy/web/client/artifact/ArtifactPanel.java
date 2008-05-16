@@ -98,6 +98,7 @@ public class ArtifactPanel extends AbstractComposite {
     
     public void onShow(List params) {
         menuPanel.clearErrorMessage();
+        menuPanel.onShow();
         panel.clear();
         panel.add(new Label("Loading..."));
         

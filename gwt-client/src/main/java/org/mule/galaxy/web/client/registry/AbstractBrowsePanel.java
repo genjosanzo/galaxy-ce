@@ -64,7 +64,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
     }
 
     protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(galaxy, false, true);
+        return new RegistryMenuPanel(galaxy, false, true, true);
     }
     
     public void onShow() {
@@ -93,6 +93,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
             first = false;
         }
         
+        menuPanel.onShow();
         refresh();
 
         if (currentTopPanel != null) {

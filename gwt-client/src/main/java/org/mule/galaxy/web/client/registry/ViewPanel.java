@@ -62,7 +62,7 @@ public class ViewPanel extends AbstractBrowsePanel {
     }
     
     protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(galaxy, true, true);
+        return new RegistryMenuPanel(galaxy, true, true, false);
     }
     
     public void onShow(List params) {
@@ -76,6 +76,8 @@ public class ViewPanel extends AbstractBrowsePanel {
             editMode = false;
         }
 
+        super.onShow();
+        
         editPanel = new InlineFlowPanel();
         currentTopPanel = editPanel;
         
@@ -93,7 +95,6 @@ public class ViewPanel extends AbstractBrowsePanel {
 //                searchForm.setPredicates(view.getPredicates());
             }
         };
-        menuPanel.loadViews(viewId, loadViewCallback);
         
         FlowPanel browseToolbar = new FlowPanel();
         browseToolbar.setStyleName("toolbar");
@@ -216,6 +217,10 @@ public class ViewPanel extends AbstractBrowsePanel {
     }
     
     protected void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback) {
+        if ("new".equals(viewId)) {
+            return;
+        }
+        
         galaxy.getRegistryService().getArtifactsForView(viewId, resultStart, maxResults, callback);
     }
 }

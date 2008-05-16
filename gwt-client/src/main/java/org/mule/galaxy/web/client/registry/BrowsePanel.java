@@ -62,7 +62,7 @@ public class BrowsePanel extends AbstractBrowsePanel {
     }
 
     protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(galaxy, false, true) {
+        return new RegistryMenuPanel(galaxy, false, true, true) {
 
             protected void addBottomLinks(Toolbox topMenuLinks) {
                 manageWkspcImg = new Image("images/editor_area.gif");

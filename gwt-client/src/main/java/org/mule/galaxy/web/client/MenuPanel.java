@@ -89,6 +89,10 @@ public class MenuPanel extends AbstractErrorShowingComposite {
     public void addMenuItem(Widget widget) {
         leftMenuContainer.add(widget);
     }
+
+    public void addMenuItem(Widget widget, int index) {
+        leftMenuContainer.insert(widget, index);
+    }
     
     public void removeMenuItem(Widget widget) {
         leftMenuContainer.remove(widget);
