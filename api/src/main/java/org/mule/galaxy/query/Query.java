@@ -132,10 +132,10 @@ public class Query {
         boolean first = true;
         
         for (Restriction r : restrictions) {
-            sb.append(r.toString());
-            
             if (first) first = false;
-            else sb.append(" ");
+            else sb.append(" and ");
+            
+            r.toString(sb);
         }
 
         return sb.toString();

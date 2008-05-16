@@ -109,7 +109,7 @@ public class ViewPanel extends AbstractBrowsePanel {
                 cancel.setText("Cancel");
                 cancel.addClickListener(new ClickListener() {
                     public void onClick(Widget arg0) {
-                        menuPanel.setTop(editPanel);
+                        History.newItem("view/" + viewId);
                     }
                 });
                 buttonPanel.add(cancel);

@@ -49,9 +49,9 @@ public class OpRestriction extends Restriction {
     }
     
     private void toString(StringBuilder sb, boolean not) {
-        sb.append(left);
         switch (operator) {
         case EQUALS:
+            sb.append(left);
             if (not) {
                 sb.append(" != '");
             } else {
@@ -61,6 +61,7 @@ public class OpRestriction extends Restriction {
             sb.append("'");
             break;
         case LIKE:
+            sb.append(left);
             if (not) {
                 sb.append(" not");
             } 
@@ -69,6 +70,7 @@ public class OpRestriction extends Restriction {
             sb.append("'");
             break;
         case IN:
+            sb.append(left);
             sb.append(" in ('");
             
             boolean first = true;

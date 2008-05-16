@@ -71,7 +71,9 @@ import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.query.SearchResults;
+import org.mule.galaxy.query.OpRestriction.Operator;
 import org.mule.galaxy.render.ArtifactRenderer;
 import org.mule.galaxy.render.RendererManager;
 import org.mule.galaxy.security.AccessControlManager;
@@ -482,7 +484,7 @@ public class RegistryServiceImpl implements RegistryService {
         return views;
     }
 
-    private WArtifactView toWeb(ArtifactView v, User currentUser) {
+    private WArtifactView toWeb(ArtifactView v, User currentUser) throws RPCException {
         WArtifactView wv = new WArtifactView();
         wv.setName(v.getName());
         wv.setId(v.getId());
@@ -491,8 +493,28 @@ public class RegistryServiceImpl implements RegistryService {
         return wv;
     }
 
-    private Set getPredicates(String query) {
-        return new HashSet<SearchPredicate>();
+    private Set getPredicates(String query) throws RPCException {
+        Set<SearchPredicate> predicates = new HashSet<SearchPredicate>();
+        try {
+            Query q = Query.fromString(query);
+            
+            for (Restriction r : q.getRestrictions()) {
+                if (r instanceof OpRestriction) {
+                    OpRestriction op = (OpRestriction) r;
+                    
+                    Object left = op.getLeft();
+                    if (left.equals(Operator.NOT)) {
+                        
+                    } else if (left.equals(Operator.EQUALS)) {
+                        new SearchPredicate()
+                    }
+                }
+            }
+            return predicates;
+        } catch (QueryException e) {
+            log.error("Could not parse query. " + e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
     }
 
     public String saveArtifactView(WArtifactView wv) throws RPCException {
