@@ -3,6 +3,8 @@ package org.mule.galaxy.impl;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class UserManagerTest extends AbstractGalaxyTest {
@@ -16,16 +18,29 @@ public class UserManagerTest extends AbstractGalaxyTest {
         assertNotNull(u.getCreated());
         assertNotNull(u.getId());
         
-        User user = new User();
-        user.setUsername("dan");
-        user.setName("Dan Diephouse");
+        User dan = new User();
+        dan.setUsername("dan");
+        dan.setName("Dan Diephouse");
+
+        HashMap<String, Object> props = new HashMap<String, Object>();
+        props.put("foo", "bar");
+        props.put("fooList", Arrays.asList("bar"));
+        dan.setProperties(props);
         
-        userManager.create(user, "dan");
-        assertNotNull(user);
-        assertNotNull(user.getId());
-        assertEquals("dan", user.getUsername());
-        assertEquals("Dan Diephouse", user.getName());
-        assertNotNull(user.getCreated());
+        userManager.create(dan, "dan");
+        
+        dan = userManager.get(dan.getId());
+        assertNotNull(dan);
+        assertNotNull(dan.getId());
+        assertEquals("dan", dan.getUsername());
+        assertEquals("Dan Diephouse", dan.getName());
+        assertNotNull(dan.getCreated());
+        assertNotNull(dan.getProperties());
+        
+        assertEquals("bar", dan.getProperties().get("foo"));
+        assertNotNull(dan.getProperties().get("fooList"));
+        assertTrue(dan.getProperties().get("fooList") instanceof List);
+        assertEquals("bar", ((List)dan.getProperties().get("fooList")).get(0));
         
         users = userManager.listAll();
         assertEquals(2, users.size());
@@ -33,24 +48,24 @@ public class UserManagerTest extends AbstractGalaxyTest {
         User authUser = userManager.authenticate("admin", "admin");
         assertNotNull(authUser);
         
-        userManager.delete(user.getId());
+        userManager.delete(dan.getId());
         
         users = userManager.listAll();
         assertEquals(1, users.size());
         
         // we really just disabled the user
-        user = userManager.get(user.getId());
-        assertNotNull(user);
+        dan = userManager.get(dan.getId());
+        assertNotNull(dan);
         
         // make sure we can add another one with the same name as was deleted
-        user = new User();
-        user.setUsername("dan");
-        user.setName("Dan Diephouse");
-        userManager.create(user, "dan");
-        assertNotNull(user.getId());
-        assertEquals("dan", user.getUsername());
-        assertEquals("Dan Diephouse", user.getName());
-        assertNotNull(user.getCreated());
+        dan = new User();
+        dan.setUsername("dan");
+        dan.setName("Dan Diephouse");
+        userManager.create(dan, "dan");
+        assertNotNull(dan.getId());
+        assertEquals("dan", dan.getUsername());
+        assertEquals("Dan Diephouse", dan.getName());
+        assertNotNull(dan.getCreated());
     }
 
 }

@@ -76,8 +76,15 @@ public interface RegistryService extends RemoteService {
      * @throws RPCException 
      */
     public Collection getArtifactViews() throws RPCException;
+
+    /**
+     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WArtifactView>
+     * @return
+     * @throws RPCException 
+     */
+    public Collection getRecentArtifactViews() throws RPCException;
     
-    public WArtifactView getArtifactView(String id) throws RPCException;
+    public WArtifactView getArtifactView(String id) throws RPCException, ItemExistsException, ItemNotFoundException;
     
     /**
      * Save an artifact view and return the id.

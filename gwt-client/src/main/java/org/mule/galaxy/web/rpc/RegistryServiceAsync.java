@@ -142,4 +142,6 @@ public interface RegistryServiceAsync {
     
     void deleteArtifactView(String id, AsyncCallback callback);
     
+    void getRecentArtifactViews(AsyncCallback callback);
+    
 }

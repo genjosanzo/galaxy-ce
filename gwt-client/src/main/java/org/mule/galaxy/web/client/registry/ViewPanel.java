@@ -55,7 +55,6 @@ public class ViewPanel extends AbstractBrowsePanel {
     private FlowPanel editPanel;
     private boolean editMode;
     private Hyperlink editLink;
-    private AbstractCallback loadViewCallback;
     
     public ViewPanel(Galaxy galaxy) {
         super(galaxy, false);
@@ -65,7 +64,7 @@ public class ViewPanel extends AbstractBrowsePanel {
         return new RegistryMenuPanel(galaxy, true, true) {
 
             public void loadViews() {
-                loadViews(viewId, loadViewCallback);
+                loadViews(viewId, null);
             }
             
         };
@@ -79,34 +78,15 @@ public class ViewPanel extends AbstractBrowsePanel {
         if (params.size() > 0) {
             viewId = (String) params.get(0);
         }
+
+        editPanel = new InlineFlowPanel();
+        currentTopPanel = editPanel;
         
         if (params.size() > 1) {
             editMode = "edit".equals((String) params.get(1));
         } else {
             editMode = false;
         }
-        
-        editPanel = new InlineFlowPanel();
-        currentTopPanel = editPanel;
-        
-        loadViewCallback = new AbstractCallback(this) {
-            public void onSuccess(Object o) {
-                view = (WArtifactView) o;
-                nameTB.setText(view.getName());
-                sharedCB.setChecked(view.isShared());
-                
-                editPanel.clear();
-                editPanel.add(createPrimaryTitle(view.getName()));
-                editPanel.add(new Label(" "));
-                editLink = new Hyperlink("Edit", "view/" + viewId + "/edit");
-                editPanel.add(editLink);
-                searchForm.setPredicates(view.getPredicates());
-                
-                if (editMode) {
-                    showSearchForm();
-                }
-            }
-        };
         
         FlowPanel browseToolbar = new FlowPanel();
         browseToolbar.setStyleName("toolbar");
@@ -174,8 +154,28 @@ public class ViewPanel extends AbstractBrowsePanel {
             view = new WArtifactView();
             showSearchForm();
         }
-
         super.onShow();
+    }
+
+    private void loadView() {
+        galaxy.getRegistryService().getArtifactView(viewId, new AbstractCallback(this) {
+            public void onSuccess(Object o) {
+                view = (WArtifactView) o;
+                nameTB.setText(view.getName());
+                sharedCB.setChecked(view.isShared());
+                
+                editPanel.clear();
+                editPanel.add(createPrimaryTitle(view.getName()));
+                editPanel.add(new Label(" "));
+                editLink = new Hyperlink("Edit", "view/" + viewId + "/edit");
+                editPanel.add(editLink);
+                searchForm.setPredicates(view.getPredicates());
+                
+                if (editMode) {
+                    showSearchForm();
+                }
+            }
+        });
     }
     
     protected void delete()
@@ -199,9 +199,11 @@ public class ViewPanel extends AbstractBrowsePanel {
     public void refresh() {
         if (!editMode || "new".equals(viewId)) {
             refreshArtifacts();
-        }
+        } 
+
+        loadView();
         
-        menuPanel.loadViews(viewId, loadViewCallback);
+        menuPanel.loadViews(viewId, null);
     }
     
     protected void save() {

@@ -80,6 +80,7 @@ import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
+import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.view.ArtifactView;
 import org.mule.galaxy.view.ArtifactViewManager;
 import org.mule.galaxy.web.client.RPCException;
@@ -114,6 +115,8 @@ public class RegistryServiceImpl implements RegistryService {
 
     protected static final String DEFAULT_DATETIME_FORMAT = "h:mm a, MMMM d, yyyy";
 
+    private static final String RECENT_VIEWS = "recent.artifactViews";
+
     private final Log log = LogFactory.getLog(getClass());
 
     private Registry registry;
@@ -126,6 +129,7 @@ public class RegistryServiceImpl implements RegistryService {
     private CommentManager commentManager;
     private AccessControlManager accessControlManager;
     private ArtifactViewManager artifactViewManager;
+    private UserManager userManager;
     
     private ContextPathResolver contextPathResolver;
 
@@ -471,8 +475,49 @@ public class RegistryServiceImpl implements RegistryService {
         artifactViewManager.delete(id);
     }
 
-    public WArtifactView getArtifactView(String id) throws RPCException {
-        return toWeb(artifactViewManager.getArtifactView(id), getCurrentUser());
+    public WArtifactView getArtifactView(String id) throws RPCException, ItemExistsException, ItemNotFoundException {
+        User user = getCurrentUser();
+        WArtifactView view = toWeb(artifactViewManager.getArtifactView(id), user);
+        try {
+            updateRecentArtifactViews(user, id);
+        } catch (DuplicateItemException e) {
+            throw new ItemExistsException();
+        } catch (NotFoundException e) {
+            log.error(e.getMessage(), e);
+            throw new ItemNotFoundException();
+        } 
+        
+        return view;
+    }
+
+    private void updateRecentArtifactViews(User user, String id) throws DuplicateItemException, NotFoundException {
+        List<String> recent = getRecentArtifactViewIds(user);
+        
+        // remove this id if it alread exists
+        recent.remove(id);
+
+        // add the view to the top of the list
+        recent.add(0, id);
+        
+        while (recent.size() > 5) {
+            recent.remove(recent.size() - 1);
+        }
+        
+        userManager.save(user);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<String> getRecentArtifactViewIds(User user) {
+        if (user.getProperties() == null) {
+            user.setProperties(new HashMap<String, Object>());
+        }
+        List<String> recent = (List<String>) user.getProperties().get(RECENT_VIEWS);
+        
+        if (recent == null) {
+            recent = new ArrayList<String>();
+            user.getProperties().put(RECENT_VIEWS, recent);
+        }
+        return recent;
     }
 
     public Collection getArtifactViews() throws RPCException {
@@ -487,6 +532,18 @@ public class RegistryServiceImpl implements RegistryService {
                 return v1.getName().compareTo(v2.getName());
             }
         });
+        return views;
+    }
+
+    public Collection getRecentArtifactViews() throws RPCException {
+        List<WArtifactView> views = new ArrayList<WArtifactView>();
+        User currentUser = getCurrentUser();
+        List<String> ids = getRecentArtifactViewIds(currentUser);
+        if (ids != null) {
+            for (String id : ids) {
+                views.add(toWeb(artifactViewManager.getArtifactView(id), currentUser));
+            }
+        }
         return views;
     }
 
@@ -1641,6 +1698,10 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void setArtifactViewManager(ArtifactViewManager artifactViewManager) {
         this.artifactViewManager = artifactViewManager;
+    }
+
+    public void setUserManager(UserManager userManager) {
+        this.userManager = userManager;
     }
 
     public ContextPathResolver getContextPathResolver()

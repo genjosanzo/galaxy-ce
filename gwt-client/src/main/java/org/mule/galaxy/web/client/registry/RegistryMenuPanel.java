@@ -21,6 +21,7 @@ package org.mule.galaxy.web.client.registry;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -49,6 +50,7 @@ public class RegistryMenuPanel extends MenuPanel {
     private final boolean showBrowse;
     private final boolean showSearch;
     private boolean first = true;
+    private FlowPanel recentViewsPanel;
     
     public RegistryMenuPanel(Galaxy galaxy) {
         this(galaxy, true, true);
@@ -109,7 +111,7 @@ public class RegistryMenuPanel extends MenuPanel {
         
         viewBox = new ListBox();
         viewBox.setStyleName("view-ListBox");
-        viewBox.setSize("195", "1");
+        viewBox.setSize("170", "");
         viewToolbox.add(viewBox);
         viewBox.addChangeListener(new ChangeListener() {
             public void onChange(Widget arg0) {
@@ -123,7 +125,13 @@ public class RegistryMenuPanel extends MenuPanel {
                 }
             }
         });
+        
         addMenuItem(viewToolbox, 1);
+        
+        recentViewsPanel = new FlowPanel();
+        recentViewsPanel.setStyleName("recent-views");
+        viewToolbox.add(recentViewsPanel);
+        
         first = false;
     }
     
@@ -140,6 +148,23 @@ public class RegistryMenuPanel extends MenuPanel {
             }
             
         });
+        
+        galaxy.getRegistryService().getRecentArtifactViews(new AbstractCallback(this) {
+
+            public void onSuccess(Object views) {
+                initializeRecentViews((Collection) views);
+            }
+            
+        });
+    }
+
+    protected void initializeRecentViews(Collection views) {
+        recentViewsPanel.clear();
+        for (Iterator itr = views.iterator(); itr.hasNext();) {
+            WArtifactView wv = (WArtifactView) itr.next();
+            
+            recentViewsPanel.add(new Hyperlink(wv.getName(), "view/" + wv.getId()));
+        }
     }
 
     protected void initializeViews(Collection views, AsyncCallback callback) {

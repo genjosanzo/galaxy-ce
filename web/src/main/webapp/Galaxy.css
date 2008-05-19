@@ -178,6 +178,9 @@ a:visited {
     font-size: 0.9em;
 }
 
+.search-panel table {
+	color: white;
+}
 
 /**
  **
@@ -357,6 +360,10 @@ a:visited {
 	margin-left: 8px;
 }
 
+.recent-views {
+    padding: 0px 4px 4px 8px;
+}
+	
 .feed-icon {
     margin-left: 6px;
     cursor: pointer;
