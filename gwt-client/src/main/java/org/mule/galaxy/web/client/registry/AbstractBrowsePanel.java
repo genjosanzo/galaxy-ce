@@ -18,16 +18,6 @@
 
 package org.mule.galaxy.web.client.registry;
 
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.MenuPanel;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.Toolbox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.rpc.WArtifactType;
-import org.mule.galaxy.web.rpc.WSearchResults;
-
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -37,7 +27,17 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.WArtifactType;
+import org.mule.galaxy.web.rpc.WSearchResults;
 
 /**
  * The basis for any form that lists out groups of artifacts.
@@ -52,6 +52,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
     protected final Galaxy galaxy;
     protected RegistryMenuPanel menuPanel;
     private boolean first = true;
+    private int resultStart;
     private final boolean showArtifactTypes;
     
     public AbstractBrowsePanel(Galaxy galaxy) {
@@ -74,10 +75,27 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
         return new RegistryMenuPanel(galaxy, false, true);
     }
     
-    public void onShow() {
+    public void onShow(List params) {
+        if (params.size() > 1) {
+            try {
+                resultStart = Integer.valueOf((String) params.get(1)).intValue();
+            } catch (NumberFormatException e) {
+            }
+            
+            if (resultStart < 0) {
+                resultStart = 0;
+            }
+        } else {
+            resultStart = 0;
+        }
+        
         if (first) {
             artifactListPanel = new ArtifactListPanel(this);
-
+        }
+        
+        artifactListPanel.setResultStart(resultStart);
+        
+        if (first) {
             initializeMenuAndTop();
             
             if (showArtifactTypes) {

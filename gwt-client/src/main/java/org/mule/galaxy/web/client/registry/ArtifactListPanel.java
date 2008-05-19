@@ -44,6 +44,7 @@ public class ArtifactListPanel
     // TODO make it a configurable parameter, maybe per-user?
     private int maxResults = 15;
     private final AbstractBrowsePanel browsePanel;
+    private FlowPanel activityNavPanel;
     
     public ArtifactListPanel(AbstractBrowsePanel browsePanel) {
         super();
@@ -98,19 +99,19 @@ public class ArtifactListPanel
     }
     
     private void createNavigationPanel(WSearchResults o) {
-        Widget w = panel.getWidget(0);
-        if (w.getStyleName().equals("activity-nav-panel")) {
-            panel.remove(0);
+        if (activityNavPanel != null) {
+            panel.remove(activityNavPanel);
+            activityNavPanel = null;
         }
 
         long resultSize = o.getTotal();
         if (resultSize > maxResults || resultStart > 0) {
-            FlowPanel activityNavPanel = new FlowPanel();
+            activityNavPanel = new FlowPanel();
             activityNavPanel.setStyleName("activity-nav-panel");
             Hyperlink hl;
             
             if (resultSize > maxResults && resultStart < o.getTotal()) {
-                hl = new Hyperlink("Next", "next");
+                hl = new Hyperlink("Next", browsePanel.getHistoryToken() + "/" + (resultStart + maxResults));
                 hl.setStyleName("activity-nav-next");
                 hl.addClickListener(new ClickListener() {
     
@@ -125,7 +126,7 @@ public class ArtifactListPanel
             }
             
             if (resultStart > 0) {
-                hl = new Hyperlink("Previous", "previous");
+                hl = new Hyperlink("Previous", browsePanel.getHistoryToken() + "/" + (resultStart - maxResults));
                 hl.setStyleName("activity-nav-previous");
                 hl.addClickListener(new ClickListener() {
     
@@ -155,6 +156,10 @@ public class ArtifactListPanel
     public void showLoadingMessage() {
         clear();
         artifactPanel.add(new Label("Loading..."));
+    }
+
+    public void setResultStart(int resultStart) {
+        this.resultStart = resultStart;
     }
 
 }

@@ -1224,7 +1224,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         return new SearchResults(artifacts2.size(), artifacts2);
                     }
                 }
-                return new SearchResults(artifacts.size(), artifacts);
+                return new SearchResults(nodes.getSize(), artifacts);
             }
 
         });

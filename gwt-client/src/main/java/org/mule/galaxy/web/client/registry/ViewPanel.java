@@ -154,7 +154,8 @@ public class ViewPanel extends AbstractBrowsePanel {
             view = new WArtifactView();
             showSearchForm();
         }
-        super.onShow();
+        
+        super.onShow(params);
     }
 
     private void loadView() {

@@ -54,7 +54,11 @@ public class BrowsePanel extends AbstractBrowsePanel {
     }
 
     protected String getHistoryToken() {
-        return "browse";
+        if (workspaceId != null) {
+            return "browse/" + workspaceId;
+        } else {
+            return "browse";
+        }
     }
     
     public void onShow(List params) {
