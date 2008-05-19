@@ -52,7 +52,6 @@ public class PropertyEditPanel extends Composite {
     private RegistryServiceAsync svc;
     private TextBox idTextBox;
     private TextBox descTextBox;
-    private CheckBox mvCheckBox;
     private Panel propertiesPanel;
 
     public PropertyEditPanel(final ErrorPanel registryPanel, 
@@ -173,9 +172,8 @@ public class PropertyEditPanel extends Composite {
             errorPanel.setMessage("A property description must be supplied;");
             return;
         }
-        boolean mv = mvCheckBox.isChecked();
         
-        svc.newPropertyDescriptor(id, desc, mv, new AbstractCallback(errorPanel) {
+        svc.newPropertyDescriptor(id, desc, false, new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object arg0) {
                 saveProperty(id, desc);
@@ -201,11 +199,6 @@ public class PropertyEditPanel extends Composite {
             descTextBox = new TextBox();
             descTextBox.setVisibleLength(20);
             newPropertyTable.setWidget(1, 1, descTextBox);
-            
-            newPropertyTable.setText(2, 0, "Multivalued:");
-            
-            mvCheckBox = new CheckBox();
-            newPropertyTable.setWidget(2, 1, mvCheckBox);
             
             propertyPanel.add(newPropertyTable);
         } else {
