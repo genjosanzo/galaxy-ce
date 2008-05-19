@@ -38,6 +38,7 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
     protected boolean newItem;
     private Button save;
     private Button delete;
+    private Button cancel;
     private String successToken;
     private final String successMessage;
     private final ErrorPanel errorPanel;
@@ -87,15 +88,18 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
         delete = new Button("Delete");
         delete.addClickListener(this);
 
+        cancel = new Button("Cancel");
+        cancel.addClickListener(this);
+
         FlexTable table = createFormTable();
         addFields(table);
 
         panel.add(table);
 
         if (newItem) {
-            panel.add(save);
+            panel.add(asHorizontal(save, cancel));
         } else {
-            panel.add(asHorizontal(save, delete));
+            panel.add(asHorizontal(save, delete, cancel));
         }
     }
 
@@ -111,7 +115,10 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
             save();
         } else if (sender == delete) {
             delete();
+        } else if (sender == cancel) {
+            cancel();
         }
+
     }
 
     protected abstract void fetchItem(String id);
@@ -149,10 +156,12 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
     protected void setEnabled(boolean enabled) {
         save.setEnabled(enabled);
         delete.setEnabled(enabled);
+        cancel.setEnabled(enabled);
 
         if (enabled) {
             save.setText("Save");
             delete.setText("Delete");
+            cancel.setText("Cancel");
         }
     }
 
@@ -160,6 +169,23 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
         setEnabled(false);
         save.setText("Saving...");
     }
+
+
+
+    /* most of the time you probably want to use the successToken page
+       as the cancel redirect page */
+    protected void cancel() {
+        setEnabled(false);
+        cancel.setText("Canceling...");
+        this.cancel(successToken);
+    }
+
+    /* in case you want to have a custom success page */
+    protected void cancel(String location) {
+        History.newItem(location);
+    }
+
+
 
     public abstract String getTitle();
 
