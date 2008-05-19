@@ -75,11 +75,6 @@ public class ArtifactHistoryCollection extends AbstractArtifactCollection {
     }
 
     @Override
-    public String getId(ArtifactVersion entry) throws ResponseContextException {
-        return ID_PREFIX + entry.getParent().getId() + ":" + entry.getVersionLabel();
-    }
-
-    @Override
     public String getName(ArtifactVersion version) {
         return super.getName(version);
     }

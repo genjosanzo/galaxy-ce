@@ -330,7 +330,11 @@ public abstract class AbstractArtifactCollection
         }
         return href;
     }
-    
+
+    public String getId(ArtifactVersion doc) {
+        return ID_PREFIX + doc.getParent().getId();
+    }
+
     @Override
     protected String getFeedIriForEntry(ArtifactVersion entryObj, RequestContext request) {
         Artifact a = entryObj.getParent();

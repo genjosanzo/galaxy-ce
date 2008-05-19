@@ -77,11 +77,7 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
     public String getId(RequestContext request) {
         return "tag:galaxy.mulesource.com,2008:registry:" + registry + ":feed";
     }
-
-    public String getId(ArtifactVersion doc) {
-        return ID_PREFIX + doc.getParent().getId();
-    }
-
+    
     public String getTitle(RequestContext request) {
         return "Mule Galaxy Registry/Repository";
     }
