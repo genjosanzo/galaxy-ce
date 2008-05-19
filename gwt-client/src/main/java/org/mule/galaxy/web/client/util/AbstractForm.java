@@ -172,19 +172,12 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
 
 
 
-    /* most of the time you probably want to use the successToken page
-       as the cancel redirect page */
+    /* Use the successToken page as the cancel redirect page */
     protected void cancel() {
         setEnabled(false);
         cancel.setText("Canceling...");
-        this.cancel(successToken);
+        History.newItem(successToken);
     }
-
-    /* in case you want to have a custom success page */
-    protected void cancel(String location) {
-        History.newItem(location);
-    }
-
 
 
     public abstract String getTitle();
