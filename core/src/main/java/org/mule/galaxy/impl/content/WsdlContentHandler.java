@@ -31,8 +31,8 @@ public class WsdlContentHandler extends XmlDocumentContentHandler implements Xml
         super(false);
         
         primaryContentType = new MimeType("application/wsdl+xml");
-        supportedContentTypes.add(primaryContentType);
         supportedContentTypes.add(new MimeType("text/wsdl+xml"));
+        supportedContentTypes.add(primaryContentType);
         
         supportedTypes.add(Document.class);
         

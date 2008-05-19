@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -47,7 +48,7 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
     
     protected MimeType primaryContentType;
 
-    protected Set<QName> supportedDocumentTypes = new HashSet<QName>();
+    protected Set<QName> supportedDocumentTypes = new LinkedHashSet<QName>();
     
     public XmlDocumentContentHandler() throws MimeTypeParseException {
         this(true);
