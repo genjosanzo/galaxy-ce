@@ -58,13 +58,23 @@ public class ViewPanel extends AbstractBrowsePanel {
     private AbstractCallback loadViewCallback;
     
     public ViewPanel(Galaxy galaxy) {
-        super(galaxy);
+        super(galaxy, false);
     }
     
     protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(galaxy, true, true, false);
+        return new RegistryMenuPanel(galaxy, true, true) {
+
+            public void loadViews() {
+                loadViews(viewId, loadViewCallback);
+            }
+            
+        };
     }
     
+    protected String getHistoryToken() {
+        return "view/" + viewId;
+    }
+
     public void onShow(List params) {
         if (params.size() > 0) {
             viewId = (String) params.get(0);
@@ -75,8 +85,6 @@ public class ViewPanel extends AbstractBrowsePanel {
         } else {
             editMode = false;
         }
-
-        super.onShow();
         
         editPanel = new InlineFlowPanel();
         currentTopPanel = editPanel;
@@ -84,7 +92,7 @@ public class ViewPanel extends AbstractBrowsePanel {
         loadViewCallback = new AbstractCallback(this) {
             public void onSuccess(Object o) {
                 view = (WArtifactView) o;
-                nameTB.setName(view.getName());
+                nameTB.setText(view.getName());
                 sharedCB.setChecked(view.isShared());
                 
                 editPanel.clear();
@@ -92,7 +100,11 @@ public class ViewPanel extends AbstractBrowsePanel {
                 editPanel.add(new Label(" "));
                 editLink = new Hyperlink("Edit", "view/" + viewId + "/edit");
                 editPanel.add(editLink);
-//                searchForm.setPredicates(view.getPredicates());
+                searchForm.setPredicates(view.getPredicates());
+                
+                if (editMode) {
+                    showSearchForm();
+                }
             }
         };
         
@@ -100,7 +112,7 @@ public class ViewPanel extends AbstractBrowsePanel {
         browseToolbar.setStyleName("toolbar");
         
         final ViewPanel viewPanel = this;
-        searchForm = new SearchForm(galaxy, "Save") {
+        searchForm = new SearchForm(galaxy, "Save", false) {
 
             protected void initializeButtons(Panel buttonPanel, String searchText) {
                 super.initializeButtons(buttonPanel, searchText);
@@ -109,7 +121,8 @@ public class ViewPanel extends AbstractBrowsePanel {
                 cancel.setText("Cancel");
                 cancel.addClickListener(new ClickListener() {
                     public void onClick(Widget arg0) {
-                        menuPanel.setTop(editPanel);
+                        // Browse back to the view  
+                        History.newItem("view/" + viewId);
                     }
                 });
                 buttonPanel.add(cancel);
@@ -160,11 +173,9 @@ public class ViewPanel extends AbstractBrowsePanel {
             }
             view = new WArtifactView();
             showSearchForm();
-        } else if (editMode) {
-            showSearchForm();
-        } else {
-            super.onShow();
         }
+
+        super.onShow();
     }
     
     protected void delete()
@@ -186,8 +197,9 @@ public class ViewPanel extends AbstractBrowsePanel {
 
 
     public void refresh() {
-        refreshArtifacts();
-        refreshArtifactTypes();
+        if (!editMode || "new".equals(viewId)) {
+            refreshArtifacts();
+        }
         
         menuPanel.loadViews(viewId, loadViewCallback);
     }

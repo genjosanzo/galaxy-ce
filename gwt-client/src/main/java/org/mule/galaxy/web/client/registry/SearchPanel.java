@@ -38,7 +38,11 @@ public class SearchPanel extends AbstractBrowsePanel {
     }
 
     protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(galaxy, true, false, true);
+        return new RegistryMenuPanel(galaxy, true, false);
+    }
+    
+    protected String getHistoryToken() {
+        return "search";
     }
     
     protected void initializeMenuAndTop() {
@@ -46,7 +50,7 @@ public class SearchPanel extends AbstractBrowsePanel {
         browseToolbar.setStyleName("toolbar");
         
         searchPanel = new FlowPanel(); 
-        searchForm = new SearchForm(galaxy, "Search");
+        searchForm = new SearchForm(galaxy, "Search", true);
         searchPanel.add(searchForm);
         currentTopPanel = searchPanel;
         menuPanel.setTop(searchPanel);

@@ -26,6 +26,7 @@ import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
 import org.mule.galaxy.web.rpc.BasicArtifactInfo;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
 import org.mule.galaxy.web.rpc.RegistryService;
+import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.TransitionResponse;
 import org.mule.galaxy.web.rpc.WApprovalMessage;
 import org.mule.galaxy.web.rpc.WComment;
@@ -331,6 +332,21 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         PropertyDescriptor pd = registry.getPropertyDescriptor(wpd.getId());
         
         assertNotNull(pd);
+    }
+    
+    /**
+     * @throws Exception
+     */
+    public void testQueryToPredicate() throws Exception {
+        Set predicates = ((RegistryServiceImpl) gwtRegistry).getPredicates("select artifact where name != 'foo'");
+        
+        assertEquals(1, predicates.size());
+        
+        SearchPredicate sp = (SearchPredicate) predicates.iterator().next();
+        
+        assertEquals(SearchPredicate.DOES_NOT_HAVE_VALUE, sp.getMatchType());
+        assertEquals("name", sp.getProperty());
+        assertEquals("foo", sp.getValue());
     }
     private final class FauxPolicy implements ArtifactPolicy {
         public String getDescription() {

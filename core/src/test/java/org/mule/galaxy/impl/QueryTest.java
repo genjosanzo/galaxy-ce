@@ -6,6 +6,7 @@ import java.util.Set;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.OpRestriction.Operator;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import static org.mule.galaxy.query.OpRestriction.not;
 import static org.mule.galaxy.query.OpRestriction.eq;
@@ -38,6 +39,16 @@ public class QueryTest extends AbstractGalaxyTest {
     
         assertEquals("select artifact where name like 'foo' and phase = 'bar'",
                  q.toString());
+    }
+    
+    public void testFromString() throws Exception {
+        Query q = Query.fromString("select artifact where name != 'foo'");
+
+        assertEquals(1, q.getRestrictions().size());
+        
+        OpRestriction opr = (OpRestriction) q.getRestrictions().iterator().next();
+        
+        assertEquals(Operator.NOT, opr.getOperator());
     }
     
     public void testQueries() throws Exception {

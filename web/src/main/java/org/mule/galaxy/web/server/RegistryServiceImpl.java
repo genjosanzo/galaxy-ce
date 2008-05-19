@@ -71,7 +71,9 @@ import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.query.SearchResults;
+import org.mule.galaxy.query.OpRestriction.Operator;
 import org.mule.galaxy.render.ArtifactRenderer;
 import org.mule.galaxy.render.RendererManager;
 import org.mule.galaxy.security.AccessControlManager;
@@ -479,10 +481,16 @@ public class RegistryServiceImpl implements RegistryService {
         for (ArtifactView v : artifactViewManager.getArtifactViews(currentUser)) {
             views.add(toWeb(v, currentUser));
         }
+        
+        Collections.sort(views, new Comparator<WArtifactView>() {
+            public int compare(WArtifactView v1, WArtifactView v2) {
+                return v1.getName().compareTo(v2.getName());
+            }
+        });
         return views;
     }
 
-    private WArtifactView toWeb(ArtifactView v, User currentUser) {
+    private WArtifactView toWeb(ArtifactView v, User currentUser) throws RPCException {
         WArtifactView wv = new WArtifactView();
         wv.setName(v.getName());
         wv.setId(v.getId());
@@ -491,8 +499,51 @@ public class RegistryServiceImpl implements RegistryService {
         return wv;
     }
 
-    private Set getPredicates(String query) {
-        return new HashSet<SearchPredicate>();
+    /**
+     * Convert a string query to a set of search predicates for the SearchForm.
+     * You'll see that we do not have full fidelity yet between text queries and
+     * the actual form. However, that is not a problem as we'll only ever encounter
+     * queries which were created with the form. So there are some cases here
+     * that we don't have to worry about.
+     * @param query
+     * @return
+     * @throws RPCException
+     */
+    public Set getPredicates(String query) throws RPCException {
+        Set<SearchPredicate> predicates = new HashSet<SearchPredicate>();
+        try {
+            Query q = Query.fromString(query);
+            
+            for (Restriction r : q.getRestrictions()) {
+                if (r instanceof OpRestriction) {
+                    OpRestriction op = (OpRestriction) r;
+                    
+                    Object left = op.getLeft();
+                    Object right = op.getRight();
+                    Operator operator = op.getOperator();
+                    
+                    if (operator.equals(Operator.NOT)) {
+                        if (right instanceof OpRestriction) {
+                            OpRestriction op2 = (OpRestriction) right;
+                            
+                            predicates.add(new SearchPredicate(op2.getLeft().toString(), 
+                                                               SearchPredicate.DOES_NOT_HAVE_VALUE, 
+                                                               op2.getRight().toString()));
+                        } else {
+                            throw new RPCException("Query could not be converted.");
+                        }
+                    } else if (operator.equals(Operator.EQUALS)) {
+                        predicates.add(new SearchPredicate(left.toString(), SearchPredicate.HAS_VALUE, right.toString()));
+                    } else if (operator.equals(Operator.LIKE)) {
+                        predicates.add(new SearchPredicate(left.toString(), SearchPredicate.LIKE, right.toString()));
+                    } 
+                }
+            }
+            return predicates;
+        } catch (QueryException e) {
+            log.error("Could not parse query. " + e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
     }
 
     public String saveArtifactView(WArtifactView wv) throws RPCException {

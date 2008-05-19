@@ -46,32 +46,26 @@ public class RegistryMenuPanel extends MenuPanel {
     private final Galaxy galaxy;
     private ListBox viewBox;
     private String selectedViewId;
-    private final boolean loadViewsOnShow;
     private final boolean showBrowse;
     private final boolean showSearch;
     private boolean first = true;
     
     public RegistryMenuPanel(Galaxy galaxy) {
-        this(galaxy, true, true, true);
+        this(galaxy, true, true);
     }
 
     public RegistryMenuPanel(Galaxy galaxy, 
                              boolean showBrowse, 
-                             boolean showSearch,
-                             boolean loadViewsOnShow) {
+                             boolean showSearch) {
         super();
         this.galaxy = galaxy;
         this.showBrowse = showBrowse;
         this.showSearch = showSearch;
-        this.loadViewsOnShow = loadViewsOnShow;
     }
     
     public void onShow() {
         createLinks();
-        
-        if (loadViewsOnShow) {
-            loadViews();
-        }
+        loadViews();
     }
 
     private void createLinks() {

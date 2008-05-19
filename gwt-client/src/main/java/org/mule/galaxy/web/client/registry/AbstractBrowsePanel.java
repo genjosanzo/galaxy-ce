@@ -52,10 +52,16 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
     protected final Galaxy galaxy;
     protected RegistryMenuPanel menuPanel;
     private boolean first = true;
+    private final boolean showArtifactTypes;
     
     public AbstractBrowsePanel(Galaxy galaxy) {
+        this(galaxy, true);
+    }
+
+    public AbstractBrowsePanel(Galaxy galaxy, boolean showArtifactTypes) {
         super();
         this.galaxy = galaxy;
+        this.showArtifactTypes = showArtifactTypes;
         this.service = galaxy.getRegistryService();
 
         menuPanel = createRegistryMenuPanel();
@@ -63,33 +69,36 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
         initWidget(menuPanel);
     }
 
+    
     protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(galaxy, false, true, true);
+        return new RegistryMenuPanel(galaxy, false, true);
     }
     
     public void onShow() {
         if (first) {
             artifactListPanel = new ArtifactListPanel(this);
-            
-            artifactTypesBox = new Toolbox(false);
-            InlineFlowPanel titlePanel = new InlineFlowPanel();
-            titlePanel.add(new Label("By Artifact Type"));
-            titlePanel.add(new Label(" "));
-            final Hyperlink h = new Hyperlink("[show all]", "browse");
-            h.addClickListener(new ClickListener()
-            {
-                public void onClick(final Widget widget)
-                {
-                    artifactTypes.clear();
-                    refreshArtifactTypes();
-                    refreshArtifacts();
-                }
-            });
-            titlePanel.add(h);
-            artifactTypesBox.setTitle(titlePanel);
 
             initializeMenuAndTop();
-            showArtifactTypes();
+            
+            if (showArtifactTypes) {
+                artifactTypesBox = new Toolbox(false);
+                InlineFlowPanel titlePanel = new InlineFlowPanel();
+                titlePanel.add(new Label("By Artifact Type"));
+                titlePanel.add(new Label(" "));
+                final Hyperlink h = new Hyperlink("[show all]", getHistoryToken());
+                h.addClickListener(new ClickListener()
+                {
+                    public void onClick(final Widget widget)
+                    {
+                        artifactTypes.clear();
+                        refreshArtifactTypes();
+                        refreshArtifacts();
+                    }
+                });
+                titlePanel.add(h);
+                artifactTypesBox.setTitle(titlePanel);
+                showArtifactTypes();
+            }
             first = false;
         }
         
@@ -100,6 +109,8 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
             menuPanel.setTop(currentTopPanel);
         }
     }
+
+    protected abstract String getHistoryToken();
 
     protected void initializeMenuAndTop() {
     }
@@ -124,7 +135,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
                 for (Iterator itr = artifactTypes.iterator(); itr.hasNext();) {
                     final WArtifactType at = (WArtifactType) itr.next();
                     
-                    Hyperlink hl = new Hyperlink(at.getDescription(), "browse");
+                    Hyperlink hl = new Hyperlink(at.getDescription(), getHistoryToken());
                     hl.addClickListener(new ClickListener() {
                         public void onClick(Widget w) {
                             String style = w.getStyleName();

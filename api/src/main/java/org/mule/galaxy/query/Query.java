@@ -153,6 +153,13 @@ public class Query {
                 }
                 start = i + 1;
                 break;
+            case '!':
+                if ('=' == queryString.charAt(i+1)) {
+                    tokens.add("!=");
+                    start = i+2;
+                    i++;
+                }
+                break;
             case '=':
                  tokens.add("=");
                  start = i+1;

@@ -139,8 +139,28 @@ public class SearchFormRow
             
             return new SearchPredicate(property, matchType, value);
         }
-        catch (NumberFormatException e) {
+        catch (NumberFormatException e) 
+        {
             return null;
+        }
+    }
+    
+    public void setPredicate(SearchPredicate predicate) 
+    {
+        selectValue(propertyList, predicate.getProperty());
+        selectValue(matchTypeList, new Integer(predicate.getMatchType()).toString());
+        
+        valueTextBox.setText(predicate.getValue());
+    }
+
+    private void selectValue(ListBox list, String value) {
+        for (int i = 0; i < list.getItemCount(); i++) {
+            String val = list.getValue(i);
+            
+            if (value.equals(val)) {
+                list.setSelectedIndex(i);
+                break;
+            }
         }
     }
 }

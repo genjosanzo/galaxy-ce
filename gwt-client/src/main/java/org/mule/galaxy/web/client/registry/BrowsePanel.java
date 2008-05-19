@@ -53,6 +53,10 @@ public class BrowsePanel extends AbstractBrowsePanel {
         super(galaxy);
     }
 
+    protected String getHistoryToken() {
+        return "browse";
+    }
+    
     public void onShow(List params) {
         if (params.size() > 0) {
             workspaceId = (String) params.get(0);
@@ -62,7 +66,7 @@ public class BrowsePanel extends AbstractBrowsePanel {
     }
 
     protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(galaxy, false, true, true) {
+        return new RegistryMenuPanel(galaxy, false, true) {
 
             protected void addBottomLinks(Toolbox topMenuLinks) {
                 manageWkspcImg = new Image("images/editor_area.gif");
