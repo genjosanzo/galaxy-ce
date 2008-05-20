@@ -42,6 +42,10 @@ public class AdministrationPanel extends MenuPanel {
         manageBox.setTitle("Manage");
         addMenuItem(manageBox);
 
+        createMenuItems(galaxy, manageBox);
+    }
+
+    protected void createMenuItems(Galaxy galaxy, Toolbox manageBox) {
         if (galaxy.hasPermission("MANAGE_ARTIFACT_TYPES")) {
             createLinkWithAdd(manageBox, 
                               "Artifact Types", 
@@ -97,7 +101,7 @@ public class AdministrationPanel extends MenuPanel {
         }
     }
 
-    private void createLinkWithAdd(Toolbox manageBox, 
+    protected void createLinkWithAdd(Toolbox manageBox, 
                                    String title, 
                                    String tokenBase,
                                    AbstractComposite list,
@@ -109,7 +113,7 @@ public class AdministrationPanel extends MenuPanel {
         createPageInfo(tokenBase + "/*", form);
     }
 
-    private void createPageInfo(String token, final AbstractComposite composite) {
+    protected void createPageInfo(String token, final AbstractComposite composite) {
         final AdministrationPanel adminPanel = this;
         PageInfo page = new PageInfo(token, getGalaxy().getAdminTab()) {
 
@@ -126,7 +130,7 @@ public class AdministrationPanel extends MenuPanel {
         getGalaxy().addPage(page);
     }
 
-    private void createDivWithAdd(Toolbox manageBox, Hyperlink link, Hyperlink add) {
+    protected void createDivWithAdd(Toolbox manageBox, Hyperlink link, Hyperlink add) {
         InlineFlowPanel item = new InlineFlowPanel();
         item.add(link);
         item.add(new Label(" ["));

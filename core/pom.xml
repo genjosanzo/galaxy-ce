@@ -304,9 +304,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.codehaus</groupId>
+            <groupId>org.mvel</groupId>
             <artifactId>mvel</artifactId>
-            <version>1.2.22-java1.5</version>
+            <version>1.2.25-java1.5</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

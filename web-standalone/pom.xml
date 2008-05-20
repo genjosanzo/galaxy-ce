@@ -9,7 +9,6 @@
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-web-standalone</artifactId>
   <name>Galaxy Web Application Standalone</name>
-  <packaging>pom</packaging>
 
   <dependencies>
 

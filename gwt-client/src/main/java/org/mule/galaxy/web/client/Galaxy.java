@@ -179,7 +179,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         });
         
         
-        Label footer = new Label("Mule Galaxy, Copyright 2008 MuleSource, Inc.");
+        Label footer = new Label(getProductName() + ", Copyright 2008 MuleSource, Inc.");
         footer.setStyleName("footer");
         base.add(footer);
         RootPanel.get().add(base);
@@ -195,6 +195,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
         new HeartbeatTimer(Galaxy.this);
     }
     
+    protected String getProductName() {
+        return "Mule Galaxy";
+    }
+
     public PageInfo createPageInfo(String token, 
                                    final AbstractComposite composite,
                                    int tab) {
@@ -217,10 +221,14 @@ public class Galaxy implements EntryPoint, HistoryListener {
         
         if (showAdminTab(user)) {
             adminTabIndex = tabPanel.getWidgetCount() ;
-            createPageInfo("tab-" + adminTabIndex, new AdministrationPanel(galaxy), adminTabIndex);
+            createPageInfo("tab-" + adminTabIndex, createAdministrationPanel(), adminTabIndex);
             tabPanel.add(adminPanel, "Administration");
         }
         showFirstPage();
+    }
+
+    protected AdministrationPanel createAdministrationPanel() {
+        return new AdministrationPanel(this);
     }
     
     protected boolean showAdminTab(WUser user) {

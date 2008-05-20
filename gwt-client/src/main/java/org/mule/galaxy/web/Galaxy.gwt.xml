@@ -4,26 +4,6 @@
             <!--"http://google-web-toolkit.googlecode.com/svn/tags/1.4.61/distro-source/core/src/gwt-module.dtd">-->
         
 <module>
-
-    <!-- Inherit the core Web Toolkit stuff.                  -->
-    <inherits name='com.google.gwt.user.User'/>
-    
-    <inherits name='org.gwtwidgets.WidgetLibrary'/>
-    
-    <source path="rpc"/>
-    <source path="client"/>
-
-    <public path="public">
-        <!--
-            Don't recursively include GWT compiler output when
-            developing with IDE and m2.
-        -->
-        <exclude name="org.mule.galaxy.web.Galaxy/**"/>
-        <exclude name="WEB-INF/**"/>
-        <exclude name="META-INF/**"/> 
-    </public>
-
-    <stylesheet src="Galaxy.css"/>
-
+    <inherits name='org.mule.galaxy.web.GalaxyLib'/>
     <entry-point class='org.mule.galaxy.web.client.Galaxy'/>
 </module>
