@@ -1,14 +1,5 @@
 package org.mule.galaxy.impl.content;
 
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.XmlContentHandler;
-import org.mule.galaxy.impl.RegistryLocator;
-import org.mule.galaxy.util.Constants;
-import org.mule.galaxy.util.QNameUtil;
-import org.mule.galaxy.wsdl.diff.DifferenceEvent;
-import org.mule.galaxy.wsdl.diff.DifferenceListener;
-import org.mule.galaxy.wsdl.diff.WsdlDiff;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -20,6 +11,15 @@ import javax.wsdl.WSDLException;
 import javax.wsdl.xml.WSDLLocator;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathExpressionException;
+
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.XmlContentHandler;
+import org.mule.galaxy.impl.RegistryLocator;
+import org.mule.galaxy.util.Constants;
+import org.mule.galaxy.util.QNameUtil;
+import org.mule.galaxy.wsdl.diff.DifferenceEvent;
+import org.mule.galaxy.wsdl.diff.DifferenceListener;
+import org.mule.galaxy.wsdl.diff.WsdlDiff;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;

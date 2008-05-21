@@ -1,21 +1,12 @@
 package org.mule.galaxy.impl.content;
 
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.XmlContentHandler;
-import org.mule.galaxy.impl.MapNamespaceContext;
-import org.mule.galaxy.util.DOMUtils;
-import org.mule.galaxy.util.QNameUtil;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -31,9 +22,18 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.XmlContentHandler;
+import org.mule.galaxy.impl.MapNamespaceContext;
+import org.mule.galaxy.util.DOMUtils;
+import org.mule.galaxy.util.QNameUtil;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
 import org.xml.sax.SAXException;
 
 public class XmlDocumentContentHandler extends AbstractContentHandler implements XmlContentHandler {
@@ -48,7 +48,7 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
     
     protected MimeType primaryContentType;
 
-    protected LinkedHashSet<QName> supportedDocumentTypes = new LinkedHashSet<QName>();
+    protected List<QName> supportedDocumentTypes = new ArrayList<QName>();
     
     public XmlDocumentContentHandler() throws MimeTypeParseException {
         this(true);
@@ -69,7 +69,7 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
         xpath.setNamespaceContext(new MapNamespaceContext(namespaces));
     }
 
-    public Set<QName> getSupportedDocumentTypes() {
+    public List<QName> getSupportedDocumentTypes() {
         return supportedDocumentTypes;
     }
 
