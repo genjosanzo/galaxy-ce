@@ -36,10 +36,14 @@
     isMixin="false" 
     hasOrderableChildNodes="false"
     primaryItemName="">
+    <supertypes>
+        <supertype>nt:file</supertype>
+        <supertype>mix:referenceable</supertype>
+    </supertypes>
     
     <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
     <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" multiple="true"/>
-    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="true" />
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
     
   </nodeType>
   

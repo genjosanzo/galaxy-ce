@@ -48,7 +48,7 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
     
     protected MimeType primaryContentType;
 
-    protected Set<QName> supportedDocumentTypes = new LinkedHashSet<QName>();
+    protected LinkedHashSet<QName> supportedDocumentTypes = new LinkedHashSet<QName>();
     
     public XmlDocumentContentHandler() throws MimeTypeParseException {
         this(true);

@@ -28,9 +28,14 @@ import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
+import javax.jcr.ValueFormatException;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
+import javax.jcr.version.VersionException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -614,10 +619,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 artifactNode.addMixin("mix:referenceable");
                 Node versionNode = artifactNode.addNode(versionLabel, ARTIFACT_VERSION_NODE_TYPE);
                 versionNode.addMixin("mix:referenceable");
-                if (is != null) {
-                    versionNode.setProperty(JcrVersion.DATA, is);
-                }
-                
                 JcrArtifact artifact = new JcrArtifact(workspace, artifactNode, registry);
                 artifact.setName(name);
                 
@@ -630,17 +631,19 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 versionNode.setProperty(JcrVersion.CREATED, now);
                 versionNode.setProperty(JcrVersion.LATEST, true);
                 
-                JcrVersion jcrVersion = new JcrVersion(artifact, versionNode);
+                Node resNode = createVersionContentNode(versionNode, is, contentType, now);
                 
+                JcrVersion jcrVersion = new JcrVersion(artifact, versionNode, resNode);
+
                 // Store the data
                 Object loadedData = null;
                 if (data != null) {
                     jcrVersion.setData(data);
                     InputStream dataStream = ch.read(data);
-                    versionNode.setProperty(JcrVersion.DATA, dataStream);
+                    resNode.setProperty("jcr:data", dataStream);
                     loadedData = data;
                 } else {
-                    InputStream dataStream = versionNode.getProperty(JcrVersion.DATA).getStream();
+                    InputStream dataStream = jcrVersion.getStream();
                     jcrVersion.setData(ch.read(dataStream, workspace));
                     loadedData = jcrVersion.getData();
                 }
@@ -929,22 +932,24 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 now.setTime(new Date());
                 versionNode.setProperty(JcrVersion.CREATED, now);
                 
+                Node resNode = createVersionContentNode(versionNode, 
+                                                        inputStream, 
+                                                        jcrArtifact.getContentType(), 
+                                                        now);
                 
-                JcrVersion next = new JcrVersion(jcrArtifact, versionNode);
+                JcrVersion next = new JcrVersion(jcrArtifact, versionNode, resNode);
                 next.setDefault(true);
                 next.setLatest(true);
                 
                 try {
                     // Store the data
                     if (inputStream != null) {
-                        versionNode.setProperty(JcrVersion.DATA, inputStream);
-                        
-                        InputStream s = versionNode.getProperty(JcrVersion.DATA).getStream();
+                        InputStream s = next.getStream();
                         Object data = getData(artifact.getParent(), artifact.getContentType(), s);
                         next.setData(data);
                     } else {
                         next.setData(data);
-                        versionNode.setProperty(JcrVersion.DATA, ch.read(data));
+                        resNode.setProperty(JcrVersion.JCR_DATA, ch.read(data));
                     }
                     
                     next.setAuthor(user);
@@ -1683,6 +1688,22 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public void setPropertyDescriptorDao(Dao<PropertyDescriptor> propertyDescriptorDao) {
         this.propertyDescriptorDao = propertyDescriptorDao;
+    }
+
+    protected Node createVersionContentNode(Node versionNode, final InputStream is,
+                                            final MimeType contentType, Calendar now)
+        throws ItemExistsException, PathNotFoundException, NoSuchNodeTypeException, LockException,
+        VersionException, ConstraintViolationException, RepositoryException, ValueFormatException {
+        // these are required since we inherit from nt:file
+        Node resNode = versionNode.addNode("jcr:content", "nt:resource");
+        resNode.setProperty("jcr:mimeType", contentType.toString());
+//        resNode.setProperty("jcr:encoding", "");
+        resNode.setProperty("jcr:lastModified", now);
+
+        if (is != null) {
+            resNode.setProperty(JcrVersion.JCR_DATA, is);
+        }
+        return resNode;
     }
 
     

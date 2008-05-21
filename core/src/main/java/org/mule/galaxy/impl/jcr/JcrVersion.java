@@ -26,7 +26,7 @@ import org.mule.galaxy.util.DateUtil;
 
 public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
     public static final String CREATED = "created";
-    public static final String DATA = "data";
+    public static final String JCR_DATA = "jcr:data";
     public static final String LATEST = "latest";
     public static final String DEFAULT = "default";
     public static final String ENABLED = "enabled";
@@ -41,13 +41,20 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
     private JcrArtifact parent;
     private Object data;
     private User author;
+    private Node contentNode;
     
     public JcrVersion(JcrArtifact parent, 
-                      Node v) throws RepositoryException  {
+                      Node v,
+                      Node contentNode) throws RepositoryException  {
         super(v, parent.getRegistry());
         this.parent = parent;
+        this.contentNode = contentNode;
     }
     
+    public JcrVersion(JcrArtifact parent, Node versionNode) throws RepositoryException {
+       this(parent, versionNode, versionNode.getNode("jcr:content"));
+    }
+
     public String getId() {
         try {
             return node.getUUID();
@@ -176,7 +183,7 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
 
     public InputStream getStream() {
         try {
-            Value v = getValueOrNull(DATA);
+            Value v = JcrUtil.getValueOrNull(contentNode, JCR_DATA);
 
             if (v != null) {
                 return v.getStream();
