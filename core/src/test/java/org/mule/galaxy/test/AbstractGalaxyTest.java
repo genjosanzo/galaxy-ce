@@ -26,6 +26,7 @@ import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.CommentManager;
 import org.mule.galaxy.PluginManager;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.index.IndexManagerImpl;
@@ -35,6 +36,7 @@ import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.FunctionRegistry;
 import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.view.ArtifactViewManager;
@@ -129,9 +131,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         throws Exception {
         InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
         
-        Collection<Workspace> workspaces = registry.getWorkspaces();
-        assertEquals(1, workspaces.size());
-        Workspace workspace = workspaces.iterator().next();
+        Workspace workspace = getTestWorkspace();
         
         ArtifactResult ar = registry.createArtifact(workspace, 
                                                     "application/xml", 
@@ -142,12 +142,16 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         return ar.getArtifact();
     }
 
+    protected Workspace getTestWorkspace() throws RegistryException, AccessException {
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        return workspaces.iterator().next();
+    }
+
     protected Artifact importXmlSchema() throws Exception {
         InputStream xsd = getResourceAsStream("/schema/test.xsd");
         
-        Collection<Workspace> workspaces = registry.getWorkspaces();
-        assertEquals(1, workspaces.size());
-        Workspace workspace = workspaces.iterator().next();
+        Workspace workspace = getTestWorkspace();
         
         ArtifactResult ar = registry.createArtifact(workspace, 
                                                     "application/xml", 
@@ -163,9 +167,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     protected Artifact importHelloMule() throws Exception {
         InputStream helloWsdl = getResourceAsStream("/mule/hello-config.xml");
         
-        Collection<Workspace> workspaces = registry.getWorkspaces();
-        assertEquals(1, workspaces.size());
-        Workspace workspace = workspaces.iterator().next();
+        Workspace workspace = getTestWorkspace();
         
         ArtifactResult ar = registry.createArtifact(workspace, 
                                                     "application/xml", 
