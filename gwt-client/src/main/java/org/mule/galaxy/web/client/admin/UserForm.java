@@ -70,10 +70,6 @@ public class UserForm extends AbstractAdministrationForm {
             usernameTB = new ValidatableTextBox();
             validationListeners.put(usernameTB, new FieldValidationListener(usernameTB.getValidationLabel()));
             table.setWidget(0, 1, usernameTB);
-            // add an extender in the table to align the validation label
-            // otherwise groups cell stretches and deforms the cell
-            table.setWidget(0, 2, new Label(" "));
-            table.getCellFormatter().setWidth(0, 2, "100%");
         } else {
             table.setText(0, 1, user.getUsername());
         }
@@ -82,6 +78,10 @@ public class UserForm extends AbstractAdministrationForm {
         nameTB.getTextBox().setText(user.getName());
         validationListeners.put(nameTB, new FieldValidationListener(nameTB.getValidationLabel()));
         table.setWidget(1, 1, nameTB);
+        // add an extender in the table to align the validation label
+        // otherwise groups cell stretches and deforms the cell
+        table.setWidget(1, 2, new Label(" "));
+        table.getCellFormatter().setWidth(1, 2, "100%");
 
         emailTB = new TextBox();
         emailTB.setText(user.getEmail());
