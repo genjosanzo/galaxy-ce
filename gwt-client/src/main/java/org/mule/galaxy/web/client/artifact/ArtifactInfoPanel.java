@@ -271,7 +271,6 @@ public class ArtifactInfoPanel extends AbstractComposite {
             public void onClick(Widget w) {
 
                 if (!validateComment(textArea)) {
-
                     return;
                 }
 

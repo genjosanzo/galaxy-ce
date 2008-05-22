@@ -22,11 +22,19 @@ import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.WorkspacesListBox;
+import org.mule.galaxy.web.client.validation.CallbackValidator;
+import org.mule.galaxy.web.client.validation.FieldValidationListener;
+import org.mule.galaxy.web.client.validation.StringNotBlankValidator;
+import org.mule.galaxy.web.client.validation.ValidationListener;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
@@ -102,22 +110,35 @@ public class NameEditPanel extends Composite {
                                                                      null,
                                                                      workspaceId,
                                                                      false);
-        panel.add(workspacesLB);
-        panel.add(new Label(" "));
-        final   TextBox nameTB = new TextBox();
+        final HorizontalPanel row = new HorizontalPanel();
+
+        row.add(workspacesLB);
+        row.add(new HTML("&nbsp;"));
+        final TextBox nameTB = new TextBox();
         nameTB.setText(name);
-        panel.add(nameTB);
-        
+
+        // group textarea and validation label
+        FlowPanel nameEditPanel = new FlowPanel();
+        nameEditPanel.add(nameTB);
+        final Label nameValidationLabel = new Label();
+        nameEditPanel.add(nameValidationLabel);
+        validationListeners.put(nameTB, new FieldValidationListener(nameValidationLabel));
+
+        // don't let the flow wrap to the new line when a validation message is displayed
+        row.add(nameEditPanel);
+
         Button saveButton = new Button("Save");
         saveButton.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
+                if (!validateName(nameTB)) {
+                    return;
+                }
                 save(workspacesLB.getSelectedValue(), nameTB.getText());
             }
             
         });
-        panel.add(saveButton);
-        
+
         Button cancelButton = new Button("Cancel");
         cancelButton.addClickListener(new ClickListener() {
 
@@ -127,7 +148,11 @@ public class NameEditPanel extends Composite {
             }
             
         });
-        panel.add(cancelButton);
+
+        row.add(saveButton);
+        row.add(cancelButton);
+        row.setVerticalAlignment(HasAlignment.ALIGN_TOP);
+        panel.add(row);
     }
 
     protected void save(String workspaceId, String name) {
@@ -141,4 +166,12 @@ public class NameEditPanel extends Composite {
         });
     }
 
+    protected boolean validateName(final TextBox nameTB) {
+        boolean isOk = true;
+        ValidationListener vl = (ValidationListener) validationListeners.get(nameTB);
+        CallbackValidator cbVal = new CallbackValidator(new StringNotBlankValidator(), vl, nameTB);
+        isOk &= cbVal.validate(nameTB.getText());
+
+        return isOk;
+    }
 }
