@@ -147,8 +147,6 @@ public class ArtifactUploadServlet extends HttpServlet {
                 if (contentType == null) {
                     contentType = "application/octet-stream";
                 }
-                    
-                System.out.println("CT " + contentType);
                 
                 result = registry.createArtifact(wkspc, contentType, name, versionLabel, uploadItem.getInputStream(), user);
             } else {
