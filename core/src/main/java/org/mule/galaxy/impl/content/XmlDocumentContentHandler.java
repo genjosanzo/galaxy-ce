@@ -61,6 +61,7 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
             primaryContentType = new MimeType("application/xml");
             supportedContentTypes.add(primaryContentType);
             supportedContentTypes.add(new MimeType("application/xml"));
+            supportedContentTypes.add(new MimeType("text/xml"));
             supportedTypes.add(Document.class);
         }
         

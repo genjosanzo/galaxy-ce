@@ -71,6 +71,7 @@ public class ArtifactUploadServlet extends HttpServlet {
         String wkspcId = null;
         String name = null;
         String versionLabel = null;
+        String contentType = null;
         FileItem uploadItem = null;
         boolean disablePrevious = false;
         
@@ -92,6 +93,7 @@ public class ArtifactUploadServlet extends HttpServlet {
 
                     if ("artifactFile".equals(f)) {
                         uploadItem = item;
+                        contentType = item.getContentType();
                     } else if ("workspaceId".equals(f)) {
                         wkspcId = item.getString();
                     } else if ("name".equals(f)) {
@@ -142,7 +144,13 @@ public class ArtifactUploadServlet extends HttpServlet {
                     name = name.substring(idx+1);
                 }
                 
-                result = registry.createArtifact(wkspc, req.getContentType(), name, versionLabel, uploadItem.getInputStream(), user);
+                if (contentType == null) {
+                    contentType = "application/octet-stream";
+                }
+                    
+                System.out.println("CT " + contentType);
+                
+                result = registry.createArtifact(wkspc, contentType, name, versionLabel, uploadItem.getInputStream(), user);
             } else {
                 Artifact a = registry.getArtifact(artifactId);
                 
