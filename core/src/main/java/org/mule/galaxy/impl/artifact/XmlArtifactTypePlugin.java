@@ -11,9 +11,11 @@ package org.mule.galaxy.impl.artifact;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -71,18 +73,23 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
     @Override
     public void doInstall() throws Exception
     {
+        Set<String> extensions = new HashSet<String>();
+        for (String ext : pluginXml.getExtension()) {
+            extensions.add(ext);
+        }
+        
         // Is there is no namespace we can assume that this is just a
         // placeholder pluging for a generic
         // type of artifact
         if (pluginXml.getNamespace().size() == 0)
         {
-            artifactTypeDao.save(new ArtifactType(pluginXml.getName(), pluginXml.getContentType()));
+            artifactTypeDao.save(new ArtifactType(pluginXml.getName(), pluginXml.getContentType(), extensions, null));
             return;
         }
 
         loadQNames();
         
-        artifactTypeDao.save(new ArtifactType(pluginXml.getName(), pluginXml.getContentType(), pluginQNames));
+        artifactTypeDao.save(new ArtifactType(pluginXml.getName(), pluginXml.getContentType(), extensions, pluginQNames));
 
         Properties props = new Properties(System.getProperties());
         String prefix = "";

@@ -40,9 +40,12 @@ public class ArtifactTypeDaoTest extends AbstractGalaxyTest {
         List<ArtifactType> all = artifactTypeDao.listAll();
         System.out.println(all);
         for (ArtifactType t : all) {
-            System.out.println(t.getContentType() + " " + t.getDocumentTypes());
+            System.out.println(t.getContentType() + " " + t.getDocumentTypes() + " " + t.getFileExtensions());
         }
         assertTrue(all.size() > 5);
+        
+        ArtifactType artifactType = artifactTypeDao.getArtifactType("wsdl");
+        assertNotNull(artifactType);
     }
 
 }

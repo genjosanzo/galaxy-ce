@@ -118,6 +118,33 @@ public class ArtifactTest extends AbstractGalaxyTest {
         Artifact artifact = ar.getArtifact();
         
         assertEquals("application/wsdl+xml", artifact.getContentType().toString());
+    }   
+    
+    public void testAddMuleConfig() throws Exception {
+        InputStream helloMule = getResourceAsStream("/mule/hello-config.xml");
+        
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+        
+        // Try application/xml
+        ArtifactResult ar = registry.createArtifact(workspace, "application/xml", 
+                                                    "hello_world.xml", "0.1", helloMule, getAdmin());
+        
+        Artifact artifact = ar.getArtifact();
+        
+        assertEquals("application/xml", artifact.getContentType().toString());
+        assertEquals("mule-configuration", artifact.getDocumentType().getLocalPart());
+        
+
+//        // Try application/octent-stream
+//        ar = registry.createArtifact(workspace, "application/octet-stream", "hello_world2.xml", "0.1",
+//                                     helloMule, getAdmin());
+//        
+//        artifact = ar.getArtifact();
+//        
+//        assertEquals("application/xml", artifact.getContentType().toString());
+//        assertEquals("mule-configuration", artifact.getDocumentType().getLocalPart());
     }
     
     public void testAddWsdl() throws Exception {

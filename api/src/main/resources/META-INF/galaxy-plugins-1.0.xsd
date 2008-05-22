@@ -82,6 +82,11 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element type="xs:string" name="extension" minOccurs="1" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>A file extension that this artifact type supports.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element type="indexesType" name="indexes" maxOccurs="1" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>A set of indexes that define the critera that the artifact can be searched on.

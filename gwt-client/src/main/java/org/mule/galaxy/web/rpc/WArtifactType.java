@@ -30,16 +30,24 @@ public class WArtifactType implements IsSerializable {
      * @gwt.typeArgs <java.lang.String>
      */
     private Collection documentTypes;
+    /**
+     * @gwt.typeArgs <java.lang.String>
+     */
+    private Collection fileExtensions;
+    
     
     public WArtifactType() {
         super();
     }
-    public WArtifactType(String id, String mediaType, String description, Collection documentTypes) {
+    public WArtifactType(String id, String mediaType, 
+                         String description, Collection documentTypes,
+                         Collection fileExtensions) {
         super();
         this.id = id;
         this.mediaType = mediaType;
         this.description = description;
         this.documentTypes = documentTypes;
+        this.fileExtensions = fileExtensions;
     }
     public String getId() {
         return id;
@@ -64,6 +72,12 @@ public class WArtifactType implements IsSerializable {
     }
     public void setDocumentTypes(Collection documentTypes) {
         this.documentTypes = documentTypes;
+    }
+    public Collection getFileExtensions() {
+        return fileExtensions;
+    }
+    public void setFileExtensions(Collection fileExtensions) {
+        this.fileExtensions = fileExtensions;
     }
     
     

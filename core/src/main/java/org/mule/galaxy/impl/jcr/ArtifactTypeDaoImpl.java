@@ -74,6 +74,16 @@ public class ArtifactTypeDaoImpl extends AbstractReflectionDao<ArtifactType>
         });
     }
 
+    public ArtifactType getArtifactType(String fileExtension) {
+        List<ArtifactType> types = find("fileExtensions", fileExtension);
+        
+        if (types.size() > 0) {
+            return types.get(0);
+        }
+        
+        return null;
+    }
+
     protected List<ArtifactType> doListAll(Session session) throws RepositoryException {
         List<ArtifactType> types = super.doListAll(session);
         

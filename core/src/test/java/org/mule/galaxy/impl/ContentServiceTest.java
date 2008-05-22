@@ -50,10 +50,5 @@ public class ContentServiceTest extends AbstractGalaxyTest {
         ch = contentService.getContentHandler(new MimeType("text/plain"));
         assertNotNull(ch);
         assertTrue(ch instanceof DefaultContentHandler);
-        
-        ch = contentService.getContentHandler("wsdl");
-        assertNotNull(ch);
-        assertTrue(ch instanceof WsdlContentHandler);
-        
     }
 }

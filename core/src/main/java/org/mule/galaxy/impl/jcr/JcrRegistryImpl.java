@@ -36,6 +36,7 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.version.VersionException;
+import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,6 +45,8 @@ import org.mule.galaxy.ActivityManager;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.ArtifactTypeDao;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
@@ -123,6 +126,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private AccessControlManager accessControlManager;
     
     private String id;
+    
+    private ArtifactTypeDao artifactTypeDao;
     
     public JcrRegistryImpl() {
         super();
@@ -684,26 +689,57 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         });
     }
 
-    protected ContentHandler initializeContentHandler(JcrArtifact artifact, final String name,
+    protected Node createVersionContentNode(Node versionNode, final InputStream is,
+                                            final MimeType contentType, Calendar now)
+        throws ItemExistsException, PathNotFoundException, NoSuchNodeTypeException, LockException,
+        VersionException, ConstraintViolationException, RepositoryException, ValueFormatException {
+        // these are required since we inherit from nt:file
+        Node resNode = versionNode.addNode("jcr:content", "nt:resource");
+        resNode.setProperty("jcr:mimeType", contentType.toString());
+//        resNode.setProperty("jcr:encoding", "");
+        resNode.setProperty("jcr:lastModified", now);
+
+        if (is != null) {
+            resNode.setProperty(JcrVersion.JCR_DATA, is);
+        }
+        return resNode;
+    }
+
+    protected ContentHandler initializeContentHandler(JcrArtifact artifact, 
+                                                      final String name,
                                                       MimeType contentType) {
-        ContentHandler ch;
+        ContentHandler ch = null;
         if ("application/octet-stream".equals(contentType.toString())) {
-            ch = contentService.getContentHandler(getExtension(name));
+            String ext = getExtension(name);
+            ArtifactType type = artifactTypeDao.getArtifactType(ext);
             
-            Set<MimeType> types = ch.getSupportedContentTypes();
-            if (types.size() > 0) {
-                try {
-                    contentType = new MimeType(types.iterator().next().toString());
-                } catch (MimeTypeParseException e) {
-                    throw new RuntimeException(e);
+            try {
+                if (type == null && "xml".equals(ext)) {
+                    contentType = new MimeType("application/xml");
+                } else if (type != null) {
+                    contentType = new MimeType(type.getContentType());
+                    
+                    if (type.getDocumentTypes().size() > 0) {
+                        for (QName q : type.getDocumentTypes()) {
+                            ch = contentService.getContentHandler(q);
+                            if (ch != null) {
+                                break;
+                            }
+                        }
+                    }
                 }
+            } catch (MimeTypeParseException e) {
+                throw new RuntimeException(e);
             }
-        } else {
+        } 
+        
+        if (ch == null) {
             ch = contentService.getContentHandler(contentType);
         }
         
         artifact.setContentType(contentType);
         artifact.setContentHandler(ch);
+        
         return ch;
     }
 
@@ -812,7 +848,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
 
-    private ArtifactResult approve(Session session, Artifact artifact, 
+    private ArtifactResult approve(Session session, 
+                                   Artifact artifact, 
                                    JcrVersion previous, 
                                    JcrVersion next,
                                    User user)
@@ -1690,21 +1727,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         this.propertyDescriptorDao = propertyDescriptorDao;
     }
 
-    protected Node createVersionContentNode(Node versionNode, final InputStream is,
-                                            final MimeType contentType, Calendar now)
-        throws ItemExistsException, PathNotFoundException, NoSuchNodeTypeException, LockException,
-        VersionException, ConstraintViolationException, RepositoryException, ValueFormatException {
-        // these are required since we inherit from nt:file
-        Node resNode = versionNode.addNode("jcr:content", "nt:resource");
-        resNode.setProperty("jcr:mimeType", contentType.toString());
-//        resNode.setProperty("jcr:encoding", "");
-        resNode.setProperty("jcr:lastModified", now);
-
-        if (is != null) {
-            resNode.setProperty(JcrVersion.JCR_DATA, is);
-        }
-        return resNode;
+    public void setArtifactTypeDao(ArtifactTypeDao artifactTypeDao) {
+        this.artifactTypeDao = artifactTypeDao;
     }
-
-    
 }

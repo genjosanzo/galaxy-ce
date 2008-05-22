@@ -32,25 +32,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class QNameListBox extends AbstractUserModifiableListBox {
+public class StringListBox extends AbstractUserModifiableListBox {
 
-    public QNameListBox(Collection list) {
+    public StringListBox(Collection list) {
         super(list);
     }
 
     protected boolean isValid(String text) {
-        if (!text.startsWith("{") || text.indexOf('{', 1) != -1) {
-            Window.alert("Document type QNames must be in the form of \"{NAMESPACE}LOCAL-NAME\"");
-            return false;
-        }
-        int rightIdx = text.indexOf("}");
-        if (rightIdx != -1) {
-            if (text.indexOf('}', rightIdx+1) != -1) {
-                Window.alert("Document type QNames must be in the form of \"{NAMESPACE}LOCAL-NAME\"");
-                return false;
-            }
-        } else {
-            Window.alert("Document type QNames must be in the form of \"{NAMESPACE}LOCAL-NAME\"");
+        if ("".equals(text)) {
+            Window.alert("You must enter a value!");
             return false;
         }
         return true;

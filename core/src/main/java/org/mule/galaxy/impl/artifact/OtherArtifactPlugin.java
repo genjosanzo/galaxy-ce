@@ -10,7 +10,7 @@ public class OtherArtifactPlugin extends AbstractArtifactPlugin
 
     @Override
     public void doInstall() throws Exception {
-        artifactTypeDao.save(new ArtifactType("Other Artifacts", "*/*"));
+        artifactTypeDao.save(new ArtifactType("Other Artifacts", "*/*", null));
     }
 
     public int getVersion() {

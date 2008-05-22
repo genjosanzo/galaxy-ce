@@ -19,6 +19,7 @@
 package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.util.QNameListBox;
+import org.mule.galaxy.web.client.util.StringListBox;
 import org.mule.galaxy.web.rpc.WArtifactType;
 
 import com.google.gwt.user.client.ui.FlexTable;
@@ -30,6 +31,7 @@ public class ArtifactTypeForm extends AbstractAdministrationForm {
     private TextBox descriptionTB;
     private QNameListBox docTypesLB;
     private TextBox mediaTypeTB;
+    private StringListBox extsLB;
     
     public ArtifactTypeForm(AdministrationPanel adminPanel){
         super(adminPanel, 
@@ -42,6 +44,7 @@ public class ArtifactTypeForm extends AbstractAdministrationForm {
         table.setText(0, 0, "Description:");
         table.setText(1, 0, "Media Type:");
         table.setText(2, 0, "Document Types:");
+        table.setText(3, 0, "File Extensions:");
         
         descriptionTB = new TextBox();
         descriptionTB.setText(artifactType.getDescription());
@@ -53,6 +56,9 @@ public class ArtifactTypeForm extends AbstractAdministrationForm {
         
         docTypesLB = new QNameListBox(artifactType.getDocumentTypes());
         table.setWidget(2, 1, docTypesLB);
+
+        extsLB = new StringListBox(artifactType.getFileExtensions());
+        table.setWidget(3, 1, extsLB);
         
         styleHeaderColumn(table);
     }
@@ -83,6 +89,7 @@ public class ArtifactTypeForm extends AbstractAdministrationForm {
         artifactType.setMediaType(mediaTypeTB.getText());
         artifactType.setDocumentTypes(docTypesLB.getItems());
         artifactType.setDescription(descriptionTB.getText());
+        artifactType.setFileExtensions(extsLB.getItems());
         
         adminPanel.getRegistryService().saveArtifactType(artifactType, getSaveCallback());
     }

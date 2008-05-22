@@ -384,7 +384,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         SecurityUtils.doPriveleged(new Runnable() {
             public void run() {
                 for (Index idx : indices) {
-                    ContentHandler ch = contentService.getContentHandler(version.getParent().getContentType());
+                    ContentHandler ch = version.getParent().getContentHandler();
                     
                     try {
                         getIndexer(idx.getIndexer()).index(version, ch, idx);

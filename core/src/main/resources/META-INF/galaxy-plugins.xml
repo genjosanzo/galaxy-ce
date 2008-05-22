@@ -29,6 +29,7 @@
             <local-name>schema</local-name>
             <uri>http://www.w3.org/2001/XMLSchema</uri>
         </namespace>
+        <extension>xsd</extension>
         <indexes>
             <index>
                 <description>XML Schema Target Namespace</description>
@@ -111,6 +112,7 @@ declare variable $document external;
             <local-name>stylesheet</local-name>
             <uri>http://www.w3.org/1999/XSL/Transform</uri>
         </namespace>
+        <extension>xsl</extension>
     </artifact-type>
 
     <artifact-type>
@@ -124,6 +126,7 @@ declare variable $document external;
             <local-name>definitions</local-name>
             <uri>http://schemas.xmlsoap.org/wsdl/</uri>
         </namespace>
+        <extension>wsdl</extension>
         <indexes>
             <index>
                 <description>WSDL Service</description>

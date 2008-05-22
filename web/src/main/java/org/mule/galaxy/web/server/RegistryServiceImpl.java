@@ -267,7 +267,9 @@ public class RegistryServiceImpl implements RegistryService {
                 docTypesAsStr.add(q.toString());
             }
         }
-        return new WArtifactType(a.getId(), a.getContentType(), a.getDescription(), docTypesAsStr);
+        return new WArtifactType(a.getId(), a.getContentType(), 
+                                 a.getDescription(), docTypesAsStr,
+                                 a.getFileExtensions());
     }
 
     public void deleteArtifactType(String id) throws RPCException {
@@ -293,12 +295,18 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private ArtifactType fromWeb(WArtifactType wat) {
         ArtifactType at = new ArtifactType();
         at.setId(wat.getId());
         at.setDescription(wat.getDescription());
         at.setContentType(wat.getMediaType());
         at.setDocumentTypes(fromWeb(wat.getDocumentTypes()));
+        
+        HashSet<String> exts = new HashSet<String>();
+        exts.addAll((Collection<String>)wat.getFileExtensions());
+        at.setFileExtensions(exts);
+        
         return at;
     }
 

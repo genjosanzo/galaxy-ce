@@ -2,6 +2,7 @@ package org.mule.galaxy.impl.artifact;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +61,7 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin
                 }
 
                 try {
-                    artifactTypeDao.save(new ArtifactType("Java Archives (JARs)", "application/java-archive", new QName("application/java-archive")));
+                    artifactTypeDao.save(new ArtifactType("Java Archives (JARs)", "application/java-archive", "jar", new QName("application/java-archive")));
                 } catch (DuplicateItemException e1) {
                     // should never happen
                     throw new RuntimeException(e1);

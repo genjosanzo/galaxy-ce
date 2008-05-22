@@ -46,20 +46,6 @@ public class ContentServiceImpl implements ContentService {
         return defaultContentHandler;
     }
 
-    public ContentHandler getContentHandler(String extension) {
-        // Closest match
-        for (ContentHandler ch : contentHandlers) {
-            
-            for (String ext : ch.getSupportedFileExtensions()) {
-                if (ext.equals(extension)) {
-                    return ch;
-                }
-            }
-        }
-        return defaultContentHandler;
-    }
-
-
     public ContentHandler getContentHandler(QName documentType) {
         for (ContentHandler ch : contentHandlers) {
             
