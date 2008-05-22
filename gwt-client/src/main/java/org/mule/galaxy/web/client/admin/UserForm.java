@@ -20,26 +20,39 @@ package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.util.SelectionPanel;
 import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
+import org.mule.galaxy.web.client.validation.CallbackValidator;
+import org.mule.galaxy.web.client.validation.FieldValidationListener;
+import org.mule.galaxy.web.client.validation.StringNotBlankValidator;
+import org.mule.galaxy.web.client.validation.ValidatableTextBox;
+import org.mule.galaxy.web.client.validation.ValidationListener;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WUser;
 
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserForm extends AbstractAdministrationForm {
 
     private WUser user;
     private PasswordTextBox passTB;
     private PasswordTextBox confirmTB;
-    private TextBox nameTB;
+    private ValidatableTextBox nameTB;
     private TextBox emailTB;
-    private TextBox usernameTB;
+    private ValidatableTextBox usernameTB;
     private SelectionPanel groupPanel;
+
+    /**
+     * A simple map of input field -> validation listener for UI updates.
+     */
+    private Map/*<Widget, ValidationListener>*/ validationListeners = new HashMap();
 
     public UserForm(AdministrationPanel adminPanel) {
         super(adminPanel, "users", "User was saved.", "User was deleted.");
@@ -52,18 +65,24 @@ public class UserForm extends AbstractAdministrationForm {
         table.setText(3, 0, "Password:");
         table.setText(4, 0, "Confirm Password:");
         table.setText(5, 0, "Groups:");
-        
+
         if (newItem) {
-            usernameTB = new TextBox();
+            usernameTB = new ValidatableTextBox();
+            validationListeners.put(usernameTB, new FieldValidationListener(usernameTB.getValidationLabel()));
             table.setWidget(0, 1, usernameTB);
+            // add an extender in the table to align the validation label
+            // otherwise groups cell stretches and deforms the cell
+            table.setWidget(0, 2, new Label(" "));
+            table.getCellFormatter().setWidth(0, 2, "100%");
         } else {
             table.setText(0, 1, user.getUsername());
         }
         
-        nameTB = new TextBox();
-        nameTB.setText(user.getName());
+        nameTB = new ValidatableTextBox();
+        nameTB.getTextBox().setText(user.getName());
+        validationListeners.put(nameTB, new FieldValidationListener(nameTB.getValidationLabel()));
         table.setWidget(1, 1, nameTB);
-        
+
         emailTB = new TextBox();
         emailTB.setText(user.getEmail());
         table.setWidget(2, 1, emailTB);
@@ -79,7 +98,7 @@ public class UserForm extends AbstractAdministrationForm {
                 receiveGroups((Collection) groups, table);
             }
         });
-        
+
         table.setText(5, 1, "Loading Groups...");
 
         styleHeaderColumn(table);
@@ -119,9 +138,15 @@ public class UserForm extends AbstractAdministrationForm {
                                         user.getGroupIds(), 6, 
                                         "Available Groups", "Joined Groups");
         table.setWidget(5, 1, groupPanel);
+        FlexTable.FlexCellFormatter cellFormatter = (FlexTable.FlexCellFormatter) table.getCellFormatter();
+        cellFormatter.setColSpan(5, 1, 2);
     }
 
     protected void save() {
+        if (!validate()) {
+            return;
+        }
+
         super.save();
         
         SecurityServiceAsync svc = getSecurityService();
@@ -136,11 +161,11 @@ public class UserForm extends AbstractAdministrationForm {
         }
     
         if (usernameTB != null) {
-            user.setUsername(usernameTB.getText());
+            user.setUsername(usernameTB.getTextBox().getText());
         }
         
         user.setEmail(emailTB.getText());
-        user.setName(nameTB.getText());
+        user.setName(nameTB.getTextBox().getText());
         user.setGroupIds(groupPanel.getSelectedValues());
         
         if (newItem) {
@@ -150,6 +175,22 @@ public class UserForm extends AbstractAdministrationForm {
         }
     }
 
+    protected boolean validate() {
+        boolean isOk = true;
+
+        // username
+        ValidationListener vl = (ValidationListener) validationListeners.get(usernameTB);
+        CallbackValidator cbVal = new CallbackValidator(new StringNotBlankValidator(), vl, usernameTB.getTextBox());
+        isOk &= cbVal.validate(usernameTB.getTextBox().getText());
+
+        // name
+        vl = (ValidationListener) validationListeners.get(nameTB);
+        cbVal = new CallbackValidator(new StringNotBlankValidator(), vl, nameTB.getTextBox());
+        isOk &= cbVal.validate(nameTB.getTextBox().getText());
+        
+        return isOk;
+
+    }
 
     private void update(SecurityServiceAsync svc, String p, String c) {
         svc.updateUser(user, p, c, getSaveCallback());
