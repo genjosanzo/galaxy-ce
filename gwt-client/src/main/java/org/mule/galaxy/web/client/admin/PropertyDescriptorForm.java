@@ -19,7 +19,6 @@
 package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.validation.CallbackValidator;
-import org.mule.galaxy.web.client.validation.DigitsOnlyValidator;
 import org.mule.galaxy.web.client.validation.FieldValidationListener;
 import org.mule.galaxy.web.client.validation.StringNotBlankValidator;
 import org.mule.galaxy.web.client.validation.ValidationListener;
@@ -40,8 +39,6 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
     private TextBox nameTB;
     private TextBox descriptionTB;
 
-    private TextBox deleteMeLater;
-
     /**
      * A simple map of input field -> validation listener for UI updates. 
      */
@@ -54,7 +51,6 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
     protected void addFields(FlexTable table) {
         table.setText(0, 0, "Name:");
         table.setText(1, 0, "Description:");
-        table.setText(2, 0, "Demo (digits only):");
 //        table.setText(2, 0, "Multivalued");
         
         nameTB = new TextBox();
@@ -74,18 +70,6 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
         descriptionTB = new TextBox();
         descriptionTB.setText(property.getDescription());
         table.setWidget(1, 1, descriptionTB);
-
-        deleteMeLater = new TextBox();
-        // This is the label containing this fields' validation message in case of an error
-        final Label demoFieldValidationLabel = new Label();
-        // some layout, put it right under the textbox
-        p = new FlowPanel();
-        p.add(deleteMeLater);
-        p.add(demoFieldValidationLabel);
-        // map the demo textbox to this validation UI callback
-        validationListeners.put(deleteMeLater, new FieldValidationListener(demoFieldValidationLabel));
-
-        table.setWidget(2, 1, p);
 
         styleHeaderColumn(table);
     }
@@ -139,12 +123,6 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
         TextBox source = nameTB;
         ValidationListener vl = (ValidationListener) validationListeners.get(source);
         CallbackValidator cbVal = new CallbackValidator(new StringNotBlankValidator(), vl, source);
-        isOk &= cbVal.validate(source.getText());
-
-        // demo textbox
-        source = deleteMeLater;
-        vl = (ValidationListener) validationListeners.get(source);
-        cbVal = new CallbackValidator(new DigitsOnlyValidator(), vl, source);
         isOk &= cbVal.validate(source.getText());
 
         return isOk;
