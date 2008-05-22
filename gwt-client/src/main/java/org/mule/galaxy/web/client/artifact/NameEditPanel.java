@@ -33,8 +33,15 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NameEditPanel extends Composite {
+
+    /**
+     * A simple map of input field -> validation listener for UI updates.
+     */
+    private Map/*<Widget, ValidationListener>*/ validationListeners = new HashMap();
 
     private InlineFlowPanel panel;
     private final String artifactId;
@@ -96,7 +103,7 @@ public class NameEditPanel extends Composite {
                                                                      workspaceId,
                                                                      false);
         panel.add(workspacesLB);
-        
+        panel.add(new Label(" "));
         final   TextBox nameTB = new TextBox();
         nameTB.setText(name);
         panel.add(nameTB);
