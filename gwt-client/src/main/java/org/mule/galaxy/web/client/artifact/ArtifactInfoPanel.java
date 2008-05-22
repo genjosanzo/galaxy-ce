@@ -23,6 +23,10 @@ import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.client.validation.CallbackValidator;
+import org.mule.galaxy.web.client.validation.FieldValidationListener;
+import org.mule.galaxy.web.client.validation.StringNotBlankValidator;
+import org.mule.galaxy.web.client.validation.ValidationListener;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
@@ -48,10 +52,16 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 public class ArtifactInfoPanel extends AbstractComposite {
 
+    /**
+     * A simple map of input field -> validation listener for UI updates.
+     */
+    private Map/*<Widget, ValidationListener>*/ validationListeners = new HashMap();
 
     private HorizontalPanel topPanel;
     private Galaxy galaxy;
@@ -230,16 +240,24 @@ public class ArtifactInfoPanel extends AbstractComposite {
         replyClickListener.setShowingComment(true);
         final VerticalPanel addCommentPanel = new VerticalPanel();
         addCommentPanel.setStyleName("addComment");
-        
-        final TextArea text = new TextArea();
-        text.setCharacterWidth(60);
-        text.setVisibleLines(5);
-        addCommentPanel.add(text);
+
+        final TextArea textArea = new TextArea();
+        textArea.setCharacterWidth(60);
+        textArea.setVisibleLines(5);
+
+        // group textarea and validation label
+        FlowPanel textPanel = new FlowPanel();
+        textPanel.add(textArea);
+        final Label commentTextValidationLabel = new Label();
+        textPanel.add(commentTextValidationLabel);
+        validationListeners.put(textArea, new FieldValidationListener(commentTextValidationLabel));
+
+        addCommentPanel.add(textPanel);
         
         HorizontalPanel buttons = new HorizontalPanel();
         buttons.setSpacing(10);
         buttons.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        
+
         final Button cancelButton = new Button("Cancel");
         cancelButton.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
@@ -247,21 +265,28 @@ public class ArtifactInfoPanel extends AbstractComposite {
                 replyClickListener.setShowingComment(false);
             }
         });
-        buttons.add(cancelButton);
-        
-        final Button addButton = new Button("Add");
+
+        final Button addButton = new Button("Save");
         addButton.addClickListener(new ClickListener() {
             public void onClick(Widget w) {
-                addComment(commentPanel, 
-                           addCommentPanel, 
-                           text,
+
+                if (!validateComment(textArea)) {
+
+                    return;
+                }
+
+                addComment(commentPanel,
+                           addCommentPanel,
+                           textArea,
                            cancelButton,
                            addButton,
                            parentId,
                            replyClickListener);
             }
         });
+
         buttons.add(addButton);
+        buttons.add(cancelButton);
         addCommentPanel.add(buttons);
         addCommentPanel.setCellHorizontalAlignment(buttons, HasHorizontalAlignment.ALIGN_RIGHT);
 
@@ -316,7 +341,16 @@ public class ArtifactInfoPanel extends AbstractComposite {
             
         });
     }
-    
+
+    protected boolean validateComment(TextArea textArea) {
+        boolean isOk = true;
+        ValidationListener vl = (ValidationListener) validationListeners.get(textArea);
+        CallbackValidator cbVal = new CallbackValidator(new StringNotBlankValidator(), vl, textArea);
+        isOk &= cbVal.validate(textArea.getText());
+
+        return isOk;
+    }
+
     protected void initDependencies(Collection o) {
         Toolbox depPanel = new Toolbox(true);
         depPanel.setTitle("Dependencies");

@@ -50,8 +50,12 @@ public class PropertyDescriptorListPanel
                 int i = 1;
                 for (Iterator itr = props.iterator(); itr.hasNext();) {
                     final WPropertyDescriptor prop = (WPropertyDescriptor) itr.next();
-                    
-                    Hyperlink hyperlink = new Hyperlink(prop.getName(), 
+
+                    String propName = prop.getName();
+                    if (propName == null || propName.trim().length() == 0) {
+                        propName = "<empty>";
+                    }
+                    Hyperlink hyperlink = new Hyperlink(propName,
                                                         "properties/" + prop.getId());
                     
                     table.setWidget(i, 0, hyperlink);

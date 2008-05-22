@@ -170,7 +170,13 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
         save.setText("Saving...");
     }
 
-
+    /**
+     *
+     * @return list of validation receipts TODO class name
+     */
+    protected boolean validate() {
+        return true;
+    }
 
     /* Use the successToken page as the cancel redirect page */
     protected void cancel() {
@@ -216,4 +222,7 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
         };
     }
 
+    public ErrorPanel getErrorPanel() {
+        return errorPanel;
+    }
 }
