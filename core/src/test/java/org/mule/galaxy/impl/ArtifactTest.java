@@ -137,14 +137,15 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals("mule-configuration", artifact.getDocumentType().getLocalPart());
         
 
-//        // Try application/octent-stream
-//        ar = registry.createArtifact(workspace, "application/octet-stream", "hello_world2.xml", "0.1",
-//                                     helloMule, getAdmin());
-//        
-//        artifact = ar.getArtifact();
-//        
-//        assertEquals("application/xml", artifact.getContentType().toString());
-//        assertEquals("mule-configuration", artifact.getDocumentType().getLocalPart());
+        // Try application/octent-stream
+        helloMule = getResourceAsStream("/mule/hello-config.xml");
+        ar = registry.createArtifact(workspace, "application/octet-stream", "hello_world2.xml", "0.1",
+                                     helloMule, getAdmin());
+        
+        artifact = ar.getArtifact();
+        
+        assertEquals("application/xml", artifact.getContentType().toString());
+        assertEquals("mule-configuration", artifact.getDocumentType().getLocalPart());
     }
     
     public void testAddWsdl() throws Exception {
