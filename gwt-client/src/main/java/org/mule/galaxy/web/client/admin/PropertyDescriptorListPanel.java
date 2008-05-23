@@ -56,7 +56,7 @@ public class PropertyDescriptorListPanel
                         propName = "<empty>";
                     }
                     Hyperlink hyperlink = new Hyperlink(propName,
-                                                        "properties/" + prop.getId());
+                                                        "properties_" + prop.getId());
                     
                     table.setWidget(i, 0, hyperlink);
                     table.setText(i, 1, prop.getDescription());

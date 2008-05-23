@@ -106,7 +106,7 @@ public class RegistryMenuPanel extends MenuPanel {
         Toolbox viewToolbox = new Toolbox(false);
         
         viewToolbox.add(asHorizontal(newLabel("Views ", "toolbox-header"), 
-                                     new Hyperlink("New", "view/new"),
+                                     new Hyperlink("New", "view_new"),
                                      new Label("...")));
         
         viewBox = new ListBox();
@@ -120,7 +120,7 @@ public class RegistryMenuPanel extends MenuPanel {
                     String id = viewBox.getValue(idx);
                     
                     if (id.length() > 0) {
-                        History.newItem("view/" + id);
+                        History.newItem("view_" + id);
                     }
                 }
             }
@@ -163,7 +163,7 @@ public class RegistryMenuPanel extends MenuPanel {
         for (Iterator itr = views.iterator(); itr.hasNext();) {
             WArtifactView wv = (WArtifactView) itr.next();
             
-            recentViewsPanel.add(new Hyperlink(wv.getName(), "view/" + wv.getId()));
+            recentViewsPanel.add(new Hyperlink(wv.getName(), "view_" + wv.getId()));
         }
     }
 

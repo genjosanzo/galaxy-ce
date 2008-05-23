@@ -148,7 +148,7 @@ public class HistoryPanel extends AbstractComposite {
                 TransitionResponse tr = (TransitionResponse) o;
                 
                 if (tr.isSuccess()) {
-                    History.newItem("artifact/" + info.getId() + "/2");
+                    History.newItem("artifact_" + info.getId() + "_2");
                 } else {
                     displayMessages(tr);
                 }
@@ -164,7 +164,7 @@ public class HistoryPanel extends AbstractComposite {
                 TransitionResponse tr = (TransitionResponse) o;
                 
                 if (tr == null || tr.isSuccess()) {
-                    History.newItem("artifact/" + info.getId() + "/2");
+                    History.newItem("artifact_" + info.getId() + "_2");
                 } else {
                     displayMessages(tr);
                 }

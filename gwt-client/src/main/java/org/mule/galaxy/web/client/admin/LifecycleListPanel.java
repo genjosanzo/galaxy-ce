@@ -62,7 +62,7 @@ public class LifecycleListPanel extends AbstractAdministrationComposite {
                  text += " (Default)";
              }
              
-             table.setWidget(i, 0, new Hyperlink(text, "lifecycles/" + l.getId()));
+             table.setWidget(i, 0, new Hyperlink(text, "lifecycles_" + l.getId()));
              table.setText(i, 1, getPhaseList(l));
              
              i++;

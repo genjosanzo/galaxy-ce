@@ -53,7 +53,7 @@ public class UserListPanel
                     final WUser u = (WUser) itr.next();
                     
                     Hyperlink hyperlink = new Hyperlink(u.getUsername(), 
-                                                        "users/" + u.getId());
+                                                        "users_" + u.getId());
                     
                     table.setWidget(i, 0, hyperlink);
                     table.setText(i, 1, u.getName());

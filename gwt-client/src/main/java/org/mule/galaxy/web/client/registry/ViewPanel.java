@@ -71,7 +71,7 @@ public class ViewPanel extends AbstractBrowsePanel {
     }
     
     protected String getHistoryToken() {
-        return "view/" + viewId;
+        return "view_" + viewId;
     }
 
     public void onShow(List params) {
@@ -102,7 +102,7 @@ public class ViewPanel extends AbstractBrowsePanel {
                 cancel.addClickListener(new ClickListener() {
                     public void onClick(Widget arg0) {
                         // Browse back to the view  
-                        History.newItem("view/" + viewId);
+                        History.newItem("view_" + viewId);
                     }
                 });
                 buttonPanel.add(cancel);
@@ -168,7 +168,7 @@ public class ViewPanel extends AbstractBrowsePanel {
                 editPanel.clear();
                 editPanel.add(createPrimaryTitle(view.getName()));
                 editPanel.add(new Label(" "));
-                editLink = new Hyperlink("Edit", "view/" + viewId + "/edit");
+                editLink = new Hyperlink("Edit", "view_" + viewId + "_edit");
                 editPanel.add(editLink);
                 searchForm.setPredicates(view.getPredicates());
                 
@@ -218,7 +218,7 @@ public class ViewPanel extends AbstractBrowsePanel {
         galaxy.getRegistryService().saveArtifactView(view, new AbstractCallback(menuPanel) {
             public void onSuccess(Object id) {
                 view.setId((String)id);
-                History.newItem("view/" + id);
+                History.newItem("view_" + id);
             }
         });
         

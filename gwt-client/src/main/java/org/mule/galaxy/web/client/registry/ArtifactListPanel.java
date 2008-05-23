@@ -111,7 +111,7 @@ public class ArtifactListPanel
             Hyperlink hl;
             
             if (resultSize > maxResults && resultStart < o.getTotal()) {
-                hl = new Hyperlink("Next", browsePanel.getHistoryToken() + "/" + (resultStart + maxResults));
+                hl = new Hyperlink("Next", browsePanel.getHistoryToken() + "_" + (resultStart + maxResults));
                 hl.setStyleName("activity-nav-next");
                 hl.addClickListener(new ClickListener() {
     
@@ -126,7 +126,7 @@ public class ArtifactListPanel
             }
             
             if (resultStart > 0) {
-                hl = new Hyperlink("Previous", browsePanel.getHistoryToken() + "/" + (resultStart - maxResults));
+                hl = new Hyperlink("Previous", browsePanel.getHistoryToken() + "_" + (resultStart - maxResults));
                 hl.setStyleName("activity-nav-previous");
                 hl.addClickListener(new ClickListener() {
     

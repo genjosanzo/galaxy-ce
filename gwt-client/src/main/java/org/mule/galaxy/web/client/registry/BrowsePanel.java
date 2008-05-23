@@ -55,7 +55,7 @@ public class BrowsePanel extends AbstractBrowsePanel {
 
     protected String getHistoryToken() {
         if (workspaceId != null) {
-            return "browse/" + workspaceId;
+            return "browse_" + workspaceId;
         } else {
             return "browse";
         }
@@ -130,7 +130,7 @@ public class BrowsePanel extends AbstractBrowsePanel {
                 }
                 cv.setRootItem(treeItem, workspaceTreeItem);
                 
-                String token = "manage-workspace/" + workspaceId;
+                String token = "manage-workspace_" + workspaceId;
                 manageWkspcImg.addClickListener(NavigationUtil.createNavigatingClickListener(token));
                 manageWkspcLink.setTargetHistoryToken(token);
             }

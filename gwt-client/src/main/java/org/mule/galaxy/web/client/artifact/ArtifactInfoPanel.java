@@ -368,7 +368,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
             hl.addClickListener(new ClickListener() {
 
                 public void onClick(Widget arg0) {
-                    History.newItem("artifact/" + info.getArtifactId());
+                    History.newItem("artifact_" + info.getArtifactId());
                 }
             });
             

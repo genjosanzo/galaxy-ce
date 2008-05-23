@@ -59,7 +59,7 @@ public class ArtifactTypeListPanel extends AbstractAdministrationComposite {
          for (Iterator itr = lifecycles.iterator(); itr.hasNext();) {
              final WArtifactType at = (WArtifactType)itr.next();
 
-             Hyperlink atLink = new Hyperlink(at.getDescription(), "artifact-types/" + at.getId());
+             Hyperlink atLink = new Hyperlink(at.getDescription(), "artifact-types_" + at.getId());
              
              table.setWidget(i, 0, atLink);
              table.setText(i, 1, at.getMediaType());

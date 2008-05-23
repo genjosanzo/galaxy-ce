@@ -220,7 +220,7 @@ public class ArtifactPanel extends AbstractComposite {
 
         linkBox.clear();
 
-        Hyperlink hl = new Hyperlink("View Artifact", "artifact/" + info.getId());
+        Hyperlink hl = new Hyperlink("View Artifact", "artifact_" + info.getId());
         hl.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
@@ -234,11 +234,11 @@ public class ArtifactPanel extends AbstractComposite {
         permalink.setTitle("Direct artifact link for inclusion in email, etc.");
         linkBox.add(permalink);
         
-        String token = "new-artifact-version/" + info.getId();
+        String token = "new-artifact-version_" + info.getId();
         hl = new Hyperlink("New Version", token);
         linkBox.add(hl);
         
-        hl = new Hyperlink("Delete", "artifact/" + info.getId());
+        hl = new Hyperlink("Delete", "artifact_" + info.getId());
         hl.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {

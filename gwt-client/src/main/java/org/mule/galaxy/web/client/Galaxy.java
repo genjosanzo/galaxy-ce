@@ -84,6 +84,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
     private int adminTabIndex;
     private BrowsePanel browsePanel;
     
+    // Delimiters may be causing GWT issues w/safari
+    // this makes it easy to swap ones out.
+    public static final String WILDCARD = "*";
+
     /**
      * This is the entry point method.
      */
@@ -184,9 +188,9 @@ public class Galaxy implements EntryPoint, HistoryListener {
         base.add(footer);
         RootPanel.get().add(base);
         
-        createPageInfo("artifact/*", new ArtifactPanel(this), 0);
+        createPageInfo("artifact_" + WILDCARD, new ArtifactPanel(this), 0);
         createPageInfo("add-artifact", new ArtifactForm(this), 0);
-        createPageInfo("new-artifact-version/*", new ArtifactForm(this), 0);
+        createPageInfo("new-artifact-version_" + WILDCARD, new ArtifactForm(this), 0);
         createPageInfo("add-workspace", new WorkspaceForm(this), 0);
         createPageInfo("manage-workspace", new ManageWorkspacePanel(this), 0);
         createPageInfo("search", new SearchPanel(this), 0);
@@ -304,12 +308,12 @@ public class Galaxy implements EntryPoint, HistoryListener {
         PageInfo page = getPageInfo(token);
         List params = new ArrayList();
         if (page == null) {
-            String[] split = token.split("/");
+            String[] split = token.split("_");
             
             // hack to match "foo/*" style tokens
-            int slashIdx = token.lastIndexOf('/');
+            int slashIdx = token.lastIndexOf('_');
             if (slashIdx != -1) {
-                page = getPageInfo(token.substring(0, slashIdx) + "/*");
+                page = getPageInfo(token.substring(0, slashIdx) + "_" + WILDCARD);
             }
             
             if (page == null) {

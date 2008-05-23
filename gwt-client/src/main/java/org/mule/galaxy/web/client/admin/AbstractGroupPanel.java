@@ -112,7 +112,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
             
             final WGroup group = (WGroup) e.getKey();
 
-            final Hyperlink hl = new Hyperlink(group.getName(), "groups/" + group.getId());
+            final Hyperlink hl = new Hyperlink(group.getName(), "groups_" + group.getId());
 
             int row = rows.indexOf(group.getName()) + 1;
             table.setWidget(row, 0, hl);

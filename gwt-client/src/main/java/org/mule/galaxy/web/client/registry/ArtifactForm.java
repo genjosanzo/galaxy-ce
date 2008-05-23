@@ -155,7 +155,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
                         artifactId2 = msg.substring(8, last);
                     }
 
-                    History.newItem("artifact/" + artifactId2);
+                    History.newItem("artifact_" + artifactId2);
                 } else
                 if (msg.startsWith("<PRE>ArtifactPolicyException") || msg.startsWith("<pre>ArtifactPolicyException")) {
                     parseAndShowPolicyMessages(msg);

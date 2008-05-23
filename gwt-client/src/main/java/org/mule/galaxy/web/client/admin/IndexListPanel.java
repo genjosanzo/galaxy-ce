@@ -61,7 +61,7 @@ public class IndexListPanel
                     else 
                     {
                         Hyperlink hyperlink = new Hyperlink(idx.getDescription(), 
-                                                            "indexes/" + idx.getId());
+                                                            "indexes_" + idx.getId());
                         
                         table.setWidget(i, 0, hyperlink);
                     }

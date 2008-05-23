@@ -18,9 +18,11 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.core.client.GWT;
+
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.MenuPanel;
@@ -42,7 +44,7 @@ public class AdministrationPanel extends MenuPanel {
         manageBox.setTitle("Manage");
         addMenuItem(manageBox);
 
-        createMenuItems(galaxy, manageBox);
+        createMenuItems(this.galaxy, manageBox);
     }
 
     protected void createMenuItems(Galaxy galaxy, Toolbox manageBox) {
@@ -106,11 +108,13 @@ public class AdministrationPanel extends MenuPanel {
                                    String tokenBase,
                                    AbstractComposite list,
                                    AbstractComposite form) {
+
         Hyperlink link = new Hyperlink(title, tokenBase);
-        createPageInfo(link.getTargetHistoryToken(), list);
-        
-        createDivWithAdd(manageBox, link, new Hyperlink("Add", tokenBase + "/new"));
-        createPageInfo(tokenBase + "/*", form);
+        Hyperlink addLink = new Hyperlink("Add", tokenBase + "_new");
+
+        createDivWithAdd(manageBox, link, addLink);
+        createPageInfo(tokenBase, list);
+        createPageInfo(tokenBase + "_" + Galaxy.WILDCARD, form);
     }
 
     protected void createPageInfo(String token, final AbstractComposite composite) {

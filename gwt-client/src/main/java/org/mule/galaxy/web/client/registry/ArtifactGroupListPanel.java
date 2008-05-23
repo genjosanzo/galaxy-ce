@@ -47,7 +47,7 @@ public class ArtifactGroupListPanel
             final BasicArtifactInfo info = (BasicArtifactInfo) group.getRows().get(i);
             for (int c = 0; c < group.getColumns().size(); c++) {
                 if (c == 0) {
-                    Hyperlink hl = new Hyperlink(info.getValue(c), "artifact/" + info.getId());
+                    Hyperlink hl = new Hyperlink(info.getValue(c), "artifact_" + info.getId());
 //                    MenuPanelPageInfo page = new MenuPanelPageInfo(hl.getTargetHistoryToken(), registryPanel) {
 //                        public AbstractComposite createInstance() {
 //                            return new ArtifactPanel(registryPanel, info.getId());
