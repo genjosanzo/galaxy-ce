@@ -23,7 +23,7 @@ package org.mule.galaxy.web.client.validation;
  */
 public class EmailValidator extends RegexValidator {
 
-    protected static final String JAVASCRIPT_EMAIL_REGEX = "^[A-z][\\w\\.\\+\\-]+[A-z0-9]@[A-z0-9][\\w\\.-]*[A-z0-9]\\.[A-z][A-z\\.]*[A-z]$";
+    protected static final String JAVASCRIPT_EMAIL_REGEX = "^[A-z0-9][\\w\\.\\+\\-]+[A-z0-9]@[A-z0-9][\\w\\.-]*[A-z0-9]\\.[A-z][A-z\\.]*[A-z]$";
 
     public EmailValidator() {
         super(JAVASCRIPT_EMAIL_REGEX);
