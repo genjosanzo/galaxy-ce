@@ -18,22 +18,37 @@
 
 package org.mule.galaxy.web.client.validation;
 
-/**
- * A simple validator negating the result of a wrapped validation.
- */
-public class ReverseValidator implements Validator {
+import junit.framework.TestCase;
 
-    protected Validator delegate;
+public class StringNotEmptyValidatorTest extends TestCase {
 
-    public ReverseValidator(final Validator delegate) {
-        this.delegate = delegate;
+    /**
+     * Trim by default.
+     */
+    public void testDefaultValidation() {
+        Validator v = new StringNotEmptyValidator();
+        assertFalse(v.validate(null));
+        assertFalse(v.validate(" "));
+        assertTrue(v.validate(" a"));
+
+        try {
+            v.validate(new Object());
+        } catch (IllegalArgumentException iaex) {
+            // expected
+        }
     }
 
-    public boolean validate(final Object value) {
-        return !delegate.validate(value);
+    public void testNoTrimValidation() {
+        Validator v = new StringNotEmptyValidator(false);
+        assertFalse(v.validate(null));
+        assertTrue(v.validate(" "));
+        assertTrue(v.validate(" a"));
+
+        try {
+            v.validate(new Object());
+        } catch (IllegalArgumentException iaex) {
+            // expected
+        }
     }
 
-    public String getFailureMessage() {
-        return "[reverse] " + delegate.getFailureMessage();
-    }
 }

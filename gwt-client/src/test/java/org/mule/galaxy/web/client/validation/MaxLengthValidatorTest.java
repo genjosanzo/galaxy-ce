@@ -20,16 +20,19 @@ package org.mule.galaxy.web.client.validation;
 
 import junit.framework.TestCase;
 
-public class StringValidatorTest extends TestCase {
+public class MaxLengthValidatorTest extends TestCase {
 
     /**
      * Trim by default.
      */
     public void testDefaultValidation() {
-        Validator v = new StringValidator();
+        Validator v = new MaxLengthValidator(3);
         assertFalse(v.validate(null));
-        assertFalse(v.validate(" "));
-        assertTrue(v.validate(" a"));
+        assertTrue(v.validate("   "));
+        assertTrue(v.validate("  123"));
+        assertTrue(v.validate("123"));
+        assertTrue(v.validate("12"));
+        assertFalse(v.validate("1234"));
 
         try {
             v.validate(new Object());
@@ -39,10 +42,12 @@ public class StringValidatorTest extends TestCase {
     }
 
     public void testNoTrimValidation() {
-        Validator v = new StringValidator(false);
+        Validator v = new MaxLengthValidator(3, false);
         assertFalse(v.validate(null));
-        assertTrue(v.validate(" "));
-        assertTrue(v.validate(" a"));
+        assertTrue(v.validate("   "));
+        assertFalse(v.validate("    "));
+        assertFalse(v.validate("  123"));
+        assertTrue(v.validate("123"));
 
         try {
             v.validate(new Object());

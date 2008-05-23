@@ -19,21 +19,22 @@
 package org.mule.galaxy.web.client.validation;
 
 /**
- * A simple validator negating the result of a wrapped validation.
+ * Checks that a String is not null or empty (after trimming it).
  */
-public class ReverseValidator implements Validator {
+public class StringNotEmptyValidator extends MinLengthValidator {
 
-    protected Validator delegate;
+    protected static final int MIN_LENGTH = 1;
 
-    public ReverseValidator(final Validator delegate) {
-        this.delegate = delegate;
+    public StringNotEmptyValidator() {
+        super(MIN_LENGTH);
     }
 
-    public boolean validate(final Object value) {
-        return !delegate.validate(value);
+    public StringNotEmptyValidator(final boolean shouldTrim) {
+        super(MIN_LENGTH, shouldTrim);
     }
 
     public String getFailureMessage() {
-        return "[reverse] " + delegate.getFailureMessage();
+        return "Must not be empty";
     }
+    
 }

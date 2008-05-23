@@ -19,17 +19,20 @@
 package org.mule.galaxy.web.client.validation;
 
 /**
- * Checks that a String is not null or empty (after trimming it).
+ * Checks that a String is less or equal to a specified length, with optional trimming.
  */
-public class StringValidator implements Validator {
+public class MaxLengthValidator implements Validator {
 
-    private boolean shouldTrim = true;
+    protected boolean shouldTrim = true;
+    protected int maxLength;
 
-    public StringValidator() {
+    public MaxLengthValidator(int maxLength) {
+        this.maxLength = maxLength;
     }
 
-    public StringValidator(final boolean shouldTrim) {
+    public MaxLengthValidator(final int maxLength, final boolean shouldTrim) {
         this.shouldTrim = shouldTrim;
+        this.maxLength = maxLength;
     }
 
     public boolean validate(final Object value) {
@@ -43,11 +46,11 @@ public class StringValidator implements Validator {
         }
 
         String s = (String) value;
-        return shouldTrim ? s.trim().length() != 0 : s.length() != 0; 
+        return shouldTrim ? s.trim().length() <= maxLength : s.length() <= maxLength;
     }
 
     public String getFailureMessage() {
-        return "Must not be empty";
+        return "Entry too long. Max " + maxLength + " chars";
     }
 
     public boolean isShouldTrim() {

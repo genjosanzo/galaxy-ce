@@ -18,7 +18,7 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.validation.StringValidator;
+import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
@@ -42,7 +42,7 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
         table.setText(1, 0, "Description:");
 //        table.setText(2, 0, "Multivalued");
         
-        nameTB = new ValidatableTextBox(new StringValidator());
+        nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
         nameTB.getTextBox().setText(property.getName());
 
         // This is the label containing this fields' validation message in case of an error

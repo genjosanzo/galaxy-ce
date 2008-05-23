@@ -23,7 +23,7 @@ import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
-import org.mule.galaxy.web.client.validation.StringValidator;
+import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextArea;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
@@ -232,7 +232,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
         final VerticalPanel addCommentPanel = new VerticalPanel();
         addCommentPanel.setStyleName("addComment");
 
-        final ValidatableTextArea textArea = new ValidatableTextArea(new StringValidator());
+        final ValidatableTextArea textArea = new ValidatableTextArea(new StringNotEmptyValidator());
         textArea.getTextArea().setCharacterWidth(60);
         textArea.getTextArea().setVisibleLines(5);
 
