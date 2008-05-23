@@ -22,7 +22,7 @@ import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.WorkspacesListBox;
-import org.mule.galaxy.web.client.validation.StringNotBlankValidator;
+import org.mule.galaxy.web.client.validation.StringValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
@@ -103,7 +103,7 @@ public class NameEditPanel extends Composite {
 
         row.add(workspacesLB);
         row.add(new HTML("&nbsp;"));
-        final ValidatableTextBox nameTB = new ValidatableTextBox(new StringNotBlankValidator());
+        final ValidatableTextBox nameTB = new ValidatableTextBox(new StringValidator());
         nameTB.getTextBox().setText(name);
 
         row.add(nameTB);

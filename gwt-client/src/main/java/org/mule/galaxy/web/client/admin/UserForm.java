@@ -20,7 +20,7 @@ package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.util.SelectionPanel;
 import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
-import org.mule.galaxy.web.client.validation.StringNotBlankValidator;
+import org.mule.galaxy.web.client.validation.StringValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
@@ -57,13 +57,13 @@ public class UserForm extends AbstractAdministrationForm {
         table.setText(5, 0, "Groups:");
 
         if (newItem) {
-            usernameTB = new ValidatableTextBox(new StringNotBlankValidator());
+            usernameTB = new ValidatableTextBox(new StringValidator());
             table.setWidget(0, 1, usernameTB);
         } else {
             table.setText(0, 1, user.getUsername());
         }
         
-        nameTB = new ValidatableTextBox(new StringNotBlankValidator());
+        nameTB = new ValidatableTextBox(new StringValidator());
         nameTB.getTextBox().setText(user.getName());
         table.setWidget(1, 1, nameTB);
         // add an extender in the table to align the validation label

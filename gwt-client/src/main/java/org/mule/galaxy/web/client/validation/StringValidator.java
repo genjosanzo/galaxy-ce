@@ -21,7 +21,16 @@ package org.mule.galaxy.web.client.validation;
 /**
  * Checks that a String is not null or empty (after trimming it).
  */
-public class StringNotBlankValidator implements Validator {
+public class StringValidator implements Validator {
+
+    private boolean shouldTrim = true;
+
+    public StringValidator() {
+    }
+
+    public StringValidator(final boolean shouldTrim) {
+        this.shouldTrim = shouldTrim;
+    }
 
     public boolean validate(final Object value) {
         if (value == null) {
@@ -33,10 +42,19 @@ public class StringNotBlankValidator implements Validator {
             throw new IllegalArgumentException("This validator accepts Strings only. Got " + value.toString());
         }
 
-        return ((String) value).trim().length() != 0; 
+        String s = (String) value;
+        return shouldTrim ? s.trim().length() != 0 : s.length() != 0; 
     }
 
     public String getFailureMessage() {
         return "Must not be empty";
+    }
+
+    public boolean isShouldTrim() {
+        return shouldTrim;
+    }
+
+    public void setShouldTrim(final boolean shouldTrim) {
+        this.shouldTrim = shouldTrim;
     }
 }
