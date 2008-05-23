@@ -166,6 +166,7 @@ public class UserForm extends AbstractAdministrationForm {
     }
 
     protected boolean validate() {
+        getErrorPanel().clearErrorMessage();
         boolean isOk = true;
 
         // username textbox is not there on Edit screen, only Add
