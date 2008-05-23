@@ -23,10 +23,8 @@ import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
-import org.mule.galaxy.web.client.validation.CallbackValidator;
-import org.mule.galaxy.web.client.validation.FieldValidationListener;
 import org.mule.galaxy.web.client.validation.StringNotBlankValidator;
-import org.mule.galaxy.web.client.validation.ValidationListener;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextArea;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
@@ -52,16 +50,9 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 public class ArtifactInfoPanel extends AbstractComposite {
-
-    /**
-     * A simple map of input field -> validation listener for UI updates.
-     */
-    private Map/*<Widget, ValidationListener>*/ validationListeners = new HashMap();
 
     private HorizontalPanel topPanel;
     private Galaxy galaxy;
@@ -241,18 +232,11 @@ public class ArtifactInfoPanel extends AbstractComposite {
         final VerticalPanel addCommentPanel = new VerticalPanel();
         addCommentPanel.setStyleName("addComment");
 
-        final TextArea textArea = new TextArea();
-        textArea.setCharacterWidth(60);
-        textArea.setVisibleLines(5);
+        final ValidatableTextArea textArea = new ValidatableTextArea(new StringNotBlankValidator());
+        textArea.getTextArea().setCharacterWidth(60);
+        textArea.getTextArea().setVisibleLines(5);
 
-        // group textarea and validation label
-        FlowPanel textPanel = new FlowPanel();
-        textPanel.add(textArea);
-        final Label commentTextValidationLabel = new Label();
-        textPanel.add(commentTextValidationLabel);
-        validationListeners.put(textArea, new FieldValidationListener(commentTextValidationLabel));
-
-        addCommentPanel.add(textPanel);
+        addCommentPanel.add(textArea);
         
         HorizontalPanel buttons = new HorizontalPanel();
         buttons.setSpacing(10);
@@ -303,7 +287,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
 
     protected void addComment(final Panel parent,
                               final Panel addCommentPanel, 
-                              final TextArea text, 
+                              final ValidatableTextArea text,
                               final Button cancelButton, 
                               final Button addButton, 
                               final String parentId,
@@ -311,16 +295,16 @@ public class ArtifactInfoPanel extends AbstractComposite {
 
         cancelButton.setEnabled(false);
         addButton.setEnabled(false);
-        text.setEnabled(false);
+        text.getTextArea().setEnabled(false);
         
-        galaxy.getRegistryService().addComment(info.getId(), parentId, text.getText(), new AbstractCallback(errorPanel) {
+        galaxy.getRegistryService().addComment(info.getId(), parentId, text.getTextArea().getText(), new AbstractCallback(errorPanel) {
 
             public void onFailure(Throwable caught) {
                 super.onFailure(caught);
                 
                 cancelButton.setEnabled(true);
                 addButton.setEnabled(true);
-                text.setEnabled(true);
+                text.getTextArea().setEnabled(true);
             }
 
             public void onSuccess(Object o) {
@@ -341,12 +325,9 @@ public class ArtifactInfoPanel extends AbstractComposite {
         });
     }
 
-    protected boolean validateComment(TextArea textArea) {
+    protected boolean validateComment(ValidatableTextArea textArea) {
         boolean isOk = true;
-        ValidationListener vl = (ValidationListener) validationListeners.get(textArea);
-        CallbackValidator cbVal = new CallbackValidator(new StringNotBlankValidator(), vl, textArea);
-        isOk &= cbVal.validate(textArea.getText());
-
+        isOk &= textArea.validate();
         return isOk;
     }
 

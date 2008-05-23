@@ -16,33 +16,39 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.mule.galaxy.web.client.validation;
+package org.mule.galaxy.web.client.validation.ui;
 
-import com.google.gwt.user.client.ui.Composite;
+import org.mule.galaxy.web.client.validation.CallbackValidator;
+import org.mule.galaxy.web.client.validation.FieldValidationListener;
+import org.mule.galaxy.web.client.validation.ValidationListener;
+import org.mule.galaxy.web.client.validation.Validator;
+
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * A textbox which has an embedded validation label right below it.
+ * A template class for components having an input field.
  */
-public class ValidatableTextBox extends Composite {
+public abstract class AbstractValidatableInputField extends AbstractValidatableWidget {
 
     private Label validationLabel = new Label();
     private FlowPanel holderPanel = new FlowPanel();
-    private TextBox textBox = new TextBox();
     private ValidationListener validationListener;
+    private Validator validator;
 
-
-    public ValidatableTextBox() {
-        holderPanel.add(textBox);
+    public AbstractValidatableInputField(final Validator validator) {
+        Widget inputWidget = this.createInputWidget();
+        validationListener = new FieldValidationListener(this.getValidationLabel());
+        this.validator = new CallbackValidator(validator, validationListener, inputWidget);
+        holderPanel.add(inputWidget);
         holderPanel.add(validationLabel);
         validationLabel.setVisible(false);
         validationLabel.setStyleName("ValidationMessage");
 
         initWidget(holderPanel);
     }
+
 
     /**
      * @return top-most FlowPanel grouping every element
@@ -55,15 +61,12 @@ public class ValidatableTextBox extends Composite {
         return validationLabel;
     }
 
-    public TextBox getTextBox() {
-        return textBox;
-    }
-
     public ValidationListener getValidationListener() {
         return validationListener;
     }
 
-    public void setValidationListener(final ValidationListener validationListener) {
-        this.validationListener = validationListener;
+    public Validator getValidator() {
+        return validator;
     }
+
 }

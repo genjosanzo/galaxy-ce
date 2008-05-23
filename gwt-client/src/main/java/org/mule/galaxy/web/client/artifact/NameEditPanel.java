@@ -22,34 +22,23 @@ import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.WorkspacesListBox;
-import org.mule.galaxy.web.client.validation.CallbackValidator;
-import org.mule.galaxy.web.client.validation.FieldValidationListener;
 import org.mule.galaxy.web.client.validation.StringNotBlankValidator;
-import org.mule.galaxy.web.client.validation.ValidationListener;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 public class NameEditPanel extends Composite {
-
-    /**
-     * A simple map of input field -> validation listener for UI updates.
-     */
-    private Map/*<Widget, ValidationListener>*/ validationListeners = new HashMap();
 
     private InlineFlowPanel panel;
     private final String artifactId;
@@ -114,18 +103,10 @@ public class NameEditPanel extends Composite {
 
         row.add(workspacesLB);
         row.add(new HTML("&nbsp;"));
-        final TextBox nameTB = new TextBox();
-        nameTB.setText(name);
+        final ValidatableTextBox nameTB = new ValidatableTextBox(new StringNotBlankValidator());
+        nameTB.getTextBox().setText(name);
 
-        // group textarea and validation label
-        FlowPanel nameEditPanel = new FlowPanel();
-        nameEditPanel.add(nameTB);
-        final Label nameValidationLabel = new Label();
-        nameEditPanel.add(nameValidationLabel);
-        validationListeners.put(nameTB, new FieldValidationListener(nameValidationLabel));
-
-        // don't let the flow wrap to the new line when a validation message is displayed
-        row.add(nameEditPanel);
+        row.add(nameTB);
 
         Button saveButton = new Button("Save");
         saveButton.addClickListener(new ClickListener() {
@@ -134,7 +115,7 @@ public class NameEditPanel extends Composite {
                 if (!validateName(nameTB)) {
                     return;
                 }
-                save(workspacesLB.getSelectedValue(), nameTB.getText());
+                save(workspacesLB.getSelectedValue(), nameTB.getTextBox().getText());
             }
             
         });
@@ -166,11 +147,9 @@ public class NameEditPanel extends Composite {
         });
     }
 
-    protected boolean validateName(final TextBox nameTB) {
+    protected boolean validateName(final ValidatableTextBox nameTB) {
         boolean isOk = true;
-        ValidationListener vl = (ValidationListener) validationListeners.get(nameTB);
-        CallbackValidator cbVal = new CallbackValidator(new StringNotBlankValidator(), vl, nameTB);
-        isOk &= cbVal.validate(nameTB.getText());
+        isOk &= nameTB.validate();
 
         return isOk;
     }

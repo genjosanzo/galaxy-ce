@@ -20,11 +20,8 @@ package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.util.SelectionPanel;
 import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
-import org.mule.galaxy.web.client.validation.CallbackValidator;
-import org.mule.galaxy.web.client.validation.FieldValidationListener;
 import org.mule.galaxy.web.client.validation.StringNotBlankValidator;
-import org.mule.galaxy.web.client.validation.ValidatableTextBox;
-import org.mule.galaxy.web.client.validation.ValidationListener;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WGroup;
@@ -36,8 +33,6 @@ import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 public class UserForm extends AbstractAdministrationForm {
 
@@ -48,11 +43,6 @@ public class UserForm extends AbstractAdministrationForm {
     private TextBox emailTB;
     private ValidatableTextBox usernameTB;
     private SelectionPanel groupPanel;
-
-    /**
-     * A simple map of input field -> validation listener for UI updates.
-     */
-    private Map/*<Widget, ValidationListener>*/ validationListeners = new HashMap();
 
     public UserForm(AdministrationPanel adminPanel) {
         super(adminPanel, "users", "User was saved.", "User was deleted.");
@@ -67,16 +57,14 @@ public class UserForm extends AbstractAdministrationForm {
         table.setText(5, 0, "Groups:");
 
         if (newItem) {
-            usernameTB = new ValidatableTextBox();
-            validationListeners.put(usernameTB, new FieldValidationListener(usernameTB.getValidationLabel()));
+            usernameTB = new ValidatableTextBox(new StringNotBlankValidator());
             table.setWidget(0, 1, usernameTB);
         } else {
             table.setText(0, 1, user.getUsername());
         }
         
-        nameTB = new ValidatableTextBox();
+        nameTB = new ValidatableTextBox(new StringNotBlankValidator());
         nameTB.getTextBox().setText(user.getName());
-        validationListeners.put(nameTB, new FieldValidationListener(nameTB.getValidationLabel()));
         table.setWidget(1, 1, nameTB);
         // add an extender in the table to align the validation label
         // otherwise groups cell stretches and deforms the cell
@@ -178,15 +166,11 @@ public class UserForm extends AbstractAdministrationForm {
     protected boolean validate() {
         boolean isOk = true;
 
-        // username
-        ValidationListener vl = (ValidationListener) validationListeners.get(usernameTB);
-        CallbackValidator cbVal = new CallbackValidator(new StringNotBlankValidator(), vl, usernameTB.getTextBox());
-        isOk &= cbVal.validate(usernameTB.getTextBox().getText());
-
-        // name
-        vl = (ValidationListener) validationListeners.get(nameTB);
-        cbVal = new CallbackValidator(new StringNotBlankValidator(), vl, nameTB.getTextBox());
-        isOk &= cbVal.validate(nameTB.getTextBox().getText());
+        // username textbox is not there on Edit screen, only Add
+        if (usernameTB != null) {
+            isOk &= usernameTB.validate();
+        }
+        isOk &= nameTB.validate();
         
         return isOk;
 

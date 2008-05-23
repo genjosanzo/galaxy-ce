@@ -18,31 +18,20 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.validation.CallbackValidator;
-import org.mule.galaxy.web.client.validation.FieldValidationListener;
 import org.mule.galaxy.web.client.validation.StringNotBlankValidator;
-import org.mule.galaxy.web.client.validation.ValidationListener;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class PropertyDescriptorForm extends AbstractAdministrationForm {
 
     private WPropertyDescriptor property;
-    private TextBox nameTB;
+    private ValidatableTextBox nameTB;
     private TextBox descriptionTB;
-
-    /**
-     * A simple map of input field -> validation listener for UI updates. 
-     */
-    private Map/*<Widget, ValidationListener>*/ validationListeners = new HashMap();
 
     public PropertyDescriptorForm(AdministrationPanel adminPanel){
         super(adminPanel, "properties", "Property was saved.", "Property was deleted.");
@@ -53,19 +42,13 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
         table.setText(1, 0, "Description:");
 //        table.setText(2, 0, "Multivalued");
         
-        nameTB = new TextBox();
-        nameTB.setText(property.getName());
+        nameTB = new ValidatableTextBox(new StringNotBlankValidator());
+        nameTB.getTextBox().setText(property.getName());
 
         // This is the label containing this fields' validation message in case of an error
         final Label nameValidationLabel = new Label();
-        // some layout, put it right under the textbox
-        FlowPanel p = new FlowPanel();
-        p.add(nameTB);
-        p.add(nameValidationLabel);
-        // map the name textbox to this validation UI callback
-        validationListeners.put(nameTB, new FieldValidationListener(nameValidationLabel));
 
-        table.setWidget(0, 1, p);
+        table.setWidget(0, 1, nameTB);
         
         descriptionTB = new TextBox();
         descriptionTB.setText(property.getDescription());
@@ -103,7 +86,7 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
         RegistryServiceAsync svc = adminPanel.getRegistryService();
 
         property.setDescription(descriptionTB.getText());
-        property.setName(nameTB.getText());
+        property.setName(nameTB.getTextBox().getText());
 
         svc.savePropertyDescriptor(property, getSaveCallback());
     }
@@ -119,11 +102,7 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
     protected boolean validate() {
         boolean isOk = true;
 
-        // name textbox
-        TextBox source = nameTB;
-        ValidationListener vl = (ValidationListener) validationListeners.get(source);
-        CallbackValidator cbVal = new CallbackValidator(new StringNotBlankValidator(), vl, source);
-        isOk &= cbVal.validate(source.getText());
+        isOk &= nameTB.validate();
 
         return isOk;
     }
