@@ -20,7 +20,9 @@ package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.util.SelectionPanel;
 import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
+import org.mule.galaxy.web.client.validation.MinLengthValidator;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatablePasswordTextBox;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
@@ -29,7 +31,6 @@ import org.mule.galaxy.web.rpc.WUser;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 
 import java.util.Collection;
@@ -37,12 +38,13 @@ import java.util.Collection;
 public class UserForm extends AbstractAdministrationForm {
 
     private WUser user;
-    private PasswordTextBox passTB;
-    private PasswordTextBox confirmTB;
+    private ValidatablePasswordTextBox passTB;
+    private ValidatablePasswordTextBox confirmTB;
     private ValidatableTextBox nameTB;
     private TextBox emailTB;
     private ValidatableTextBox usernameTB;
     private SelectionPanel groupPanel;
+    private static final int PASSWORD_MIN_LENGTH = 5;
 
     public UserForm(AdministrationPanel adminPanel) {
         super(adminPanel, "users", "User was saved.", "User was deleted.");
@@ -54,7 +56,7 @@ public class UserForm extends AbstractAdministrationForm {
         table.setText(2, 0, "Email:");
         table.setText(3, 0, "Password:");
         table.setText(4, 0, "Confirm Password:");
-        table.setText(5, 0, "Groups:");
+        table.setText(PASSWORD_MIN_LENGTH, 0, "Groups:");
 
         if (newItem) {
             usernameTB = new ValidatableTextBox(new StringNotEmptyValidator());
@@ -75,10 +77,10 @@ public class UserForm extends AbstractAdministrationForm {
         emailTB.setText(user.getEmail());
         table.setWidget(2, 1, emailTB);
 
-        passTB = new PasswordTextBox();
+        passTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
         table.setWidget(3, 1, passTB);
         
-        confirmTB = new PasswordTextBox();
+        confirmTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
         table.setWidget(4, 1, confirmTB);
 
         getSecurityService().getGroups(new AbstractCallback(adminPanel) {
@@ -139,8 +141,8 @@ public class UserForm extends AbstractAdministrationForm {
         
         SecurityServiceAsync svc = getSecurityService();
         
-        String p = passTB.getText();
-        String c = confirmTB.getText();
+        String p = passTB.getTextBox().getText();
+        String c = confirmTB.getTextBox().getText();
         
         if (p != null && !p.equals(c)){
             adminPanel.setMessage("The confirmation password does not match.");
@@ -171,9 +173,14 @@ public class UserForm extends AbstractAdministrationForm {
             isOk &= usernameTB.validate();
         }
         isOk &= nameTB.validate();
-        
-        return isOk;
+        isOk &= passTB.validate();
+        isOk &= confirmTB.validate();
 
+        if (!passTB.getTextBox().getText().equals(confirmTB.getTextBox().getText())) {
+            getErrorPanel().setMessage("Passwords must match");
+        }
+
+        return isOk;
     }
 
     private void update(SecurityServiceAsync svc, String p, String c) {
