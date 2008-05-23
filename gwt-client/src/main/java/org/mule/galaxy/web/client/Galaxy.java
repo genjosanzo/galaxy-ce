@@ -259,33 +259,6 @@ public class Galaxy implements EntryPoint, HistoryListener {
         history.put(info.getName(), info);
     }
 
-    public void show(PageInfo info, boolean affectHistory) {
-        // Don't bother re-displaying the existing sink. This can be an issue
-        // in practice, because when the history context is set, our
-        // onHistoryChanged() handler will attempt to show the currently-visible
-        // sink.
-        if (info == curInfo) {
-            return;
-        }
-        suppressTabHistory = true;
-        curInfo = info;
-
-        // If affectHistory is set, create a new item on the history stack. This
-        // will ultimately result in onHistoryChanged() being called. It will
-        // call
-        // show() again, but nothing will happen because it will request the
-        // exact
-        // same sink we're already showing.
-        if (affectHistory) {
-            History.newItem(info.getName());
-        }
-
-        // Display the page
-        history.put(info.getName(), info);
-        show(info);
-        suppressTabHistory = false;
-    }
-    
     private void show(PageInfo page) {
         SimplePanel p = (SimplePanel) tabPanel.getWidget(page.getTabIndex());
         
@@ -293,6 +266,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         
         p.add(page.getInstance());
     }
+    
     public void onHistoryChanged(String token) {
         suppressTabHistory = true;
         if ("".equals(token)) {

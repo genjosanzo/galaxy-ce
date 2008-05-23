@@ -20,9 +20,6 @@ package org.mule.galaxy.web.client.admin;
 
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.http.client.URL;
-import com.google.gwt.core.client.GWT;
-
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.MenuPanel;
