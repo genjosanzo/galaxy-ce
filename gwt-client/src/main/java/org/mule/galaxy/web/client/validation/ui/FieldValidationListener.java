@@ -16,7 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.mule.galaxy.web.client.validation;
+package org.mule.galaxy.web.client.validation.ui;
+
+import org.mule.galaxy.web.client.validation.ValidationListener;
 
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;

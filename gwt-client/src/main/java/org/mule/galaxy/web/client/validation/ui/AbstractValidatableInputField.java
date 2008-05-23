@@ -19,7 +19,6 @@
 package org.mule.galaxy.web.client.validation.ui;
 
 import org.mule.galaxy.web.client.validation.CallbackValidator;
-import org.mule.galaxy.web.client.validation.FieldValidationListener;
 import org.mule.galaxy.web.client.validation.ValidationListener;
 import org.mule.galaxy.web.client.validation.Validator;
 
