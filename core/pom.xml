@@ -386,9 +386,9 @@
     <repositories>
         <!-- Saxon -->
         <repository>
-            <id>local</id>
-            <name>Local Repository</name>
-            <url>file://${basedir}/mvn-repo/</url>
+            <id>mule.repository</id>
+            <name>Mule Dependency Repository</name>
+            <url>http://dist.codehaus.org/mule/dependencies/maven2/</url>
         </repository>
     </repositories>
 
