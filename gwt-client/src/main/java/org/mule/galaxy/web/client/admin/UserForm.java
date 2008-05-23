@@ -177,8 +177,14 @@ public class UserForm extends AbstractAdministrationForm {
         isOk &= passTB.validate();
         isOk &= confirmTB.validate();
 
+        // passwords must match
         if (!passTB.getTextBox().getText().equals(confirmTB.getTextBox().getText())) {
-            getErrorPanel().setMessage("Passwords must match");
+            getErrorPanel().addMessage("Passwords must match");
+        }
+
+        // at least one group must be selected
+        if (groupPanel.getSelectedValues().isEmpty()) {
+            getErrorPanel().addMessage("User must be a member of at least one group");
         }
 
         return isOk;

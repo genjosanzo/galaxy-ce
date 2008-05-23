@@ -47,16 +47,25 @@ public class AbstractErrorShowingComposite
 
     public void setMessage(Label label) {
         errorPanel.clear();
-        
-        int pos = getErrorPanelPosition();
-        if (pos > mainPanel.getWidgetCount()) pos = mainPanel.getWidgetCount();
-        errorPanel.add(label);
-        
-        mainPanel.insert(errorPanel, pos);
+        addMessage(label);
     }
-    
+
     public void setMessage(String string) {
         setMessage(new Label(string));
+    }
+
+    public void addMessage(String message) {
+        addMessage(new Label(message));
+    }
+
+    public void addMessage(Label message) {
+        int pos = getErrorPanelPosition();
+        if (pos > mainPanel.getWidgetCount()) {
+            pos = mainPanel.getWidgetCount();
+        }
+        errorPanel.add(message);
+
+        mainPanel.insert(errorPanel, pos);
     }
 
     protected int getErrorPanelPosition() {

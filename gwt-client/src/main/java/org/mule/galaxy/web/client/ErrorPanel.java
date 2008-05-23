@@ -24,4 +24,8 @@ public interface ErrorPanel {
     void clearErrorMessage();
     void setMessage(Label label);
     void setMessage(String string);
+
+    void addMessage(String message);
+
+    void addMessage(Label message);
 }
