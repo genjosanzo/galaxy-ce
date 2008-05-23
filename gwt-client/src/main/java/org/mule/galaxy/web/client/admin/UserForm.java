@@ -20,6 +20,7 @@ package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.util.SelectionPanel;
 import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
+import org.mule.galaxy.web.client.validation.EmailValidator;
 import org.mule.galaxy.web.client.validation.MinLengthValidator;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatablePasswordTextBox;
@@ -31,7 +32,6 @@ import org.mule.galaxy.web.rpc.WUser;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
 
 import java.util.Collection;
 
@@ -41,7 +41,7 @@ public class UserForm extends AbstractAdministrationForm {
     private ValidatablePasswordTextBox passTB;
     private ValidatablePasswordTextBox confirmTB;
     private ValidatableTextBox nameTB;
-    private TextBox emailTB;
+    private ValidatableTextBox emailTB;
     private ValidatableTextBox usernameTB;
     private SelectionPanel groupPanel;
     private static final int PASSWORD_MIN_LENGTH = 5;
@@ -73,8 +73,8 @@ public class UserForm extends AbstractAdministrationForm {
         table.setWidget(1, 2, new Label(" "));
         table.getCellFormatter().setWidth(1, 2, "100%");
 
-        emailTB = new TextBox();
-        emailTB.setText(user.getEmail());
+        emailTB = new ValidatableTextBox(new EmailValidator());
+        emailTB.getTextBox().setText(user.getEmail());
         table.setWidget(2, 1, emailTB);
 
         passTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
@@ -154,7 +154,7 @@ public class UserForm extends AbstractAdministrationForm {
             user.setUsername(usernameTB.getTextBox().getText());
         }
         
-        user.setEmail(emailTB.getText());
+        user.setEmail(emailTB.getTextBox().getText());
         user.setName(nameTB.getTextBox().getText());
         user.setGroupIds(groupPanel.getSelectedValues());
         
@@ -174,6 +174,7 @@ public class UserForm extends AbstractAdministrationForm {
             isOk &= usernameTB.validate();
         }
         isOk &= nameTB.validate();
+        isOk &= emailTB.validate();
         isOk &= passTB.validate();
         isOk &= confirmTB.validate();
 
