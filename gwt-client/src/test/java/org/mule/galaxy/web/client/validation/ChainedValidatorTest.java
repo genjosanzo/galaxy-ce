@@ -20,13 +20,28 @@ package org.mule.galaxy.web.client.validation;
 
 import junit.framework.TestCase;
 
-public class ReverseValidatorTest extends TestCase {
+public class ChainedValidatorTest extends TestCase {
 
-    public void testValidation() {
-        // always-pass test validator
-        Validator v = new AlwaysPassValidator();
+    public void testFirstFails() {
+        ChainedValidator v = new ChainedValidator(new AlwaysFailValidator("1"), new AlwaysPassValidator("2"));
+        assertFalse(v.validate(null));
 
-        assertFalse(new ReverseValidator(v).validate(null));
+        assertEquals("1", v.getFailureMessage());
+    }
+
+    public void testAllPass() {
+        ChainedValidator v = new ChainedValidator(new AlwaysPassValidator("1"), new AlwaysPassValidator("2"));
+        assertTrue(v.validate(null));
+
+        assertEquals("2", v.getFailureMessage());
+    }
+
+    public void testLastFails() {
+
+        ChainedValidator v = new ChainedValidator(new AlwaysPassValidator("1"), new AlwaysFailValidator("2"));
+        assertFalse(v.validate(null));
+
+        assertEquals("2", v.getFailureMessage());
     }
 
 }

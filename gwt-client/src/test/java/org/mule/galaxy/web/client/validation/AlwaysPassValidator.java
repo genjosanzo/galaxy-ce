@@ -18,15 +18,25 @@
 
 package org.mule.galaxy.web.client.validation;
 
-import junit.framework.TestCase;
+/**
+ * A test validator which always passes.
+ */
+public class AlwaysPassValidator implements Validator {
 
-public class ReverseValidatorTest extends TestCase {
+    protected String message = "Always Pass Message";
 
-    public void testValidation() {
-        // always-pass test validator
-        Validator v = new AlwaysPassValidator();
-
-        assertFalse(new ReverseValidator(v).validate(null));
+    public AlwaysPassValidator() {
     }
 
+    public AlwaysPassValidator(final String message) {
+        this.message = message;
+    }
+
+    public boolean validate(final Object value) {
+        return true;
+    }
+
+    public String getFailureMessage() {
+        return message;
+    }
 }
