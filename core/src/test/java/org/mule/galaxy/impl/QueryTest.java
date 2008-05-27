@@ -89,7 +89,7 @@ public class QueryTest extends AbstractGalaxyTest {
         
         q = new Query(Artifact.class)
             .add(OpRestriction.in("lifecycle", 
-                                Arrays.asList(new String[] { "Defaul", "notinthisone" })));
+                                Arrays.asList(new String[] { "Default", "notinthisone" })));
         results = registry.search(q).getResults();
     
         assertEquals(1, results.size());

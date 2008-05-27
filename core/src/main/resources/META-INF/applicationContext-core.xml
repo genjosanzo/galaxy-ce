@@ -117,6 +117,21 @@
     <property name="indexManager" ref="indexManager" />
     <property name="policyManager" ref="policyManager" />
     <property name="userManager" ref="userManager" />
+    <property name="queryBuilders" ref="queryBuilders"/>
+  </bean>
+  
+  <bean id="queryBuilders" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <bean class="org.mule.galaxy.impl.jcr.query.PhaseQueryBuilder">
+          <property name="lifecycleManager" ref="lifecycleManager"/>
+        </bean>
+        <bean class="org.mule.galaxy.impl.jcr.query.LifecycleQueryBuilder">
+          <property name="lifecycleManager" ref="lifecycleManager"/>
+        </bean>
+        <bean class="org.mule.galaxy.impl.jcr.query.ArtifactPropertyQueryBuilder"/>
+      </list>
+    </constructor-arg>
   </bean>
   
   <bean id="userManager" parent="txProxyTemplate">
