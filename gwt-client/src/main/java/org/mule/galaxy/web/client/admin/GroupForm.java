@@ -18,15 +18,16 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.WGroup;
 
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.TextBox;
 
 public class GroupForm extends AbstractAdministrationForm {
 
     private WGroup group;
-    private TextBox nameTB;
+    private ValidatableTextBox nameTB;
 
     public GroupForm(AdministrationPanel adminPanel) {
         super(adminPanel, "groups", "Group was saved.", "Group was deleted.");
@@ -35,8 +36,8 @@ public class GroupForm extends AbstractAdministrationForm {
     protected void addFields(FlexTable table) {
         table.setText(0, 0, "Name:");
 
-        nameTB = new TextBox();
-        nameTB.setText(group.getName());
+        nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
+        nameTB.getTextBox().setText(group.getName());
         table.setWidget(0, 1, nameTB);
 
         styleHeaderColumn(table);
@@ -63,8 +64,11 @@ public class GroupForm extends AbstractAdministrationForm {
     }
 
     protected void save() {
+        if (!validate()) {
+            return;
+        }
         super.save();
-        group.setName(nameTB.getText());
+        group.setName(nameTB.getTextBox().getText());
         getSecurityService().save(group, getSaveCallback());
     }
 
@@ -72,6 +76,11 @@ public class GroupForm extends AbstractAdministrationForm {
         super.delete();
 
         getSecurityService().deleteGroup(group.getId(), getDeleteCallback());
+    }
+
+    protected boolean validate() {
+        getErrorPanel().clearErrorMessage();
+        return nameTB.validate();
     }
 
 }
