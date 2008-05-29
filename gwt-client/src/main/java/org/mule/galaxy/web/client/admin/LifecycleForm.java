@@ -24,7 +24,6 @@ import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WPhase;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -36,7 +35,6 @@ import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
@@ -391,17 +389,6 @@ public class LifecycleForm extends AbstractAdministrationForm {
             buttonPanel.setWidget(0, 2, cancel);
 
             setWidget(buttonPanel);
-        }
-
-        public void center() {
-            final DialogBox dialog = this;
-            this.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-                public void setPosition(int offsetWidth, int offsetHeight) {
-                    int left = (Window.getClientWidth() - offsetWidth) / 3;
-                    int top = (Window.getClientHeight() - offsetHeight) / 3;
-                    dialog.setPopupPosition(left, top);
-                }
-            });
         }
     }
 
