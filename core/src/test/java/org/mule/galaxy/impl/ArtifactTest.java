@@ -31,6 +31,8 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         registry.move(a, w.getId());
         
+        assertEquals(w.getId(), a.getParent().getId());
+        
         Set results = registry.search(new Query(Artifact.class).workspaceId(w.getId())).getResults();
         
         assertEquals(1, results.size());
@@ -44,6 +46,9 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals("test.wsdl", a2.getName());
         
         assertEquals("test.wsdl", a2.getName());
+        
+        // test moving it into the workspace its already in.
+        registry.move(a, w.getId());
     }
 
     public void testWorkspaces() throws Exception {

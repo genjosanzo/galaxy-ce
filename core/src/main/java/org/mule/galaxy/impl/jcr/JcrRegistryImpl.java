@@ -1099,6 +1099,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE, workspace);
         accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, artifact);
         
+        if (artifact.getParent().getId().equals(workspaceId)) {
+            return;
+        }
+
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 
@@ -1111,8 +1115,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 activityManager.logActivity(SecurityUtils.getCurrentUser(),
                                             "Workspace " + p1 + " was moved to " + artifact.getPath(), 
                                             EventType.INFO);
-                
                 session.save();
+                ((JcrArtifact) artifact).setWorkspace(workspace);
                 return null;
             }
         });

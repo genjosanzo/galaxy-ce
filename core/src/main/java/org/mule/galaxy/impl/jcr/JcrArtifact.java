@@ -146,10 +146,10 @@ public class JcrArtifact extends AbstractJcrItem implements Artifact {
                     }
                     
                 });
+                node.setProperty(NAME, name);
+                update();
             }
-            node.setProperty(NAME, name);
             
-            update();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -247,6 +247,10 @@ public class JcrArtifact extends AbstractJcrItem implements Artifact {
     public void setVisible(String name, boolean visible) {
         update();
         getDefaultVersion().setVisible(name, visible);
+    }
+
+    public void setWorkspace(Workspace workspace) {
+        this.workspace = workspace;
     }
 
     public JcrRegistryImpl getRegistry() {
