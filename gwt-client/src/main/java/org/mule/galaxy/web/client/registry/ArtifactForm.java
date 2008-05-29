@@ -147,19 +147,24 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
 
             public void onSubmitComplete(FormSubmitCompleteEvent event) {
                 String msg = event.getResults();
-                if (msg.startsWith("<PRE>OK ") || msg.startsWith("<pre>OK ")) {
-                    int last = msg.indexOf("</PRE>");
-                    if (last == -1) last = msg.indexOf("</pre>");
-                    if (last == -1) last = msg.length();
 
+                // some platforms insert css info into the pre-tag -- just remove it all
+                msg = msg.replaceAll("\\<.*?\\>", "");
+
+                // This is our 200 OK response
+                // eg:  OK 9c495a52-4a07-4697-ba73-f94f95cd3020
+                if (msg.startsWith("OK ")) {
                     String artifactId2 = artifactId;
                     if (add) {
-                        artifactId2 = msg.substring(8, last);
+                        // remove the "OK " string to get the artifactId
+                        artifactId2 = msg.substring(3);
                     }
-
+                    // send them to the view artifact info page on success.
                     History.newItem("artifact_" + artifactId2);
                 } else
-                if (msg.startsWith("<PRE>ArtifactPolicyException") || msg.startsWith("<pre>ArtifactPolicyException")) {
+
+                // something bad happened...
+                if (msg.startsWith("ArtifactPolicyException")) {
                     parseAndShowPolicyMessages(msg);
                 } else {
                     setMessage(msg);
