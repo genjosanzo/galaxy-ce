@@ -92,8 +92,11 @@ public class RegistryMenuPanel extends MenuPanel {
         addBottomLinks(menuLinks);
         
         if (showBrowse) {
+            Image browseImg = new Image("images/fldr_obj.gif");
+            browseImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-workspace"));
+
             hl = new Hyperlink("Browse Workspaces", "browse");
-            menuLinks.add(hl);
+            menuLinks.add(asHorizontal(browseImg, new Label(" "), hl));
         }
 
         if (showSearch) {
