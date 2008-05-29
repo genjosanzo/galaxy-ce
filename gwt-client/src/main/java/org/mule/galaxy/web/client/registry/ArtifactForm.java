@@ -205,9 +205,6 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
 
     private String getMessage(String s) {
         s = s.substring(9);
-        if (s.endsWith("</PRE>") || s.endsWith("</pre>")) {
-            s = s.substring(0, s.length() - 6);
-        }
         return s;
     }
 
