@@ -146,10 +146,9 @@ public class JcrArtifact extends AbstractJcrItem implements Artifact {
                     }
                     
                 });
-                node.setProperty(NAME, name);
-                update();
             }
-            
+            node.setProperty(NAME, name);
+            update();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

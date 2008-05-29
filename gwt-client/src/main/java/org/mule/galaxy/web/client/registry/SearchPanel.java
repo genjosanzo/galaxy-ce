@@ -50,7 +50,7 @@ public class SearchPanel extends AbstractBrowsePanel {
         browseToolbar.setStyleName("toolbar");
         
         searchPanel = new FlowPanel(); 
-        searchForm = new SearchForm(galaxy, "Search", true);
+        searchForm = createSearchForm();
         searchPanel.add(searchForm);
         currentTopPanel = searchPanel;
         menuPanel.setTop(searchPanel);
@@ -60,6 +60,10 @@ public class SearchPanel extends AbstractBrowsePanel {
                 refreshArtifacts();
             }
         });
+    }
+
+    protected SearchForm createSearchForm() {
+        return new SearchForm(galaxy, "Search", true);
     }
 
     protected void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback) {
