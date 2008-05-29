@@ -18,7 +18,9 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WPhase;
 
@@ -35,7 +37,6 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
@@ -46,11 +47,11 @@ import org.gwtwidgets.client.ui.LightBox;
 public class LifecycleForm extends AbstractAdministrationForm {
 
     private WLifecycle lifecycle;
-    private TextBox nameTB;
+    private ValidatableTextBox nameTB;
     private FlexTable nextPhasesPanel;
     private ListBox phases;
     private ListBox nextPhases;
-    private TextBox phaseNameTB;
+    private ValidatableTextBox phaseNameTB;
     private Button deletePhase;
     private Button addBtn;
     private WPhase initialPhase;
@@ -89,8 +90,8 @@ public class LifecycleForm extends AbstractAdministrationForm {
     protected void addFields(FlexTable table) {
         FlexTable nameAndPhases = createColumnTable();
 
-        nameTB = new TextBox();
-        nameTB.setText(lifecycle.getName());
+        nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
+        nameTB.getTextBox().setText(lifecycle.getName());
         nameAndPhases.setText(0, 0, "Lifecycle Name:");
         nameAndPhases.setWidget(0, 1, nameTB);
 
@@ -209,14 +210,18 @@ public class LifecycleForm extends AbstractAdministrationForm {
         nextPhases.setMultipleSelect(true);
         nextPhases.setVisibleItemCount(10);
 
-        phaseNameTB = new TextBox();
-        phaseNameTB.setText(phase.getName());
-        phaseNameTB.addFocusListener(new FocusListener() {
+        phaseNameTB = new ValidatableTextBox(new StringNotEmptyValidator());
+        phaseNameTB.getTextBox().setText(phase.getName());
+        phaseNameTB.getTextBox().addFocusListener(new FocusListener() {
             public void onFocus(Widget arg0) {
             }
 
             public void onLostFocus(Widget arg0) {
-                String newName = phaseNameTB.getText();
+                if (!phaseNameTB.validate()) {
+                    phaseNameTB.getTextBox().setFocus(true);
+                    return;
+                }
+                String newName = phaseNameTB.getTextBox().getText();
 
                 // update left hand phases list with new name
                 int idx = findPhaseInList(phases, phase.getName());
@@ -305,8 +310,7 @@ public class LifecycleForm extends AbstractAdministrationForm {
 
 
     protected void save() {
-        if (initialPhase == null) {
-            adminPanel.setMessage("You must set one phase as the initial phase before the lifecycle can be saved.");
+        if (!validate()) {
             return;
         }
 
@@ -315,7 +319,7 @@ public class LifecycleForm extends AbstractAdministrationForm {
         if (defaultLifecycleCB.isChecked()) {
             lifecycle.setDefaultLifecycle(true);
         }
-        lifecycle.setName(nameTB.getText());
+        lifecycle.setName(nameTB.getTextBox().getText());
         lifecycle.setInitialPhase(initialPhase);
 
         adminPanel.getRegistryService().saveLifecycle(lifecycle, getSaveCallback());
@@ -328,12 +332,12 @@ public class LifecycleForm extends AbstractAdministrationForm {
     }
 
     protected void setEnabled(boolean enabled) {
-        nameTB.setEnabled(enabled);
+        nameTB.getTextBox().setEnabled(enabled);
         phases.setEnabled(enabled);
 
         if (nextPhases != null) {
             nextPhases.setEnabled(enabled);
-            phaseNameTB.setEnabled(enabled);
+            phaseNameTB.getTextBox().setEnabled(enabled);
         }
 
         super.setEnabled(enabled);
@@ -345,11 +349,9 @@ public class LifecycleForm extends AbstractAdministrationForm {
             // Set the dialog box's caption.
             setText("Please enter the name of the phase you would like to add:");
 
-            InlineFlowPanel buttonPanel = new InlineFlowPanel();
+            FlexTable buttonPanel = new FlexTable();
 
-            final TextBox tb = new TextBox();
-            buttonPanel.add(tb);
-
+            final ValidatableTextBox tb = new ValidatableTextBox(new StringNotEmptyValidator());
 
             Button cancel = new Button("Cancel");
             cancel.addClickListener(new ClickListener() {
@@ -360,17 +362,23 @@ public class LifecycleForm extends AbstractAdministrationForm {
             Button ok = new Button("OK");
             ok.addClickListener(new ClickListener() {
                 public void onClick(Widget sender) {
+                    if (!tb.validate()) {
+                        return;
+                    }
                     AddDialog.this.hide();
-                    panel.addPhase(tb.getText());
+                    panel.addPhase(tb.getTextBox().getText());
                 }
             });
 
             // allow keyboard shortcuts
-            tb.addKeyboardListener(new KeyboardListenerAdapter() {
+            tb.getTextBox().addKeyboardListener(new KeyboardListenerAdapter() {
                 public void onKeyPress(Widget sender, char keyCode, int modifiers) {
                     if ((keyCode == KEY_ENTER) && (modifiers == 0)) {
+                        if (!tb.validate()) {
+                            return;
+                        }
                         AddDialog.this.hide();
-                        panel.addPhase(tb.getText());
+                        panel.addPhase(tb.getTextBox().getText());
                     }
                     if ((keyCode == KEY_ESCAPE) && (modifiers == 0)) {
                         AddDialog.this.hide();
@@ -378,9 +386,9 @@ public class LifecycleForm extends AbstractAdministrationForm {
                 }
             });
 
-            buttonPanel.add(tb);
-            buttonPanel.add(ok);
-            buttonPanel.add(cancel);
+            buttonPanel.setWidget(0, 0, tb);
+            buttonPanel.setWidget(0, 1, ok);
+            buttonPanel.setWidget(0, 2, cancel);
 
             setWidget(buttonPanel);
         }
@@ -397,4 +405,24 @@ public class LifecycleForm extends AbstractAdministrationForm {
         }
     }
 
+    protected boolean validate() {
+        final ErrorPanel errorPanel = getErrorPanel();
+        errorPanel.clearErrorMessage();
+
+        boolean isOk = true;
+        isOk &= nameTB.validate();
+        isOk &= phaseNameTB.validate();
+
+        if (initialPhase == null) {
+            errorPanel.addMessage("You must set one phase as the initial phase before the lifecycle can be saved.");
+            isOk = false;
+        }
+
+        if (phases.getItemCount() == 0) {
+            errorPanel.addMessage("Lifecycle must have at least one phase");
+            isOk = false;
+        }
+
+        return isOk;
+    }
 }
