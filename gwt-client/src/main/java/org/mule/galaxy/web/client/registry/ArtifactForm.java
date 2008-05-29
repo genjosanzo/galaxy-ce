@@ -121,9 +121,11 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
 
                 // whitespace will throw an invalid path exception
                 // on the server -- so trim this optional value
-                String name = nameBox.getText().trim();
-                if (name != null || !"".equals(name)) {
-                    nameBox.setText(name);
+                if (nameBox != null) {
+                    String name = nameBox.getText().trim();
+                    if (name != null || !"".equals(name)) {
+                        nameBox.setText(name);
+                    }
                 }
 
                 if (artifactUpload.getFilename().length() == 0) {
