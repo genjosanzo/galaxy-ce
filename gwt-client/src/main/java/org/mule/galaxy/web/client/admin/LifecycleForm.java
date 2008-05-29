@@ -397,18 +397,18 @@ public class LifecycleForm extends AbstractAdministrationForm {
         errorPanel.clearErrorMessage();
 
         boolean isOk = true;
-        isOk &= nameTB.validate();
-        isOk &= phaseNameTB.validate();
-
         if (initialPhase == null) {
             errorPanel.addMessage("You must set one phase as the initial phase before the lifecycle can be saved.");
             isOk = false;
         }
-
+        
         if (phases.getItemCount() == 0) {
             errorPanel.addMessage("Lifecycle must have at least one phase");
             isOk = false;
         }
+        
+        isOk &= nameTB.validate();
+        isOk &= phaseNameTB.validate();
 
         return isOk;
     }

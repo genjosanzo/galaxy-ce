@@ -117,11 +117,6 @@
         </profile>
     </profiles>
   <repositories>
-    <repository>
-      <id>local</id>
-      <name>Local Repository</name>
-      <url>file://${basedir}/../core/mvn-repo/</url>
-    </repository>
       <repository>
          <id>gwt-maven</id>
          <url>http://dist.codehaus.org/mule/dependencies/maven2/</url>
