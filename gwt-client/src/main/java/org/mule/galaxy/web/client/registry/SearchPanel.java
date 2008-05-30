@@ -25,9 +25,6 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class SearchPanel extends AbstractBrowsePanel {
 
     private FlowPanel searchPanel;
@@ -68,7 +65,7 @@ public class SearchPanel extends AbstractBrowsePanel {
 
     protected void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback) {
         galaxy.getRegistryService().getArtifacts(null, 
-                                                 getArtifactTypes(), 
+                                                 getAppliedArtifactTypeFilters(), 
                                                  searchForm.getPredicates(), 
                                                  searchForm.getFreeformQuery(), 
                                                  resultStart, maxResults, callback);

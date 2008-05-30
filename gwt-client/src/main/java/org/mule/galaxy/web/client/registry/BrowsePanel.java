@@ -18,6 +18,14 @@
 
 package org.mule.galaxy.web.client.registry;
 
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.ColumnView;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.NavigationUtil;
+import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WWorkspace;
+
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
@@ -29,14 +37,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.ColumnView;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.NavigationUtil;
-import org.mule.galaxy.web.client.util.Toolbox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WWorkspace;
 
 public class BrowsePanel extends AbstractBrowsePanel {
 
@@ -183,7 +183,7 @@ public class BrowsePanel extends AbstractBrowsePanel {
     }
 
     protected void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback) {
-        galaxy.getRegistryService().getArtifacts(workspaceId, getArtifactTypes(), 
+        galaxy.getRegistryService().getArtifacts(workspaceId, getAppliedArtifactTypeFilters(), 
                                                  new HashSet(), null, 
                                                  resultStart, maxResults, callback);
     }

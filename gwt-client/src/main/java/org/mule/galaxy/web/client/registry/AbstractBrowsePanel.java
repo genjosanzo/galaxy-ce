@@ -44,7 +44,7 @@ import java.util.Set;
  */
 public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite {
 
-    protected Set artifactTypes = new HashSet();
+    protected Set appliedArtifactTypeFilters = new HashSet();
     protected Toolbox artifactTypesBox;
     protected RegistryServiceAsync service;
     protected ArtifactListPanel artifactListPanel;
@@ -108,7 +108,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
                 {
                     public void onClick(final Widget widget)
                     {
-                        artifactTypes.clear();
+                        appliedArtifactTypeFilters.clear();
                         refreshArtifactTypes();
                         refreshArtifacts();
                     }
@@ -167,7 +167,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
                             
                         }
                     });
-                    final String currentStyleName = artifactTypes.contains(at.getId())
+                    final String currentStyleName = appliedArtifactTypeFilters.contains(at.getId())
                                                         ? "selected-link"
                                                         : "unselected-link";
 
@@ -179,12 +179,12 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
     }
     
     public void addArtifactTypeFilter(String id) {
-        artifactTypes.add(id);
+        appliedArtifactTypeFilters.add(id);
         refreshArtifacts();
     }
 
     public void removeArtifactTypeFilter(String id) {
-        artifactTypes.remove(id);
+        appliedArtifactTypeFilters.remove(id);
         refreshArtifacts();
     }
 
@@ -210,8 +210,8 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
     }
 
     
-    public Set getArtifactTypes() {
-        return artifactTypes;
+    public Set getAppliedArtifactTypeFilters() {
+        return appliedArtifactTypeFilters;
     }
     
     public void showArtifactTypes() {
