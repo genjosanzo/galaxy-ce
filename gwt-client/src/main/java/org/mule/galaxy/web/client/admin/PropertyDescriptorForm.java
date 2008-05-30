@@ -18,6 +18,8 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
@@ -26,6 +28,8 @@ import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
+
+import org.gwtwidgets.client.ui.LightBox;
 
 public class PropertyDescriptorForm extends AbstractAdministrationForm {
 
@@ -92,11 +96,14 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
     }
 
     protected void delete() {
-        super.delete();
-        
-        RegistryServiceAsync svc = adminPanel.getRegistryService();
-        
-        svc.deletePropertyDescriptor(property.getId(), getDeleteCallback());
+        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter() {
+            public void onConfirm() {
+                PropertyDescriptorForm.super.delete();
+                RegistryServiceAsync svc = adminPanel.getRegistryService();
+                svc.deletePropertyDescriptor(property.getId(), getDeleteCallback());
+            }
+        }, "Are you sure you want to delete property " + property.getName() + "?");
+        new LightBox(dialog).show();
     }
 
     protected boolean validate() {
