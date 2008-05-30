@@ -139,25 +139,18 @@ public class UserForm extends AbstractAdministrationForm {
 
         super.save();
         
-        SecurityServiceAsync svc = getSecurityService();
-        
-        String p = passTB.getTextBox().getText();
-        String c = confirmTB.getTextBox().getText();
-        
-        if (p != null && !p.equals(c)){
-            adminPanel.setMessage("The confirmation password does not match.");
-            setEnabled(true);
-            return;
-        }
-    
         if (usernameTB != null) {
             user.setUsername(usernameTB.getTextBox().getText());
         }
-        
+
         user.setEmail(emailTB.getTextBox().getText());
         user.setName(nameTB.getTextBox().getText());
         user.setGroupIds(groupPanel.getSelectedValues());
+
+        String p = passTB.getTextBox().getText();
+        String c = confirmTB.getTextBox().getText();
         
+        SecurityServiceAsync svc = getSecurityService();
         if (newItem) {
             save(svc, p, c);
         } else {
