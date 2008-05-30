@@ -47,6 +47,11 @@ import org.gwtwidgets.client.ui.LightBox;
  */
 public class ViewPanel extends AbstractBrowsePanel {
 
+    /**
+     * This is the id new views have before being persisted.
+     */
+    protected static final String NEW_VIEW_ID = "new";
+    
     private String viewId;
     private SearchForm searchForm;
     private ValidatableTextBox nameTB;
@@ -57,7 +62,7 @@ public class ViewPanel extends AbstractBrowsePanel {
     private FlowPanel editPanel;
     private boolean editMode;
     private Hyperlink editLink;
-    
+
     public ViewPanel(Galaxy galaxy) {
         super(galaxy, false);
     }
@@ -103,8 +108,13 @@ public class ViewPanel extends AbstractBrowsePanel {
                 cancel.setText("Cancel");
                 cancel.addClickListener(new ClickListener() {
                     public void onClick(Widget arg0) {
-                        // Browse back to the view  
-                        History.newItem("view_" + viewId);
+                        if (NEW_VIEW_ID.equals(viewId)) {
+                            History.back();
+                        } else {
+                            // Browse back to the view
+                            History.newItem("view_" + viewId);
+                        }
+
                     }
                 });
                 buttonPanel.add(cancel);
@@ -121,7 +131,7 @@ public class ViewPanel extends AbstractBrowsePanel {
             }
 
             protected void initializeFields() {
-                if ("new".equals(viewId)) {
+                if (NEW_VIEW_ID.equals(viewId)) {
                     panel.add(createPrimaryTitle("New View"));
                 } else {
                     panel.add(createPrimaryTitle("Edit View"));
@@ -152,7 +162,7 @@ public class ViewPanel extends AbstractBrowsePanel {
             }
         });
         
-        if ("new".equals(viewId)) {
+        if (NEW_VIEW_ID.equals(viewId)) {
             if (artifactListPanel != null) {
                 artifactListPanel.clear();
             }
@@ -203,7 +213,7 @@ public class ViewPanel extends AbstractBrowsePanel {
 
 
     public void refresh() {
-        if (!editMode || "new".equals(viewId)) {
+        if (!editMode || NEW_VIEW_ID.equals(viewId)) {
             refreshArtifacts();
         } 
 
@@ -242,7 +252,7 @@ public class ViewPanel extends AbstractBrowsePanel {
     }
     
     protected void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback) {
-        if ("new".equals(viewId)) {
+        if (NEW_VIEW_ID.equals(viewId)) {
             return;
         }
         
