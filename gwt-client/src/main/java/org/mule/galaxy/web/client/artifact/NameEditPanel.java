@@ -42,7 +42,7 @@ public class NameEditPanel extends Composite {
 
     private InlineFlowPanel panel;
     private final String artifactId;
-    private final String name;
+    private String name;
     private final String workspaceId;
     private final Galaxy galaxy;
     private final ErrorPanel errorPanel;
@@ -136,11 +136,12 @@ public class NameEditPanel extends Composite {
         panel.add(row);
     }
 
-    protected void save(String workspaceId, String name) {
-        galaxy.getRegistryService().move(artifactId, workspaceId, name, new AbstractCallback(errorPanel) {
+    protected void save(final String workspaceId, final String newName) {
+        galaxy.getRegistryService().move(artifactId, workspaceId, newName, new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object arg0) {
                 panel.clear();
+                NameEditPanel.this.name = newName;
                 initName();
             }
             
