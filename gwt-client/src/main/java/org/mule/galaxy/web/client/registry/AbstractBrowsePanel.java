@@ -18,6 +18,15 @@
 
 package org.mule.galaxy.web.client.registry;
 
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.WArtifactType;
+import org.mule.galaxy.web.rpc.WSearchResults;
+
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -30,21 +39,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.Toolbox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.rpc.WArtifactType;
-import org.mule.galaxy.web.rpc.WSearchResults;
-
 /**
  * The basis for any form that lists out groups of artifacts.
  */
 public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite {
 
-    protected Set artifactTypes;
+    protected Set artifactTypes = new HashSet();
     protected Toolbox artifactTypesBox;
     protected RegistryServiceAsync service;
     protected ArtifactListPanel artifactListPanel;
@@ -140,7 +140,6 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
     }
 
     protected void refreshArtifactTypes() {
-        artifactTypes = new HashSet();
         artifactTypesBox.clear();
         artifactTypesBox.add(new Label("Loading..."));
         
@@ -148,15 +147,16 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
 
             public void onSuccess(Object o) {
                 artifactTypesBox.clear();
-                Collection artifactTypes = (Collection) o;
+                Collection allArtifactTypes = (Collection) o;
                 
-                for (Iterator itr = artifactTypes.iterator(); itr.hasNext();) {
+                for (Iterator itr = allArtifactTypes.iterator(); itr.hasNext();) {
                     final WArtifactType at = (WArtifactType) itr.next();
                     
                     Hyperlink hl = new Hyperlink(at.getDescription(), getHistoryToken());
                     hl.addClickListener(new ClickListener() {
                         public void onClick(Widget w) {
                             String style = w.getStyleName();
+                            w.removeStyleName("unselected-link");
                             if ("unselected-link".equals(style)) {
                                 w.setStyleName("selected-link");
                                 addArtifactTypeFilter(at.getId());
@@ -167,7 +167,11 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
                             
                         }
                     });
-                    hl.setStyleName("unselected-link");
+                    final String currentStyleName = artifactTypes.contains(at.getId())
+                                                        ? "selected-link"
+                                                        : "unselected-link";
+
+                    hl.setStyleName(currentStyleName);
                     artifactTypesBox.add(hl, false);
                 }
             }
