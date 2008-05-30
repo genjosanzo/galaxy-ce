@@ -19,6 +19,8 @@
 package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.WLifecycle;
@@ -324,9 +326,13 @@ public class LifecycleForm extends AbstractAdministrationForm {
     }
 
     protected void delete() {
-        super.delete();
-
-        adminPanel.getRegistryService().deleteLifecycle(lifecycle.getId(), getDeleteCallback());
+        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter() {
+            public void onConfirm() {
+                LifecycleForm.super.delete();
+                adminPanel.getRegistryService().deleteLifecycle(lifecycle.getId(), getDeleteCallback());
+            }
+        }, "Are you sure you want to delete lifecycle " + lifecycle.getName() + "?");
+        new LightBox(dialog).show();
     }
 
     protected void setEnabled(boolean enabled) {
