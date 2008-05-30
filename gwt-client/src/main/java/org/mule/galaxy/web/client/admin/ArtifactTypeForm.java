@@ -18,12 +18,16 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
 import org.mule.galaxy.web.client.util.QNameListBox;
 import org.mule.galaxy.web.client.util.StringListBox;
 import org.mule.galaxy.web.rpc.WArtifactType;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.TextBox;
+
+import org.gwtwidgets.client.ui.LightBox;
 
 public class ArtifactTypeForm extends AbstractAdministrationForm {
 
@@ -95,9 +99,13 @@ public class ArtifactTypeForm extends AbstractAdministrationForm {
     }
 
     protected void delete() {
-        super.delete();
-        
-        adminPanel.getRegistryService().deleteArtifactType(artifactType.getId(), getDeleteCallback());
+        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter() {
+            public void onConfirm() {
+                ArtifactTypeForm.super.delete();
+                adminPanel.getRegistryService().deleteArtifactType(artifactType.getId(), getDeleteCallback());
+            }
+        }, "Are you sure you want to delete artifact type " + artifactType.getDescription() + "?");
+        new LightBox(dialog).show();
     }
     
     public void setEnabled(boolean enabled) {
