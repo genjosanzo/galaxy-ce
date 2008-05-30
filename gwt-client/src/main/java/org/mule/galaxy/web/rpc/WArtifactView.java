@@ -2,12 +2,13 @@ package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class WArtifactView implements IsSerializable {
     private String id;
     private String name;
-    private Set predicates;
+    private Set predicates = new HashSet();
     private boolean shared;
     
     public String getId() {
