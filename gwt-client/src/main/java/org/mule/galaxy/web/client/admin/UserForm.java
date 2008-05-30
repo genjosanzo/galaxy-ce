@@ -18,6 +18,8 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
 import org.mule.galaxy.web.client.util.SelectionPanel;
 import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
 import org.mule.galaxy.web.client.validation.EmailValidator;
@@ -34,6 +36,8 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 
 import java.util.Collection;
+
+import org.gwtwidgets.client.ui.LightBox;
 
 public class UserForm extends AbstractAdministrationForm {
 
@@ -193,9 +197,17 @@ public class UserForm extends AbstractAdministrationForm {
     }
 
     protected void delete() {
-        super.delete();
-        
-        getSecurityService().deleteUser(user.getId(),getDeleteCallback());
+        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter()
+        {
+            public void onConfirm()
+            {
+                UserForm.super.delete();
+                getSecurityService().deleteUser(user.getId(),getDeleteCallback());
+            }
+
+        }, "Are you sure you want to delete user " + user.getName() + " (" + user.getUsername() + ")?");
+
+        new LightBox(dialog).show();
     }
 
 }
