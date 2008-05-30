@@ -493,7 +493,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     public WArtifactView getArtifactView(String id) throws RPCException, ItemExistsException, ItemNotFoundException {
         User user = getCurrentUser();
-        WArtifactView view = toWeb(artifactViewManager.getArtifactView(id), user);
+        WArtifactView view = toWeb(artifactViewManager.getArtifactView(id));
         try {
             updateRecentArtifactViews(user, id);
         } catch (DuplicateItemException e) {
@@ -540,7 +540,7 @@ public class RegistryServiceImpl implements RegistryService {
         List<WArtifactView> views = new ArrayList<WArtifactView>();
         User currentUser = getCurrentUser();
         for (ArtifactView v : artifactViewManager.getArtifactViews(currentUser)) {
-            views.add(toWeb(v, currentUser));
+            views.add(toWeb(v));
         }
         
         Collections.sort(views, new Comparator<WArtifactView>() {
@@ -557,13 +557,13 @@ public class RegistryServiceImpl implements RegistryService {
         List<String> ids = getRecentArtifactViewIds(currentUser);
         if (ids != null) {
             for (String id : ids) {
-                views.add(toWeb(artifactViewManager.getArtifactView(id), currentUser));
+                views.add(toWeb(artifactViewManager.getArtifactView(id)));
             }
         }
         return views;
     }
 
-    private WArtifactView toWeb(ArtifactView v, User currentUser) throws RPCException {
+    private WArtifactView toWeb(ArtifactView v) throws RPCException {
         WArtifactView wv = new WArtifactView();
         if (v == null) {
             return wv;
