@@ -4,8 +4,12 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.classextension.EasyMock.createMock;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
+
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
 import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Feed;
@@ -18,7 +22,10 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.easymock.classextension.EasyMock;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.test.AbstractAtomTest;
+import org.springmodules.jcr.JcrCallback;
 
 public class PublishMojoTest extends AbstractAtomTest {
     private static final String WORKSPACE_URL = "http://localhost:9002/api/registry/Default%20Workspace";
@@ -213,7 +220,7 @@ public class PublishMojoTest extends AbstractAtomTest {
         Document<Feed> feedDoc = res.getDocument();
         Feed feed = feedDoc.getRoot();
         
-        assertEquals(3, feed.getEntries().size());
+        assertEquals(4, feed.getEntries().size());
         
         res.release();
         
@@ -228,7 +235,24 @@ public class PublishMojoTest extends AbstractAtomTest {
         feedDoc = res.getDocument();
         feed = feedDoc.getRoot();
         
-        assertEquals(2, feed.getEntries().size());
+        assertEquals(3, feed.getEntries().size());
+        
+        login("admin", "admin");
+        JcrUtil.doInTransaction(sessionFactory, new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                try {
+                    Workspace workspace = registry.getWorkspaces().iterator().next();
+                    
+                    org.mule.galaxy.Artifact artifact = registry.getArtifact(workspace, "test-mule-config.xml");
+                    assertEquals("application/xml", artifact.getContentType().toString());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                return null;
+            }
+            
+        });
     }
 
     public static File getBasedir()

@@ -33,6 +33,11 @@ import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 
 import junit.framework.TestCase;
+
+import org.acegisecurity.Authentication;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.providers.AuthenticationProvider;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Base;
@@ -43,6 +48,7 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springmodules.jcr.SessionFactory;
 
 public class AbstractAtomTest extends TestCase {
     
@@ -52,6 +58,7 @@ public class AbstractAtomTest extends TestCase {
     protected Factory factory = abdera.getFactory();
     private Server server;
     private WebAppContext context;
+    protected SessionFactory sessionFactory;
 
     @Override
     protected void setUp() throws Exception {
@@ -61,8 +68,17 @@ public class AbstractAtomTest extends TestCase {
 
         super.setUp();
         initializeJetty();
+        
+        registry = (Registry) getApplicationContext().getBean("registry");
+        sessionFactory = (SessionFactory) getApplicationContext().getBean("sessionFactory");
     }
 
+    protected void login(final String username, final String password) {
+        AuthenticationProvider provider = (AuthenticationProvider) getApplicationContext().getBean("authenticationProvider");
+        Authentication auth = provider.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+    
     @Override
     protected void tearDown() throws Exception {
         ((IndexManagerImpl) getApplicationContext().getBean("indexManagerTarget")).destroy();
