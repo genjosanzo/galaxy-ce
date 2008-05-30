@@ -19,6 +19,7 @@ import javax.jcr.ValueFormatException;
 
 import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Workspace;
@@ -117,6 +118,30 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
 
     public void deleteGroup(String id) {
         delete(id);
+    }
+
+    @Override
+    protected void doDelete(String id, Session session) throws RepositoryException {
+        List<User> usersWithGroup = userManager.find("groups", id);
+        
+        for (User u : usersWithGroup) {
+            for (Group g : u.getGroups()) {
+                if (g.getId().equals(id)) {
+                    u.getGroups().remove(g);
+                    try {
+                        userManager.save(u);
+                    } catch (DuplicateItemException e) {
+                        // can't happen
+                        throw new RuntimeException(e);
+                    } catch (NotFoundException e) {
+                        // can't happen
+                        throw new RuntimeException(e);
+                    }
+                    break;
+                }
+            }
+        }
+        super.doDelete(id, session);
     }
 
     public List<Group> getGroups() {

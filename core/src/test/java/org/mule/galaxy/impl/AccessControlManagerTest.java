@@ -50,7 +50,21 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
         assertEquals("test", g3.getName());
     }
     
-
+    
+    public void testGroupUserDelete() throws Exception {
+        List<Group> groups = accessControlManager.getGroups();
+        assertEquals(2, groups.size());
+        
+        Group group = getGroup("Users", groups);
+        assertNotNull(group);
+        
+        accessControlManager.deleteGroup(group.getId());
+        
+        User user = userManager.getByUsername("admin");
+        
+        assertNotNull(user);
+    }
+    
     public void testItemGrants() throws Exception {
         Artifact artifact = importHelloWsdl();
         
