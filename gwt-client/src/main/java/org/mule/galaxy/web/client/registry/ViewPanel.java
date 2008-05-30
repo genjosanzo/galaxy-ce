@@ -18,6 +18,15 @@
 
 package org.mule.galaxy.web.client.registry;
 
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WArtifactView;
+
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -27,18 +36,11 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
 
 import org.gwtwidgets.client.ui.LightBox;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WArtifactView;
 
 /**
  * Shows/Edits an ArtifactView. 
@@ -47,7 +49,7 @@ public class ViewPanel extends AbstractBrowsePanel {
 
     private String viewId;
     private SearchForm searchForm;
-    private TextBox nameTB;
+    private ValidatableTextBox nameTB;
     private WArtifactView view;
     private CheckBox sharedCB;
     protected Button delete;
@@ -126,8 +128,8 @@ public class ViewPanel extends AbstractBrowsePanel {
                 }
                 FlexTable table = new FlexTable();
                 
-                nameTB = new TextBox();
-                nameTB.setVisibleLength(25);
+                nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
+                nameTB.getTextBox().setVisibleLength(25);
                 table.setText(0, 0, "View Name: ");
                 table.setWidget(0, 1, nameTB);
 
@@ -143,6 +145,9 @@ public class ViewPanel extends AbstractBrowsePanel {
         
         searchForm.addSearchListener(new ClickListener() {
             public void onClick(Widget arg0) {
+                if (!validate()) {
+                    return;
+                }
                 save();
             }
         });
@@ -162,7 +167,7 @@ public class ViewPanel extends AbstractBrowsePanel {
         galaxy.getRegistryService().getArtifactView(viewId, new AbstractCallback(this) {
             public void onSuccess(Object o) {
                 view = (WArtifactView) o;
-                nameTB.setText(view.getName());
+                nameTB.getTextBox().setText(view.getName());
                 sharedCB.setChecked(view.isShared());
                 
                 editPanel.clear();
@@ -208,10 +213,7 @@ public class ViewPanel extends AbstractBrowsePanel {
     }
     
     protected void save() {
-        if (nameTB.getText().length() == 0) {
-            setMessage("You must supply a view name.");
-        }
-        view.setName(nameTB.getText());
+        view.setName(nameTB.getTextBox().getText());
         view.setShared(sharedCB.isChecked());
         view.setPredicates(searchForm.getPredicates());
         
@@ -223,6 +225,14 @@ public class ViewPanel extends AbstractBrowsePanel {
         });
         
         menuPanel.setTop(editPanel);
+    }
+
+    protected boolean validate() {
+        boolean isOk = true;
+
+        isOk &= nameTB.validate();
+
+        return isOk;
     }
 
     private void showSearchForm() {
