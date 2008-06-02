@@ -419,8 +419,11 @@ public class LifecycleForm extends AbstractAdministrationForm {
         }
         
         isOk &= nameTB.validate();
-        isOk &= phaseNameTB.validate();
-
+        
+        if (phaseNameTB != null) {
+            isOk &= phaseNameTB.validate();
+        }
+        
         return isOk;
     }
 }

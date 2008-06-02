@@ -335,9 +335,9 @@ public class Galaxy implements EntryPoint, HistoryListener {
         
         ErrorPanel ep = (ErrorPanel) pi.getInstance();
         
-        ep.setMessage(message);
-        
         History.newItem(token);
+        
+        ep.setMessage(message);
     }
     
     public RegistryServiceAsync getRegistryService() {
