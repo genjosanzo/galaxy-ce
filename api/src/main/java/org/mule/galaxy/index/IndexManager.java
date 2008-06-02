@@ -12,10 +12,12 @@ public interface IndexManager {
 
     void save(Index index, boolean blockForIndexing) throws GalaxyException;
 
-    void delete(String id);
+    void delete(String id, boolean removeArtifactMetadata);
     
     Index getIndex(String idxName) throws NotFoundException;
 
+    Index getIndexByName(final String name) throws NotFoundException;
+    
     Collection<Index> getIndexes();
     
     Collection<Index> getIndexes(ArtifactVersion artifactVersion);

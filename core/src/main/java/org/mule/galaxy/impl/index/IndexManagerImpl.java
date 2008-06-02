@@ -155,7 +155,49 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         }
         return i;
     }
+    public Index getIndexByName(final String name) throws NotFoundException {
+        List<Index> indexes = find("name", name);
+        if (indexes.size() == 0) {
+            throw new NotFoundException(name);
+        }
+        return indexes.get(0);
+    }
 
+    public void delete(final String id, final boolean removeArtifactMetadata) {
+        execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                doDelete(id, removeArtifactMetadata, session);
+                session.save();
+                return null;
+            }
+        });
+    }
+
+    protected void doDelete(String id, boolean removeArtifactMetadata, Session session) throws RepositoryException {
+        Index idx;
+        try {
+            idx = getIndex(id);
+        } catch (NotFoundException e) {
+            return;
+        }
+        
+        String propName = idx.getConfiguration().get(XPathIndexer.PROPERTY_NAME);
+        
+        doDelete(id, session);
+        
+        if (removeArtifactMetadata && propName != null) {
+            Query query = getQueryManager(session).createQuery("//element(*, galaxy:artifactVersion)[@" + propName + "]", Query.XPATH);
+            
+            QueryResult result = query.execute();
+            
+            for (NodeIterator itr = result.getNodes(); itr.hasNext();) {
+                Node n = itr.nextNode();
+                
+                n.setProperty(propName, (String) null);
+            }
+            session.save();
+        }
+    }
 
     @Override
     public void initialize() throws Exception {

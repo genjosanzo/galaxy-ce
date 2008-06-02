@@ -15,11 +15,9 @@ import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.index.XPathIndexer;
 import org.mule.galaxy.impl.index.XQueryIndexer;
-import org.mule.galaxy.impl.jcr.JcrUtil;
-import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.index.Index;
-import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.Query;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
 
@@ -69,6 +67,54 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals("foobar", value);
     }
     
+    public void testDelete() throws Exception {
+        Artifact artifact = importHelloWsdl();
+        
+        Collection<Index> indices = indexManager.getIndexes();
+        assertNotNull(indices);
+        
+        Index tnsIdx = null;
+        Index ptIdx = null;
+        Index svcIdx = null;
+        for (Index i : indices) {
+            String prop = i.getConfiguration().get(XQueryIndexer.PROPERTY_NAME);
+            if (prop == null) {
+                continue;
+            }
+            
+            if (prop.equals("wsdl.targetNamespace")) {
+                tnsIdx = i;
+            } else if (prop.equals("wsdl.endpoint")) {
+                ptIdx = i;
+            } else if (prop.equals("wsdl.service")) {
+                svcIdx = i;
+            }
+        }
+        
+        assertNotNull(tnsIdx);
+        assertNotNull(ptIdx);
+        assertNotNull(svcIdx);
+        
+        indexManager.delete(tnsIdx.getId(), true);
+        
+        artifact = registry.getArtifact(artifact.getId());
+        Object value = artifact.getProperty("wsdl.targetNamespace");
+        assertNull(value);
+
+        indexManager.delete(ptIdx.getId(), false);
+        
+        artifact = registry.getArtifact(artifact.getId());
+        value = artifact.getProperty("wsdl.endpoint");
+        assertNotNull(value);
+        
+        indexManager.delete(svcIdx.getId(), true);
+        
+        artifact = registry.getArtifact(artifact.getId());
+        value = artifact.getProperty("wsdl.service");
+        assertNull(value);
+    }
+    
+    
     public void testWsdlIndex() throws Exception {
         Collection<Index> indices = indexManager.getIndexes();
         assertNotNull(indices);
@@ -76,7 +122,6 @@ public class IndexTest extends AbstractGalaxyTest {
         
         Index idx = null;
         Index tnsIdx = null;
-        Index epIdx = null;
         for (Index i : indices) {
             String prop = i.getConfiguration().get(XQueryIndexer.PROPERTY_NAME);
             if (prop == null) {
@@ -85,8 +130,6 @@ public class IndexTest extends AbstractGalaxyTest {
             
             if (prop.equals("wsdl.service")) {
                 idx = i;
-            } else if (prop.equals("wsdl.endpoint")) {
-                epIdx = i;
             } else if (prop.equals("wsdl.targetNamespace")) {
                 tnsIdx = i;
             }
