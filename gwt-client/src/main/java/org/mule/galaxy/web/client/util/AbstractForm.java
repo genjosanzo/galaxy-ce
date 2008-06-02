@@ -20,9 +20,9 @@ package org.mule.galaxy.web.client.util;
 
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -43,6 +43,7 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
     private final String successMessage;
     private final ErrorPanel errorPanel;
     private final String deleteMessage;
+    private final String CANCEL_MESSAGE = "Action Canceled";
 
     public AbstractForm(ErrorPanel errorPanel, String successToken,
                         String successMessage, String deleteMessage) {
@@ -181,7 +182,8 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
     protected void cancel() {
         setEnabled(false);
         cancel.setText("Canceling...");
-        History.newItem(successToken);
+        ((AdministrationPanel)errorPanel).getGalaxy().setMessageAndGoto(successToken,
+                                                 CANCEL_MESSAGE);
     }
 
 
@@ -197,8 +199,8 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
 
             public void onSuccess(Object arg0) {
                 setEnabled(false);
-                History.newItem(successToken);
-                errorPanel.setMessage(successMessage);
+                ((AdministrationPanel)errorPanel).getGalaxy().setMessageAndGoto(successToken,
+                                                         successMessage);
             }
 
         };
@@ -214,8 +216,8 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
 
             public void onSuccess(Object arg0) {
                 setEnabled(false);
-                History.newItem(successToken);
-                errorPanel.setMessage(deleteMessage);
+                ((AdministrationPanel)errorPanel).getGalaxy().setMessageAndGoto(successToken,
+                                                         deleteMessage);
             }
 
         };
