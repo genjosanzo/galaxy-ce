@@ -1191,7 +1191,3 @@ a:visited {
     font-size: 8pt;
     text-align: right;
 }
-
-.mandatory {
-    *:after { content: "*" }
-}
