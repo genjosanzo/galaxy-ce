@@ -77,6 +77,32 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         assertNotNull(e.getPhase());
     }
     
+    public void testInvalidSaves() throws Exception {    
+        Lifecycle l = new Lifecycle();
+        
+        try {
+            lifecycleManager.save(l);
+            fail("Must have lifecycle name");
+        } catch (RuntimeException e) {
+        }
+        
+        l.setName("test");
+        
+        try {
+            lifecycleManager.save(l);
+            fail("Must have initial phase");
+        } catch (RuntimeException e) {
+        }
+        
+        Phase p = new Phase(l);
+        p.setName("test");
+        
+        l.setInitialPhase(p);
+        l.addPhase(p);
+        
+        lifecycleManager.save(l);
+    }
+    
     public void testSave() throws Exception {    
         Lifecycle l = lifecycleManager.getDefaultLifecycle();
         l.setName("test");

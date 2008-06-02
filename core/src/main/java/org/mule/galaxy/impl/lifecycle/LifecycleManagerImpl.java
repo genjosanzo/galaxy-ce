@@ -29,11 +29,9 @@ import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.ActivityManager.EventType;
-import org.mule.galaxy.impl.jcr.JcrArtifact;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.impl.jcr.onm.AbstractDao;
-import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
@@ -43,6 +41,8 @@ import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.security.User;
+import org.mule.galaxy.util.BundleUtils;
+import org.mule.galaxy.util.Message;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -111,6 +111,18 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
     public Collection<Lifecycle> getLifecycles() {
         return listAll();
     }
+    
+    public void save(Lifecycle l) throws DuplicateItemException, NotFoundException {
+        // TODO: we should have a validation related exception in the DAO framework
+        if (l.getName() == null || "".equals(l.getName())) {
+            throw new RuntimeException(new Message("NAME_NOT_NULL", BundleUtils.getBundle(LifecycleManagerImpl.class)).toString());
+        }
+        
+        if (l.getInitialPhase() == null) {
+            throw new RuntimeException(new Message("INITIAL_PHASE_NOT_NULL", BundleUtils.getBundle(LifecycleManagerImpl.class)).toString());
+        }
+    }
+
     public void delete(final String lifecycleId, 
                        final String fallbackLifecycleId) throws NotFoundException {
         final Lifecycle fallbackLifecycle;
