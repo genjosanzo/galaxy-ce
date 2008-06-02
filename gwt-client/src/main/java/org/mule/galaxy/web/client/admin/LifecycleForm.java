@@ -177,7 +177,8 @@ public class LifecycleForm extends AbstractAdministrationForm {
         lifecycle.getPhases().add(p);
         phases.addItem(name);
 
-        phases.setSelectedIndex(phases.getItemCount());
+        phases.setSelectedIndex(phases.getItemCount()-1);
+        showNextPhases();
     }
 
     protected void deletePhase() {
@@ -226,11 +227,15 @@ public class LifecycleForm extends AbstractAdministrationForm {
                 // update left hand phases list with new name
                 int idx = findPhaseInList(phases, phase.getName());
                 phases.setItemText(idx, newName);
-
+                phases.setValue(idx, newName);
+                
                 // update next phases list with new name
                 idx = findPhaseInList(nextPhases, phase.getName());
-                nextPhases.setItemText(idx, newName);
-
+                if (idx != -1) {
+                    nextPhases.setItemText(idx, newName);
+                    nextPhases.setValue(idx, newName);
+                }
+                
                 // update actual phase object
                 phase.setName(newName);
             }
