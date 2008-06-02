@@ -91,4 +91,25 @@ public class User implements Identifiable, Serializable
         }
         groups.add(g);
     }
+
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final User user = (User) o;
+
+        if (!id.equals(user.id)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

@@ -135,26 +135,33 @@ public class SecurityServiceImpl implements SecurityService {
     public void updateUser(WUser user, String password, String confirm) 
         throws ItemNotFoundException, PasswordChangeException, RPCException {
         try {
+            try {
+                accessControlManager.assertAccess(Permission.MANAGE_USERS);
+            } catch (AccessException e) {
+                // TODO probably change the signature to throw AccessException
+                throw new RPCException(e.getMessage());
+            }
+
             User u = userManager.get(user.getId());
-            
+
             if (u == null) {
                 throw new ItemNotFoundException();
             }
-            
+
             u.setName(user.getName());
             u.setEmail(user.getEmail());
 
             if (password != null && password.equals(confirm) && !password.equals("")) {
                 userManager.setPassword(u, password);
             }
-            
+
             u.getGroups().clear();
             for (Object o : user.getGroupIds()) {
                 u.getGroups().add(accessControlManager.getGroup(o.toString()));
             }
             userManager.save(u);
-            
-            
+
+
         } catch (DuplicateItemException e) {
             throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {

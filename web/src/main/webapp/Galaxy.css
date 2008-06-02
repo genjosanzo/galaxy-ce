@@ -1191,3 +1191,11 @@ a:visited {
     font-size: 8pt;
     text-align: right;
 }
+
+.form-label {
+    float: left;
+    width: 9em;
+    text-align: right;
+    clear: left;
+    margin-right: 15px;
+}

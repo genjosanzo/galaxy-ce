@@ -20,6 +20,7 @@ package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.util.ConfirmDialog;
 import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.SelectionPanel;
 import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
 import org.mule.galaxy.web.client.validation.EmailValidator;
@@ -32,8 +33,14 @@ import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WUser;
 
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
 
@@ -48,6 +55,7 @@ public class UserForm extends AbstractAdministrationForm {
     private ValidatableTextBox emailTB;
     private ValidatableTextBox usernameTB;
     private SelectionPanel groupPanel;
+    private CheckBox resetPassword;
     private static final int PASSWORD_MIN_LENGTH = 5;
 
     public UserForm(AdministrationPanel adminPanel) {
@@ -55,45 +63,75 @@ public class UserForm extends AbstractAdministrationForm {
     }
     
     protected void addFields(final FlexTable table) {
-        table.setText(0, 0, "Username:");
-        table.setText(1, 0, "Name:");
-        table.setText(2, 0, "Email:");
-        table.setText(3, 0, "Password:");
-        table.setText(4, 0, "Confirm Password:");
-        table.setText(PASSWORD_MIN_LENGTH, 0, "Groups:");
+        // a simple row counter to simplify table.setWidget() calls
+        int row = 0;
+        table.setText(row++, 0, "Username:");
+        table.setText(row++, 0, "Name:");
+        table.setText(row++, 0, "Email:");
+        if (newItem) {
+            table.setText(row++, 0, "Password:");
+            table.setText(row++, 0, "Confirm Password:");
+        } else {
+            table.setText(row++, 0, "");
+        }
+        table.setText(row++, 0, "Groups:");
+
+        // reset row counter for input fields
+        row = 0;
 
         if (newItem) {
             usernameTB = new ValidatableTextBox(new StringNotEmptyValidator());
-            table.setWidget(0, 1, usernameTB);
+            table.setWidget(row, 1, usernameTB);
         } else {
-            table.setText(0, 1, user.getUsername());
+            table.setText(row, 1, user.getUsername());
         }
-        
+
+        row++;
         nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
         nameTB.getTextBox().setText(user.getName());
-        table.setWidget(1, 1, nameTB);
+        table.setWidget(row, 1, nameTB);
         // add an extender in the table to align the validation label
         // otherwise groups cell stretches and deforms the cell
-        table.setWidget(1, 2, new Label(" "));
-        table.getCellFormatter().setWidth(1, 2, "100%");
+        table.setWidget(row, 2, new Label(" "));
+        table.getCellFormatter().setWidth(row, 2, "100%");
 
+        row++;
         emailTB = new ValidatableTextBox(new EmailValidator());
         emailTB.getTextBox().setText(user.getEmail());
-        table.setWidget(2, 1, emailTB);
+        table.setWidget(row, 1, emailTB);
 
-        passTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
-        table.setWidget(3, 1, passTB);
+        if (newItem) {
+            row++;
+            passTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
+            table.setWidget(row, 1, passTB);
+
+            row++;
+            confirmTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
+            table.setWidget(row, 1, confirmTB);
+        } else {
+            row++;
+            resetPassword = new CheckBox("Reset Password");
+            table.setWidget(row, 1, resetPassword);
+            resetPassword.addClickListener(new ClickListener() {
+                public void onClick(final Widget widget) {
+                    // It's critical to use the passed in event source, otherwise the event fires 3 times (?!)
+                    if (((CheckBox) widget).isChecked()) {
+                        // only show the dialog if enabling the checkbox
+                        new LightBox(new ResetPasswordDialog()).show();
+                    }
+                }
+            });
+        }
         
-        confirmTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
-        table.setWidget(4, 1, confirmTB);
-
+        row++;
+        table.setText(row, 1, "Loading Groups...");
+        // temp var for anonymous class
+        final int groupRow = row;
         getSecurityService().getGroups(new AbstractCallback(adminPanel) {
             public void onSuccess(Object groups) {
-                receiveGroups((Collection) groups, table);
+                receiveGroups((Collection) groups, table, groupRow);
             }
         });
-
-        table.setText(5, 1, "Loading Groups...");
 
         styleHeaderColumn(table);
     }
@@ -118,7 +156,7 @@ public class UserForm extends AbstractAdministrationForm {
         this.user = new WUser();
     }
 
-    protected void receiveGroups(Collection groups, FlexTable table) {
+    protected void receiveGroups(Collection groups, FlexTable table, final int currentRow) {
         ItemInfo itemInfo = new ItemInfo() {
             public String getText(Object o) {
                 return ((WGroup) o).getName();
@@ -131,9 +169,9 @@ public class UserForm extends AbstractAdministrationForm {
         groupPanel = new SelectionPanel(groups, itemInfo, 
                                         user.getGroupIds(), 6, 
                                         "Available Groups", "Joined Groups");
-        table.setWidget(5, 1, groupPanel);
+        table.setWidget(currentRow, 1, groupPanel);
         FlexTable.FlexCellFormatter cellFormatter = (FlexTable.FlexCellFormatter) table.getCellFormatter();
-        cellFormatter.setColSpan(5, 1, 2);
+        cellFormatter.setColSpan(currentRow, 1, 2);
     }
 
     protected void save() {
@@ -151,9 +189,9 @@ public class UserForm extends AbstractAdministrationForm {
         user.setName(nameTB.getTextBox().getText());
         user.setGroupIds(groupPanel.getSelectedValues());
 
-        String p = passTB.getTextBox().getText();
-        String c = confirmTB.getTextBox().getText();
-        
+        String p = passTB != null ? passTB.getTextBox().getText() : null;
+        String c = confirmTB != null ? confirmTB.getTextBox().getText() : null;
+
         SecurityServiceAsync svc = getSecurityService();
         if (newItem) {
             save(svc, p, c);
@@ -167,22 +205,25 @@ public class UserForm extends AbstractAdministrationForm {
         boolean isOk = true;
 
         // username textbox is not there on Edit screen, only Add
-        if (usernameTB != null) {
+        if (newItem) {
             isOk &= usernameTB.validate();
         }
         isOk &= nameTB.validate();
         isOk &= emailTB.validate();
-        isOk &= passTB.validate();
-        isOk &= confirmTB.validate();
-
-        // passwords must match
-        if (!passTB.getTextBox().getText().equals(confirmTB.getTextBox().getText())) {
-            getErrorPanel().addMessage("Passwords must match");
+        if (newItem || (resetPassword != null && resetPassword.isChecked())) {
+            isOk &= passTB.validate();
+            isOk &= confirmTB.validate();
+            // passwords must match
+            if (!passTB.getTextBox().getText().equals(confirmTB.getTextBox().getText())) {
+                getErrorPanel().addMessage("Passwords must match");
+                isOk = false;
+            }
         }
 
         // at least one group must be selected
         if (groupPanel.getSelectedValues().isEmpty()) {
             getErrorPanel().addMessage("User must be a member of at least one group");
+            isOk = false;
         }
 
         return isOk;
@@ -208,6 +249,58 @@ public class UserForm extends AbstractAdministrationForm {
         }, "Are you sure you want to delete user " + user.getName() + " (" + user.getUsername() + ")?");
 
         new LightBox(dialog).show();
+    }
+
+    private class ResetPasswordDialog extends DialogBox {
+
+        public ResetPasswordDialog() {
+            setText("Reset Password");
+
+            VerticalPanel main = new VerticalPanel();
+            passTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
+            confirmTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
+            InlineFlowPanel row = new InlineFlowPanel();
+            Label label = new Label("New Password:");
+            label.addStyleName("form-label");
+            row.add(label);
+            row.add(passTB);
+            main.add(row);
+
+            row = new InlineFlowPanel();
+            label = new Label("Confirm Password:");
+            label.addStyleName("form-label");
+            row.add(label);
+            row.add(confirmTB);
+            main.add(row);
+
+            row = new InlineFlowPanel();
+            row.addStyleName("buttonRow");
+            Button okButton = new Button("OK");
+            okButton.addClickListener(new ClickListener() {
+                public void onClick(final Widget widget) {
+                    boolean isOk = passTB.validate();
+                    isOk &= confirmTB.validate();
+                    if (isOk) {
+                        ResetPasswordDialog.this.hide();
+                    }
+                }
+            });
+
+            row.add(okButton);
+            Button cancelButton = new Button("Cancel");
+            cancelButton.addClickListener(new ClickListener() {
+                public void onClick(final Widget widget) {
+                    ResetPasswordDialog.this.hide();
+                    passTB.getTextBox().setText(null);
+                    confirmTB.getTextBox().setText(null);
+                    resetPassword.setChecked(false);
+                }
+            });
+            row.add(cancelButton);
+            main.add(row);
+
+            setWidget(main);
+        }
     }
 
 }
