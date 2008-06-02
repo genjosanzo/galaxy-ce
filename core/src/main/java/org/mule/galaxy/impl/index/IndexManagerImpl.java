@@ -1,27 +1,5 @@
 package org.mule.galaxy.impl.index;
 
-import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.ActivityManager.EventType;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.ContentService;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.impl.jcr.JcrUtil;
-import org.mule.galaxy.impl.jcr.JcrVersion;
-import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
-import org.mule.galaxy.index.Index;
-import org.mule.galaxy.index.IndexException;
-import org.mule.galaxy.index.IndexManager;
-import org.mule.galaxy.index.Indexer;
-import org.mule.galaxy.query.QueryException;
-import org.mule.galaxy.query.OpRestriction;
-import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.util.SecurityUtils;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,6 +23,29 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.ActivityManager;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.ContentService;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.ActivityManager.EventType;
+import org.mule.galaxy.impl.jcr.JcrRegistryImpl;
+import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.impl.jcr.JcrVersion;
+import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+import org.mule.galaxy.index.Index;
+import org.mule.galaxy.index.IndexException;
+import org.mule.galaxy.index.IndexManager;
+import org.mule.galaxy.index.Indexer;
+import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
@@ -193,7 +194,11 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
             for (NodeIterator itr = result.getNodes(); itr.hasNext();) {
                 Node n = itr.nextNode();
                 
-                n.setProperty(propName, (String) null);
+                try {
+                    new JcrVersion(n, (JcrRegistryImpl) registry).setProperty(propName, null);
+                } catch (PropertyException e) {
+                    throw new RuntimeException(e);
+                }
             }
             session.save();
         }

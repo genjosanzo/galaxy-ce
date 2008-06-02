@@ -708,6 +708,15 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
+    public void deleteIndex(String id, boolean removeArtifactMetadata) throws RPCException {
+        try {
+            indexManager.delete(id, removeArtifactMetadata);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException("Couldn't save index.");
+        }
+    }
+
     private Index fromWeb(WIndex wi) throws RPCException {
         Index idx = new Index();
         idx.setId(wi.getId());

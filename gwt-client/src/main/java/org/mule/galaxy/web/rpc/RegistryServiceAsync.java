@@ -62,6 +62,8 @@ public interface RegistryServiceAsync {
     
     void saveIndex(WIndex index, AsyncCallback callback);
     
+    void deleteIndex(String id, boolean removeArtifactMetadata, AsyncCallback callback);
+    
     void getDependencyInfo(String artifactId, AsyncCallback callback);
 
     void getArtifact(String artifactId, AsyncCallback callback);

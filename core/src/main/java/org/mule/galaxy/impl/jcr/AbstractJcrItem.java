@@ -80,7 +80,6 @@ public abstract class AbstractJcrItem {
             
             JcrUtil.setProperty(name, value, node);
             
-            node.setProperty(name + VISIBLE, true);
             if (value == null) {
                 deleteProperty(name);
             } else {
@@ -209,6 +208,24 @@ public abstract class AbstractJcrItem {
     }
 
     public PropertyInfo getPropertyInfo(String name) {
+        try {
+            Property propList = node.getProperty("properties");
+            
+            boolean found = false;
+            for (Value v : propList.getValues()) {
+                if (v.getString().equals(name)) {
+                    found = true;
+                    break;
+                }
+            }
+            
+            if (!found) return null;
+        } catch (PathNotFoundException e) {
+            return null;
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
+        
         return new PropertyInfoImpl(name, node, registry);
     }
 

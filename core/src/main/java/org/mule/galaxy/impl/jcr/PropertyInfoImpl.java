@@ -36,7 +36,12 @@ public class PropertyInfoImpl implements PropertyInfo {
     }
 
     public boolean isVisible() {
-        return JcrUtil.getBooleanOrNull(node, getName() + JcrVersion.VISIBLE);
+        Boolean vis = JcrUtil.getBooleanOrNull(node, getName() + JcrVersion.VISIBLE);
+        if (vis == null) {
+            return true;
+        }
+        
+        return vis;
     }
 
     public String getDescription() {

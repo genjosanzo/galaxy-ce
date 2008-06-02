@@ -100,6 +100,7 @@ public class IndexTest extends AbstractGalaxyTest {
         artifact = registry.getArtifact(artifact.getId());
         Object value = artifact.getProperty("wsdl.targetNamespace");
         assertNull(value);
+        assertNull(artifact.getPropertyInfo("wsdl.targetNamespace"));
 
         indexManager.delete(ptIdx.getId(), false);
         
@@ -112,6 +113,7 @@ public class IndexTest extends AbstractGalaxyTest {
         artifact = registry.getArtifact(artifact.getId());
         value = artifact.getProperty("wsdl.service");
         assertNull(value);
+        assertNull(artifact.getPropertyInfo("wsdl.service"));
     }
     
     
@@ -274,6 +276,7 @@ public class IndexTest extends AbstractGalaxyTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     public void testJavaAnnotationsIndex() throws Exception
     {
         // a compiled java class, but without any package hierarchy, so it can't be

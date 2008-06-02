@@ -43,10 +43,15 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
     private User author;
     private Node contentNode;
     
+    public JcrVersion(Node v,
+                      JcrRegistryImpl registry) throws RepositoryException  {
+        super(v, registry);
+    }
+    
     public JcrVersion(JcrArtifact parent, 
                       Node v,
                       Node contentNode) throws RepositoryException  {
-        super(v, parent.getRegistry());
+        super(v, parent != null ? parent.getRegistry() : null);
         this.parent = parent;
         this.contentNode = contentNode;
     }

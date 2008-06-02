@@ -75,6 +75,7 @@ public class AdministrationPanel extends MenuPanel {
                               "indexes", 
                               new IndexListPanel(this),
                               new IndexForm(this));
+            createPageInfo("index-delete", new IndexDeleteForm(this));
         }
         
         if (galaxy.hasPermission("MANAGE_POLICIES")) {

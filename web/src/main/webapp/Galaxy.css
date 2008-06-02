@@ -687,6 +687,18 @@ a:visited {
     font-weight: bold;
 }
 
+
+/**
+ **
+ ** Other admin panel styles
+ **
+ **/
+.deleteIndexPanel {
+    padding-top: 5px;
+	padding-left: 5px;
+}
+	
+
 /**
  **
  ** Raw GWT Styles

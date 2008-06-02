@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.client.admin;
 
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.ListBox;
@@ -206,6 +207,10 @@ public class IndexForm extends AbstractAdministrationForm {
             return false;
         }
         return true;
+    }
+
+    protected void delete() {
+        History.newItem("index-delete_" + index.getId());
     }
 
 }
