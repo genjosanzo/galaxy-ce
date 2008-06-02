@@ -18,11 +18,15 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.WGroup;
 
 import com.google.gwt.user.client.ui.FlexTable;
+
+import org.gwtwidgets.client.ui.LightBox;
 
 public class GroupForm extends AbstractAdministrationForm {
 
@@ -73,9 +77,13 @@ public class GroupForm extends AbstractAdministrationForm {
     }
 
     protected void delete() {
-        super.delete();
-
-        getSecurityService().deleteGroup(group.getId(), getDeleteCallback());
+        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter() {
+            public void onConfirm() {
+                GroupForm.super.delete();
+                getSecurityService().deleteGroup(group.getId(), getDeleteCallback());
+            }
+        }, "Are you sure you want to delete group" + group.getName() + "?");
+        new LightBox(dialog).show();
     }
 
     protected boolean validate() {
