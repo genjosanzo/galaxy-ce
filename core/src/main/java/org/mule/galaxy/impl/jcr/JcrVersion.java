@@ -90,11 +90,19 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
     }
     
     public boolean isLatest() {
-        return JcrUtil.getBooleanOrNull(node, LATEST);
+        Boolean b = JcrUtil.getBooleanOrNull(node, LATEST);
+        if (b == null) {
+            return false;
+        }
+        return b;
     }
     
     public boolean isEnabled() {
-        return JcrUtil.getBooleanOrNull(node, ENABLED);
+        Boolean b = JcrUtil.getBooleanOrNull(node, ENABLED);
+        if (b == null) {
+            return false;
+        }
+        return b;
     }
 
     public void setLatest(boolean latest) {
@@ -122,7 +130,13 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
     }
     
     public boolean isIndexedPropertiesStale() {
-        return JcrUtil.getBooleanOrNull(node, INDEX_PROPERTIES_STALE);
+        Boolean b = JcrUtil.getBooleanOrNull(node, INDEX_PROPERTIES_STALE);
+        
+        if (b == null) {
+            return false;
+        }
+        
+        return b;
     }
 
     public void setIndexedPropertiesStale(boolean stale) {
@@ -139,7 +153,11 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
 
 
     public boolean isDefault() {
-        return JcrUtil.getBooleanOrNull(node, DEFAULT);
+        Boolean b = JcrUtil.getBooleanOrNull(node, DEFAULT);
+        if (b == null) {
+            return false;
+        }
+        return b;
     }
 
     public void setDefault(boolean active) {
@@ -272,7 +290,7 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
             Set<Dependency> deps = new HashSet<Dependency>();
             for (NodeIterator nodes = depsNode.getNodes(); nodes.hasNext();) {
                 Node dep = nodes.nextNode();
-                final boolean user = JcrUtil.getBooleanOrNull(dep, USER_SPECIFIED);
+                final Boolean user = JcrUtil.getBooleanOrNull(dep, USER_SPECIFIED);
                 try {
                     final Artifact a = parent.getRegistry().getArtifact(dep.getName());
                     deps.add(new Dependency() {
@@ -282,6 +300,9 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
                         }
 
                         public boolean isUserSpecified() {
+                            if (user == null) {
+                                return false;
+                            }
                             return user;
                         }
                         

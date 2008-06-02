@@ -121,6 +121,8 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
         if (l.getInitialPhase() == null) {
             throw new RuntimeException(new Message("INITIAL_PHASE_NOT_NULL", BundleUtils.getBundle(LifecycleManagerImpl.class)).toString());
         }
+        
+        super.save(l);
     }
 
     public void delete(final String lifecycleId, 

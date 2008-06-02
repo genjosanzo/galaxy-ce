@@ -32,7 +32,11 @@ public class PropertyInfoImpl implements PropertyInfo {
     }
 
     public boolean isLocked() {
-        return JcrUtil.getBooleanOrNull(node, getName() + JcrVersion.LOCKED);
+        Boolean b = JcrUtil.getBooleanOrNull(node, getName() + JcrVersion.LOCKED);
+        if (b == null) {
+            return false;
+        }
+        return b;
     }
 
     public boolean isVisible() {

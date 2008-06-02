@@ -38,7 +38,11 @@ public class JcrDependency implements Dependency {
     }
 
     public boolean isUserSpecified() {
-        return JcrUtil.getBooleanOrNull(depNode, JcrVersion.USER_SPECIFIED);
+        Boolean b = JcrUtil.getBooleanOrNull(depNode, JcrVersion.USER_SPECIFIED);
+        if (b == null) {
+            return false;
+        }
+        return b;
     }
 
     public Node getDependencyNode() {

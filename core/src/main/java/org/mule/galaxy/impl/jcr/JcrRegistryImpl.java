@@ -1545,8 +1545,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     Node depsNode = JcrUtil.getOrCreate(jcrVersion.node, JcrVersion.DEPENDENCIES);
                     for (NodeIterator nodes = depsNode.getNodes(); nodes.hasNext();) {
                         Node dep = nodes.nextNode();
-                        boolean user = JcrUtil.getBooleanOrNull(dep, JcrVersion.USER_SPECIFIED);
-                        if (user && ids.contains(dep.getName())) {
+                        Boolean user = JcrUtil.getBooleanOrNull(dep, JcrVersion.USER_SPECIFIED);
+                        if (user != null && user && ids.contains(dep.getName())) {
                             dep.remove();
                         }
                     }

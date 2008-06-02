@@ -177,7 +177,7 @@ public class JcrUtil {
         return null;
     }
 
-    public static boolean getBooleanOrNull(Node node, String propName) {
+    public static Boolean getBooleanOrNull(Node node, String propName) {
         try {
             Value v = getValueOrNull(node, propName);   
             if (v != null) {
@@ -189,7 +189,7 @@ public class JcrUtil {
             throw new RuntimeException(e);
         }  
         
-        return false;
+        return null;
     }
 
     protected static Date getDateOrNull(Node node, String propName) {
