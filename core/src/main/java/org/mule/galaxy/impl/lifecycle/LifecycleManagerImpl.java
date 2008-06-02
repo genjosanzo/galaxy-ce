@@ -477,6 +477,8 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
     }
     
     private Node getChild(Node node, String id) throws RepositoryException {
+        if (id == null) return null;
+        
         for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
             Node n = nodes.nextNode();
             if (id.equals(n.getUUID())) {
