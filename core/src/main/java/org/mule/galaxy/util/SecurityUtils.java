@@ -1,5 +1,10 @@
 package org.mule.galaxy.util;
 
+import org.mule.galaxy.Item;
+import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
+import org.mule.galaxy.security.Permission;
+import org.mule.galaxy.security.User;
+
 import java.util.Collections;
 import java.util.Set;
 
@@ -8,10 +13,6 @@ import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.runas.RunAsUserToken;
-import org.mule.galaxy.Item;
-import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
-import org.mule.galaxy.security.Permission;
-import org.mule.galaxy.security.User;
 
 public final class SecurityUtils {
     public static final User SYSTEM_USER = new User("system");
@@ -42,7 +43,7 @@ public final class SecurityUtils {
         Authentication prevAuth = context.getAuthentication();
         try {
             Set<Permission> perms = Collections.emptySet();
-            UserDetailsWrapper wrapper = new UserDetailsWrapper(SYSTEM_USER, perms, "");
+            UserDetailsWrapper wrapper = new UserDetailsWrapper(user, perms, "");
             Authentication auth = new RunAsUserToken("system", wrapper, "", new GrantedAuthority[0], User.class);
             context.setAuthentication(auth);
             
