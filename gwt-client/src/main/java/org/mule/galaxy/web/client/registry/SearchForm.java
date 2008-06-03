@@ -18,6 +18,13 @@
 
 package org.mule.galaxy.web.client.registry;
 
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.SearchPredicate;
+
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -30,12 +37,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.SearchPredicate;
 
 public class SearchForm
     extends AbstractErrorShowingComposite
@@ -107,12 +108,20 @@ public class SearchForm
                 addPredicate();
             }
          });
-        
+
+        Button cancel = new Button("Cancel");
+        cancel.addClickListener(new ClickListener() {
+            public void onClick(final Widget widget) {
+                History.back();
+            }
+        });
+
         if (allowFreeform) {
             buttonPanel.add(freeformQueryLink);
         }
         buttonPanel.add(searchButton);
         buttonPanel.add(clearButton);
+        buttonPanel.add(cancel);
     }
 
     public FlowPanel getPanel() {
