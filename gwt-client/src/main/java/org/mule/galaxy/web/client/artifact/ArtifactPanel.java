@@ -24,6 +24,7 @@ import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
 import org.mule.galaxy.web.client.util.ConfirmDialog;
 import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.NavigationUtil;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -41,6 +42,7 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -72,22 +74,11 @@ public class ArtifactPanel extends AbstractComposite {
     private int selectedTab = -1;
     private ListBox versionLB;
     private RegistryMenuPanel menuPanel;
-    protected FlowPanel linkBox;
 
     public ArtifactPanel(Galaxy galaxy) {
         this.galaxy = galaxy;
         
-        menuPanel = new RegistryMenuPanel(galaxy) {
-
-            protected void addTopLinks(Toolbox topMenuLinks) {
-                if (linkBox == null) {
-                    linkBox = new FlowPanel();
-                }
-                topMenuLinks.add(linkBox);
-                topMenuLinks.add(new Label(" "));
-            }
-            
-        };
+        menuPanel = new RegistryMenuPanel(galaxy);
         
         panel = new VerticalPanel();
         panel.setWidth("100%");
@@ -156,17 +147,7 @@ public class ArtifactPanel extends AbstractComposite {
         });
         titleTable.setWidget(0, 1, versionLB);
         
-        Image img = new Image("images/feed-icon-14x14.png");
-        img.setStyleName("feed-icon");
-        img.setTitle("Versions Atom Feed");
-        img.addClickListener(new ClickListener() {
-
-            public void onClick(Widget sender) {
-                Window.open(info.getArtifactFeedLink(), null, "scrollbars=yes");
-            }
-            
-        });
-        titleTable.setWidget(0, 2, img);
+        titleTable.setWidget(0, 2, getArtifactLinks());
         
         artifactTitle.add(titleTable);
         
@@ -218,9 +199,12 @@ public class ArtifactPanel extends AbstractComposite {
             }
             
         });
+    }
 
-        linkBox.clear();
-
+    private Panel getArtifactLinks() {
+        InlineFlowPanel linkPanel = new InlineFlowPanel();
+        linkPanel.setStyleName("artifactLinkPanel");
+        
         ClickListener cl = new ClickListener() {
 
             public void onClick(Widget arg0) {
@@ -234,18 +218,21 @@ public class ArtifactPanel extends AbstractComposite {
 
         Hyperlink hl = new Hyperlink("View Artifact", "artifact_" + info.getId());
         hl.addClickListener(cl);
-        linkBox.add(asHorizontal(img, new Label(" "), hl));
+        // Add the first one without any style so it doesn't get the splitter
+        InlineFlowPanel p = asHorizontal(img, new Label(" "), hl);
+        p.setStyleName("artifactToolbarItemFirst");
+        linkPanel.add(p);
 
         ExternalHyperlink permalink = new ExternalHyperlink("Permalink", info.getArtifactLink());
         permalink.setTitle("Direct artifact link for inclusion in email, etc.");
-        linkBox.add(asHorizontal(new Image("images/permalink.gif"), new Label(" "), permalink));
+        linkPanel.add(asToolbarItem(new Image("images/permalink.gif"), permalink));
         
         String token = "new-artifact-version_" + info.getId();
 
         img = new Image("images/new-version.gif");
         img.addClickListener(NavigationUtil.createNavigatingClickListener(token));
         hl = new Hyperlink("New Version", token);
-        linkBox.add(asHorizontal(img, new Label(" "), hl));
+        linkPanel.add(asToolbarItem(img, hl));
         
         cl = new ClickListener() {
             public void onClick(Widget arg0) {
@@ -257,9 +244,34 @@ public class ArtifactPanel extends AbstractComposite {
         img.addClickListener(cl);
         hl = new Hyperlink("Delete", "artifact_" + info.getId());
         hl.addClickListener(cl);
-        linkBox.add(asHorizontal(img, new Label(" "), hl));
+        linkPanel.add(asToolbarItem(img, hl));
+        
+
+        cl = new ClickListener() {
+
+            public void onClick(Widget sender) {
+                Window.open(info.getArtifactFeedLink(), null, "scrollbars=yes");
+            }
+        };
+        img = new Image("images/feed-icon-14x14.png");
+//        img.setStyleName("feed-icon");
+        img.setTitle("Versions Atom Feed");
+        img.addClickListener(cl);
+        
+        hl = new Hyperlink("Version Feed", "artifact-versions_" + info.getId());
+        hl.addClickListener(cl);
+        linkPanel.add(asToolbarItem(img, hl));
+        
+        return linkPanel;
     }
     
+    private Widget asToolbarItem(Image img, Widget hl) {
+        InlineFlowPanel p = asHorizontal(img, new Label(" "), hl);
+        p.setStyleName("artifactToolbarItem");
+        
+        return p;
+    }
+
     protected void warnDelete()
     {
         new LightBox(new ConfirmDialog(new ConfirmDialogAdapter()

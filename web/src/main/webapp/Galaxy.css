@@ -370,9 +370,17 @@ a:visited {
     cursor: hand;
 }
 
-.viewArtifactImage {
-	margin: 3px;
+.artifactToolbarItem {
+	margin-left: 6px;
+    padding-left: 6px;
+	border-left: 1px solid #ccc;
 }
+
+.artifactToolbarItemFirst {
+    margin-left: 12px;
+    padding-bottom: 2px;
+}
+
 .artifact-title-base {
     padding: 6px;
     margin-top: 4px;
