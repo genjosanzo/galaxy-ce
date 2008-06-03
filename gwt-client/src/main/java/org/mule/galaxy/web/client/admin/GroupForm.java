@@ -82,7 +82,7 @@ public class GroupForm extends AbstractAdministrationForm {
                 GroupForm.super.delete();
                 getSecurityService().deleteGroup(group.getId(), getDeleteCallback());
             }
-        }, "Are you sure you want to delete group" + group.getName() + "?");
+        }, "Are you sure you want to delete group " + group.getName() + "?");
         new LightBox(dialog).show();
     }
 

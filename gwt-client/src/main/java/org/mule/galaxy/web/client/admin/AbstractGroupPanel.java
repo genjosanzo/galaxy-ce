@@ -33,6 +33,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.CheckBox;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +53,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
     private Button resetButton;
     protected final Galaxy galaxy;
     protected FlowPanel mainPanel;
-    
+
     public AbstractGroupPanel(Galaxy galaxy, ErrorPanel errorPanel) {
         super();
         this.galaxy = galaxy;
@@ -64,7 +65,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
         // table.setStyleName("permission-grant-table");
         mainPanel.clear();
         mainPanel.add(new Label("Loading..."));
-        
+
         AbstractCallback callback = new AbstractCallback(errorPanel) {
             public void onSuccess(Object permissions) {
                 receivePermissions((Collection) permissions);
@@ -80,70 +81,79 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
                 receiveGroups((Map) groups);
             }
         };
-        
+
         getGroupPermissionGrants(callback);
     }
 
     protected abstract void getPermissions(AbstractCallback callback);
 
     protected abstract void getGroupPermissionGrants(AbstractCallback callback);
-    
+
     protected void receiveGroups(Map groups2Permissions) {
         this.groups2Permissions = groups2Permissions;
         mainPanel.clear();
-        
+
         table = createTitledRowTable(mainPanel, "Manage Group Permissions");
         int col = 1;
         for (Iterator itr = permissions.iterator(); itr.hasNext();) {
-            WPermission p = (WPermission)itr.next();
+            WPermission p = (WPermission) itr.next();
             table.setText(0, col, p.getDescription());
-            
+
             col++;
-        }   
-        
+        }
+
         rows = new ArrayList();
         for (Iterator itr = groups2Permissions.keySet().iterator(); itr.hasNext();) {
-            rows.add(((WGroup)itr.next()).getName());
+            rows.add(((WGroup) itr.next()).getName());
         }
         Collections.sort(rows);
-        
-        for (Iterator itr = groups2Permissions.entrySet().iterator(); itr.hasNext();) {
-            Map.Entry e = (Map.Entry)itr.next();
-            
-            final WGroup group = (WGroup) e.getKey();
 
+        for (Iterator itr = groups2Permissions.entrySet().iterator(); itr.hasNext();) {
+            Map.Entry e = (Map.Entry) itr.next();
+
+            final WGroup group = (WGroup) e.getKey();
             final Hyperlink hl = new Hyperlink(group.getName(), "groups_" + group.getId());
 
             int row = rows.indexOf(group.getName()) + 1;
-            table.setWidget(row, 0, hl);
-            
+
+            // certain groups should not be removed or edited via the GUI
+            boolean lockedGroup = group.getName().equals("Administrators");
+            if (lockedGroup) {
+                table.setWidget(row, 0, new Label(group.getName()));
+            } else {
+                table.setWidget(row, 0, hl);
+            }
+
             Collection grants = (Collection) e.getValue();
             for (Iterator gItr = grants.iterator(); gItr.hasNext();) {
-                WPermissionGrant pg = (WPermissionGrant)gItr.next();
+                WPermissionGrant pg = (WPermissionGrant) gItr.next();
 
-                table.setWidget(row, getPermissionColumn(pg.getPermission()), createGrantWidget(pg));
+                Widget w = createGrantWidget(pg);
+                // disable for admin group
+                if (lockedGroup) ((CheckBox)w).setEnabled(false);
+                table.setWidget(row, getPermissionColumn(pg.getPermission()), w);
             }
             row++;
         }
-        
+
         table.getFlexCellFormatter().setColSpan(rows.size() + 1, 0, col);
-        
+
         applyButton = new Button("Apply");
         applyButton.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 beginApply();
             }
         });
-        
+
         resetButton = new Button("Reset");
         resetButton.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 reset();
             }
         });
-        
+
         table.setWidget(rows.size() + 1, 0, asHorizontal(applyButton, resetButton));
-        
+
     }
 
     /**
@@ -159,24 +169,24 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
     protected void beginApply() {
         setEnabled(false);
         for (Iterator itr = groups2Permissions.entrySet().iterator(); itr.hasNext();) {
-            Map.Entry e = (Map.Entry)itr.next();
-            
+            Map.Entry e = (Map.Entry) itr.next();
+
             WGroup g = (WGroup) e.getKey();
             Collection permGrants = (Collection) e.getValue();
-            
+
             int row = rows.indexOf(g.getName());
-            
+
             for (Iterator pgItr = permGrants.iterator(); pgItr.hasNext();) {
-                WPermissionGrant pg = (WPermissionGrant)pgItr.next();
-                
+                WPermissionGrant pg = (WPermissionGrant) pgItr.next();
+
                 int col = getPermissionColumn(pg.getPermission());
-                
+
                 setGrant(row, col, pg);
             }
         }
-        
+
         AbstractCallback callback = new AbstractCallback(errorPanel) {
-            
+
             public void onFailure(Throwable caught) {
                 super.onFailure(caught);
                 setEnabled(true);
@@ -202,8 +212,8 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
     private int getPermissionColumn(String permission) {
         int i = 1;
         for (Iterator itr = permissions.iterator(); itr.hasNext();) {
-            WPermission p = (WPermission)itr.next();
-            
+            WPermission p = (WPermission) itr.next();
+
             if (p.getName().equals(permission)) {
                 return i;
             }
