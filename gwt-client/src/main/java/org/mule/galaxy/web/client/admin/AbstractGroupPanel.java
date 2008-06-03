@@ -160,6 +160,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
      * Go back to the saved state on the server.
      */
     protected void reset() {
+        errorPanel.clearErrorMessage();
         onShow();
     }
 
