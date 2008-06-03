@@ -168,6 +168,15 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
             });
             buttonPanel.add(deleteButton);
         }
+
+        Button cancel = new Button("Cancel");
+        cancel.addClickListener(new ClickListener() {
+            public void onClick(final Widget widget) {
+                History.back();
+            }
+        });
+        buttonPanel.add(cancel);
+        
         table.setWidget(3, 1, buttonPanel);
 
         if (edit) {
