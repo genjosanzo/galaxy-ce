@@ -21,6 +21,7 @@ package org.mule.galaxy.web.client.registry;
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.artifact.ArtifactPolicyResultsPanel;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.WorkspacesListBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
@@ -114,7 +115,19 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
                 form.submit();
             }
         });
-        table.setWidget(row + 1, 1, addButton);
+
+        Button cancel = new Button("Cancel");
+        cancel.addClickListener(new ClickListener() {
+            public void onClick(final Widget widget) {
+                History.back();
+            }
+        });
+
+        InlineFlowPanel buttons = new InlineFlowPanel();
+        buttons.add(addButton);
+        buttons.add(cancel);
+
+        table.setWidget(row + 1, 1, buttons);
 
         form.addFormHandler(new FormHandler() {
             public void onSubmit(FormSubmitEvent event) {
