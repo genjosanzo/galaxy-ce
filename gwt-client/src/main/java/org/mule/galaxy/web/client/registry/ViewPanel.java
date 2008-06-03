@@ -104,6 +104,16 @@ public class ViewPanel extends AbstractBrowsePanel {
             protected void initializeButtons(Panel buttonPanel, String searchText) {
                 super.initializeButtons(buttonPanel, searchText);
 
+                delete = new Button();
+                delete.setText("Delete");
+                delete.addClickListener(new ClickListener() {
+                    public void onClick(Widget arg0) {
+                        viewPanel.delete();
+                    }
+                });
+
+                buttonPanel.add(delete);
+
                 cancel = new Button();
                 cancel.setText("Cancel");
                 cancel.addClickListener(new ClickListener() {
@@ -118,16 +128,6 @@ public class ViewPanel extends AbstractBrowsePanel {
                     }
                 });
                 buttonPanel.add(cancel);
-                
-                delete = new Button();
-                delete.setText("Delete");
-                delete.addClickListener(new ClickListener() {
-                    public void onClick(Widget arg0) {
-                        viewPanel.delete();
-                    }
-                });
-
-                buttonPanel.add(delete);
             }
 
             protected void initializeFields() {
