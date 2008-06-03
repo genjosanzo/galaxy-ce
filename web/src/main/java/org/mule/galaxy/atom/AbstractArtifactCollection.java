@@ -263,11 +263,12 @@ public abstract class AbstractArtifactCollection
             s.append("</div>");
         }
         
-        s.append("</html>");
+        s.append("</body></html>");
         SimpleResponseContext rc = new SimpleResponseContext() {
             @Override
             protected void writeEntity(Writer writer) throws IOException {
                 writer.write(s.toString());
+                writer.flush();
             }
 
             public boolean hasEntity() {

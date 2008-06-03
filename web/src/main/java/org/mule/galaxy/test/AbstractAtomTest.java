@@ -116,9 +116,8 @@ public class AbstractAtomTest extends TestCase {
         }
     }
 
-    private WebApplicationContext getApplicationContext() {
-        WebApplicationContext wac = WebApplicationContextUtils.getWebApplicationContext(context.getServletContext());
-        return wac;
+    protected WebApplicationContext getApplicationContext() {
+        return WebApplicationContextUtils.getWebApplicationContext(context.getServletContext());
     }
 
     protected void prettyPrint(Base doc) throws IOException {

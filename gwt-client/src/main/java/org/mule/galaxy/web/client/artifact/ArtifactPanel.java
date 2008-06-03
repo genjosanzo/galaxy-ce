@@ -229,6 +229,7 @@ public class ArtifactPanel extends AbstractComposite {
             
         };
         Image img = new Image("images/external.png");
+        img.setStyleName("viewArtifactImage");
         img.addClickListener(cl);
 
         Hyperlink hl = new Hyperlink("View Artifact", "artifact_" + info.getId());

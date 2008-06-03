@@ -370,6 +370,9 @@ a:visited {
     cursor: hand;
 }
 
+.viewArtifactImage {
+	margin: 3px;
+}
 .artifact-title-base {
     padding: 6px;
     margin-top: 4px;
