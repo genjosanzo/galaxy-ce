@@ -75,6 +75,7 @@ public class LifecycleForm extends AbstractAdministrationForm {
 
     protected void initializeNewItem() {
         lifecycle = new WLifecycle();
+        initialPhase = null;
     }
     
     protected FlexTable createFormTable() {
