@@ -138,17 +138,19 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
 
         table.getFlexCellFormatter().setColSpan(rows.size() + 1, 0, col);
 
-        applyButton = new Button("Apply");
+        applyButton = new Button("Save");
         applyButton.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 beginApply();
             }
         });
 
-        resetButton = new Button("Reset");
+        resetButton = new Button("Cancel");
         resetButton.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
-                reset();
+                // Go back to the previously saved state.
+                errorPanel.clearErrorMessage();
+                onShow();
             }
         });
 
@@ -156,13 +158,6 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
 
     }
 
-    /**
-     * Go back to the saved state on the server.
-     */
-    protected void reset() {
-        errorPanel.clearErrorMessage();
-        onShow();
-    }
 
     /**
      * Update the permission map and then save it.
