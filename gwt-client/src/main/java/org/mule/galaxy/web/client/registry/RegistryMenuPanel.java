@@ -81,27 +81,30 @@ public class RegistryMenuPanel extends MenuPanel {
         Image addImg = new Image("images/add_obj.gif");
         addImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-artifact"));
         
-        Image addWkspcImg = new Image("images/fldr_obj.gif");
+        menuLinks.add(asHorizontal(addImg, new Label(" "), new Hyperlink("Add Artifact", "add-artifact")));
+
+        Image addWkspcImg = new Image("images/add-workspace.gif");
         addWkspcImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-workspace"));
 
-        menuLinks.add(asHorizontal(addImg, new Label(" "), new Hyperlink("Add Artifact", "add-artifact")));
-        
         Hyperlink hl = new Hyperlink("Add Workspace", "add-workspace");
         menuLinks.add(asHorizontal(addWkspcImg, new Label(" "), hl));
         
         addBottomLinks(menuLinks);
         
         if (showBrowse) {
-            Image browseImg = new Image("images/fldr_obj.gif");
-            browseImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-workspace"));
+            Image img = new Image("images/browse-workspaces.gif");
+            img.addClickListener(NavigationUtil.createNavigatingClickListener("browse"));
 
             hl = new Hyperlink("Browse Workspaces", "browse");
-            menuLinks.add(asHorizontal(browseImg, new Label(" "), hl));
+            menuLinks.add(asHorizontal(img, new Label(" "), hl));
         }
 
         if (showSearch) {
+            Image img = new Image("images/search-workspaces.gif");
+            img.addClickListener(NavigationUtil.createNavigatingClickListener("search"));
+
             hl = new Hyperlink("Search Workspaces", "search");
-            menuLinks.add(hl);
+            menuLinks.add(asHorizontal(img, new Label(" "), hl));
         }
         
         addMenuItem(menuLinks, 0);

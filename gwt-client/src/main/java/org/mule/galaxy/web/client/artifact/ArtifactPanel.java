@@ -24,6 +24,7 @@ import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
 import org.mule.galaxy.web.client.util.ConfirmDialog;
 import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
+import org.mule.galaxy.web.client.util.NavigationUtil;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
@@ -220,33 +221,42 @@ public class ArtifactPanel extends AbstractComposite {
 
         linkBox.clear();
 
-        Hyperlink hl = new Hyperlink("View Artifact", "artifact_" + info.getId());
-        hl.addClickListener(new ClickListener() {
+        ClickListener cl = new ClickListener() {
 
             public void onClick(Widget arg0) {
                 Window.open(info.getArtifactLink(), null, "scrollbars=yes");
             }
             
-        });
-        linkBox.add(asHorizontal(hl, new Label(" "), new Image("images/external.png")));
+        };
+        Image img = new Image("images/external.png");
+        img.addClickListener(cl);
+
+        Hyperlink hl = new Hyperlink("View Artifact", "artifact_" + info.getId());
+        hl.addClickListener(cl);
+        linkBox.add(asHorizontal(img, new Label(" "), hl));
 
         ExternalHyperlink permalink = new ExternalHyperlink("Permalink", info.getArtifactLink());
         permalink.setTitle("Direct artifact link for inclusion in email, etc.");
-        linkBox.add(permalink);
+        linkBox.add(asHorizontal(new Image("images/permalink.gif"), new Label(" "), permalink));
         
         String token = "new-artifact-version_" + info.getId();
-        hl = new Hyperlink("New Version", token);
-        linkBox.add(hl);
-        
-        hl = new Hyperlink("Delete", "artifact_" + info.getId());
-        hl.addClickListener(new ClickListener() {
 
+        img = new Image("images/new-version.gif");
+        img.addClickListener(NavigationUtil.createNavigatingClickListener(token));
+        hl = new Hyperlink("New Version", token);
+        linkBox.add(asHorizontal(img, new Label(" "), hl));
+        
+        cl = new ClickListener() {
             public void onClick(Widget arg0) {
                 warnDelete();
             }
-            
-        });
-        linkBox.add(hl);
+        };
+        
+        img = new Image("images/delete_config.gif");
+        img.addClickListener(cl);
+        hl = new Hyperlink("Delete", "artifact_" + info.getId());
+        hl.addClickListener(cl);
+        linkBox.add(asHorizontal(img, new Label(" "), hl));
     }
     
     protected void warnDelete()
