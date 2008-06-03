@@ -148,7 +148,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
         panel.add(table);
         
         InlineFlowPanel buttonPanel = new InlineFlowPanel();
-        Button saveButton = new Button("Save");
+        Button saveButton = new Button("Add");
         saveButton.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 save(workspacesLB.getSelectedValue(), 
