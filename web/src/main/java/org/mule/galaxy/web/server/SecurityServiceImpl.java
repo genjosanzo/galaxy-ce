@@ -322,7 +322,7 @@ public class SecurityServiceImpl implements SecurityService {
             
     }
     @SuppressWarnings("unchecked")
-    public void save(WGroup wgroup) throws RPCException {
+    public void save(WGroup wgroup) throws RPCException, ItemExistsException {
         Group g = null;
         if (wgroup.getId() != null) {
             g = accessControlManager.getGroup(wgroup.getId());
@@ -335,7 +335,7 @@ public class SecurityServiceImpl implements SecurityService {
         } catch (AccessException e1) {
             throw new RPCException(e1.getMessage());
         } catch (DuplicateItemException e) {
-            throw new RPCException(e.getMessage());
+            throw new ItemExistsException();
         } catch (NotFoundException e) {
             throw new RPCException(e.getMessage());
         }

@@ -48,9 +48,10 @@ public interface SecurityService extends RemoteService {
     
     /**
      * @throws RPCException 
+     * @throws ItemExistsException 
      * @gwt.typeArgs group <java.lang.String>
      */
-    void save(WGroup group) throws RPCException;
+    void save(WGroup group) throws RPCException, ItemExistsException;
     
     WGroup getGroup(String id) throws RPCException;
     
