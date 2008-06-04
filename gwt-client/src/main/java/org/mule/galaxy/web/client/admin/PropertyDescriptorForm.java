@@ -26,7 +26,6 @@ import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 
 import org.gwtwidgets.client.ui.LightBox;
@@ -49,9 +48,6 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
         
         nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
         nameTB.getTextBox().setText(property.getName());
-
-        // This is the label containing this fields' validation message in case of an error
-        final Label nameValidationLabel = new Label();
 
         table.setWidget(0, 1, nameTB);
         
