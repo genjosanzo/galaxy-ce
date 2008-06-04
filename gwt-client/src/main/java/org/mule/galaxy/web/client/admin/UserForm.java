@@ -18,18 +18,6 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-
-import java.util.Collection;
-
-import org.gwtwidgets.client.ui.LightBox;
 import org.mule.galaxy.web.client.util.ConfirmDialog;
 import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
@@ -41,10 +29,23 @@ import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatablePasswordTextBox;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WUser;
+
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+
+import java.util.Collection;
+import java.util.Iterator;
+
+import org.gwtwidgets.client.ui.LightBox;
 
 public class UserForm extends AbstractAdministrationForm {
 
@@ -57,12 +58,15 @@ public class UserForm extends AbstractAdministrationForm {
     private SelectionPanel groupPanel;
     private CheckBox resetPassword;
     private static final int PASSWORD_MIN_LENGTH = 5;
+    private Collection wgroups;
+    private static final String UBER_USER = "admin";
+    private static final String UBER_GROUP = "Administrators";
 
     public UserForm(AdministrationPanel adminPanel) {
-        super(adminPanel, "users", "User was saved.", "User was deleted.", 
+        super(adminPanel, "users", "User was saved.", "User was deleted.",
               "A user with that username already exists.");
     }
-    
+
     protected void addFields(final FlexTable table) {
         // a simple row counter to simplify table.setWidget() calls
         int row = 0;
@@ -85,6 +89,11 @@ public class UserForm extends AbstractAdministrationForm {
             table.setWidget(row, 1, usernameTB);
         } else {
             table.setText(row, 1, user.getUsername());
+            // admin user is not to be deleted
+            // would be nice to remove the button maybe?
+            if (user.getUsername().equals(UBER_USER)) {
+                getDelete().setEnabled(false);
+            }
         }
 
         row++;
@@ -123,7 +132,7 @@ public class UserForm extends AbstractAdministrationForm {
                 }
             });
         }
-        
+
         row++;
         table.setText(row, 1, "Loading Groups...");
         // temp var for anonymous class
@@ -158,6 +167,7 @@ public class UserForm extends AbstractAdministrationForm {
     }
 
     protected void receiveGroups(Collection groups, FlexTable table, final int currentRow) {
+        this.wgroups = groups;
         ItemInfo itemInfo = new ItemInfo() {
             public String getText(Object o) {
                 return ((WGroup) o).getName();
@@ -167,8 +177,8 @@ public class UserForm extends AbstractAdministrationForm {
                 return ((WGroup) o).getId();
             }
         };
-        groupPanel = new SelectionPanel(groups, itemInfo, 
-                                        user.getGroupIds(), 6, 
+        groupPanel = new SelectionPanel(groups, itemInfo,
+                                        user.getGroupIds(), 6,
                                         "Available Groups", "Joined Groups");
         table.setWidget(currentRow, 1, groupPanel);
         FlexTable.FlexCellFormatter cellFormatter = (FlexTable.FlexCellFormatter) table.getCellFormatter();
@@ -181,7 +191,7 @@ public class UserForm extends AbstractAdministrationForm {
         }
 
         super.save();
-        
+
         if (usernameTB != null) {
             user.setUsername(usernameTB.getTextBox().getText());
         }
@@ -227,8 +237,29 @@ public class UserForm extends AbstractAdministrationForm {
             isOk = false;
         }
 
+        // make sure admin user is still a member of the Administrators group
+        if (!(newItem) && user.getUsername().equals(UBER_USER)) {
+            if (!(groupPanel.getSelectedValues().contains(getAdminGroupKey(this.wgroups)))) {
+                getErrorPanel().addMessage(UBER_USER + " user must be a member of the " + UBER_GROUP + " group");
+                isOk = false;
+            }
+        }
+
         return isOk;
     }
+
+
+    /* find the key that maps to the Administrator group and verify */
+    private String getAdminGroupKey(Collection groups) {
+        for (Iterator itr = groups.iterator(); itr.hasNext();) {
+            WGroup wg = (WGroup) itr.next();
+            if (wg.getName().equals(UBER_GROUP)) {
+                return wg.getId();
+            }
+        }
+        return null;
+    }
+
 
     private void update(SecurityServiceAsync svc, String p, String c) {
         svc.updateUser(user, p, c, getSaveCallback());
@@ -237,14 +268,12 @@ public class UserForm extends AbstractAdministrationForm {
     private void save(SecurityServiceAsync svc, String p, String c) {
         svc.addUser(user, p, getSaveCallback());
     }
-    
+
     protected void delete() {
-        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter()
-        {
-            public void onConfirm()
-            {
+        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter() {
+            public void onConfirm() {
                 UserForm.super.delete();
-                getSecurityService().deleteUser(user.getId(),getDeleteCallback());
+                getSecurityService().deleteUser(user.getId(), getDeleteCallback());
             }
 
         }, "Are you sure you want to delete user " + user.getName() + " (" + user.getUsername() + ")?");

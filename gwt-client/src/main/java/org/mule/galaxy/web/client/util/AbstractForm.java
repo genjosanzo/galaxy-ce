@@ -239,4 +239,30 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
     public ErrorPanel getErrorPanel() {
         return errorPanel;
     }
+
+    public Button getSave() {
+        return save;
+    }
+
+    public void setSave(Button save) {
+        this.save = save;
+    }
+
+    public Button getDelete() {
+        return delete;
+    }
+
+    public void setDelete(Button delete) {
+        this.delete = delete;
+    }
+
+    public Button getCancel() {
+        return cancel;
+    }
+
+    public void setCancel(Button cancel) {
+        this.cancel = cancel;
+    }
+
+
 }
