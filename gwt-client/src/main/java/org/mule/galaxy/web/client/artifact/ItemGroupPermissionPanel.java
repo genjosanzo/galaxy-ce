@@ -26,7 +26,6 @@ import org.mule.galaxy.web.rpc.WPermissionGrant;
 
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.core.client.GWT;
 
 import java.util.Map;
 
@@ -36,9 +35,9 @@ public class ItemGroupPermissionPanel extends AbstractGroupPanel {
     private final int permissionType;
     private final Galaxy galaxy;
 
-    public ItemGroupPermissionPanel(Galaxy galaxy, 
-                                    ErrorPanel adminPanel, 
-                                    String itemId, 
+    public ItemGroupPermissionPanel(Galaxy galaxy,
+                                    ErrorPanel adminPanel,
+                                    String itemId,
                                     int PermissionType) {
         super(galaxy, adminPanel);
         this.galaxy = galaxy;
@@ -48,26 +47,20 @@ public class ItemGroupPermissionPanel extends AbstractGroupPanel {
 
     protected void setGrant(int row, int col, WPermissionGrant pg) {
         ListBox lb = (ListBox) table.getWidget(row + 1, col);
-        
+
         pg.setGrant(lb.getSelectedIndex() - 1);
     }
-    
+
     protected Widget createGrantWidget(WPermissionGrant pg, boolean uberuser) {
         ListBox lb = new ListBox();
         lb.addItem("Revoked");
         lb.addItem("Inherited");
         lb.addItem("Granted");
 
-        // admins always get full permissions
-        if(uberuser) {
-            lb.setSelectedIndex(pg.getGrant() + 2);
-            lb.setEnabled(false);
-        } else {
-            lb.setSelectedIndex(pg.getGrant() + 1);
-        }
+        lb.setSelectedIndex(pg.getGrant() + 1);
         return lb;
     }
-    
+
     protected void getPermissions(AbstractCallback callback) {
         galaxy.getSecurityService().getPermissions(permissionType, callback);
     }
