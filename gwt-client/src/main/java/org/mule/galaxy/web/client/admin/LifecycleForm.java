@@ -58,7 +58,8 @@ public class LifecycleForm extends AbstractAdministrationForm {
     private CheckBox defaultLifecycleCB;
 
     public LifecycleForm(AdministrationPanel adminPanel) {
-        super(adminPanel, "lifecycles", "Lifecycle was saved.", "Lifecycle was deleted.");
+        super(adminPanel, "lifecycles", "Lifecycle was saved.", "Lifecycle was deleted.", 
+              "A lifecycle with that name already exists");
 
         panel.setStyleName("lifecycle-form-base");
     }

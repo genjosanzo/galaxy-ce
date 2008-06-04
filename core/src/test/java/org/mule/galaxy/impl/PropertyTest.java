@@ -2,6 +2,7 @@ package org.mule.galaxy.impl;
 
 
 import org.mule.galaxy.Dao;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
@@ -30,6 +31,13 @@ public class PropertyTest extends AbstractGalaxyTest {
        
        PropertyDescriptor pd3 = registry.getPropertyDescriptorByName(pd.getProperty());
        assertNotNull(pd3);
+       
+       pd.setId(null);
+       try {
+           registry.savePropertyDescriptor(pd);
+           fail("DuplicateItemException expected");
+       } catch (DuplicateItemException e) {
+       }
     }
 
 }

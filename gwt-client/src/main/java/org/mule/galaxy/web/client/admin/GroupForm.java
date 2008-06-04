@@ -34,7 +34,8 @@ public class GroupForm extends AbstractAdministrationForm {
     private ValidatableTextBox nameTB;
 
     public GroupForm(AdministrationPanel adminPanel) {
-        super(adminPanel, "groups", "Group was saved.", "Group was deleted.");
+        super(adminPanel, "groups", "Group was saved.", "Group was deleted.", 
+              "A group with that name already exists.");
     }
 
     protected void addFields(FlexTable table) {

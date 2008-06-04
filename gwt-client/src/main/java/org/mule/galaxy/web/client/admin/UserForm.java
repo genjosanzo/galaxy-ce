@@ -18,21 +18,6 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.SelectionPanel;
-import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
-import org.mule.galaxy.web.client.validation.EmailValidator;
-import org.mule.galaxy.web.client.validation.MinLengthValidator;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatablePasswordTextBox;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.SecurityServiceAsync;
-import org.mule.galaxy.web.rpc.WGroup;
-import org.mule.galaxy.web.rpc.WUser;
-
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -45,6 +30,21 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Collection;
 
 import org.gwtwidgets.client.ui.LightBox;
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.SelectionPanel;
+import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
+import org.mule.galaxy.web.client.validation.EmailValidator;
+import org.mule.galaxy.web.client.validation.MinLengthValidator;
+import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatablePasswordTextBox;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemExistsException;
+import org.mule.galaxy.web.rpc.SecurityServiceAsync;
+import org.mule.galaxy.web.rpc.WGroup;
+import org.mule.galaxy.web.rpc.WUser;
 
 public class UserForm extends AbstractAdministrationForm {
 
@@ -59,7 +59,8 @@ public class UserForm extends AbstractAdministrationForm {
     private static final int PASSWORD_MIN_LENGTH = 5;
 
     public UserForm(AdministrationPanel adminPanel) {
-        super(adminPanel, "users", "User was saved.", "User was deleted.");
+        super(adminPanel, "users", "User was saved.", "User was deleted.", 
+              "A user with that username already exists.");
     }
     
     protected void addFields(final FlexTable table) {
@@ -236,7 +237,7 @@ public class UserForm extends AbstractAdministrationForm {
     private void save(SecurityServiceAsync svc, String p, String c) {
         svc.addUser(user, p, getSaveCallback());
     }
-
+    
     protected void delete() {
         final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter()
         {

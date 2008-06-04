@@ -30,7 +30,7 @@ public abstract class AbstractCallback implements AsyncCallback{
         this.menuPanel = panel;
     }
 
-    public void onFailure(Throwable caught) {
+    public void onFailureDirect(Throwable caught) {
         String msg = caught.getMessage();
         
         if (msg != null || !"".equals(msg)) {
@@ -38,6 +38,10 @@ public abstract class AbstractCallback implements AsyncCallback{
         } else {
             menuPanel.setMessage("There was an error communicating with the server. Please try again." + caught.getMessage());
         }
+    }
+
+    public void onFailure(Throwable caught) {
+        onFailureDirect(caught);
     }
     
     

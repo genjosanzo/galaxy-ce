@@ -25,7 +25,7 @@ public class IndexForm extends AbstractAdministrationForm {
     private TextArea groovyExpressionTA;
     
     public IndexForm(AdministrationPanel adminPanel) {
-        super(adminPanel, "indexes", "Index was saved.", "Index was deleted.");
+        super(adminPanel, "indexes", "Index was saved.", "Index was deleted.", null);
     }
     
     protected void addFields(final FlexTable table) {

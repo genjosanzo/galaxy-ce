@@ -28,8 +28,8 @@ public abstract class AbstractAdministrationForm extends AbstractForm {
     public AbstractAdministrationForm(AdministrationPanel adminPanel, 
                                       String successToken,
                                       String successMessage, 
-                                      String deleteMessage) {
-        super(adminPanel, successToken, successMessage, deleteMessage);
+                                      String deleteMessage, String existsMessage) {
+        super(adminPanel, successToken, successMessage, deleteMessage, existsMessage);
         
         this.adminPanel = adminPanel;
     }

@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -44,6 +45,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
 
     private AccessControlManager accessControlManager;
     private ApplicationContext applicationContext;
+    private String activeUsersNodeId;
     
     public UserManagerImpl() throws Exception {
         super(User.class, "users", true);
@@ -165,8 +167,14 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     }
 
     public void create(final User user, final String password) throws UserExistsException {
-        execute(new JcrCallback() {
+        Object result = execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node activeUsers = getNodeByUUID(activeUsersNodeId);
+                try {
+                    activeUsers.addNode(user.getUsername());
+                } catch (ItemExistsException e) {
+                    return new UserExistsException();
+                }
                 Node users = getObjectsNode(session);
                 
                 String id = generateNodeName(null);
@@ -189,10 +197,15 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
                     }
                     throw new RuntimeException(e);
                 }
+                
                 session.save();
                 return null;
             }
         });
+        
+        if (result instanceof UserExistsException) {
+            throw (UserExistsException) result;
+        }
     }
 
     @Override
@@ -202,6 +215,11 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         if (userNode != null) {
             userNode.setProperty(ENABLED, false);
         }
+        
+        Node activeUsers = getNodeByUUID(activeUsersNodeId);
+        Node activeUser = activeUsers.getNode(JcrUtil.getStringOrNull(activeUsers, USERNAME));
+        
+        activeUser.remove();
         
         session.save();
     }
@@ -238,6 +256,9 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     }
 
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
+        Node activeUsers = JcrUtil.getOrCreate(getRootNode(), "activeUsers", "galaxy:noSiblings");
+        activeUsersNodeId = activeUsers.getUUID();
+        
         if (objects.getNodes().getSize() == 0) {
             String id = generateNodeName(null);
             Node node = objects.addNode(id);
@@ -256,6 +277,8 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
             Calendar cal = Calendar.getInstance();
             cal.setTime(new Date());
             JcrUtil.setProperty(CREATED, cal, node);
+            
+            activeUsers.addNode("admin");
         }
     }
 

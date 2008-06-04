@@ -1,11 +1,12 @@
 package org.mule.galaxy.impl;
 
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.test.AbstractGalaxyTest;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.security.UserExistsException;
+import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class UserManagerTest extends AbstractGalaxyTest {
     public void testDao() throws Exception {
@@ -67,5 +68,16 @@ public class UserManagerTest extends AbstractGalaxyTest {
         assertEquals("Dan Diephouse", dan.getName());
         assertNotNull(dan.getCreated());
     }
+    
+    public void testUserExistsException() throws Exception {
+        User admin = new User();
+        admin.setUsername("admin");
+        admin.setName("Dan Diephouse");
 
+        try {
+            userManager.create(admin, "test");
+            fail("User already exists, should've thrown exception!");
+        } catch (UserExistsException e) {
+        }
+    }
 }

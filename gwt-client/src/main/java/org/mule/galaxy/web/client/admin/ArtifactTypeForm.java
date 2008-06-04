@@ -41,7 +41,7 @@ public class ArtifactTypeForm extends AbstractAdministrationForm {
         super(adminPanel, 
               "artifact-types", 
               "Artifact type was saved.", 
-              "Artifact type was deleted.");
+              "Artifact type was deleted.", null);
     }
 
     protected void addFields(FlexTable table) {

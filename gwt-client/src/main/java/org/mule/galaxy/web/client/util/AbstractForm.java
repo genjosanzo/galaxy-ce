@@ -22,12 +22,14 @@ import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemExistsException;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
@@ -44,14 +46,16 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
     private final ErrorPanel errorPanel;
     private final String deleteMessage;
     private final String CANCEL_MESSAGE = "Action Canceled";
+    private String existsMessage;
 
     public AbstractForm(ErrorPanel errorPanel, String successToken,
-                        String successMessage, String deleteMessage) {
+                        String successMessage, String deleteMessage, String existsMessage) {
         super();
         this.errorPanel = errorPanel;
         this.successToken = successToken;
         this.successMessage = successMessage;
         this.deleteMessage = deleteMessage;
+        this.existsMessage = existsMessage;
 
         panel = new FlowPanel();
 
@@ -193,8 +197,7 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
         return new AbstractCallback(errorPanel) {
 
             public void onFailure(Throwable caught) {
-                setEnabled(true);
-                super.onFailure(caught);
+                onSaveFailure(this, caught);
             }
 
             public void onSuccess(Object arg0) {
@@ -204,6 +207,16 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
             }
 
         };
+    }
+
+    protected void onSaveFailure(AbstractCallback callback, Throwable caught) {
+        setEnabled(true);
+        
+        if (caught instanceof ItemExistsException) {
+            errorPanel.setMessage(existsMessage);
+        } else {
+            callback.onFailureDirect(caught);
+        }
     }
 
     protected AsyncCallback getDeleteCallback() {
