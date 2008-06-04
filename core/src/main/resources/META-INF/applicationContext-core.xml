@@ -21,7 +21,6 @@
   </bean>
 
   <bean class="org.mule.galaxy.policy.wsdl.BackwardCompatibilityPolicy"/>
-  <bean class="org.mule.galaxy.policy.wsdl.ForwardCompatibilityPolicy"/>
   <bean class="org.mule.galaxy.policy.wsdl.BasicProfilePolicy"/>
 
   <bean id="indexer.xpath" class="org.mule.galaxy.impl.index.XPathIndexer"/>
