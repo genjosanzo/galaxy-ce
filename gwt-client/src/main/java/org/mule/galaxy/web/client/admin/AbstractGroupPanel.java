@@ -117,8 +117,8 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
             int row = rows.indexOf(group.getName()) + 1;
 
             // certain groups should not be removed or edited via the GUI
-            boolean lockedGroup = group.getName().equals("Administrators");
-            if (lockedGroup) {
+            boolean isUberGroup = group.getName().equals("Administrators");
+            if (isUberGroup) {
                 table.setWidget(row, 0, new Label(group.getName()));
             } else {
                 table.setWidget(row, 0, hl);
@@ -128,9 +128,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
             for (Iterator gItr = grants.iterator(); gItr.hasNext();) {
                 WPermissionGrant pg = (WPermissionGrant) gItr.next();
 
-                Widget w = createGrantWidget(pg);
-                // disable for admin group
-                if (lockedGroup) ((CheckBox)w).setEnabled(false);
+                Widget w = createGrantWidget(pg, isUberGroup);
                 table.setWidget(row, getPermissionColumn(pg.getPermission()), w);
             }
             row++;
@@ -218,6 +216,6 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
         return -1;
     }
 
-    protected abstract Widget createGrantWidget(WPermissionGrant pg);
+    protected abstract Widget createGrantWidget(WPermissionGrant pg, boolean isUberGroup);
 
 }

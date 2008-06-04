@@ -47,11 +47,12 @@ public class GroupListPanel extends AbstractGroupPanel {
         }
     }
     
-    protected Widget createGrantWidget(WPermissionGrant pg) {
+    protected Widget createGrantWidget(WPermissionGrant pg, boolean isUberGroup) {
         CheckBox cb = new CheckBox();
         if (pg.getGrant() == WPermissionGrant.GRANTED) {
             cb.setChecked(true);
         }
+        cb.setEnabled(!isUberGroup);
         return cb;
     }
     

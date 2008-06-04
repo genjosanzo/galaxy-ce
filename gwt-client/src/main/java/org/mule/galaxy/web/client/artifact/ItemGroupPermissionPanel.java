@@ -26,6 +26,7 @@ import org.mule.galaxy.web.rpc.WPermissionGrant;
 
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.core.client.GWT;
 
 import java.util.Map;
 
@@ -51,14 +52,19 @@ public class ItemGroupPermissionPanel extends AbstractGroupPanel {
         pg.setGrant(lb.getSelectedIndex() - 1);
     }
     
-    protected Widget createGrantWidget(WPermissionGrant pg) {
+    protected Widget createGrantWidget(WPermissionGrant pg, boolean uberuser) {
         ListBox lb = new ListBox();
         lb.addItem("Revoked");
         lb.addItem("Inherited");
         lb.addItem("Granted");
-        
-        lb.setSelectedIndex(pg.getGrant() + 1);
-        
+
+        // admins always get full permissions
+        if(uberuser) {
+            lb.setSelectedIndex(pg.getGrant() + 2);
+            lb.setEnabled(false);
+        } else {
+            lb.setSelectedIndex(pg.getGrant() + 1);
+        }
         return lb;
     }
     
