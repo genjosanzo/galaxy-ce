@@ -65,6 +65,7 @@ import org.mule.galaxy.web.rpc.WUser;
  */
 public class Galaxy implements EntryPoint, HistoryListener {
 
+    public static final String WILDCARD = "*";
     private static final String DEFAULT_PAGE = "browse";
     private SimplePanel registryPanel;
     private SimplePanel activityPanel;
@@ -75,7 +76,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     private FlowPanel rightPanel;
     private PageInfo curInfo;
     private Map history = new HashMap();
-    private TabPanel tabPanel;
+    protected TabPanel tabPanel;
     private WUser user;
     protected int oldTab;
     private boolean suppressTabHistory;
@@ -86,7 +87,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     
     // Delimiters may be causing GWT issues w/safari
     // this makes it easy to swap ones out.
-    public static final String WILDCARD = "*";
+    protected FlowPanel base;
 
     /**
      * This is the entry point method.
@@ -113,7 +114,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         target = (ServiceDefTarget) heartbeatService;
         target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/heartbeat.rpc");
 
-        FlowPanel base = new FlowPanel();
+        base = new FlowPanel();
         base.setStyleName("base");
         base.setWidth("100%");
 
@@ -162,7 +163,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
                 oldTab = tab;
             }
         });
-        base.add(tabPanel);
+        
+        initializeBody();
         
         browsePanel = new BrowsePanel(this);
         createPageInfo(DEFAULT_PAGE, browsePanel, 0);
@@ -197,6 +199,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
         createPageInfo("view", new ViewPanel(this), 0);
 
         new HeartbeatTimer(Galaxy.this);
+    }
+
+    protected void initializeBody() {
+        base.add(tabPanel);
     }
     
     protected String getProductName() {

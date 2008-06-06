@@ -58,15 +58,15 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
 
-public class ArtifactUploadServlet extends HttpServlet {
-
-    private WebApplicationContext context;
-    private Registry registry;
+public class ArtifactUploadServlet implements Controller {
     
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
-        IOException {
+    private Registry registry;
+
+    public ModelAndView handleRequest(HttpServletRequest req, HttpServletResponse resp)
+        throws Exception {
         String artifactId = null;
         String wkspcId = null;
         String name = null;
@@ -112,12 +112,12 @@ public class ArtifactUploadServlet extends HttpServlet {
             
             if (uploadItem == null) {
                 writer.write("No file was specified.");
-                return;
+                return null;
             }
 
             if (versionLabel == null) {
                 writer.write("No version label was specified.");
-                return;
+                return null;
             }
 
             UserDetailsWrapper wrapper = (UserDetailsWrapper)SecurityContextHolder.getContext()
@@ -128,7 +128,7 @@ public class ArtifactUploadServlet extends HttpServlet {
             if (artifactId == null) {            
                 if (wkspcId == null) {
                     writer.write("No workspace was specified.");
-                    return;
+                    return null;
                 }
                 
                 Workspace wkspc = registry.getWorkspace(wkspcId);
@@ -194,15 +194,11 @@ public class ArtifactUploadServlet extends HttpServlet {
             resp.setStatus(401);
             writer.write("AccessException.");
         }
+        return null;
     }
 
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-
-        context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-
-        registry = (Registry)context.getBean("registry");
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
     }
 
 }

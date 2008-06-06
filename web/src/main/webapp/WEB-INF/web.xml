@@ -61,7 +61,7 @@
 
     <filter-mapping>
         <filter-name>jcr</filter-name>
-        <url-pattern>/artifactUpload</url-pattern>
+        <url-pattern>*.form</url-pattern>
     </filter-mapping>
 
 
@@ -82,17 +82,25 @@
     </servlet>
 
     <servlet>
-        <servlet-name>ArtifactUploadServlet</servlet-name>
-        <servlet-class>org.mule.galaxy.web.ArtifactUploadServlet</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>handler</servlet-name>
         <servlet-class>
             org.springframework.web.servlet.DispatcherServlet
         </servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+
+    <servlet>
+        <servlet-name>form</servlet-name>
+        <servlet-class>
+            org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>form</servlet-name>
+        <url-pattern>*.form</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>handler</servlet-name>
@@ -102,11 +110,6 @@
     <servlet-mapping id="abdera-mapping">
         <servlet-name>Abdera</servlet-name>
         <url-pattern>/api/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>ArtifactUploadServlet</servlet-name>
-        <url-pattern>/artifactUpload</url-pattern>
     </servlet-mapping>
 
     <!--<error-page>-->
