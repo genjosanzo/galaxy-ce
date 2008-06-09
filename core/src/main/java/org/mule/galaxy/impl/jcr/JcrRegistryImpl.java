@@ -997,7 +997,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     next.setLatest(true);
                     next.setEnabled(true);
                     
-                    ((List<ArtifactVersion>)jcrArtifact.getVersions()).add(0, next);
+                    // Add it as the most recent version
+                    ((List<ArtifactVersion>)jcrArtifact.getVersions()).add(next);
                     
                     Lifecycle lifecycle = jcrArtifact.getParent().getDefaultLifecycle();
                     next.setPhase(lifecycle.getInitialPhase());        

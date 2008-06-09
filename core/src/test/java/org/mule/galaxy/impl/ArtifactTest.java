@@ -301,6 +301,8 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertNotNull(ar);
         assertTrue(ar.isApproved());
 
+        assertNotNull(ar.getArtifactVersion().getPrevious());
+        
         registry.setDefaultVersion(artifact.getVersion("1"), getAdmin());
 
         Artifact a = registry.getArtifact(workspace, "test.txt");
