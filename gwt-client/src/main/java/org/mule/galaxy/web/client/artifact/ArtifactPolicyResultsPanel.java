@@ -18,20 +18,29 @@
 
 package org.mule.galaxy.web.client.artifact;
 
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
-
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
 
 public class ArtifactPolicyResultsPanel extends AbstractErrorShowingComposite {
 
-    public ArtifactPolicyResultsPanel(Collection warnings, Collection failures) {
+    private RegistryMenuPanel menuPanel;
+
+    public ArtifactPolicyResultsPanel(Galaxy galaxy, Collection warnings, Collection failures) {
         super();
         
+        menuPanel = new RegistryMenuPanel(galaxy);
+        
         FlowPanel panel = getMainPanel();
+        menuPanel.setMain(panel);
+        
         if (warnings.size() > 0) {
             panel.add(createTitle("Warnings"));
             
@@ -57,7 +66,12 @@ public class ArtifactPolicyResultsPanel extends AbstractErrorShowingComposite {
             }
         }
         
-        initWidget(panel);
+        initWidget(menuPanel);
+    }
+
+    public void onShow(List params) {
+        menuPanel.onShow();
+        super.onShow(params);
     }
     
 }

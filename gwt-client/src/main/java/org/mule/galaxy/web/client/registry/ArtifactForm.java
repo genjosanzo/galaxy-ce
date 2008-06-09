@@ -82,7 +82,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
             add = true;
         }
 
-        form.setAction(GWT.getModuleBaseURL() + "../artifactUpload");
+        form.setAction(GWT.getModuleBaseURL() + "../artifactUpload.form");
         form.setEncoding(FormPanel.ENCODING_MULTIPART);
         form.setMethod(FormPanel.METHOD_POST);
 
@@ -199,21 +199,46 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
 
         List warnings = new ArrayList();
         List failures = new ArrayList();
+        String lines = null;
+        boolean warning = true;
         for (int i = 1; i < split.length; i++) {
             String s = split[i];
 
             if (s.startsWith("WARNING: ")) {
-                warnings.add(getMessage(s));
+                addWarningOrFailure(warnings, failures, lines, warning);
+                
+                warning = true;
+                lines = getMessage(s);
             } else if (s.startsWith("FAILURE: ")) {
-                failures.add(getMessage(s));
+                addWarningOrFailure(warnings, failures, lines, warning);
+                
+                warning = false;
+                lines = getMessage(s);
+            } else {
+                lines += s;
             }
         }
-
-        String token = "policy-failures-" + artifactId;
-        ArtifactPolicyResultsPanel failurePanel = new ArtifactPolicyResultsPanel(warnings, failures);
+        
+        addWarningOrFailure(warnings, failures, lines, warning);
+        
+        String token = "policy-failures";
+        if (artifactId != null) {
+            token += "-" + artifactId;
+        }
+        ArtifactPolicyResultsPanel failurePanel = new ArtifactPolicyResultsPanel(galaxy, warnings, failures);
         failurePanel.setMessage("The artifact did not meet all the necessary policies!");
         galaxy.createPageInfo(token, failurePanel, 0);
         History.newItem(token);
+    }
+
+    private void addWarningOrFailure(List warnings, List failures, String lines, boolean warning) {
+        if (lines == null) return;
+        
+        if (warning) {
+            warnings.add(lines);
+        } else {
+            failures.add(lines);
+        }
     }
 
     private String getMessage(String s) {
