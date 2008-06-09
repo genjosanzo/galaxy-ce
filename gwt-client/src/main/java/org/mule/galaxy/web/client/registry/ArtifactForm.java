@@ -296,6 +296,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
         table.setText(1, 0, "Disable Previous");
 
         disablePrevious = new CheckBox();
+        disablePrevious.setChecked(true);
         disablePrevious.setName("disablePrevious");
         table.setWidget(1, 1, disablePrevious);
 
