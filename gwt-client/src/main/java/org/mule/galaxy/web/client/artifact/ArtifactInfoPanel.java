@@ -345,7 +345,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
             final DependencyInfo info = (DependencyInfo) itr.next();
             
             Hyperlink hl = new Hyperlink(info.getArtifactName(), 
-                                         "artifact-" + info.getArtifactId());
+                                         "artifact_" + info.getArtifactId());
             hl.addClickListener(new ClickListener() {
 
                 public void onClick(Widget arg0) {
