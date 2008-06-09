@@ -291,7 +291,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
             String[] split = token.split("_");
             
             // hack to match "foo/*" style tokens
-            int slashIdx = token.lastIndexOf('_');
+            int slashIdx = token.indexOf('_');
             if (slashIdx != -1) {
                 page = getPageInfo(token.substring(0, slashIdx) + "_" + WILDCARD);
             }

@@ -164,6 +164,7 @@ public class HistoryPanel extends AbstractComposite {
                 TransitionResponse tr = (TransitionResponse) o;
                 
                 if (tr == null || tr.isSuccess()) {
+                    // reload the artifact form and show tab 2
                     History.newItem("artifact_" + info.getId() + "_2");
                 } else {
                     displayMessages(tr);

@@ -193,9 +193,9 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
         created.setProperty(INITIAL_PHASE, true);
         
         addPhaseNode(lNode, "Developed", new String[] { "Tested" });
-        addPhaseNode(lNode, "Tested", new String[] { "Staged", "Deployed", "Retired" });
-        addPhaseNode(lNode, "Staged", new String[] { "Deployed", "Retired" });
-        addPhaseNode(lNode, "Deployed", new String[] { "Retired" });
+        addPhaseNode(lNode, "Tested", new String[] { "Staged", "Production", "Retired" });
+        addPhaseNode(lNode, "Staged", new String[] { "Production", "Retired" });
+        addPhaseNode(lNode, "Production", new String[] { "Retired" });
         addPhaseNode(lNode, "Retired", new String[0]);
     }
 
