@@ -60,14 +60,16 @@ public interface RegistryService extends RemoteService {
     
     /**
      * @gwt.typeArgs searchPredicates <org.mule.galaxy.web.rpc.SearchPredicate>
+     * @param workspacePath TODO
+     * @param includeChildWkspcs TODO
      * @param start TODO
      * @param maxResults TODO
      * @return 
      * @throws RPCException 
      */
-    WSearchResults getArtifacts(String workspace, Set artifactTypes, 
-                                Set searchPredicates, String freeformQuery, 
-                                int start, int maxResults) throws RPCException;
+    WSearchResults getArtifacts(String workspaceId, String workspacePath, 
+                                boolean includeChildWkspcs, Set artifactTypes, 
+                                Set searchPredicates, String freeformQuery, int start, int maxResults) throws RPCException;
     
     WSearchResults getArtifactsForView(String viewId, int resultStart, int maxResults) throws RPCException;
     

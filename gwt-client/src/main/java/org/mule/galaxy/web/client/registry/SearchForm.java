@@ -18,25 +18,28 @@
 
 package org.mule.galaxy.web.client.registry;
 
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.SearchPredicate;
-
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.SearchPredicate;
 
 public class SearchForm
     extends AbstractErrorShowingComposite
@@ -51,6 +54,8 @@ public class SearchForm
     private Hyperlink freeformQueryLink;
     private TextArea freeformQueryArea;
     private final boolean allowFreeform;
+    private TextBox workspaceTB;
+    private CheckBox includeChildWkspcCB;
 
     public SearchForm(Galaxy galaxy, String searchText, boolean allowFreeform) {
         this.allowFreeform = allowFreeform;
@@ -85,6 +90,21 @@ public class SearchForm
     }
 
     protected void initializeFields() {
+        Label searchLabel = new Label("Workspace: ");
+        workspaceTB = new TextBox();
+        workspaceTB.setVisibleLength(80);
+        
+        includeChildWkspcCB = new CheckBox("Include Child Workspaces");
+        
+        FlowPanel fieldPanel = asHorizontal(searchLabel, workspaceTB);
+        fieldPanel.setStyleName("search-panel-field");
+        panel.add(fieldPanel);
+        
+        fieldPanel = new FlowPanel();
+        fieldPanel.setStyleName("search-panel-field");
+        fieldPanel.add(includeChildWkspcCB);
+        panel.add(fieldPanel);
+        
         freeformQueryArea = new TextArea();
         freeformQueryArea.setCharacterWidth(83);
         freeformQueryArea.setVisibleLines(7);
@@ -206,6 +226,16 @@ public class SearchForm
         return freeformQueryArea.getText();
     }
 
+    public String getWorkspacePath() 
+    {
+        return workspaceTB.getText();
+    }
+    
+    public boolean isSearchWorkspaceChildren() 
+    {
+        return includeChildWkspcCB.isChecked();
+    }
+    
     public void setPredicates(Set predicates)
     {
         rows.clear();

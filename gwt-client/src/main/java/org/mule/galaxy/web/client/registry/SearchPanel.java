@@ -65,6 +65,8 @@ public class SearchPanel extends AbstractBrowsePanel {
 
     protected void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback) {
         galaxy.getRegistryService().getArtifacts(null, 
+                                                 searchForm.getWorkspacePath(), 
+                                                 searchForm.isSearchWorkspaceChildren(),
                                                  getAppliedArtifactTypeFilters(), 
                                                  searchForm.getPredicates(), 
                                                  searchForm.getFreeformQuery(), 

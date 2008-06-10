@@ -51,7 +51,8 @@ public interface RegistryServiceAsync {
     void deleteArtifactType(String id, 
                             AsyncCallback callback);
     
-    void getArtifacts(String workspace, Set artifactTypes, 
+    void getArtifacts(String workspace, String workspacePath, 
+                      boolean includeChildWkspcs, Set artifactTypes, 
                       Set searchPredicates, String freeformQuery, 
                       int start, int maxResults, 
                       AsyncCallback callback);

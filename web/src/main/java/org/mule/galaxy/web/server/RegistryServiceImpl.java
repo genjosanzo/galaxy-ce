@@ -342,12 +342,15 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     @SuppressWarnings("unchecked")
-    public WSearchResults getArtifacts(String workspaceId, Set artifactTypes, Set searchPredicates,
-                                       String freeformQuery, int start, int maxResults) throws RPCException {
+    public WSearchResults getArtifacts(String workspaceId, String workspacePath, boolean includeChildWkspcs,
+                                       Set artifactTypes, Set searchPredicates, String freeformQuery, 
+                                       int start, int maxResults) throws RPCException {
         Query q = getQuery(searchPredicates, start, maxResults);
 
         if (workspaceId != null) {
-            q.workspaceId(workspaceId);
+            q.workspaceId(workspaceId, includeChildWkspcs);
+        } else if (workspacePath != null) {
+            q.workspacePath(workspacePath, includeChildWkspcs);
         }
         try {
             SearchResults results;

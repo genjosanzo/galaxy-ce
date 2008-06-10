@@ -183,7 +183,8 @@ public class BrowsePanel extends AbstractBrowsePanel {
     }
 
     protected void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback) {
-        galaxy.getRegistryService().getArtifacts(workspaceId, getAppliedArtifactTypeFilters(), 
+        galaxy.getRegistryService().getArtifacts(workspaceId, null, false, 
+                                                 getAppliedArtifactTypeFilters(), 
                                                  new HashSet(), null, 
                                                  resultStart, maxResults, callback);
     }

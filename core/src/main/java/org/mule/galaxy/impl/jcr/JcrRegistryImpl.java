@@ -1299,7 +1299,16 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         if (query.getWorkspaceId() != null) {
             base.append("//*[@jcr:uuid='")
                 .append(query.getWorkspaceId())
-                .append("'][@jcr:primaryType=\"galaxy:workspace\"]/element(*, galaxy:artifact)");
+                .append("'][@jcr:primaryType=\"galaxy:workspace\"]");
+
+            if (query.isSearchWorkspaceChildren()) {
+                base.append("//");
+            } else {
+                base.append("/");
+            }
+            
+            base.append("element(*, galaxy:artifact)");
+            
         } else if (query.getWorkspacePath() != null) {
             String path = query.getWorkspacePath();
 
@@ -1313,7 +1322,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             
             base.append("//")
             .append(ISO9075.encode(path))
-            .append("[@jcr:primaryType=\"galaxy:workspace\"]/element(*, galaxy:artifact)");
+            .append("[@jcr:primaryType=\"galaxy:workspace\"]");
+            
+            if (query.isSearchWorkspaceChildren()) {
+                base.append("//");
+            } else {
+                base.append("/");
+            }
+            
+            base.append("element(*, galaxy:artifact)");
         } else {
             base.append("//element(*, galaxy:artifact)");
         }

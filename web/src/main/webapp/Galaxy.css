@@ -182,6 +182,10 @@ a:visited {
 	color: white;
 }
 
+.search-panel-field {
+  padding-bottom: 6px;
+}
+
 /**
  **
  ** Generic right side styles
