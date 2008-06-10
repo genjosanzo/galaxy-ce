@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.4"
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee   http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-    <!-- $Id: web.xml 805 2008-04-25 13:36:56Z andrew $ -->
+    <!-- $Id: web.xml 1020 2008-06-06 22:11:34Z dandiep $ -->
 
     <context-param>
         <param-name>contextConfigLocation</param-name>
@@ -62,7 +62,7 @@
 
     <filter-mapping>
         <filter-name>jcr</filter-name>
-        <url-pattern>/artifactUpload</url-pattern>
+        <url-pattern>*.form</url-pattern>
     </filter-mapping>
 
 
@@ -83,17 +83,25 @@
     </servlet>
 
     <servlet>
-        <servlet-name>ArtifactUploadServlet</servlet-name>
-        <servlet-class>org.mule.galaxy.web.ArtifactUploadServlet</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>handler</servlet-name>
         <servlet-class>
             org.springframework.web.servlet.DispatcherServlet
         </servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+
+    <servlet>
+        <servlet-name>form</servlet-name>
+        <servlet-class>
+            org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>form</servlet-name>
+        <url-pattern>*.form</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>handler</servlet-name>
@@ -103,11 +111,6 @@
     <servlet-mapping id="abdera-mapping">
         <servlet-name>Abdera</servlet-name>
         <url-pattern>/api/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>ArtifactUploadServlet</servlet-name>
-        <url-pattern>/artifactUpload</url-pattern>
     </servlet-mapping>
 
     <!--<error-page>-->

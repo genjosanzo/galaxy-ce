@@ -76,6 +76,11 @@ public class WorkspaceCollectionTest extends AbstractAtomTest {
         feed = feedDoc.getRoot();
         
         assertEquals(1, feed.getEntries().size());
+        res.release();
+        
+        res = client.get(dwBase + "/MyWorkspace", defaultOpts);
+        assertEquals(200, res.getStatus());
+        res.release();
         
         // delete the workspace
         res = client.delete(dwBase + "/MyWorkspace", defaultOpts);
