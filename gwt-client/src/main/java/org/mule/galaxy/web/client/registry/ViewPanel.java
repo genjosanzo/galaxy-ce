@@ -130,25 +130,23 @@ public class ViewPanel extends AbstractBrowsePanel {
                 buttonPanel.add(cancel);
             }
 
-            protected void initializeFields() {
+            protected void initializeFields(FlexTable table) {
                 if (NEW_VIEW_ID.equals(viewId)) {
                     panel.add(createPrimaryTitle("New View"));
                 } else {
                     panel.add(createPrimaryTitle("Edit View"));
                 }
-                FlexTable table = new FlexTable();
                 
                 nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
                 nameTB.getTextBox().setVisibleLength(25);
                 table.setText(0, 0, "View Name: ");
                 table.setWidget(0, 1, nameTB);
 
-                sharedCB = new CheckBox();
-                table.setText(1, 0, "Shared: ");
-                table.setWidget(1, 1, sharedCB);
+                sharedCB = new CheckBox("Shared");
+                table.getFlexCellFormatter().setColSpan(1, 0, 2);
+                table.setWidget(1, 0, sharedCB);
                 
-                panel.add(table);
-                super.initializeFields();
+                super.initializeFields(table);
             }
             
         };

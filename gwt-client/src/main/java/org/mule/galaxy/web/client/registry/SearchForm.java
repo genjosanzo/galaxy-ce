@@ -22,6 +22,7 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
@@ -73,7 +74,10 @@ public class SearchForm
             }
         });
 
-        initializeFields();
+        FlexTable table = new FlexTable();
+        panel.add(table);
+        
+        initializeFields(table);
         
         panel.add(fieldPanel);
         
@@ -89,21 +93,19 @@ public class SearchForm
         initWidget(panel);
     }
 
-    protected void initializeFields() {
-        Label searchLabel = new Label("Workspace: ");
+    protected void initializeFields(FlexTable table) {
+        int row = table.getRowCount();
+        table.setText(row, 0, "Workspace:");
+        
         workspaceTB = new TextBox();
         workspaceTB.setVisibleLength(80);
+        table.setWidget(row, 1, workspaceTB);
+        
+        row = table.getRowCount();
         
         includeChildWkspcCB = new CheckBox("Include Child Workspaces");
-        
-        FlowPanel fieldPanel = asHorizontal(searchLabel, workspaceTB);
-        fieldPanel.setStyleName("search-panel-field");
-        panel.add(fieldPanel);
-        
-        fieldPanel = new FlowPanel();
-        fieldPanel.setStyleName("search-panel-field");
-        fieldPanel.add(includeChildWkspcCB);
-        panel.add(fieldPanel);
+        table.getFlexCellFormatter().setColSpan(row, 0, 2);
+        table.setWidget(row, 0, includeChildWkspcCB);
         
         freeformQueryArea = new TextArea();
         freeformQueryArea.setCharacterWidth(83);
