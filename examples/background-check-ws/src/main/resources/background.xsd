@@ -3,8 +3,34 @@
         xmlns="http://www.w3.org/2001/XMLSchema" 
         targetNamespace="http://galaxy.mule.org/example/background-check/">
     
-    <element name="BackgroundInformation">
-    
+    <element name="BackgroundInformationRequest">
+      <complexType>
+        <sequence>
+          <element name="FirstName" type="string"/>
+          <element name="LastName" type="string"/>
+          <element name="SocialSecurityNumber" type="string"/>
+        </sequence>
+      </complexType>
     </element>
     
+    <element name="BackgroundInformation">
+      <complexType>
+        <sequence>
+          <element name="FullName" type="string"/>
+          <element name="HasCriminalRecord" type="boolean"/>
+          <element name="HasValidSocialSecurityNumber" type="boolean"/>
+          <element name="Address" type="tns:AddressType"/>
+        </sequence>
+      </complexType>
+    </element>
+    
+    <complexType name="AddressType">
+      <sequence>
+        <element name="Address1" type="string"/>
+        <element name="Address2" type="string" minOccurs="0"/>
+        <element name="City" type="string"/>
+        <element name="State" type="string"/>
+        <element name="PostalCode" type="string"/>
+      </sequence>
+    </complexType>
 </schema>

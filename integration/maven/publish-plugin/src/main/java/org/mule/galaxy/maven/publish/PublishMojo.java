@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +13,8 @@ import java.util.Set;
 
 import javax.activation.MimeType;
 
+import org.apache.abdera.Abdera;
+import org.apache.abdera.factory.Factory;
 import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.i18n.text.CharUtils.Profile;
 import org.apache.abdera.model.Document;
@@ -163,8 +166,30 @@ public class PublishMojo extends AbstractMojo {
      * @parameter
      */
     private boolean strictFiltering;
-
+    
+    /**
+     * Set this to true to skip execution. Or set the property galaxy.publish.skip to true
+     * to skip execution. 
+     * @parameter expression="${galaxy.publish.skip}"
+     */
+    private boolean skip;
+    
+    /**
+     * Set this to true if you only want to show what would be uploaded.
+     * 
+     * @parameter expression="${galaxy.showOnly}"
+     */
+    private boolean showOnly;
+    
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (skip) {
+            getLog().info("Skipping Galaxy publishing.");
+            return;
+        }
+        
+        if (showOnly) {
+            getLog().info("showOnly mode is on. No changes will be made to the repository.");
+        }
         
         String auth = null;
         if (serverId != null) {
@@ -190,6 +215,12 @@ public class PublishMojo extends AbstractMojo {
         
         authorization = "Basic " + Base64.encode(auth.getBytes());
     
+        publish();
+    }
+
+    private void publish() throws MojoFailureException, MojoExecutionException {
+        ensureWorkspaceExists();
+        
         if (clearWorkspace) {
             clearWorkspace();
         }
@@ -239,12 +270,88 @@ public class PublishMojo extends AbstractMojo {
         }
     }
 
+    private void ensureWorkspaceExists() throws MojoFailureException {
+        RequestOptions opts = new RequestOptions();
+        opts.setAuthorization(authorization);
+        
+        ClientResponse res = client.head(url, opts);
+        
+        String url2 = url;
+        while (res.getStatus() == 404) {
+            int idx = url2.lastIndexOf('/');
+            
+            if (idx == url2.length()) {
+                continue;
+            }
+            
+            if (idx != -1) {
+                url2 = url.substring(0, idx);
+             
+                res.release();
+                res = client.head(url2, opts);
+            } else {
+                break;
+            }
+        }
+        
+        if (url2 != null) {
+            createWorkspace(url2);
+        }
+        
+        res.release();
+    }
+
+    private void createWorkspace(String url2) throws MojoFailureException {
+        String workspaceUrl = url.substring(url2.length());
+        if ("".equals(workspaceUrl)) {
+            return;
+        }
+        
+        String[] workspaces = workspaceUrl.split("/");
+        
+        RequestOptions defaultOpts = client.getDefaultRequestOptions();
+        defaultOpts.setAuthorization(authorization);
+        defaultOpts.setContentType("application/atom+xml;type=entry");
+        
+        Factory factory = Abdera.getInstance().getFactory();
+        
+        String wkspcUrl = url2;
+        for (String wkspc : workspaces) {
+            if ("".equals(wkspc)) {
+                continue;
+            }
+            
+            Entry entry = factory.newEntry();
+            entry.setTitle(wkspc);
+            entry.setUpdated(new Date());
+            entry.addAuthor("Ignored");
+            entry.setId(factory.newUuidUri());
+            // Once we support workspace descriptions, the description will go here
+            entry.setContent("");
+            
+            ClientResponse res = client.post(wkspcUrl + ";workspaces", entry, defaultOpts);
+            if (res.getStatus() != 409 && res.getStatus() >= 300) {
+                throw new MojoFailureException("Could not create a workspace. Got status: " 
+                                               + res.getStatus()
+                                               + " (" + res.getStatusText() + ") for " + wkspcUrl);
+            }
+            res.release();
+            
+            wkspcUrl += "/" + wkspc;
+        }
+    }
+
     private void clearWorkspace() throws MojoFailureException {
         RequestOptions opts = new RequestOptions();
         opts.setAuthorization(authorization);
         
         getLog().info("Clearing workspace " + url);
+        
         ClientResponse res = client.get(url, opts);
+        if (res.getStatus() == 404) {
+            return;
+        }
+        
         if (res.getStatus() >= 300) {
             throw new MojoFailureException("Could not GET the workspace URL. Got status: " 
                                            + res.getStatus()
@@ -258,7 +365,11 @@ public class PublishMojo extends AbstractMojo {
         
         for (Entry e : feed.getEntries()) {
             getLog().info("Deleting " + e.getTitle());
-            client.delete(e.getContentSrc().toString(), opts);
+            
+            if (!showOnly) {
+                ClientResponse delRes = client.delete(e.getContentSrc().toString(), opts);
+                delRes.release();
+            }
         }
         
         res.release();
@@ -315,8 +426,10 @@ public class PublishMojo extends AbstractMojo {
             
             if (artifactExists == 404 && artifactVersionExists == 404) {
                 // create a new artifact
-                res = client.post(url, new FileInputStream(file), opts);
-                res.release();
+                if (!showOnly) {
+                    res = client.post(url, new FileInputStream(file), opts);
+                    res.release();
+                }
                 getLog().info("Created artifact " + name + " (version " + version + ")");
             } else if (artifactVersionExists < 300) {
                 getLog().info("Skipping artifact " + name + " as the current version already exists in the destination workspace.");
@@ -325,8 +438,10 @@ public class PublishMojo extends AbstractMojo {
                     + ". Got status " + res.getStatus() + " for URL " + artifactUrl + ".");
             } else {
                 // update the artifact
-                res = client.put(artifactUrl, new FileInputStream(file), opts);
-                res.release();
+                if (!showOnly) {
+                    res = client.put(artifactUrl, new FileInputStream(file), opts);
+                    res.release();
+                }
                 getLog().info("Updated artifact " + name + " (version " + version + ")");
             }
             

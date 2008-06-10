@@ -28,7 +28,8 @@ import org.mule.galaxy.test.AbstractAtomTest;
 import org.springmodules.jcr.JcrCallback;
 
 public class PublishMojoTest extends AbstractAtomTest {
-    private static final String WORKSPACE_URL = "http://localhost:9002/api/registry/Default%20Workspace";
+    private static final String BASE_URL = "http://localhost:9002/api/registry";
+    private static final String WORKSPACE_URL = BASE_URL + "/Default%20Workspace";
     private static final String SERVER_ID = "testServer";
     private static String basedirPath;
     private HashSet<Artifact> artifacts;
@@ -253,6 +254,38 @@ public class PublishMojoTest extends AbstractAtomTest {
             }
             
         });
+    }
+    
+    public void testWorkspaceCreation() throws Exception {
+        PublishMojo mojo = new PublishMojo();
+        mojo.setProject(project);
+        mojo.setServerId(SERVER_ID);
+        mojo.setSettings(settings);
+        mojo.setUrl(BASE_URL + "/test1");
+        mojo.setClearWorkspace(true);
+        mojo.setIncludes(new String[] { "src/test/resources/xxx" });
+        mojo.setBasedir(getBasedir());
+        mojo.execute();
+        
+        AbderaClient client = getClient();
+        
+        ClientResponse res = client.get(BASE_URL + "/test1", defaultOpts);
+        assertEquals(200, res.getStatus());
+        res.release();
+        
+        mojo.setUrl(BASE_URL + "/test1/test2/test3");
+        mojo.execute();
+        
+        res = client.get(BASE_URL + "/test1/test2/test3", defaultOpts);
+        assertEquals(200, res.getStatus());
+        res.release();
+        
+        mojo.execute();
+        
+        res = client.get(BASE_URL + "/test1/test2/test3", defaultOpts);
+        assertEquals(200, res.getStatus());
+        res.release();
+        
     }
 
     public static File getBasedir()
