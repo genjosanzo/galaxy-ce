@@ -349,7 +349,7 @@ public class RegistryServiceImpl implements RegistryService {
 
         if (workspaceId != null) {
             q.workspaceId(workspaceId, includeChildWkspcs);
-        } else if (workspacePath != null) {
+        } else if (workspacePath != null && !"".equals(workspacePath)&& !"/".equals(workspacePath)) {
             q.workspacePath(workspacePath, includeChildWkspcs);
         }
         try {
