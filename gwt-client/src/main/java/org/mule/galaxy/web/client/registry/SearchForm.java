@@ -147,7 +147,7 @@ public class SearchForm
     public SearchFormRow addPredicate() {
         SearchFormRow pred = new SearchFormRow(this);
         if (artifactPropertyMap != null)
-            pred.addPropertySet("Properties", artifactPropertyMap);
+            pred.addPropertySet("Properties:", artifactPropertyMap);
         
         fieldPanel.insert(pred, fieldPanel.getWidgetCount());
         rows.add(pred);

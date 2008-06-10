@@ -54,10 +54,11 @@ public class SearchFormRow
         propertyList = new ListBox();
         propertyList.setWidth("175px");
         propertyList.addItem("Content Type", "contentType");
-        propertyList.addItem("Description", "documentType");
+        propertyList.addItem("Description", "description");
         propertyList.addItem("Document Type", "documentType");
         propertyList.addItem("Name", "name");
         propertyList.addItem("Phase", "phase");
+        propertyList.addItem("Version", "version");
         
         propertyList.setSelectedIndex(3);
         propertyList.addChangeListener(new ChangeListener() {

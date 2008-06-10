@@ -628,6 +628,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 artifactNode.addMixin("mix:referenceable");
                 Node versionNode = artifactNode.addNode(versionLabel, ARTIFACT_VERSION_NODE_TYPE);
                 versionNode.addMixin("mix:referenceable");
+
+                // set the version as a property so we can search via it as local-name() isn't supported.
+                // See JCR-696
+                versionNode.setProperty(JcrVersion.VERSION, versionLabel);
+                
                 JcrArtifact artifact = new JcrArtifact(workspace, artifactNode, registry);
                 artifact.setName(name);
                 
@@ -968,6 +973,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 // create a new version node
                 Node versionNode = artifactNode.addNode(versionLabel, ARTIFACT_VERSION_NODE_TYPE);
                 versionNode.addMixin("mix:referenceable");
+
+                // set the version as a property so we can search via it as local-name() isn't supported.
+                // See JCR-696
+                versionNode.setProperty(JcrVersion.VERSION, versionLabel);
                 
                 Calendar now = Calendar.getInstance();
                 now.setTime(new Date());

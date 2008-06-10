@@ -37,6 +37,8 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
 
     public static final String LIFECYCLE = "lifecycle";
     public static final String PHASE = "phase";
+    public static final String VERSION = "version";
+
     
     private JcrArtifact parent;
     private Object data;

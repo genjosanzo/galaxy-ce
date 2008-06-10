@@ -73,10 +73,8 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
             List<Permission> toGrant = new ArrayList<Permission>();
             toGrant.add(Permission.READ_ARTIFACT);
             toGrant.add(Permission.MODIFY_ARTIFACT);
-            toGrant.add(Permission.DELETE_ARTIFACT);
             toGrant.add(Permission.READ_WORKSPACE);
             toGrant.add(Permission.MODIFY_WORKSPACE);
-            toGrant.add(Permission.DELETE_WORKSPACE);
             grant(userGroup, toGrant);
             
             User admin = userManager.getByUsername("admin");

@@ -52,7 +52,7 @@ public class QueryTest extends AbstractGalaxyTest {
     }
     
     public void testQueries() throws Exception {
-        importXmlSchema();
+        Artifact artifact = importXmlSchema();
 
         // Try out search!
         Query q = new Query(Artifact.class)
@@ -69,7 +69,16 @@ public class QueryTest extends AbstractGalaxyTest {
         q.setStart(2);
         results = registry.search(q).getResults();
         assertEquals(0, results.size());
+
+        // search by version
+        q = new Query(Artifact.class)
+            .add(OpRestriction.eq("version", artifact.getDefaultVersion().getVersionLabel()));
         
+        results = registry.search(q).getResults();
+    
+        assertEquals(1, results.size());
+        
+        // search by lifecycle
         q = new Query(Artifact.class).add(OpRestriction.eq("phase", "Default:Created"));
         results = registry.search(q).getResults();
     
