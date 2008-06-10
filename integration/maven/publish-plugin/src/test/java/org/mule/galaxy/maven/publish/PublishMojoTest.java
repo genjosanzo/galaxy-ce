@@ -10,8 +10,11 @@ import java.util.HashSet;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.xml.namespace.QName;
 
 import org.apache.abdera.model.Document;
+import org.apache.abdera.model.Element;
+import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
@@ -23,6 +26,7 @@ import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.easymock.classextension.EasyMock;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.atom.AbstractArtifactCollection;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.test.AbstractAtomTest;
 import org.springmodules.jcr.JcrCallback;
@@ -41,7 +45,7 @@ public class PublishMojoTest extends AbstractAtomTest {
     private File artifactFile ;
     private File projectArtifactFile;
     private RequestOptions defaultOpts;
-
+    
     public void setUp() throws Exception {
         super.setUp();
         artifacts = new HashSet<Artifact>();
@@ -175,6 +179,38 @@ public class PublishMojoTest extends AbstractAtomTest {
         res.release();
     }
     
+    public void testDependencyWithArtifactVersion() throws Exception {
+        initializeMockDependency();
+        
+        PublishMojo mojo = new PublishMojo();
+        mojo.setProject(project);
+        mojo.setServerId(SERVER_ID);
+        mojo.setSettings(settings);
+        mojo.setUrl(WORKSPACE_URL);
+        mojo.setClearWorkspace(true);
+        mojo.setUseArtifactVersion(true);
+        mojo.setDependencyIncludes(new String[] { "org.mule.galaxy:mock-dependency" } );
+        mojo.setDependencyExcludes(new String[] { "org.mule.galaxy:project-artifact" } );
+        
+        mojo.execute();
+        
+        AbderaClient client = getClient();
+        ClientResponse res = client.get(WORKSPACE_URL, defaultOpts);
+        assertEquals(200, res.getStatus());
+        
+        Document<Feed> feedDoc = res.getDocument();
+        Feed feed = feedDoc.getRoot();
+        
+        assertEquals(1, feed.getEntries().size());
+        
+        Entry e = feed.getEntries().get(0);
+        
+        Element versionEl = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "version"));
+        assertNotNull(versionEl);
+        assertEquals("2.0", versionEl.getAttributeValue("label"));
+        
+        res.release();
+    }
     private AbderaClient getClient() {
         AbderaClient client = new AbderaClient();
         defaultOpts = client.getDefaultRequestOptions();
@@ -184,7 +220,7 @@ public class PublishMojoTest extends AbstractAtomTest {
     
     private void initializeMockDependency() {
         mavenArtifact = org.easymock.EasyMock.createMock(Artifact.class);
-        org.easymock.EasyMock.expect(mavenArtifact.getVersion()).andStubReturn("1.0");
+        org.easymock.EasyMock.expect(mavenArtifact.getVersion()).andStubReturn("2.0");
         org.easymock.EasyMock.expect(mavenArtifact.getGroupId()).andStubReturn("org.mule.galaxy");
         org.easymock.EasyMock.expect(mavenArtifact.getArtifactId()).andStubReturn("mock-dependency");
         org.easymock.EasyMock.expect(mavenArtifact.getDependencyConflictId()).andStubReturn("");

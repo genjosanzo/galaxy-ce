@@ -181,6 +181,14 @@ public class PublishMojo extends AbstractMojo {
      */
     private boolean showOnly;
     
+    /**
+     * Use the artifact's version when publishing. Otherwise use the project's version.
+     * Defaults to false;
+     * 
+     * @parameter
+     */
+    private boolean useArtifactVersion;
+    
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (skip) {
             getLog().info("Skipping Galaxy publishing.");
@@ -385,7 +393,13 @@ public class PublishMojo extends AbstractMojo {
     }
 
     private void publishArtifact(Artifact a) throws MojoExecutionException, MojoFailureException {
-        String version = a.getVersion();
+        String version;
+        if (useArtifactVersion) {
+            version = a.getVersion();
+        } else {
+            version = project.getVersion();
+        }
+        
         File file = a.getFile();
         
         publishFile(file, version);
@@ -493,6 +507,22 @@ public class PublishMojo extends AbstractMojo {
 
     public void setDependencyExcludes(String[] dependencyExcludes) {
         this.dependencyExcludes = dependencyExcludes;
+    }
+
+    public void setStrictFiltering(boolean strictFiltering) {
+        this.strictFiltering = strictFiltering;
+    }
+
+    public void setSkip(boolean skip) {
+        this.skip = skip;
+    }
+
+    public void setShowOnly(boolean showOnly) {
+        this.showOnly = showOnly;
+    }
+
+    public void setUseArtifactVersion(boolean useArtifactVersion) {
+        this.useArtifactVersion = useArtifactVersion;
     }
     
 }
