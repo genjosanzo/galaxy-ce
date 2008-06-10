@@ -211,7 +211,7 @@ public class ArtifactResolver implements Resolver<Target> {
             context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, artifactWorkspaceCollection);
         }
          
-        if ("GET".equals(context.getMethod()) || "POST".equals(context.getMethod())) {
+        if ("GET".equals(context.getMethod()) || "POST".equals(context.getMethod()) || "HEAD".equals(context.getMethod())) {
             return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
         } else {
             // TODO: not sure if this is what we should be doing.
