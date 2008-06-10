@@ -72,13 +72,16 @@ import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.protocol.server.context.SimpleResponseContext;
 import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public abstract class AbstractArtifactCollection 
     extends AbstractEntityCollectionAdapter<ArtifactVersion> {
     public static final String NAMESPACE = "http://galaxy.mule.org/1.0";
     public static final String ID_PREFIX = "urn:galaxy:artifact:";
+    private final Log log = LogFactory.getLog(getClass());
 
-    protected Factory factory = new Abdera().getFactory();
+    protected Factory factory = Abdera.getInstance().getFactory();
     protected Registry registry;
     protected LifecycleManager lifecycleManager;
     
@@ -234,6 +237,7 @@ public abstract class AbstractArtifactCollection
         } catch (DuplicateItemException e) {
             throw newErrorMessage("Duplicate artifact.", "An artifact with that name already exists in this workspace.", 409);
         } catch (RegistryException e) {
+            log.error("Could not add artifact.", e);
             throw new ResponseContextException(500, e);
         } catch (IOException e) {
             throw new ResponseContextException(500, e);

@@ -61,7 +61,7 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin
                 }
 
                 try {
-                    artifactTypeDao.save(new ArtifactType("Java Archives (JARs)", "application/java-archive", "jar", new QName("application/java-archive")));
+                    artifactTypeDao.save(new ArtifactType("Java Archives (JARs)", "application/java-archive", "jar", new QName[0]));
                 } catch (DuplicateItemException e1) {
                     // should never happen
                     throw new RuntimeException(e1);

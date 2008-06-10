@@ -723,7 +723,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 } else if (type != null) {
                     contentType = new MimeType(type.getContentType());
                     
-                    if (type.getDocumentTypes().size() > 0) {
+                    if (type.getDocumentTypes() != null && type.getDocumentTypes().size() > 0) {
                         for (QName q : type.getDocumentTypes()) {
                             ch = contentService.getContentHandler(q);
                             if (ch != null) {
