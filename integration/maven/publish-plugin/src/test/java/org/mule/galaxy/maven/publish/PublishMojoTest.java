@@ -53,6 +53,7 @@ public class PublishMojoTest extends AbstractAtomTest {
         // Set up a mock maven project
         project = createMock(MavenProject.class);
         expect(project.getArtifacts()).andStubReturn(artifacts);
+        expect(project.getVersion()).andStubReturn("1.0");
         
         projectArtifact = org.easymock.EasyMock.createMock(Artifact.class);
         org.easymock.EasyMock.expect(projectArtifact.getVersion()).andStubReturn("1.0");
@@ -95,6 +96,7 @@ public class PublishMojoTest extends AbstractAtomTest {
         mojo.setSettings(settings);
         mojo.setUrl(WORKSPACE_URL);
         mojo.setClearWorkspace(true);
+        mojo.setUseArtifactVersion(true);
         
         mojo.execute();
         
@@ -125,7 +127,7 @@ public class PublishMojoTest extends AbstractAtomTest {
         
         // Upload a second version
         org.easymock.EasyMock.reset(mavenArtifact);
-        org.easymock.EasyMock.expect(mavenArtifact.getVersion()).andStubReturn("2.0");
+        org.easymock.EasyMock.expect(mavenArtifact.getVersion()).andStubReturn("3.0");
         org.easymock.EasyMock.expect(mavenArtifact.getFile()).andStubReturn(artifactFile);
         org.easymock.EasyMock.replay(mavenArtifact);
         
