@@ -399,7 +399,6 @@ public class PublishMojo extends AbstractMojo {
         } else {
             version = project.getVersion();
         }
-        
         File file = a.getFile();
         
         publishFile(file, version);
