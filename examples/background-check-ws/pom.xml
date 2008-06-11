@@ -188,5 +188,12 @@
             <name>Apache Incubating Repository</name>
             <url>http://people.apache.org/repo/m2-incubating-repository/</url>
         </repository>
-    </repositories>
+    </repositories>    
+    <pluginRepositories>
+        <pluginRepository>
+            <id>apache-incubating</id>
+            <name>Apache Incubating Repository</name>
+            <url>http://people.apache.org/repo/m2-incubating-repository/</url>
+        </pluginRepository>
+    </pluginRepositories>
 </project>
