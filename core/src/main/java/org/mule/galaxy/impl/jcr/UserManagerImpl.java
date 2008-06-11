@@ -217,7 +217,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         }
         
         Node activeUsers = getNodeByUUID(activeUsersNodeId);
-        Node activeUser = activeUsers.getNode(JcrUtil.getStringOrNull(activeUsers, USERNAME));
+        Node activeUser = activeUsers.getNode(JcrUtil.getStringOrNull(userNode, USERNAME));
         
         activeUser.remove();
         
