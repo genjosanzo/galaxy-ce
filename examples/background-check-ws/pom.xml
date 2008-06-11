@@ -79,6 +79,8 @@
                       <dependencyExclude>org.mule:mule-core</dependencyExclude>
                       <dependencyExclude>org.mule.transports:*</dependencyExclude>
                       <dependencyExclude>org.mule.modules:*</dependencyExclude>
+                      <dependencyExclude>org.mule.tests:*</dependencyExclude>
+                      <dependencyExclude>org.apache.cxf:*</dependencyExclude>
                     </dependencyExcludes>
                     
                     <!-- Publish our shared artifacts -->

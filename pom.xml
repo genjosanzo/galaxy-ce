@@ -16,6 +16,7 @@
             fallback to 2.1.
         -->
         <mavenAssemblyPluginVersion>2.2-beta-2</mavenAssemblyPluginVersion>
+        <galaxy.publish.skip>true</galaxy.publish.skip>
     </properties>
 
     <licenses>
@@ -40,6 +41,7 @@
         <module>integration</module>
         <module>server</module>
         <module>netboot</module>
+        <module>examples/background-check-ws</module>
     </modules>
 
     <dependencyManagement>
