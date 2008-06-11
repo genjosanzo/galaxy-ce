@@ -16,7 +16,7 @@
             fallback to 2.1.
         -->
         <mavenAssemblyPluginVersion>2.2-beta-2</mavenAssemblyPluginVersion>
-        <galaxy.publish.skip>true</galaxy.publish.skip>
+        <skipPublish>true</skipPublish>
     </properties>
 
     <licenses>
@@ -27,7 +27,7 @@
     </licenses>
 
     <modules>
-        <module>buildtools</module>
+<!--        <module>buildtools</module>
         <module>api</module>
         <module>core</module>
         <module>ldap</module>
@@ -41,7 +41,7 @@
         <module>integration</module>
         <module>server</module>
         <module>netboot</module>
-        <module>examples/background-check-ws</module>
+   -->     <module>examples/background-check-ws</module>
     </modules>
 
     <dependencyManagement>
@@ -442,6 +442,14 @@
                     </filesets>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                   <arguments>-Prelease,deploy</arguments>
+                </configuration>
+                </plugin>
         </plugins>
 
         <defaultGoal>install</defaultGoal>

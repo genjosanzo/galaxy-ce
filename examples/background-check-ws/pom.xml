@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-    <groupId>org.mule.galaxy</groupId>
-    <artifactId>galaxy-parent</artifactId>
-    <version>1.0-RC-SNAPSHOT</version>
-  </parent>
+    <parent>
+        <groupId>org.mule.galaxy</groupId>
+        <artifactId>galaxy-parent</artifactId>
+        <version>1.0-RC-SNAPSHOT</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-background-check-service</artifactId>
@@ -14,7 +14,7 @@
     </description>
     
     <properties>
-      <mule.version>2.0.1</mule.version>
+        <mule.version>2.0.1</mule.version>
     </properties>
 
     <dependencies>
@@ -70,11 +70,13 @@
                     <url>http://localhost:8080/api/registry/Applications/BackgroundCheck</url>
                     <username>admin</username>
                     <password>admin</password>
-                    <clearWorkspace>true</clearWorkspace>
+                    
                     <!-- Use this to set up the username/password in your ~/.m2/settings.xml -->
                     <!-- <serverId>galaxy</serverId> -->
                     
-                    <!-- Don't publish Mule to the repository -->
+                    <clearWorkspace>true</clearWorkspace>
+                    
+                    <!-- Don't publish Mule & CXF to the repository -->
                     <dependencyExcludes>
                       <dependencyExclude>org.mule:mule-core</dependencyExclude>
                       <dependencyExclude>org.mule.transports:*</dependencyExclude>
@@ -89,6 +91,12 @@
                         <include>src/main/resources/*.wsdl</include>
                         <include>src/main/resources/mule-config.xml</include>
                     </includes>
+                    
+                    <!-- 
+                      This is configured here so it can be disabled during the larger 
+                      Galaxy build when there is no Galaxy instance running.
+                      -->
+                    <skip>${skipPublish}</skip>
                 </configuration>
                 <executions>
                     <execution>
@@ -126,6 +134,7 @@
                     </execution>
                 </executions>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -134,9 +143,45 @@
                     <target>1.5</target>
                 </configuration>
             </plugin>
+
+
+
         </plugins>
     </build>
 
+    <!-- This packages up the source code when releases are made -->
+    <profiles>
+        <profile>
+            <id>deploy</id>
+            <build>
+                <filters>
+                    <filter>${basedir}/src/main/assembly/filter.properties</filter>
+                </filters>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.2-beta-2</version>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${basedir}/src/main/assembly/src.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>attached</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    
     <repositories>
         <repository>
             <id>apache-incubating</id>
