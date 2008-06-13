@@ -27,7 +27,7 @@
     </licenses>
 
     <modules>
-<!--        <module>buildtools</module>
+        <module>buildtools</module>
         <module>api</module>
         <module>core</module>
         <module>ldap</module>
@@ -41,7 +41,7 @@
         <module>integration</module>
         <module>server</module>
         <module>netboot</module>
-   -->     <module>examples/background-check-ws</module>
+        <module>examples/background-check-ws</module>
     </modules>
 
     <dependencyManagement>
