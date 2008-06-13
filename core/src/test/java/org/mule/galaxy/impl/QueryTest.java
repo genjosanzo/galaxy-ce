@@ -39,6 +39,27 @@ public class QueryTest extends AbstractGalaxyTest {
     
         assertEquals("select artifact where name like 'foo' and phase = 'bar'",
                  q.toString());
+        
+        q = new Query(Artifact.class)
+            .workspacePath("/foo", false)
+            .add(eq("phase", "bar"));
+
+        assertEquals("select artifact from '/foo' where phase = 'bar'",
+             q.toString());
+        
+        q = new Query(Artifact.class)
+            .workspacePath("/foo", true)
+            .add(eq("phase", "bar"));
+
+        assertEquals("select artifact from '/foo' recursive where phase = 'bar'",
+             q.toString());
+        
+        q = new Query(Artifact.class)
+            .workspaceId("123", true)
+            .add(eq("phase", "bar"));
+
+        assertEquals("select artifact from '@123' recursive where phase = 'bar'",
+             q.toString());
     }
     
     public void testFromString() throws Exception {
@@ -49,6 +70,16 @@ public class QueryTest extends AbstractGalaxyTest {
         OpRestriction opr = (OpRestriction) q.getRestrictions().iterator().next();
         
         assertEquals(Operator.NOT, opr.getOperator());
+        
+        q = Query.fromString("select artifact from '/foo' recursive");
+        
+        assertTrue(q.isWorkspaceSearchRecursive());
+        assertEquals("/foo", q.getWorkspacePath());
+        
+        q = Query.fromString("select artifact from '@123' recursive");
+        
+        assertTrue(q.isWorkspaceSearchRecursive());
+        assertEquals("123", q.getWorkspaceId());
     }
     
     public void testQueries() throws Exception {

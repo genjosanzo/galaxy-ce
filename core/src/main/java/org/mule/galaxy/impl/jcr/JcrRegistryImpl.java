@@ -1301,7 +1301,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 .append(query.getWorkspaceId())
                 .append("'][@jcr:primaryType=\"galaxy:workspace\"]");
 
-            if (query.isSearchWorkspaceChildren()) {
+            if (query.isWorkspaceSearchRecursive()) {
                 base.append("//");
             } else {
                 base.append("/");
@@ -1324,7 +1324,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             .append(ISO9075.encode(path))
             .append("[@jcr:primaryType=\"galaxy:workspace\"]");
             
-            if (query.isSearchWorkspaceChildren()) {
+            if (query.isWorkspaceSearchRecursive()) {
                 base.append("//");
             } else {
                 base.append("/");
