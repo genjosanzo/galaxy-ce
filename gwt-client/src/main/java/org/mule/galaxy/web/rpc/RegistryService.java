@@ -146,6 +146,8 @@ public interface RegistryService extends RemoteService {
     void move(String artifactId, String workspaceId, String name) throws RPCException, ItemNotFoundException;
     
     void delete(String artifactId) throws RPCException, ItemNotFoundException;
+
+    boolean deleteArtifactVersion(String artifactVersionId) throws RPCException, ItemNotFoundException;
     
     Map getPropertyList() throws RPCException;
     

@@ -142,6 +142,8 @@ public interface Registry {
     
     void delete(Artifact artifact) throws RegistryException, AccessException;
 
+    void delete(ArtifactVersion version) throws RegistryException, AccessException;
+
     void save(Artifact artifact) throws RegistryException, AccessException;
 
     SearchResults search(String queryString, int start, int maxResults) throws RegistryException, QueryException;

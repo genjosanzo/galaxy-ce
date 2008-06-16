@@ -202,7 +202,8 @@ public class JcrArtifact extends AbstractJcrItem implements Artifact {
                 return v;
             }
         }
-        return null;
+        // return the latest artifact if there is no default
+        return getVersions().get(0);
     }
     
     public void setVersions(List<ArtifactVersion> versions2) {

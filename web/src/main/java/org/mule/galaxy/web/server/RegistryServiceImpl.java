@@ -1184,6 +1184,24 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
+    public boolean deleteArtifactVersion(String artifactVersionId) throws RPCException, ItemNotFoundException {
+        try {
+            ArtifactVersion artifact = registry.getArtifactVersion(artifactVersionId);
+            boolean last = artifact.getParent().getVersions().size() == 1;
+            
+            registry.delete(artifact);
+            
+            return last;
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
+
     public WGovernanceInfo getGovernanceInfo(String artifactVersionId) throws RPCException, ItemNotFoundException {
         try {
             ArtifactVersion artifact = registry.getArtifactVersion(artifactVersionId);

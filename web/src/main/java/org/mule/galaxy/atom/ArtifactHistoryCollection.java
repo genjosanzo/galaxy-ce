@@ -19,10 +19,13 @@
 package org.mule.galaxy.atom;
 
 
+import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
 import java.io.InputStream;
@@ -31,9 +34,12 @@ import javax.activation.MimeType;
 
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class ArtifactHistoryCollection extends AbstractArtifactCollection {
-    
+    private final Log log = LogFactory.getLog(getClass());
+
     public ArtifactHistoryCollection(Registry registry, LifecycleManager lifecycleManager) {
         super(registry, lifecycleManager);
     }
@@ -50,18 +56,27 @@ public class ArtifactHistoryCollection extends AbstractArtifactCollection {
 
     @Override
     protected ArtifactResult postMediaEntry(String slug,
-                                              MimeType mimeType, 
-                                              String version,
-                                              InputStream inputStream, 
-                                              User user,
-                                              RequestContext ctx)
+                                            MimeType mimeType, 
+                                            String version,
+                                            InputStream inputStream, 
+                                            User user,
+                                            RequestContext ctx)
         throws ResponseContextException {
         throw new ResponseContextException(501);
     }
     
     @Override
-    public void deleteEntry(String entry, RequestContext arg1) throws ResponseContextException {
-        throw new ResponseContextException(501);
+    public void deleteEntry(String entry, RequestContext request) throws ResponseContextException {
+        ArtifactVersion version = getEntry(entry, request);
+        
+        try {
+            registry.delete(version);
+        } catch (RegistryException e) {
+            log.error(e);
+            throw new ResponseContextException(500, e);
+        } catch (AccessException e) {
+            throw new ResponseContextException(401, e);
+        }
     }
 
     @Override

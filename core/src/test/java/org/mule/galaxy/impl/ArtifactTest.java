@@ -266,6 +266,13 @@ public class ArtifactTest extends AbstractGalaxyTest {
         ArtifactVersion activeVersion = a2.getDefaultVersion();
         assertEquals("0.1", activeVersion.getVersionLabel());
         
+        registry.delete(activeVersion);
+        
+        assertEquals(1, a2.getVersions().size());
+        
+        activeVersion = a2.getDefaultVersion();
+        assertNotNull(activeVersion);
+        
         registry.delete(a2);
     }
 

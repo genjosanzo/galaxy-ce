@@ -110,6 +110,8 @@ public interface RegistryServiceAsync {
     void move(String artifactId, String workspaceId, String name, AsyncCallback c);
     
     void delete(String artifactId, AsyncCallback c);
+
+    void deleteArtifactVersion(String artifactId, AsyncCallback c);
     
     void getPolicies(AsyncCallback c);
 

@@ -828,7 +828,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
     private Object executeWithRegistryException(JcrCallback jcrCallback) 
-        throws RegistryException {
+        throws RegistryException, AccessException {
         try {
             return execute(jcrCallback);
         } catch (RuntimeException e) {
@@ -1162,6 +1162,40 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         });
     }
     
+    public void delete(final ArtifactVersion version) throws RegistryException, AccessException {
+        accessControlManager.assertAccess(Permission.DELETE_ARTIFACT, version.getParent());
+
+        executeWithRegistryException(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                if (version.getParent().getVersions().size() == 1) {
+                    try {
+                        delete(version.getParent());
+                        return null;
+                    } catch (RegistryException e) {
+                        throw new RuntimeException(e);
+                    } catch (AccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                
+                Artifact artifact = version.getParent();
+                artifact.getVersions().remove(version);
+
+                String label = version.getVersionLabel();
+
+                ((JcrVersion) version).getNode().remove();
+                
+                activityManager.logActivity(SecurityUtils.getCurrentUser(),
+                                            "Version " + label + 
+                                            " of artifact " + artifact.getPath() + " was deleted", 
+                                            EventType.INFO);
+
+                session.save();
+                return null;
+            }
+        });
+    }
+
     private QueryManager getQueryManager(Session session) throws RepositoryException {
         return session.getWorkspace().getQueryManager();
     }
@@ -1432,7 +1466,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 QueryManager qm = getQueryManager(session);
                 
                 StringBuilder qstr = new StringBuilder();
-                qstr.append("//element(*, galaxy:artifact)/*/")
+                qstr.append("//element(*, galaxy:artifactVersion)/")
                     .append(JcrVersion.DEPENDENCIES)
                     .append("/")
                     .append(ISO9075.encode(artifact.getId()))

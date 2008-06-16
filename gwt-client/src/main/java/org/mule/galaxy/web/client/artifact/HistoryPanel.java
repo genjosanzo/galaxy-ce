@@ -18,9 +18,12 @@
 
 package org.mule.galaxy.web.client.artifact;
 
+import org.gwtwidgets.client.ui.LightBox;
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -45,11 +48,13 @@ public class HistoryPanel extends AbstractComposite {
     private FlowPanel panel;
     private ExtendedArtifactInfo info;
     private final ErrorPanel errorPanel;
+    private final Galaxy galaxy;
 
     public HistoryPanel(Galaxy galaxy,
                         ErrorPanel errorPanel,
                         ExtendedArtifactInfo info) {
         super();
+        this.galaxy = galaxy;
         this.errorPanel = errorPanel;
         this.registryService = galaxy.getRegistryService();
         this.info = info;
@@ -137,10 +142,49 @@ public class HistoryPanel extends AbstractComposite {
                 links.add(disableLink);
             }
             
+            links.add(new Label(" | "));
+            Hyperlink deleteLink = new Hyperlink("Delete", "delete-version");
+            deleteLink.addClickListener(new ClickListener() {
+
+                public void onClick(Widget w) {
+                    warnDelete(av.getId());
+                }
+                
+            });
+            links.add(deleteLink);
+            
             panel.add(avPanel);
         }
+        
     }
+    protected void warnDelete(final String id)
+    {
+        new LightBox(new ConfirmDialog(new ConfirmDialogAdapter()
+        {
+            public void onConfirm()
+            {
+                delete(id);
+            }
+        }, "Are you sure you want to delete this artifact version?")).show();
+    }
+    
+    protected void delete(String versionId) {
+        
+        registryService.deleteArtifactVersion(versionId, new AbstractCallback(errorPanel) {
 
+            public void onSuccess(Object o) {
+                galaxy.setMessageAndGoto("browse", "Artifact version was deleted.");
+                
+                // is it the last version?
+                if (((Boolean)o).booleanValue()) {
+                    History.newItem("browse");
+                } else {
+                    History.newItem("artifact_" + info.getId());
+                }
+            }
+
+        });
+    }
     protected void setDefault(String versionId) {
         registryService.setDefault(versionId, new AbstractCallback(errorPanel) {
 

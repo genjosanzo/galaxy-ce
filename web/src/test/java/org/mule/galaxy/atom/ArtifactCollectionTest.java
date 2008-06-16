@@ -299,6 +299,64 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res.release();
     }
     
+    public void testVersionDelete() throws Exception {
+        AbderaClient client = new AbderaClient(abdera);
+        RequestOptions defaultOpts = client.getDefaultRequestOptions();
+        defaultOpts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
+        
+        String collection = "http://localhost:9002/api/registry";
+
+        // Testing of entry creation
+        System.out.println("Creating Entry from a WSDL " + collection);
+        
+        RequestOptions opts = new RequestOptions();
+        opts.setContentType("application/xml; charset=utf-8");
+        opts.setSlug("hello_world.wsdl");
+        opts.setHeader("X-Artifact-Version", "0.1");
+        opts.setAuthorization(defaultOpts.getAuthorization());
+        
+        ClientResponse res = client.post(collection + "/Default%20Workspace", getWsdl(), opts);
+        assertEquals(201, res.getStatus());
+        
+        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl", 
+                     res.getLocation().toString());
+        res.release();
+        
+        res = client.delete(collection + "/Default%20Workspace/hello_world.wsdl;atom?version=0.1", defaultOpts);
+        assertEquals(204, res.getStatus());
+        res.release();
+        
+        res = client.get(collection + "/Default%20Workspace/hello_world.wsdl;atom?version=0.1", defaultOpts);
+        assertEquals(404, res.getStatus());
+        res.release();
+        
+        // create multiple versions and delete one
+        res = client.post(collection + "/Default%20Workspace", getWsdl(), opts);
+        assertEquals(201, res.getStatus());
+        res.release();
+
+        opts.setHeader("X-Artifact-Version", "0.2");
+        res = client.put(collection + "/Default%20Workspace/hello_world.wsdl", getWsdl(), opts);
+        assertEquals(200, res.getStatus());
+        res.release();
+        
+        res = client.delete(collection + "/Default%20Workspace/hello_world.wsdl;atom?version=0.2", defaultOpts);
+        assertEquals(204, res.getStatus());
+        res.release();
+
+        res = client.get(collection + "/Default%20Workspace/hello_world.wsdl;atom?version=0.2", defaultOpts);
+        assertEquals(404, res.getStatus());
+        res.release();
+        
+        res = client.get(collection + "/Default%20Workspace/hello_world.wsdl;atom", defaultOpts);
+        assertEquals(200, res.getStatus());
+        res.release();
+        
+        res = client.get(collection + "/Default%20Workspace/hello_world.wsdl;atom?version=0.1", defaultOpts);
+        assertEquals(200, res.getStatus());
+        res.release();
+    }
+    
     private InputStream getWsdl() {
         return getClass().getResourceAsStream("/wsdl/hello.wsdl");
     }
