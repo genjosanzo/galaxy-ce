@@ -20,6 +20,7 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.query.Query;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
@@ -338,7 +339,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
      * @throws Exception
      */
     public void testQueryToPredicate() throws Exception {
-        Set predicates = ((RegistryServiceImpl) gwtRegistry).getPredicates("select artifact where name != 'foo'");
+        Set predicates = ((RegistryServiceImpl) gwtRegistry).getPredicates(Query.fromString("select artifact where name != 'foo'"));
         
         assertEquals(1, predicates.size());
         
