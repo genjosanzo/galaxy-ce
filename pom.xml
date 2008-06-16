@@ -485,6 +485,7 @@
             <url>
                 dav:https://dav.muleforge.org/snapshots.repository/galaxy/
             </url>
+            <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
         <site>
             <id>muleforge.webdav.sites</id>
