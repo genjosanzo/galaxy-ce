@@ -118,7 +118,7 @@ public class SearchForm
         });
     }
 
-    protected void initializeButtons(Panel buttonPanel, String searchText) {
+    protected void initializeButtons(FlowPanel buttonPanel, String searchText) {
         searchButton = new Button(searchText);
         
         clearButton = new Button("Clear", new ClickListener() {

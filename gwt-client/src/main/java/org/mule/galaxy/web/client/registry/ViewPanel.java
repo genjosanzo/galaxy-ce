@@ -101,9 +101,10 @@ public class ViewPanel extends AbstractBrowsePanel {
         final ViewPanel viewPanel = this;
         searchForm = new SearchForm(galaxy, "Save", false) {
 
-            protected void initializeButtons(Panel buttonPanel, String searchText) {
+            protected void initializeButtons(FlowPanel buttonPanel, String searchText) {
                 super.initializeButtons(buttonPanel, searchText);
 
+                buttonPanel.remove(buttonPanel.getWidgetCount()-1);
                 delete = new Button();
                 delete.setText("Delete");
                 delete.addClickListener(new ClickListener() {
