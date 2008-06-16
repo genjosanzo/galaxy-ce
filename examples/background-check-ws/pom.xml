@@ -95,7 +95,7 @@
                     <!-- 
                       This is configured here so it can be disabled during the larger 
                       Galaxy build when there is no Galaxy instance running.
-                      -->
+                    <skip>${skipPublish}</skip>
                 </configuration>
                 <executions>
                     <execution>
