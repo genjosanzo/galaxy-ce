@@ -185,6 +185,8 @@ public class ViewPanel extends AbstractBrowsePanel {
                 editLink = new Hyperlink("Edit", "view_" + viewId + "_edit");
                 editPanel.add(editLink);
                 searchForm.setPredicates(view.getPredicates());
+                searchForm.setWorkspace(view.getWorkspace());
+                searchForm.setWorkspaceSearchRecursive(view.isWorkspaceSearchRecursive());
                 
                 if (editMode) {
                     showSearchForm();
@@ -225,6 +227,8 @@ public class ViewPanel extends AbstractBrowsePanel {
         view.setName(nameTB.getTextBox().getText());
         view.setShared(sharedCB.isChecked());
         view.setPredicates(searchForm.getPredicates());
+        view.setWorkspace(searchForm.getWorkspacePath());
+        view.setWorkspaceSearchRecursive(searchForm.isWorkspaceSearchRecursive());
         
         galaxy.getRegistryService().saveArtifactView(view, new AbstractCallback(menuPanel) {
             public void onSuccess(Object id) {

@@ -10,7 +10,8 @@ public class WArtifactView implements IsSerializable {
     private String name;
     private Set predicates = new HashSet();
     private boolean shared;
-    
+    private String workspace;
+    private boolean workspaceSearchRecursive;
     public String getId() {
         return id;
     }
@@ -34,6 +35,18 @@ public class WArtifactView implements IsSerializable {
     }
     public void setShared(boolean shared) {
         this.shared = shared;
+    }
+    public String getWorkspace() {
+        return workspace;
+    }
+    public void setWorkspace(String workspace) {
+        this.workspace = workspace;
+    }
+    public boolean isWorkspaceSearchRecursive() {
+        return workspaceSearchRecursive;
+    }
+    public void setWorkspaceSearchRecursive(boolean workspaceSearchRecursive) {
+        this.workspaceSearchRecursive = workspaceSearchRecursive;
     }
     
 }

@@ -573,8 +573,19 @@ public class RegistryServiceImpl implements RegistryService {
         }
         wv.setName(v.getName());
         wv.setId(v.getId());
-        wv.setPredicates(getPredicates(v.getQuery()));
-        wv.setShared(v.getUser() == null);
+        
+        try {
+            Query q = Query.fromString(v.getQuery());
+    
+        
+            wv.setPredicates(getPredicates(q));
+            wv.setShared(v.getUser() == null);
+            wv.setWorkspace(q.getWorkspacePath());
+            wv.setWorkspaceSearchRecursive(q.isWorkspaceSearchRecursive());
+        } catch (QueryException e) {
+            log.error("Could not parse query. " + e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
         return wv;
     }
 
@@ -588,41 +599,35 @@ public class RegistryServiceImpl implements RegistryService {
      * @return
      * @throws RPCException
      */
-    public Set getPredicates(String query) throws RPCException {
+    public Set getPredicates(Query q) throws RPCException {
         Set<SearchPredicate> predicates = new HashSet<SearchPredicate>();
-        try {
-            Query q = Query.fromString(query);
-            
-            for (Restriction r : q.getRestrictions()) {
-                if (r instanceof OpRestriction) {
-                    OpRestriction op = (OpRestriction) r;
-                    
-                    Object left = op.getLeft();
-                    Object right = op.getRight();
-                    Operator operator = op.getOperator();
-                    
-                    if (operator.equals(Operator.NOT)) {
-                        if (right instanceof OpRestriction) {
-                            OpRestriction op2 = (OpRestriction) right;
-                            
-                            predicates.add(new SearchPredicate(op2.getLeft().toString(), 
-                                                               SearchPredicate.DOES_NOT_HAVE_VALUE, 
-                                                               op2.getRight().toString()));
-                        } else {
-                            throw new RPCException("Query could not be converted.");
-                        }
-                    } else if (operator.equals(Operator.EQUALS)) {
-                        predicates.add(new SearchPredicate(left.toString(), SearchPredicate.HAS_VALUE, right.toString()));
-                    } else if (operator.equals(Operator.LIKE)) {
-                        predicates.add(new SearchPredicate(left.toString(), SearchPredicate.LIKE, right.toString()));
-                    } 
-                }
+        
+        for (Restriction r : q.getRestrictions()) {
+            if (r instanceof OpRestriction) {
+                OpRestriction op = (OpRestriction) r;
+                
+                Object left = op.getLeft();
+                Object right = op.getRight();
+                Operator operator = op.getOperator();
+                
+                if (operator.equals(Operator.NOT)) {
+                    if (right instanceof OpRestriction) {
+                        OpRestriction op2 = (OpRestriction) right;
+                        
+                        predicates.add(new SearchPredicate(op2.getLeft().toString(), 
+                                                           SearchPredicate.DOES_NOT_HAVE_VALUE, 
+                                                           op2.getRight().toString()));
+                    } else {
+                        throw new RPCException("Query could not be converted.");
+                    }
+                } else if (operator.equals(Operator.EQUALS)) {
+                    predicates.add(new SearchPredicate(left.toString(), SearchPredicate.HAS_VALUE, right.toString()));
+                } else if (operator.equals(Operator.LIKE)) {
+                    predicates.add(new SearchPredicate(left.toString(), SearchPredicate.LIKE, right.toString()));
+                } 
             }
-            return predicates;
-        } catch (QueryException e) {
-            log.error("Could not parse query. " + e.getMessage(), e);
-            throw new RPCException(e.getMessage());
         }
+        return predicates;
     }
 
     public String saveArtifactView(WArtifactView wv) throws RPCException {
@@ -647,7 +652,11 @@ public class RegistryServiceImpl implements RegistryService {
         if (!wv.isShared()) {
             v.setUser(getCurrentUser());
         }
-        v.setQuery(getQuery(wv.getPredicates(), 0, 0).toString());
+        Query query = getQuery(wv.getPredicates(), 0, 0);
+        query.workspacePath(wv.getWorkspace(), wv.isWorkspaceSearchRecursive());
+       
+        v.setQuery(query.toString());
+        
         return v;
     }
 

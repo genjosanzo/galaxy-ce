@@ -233,7 +233,7 @@ public class SearchForm
         return workspaceTB.getText();
     }
     
-    public boolean isSearchWorkspaceChildren() 
+    public boolean isWorkspaceSearchRecursive() 
     {
         return includeChildWkspcCB.isChecked();
     }
@@ -253,5 +253,15 @@ public class SearchForm
         
         // Add an empty predicate to add more
         addPredicate();
+    }
+
+    public void setWorkspace(String workspace) 
+    {
+        workspaceTB.setText(workspace);
+    }
+
+    public void setWorkspaceSearchRecursive(boolean workspaceSearchRecursive) 
+    {
+        includeChildWkspcCB.setChecked(workspaceSearchRecursive);
     }
 }
