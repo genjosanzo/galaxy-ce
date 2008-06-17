@@ -20,6 +20,7 @@ package org.mule.galaxy.web.client.registry;
 
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.artifact.ArtifactMetadataPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -203,6 +204,9 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
             }
             public void onFailure(Throwable caught) {
                 menuPanel.setMessage(caught.getMessage());
+                if (artifactListPanel != null) {
+                    artifactListPanel.clear();
+                }
             }
         };
         
