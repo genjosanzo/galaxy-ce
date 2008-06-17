@@ -126,7 +126,7 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
                         if (next instanceof ArtifactVersion) {
                             av = (ArtifactVersion) next;
                         } else {
-                            av = ((Artifact) next).getDefaultVersion();
+                            av = ((Artifact) next).getDefaultOrLastVersion();
                         }
                         
                         return av;

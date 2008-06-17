@@ -21,9 +21,9 @@ public class DefaultArtifactRenderer implements ArtifactRenderer {
         case 1:
             return row.getParent().getPath();
         case 2:
-            return row.getDefaultVersion().getVersionLabel();
+            return row.getDefaultOrLastVersion().getVersionLabel();
         case 3:
-            return row.getDefaultVersion().getPhase().getName();
+            return row.getDefaultOrLastVersion().getPhase().getName();
         }
         
         return null;

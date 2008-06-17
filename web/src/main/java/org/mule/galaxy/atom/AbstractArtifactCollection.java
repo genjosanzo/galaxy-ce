@@ -372,7 +372,7 @@ public abstract class AbstractArtifactCollection
                 throw new ResponseContextException(res);
             }
         }
-        return next.getDefaultVersion();
+        return next.getDefaultOrLastVersion();
     }
 
     protected Artifact getArtifact(RequestContext request) {

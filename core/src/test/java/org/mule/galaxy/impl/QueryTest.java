@@ -103,7 +103,7 @@ public class QueryTest extends AbstractGalaxyTest {
 
         // search by version
         q = new Query(Artifact.class)
-            .add(OpRestriction.eq("version", artifact.getDefaultVersion().getVersionLabel()));
+            .add(OpRestriction.eq("version", artifact.getDefaultOrLastVersion().getVersionLabel()));
         
         results = registry.search(q).getResults();
     

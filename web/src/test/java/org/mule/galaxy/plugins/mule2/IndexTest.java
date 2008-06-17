@@ -54,7 +54,7 @@ public class IndexTest extends AbstractGalaxyTest {
                                                     "0.1", helloWsdl, getAdmin());
         Artifact artifact = ar.getArtifact();
 
-        JcrVersion version = (JcrVersion) artifact.getDefaultVersion();
+        JcrVersion version = (JcrVersion) artifact.getDefaultOrLastVersion();
         Object property = version.getProperty("mule2.service");
         assertNotNull(property);
         assertTrue(property instanceof Collection);

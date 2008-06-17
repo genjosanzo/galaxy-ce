@@ -51,7 +51,7 @@ public class IndexTest extends AbstractGalaxyTest
                                                     "0.1", stream, getAdmin());
         Artifact artifact = ar.getArtifact();
 
-        JcrVersion version = (JcrVersion) artifact.getDefaultVersion();
+        JcrVersion version = (JcrVersion) artifact.getDefaultOrLastVersion();
         Object property = version.getProperty("spring.bean");
         assertNotNull(property);
         assertTrue(property instanceof Collection);

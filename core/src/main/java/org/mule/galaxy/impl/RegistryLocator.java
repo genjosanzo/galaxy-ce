@@ -66,7 +66,7 @@ public class RegistryLocator implements WSDLLocator {
         if (importLoc.indexOf("://") == -1) {
             Artifact artifact = registry.resolve(w, importLoc);
             if (artifact != null) {
-                InputStream is = artifact.getDefaultVersion().getStream();
+                InputStream is = artifact.getDefaultOrLastVersion().getStream();
                 InputSource source = new InputSource(is);
                 source.setSystemId(artifact.getPath());
                 return source;

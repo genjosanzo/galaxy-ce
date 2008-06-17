@@ -962,7 +962,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 JcrArtifact jcrArtifact = (JcrArtifact) artifact;
                 Node artifactNode = jcrArtifact.getNode();
                 artifactNode.refresh(false);
-                JcrVersion previousLatest = ((JcrVersion)jcrArtifact.getDefaultVersion());
+                JcrVersion previousLatest = ((JcrVersion)jcrArtifact.getDefaultOrLastVersion());
                 Node previousNode = previousLatest.getNode();
                 
                 previousLatest.setDefault(false);
@@ -1063,7 +1063,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         ArtifactPolicyException {
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                ArtifactVersion oldDefault = version.getParent().getDefaultVersion();
+                ArtifactVersion oldDefault = version.getParent().getDefaultOrLastVersion();
                 
                 ((JcrVersion) oldDefault).setDefault(false);
                 ((JcrVersion) version).setDefault(true);
@@ -1167,31 +1167,39 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
         executeWithRegistryException(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                if (version.getParent().getVersions().size() == 1) {
-                    try {
+                try {
+                    if (version.getParent().getVersions().size() == 1) {
                         delete(version.getParent());
                         return null;
-                    } catch (RegistryException e) {
-                        throw new RuntimeException(e);
-                    } catch (AccessException e) {
-                        throw new RuntimeException(e);
                     }
+                    
+                    User user = SecurityUtils.getCurrentUser();
+                    Artifact artifact = version.getParent();
+                    artifact.getVersions().remove(version);
+                    
+                    if (((JcrVersion)version).isLatest()) {
+                        JcrVersion newLatest = (JcrVersion) artifact.getVersions().get(0);
+                        
+                        newLatest.setLatest(true);
+                    }
+                    
+                    String label = version.getVersionLabel();
+    
+                    ((JcrVersion) version).getNode().remove();
+                    
+                    activityManager.logActivity(user,
+                                                "Version " + label + 
+                                                " of artifact " + artifact.getPath() + " was deleted", 
+                                                EventType.INFO);
+    
+                    session.save();
+                    return null;
+
+                } catch (RegistryException e) {
+                    throw new RuntimeException(e);
+                } catch (AccessException e) {
+                    throw new RuntimeException(e);
                 }
-                
-                Artifact artifact = version.getParent();
-                artifact.getVersions().remove(version);
-
-                String label = version.getVersionLabel();
-
-                ((JcrVersion) version).getNode().remove();
-                
-                activityManager.logActivity(SecurityUtils.getCurrentUser(),
-                                            "Version " + label + 
-                                            " of artifact " + artifact.getPath() + " was deleted", 
-                                            EventType.INFO);
-
-                session.save();
-                return null;
             }
         });
     }

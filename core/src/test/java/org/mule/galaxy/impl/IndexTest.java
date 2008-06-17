@@ -155,7 +155,7 @@ public class IndexTest extends AbstractGalaxyTest {
         // Import a document which should now be indexed
         Artifact artifact = importHelloWsdl();
 
-        ArtifactVersion version = artifact.getDefaultVersion();
+        ArtifactVersion version = artifact.getDefaultOrLastVersion();
         Object property = version.getProperty("wsdl.service");
         assertNotNull(property);
         assertTrue(property instanceof Collection);
@@ -254,7 +254,7 @@ public class IndexTest extends AbstractGalaxyTest {
         String scriptSource = indexConfig.get("scriptSource");
         assertEquals("Wrong configuration saved to the JCR repo", "JarIndex.groovy", scriptSource);
 
-        ArtifactVersion latest = artifact.getDefaultVersion();
+        ArtifactVersion latest = artifact.getDefaultOrLastVersion();
 
         assertEquals(false, latest.getPropertyInfo("jar.entries").isVisible());
         // normal manifest property
@@ -300,7 +300,7 @@ public class IndexTest extends AbstractGalaxyTest {
 
         assertNotNull(artifact);
 
-        ArtifactVersion latest = artifact.getDefaultVersion();
+        ArtifactVersion latest = artifact.getDefaultOrLastVersion();
 
         // class
         List<String> annotations = (List<String>) latest.getProperty("java.annotations.level.class");

@@ -768,7 +768,7 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
             List deps = new ArrayList();
-            ArtifactVersion latest = artifact.getDefaultVersion();
+            ArtifactVersion latest = artifact.getDefaultOrLastVersion();
             for (Dependency d : latest.getDependencies()) {
                 Artifact depArt = d.getArtifact();
                 deps.add(new DependencyInfo(d.isUserSpecified(), true, depArt.getName(), depArt.getId()));

@@ -47,7 +47,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         Phase dev = created.getNextPhases().iterator().next();
         
         Artifact artifact = importHelloWsdl();
-        ArtifactVersion version = artifact.getDefaultVersion();
+        ArtifactVersion version = artifact.getDefaultOrLastVersion();
         assertEquals(created, version.getPhase());
         
         assertFalse(lifecycleManager.isTransitionAllowed(version, created));
@@ -123,7 +123,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         lifecycleManager.save(l);
         
         a = registry.getArtifact(a.getId());
-        assertEquals(l, a.getDefaultVersion().getPhase().getLifecycle());
+        assertEquals(l, a.getDefaultOrLastVersion().getPhase().getLifecycle());
         
         try {
             lifecycleManager.delete(l.getId(), null);
@@ -150,7 +150,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         
         Workspace wkspc = registry.getWorkspaceByPath("Default Workspace");
         Artifact artifact = registry.getArtifact(wkspc, "hello_world.wsdl");
-        assertEquals(newLc, artifact.getDefaultVersion().getPhase().getLifecycle());
+        assertEquals(newLc, artifact.getDefaultOrLastVersion().getPhase().getLifecycle());
         
         // try saving a lifecycle with a duplicate name
         newLc.setId(null);
@@ -197,7 +197,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         lifecycleManager.save(l);
         
         artifact = registry.getArtifact(artifact.getId());
-        assertEquals(p1, artifact.getDefaultVersion().getPhase());
+        assertEquals(p1, artifact.getDefaultOrLastVersion().getPhase());
         
         Phase p2 = p1.getNextPhases().iterator().next();
         

@@ -239,7 +239,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertTrue(newVersion.isLatest());
         assertFalse(version.isLatest());
         
-        assertSame(newVersion, ar.getArtifact().getDefaultVersion());
+        assertSame(newVersion, ar.getArtifact().getDefaultOrLastVersion());
         
         versions = artifact.getVersions();
         assertEquals(2, versions.size());
@@ -263,16 +263,27 @@ public class ArtifactTest extends AbstractGalaxyTest {
         registry.setDefaultVersion(version, getAdmin());
         
         assertEquals(2, a2.getVersions().size());
-        ArtifactVersion activeVersion = a2.getDefaultVersion();
+        ArtifactVersion activeVersion = a2.getDefaultOrLastVersion();
         assertEquals("0.1", activeVersion.getVersionLabel());
         
         registry.delete(activeVersion);
         
         assertEquals(1, a2.getVersions().size());
         
-        activeVersion = a2.getDefaultVersion();
+        activeVersion = a2.getDefaultOrLastVersion();
         assertNotNull(activeVersion);
         
+        assertTrue(((JcrVersion)activeVersion).isLatest());
+        
+        Collection<Artifact> artifacts = registry.getArtifacts(a2.getParent());
+        boolean found = false;
+        for (Artifact a : artifacts) {
+            if (a.getId().equals(a2.getId())) {
+                found = true;
+                break;
+            }
+        }
+        assertTrue(found);
         registry.delete(a2);
     }
 
@@ -314,8 +325,8 @@ public class ArtifactTest extends AbstractGalaxyTest {
 
         Artifact a = registry.getArtifact(workspace, "test.txt");
         assertNotNull(a);
-        assertEquals("1", a.getDefaultVersion().getVersionLabel());
-        assertEquals(version1, IOUtils.readStringFromStream(a.getDefaultVersion().getStream()));
+        assertEquals("1", a.getDefaultOrLastVersion().getVersionLabel());
+        assertEquals(version1, IOUtils.readStringFromStream(a.getDefaultOrLastVersion().getStream()));
 
         ArtifactVersion artifactVersion = a.getVersion("2");
         assertEquals(version2, IOUtils.readStringFromStream(artifactVersion.getStream()));

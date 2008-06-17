@@ -196,13 +196,13 @@ public class JcrArtifact extends AbstractJcrItem implements Artifact {
         return node;
     }
 
-    public ArtifactVersion getDefaultVersion() {
+    public ArtifactVersion getDefaultOrLastVersion() {
         for (ArtifactVersion v : getVersions()) {
             if (v.isDefault()) {
                 return v;
             }
         }
-        // return the latest artifact if there is no default
+        
         return getVersions().get(0);
     }
     
@@ -212,41 +212,41 @@ public class JcrArtifact extends AbstractJcrItem implements Artifact {
 
     @Override
     public Object getProperty(String name) {
-        return getDefaultVersion().getProperty(name);
+        return getDefaultOrLastVersion().getProperty(name);
     }
 
     @Override
     public void setProperty(String name, Object value) throws PropertyException {
-        getDefaultVersion().setProperty(name, value);
+        getDefaultOrLastVersion().setProperty(name, value);
     }
     
     @Override
     public Iterator<PropertyInfo> getProperties() {
-        return getDefaultVersion().getProperties();
+        return getDefaultOrLastVersion().getProperties();
     }
 
     @Override
     public PropertyInfo getPropertyInfo(String name) {
-        return getDefaultVersion().getPropertyInfo(name);
+        return getDefaultOrLastVersion().getPropertyInfo(name);
     }
 
     @Override
     public void setLocked(String name, boolean locked) {
         update();
-        getDefaultVersion().setLocked(name, locked);
+        getDefaultOrLastVersion().setLocked(name, locked);
     }
 
 
     @Override
     public boolean hasProperty(String name) {
         update();
-        return getDefaultVersion().hasProperty(name);
+        return getDefaultOrLastVersion().hasProperty(name);
     }
 
     @Override
     public void setVisible(String name, boolean visible) {
         update();
-        getDefaultVersion().setVisible(name, visible);
+        getDefaultOrLastVersion().setVisible(name, visible);
     }
 
     public void setWorkspace(Workspace workspace) {

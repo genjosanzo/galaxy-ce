@@ -146,7 +146,7 @@ public class ArtifactUploadServlet implements Controller {
                 result = registry.newVersion(a, uploadItem.getInputStream(), versionLabel, user);
 
                 if (disablePrevious) {
-                    result.getArtifactVersion().getPrevious().setEnabled(false);
+                    registry.setEnabled( result.getArtifactVersion().getPrevious(), false, user);
                 }
             }
 
@@ -185,6 +185,7 @@ public class ArtifactUploadServlet implements Controller {
             resp.setStatus(401);
             writer.write("AccessException.");
         }
+        writer.close();
         return null;
     }
 

@@ -43,7 +43,7 @@ public interface Artifact extends Item<Workspace> {
      * Get the default version of this artifact. If this hasn't been specifically set,
      * its the latest version of the artifact.
      */
-    ArtifactVersion getDefaultVersion();
+    ArtifactVersion getDefaultOrLastVersion();
 
     ContentHandler getContentHandler();
 }

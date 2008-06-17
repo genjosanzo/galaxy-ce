@@ -138,6 +138,9 @@ public class ArtifactPanel extends AbstractComposite {
                 versionLB.setSelectedIndex(versionLB.getItemCount()-1);
             }
         }
+        if (defaultVersion == null) {
+            defaultVersion = (ArtifactVersionInfo) info.getVersions().iterator().next();
+        }
         versionLB.addChangeListener(new ChangeListener() {
 
             public void onChange(Widget arg0) {
