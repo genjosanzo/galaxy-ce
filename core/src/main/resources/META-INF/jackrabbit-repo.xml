@@ -72,7 +72,6 @@
             <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
             <param name="schemaObjectPrefix" value="workspace_"/>
             <param name="shutdownOnClose" value="false"/>
-            <param name="externalBLOBs" value="false"/>
         </FileSystem>
         <!--
             persistence manager of the workspace:
@@ -83,7 +82,7 @@
           <param name="schemaObjectPrefix" value="Jackrabbit Core_"/>
           <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
           <param name="shutdownOnClose" value="false"/>
-          <param name="externalBLOBs" value="false"/>
+          <param name="externalBLOBs" value="true"/>
         </PersistenceManager>
         <!--
             Search index and the file system it uses.
@@ -95,7 +94,6 @@
                 <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
                 <param name="schemaObjectPrefix" value="search_index_w_"/>
                 <param name="shutdownOnClose" value="false"/>
-                <param name="externalBLOBs" value="false"/>
             </FileSystem>
         </SearchIndex>
     </Workspace>
@@ -114,7 +112,6 @@
             <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
             <param name="schemaObjectPrefix" value="filesystem_version_"/>
             <param name="shutdownOnClose" value="false"/>
-            <param name="externalBLOBs" value="false"/>
         </FileSystem>
 
         <!--
@@ -128,7 +125,7 @@
           <param name="schemaObjectPrefix" value="version_"/>
           <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
           <param name="shutdownOnClose" value="false"/>
-          <param name="externalBLOBs" value="false"/>
+          <param name="externalBLOBs" value="true"/>
         </PersistenceManager>
     </Versioning>
 
@@ -143,7 +140,6 @@
             <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
             <param name="schemaObjectPrefix" value="search_index_"/>
             <param name="shutdownOnClose" value="false"/>
-            <param name="externalBLOBs" value="false"/>
         </FileSystem>
     </SearchIndex>
 </Repository>
