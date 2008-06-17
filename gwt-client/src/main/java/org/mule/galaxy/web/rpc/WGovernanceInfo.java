@@ -21,6 +21,7 @@ package org.mule.galaxy.web.rpc;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.util.Collection;
+import java.util.List;
 
 public class WGovernanceInfo implements IsSerializable {
     /*
@@ -29,6 +30,7 @@ public class WGovernanceInfo implements IsSerializable {
     private Collection nextPhases;
     private String currentPhase;
     private String lifecycle;
+    private Collection previousPhases;
     
     public String getLifecycle() {
         return lifecycle;
@@ -53,6 +55,13 @@ public class WGovernanceInfo implements IsSerializable {
     public void setNextPhases(Collection nextPhases) {
         this.nextPhases = nextPhases;
     }
-    
+
+    public void setPreviousPhases(Collection previousPhases) {
+        this.previousPhases = previousPhases;
+    }
+
+    public Collection getPreviousPhases() {
+        return previousPhases;
+    }
     
 }

@@ -54,6 +54,9 @@ public class GovernancePanel extends AbstractComposite {
     private final ArtifactVersionInfo version;
     private final Galaxy galaxy;
     private final ErrorPanel errorPanel;
+    private FlowPanel transitionForm;
+    private FlowPanel rollbackForm;
+    private FlowPanel nextPhasesPanel;
 
     public GovernancePanel(Galaxy galaxy,
                            ErrorPanel errorPanel,
@@ -102,27 +105,38 @@ public class GovernancePanel extends AbstractComposite {
         table.setText(1, 1, governanceInfo.getCurrentPhase());
 
         table.setText(2, 0, "Next Phases:");
-        FlowPanel nextPhasesPanel = new FlowPanel();
+        nextPhasesPanel = new FlowPanel();
         nextPhasesPanel.setStyleName("next-phases-panel");
+
+        transitionForm = addTransitionForm(nextPhasesPanel, governanceInfo.getNextPhases(), "Transition");
+        rollbackForm = addTransitionForm(nextPhasesPanel, governanceInfo.getPreviousPhases(), "Rollback");
         
+        table.setWidget(2, 1, nextPhasesPanel);
+        styleHeaderColumn(table);
+        return table;
+    }
+
+    private FlowPanel addTransitionForm(FlowPanel nextPhasesPanel, Collection phases, String action) {
         final ListBox nextPhasesList = new ListBox();
-        for (Iterator itr = governanceInfo.getNextPhases().iterator(); itr.hasNext();){
+        for (Iterator itr = phases.iterator(); itr.hasNext();){
             WPhase p = (WPhase) itr.next();
             nextPhasesList.addItem(p.getName(), p.getId());
         }
-        nextPhasesPanel.add(nextPhasesList);
         
-        final Button transition = new Button("Transition");
+        final Button transition = new Button(action);
         transition.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 transition(nextPhasesList, transition);
             }
         });
-        nextPhasesPanel.add(transition);
+
+        InlineFlowPanel flowPanel = asHorizontal(nextPhasesList, transition);
         
-        table.setWidget(2, 1, nextPhasesPanel);
-        styleHeaderColumn(table);
-        return table;
+        if (phases.size() > 0) {
+            nextPhasesPanel.add(flowPanel);
+        }
+        
+        return flowPanel;
     }
 
     private void showLifecycle(final FlexTable table, String lifecycle) {
@@ -225,7 +239,7 @@ public class GovernancePanel extends AbstractComposite {
 
     protected void transition(final ListBox nextPhasesList, 
                               final Button transitionButton) {
-        transitionButton.setEnabled(false);
+        setEnabled(false);
         transitionButton.setText("Applying transition...");
         messages.clear();
         
@@ -234,7 +248,7 @@ public class GovernancePanel extends AbstractComposite {
         registryService.transition(version.getId(), nextPhasesList.getValue(idx), new AbstractCallback(errorPanel) {
 
             public void onFailure(Throwable caught) {
-                transitionButton.setEnabled(true);
+                setEnabled(true);
                 transitionButton.setText("Transition");
                 
                 super.onFailure(caught);
@@ -247,6 +261,18 @@ public class GovernancePanel extends AbstractComposite {
         });
      }
 
+    protected void setEnabled(boolean enabled) {
+        setEnabled(enabled, transitionForm);
+        setEnabled(enabled, rollbackForm);
+    }
+
+    private void setEnabled(boolean enabled, FlowPanel form) {
+        ListBox lb = (ListBox) form.getWidget(0);
+        lb.setEnabled(enabled);
+        
+        Button b = (Button) form.getWidget(1);
+        b.setEnabled(enabled);
+    }
     protected void displayTransitionResponse(TransitionResponse o) {
         if (!o.isSuccess()) {
             for (Iterator iterator = o.getMessages().iterator(); iterator.hasNext();) {

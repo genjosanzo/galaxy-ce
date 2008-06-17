@@ -213,7 +213,9 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
         if (p == null || !l.equals(p.getLifecycle())) {
             return l.getInitialPhase().equals(p2);
         } else {
-            return p != null && p.getNextPhases() != null && p.getNextPhases().contains(p2);
+            return p != null && 
+                ((p.getNextPhases() != null && p.getNextPhases().contains(p2)) 
+                    || (p2.getNextPhases() != null && p2.getNextPhases().contains(p)));
         }
     }
     

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.mule.galaxy.Identifiable;
+import org.mule.galaxy.Workspace;
 import org.mule.galaxy.security.User;
 
 public class Phase implements Identifiable {
@@ -52,6 +53,18 @@ public class Phase implements Identifiable {
         this.nextPhases = nextPhases;
     }
 
+    public Set<Phase> getPreviousPhases() {
+        Set<Phase> prevPhases = new HashSet<Phase>();
+        
+        for (Phase p : lifecycle.getPhases().values()) {
+            if (p.getNextPhases().contains(this) && p != this) {
+                prevPhases.add(p);
+            }
+        }
+        return prevPhases;
+    }
+
+
     /**
      * The users which can manipulate this lifecycle phase.
      * @return
@@ -98,5 +111,4 @@ public class Phase implements Identifiable {
             return false;
         return true;
     }
-
 }

@@ -75,6 +75,22 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         assertEquals(artifact.getId(), e.getArtifactVersion().getParent().getId());
         assertNotNull(e.getCalendar());
         assertNotNull(e.getPhase());
+        
+        Phase next = l.getPhase("Tested");
+        lifecycleManager.transition(version, next, getAdmin());
+        
+        next = l.getPhase("Staged");
+        lifecycleManager.transition(version, next, getAdmin());
+        
+        next = l.getPhase("Production");
+        lifecycleManager.transition(version, next, getAdmin());
+        
+        next = l.getPhase("Retired");
+        lifecycleManager.transition(version, next, getAdmin());
+        
+        // try going back
+        next = l.getPhase("Production");
+        lifecycleManager.transition(version, next, getAdmin());
     }
     
     public void testInvalidSaves() throws Exception {    

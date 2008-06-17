@@ -216,7 +216,12 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals("Default", lifecycleEl.getAttributeValue("name"));
         assertEquals("Created", lifecycleEl.getAttributeValue("phase"));
         
-
+        Element next = lifecycleEl.getFirstChild(new QName(AbstractArtifactCollection.NAMESPACE, "next-phases"));
+        assertNotNull(next);
+        
+        Element previous = lifecycleEl.getFirstChild(new QName(AbstractArtifactCollection.NAMESPACE, "previous-phases"));
+        assertNotNull(previous);
+        
         Element versionEl = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "version"));
         assertNotNull(lifecycleEl);
         assertEquals("0.2", versionEl.getAttributeValue("label"));

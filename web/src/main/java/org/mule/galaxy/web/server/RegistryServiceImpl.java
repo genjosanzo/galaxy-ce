@@ -1220,13 +1220,9 @@ public class RegistryServiceImpl implements RegistryService {
             gov.setCurrentPhase(phase.getName());
             gov.setLifecycle(phase.getLifecycle().getName());
 
-            Set<Phase> nextPhases = phase.getNextPhases();
-            List<WPhase> wNextPhases = new ArrayList<WPhase>();
-            for (Phase p : nextPhases) {
-                wNextPhases.add(toWeb(p));
-            }
-            gov.setNextPhases(wNextPhases);
-
+            gov.setNextPhases(toWeb(phase.getNextPhases()));
+            gov.setPreviousPhases(toWeb(phase.getPreviousPhases()));
+      
             // Collection<PolicyInfo> policies =
             // policyManager.getActivePolicies(artifact, false);
 
@@ -1239,6 +1235,14 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
         }
+    }
+
+    private List<WPhase> toWeb(Set<Phase> nextPhases) {
+        List<WPhase> wNextPhases = new ArrayList<WPhase>();
+        for (Phase p : nextPhases) {
+            wNextPhases.add(toWeb(p));
+        }
+        return wNextPhases;
     }
 
     public TransitionResponse transition(String artifactVersionId, String nextPhaseId) throws RPCException, ItemNotFoundException {

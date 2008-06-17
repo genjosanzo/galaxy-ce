@@ -18,6 +18,44 @@
 
 package org.mule.galaxy.atom;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
+import javax.xml.namespace.QName;
+
+import org.acegisecurity.context.SecurityContextHolder;
+import org.apache.abdera.Abdera;
+import org.apache.abdera.factory.Factory;
+import org.apache.abdera.i18n.iri.IRI;
+import org.apache.abdera.i18n.text.UrlEncoding;
+import org.apache.abdera.i18n.text.CharUtils.Profile;
+import org.apache.abdera.model.Content;
+import org.apache.abdera.model.Document;
+import org.apache.abdera.model.Element;
+import org.apache.abdera.model.Entry;
+import org.apache.abdera.model.Person;
+import org.apache.abdera.model.Text;
+import org.apache.abdera.model.Text.Type;
+import org.apache.abdera.parser.ParseException;
+import org.apache.abdera.protocol.server.RequestContext;
+import org.apache.abdera.protocol.server.RequestContext.Scope;
+import org.apache.abdera.protocol.server.context.EmptyResponseContext;
+import org.apache.abdera.protocol.server.context.ResponseContextException;
+import org.apache.abdera.protocol.server.context.SimpleResponseContext;
+import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
@@ -36,44 +74,6 @@ import org.mule.galaxy.lifecycle.TransitionException;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
-import javax.xml.namespace.QName;
-
-import org.acegisecurity.context.SecurityContextHolder;
-import org.apache.abdera.Abdera;
-import org.apache.abdera.factory.Factory;
-import org.apache.abdera.i18n.iri.IRI;
-import org.apache.abdera.i18n.text.CharUtils.Profile;
-import org.apache.abdera.i18n.text.UrlEncoding;
-import org.apache.abdera.model.Content;
-import org.apache.abdera.model.Document;
-import org.apache.abdera.model.Element;
-import org.apache.abdera.model.Entry;
-import org.apache.abdera.model.Person;
-import org.apache.abdera.model.Text;
-import org.apache.abdera.model.Text.Type;
-import org.apache.abdera.parser.ParseException;
-import org.apache.abdera.protocol.server.RequestContext;
-import org.apache.abdera.protocol.server.RequestContext.Scope;
-import org.apache.abdera.protocol.server.context.EmptyResponseContext;
-import org.apache.abdera.protocol.server.context.ResponseContextException;
-import org.apache.abdera.protocol.server.context.SimpleResponseContext;
-import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 public abstract class AbstractArtifactCollection 
     extends AbstractEntityCollectionAdapter<ArtifactVersion> {
@@ -145,7 +145,8 @@ public abstract class AbstractArtifactCollection
         
         e.addExtension(lifecycle);
         
-        e.addExtension(buildAvailablePhases(phase));
+        buildAvailablePhases(phase, phase.getNextPhases(), "next-phases", lifecycle);
+        buildAvailablePhases(phase, phase.getPreviousPhases(), "previous-phases", lifecycle);
         
         Element version = factory.newElement(new QName(NAMESPACE, "version"));
         version.setAttributeValue("label", entryObj.getVersionLabel());
@@ -157,11 +158,11 @@ public abstract class AbstractArtifactCollection
         return link;
     }
 
-    private Element buildAvailablePhases(Phase phase) {
-        Element availPhases = factory.newElement(new QName(NAMESPACE, "available-phases"));
+    private Element buildAvailablePhases(Phase phase, Set<Phase> phases, String name, Element lifecycle) {
+        Element availPhases = factory.newElement(new QName(NAMESPACE, name), lifecycle);
         StringBuilder sb = new StringBuilder();
         boolean first = true;
-        for (Phase p : phase.getNextPhases()) {
+        for (Phase p : phases) {
             if (!first) {
                 sb.append(", ");
             } else {
