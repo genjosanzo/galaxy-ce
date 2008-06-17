@@ -299,7 +299,9 @@ public class LifecycleForm extends AbstractAdministrationForm {
         phase.setNextPhases(new ArrayList());
         for (int i = 0; i < nextPhases.getItemCount(); i++) {
             if (nextPhases.isItemSelected(i)) {
-                phase.getNextPhases().add(lifecycle.getPhaseById(nextPhases.getValue(i)));
+                String pName = nextPhases.getItemText(i);
+                
+                phase.getNextPhases().add(lifecycle.getPhase(pName));
             }
         }
     }
