@@ -1350,8 +1350,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
             
             base.append("element(*, galaxy:artifact)");
-            
-        } else if (query.getWorkspacePath() != null) {
+        } else if (query.getWorkspacePath() != null && !"".equals(query.getWorkspacePath())) {
             String path = query.getWorkspacePath();
 
             if (path.startsWith("/")) {

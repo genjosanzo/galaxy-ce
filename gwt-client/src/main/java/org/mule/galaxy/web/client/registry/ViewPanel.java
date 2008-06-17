@@ -162,14 +162,17 @@ public class ViewPanel extends AbstractBrowsePanel {
         });
         
         if (NEW_VIEW_ID.equals(viewId)) {
-            if (artifactListPanel != null) {
-                artifactListPanel.clear();
-            }
             view = new WArtifactView();
             showSearchForm();
         }
         
         super.onShow(params);
+        
+        if (NEW_VIEW_ID.equals(viewId) || editMode) {
+            if (artifactListPanel != null) {
+                artifactListPanel.clear();
+            }
+        }
     }
 
     private void loadView() {
