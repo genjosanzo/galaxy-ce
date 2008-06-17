@@ -31,7 +31,7 @@ public class Main {
         
         List<String> argsList = new ArrayList<String>();
         argsList.addAll(Arrays.asList(args));
-        argsList.add(0, "galaxy.war");
+        argsList.add("galaxy.war");
         
         org.mortbay.jetty.runner.Runner.main(argsList.toArray(new String[argsList.size()]));
         
