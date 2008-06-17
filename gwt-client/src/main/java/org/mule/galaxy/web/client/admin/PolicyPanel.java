@@ -181,7 +181,7 @@ public class PolicyPanel extends AbstractComposite {
     protected void handlePolicyFailure(final ApplyPolicyException caught) {
         PageInfo page = 
             galaxy.createPageInfo("policy-failure-" + caught.hashCode(), 
-                                  new ArtifactCollectionPolicyResultsPanel(caught.getPolicyFailures()),
+                                  new ArtifactCollectionPolicyResultsPanel(galaxy, caught.getPolicyFailures()),
                                   0);
         
         History.newItem(page.getName());

@@ -18,10 +18,6 @@
 
 package org.mule.galaxy.web.client.artifact;
 
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.rpc.BasicArtifactInfo;
-import org.mule.galaxy.web.rpc.WApprovalMessage;
-
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
@@ -30,27 +26,39 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class ArtifactCollectionPolicyResultsPanel extends AbstractComposite {
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
+import org.mule.galaxy.web.rpc.BasicArtifactInfo;
+import org.mule.galaxy.web.rpc.WApprovalMessage;
+
+public class ArtifactCollectionPolicyResultsPanel extends AbstractErrorShowingComposite {
 
     
     private final Map policyFailures;
     private FlowPanel panel;
+    private RegistryMenuPanel menuPanel;
 
-    public ArtifactCollectionPolicyResultsPanel(Map policyFailures) {
+    public ArtifactCollectionPolicyResultsPanel(Galaxy galaxy, Map policyFailures) {
         super();
         this.policyFailures = policyFailures;
         
-        FlowPanel base = new FlowPanel();
+        menuPanel = new RegistryMenuPanel(galaxy);
+        
+        FlowPanel base = getMainPanel();
+        menuPanel.setMain(base);
+        
         base.setStyleName("policy-failure-panel-base");
 
         panel = new FlowPanel();
         panel.setStyleName("policy-failure-panel");
         base.add(panel);
         
-        initWidget(base);
+        initWidget(menuPanel);
     }
     
     public void onShow() {
+        menuPanel.onShow();
         panel.clear();
         
         panel.add(createTitle("Artifact Policy Failures"));
