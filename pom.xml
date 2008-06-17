@@ -4,7 +4,7 @@
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-RC-SNAPSHOT</version>
+    <version>1.0-RC</version>
     <name>Galaxy</name>
 
     <properties>
@@ -494,9 +494,9 @@
         </site>
     </distributionManagement>
     <scm>
-        <connection>scm:svn:https://svn.muleforge.org/galaxy/trunk</connection>
-        <developerConnection>scm:svn:https://svn.muleforge.org/galaxy/trunk</developerConnection>
-        <url>http://svn.galaxy.muleforge.org/</url>
+        <connection>scm:svn:https://svn.muleforge.org/galaxy/tags/galaxy-1.0-RC</connection>
+        <developerConnection>scm:svn:https://svn.muleforge.org/galaxy/tags/galaxy-1.0-RC</developerConnection>
+        <url>http://svn.galaxy.muleforge.org/tags/galaxy-1.0-RC</url>
     </scm>
 
     <profiles>
