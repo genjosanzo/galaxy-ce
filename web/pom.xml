@@ -2,7 +2,7 @@
     <parent>
         <groupId>org.mule.galaxy</groupId>
         <artifactId>galaxy-parent</artifactId>
-        <version>1.0-RC-SNAPSHOT</version>
+        <version>1.0-RC</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.galaxy</groupId>
@@ -177,7 +177,7 @@
                       <copy todir="${project.build.directory}/${project.build.finalName}">
                          <fileset dir="${basedir}/../gwt-client/target/galaxy-gwt-client-${project.version}/">
                              <!-- Required for better IDE support of GWT (avoid looped symlinks). -->
-                             <exclude name="**/org/mule/galaxy/web/public/**"/>
+                             <exclude name="**/org/mule/galaxy/web/public/**" />
                          </fileset>
                       </copy>
                     </tasks>
