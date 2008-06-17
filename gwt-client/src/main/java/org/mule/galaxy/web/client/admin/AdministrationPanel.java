@@ -45,14 +45,6 @@ public class AdministrationPanel extends MenuPanel {
     }
 
     protected void createMenuItems(Galaxy galaxy, Toolbox manageBox) {
-        if (galaxy.hasPermission("MANAGE_ARTIFACT_TYPES")) {
-            createLinkWithAdd(manageBox, 
-                              "Artifact Types", 
-                              "artifact-types", 
-                              new ArtifactTypeListPanel(this),
-                              new ArtifactTypeForm(this));
-        }        
-
         if (galaxy.hasPermission("MANAGE_GROUPS")) {
             createLinkWithAdd(manageBox, 
                               "Groups", 
@@ -67,15 +59,6 @@ public class AdministrationPanel extends MenuPanel {
                               "lifecycles", 
                               new LifecycleListPanel(this),
                               new LifecycleForm(this));
-        }
-        
-        if (galaxy.hasPermission("MANAGE_INDEXES")) {
-            createLinkWithAdd(manageBox, 
-                              "Indexes", 
-                              "indexes", 
-                              new IndexListPanel(this),
-                              new IndexForm(this));
-            createPageInfo("index-delete", new IndexDeleteForm(this));
         }
         
         if (galaxy.hasPermission("MANAGE_POLICIES")) {
