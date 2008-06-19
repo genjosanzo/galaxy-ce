@@ -11,7 +11,9 @@ package org.mule.galaxy.netboot;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedHashSet;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
@@ -269,11 +271,14 @@ public class NetbootConfig
     public void setWorkspacesAsString(String workspaces)
     {
         StringTokenizer tokenizer = new StringTokenizer(workspaces, ",");
-        this.workspaces = new String[tokenizer.countTokens()];
+        // filter duplicates
+        Set ws = new LinkedHashSet();
         for (int i = 0; tokenizer.hasMoreTokens(); i++)
         {
-            this.workspaces[i] = tokenizer.nextToken().trim();
+            ws.add(tokenizer.nextToken().trim());
         }
+
+        this.workspaces = (String[]) ws.toArray(new String[ws.size()]);
     }
 
     public String[] getStartupArgs()
