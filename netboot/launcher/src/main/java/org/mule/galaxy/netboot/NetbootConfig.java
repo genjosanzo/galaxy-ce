@@ -9,16 +9,18 @@
  */
 package org.mule.galaxy.netboot;
 
-import java.util.Properties;
-import java.util.StringTokenizer;
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
  * TODO
  */
 public class NetbootConfig
 {
+
+    private static final String NL = System.getProperty("line.separator");
 
     private String httpScheme;
     private String host;
@@ -106,36 +108,36 @@ public class NetbootConfig
         StringBuffer buf = new StringBuffer();
         if (muleHome == null)
         {
-            buf.append("Mule Home (mule.home) must be set\n");
+            buf.append("Mule Home (mule.home) must be set" + NL);
         }
         if (host == null)
         {
-            buf.append("A hostname must be set\n");
+            buf.append("A hostname must be set" + NL);
         }
         if (port == 0)
         {
-            buf.append("A valid port number must be set\n");
+            buf.append("A valid port number must be set" + NL);
         }
         if (username == null)
         {
-            buf.append("A valid user name must be set\n");
+            buf.append("A valid user name must be set" + NL);
         }
         if (password == null)
         {
-            buf.append("A password must be set for the user\n");
+            buf.append("A password must be set for the user" + NL);
         }
         if (netBootWorkspace == null)
         {
-            buf.append("A netboot workspace must be set\n");
+            buf.append("A netboot workspace must be set" + NL);
         }
         if (workspaces == null || workspaces.length == 0)
         {
-            buf.append("You must set at least one configuration workspace\n");
+            buf.append("You must set at least one configuration workspace" + NL);
         }
 
         if (buf.length() > 0)
         {
-            throw new IllegalStateException("Netboot config not valid:\n" + buf.toString());
+            throw new IllegalStateException("Netboot config not valid:" + NL + buf.toString());
         }
     }
 
