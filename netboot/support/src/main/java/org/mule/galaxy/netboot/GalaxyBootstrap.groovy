@@ -45,20 +45,20 @@ class GalaxyBootstrap {
     static URL[] constructMuleClasspath(NetbootConfig config) {
 
         //def httpScheme = p.'galaxy.httpScheme' ?: 'http'
-        def httpScheme = config.getHttpScheme()
-        def host = config.getHost()
-        def port = config.getPort()
-        def apiUrl = config.getApiUrl()
-        def username = config.getUsername()
-        def password = config.getPassword()
+        def httpScheme = config.httpScheme
+        def host = config.host
+        def port = config.port
+        def apiUrl = config.apiUrl
+        def username = config.username
+        def password = config.password
         // split by comma, prune duplicates, all in a null-safe manner
-        workspaces = config.getWorkspaces()
-        netBootWorkspace = config.getNetBootWorkspace()
-        debug = config.isDebug()
-        def clean = config.isClean()
+        workspaces = config.workspaces
+        netBootWorkspace = config.netBootWorkspace
+        debug = config.debug
+        def clean = config.clean
 
         // Passed in as -Dmule.home
-        def muleHome = config.getMuleHome()
+        def muleHome = config.muleHome
         // create a local cache dir if needed
         File cacheDir = new File(muleHome, 'lib/cache')
         netBootCacheDir = new File(cacheDir, netBootWorkspace)
