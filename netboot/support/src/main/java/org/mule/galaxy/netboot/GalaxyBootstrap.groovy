@@ -28,7 +28,7 @@ import java.util.concurrent.ExecutionException
 class GalaxyBootstrap {
 
     def static g
-    def static List workspaces
+    def static String[] workspaces
     def static netBootWorkspace
     def static boolean debug
     def static File netBootCacheDir
