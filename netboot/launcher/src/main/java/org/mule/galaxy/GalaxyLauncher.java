@@ -56,7 +56,6 @@ public class GalaxyLauncher
 
         });
 
-        config.validate();
         launcher.launchWithConfig(config);
     }
 
