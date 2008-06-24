@@ -42,6 +42,7 @@ public class ArtifactListPanel extends Composite {
     private final AbstractBrowsePanel browsePanel;
     private FlowPanel activityNavPanel;
     private FlowPanel bulkEditPanel;
+    private boolean editable;
 
     public ArtifactListPanel(AbstractBrowsePanel browsePanel) {
         super();
@@ -74,7 +75,7 @@ public class ArtifactListPanel extends Composite {
         for (Iterator groups = o.getResults().iterator(); groups.hasNext();) {
             ArtifactGroup group = (ArtifactGroup) groups.next();
 
-            ArtifactGroupListPanel list = new ArtifactGroupListPanel(group);
+            ArtifactGroupListPanel list = new ArtifactGroupListPanel(group, isEditable());
 
             SimplePanel rightTitlePanel = new SimplePanel();
             rightTitlePanel.setStyleName("right-title-panel");
@@ -107,7 +108,7 @@ public class ArtifactListPanel extends Composite {
         if (resultSize > 0) {
             bulkEditPanel = new FlowPanel();
             bulkEditPanel.setStyleName("activity-bulkedit-panel");
-            Hyperlink h = new Hyperlink("Bulk Edit ", "someAction");
+            Hyperlink h = new Hyperlink("Bulk Edit ","");
 
             // TODP: replace w/icon
             h.setStyleName("activity-bulkedit-link");
@@ -115,11 +116,17 @@ public class ArtifactListPanel extends Composite {
 
                 public void onClick(Widget arg0) {
                    // allow user to select which artifacts to bulk edit
-
+                    setEditable(true);
                 }
 
             });
             bulkEditPanel.add(h);
+
+            // add a continue and clear link or button in edit mode
+            if(this.isEditable()) {
+                // ....
+            }
+
             panel.insert(bulkEditPanel, 0);
 
         }
@@ -189,4 +196,12 @@ public class ArtifactListPanel extends Composite {
         this.resultStart = resultStart;
     }
 
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
+    
 }

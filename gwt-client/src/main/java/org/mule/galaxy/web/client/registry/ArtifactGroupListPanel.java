@@ -19,56 +19,79 @@
 package org.mule.galaxy.web.client.registry;
 
 import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.BasicArtifactInfo;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.CheckBox;
 
 /**
  * Lists a group of artifacts.
  */
-public class ArtifactGroupListPanel
-    extends AbstractComposite
-{
-    private ArtifactGroup group;
+public class ArtifactGroupListPanel extends AbstractComposite {
 
-    public ArtifactGroupListPanel(final ArtifactGroup group) {
-        super();
+    private ArtifactGroup group;
+    private boolean editable;
+
+    public ArtifactGroupListPanel(final ArtifactGroup group, boolean editable) {
         this.group = group;
-        
+        this.editable = editable;
+        renderArtifacts();
+    }
+
+    private void renderArtifacts() {
         FlexTable table = super.createRowTable();
 
-        for (int i = 0; i < group.getColumns().size(); i++) {
-            table.setText(0, i, (String) group.getColumns().get(i));
-        }
-        
-        for (int i = 0; i < group.getRows().size(); i++) {
-            final BasicArtifactInfo info = (BasicArtifactInfo) group.getRows().get(i);
-            for (int c = 0; c < group.getColumns().size(); c++) {
-                if (c == 0) {
-                    Hyperlink hl = new Hyperlink(info.getValue(c), "artifact_" + info.getId());
-//                    MenuPanelPageInfo page = new MenuPanelPageInfo(hl.getTargetHistoryToken(), registryPanel) {
-//                        public AbstractComposite createInstance() {
-//                            return new ArtifactPanel(registryPanel, info.getId());
-//                        }
-//                    };
-//                    registryPanel.addPage(page);
-                    
-                    table.setWidget(i+1, c, hl);
-                } else {
-                    table.setText(i+1, c, info.getValue(c));
-                }
-                table.getRowFormatter().setStyleName(i+1, "artifactTableEntry");
-            }
+        // each group contains one to many artifacts of the same type (ie, mule 1 configs)
+        // and each type will (probably) have a different number of data points
+        int numCols = group.getColumns().size();
+        int numRows = group.getRows().size();
+
+        // create the colum headers
+        // the first column is blank on purpose
+        table.setText(0, 0,"");
+        for (int i = 0; i < numCols; i++) {
+            int cPos = i + 1;
+            table.setText(0, cPos, (String) group.getColumns().get(i));
         }
 
+        // draw the rows for each artifact type in the group
+        for (int i = 0; i < numRows; i++) {
+            final BasicArtifactInfo info = (BasicArtifactInfo) group.getRows().get(i);
+
+            // draw the checkbox in edit mode
+            if(editable) {
+                CheckBox checkbox = new CheckBox();
+                checkbox.setName(info.getId());
+                table.setWidget(i + 1, 0, checkbox);
+            } else {
+                //
+                table.setText(0, 0,"");
+            }
+
+            // draw the rest of the colums
+            for (int c = 0; c < numCols; c++) {
+                int cPos = c + 1;
+
+                String value = info.getValue(c);
+                String Id = info.getId();
+                if (c == 0) {
+                    // the first column is the artifact name (value) and that's a link
+                    Hyperlink hl = new Hyperlink(value, "artifact_" + Id);
+                    table.setWidget(i + 1, cPos, hl);
+                } else {
+                    // each additional value is just regular ol' text
+                    table.setText(i + 1, cPos, value);
+                }
+                table.getRowFormatter().setStyleName(i + 1, "artifactTableEntry");
+            }
+        }
         initWidget(table);
     }
 
-    public String getTitle()
-    {
+    public String getTitle() {
         return group.getName();
     }
+
 }
