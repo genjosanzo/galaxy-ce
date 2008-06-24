@@ -43,6 +43,7 @@ public class GroupForm extends AbstractAdministrationForm {
 
         nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
         nameTB.getTextBox().setText(group.getName());
+        nameTB.getTextBox().setFocus(true);
         table.setWidget(0, 1, nameTB);
 
         styleHeaderColumn(table);

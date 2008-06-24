@@ -102,7 +102,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
             if (showArtifactTypes) {
                 artifactTypesBox = new Toolbox(false);
                 InlineFlowPanel titlePanel = new InlineFlowPanel();
-                titlePanel.add(new Label("Artifact Type"));
+                titlePanel.add(new Label("Display"));
                 artifactTypesBox.setTitle(titlePanel);
                 showArtifactTypes();
             }
@@ -144,7 +144,8 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
                 Collection allArtifactTypes = (Collection) o;
 
                 // Create a show all or "reset" link
-                final Hyperlink h = new Hyperlink("[Show All Artifacts]", getHistoryToken());
+                // Make this an icon?
+                final Hyperlink h = new Hyperlink("All Artifacts", getHistoryToken());
                 h.setStyleName("unselected-link");
                 h.addClickListener(new ClickListener() {
                     public void onClick(final Widget widget) {

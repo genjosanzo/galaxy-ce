@@ -93,7 +93,6 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
         userLB = new ListBox();
         userLB.addItem("All");
         userLB.addItem("System", "system");
-        userLB.setSelectedIndex(0);
         searchPanel.add(userLB);
         galaxy.getSecurityService().getUsers(new AbstractCallback(this) {
             public void onSuccess(Object result) {
@@ -101,13 +100,12 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
             }
         });
 
-        searchPanel.add(new Label("EventType:"));
+        searchPanel.add(new Label("Type:"));
         eventLB = new ListBox();
         eventLB.addItem("All");
         eventLB.addItem("Info");
         eventLB.addItem("Error");
         eventLB.addItem("Warning");
-        eventLB.setSelectedIndex(0);
         searchPanel.add(eventLB);
 
         searchPanel.add(new Label("Max Results:"));
@@ -117,7 +115,6 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
         resultsLB.addItem("50");
         resultsLB.addItem("100");
         resultsLB.addItem("200");
-        resultsLB.setSelectedIndex(2);
         searchPanel.add(resultsLB);
 
         Button search = new Button("Search");
@@ -130,9 +127,22 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
         });
         searchPanel.add(search);
 
+        Button reset = new Button("Reset");
+        reset.addClickListener(new ClickListener() {
+
+            public void onClick(Widget sender) {
+                reset();
+                onShow();
+            }
+
+        });
+        searchPanel.add(reset);
+
         resultsPanel = new FlowPanel();
         panel.add(resultsPanel);
 
+        // set form widgets to default values
+        reset();
         initWidget(mainPanel);
     }
 
@@ -256,7 +266,7 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
 
         table.setText(0, 0, "Date");
         table.setText(0, 1, "User");
-        table.setText(0, 2, "Event Type");
+        table.setText(0, 2, "Type");
         table.setText(0, 3, "Activity");
 
         int i = 1;
@@ -302,4 +312,14 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
 
         return tb;
     }
+
+    // reset search params to default values
+    private void reset() {
+        fromTB.setText("");
+        toTB.setText("");
+        userLB.setSelectedIndex(0);
+        eventLB.setSelectedIndex(0);
+        resultsLB.setSelectedIndex(2);
+    }
+
 }

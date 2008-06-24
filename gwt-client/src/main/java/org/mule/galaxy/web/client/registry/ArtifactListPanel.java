@@ -41,6 +41,7 @@ public class ArtifactListPanel extends Composite {
     private int maxResults = 15;
     private final AbstractBrowsePanel browsePanel;
     private FlowPanel activityNavPanel;
+    private FlowPanel bulkEditPanel;
 
     public ArtifactListPanel(AbstractBrowsePanel browsePanel) {
         super();
@@ -59,7 +60,6 @@ public class ArtifactListPanel extends Composite {
         initWidget(panel);
 
         clear();
-        artifactPanel.add(new Label("Loading..."));
     }
 
     public int getMaxResults() {
@@ -68,7 +68,9 @@ public class ArtifactListPanel extends Composite {
 
     public void initArtifacts(WSearchResults o) {
         clear();
+        createBulkEditPanel(o);
         createNavigationPanel(o);
+
         for (Iterator groups = o.getResults().iterator(); groups.hasNext();) {
             ArtifactGroup group = (ArtifactGroup) groups.next();
 
@@ -92,6 +94,35 @@ public class ArtifactListPanel extends Composite {
 
     public void clear() {
         artifactPanel.clear();
+    }
+
+
+    private void createBulkEditPanel(WSearchResults o) {
+        if (bulkEditPanel != null) {
+            panel.remove(bulkEditPanel);
+            bulkEditPanel = null;
+        }
+
+        long resultSize = o.getTotal();
+        if (resultSize > 0) {
+            bulkEditPanel = new FlowPanel();
+            bulkEditPanel.setStyleName("activity-bulkedit-panel");
+            Hyperlink h = new Hyperlink("Bulk Edit ", "someAction");
+
+            // TODP: replace w/icon
+            h.setStyleName("activity-bulkedit-link");
+            h.addClickListener(new ClickListener() {
+
+                public void onClick(Widget arg0) {
+                   // allow user to select which artifacts to bulk edit
+
+                }
+
+            });
+            bulkEditPanel.add(h);
+            panel.insert(bulkEditPanel, 0);
+
+        }
     }
 
     private void createNavigationPanel(WSearchResults o) {

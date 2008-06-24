@@ -636,6 +636,15 @@ a:visited {
     float: right;
 }
 
+.activity-bulkedit-panel {
+    background-color: #fff;
+    padding: 6px;
+}
+
+.activity-bulkedit-link {
+    float: right;
+}
+
 
 .GWTCDatePicker, .GWTCDatePickerCheckout, .GWTCDatePickerCheckin {
   border: 6px solid #4c0000;

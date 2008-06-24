@@ -94,6 +94,7 @@ public class LifecycleForm extends AbstractAdministrationForm {
 
         nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
         nameTB.getTextBox().setText(lifecycle.getName());
+        nameTB.getTextBox().setFocus(true);
         nameAndPhases.setText(0, 0, "Lifecycle Name:");
         nameAndPhases.setWidget(0, 1, nameTB);
 
