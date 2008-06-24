@@ -643,6 +643,8 @@ a:visited {
 
 .activity-bulkedit-link {
     float: right;
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
 

@@ -22,9 +22,9 @@ import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.BasicArtifactInfo;
 
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.CheckBox;
 
 /**
  * Lists a group of artifacts.
@@ -50,7 +50,7 @@ public class ArtifactGroupListPanel extends AbstractComposite {
 
         // create the colum headers
         // the first column is blank on purpose
-        table.setText(0, 0,"");
+        table.setText(0, 0, "");
         for (int i = 0; i < numCols; i++) {
             int cPos = i + 1;
             table.setText(0, cPos, (String) group.getColumns().get(i));
@@ -61,13 +61,13 @@ public class ArtifactGroupListPanel extends AbstractComposite {
             final BasicArtifactInfo info = (BasicArtifactInfo) group.getRows().get(i);
 
             // draw the checkbox in edit mode
-            if(editable) {
+            if (editable) {
                 CheckBox checkbox = new CheckBox();
                 checkbox.setName(info.getId());
                 table.setWidget(i + 1, 0, checkbox);
             } else {
                 //
-                table.setText(0, 0,"");
+                table.setText(0, 0, "");
             }
 
             // draw the rest of the colums
@@ -76,8 +76,8 @@ public class ArtifactGroupListPanel extends AbstractComposite {
 
                 String value = info.getValue(c);
                 String Id = info.getId();
+                // the first column is the artifact name (value) and that's a link
                 if (c == 0) {
-                    // the first column is the artifact name (value) and that's a link
                     Hyperlink hl = new Hyperlink(value, "artifact_" + Id);
                     table.setWidget(i + 1, cPos, hl);
                 } else {

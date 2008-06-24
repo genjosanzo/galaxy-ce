@@ -156,7 +156,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
                 });
                 artifactTypesBox.add(h, false);
 
-                // Get list of all artifacts types
+                // Get list of all artifact types
                 for (Iterator itr = allArtifactTypes.iterator(); itr.hasNext();) {
                     final WArtifactType at = (WArtifactType) itr.next();
 
