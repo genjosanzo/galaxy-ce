@@ -174,9 +174,9 @@ public class Galaxy implements EntryPoint, HistoryListener {
         registryService.getUserInfo(new AbstractCallback(browsePanel) {
             public void onSuccess(Object o) {
                 user = (WUser) o;
-                rightPanel.add(new Label(user.getName()));
+                rightPanel.add(new Label("Signed in as: " + user.getName()));
 
-                ExternalHyperlink logout = new ExternalHyperlink("Logout", GWT.getHostPageBaseURL() + "j_logout");
+                ExternalHyperlink logout = new ExternalHyperlink("Sign out", GWT.getHostPageBaseURL() + "j_logout");
                 rightPanel.add(logout);
 
                 loadTabs(galaxy);
