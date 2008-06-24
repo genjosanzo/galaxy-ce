@@ -54,6 +54,7 @@ public class ArtifactGroupListPanel extends AbstractComposite {
         for (int i = 0; i < numCols; i++) {
             int cPos = i + 1;
             table.setText(0, cPos, (String) group.getColumns().get(i));
+            table.getCellFormatter().setWidth(0, 0, "20");
         }
 
         // draw the rows for each artifact type in the group

@@ -115,7 +115,8 @@ public class ArtifactListPanel extends Composite {
             String editLinkText = this.isEditable()
                     ? "Cancel"
                     : "Bulk Edit";
-            Hyperlink h = new Hyperlink(editLinkText, "");
+            Hyperlink h = new Hyperlink();
+            h.setText(editLinkText);
             h.setStyleName("activity-bulkedit-link");
             h.addClickListener(new ClickListener() {
                 public void onClick(Widget w) {
@@ -126,13 +127,15 @@ public class ArtifactListPanel extends Composite {
             });
             bulkEditPanel.add(h);
 
-            // insert a contine link to start the editing process
+            //  start the editing process
             if(isEditable()) {
-                Hyperlink ha = new Hyperlink("Edit All", "");
+                Hyperlink ha = new Hyperlink();
+                ha.setText("Edit All");
                 ha.setStyleName("activity-bulkedit-link");
                 bulkEditPanel.add(ha);
 
-                Hyperlink hc = new Hyperlink("Edit Selected", "");
+                Hyperlink hc = new Hyperlink();
+                hc.setText("Edit Selected");
                 hc.setStyleName("activity-bulkedit-link");
                 bulkEditPanel.add(hc);
             }
