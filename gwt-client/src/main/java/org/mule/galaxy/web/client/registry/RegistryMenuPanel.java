@@ -18,6 +18,13 @@
 
 package org.mule.galaxy.web.client.registry;
 
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.MenuPanel;
+import org.mule.galaxy.web.client.util.NavigationUtil;
+import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WArtifactView;
+
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -30,14 +37,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
-
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.MenuPanel;
-import org.mule.galaxy.web.client.util.NavigationUtil;
-import org.mule.galaxy.web.client.util.Toolbox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WArtifactView;
 
 /**
  * Forms the basis of any pages which do not list artifacts.
@@ -51,20 +50,20 @@ public class RegistryMenuPanel extends MenuPanel {
     private final boolean showSearch;
     private boolean first = true;
     private FlowPanel recentViewsPanel;
-    
+
     public RegistryMenuPanel(Galaxy galaxy) {
         this(galaxy, true, true);
     }
 
-    public RegistryMenuPanel(Galaxy galaxy, 
-                             boolean showBrowse, 
+    public RegistryMenuPanel(Galaxy galaxy,
+                             boolean showBrowse,
                              boolean showSearch) {
         super();
         this.galaxy = galaxy;
         this.showBrowse = showBrowse;
         this.showSearch = showSearch;
     }
-    
+
     public void onShow() {
         createLinks();
         loadViews();
@@ -75,12 +74,12 @@ public class RegistryMenuPanel extends MenuPanel {
             return;
         }
         Toolbox menuLinks = new Toolbox(false);
-        
+
         addTopLinks(menuLinks);
-        
+
         Image addImg = new Image("images/add_obj.gif");
         addImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-artifact"));
-        
+
         menuLinks.add(asHorizontal(addImg, new Label(" "), new Hyperlink("Add Artifact", "add-artifact")));
 
         Image addWkspcImg = new Image("images/add-workspace.gif");
@@ -88,9 +87,9 @@ public class RegistryMenuPanel extends MenuPanel {
 
         Hyperlink hl = new Hyperlink("Add Workspace", "add-workspace");
         menuLinks.add(asHorizontal(addWkspcImg, new Label(" "), hl));
-        
+
         addBottomLinks(menuLinks);
-        
+
         if (showBrowse) {
             Image img = new Image("images/browse-workspaces.gif");
             img.addClickListener(NavigationUtil.createNavigatingClickListener("browse"));
@@ -106,15 +105,15 @@ public class RegistryMenuPanel extends MenuPanel {
             hl = new Hyperlink("Search Workspaces", "search");
             menuLinks.add(asHorizontal(img, new Label(" "), hl));
         }
-        
+
         addMenuItem(menuLinks, 0);
-        
+
         Toolbox viewToolbox = new Toolbox(false);
-        
-        viewToolbox.add(asHorizontal(newLabel("View ", "toolbox-header"), 
+
+        viewToolbox.add(asHorizontal(newLabel("View ", "toolbox-header"),
                                      new Hyperlink("New", "view_new"),
                                      new Label("...")));
-        
+
         viewBox = new ListBox();
         viewBox.setStyleName("view-ListBox");
         viewBox.setSize("170", "");
@@ -124,14 +123,14 @@ public class RegistryMenuPanel extends MenuPanel {
                 int idx = viewBox.getSelectedIndex();
                 if (idx != -1) {
                     String id = viewBox.getValue(idx);
-                    
+
                     if (id.length() > 0) {
                         History.newItem("view_" + id);
                     }
                 }
             }
         });
-        
+
         addMenuItem(viewToolbox, 1);
 
         // recent view history
@@ -143,11 +142,11 @@ public class RegistryMenuPanel extends MenuPanel {
 
         first = false;
     }
-    
+
     public void loadViews() {
         loadViews(null, null);
     }
-    
+
     public void loadViews(String viewId, final AsyncCallback callback) {
         this.selectedViewId = viewId;
         galaxy.getRegistryService().getArtifactViews(new AbstractCallback(this) {
@@ -155,23 +154,24 @@ public class RegistryMenuPanel extends MenuPanel {
             public void onSuccess(Object views) {
                 initializeViews((Collection) views, callback);
             }
-            
+
         });
-        
+
+        /* 
         galaxy.getRegistryService().getRecentArtifactViews(new AbstractCallback(this) {
 
-            public void onSuccess(Object views) {
-                initializeRecentViews((Collection) views);
-            }
-            
-        });
+         public void onSuccess(Object views) {
+             initializeRecentViews((Collection) views);
+         }
+
+     });   */
     }
 
     protected void initializeRecentViews(Collection views) {
         recentViewsPanel.clear();
         for (Iterator itr = views.iterator(); itr.hasNext();) {
             WArtifactView wv = (WArtifactView) itr.next();
-            
+
             recentViewsPanel.add(new Hyperlink(wv.getName(), "view_" + wv.getId()));
         }
     }
@@ -181,11 +181,11 @@ public class RegistryMenuPanel extends MenuPanel {
         viewBox.addItem("Select...", "");
         for (Iterator itr = views.iterator(); itr.hasNext();) {
             WArtifactView wv = (WArtifactView) itr.next();
-            
+
             viewBox.addItem(wv.getName(), wv.getId());
-            
+
             if (wv.getId().equals(selectedViewId)) {
-                viewBox.setSelectedIndex(viewBox.getItemCount()-1);
+                viewBox.setSelectedIndex(viewBox.getItemCount() - 1);
 
                 if (callback != null) {
                     callback.onSuccess(wv);
@@ -195,11 +195,11 @@ public class RegistryMenuPanel extends MenuPanel {
     }
 
     protected void addTopLinks(Toolbox topMenuLinks) {
-        
+
     }
 
     protected void addBottomLinks(Toolbox topMenuLinks) {
-        
+
     }
 
 }

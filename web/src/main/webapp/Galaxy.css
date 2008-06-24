@@ -1096,6 +1096,7 @@ a:visited {
   cursor: hand;
 
   color: white;
+  font-weight: bold;
   background-color: black;
   border-bottom: 2px solid black;
   margin-right: 2px;
