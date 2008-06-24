@@ -20,7 +20,6 @@ package org.mule.galaxy.web.client.registry;
 
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.artifact.ArtifactMetadataPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -55,7 +54,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
     private boolean first = true;
     private int resultStart;
     private final boolean showArtifactTypes;
-    
+
     public AbstractBrowsePanel(Galaxy galaxy) {
         this(galaxy, true);
     }
@@ -67,60 +66,49 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
         this.service = galaxy.getRegistryService();
 
         menuPanel = createRegistryMenuPanel();
-        
+
         initWidget(menuPanel);
     }
 
-    
+
     protected RegistryMenuPanel createRegistryMenuPanel() {
         return new RegistryMenuPanel(galaxy, false, true);
     }
-    
+
     public void onShow(List params) {
         if (params.size() > 1) {
             try {
                 resultStart = Integer.valueOf((String) params.get(1)).intValue();
             } catch (NumberFormatException e) {
             }
-            
+
             if (resultStart < 0) {
                 resultStart = 0;
             }
         } else {
             resultStart = 0;
         }
-        
+
         if (first) {
             artifactListPanel = new ArtifactListPanel(this);
         }
-        
+
         artifactListPanel.setResultStart(resultStart);
-        
+
         if (first) {
             initializeMenuAndTop();
-            
+
+
             if (showArtifactTypes) {
                 artifactTypesBox = new Toolbox(false);
                 InlineFlowPanel titlePanel = new InlineFlowPanel();
-                titlePanel.add(new Label("By Artifact Type"));
-                titlePanel.add(new Label(" "));
-                final Hyperlink h = new Hyperlink("[show all]", getHistoryToken());
-                h.addClickListener(new ClickListener()
-                {
-                    public void onClick(final Widget widget)
-                    {
-                        appliedArtifactTypeFilters.clear();
-                        refreshArtifactTypes();
-                        refreshArtifacts();
-                    }
-                });
-                titlePanel.add(h);
+                titlePanel.add(new Label("Artifact Type"));
                 artifactTypesBox.setTitle(titlePanel);
                 showArtifactTypes();
             }
             first = false;
         }
-        
+
         menuPanel.onShow();
         refresh();
 
@@ -132,28 +120,46 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
     protected abstract String getHistoryToken();
 
     protected void initializeMenuAndTop() {
+
+    }
+
+    protected void initializeBulkEdit() {
+
     }
 
     public void refresh() {
         refreshArtifactTypes();
-        
+
         menuPanel.loadViews();
     }
 
     protected void refreshArtifactTypes() {
         artifactTypesBox.clear();
         artifactTypesBox.add(new Label("Loading..."));
-        
+
         service.getArtifactTypes(new AbstractCallback(this) {
 
             public void onSuccess(Object o) {
                 artifactTypesBox.clear();
                 Collection allArtifactTypes = (Collection) o;
-                
+
+                // Create a show all or "reset" link
+                final Hyperlink h = new Hyperlink("[Show All Artifacts]", getHistoryToken());
+                h.setStyleName("unselected-link");
+                h.addClickListener(new ClickListener() {
+                    public void onClick(final Widget widget) {
+                        appliedArtifactTypeFilters.clear();
+                        refreshArtifactTypes();
+                        refreshArtifacts();
+                    }
+                });
+                artifactTypesBox.add(h, false);
+
+                // Get list of all artifacts types
                 for (Iterator itr = allArtifactTypes.iterator(); itr.hasNext();) {
                     final WArtifactType at = (WArtifactType) itr.next();
-                    
-                    Hyperlink hl = new Hyperlink(at.getDescription(), getHistoryToken());
+
+                    final Hyperlink hl = new Hyperlink(at.getDescription(), getHistoryToken());
                     hl.addClickListener(new ClickListener() {
                         public void onClick(Widget w) {
                             String style = w.getStyleName();
@@ -165,12 +171,12 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
                                 w.setStyleName("unselected-link");
                                 removeArtifactTypeFilter(at.getId());
                             }
-                            
+
                         }
                     });
                     final String currentStyleName = appliedArtifactTypeFilters.contains(at.getId())
-                                                        ? "selected-link"
-                                                        : "unselected-link";
+                            ? "selected-link"
+                            : "unselected-link";
 
                     hl.setStyleName(currentStyleName);
                     artifactTypesBox.add(hl, false);
@@ -178,7 +184,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
             }
         });
     }
-    
+
     public void addArtifactTypeFilter(String id) {
         appliedArtifactTypeFilters.add(id);
         refreshArtifacts();
@@ -191,8 +197,8 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
 
     public void refreshArtifacts() {
         menuPanel.setMain(artifactListPanel);
-        refreshArtifacts(artifactListPanel.getResultStart(), 
-                        artifactListPanel.getMaxResults());
+        refreshArtifacts(artifactListPanel.getResultStart(),
+                         artifactListPanel.getMaxResults());
     }
 
     public void refreshArtifacts(int resultStart, int maxResults) {
@@ -202,6 +208,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
             public void onSuccess(Object o) {
                 artifactListPanel.initArtifacts((WSearchResults) o);
             }
+
             public void onFailure(Throwable caught) {
                 menuPanel.setMessage(caught.getMessage());
                 if (artifactListPanel != null) {
@@ -209,19 +216,19 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
                 }
             }
         };
-        
+
         fetchArtifacts(resultStart, maxResults, callback);
     }
 
-    
+
     public Set getAppliedArtifactTypeFilters() {
         return appliedArtifactTypeFilters;
     }
-    
+
     public void showArtifactTypes() {
         menuPanel.addMenuItem(artifactTypesBox);
     }
-    
+
     public void hideArtifactTypes() {
         menuPanel.removeMenuItem(artifactTypesBox);
     }
@@ -230,6 +237,6 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
     protected int getErrorPanelPosition() {
         return 0;
     }
-    
+
     protected abstract void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback);
 }

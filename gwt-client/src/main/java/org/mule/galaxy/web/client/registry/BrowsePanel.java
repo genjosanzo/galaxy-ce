@@ -48,7 +48,7 @@ public class BrowsePanel extends AbstractBrowsePanel {
     private FlowPanel browsePanel;
     private Image manageWkspcImg;
     private Hyperlink manageWkspcLink;
-    
+
     public BrowsePanel(Galaxy galaxy) {
         super(galaxy);
     }
@@ -74,13 +74,11 @@ public class BrowsePanel extends AbstractBrowsePanel {
 
             protected void addBottomLinks(Toolbox topMenuLinks) {
                 manageWkspcImg = new Image("images/editor_area.gif");
-                
                 manageWkspcLink = new Hyperlink("Manage Workspace", "");
-                
                 InlineFlowPanel manageLinks = asHorizontal(manageWkspcImg, new Label(" "), manageWkspcLink);
-                
                 topMenuLinks.add(manageLinks);
             }
+
         };
     }
 

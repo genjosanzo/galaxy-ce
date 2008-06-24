@@ -35,7 +35,6 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
@@ -118,7 +117,7 @@ public class ViewPanel extends AbstractBrowsePanel {
                 cancel = new Button();
                 cancel.setText("Cancel");
                 cancel.addClickListener(new ClickListener() {
-                    public void onClick(Widget arg0) {
+                    public void onClick(Widget arg0) {   
                         if (NEW_VIEW_ID.equals(viewId)) {
                             History.back();
                         } else {

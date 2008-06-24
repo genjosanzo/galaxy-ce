@@ -111,7 +111,7 @@ public class RegistryMenuPanel extends MenuPanel {
         
         Toolbox viewToolbox = new Toolbox(false);
         
-        viewToolbox.add(asHorizontal(newLabel("Views ", "toolbox-header"), 
+        viewToolbox.add(asHorizontal(newLabel("View ", "toolbox-header"), 
                                      new Hyperlink("New", "view_new"),
                                      new Label("...")));
         
@@ -133,11 +133,14 @@ public class RegistryMenuPanel extends MenuPanel {
         });
         
         addMenuItem(viewToolbox, 1);
-        
+
+        // recent view history
+        /*
         recentViewsPanel = new FlowPanel();
         recentViewsPanel.setStyleName("recent-views");
         viewToolbox.add(recentViewsPanel);
-        
+        */
+
         first = false;
     }
     

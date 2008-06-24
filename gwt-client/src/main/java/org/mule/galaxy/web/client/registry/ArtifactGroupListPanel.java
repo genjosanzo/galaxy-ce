@@ -19,6 +19,7 @@
 package org.mule.galaxy.web.client.registry;
 
 import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.BasicArtifactInfo;
 
@@ -37,8 +38,8 @@ public class ArtifactGroupListPanel
         super();
         this.group = group;
         
-        FlexTable table = createRowTable();
-        
+        FlexTable table = super.createRowTable();
+
         for (int i = 0; i < group.getColumns().size(); i++) {
             table.setText(0, i, (String) group.getColumns().get(i));
         }
@@ -62,7 +63,7 @@ public class ArtifactGroupListPanel
                 table.getRowFormatter().setStyleName(i+1, "artifactTableEntry");
             }
         }
-        
+
         initWidget(table);
     }
 

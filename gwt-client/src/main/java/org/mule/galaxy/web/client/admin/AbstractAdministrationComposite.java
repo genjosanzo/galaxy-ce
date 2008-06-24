@@ -21,7 +21,7 @@ package org.mule.galaxy.web.client.admin;
 import org.mule.galaxy.web.client.AbstractFlowComposite;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 
-public class AbstractAdministrationComposite extends AbstractFlowComposite {
+public abstract class AbstractAdministrationComposite extends AbstractFlowComposite {
     protected AdministrationPanel adminPanel;
 
     public AbstractAdministrationComposite(AdministrationPanel a) {
