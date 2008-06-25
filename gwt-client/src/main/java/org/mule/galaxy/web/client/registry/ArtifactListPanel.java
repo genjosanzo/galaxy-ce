@@ -98,6 +98,8 @@ public class ArtifactListPanel extends Composite {
     }
 
 
+    // each panel that links artifacts will have the option
+    // bulk edit all or some -- this handles the controls for that.
     private void createBulkEditPanel(final WSearchResults o) {
 
         if (bulkEditPanel != null) {
@@ -125,12 +127,13 @@ public class ArtifactListPanel extends Composite {
                 }
 
             });
+
             bulkEditPanel.add(h);
 
-            //  start the editing process
+            //  buttons or linkls?
             if(isEditable()) {
                 Hyperlink ha = new Hyperlink();
-                ha.setText("Edit All");
+                ha.setText("Edit All ("+ resultSize + ")");
                 ha.setStyleName("activity-bulkedit-link");
                 bulkEditPanel.add(ha);
 
@@ -141,9 +144,9 @@ public class ArtifactListPanel extends Composite {
             }
 
             panel.insert(bulkEditPanel, 0);
-
         }
     }
+
 
     private void createNavigationPanel(WSearchResults o) {
         if (activityNavPanel != null) {

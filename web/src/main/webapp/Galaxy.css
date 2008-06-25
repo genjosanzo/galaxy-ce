@@ -645,6 +645,8 @@ a:visited {
     float: right;
     padding-left: 6px;
     padding-right: 6px;
+    cursor: pointer;
+    cursor: hand;
 }
 
 
