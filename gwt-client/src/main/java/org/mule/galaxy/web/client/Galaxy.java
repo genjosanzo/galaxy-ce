@@ -88,6 +88,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     // Delimiters may be causing GWT issues w/safari
     // this makes it easy to swap ones out.
     protected FlowPanel base;
+    protected Label footer;
 
     /**
      * This is the entry point method.
@@ -185,7 +186,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         });
         
         
-        Label footer = new Label(getProductName() + ", Copyright 2008 MuleSource, Inc.");
+        footer = new Label(getFooterText());
         footer.setStyleName("footer");
         base.add(footer);
         RootPanel.get().add(base);
@@ -199,6 +200,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
         createPageInfo("view", new ViewPanel(this), 0);
 
         new HeartbeatTimer(Galaxy.this);
+    }
+
+    protected String getFooterText() {
+        return getProductName() + ", Copyright 2008 MuleSource, Inc.";
     }
 
     protected void initializeBody() {
