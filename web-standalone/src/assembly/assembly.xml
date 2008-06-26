@@ -33,7 +33,6 @@
       <includes>
         <include>org.mule.galaxy:galaxy-web-standalone</include>
         <include>log4j:log4j</include>
-        <include>commons-logging:commons-logging</include>
       </includes>
     </dependencySet>
     <dependencySet>
