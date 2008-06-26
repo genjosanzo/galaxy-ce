@@ -40,7 +40,6 @@
       <unpack>true</unpack>
       <outputDirectory></outputDirectory>
       <outputFileNameMapping></outputFileNameMapping>
-      <scope>system</scope>
       <includes>
         <include>org.mortbay.jetty:jetty-runner</include>
       </includes>
