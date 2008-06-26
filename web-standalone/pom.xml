@@ -32,15 +32,6 @@
       <version>1.2.13</version>
     </dependency>
 
-      <!--
-        This dependency is here only to fix Winstone classloader issues.
-      -->
-      <dependency>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-          <version>1.0.4</version>
-      </dependency>
-
   </dependencies>
   
   <build>
