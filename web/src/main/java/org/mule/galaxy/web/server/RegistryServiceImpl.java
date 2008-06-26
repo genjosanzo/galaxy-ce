@@ -389,6 +389,8 @@ public class RegistryServiceImpl implements RegistryService {
         Map<String, ArtifactGroup> name2group = new HashMap<String, ArtifactGroup>();
         Map<String, ArtifactRenderer> name2view = new HashMap<String, ArtifactRenderer>();
 
+        int total = 0;
+
         for (Object o : results.getResults()) {
             Artifact a = (Artifact)o;
             ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), a
@@ -399,6 +401,8 @@ public class RegistryServiceImpl implements RegistryService {
                 && !artifactTypes.contains(type.getId())) {
                 continue;
             }
+
+            total++;
 
             ArtifactGroup g = name2group.get(type.getDescription());
             ArtifactRenderer view = name2view.get(type.getDescription());
@@ -439,7 +443,7 @@ public class RegistryServiceImpl implements RegistryService {
 
         WSearchResults wsr = new WSearchResults();
         wsr.setResults(values);
-        wsr.setTotal(results.getTotal());
+        wsr.setTotal(total);
         return wsr;
     }
 
