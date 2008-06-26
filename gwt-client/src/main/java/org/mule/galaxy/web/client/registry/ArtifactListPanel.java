@@ -113,27 +113,23 @@ public class ArtifactListPanel extends Composite {
             bulkEditPanel = new FlowPanel();
             bulkEditPanel.setStyleName("activity-bulkedit-panel");
 
-            // edit/cancel link toggle
-            String editLinkText = this.isEditable()
-                    ? "Cancel"
-                    : "Bulk Edit";
-            Hyperlink h = new Hyperlink();
-            h.setText(editLinkText);
-            h.setStyleName("activity-bulkedit-link");
-            h.addClickListener(new ClickListener() {
-                public void onClick(Widget w) {
-                    // toggle edit mode
-                    setEditable(true);
-                }
+            //  buttons or links?
+            if (isEditable()) {
 
-            });
+                Hyperlink h = new Hyperlink();
+                h.setText("Cancel");
+                h.setStyleName("activity-bulkedit-link");
+                h.addClickListener(new ClickListener() {
+                    public void onClick(Widget w) {
+                        setEditable(false);
+                        initArtifacts(o);
+                    }
 
-            bulkEditPanel.add(h);
+                });
+                bulkEditPanel.add(h);
 
-            //  buttons or linkls?
-            if(isEditable()) {
                 Hyperlink ha = new Hyperlink();
-                ha.setText("Edit All ("+ resultSize + ")");
+                ha.setText("Edit All (" + resultSize + ")");
                 ha.setStyleName("activity-bulkedit-link");
                 bulkEditPanel.add(ha);
 
@@ -141,6 +137,22 @@ public class ArtifactListPanel extends Composite {
                 hc.setText("Edit Selected");
                 hc.setStyleName("activity-bulkedit-link");
                 bulkEditPanel.add(hc);
+
+            } else {
+
+                Hyperlink h = new Hyperlink();
+                h.setText("Bulk Edit");
+                h.setStyleName("activity-bulkedit-link");
+                h.addClickListener(new ClickListener() {
+                    public void onClick(Widget w) {
+                        // toggle edit mode
+                        setEditable(true);
+                        // if this is removed it won't work on the second click...?
+                        initArtifacts(o);
+                    }
+
+                });
+                bulkEditPanel.add(h);
             }
 
             panel.insert(bulkEditPanel, 0);
