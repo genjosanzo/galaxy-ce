@@ -24,8 +24,6 @@
         (e.g. registered namespaces, custom node types, etc.)
     -->
     <FileSystem class="org.apache.jackrabbit.core.fs.db.DerbyFileSystem">
-    <!--<FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">-->
-        <param name="path" value="${rep.home}/repository"/>
         <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
         <param name="schemaObjectPrefix" value="repo_"/>
     </FileSystem>
@@ -67,8 +65,6 @@
             class: FQN of class implementing the FileSystem interface
         -->
         <FileSystem class="org.apache.jackrabbit.core.fs.db.DerbyFileSystem">
-        <!--<FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">-->
-            <param name="path" value="${wsp.home}"/>
             <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
             <param name="schemaObjectPrefix" value="workspace_"/>
             <param name="shutdownOnClose" value="false"/>
@@ -107,8 +103,6 @@
             persistence manager
         -->
         <FileSystem class="org.apache.jackrabbit.core.fs.db.DerbyFileSystem">
-        <!--<FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">-->
-            <param name="path" value="${rep.home}/version" />
             <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
             <param name="schemaObjectPrefix" value="filesystem_version_"/>
             <param name="shutdownOnClose" value="false"/>
@@ -121,7 +115,6 @@
             implementations.
         -->
         <PersistenceManager class="org.apache.jackrabbit.core.persistence.db.DerbyPersistenceManager">
-        <!--<PersistenceManager class="org.apache.jackrabbit.core.persistence.mem.InMemPersistenceManager">-->
           <param name="schemaObjectPrefix" value="version_"/>
           <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
           <param name="shutdownOnClose" value="false"/>
