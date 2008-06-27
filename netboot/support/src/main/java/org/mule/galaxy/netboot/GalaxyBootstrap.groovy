@@ -28,7 +28,7 @@ import java.util.concurrent.ExecutionException
 class GalaxyBootstrap {
 
     def static g
-    def static List workspaces
+    def static String[] workspaces
     def static netBootWorkspace
     def static boolean debug
     def static File netBootCacheDir
@@ -39,28 +39,26 @@ class GalaxyBootstrap {
     def static ExecutorCompletionService compService = new ExecutorCompletionService(exec)
 
     static void main(args) {
-        constructMuleClasspath()
+        constructMuleClasspath(new NetbootConfig(args, System.getProperties()))
     }
 
-    static URL[] constructMuleClasspath() {
-        // parse cli params
-        def p = System.properties
+    static URL[] constructMuleClasspath(NetbootConfig config) {
 
         //def httpScheme = p.'galaxy.httpScheme' ?: 'http'
-        def httpScheme = 'http' // TODO https is not yet supported
-        def host = p.'galaxy.host' ?: 'localhost'
-        def port = p.'galaxy.port' ?: 8080
-        def apiUrl = p.'galaxy.apiUrl' ?: '/api/registry'
-        def username = p.'galaxy.username' ?: 'admin'
-        def password = p.'galaxy.password' ?: 'admin'
+        def httpScheme = config.httpScheme
+        def host = config.host
+        def port = config.port
+        def apiUrl = config.apiUrl
+        def username = config.username
+        def password = config.password
         // split by comma, prune duplicates, all in a null-safe manner
-        workspaces = p.'galaxy.app.workspaces'?.split(',')?.toList()?.unique() ?: []
-        netBootWorkspace = p.'galaxy.netboot.workspace' ?: 'Mule'
-        debug = 'true'.equalsIgnoreCase(p.'galaxy.debug')
-        def clean = 'true'.equalsIgnoreCase(p.'galaxy.clean')
+        workspaces = config.workspaces
+        netBootWorkspace = config.netBootWorkspace
+        debug = config.debug
+        def clean = config.clean
 
         // Passed in as -Dmule.home
-        def muleHome = p.'mule.home'
+        def muleHome = config.muleHome
         // create a local cache dir if needed
         File cacheDir = new File(muleHome, 'lib/cache')
         netBootCacheDir = new File(cacheDir, netBootWorkspace)
