@@ -18,21 +18,23 @@
 
 package org.mule.galaxy.web.client.registry;
 
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.WSearchResults;
 
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Iterator;
 
-public class ArtifactListPanel extends Composite {
+public class ArtifactListPanel extends AbstractComposite {
 
     private FlowPanel panel;
     private FlowPanel artifactPanel;
@@ -113,50 +115,77 @@ public class ArtifactListPanel extends Composite {
             bulkEditPanel = new FlowPanel();
             bulkEditPanel.setStyleName("activity-bulkedit-panel");
 
-            //  buttons or links?
+            //  we are in edit mode, offer new choices
             if (isEditable()) {
 
-                Hyperlink h = new Hyperlink();
-                h.setText("Cancel");
-                h.setStyleName("activity-bulkedit-link");
-                h.addClickListener(new ClickListener() {
-                    public void onClick(Widget w) {
+                ClickListener cl = new ClickListener() {
+                    public void onClick(Widget sender) {
+                        // toggle edit mode
                         setEditable(false);
                         initArtifacts(o);
                     }
+                };
 
-                });
-                bulkEditPanel.add(h);
+                // Cancel
+                Hyperlink h = new Hyperlink();
+                h.setText("Cancel");
+                h.addClickListener(cl);
+                Image imgCancel = new Image("images/page_deny.gif");
+                imgCancel.addClickListener(cl);
+                bulkEditPanel.add(asToolbarItem(imgCancel, h));
 
+                // Edit entire result set
                 Hyperlink ha = new Hyperlink();
                 ha.setText("Edit All (" + resultSize + ")");
-                ha.setStyleName("activity-bulkedit-link");
-                bulkEditPanel.add(ha);
+                ha.addClickListener(cl);
+                Image imgAll = new Image("images/page_right.gif");
+                imgAll.addClickListener(cl);
+                bulkEditPanel.add(asToolbarItem(imgAll, ha));
 
+                // Edit only the checked items
                 Hyperlink hc = new Hyperlink();
                 hc.setText("Edit Selected");
-                hc.setStyleName("activity-bulkedit-link");
-                bulkEditPanel.add(hc);
+                hc.addClickListener(cl);
+                Image imgSelected = new Image("images/page_tick.gif");
+                imgSelected.addClickListener(cl);
+                bulkEditPanel.add(asToolbarItem(imgSelected, hc, "activity-bulkedit-item-first"));
 
             } else {
 
-                Hyperlink h = new Hyperlink();
-                h.setText("Bulk Edit");
-                h.setStyleName("activity-bulkedit-link");
-                h.addClickListener(new ClickListener() {
-                    public void onClick(Widget w) {
+                ClickListener cl = new ClickListener() {
+                    public void onClick(Widget sender) {
                         // toggle edit mode
                         setEditable(true);
-                        // if this is removed it won't work on the second click...?
                         initArtifacts(o);
                     }
+                };
 
-                });
-                bulkEditPanel.add(h);
+                Hyperlink h = new Hyperlink();
+                h.setText("Bulk Edit");
+                h.addClickListener(cl);
+                Image img = new Image("images/page_edit.gif");
+                img.addClickListener(cl);
+                bulkEditPanel.add(asToolbarItem(img, h, "activity-bulkedit-item-first"));
+
             }
 
             panel.insert(bulkEditPanel, 0);
         }
+    }
+
+
+    private Widget asToolbarItem(Image img, Widget hl) {
+        return asToolbarItem(img, hl, null);
+    }
+
+    private Widget asToolbarItem(Image img, Widget hl, String overrideStyle) {
+        InlineFlowPanel p = asHorizontal(img, new Label(" "), hl);
+        if (overrideStyle == null) {
+            p.setStyleName("activity-bulkedit-item");
+        } else {
+            p.setStyleName(overrideStyle);
+        }
+        return p;
     }
 
 
