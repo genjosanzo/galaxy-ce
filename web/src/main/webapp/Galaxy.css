@@ -641,13 +641,23 @@ a:visited {
     padding: 6px;
 }
 
-.activity-bulkedit-link {
+.activity-bulkedit-item {
     float: right;
-    padding-left: 6px;
-    padding-right: 6px;
+    margin-left: 8px;
+    padding-left: 8px;
+    border-left: 1px solid #ddd;
     cursor: pointer;
     cursor: hand;
 }
+
+.activity-bulkedit-item-first {
+    float: right;
+    margin-left: 8px;
+    padding-left: 8px;
+    cursor: pointer;
+    cursor: hand;
+}
+
 
 
 .GWTCDatePicker, .GWTCDatePickerCheckout, .GWTCDatePickerCheckin {
