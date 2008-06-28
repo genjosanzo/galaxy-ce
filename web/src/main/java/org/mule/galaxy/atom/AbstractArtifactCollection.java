@@ -83,12 +83,10 @@ public abstract class AbstractArtifactCollection
 
     protected Factory factory = Abdera.getInstance().getFactory();
     protected Registry registry;
-    protected LifecycleManager lifecycleManager;
     
-    public AbstractArtifactCollection(Registry registry, LifecycleManager lifecycleManager) {
+    public AbstractArtifactCollection(Registry registry) {
         super();
         this.registry = registry;
-        this.lifecycleManager = lifecycleManager;
     }
 
     public Content getContent(ArtifactVersion doc, RequestContext request) {
@@ -464,6 +462,7 @@ public abstract class AbstractArtifactCollection
             return;
         }
             
+        LifecycleManager lifecycleManager = av.getParent().getParent().getLifecycleManager();
         Lifecycle lifecycle = lifecycleManager.getLifecycle(name);
         
         if (lifecycle == null)

@@ -124,7 +124,6 @@ public class RegistryServiceImpl implements RegistryService {
     private ArtifactTypeDao artifactTypeDao;
     private RendererManager rendererManager;
     private PolicyManager policyManager;
-    private LifecycleManager lifecycleManager;
     private IndexManager indexManager;
     private ActivityManager activityManager;
     private CommentManager commentManager;
@@ -133,6 +132,8 @@ public class RegistryServiceImpl implements RegistryService {
     private UserManager userManager;
     
     private ContextPathResolver contextPathResolver;
+
+    private LifecycleManager localLifecycleManager;
 
     @SuppressWarnings("unchecked")
     public Collection getWorkspaces() throws RPCException {
@@ -159,7 +160,7 @@ public class RegistryServiceImpl implements RegistryService {
 
         Collection<Workspace> children = w.getWorkspaces();
         if (children != null && children.size() > 0) {
-            ww.setWorkspaces(new ArrayList());
+            ww.setWorkspaces(new ArrayList<WWorkspace>());
             addWorkspaces(ww, children);
         }
         return ww;
@@ -189,7 +190,7 @@ public class RegistryServiceImpl implements RegistryService {
                 w = registry.createWorkspace(parent, workspaceName);
             }
             if (lifecycleId != null) {
-                w.setDefaultLifecycle(lifecycleManager.getLifecycleById(lifecycleId));
+                w.setDefaultLifecycle(w.getLifecycleManager().getLifecycleById(lifecycleId));
                 registry.save(w);
             }
         } catch (DuplicateItemException e) {
@@ -213,7 +214,7 @@ public class RegistryServiceImpl implements RegistryService {
             }
             Workspace w = registry.getWorkspace(workspaceId);
             if (lifecycleId != null) {
-                w.setDefaultLifecycle(lifecycleManager.getLifecycleById(lifecycleId));
+                w.setDefaultLifecycle(w.getLifecycleManager().getLifecycleById(lifecycleId));
             }
             w.setName(workspaceName);
             registry.save(w, parentWorkspaceId);
@@ -1253,6 +1254,7 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             ArtifactVersion artifact = registry.getArtifactVersion(artifactVersionId);
 
+            LifecycleManager lifecycleManager = artifact.getParent().getParent().getLifecycleManager();
             Phase nextPhase = lifecycleManager.getPhaseById(nextPhaseId);
 
             TransitionResponse tr = new TransitionResponse();
@@ -1284,8 +1286,8 @@ public class RegistryServiceImpl implements RegistryService {
 
     @SuppressWarnings("unchecked")
     public Collection getLifecycles() throws RPCException {
-        Collection<Lifecycle> lifecycles = lifecycleManager.getLifecycles();
-        Lifecycle defaultLifecycle = lifecycleManager.getDefaultLifecycle();
+        Collection<Lifecycle> lifecycles = localLifecycleManager.getLifecycles();
+        Lifecycle defaultLifecycle = localLifecycleManager.getDefaultLifecycle();
         
         ArrayList<WLifecycle> wls = new ArrayList<WLifecycle>();
         for (Lifecycle l : lifecycles) {
@@ -1298,9 +1300,9 @@ public class RegistryServiceImpl implements RegistryService {
     
     public WLifecycle getLifecycle(String id) throws RPCException {
         try {
-            Lifecycle defaultLifecycle = lifecycleManager.getDefaultLifecycle();
+            Lifecycle defaultLifecycle = localLifecycleManager.getDefaultLifecycle();
             
-            Lifecycle l = lifecycleManager.getLifecycleById(id);
+            Lifecycle l = localLifecycleManager.getLifecycleById(id);
             
             return toWeb(l, defaultLifecycle.equals(l));
         } catch (Exception e) {
@@ -1353,7 +1355,7 @@ public class RegistryServiceImpl implements RegistryService {
     public Collection getActivePoliciesForLifecycle(String lifecycleName, String workspaceId)
         throws RPCException {
         Collection<ArtifactPolicy> pols = null;
-        Lifecycle lifecycle = lifecycleManager.getLifecycle(lifecycleName);
+        Lifecycle lifecycle = localLifecycleManager.getLifecycle(lifecycleName);
         try {
             if (workspaceId != null) {
                 Workspace w = registry.getWorkspace(workspaceId);
@@ -1375,7 +1377,7 @@ public class RegistryServiceImpl implements RegistryService {
     public Collection getActivePoliciesForPhase(String lifecycle, String phaseName, String workspaceId)
         throws RPCException {
         Collection<ArtifactPolicy> pols = null;
-        Phase phase = lifecycleManager.getLifecycle(lifecycle).getPhase(phaseName);
+        Phase phase = localLifecycleManager.getLifecycle(lifecycle).getPhase(phaseName);
         try {
             if (workspaceId != null) {
                 Workspace w = registry.getWorkspace(workspaceId);
@@ -1397,7 +1399,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids)
         throws RPCException, ApplyPolicyException, ItemNotFoundException {
-        Lifecycle l = lifecycleManager.getLifecycle(lifecycle);
+        Lifecycle l = localLifecycleManager.getLifecycle(lifecycle);
         List<ArtifactPolicy> policies = getArtifactPolicies(ids);
 
         try {
@@ -1560,13 +1562,13 @@ public class RegistryServiceImpl implements RegistryService {
         Lifecycle l = fromWeb(wl);
 
         try {
-            lifecycleManager.save(l);
+            localLifecycleManager.save(l);
             
             if (wl.isDefaultLifecycle()) {
-                Lifecycle defaultLifecycle = lifecycleManager.getDefaultLifecycle();
+                Lifecycle defaultLifecycle = localLifecycleManager.getDefaultLifecycle();
                 
                 if (!defaultLifecycle.equals(l)) {
-                    lifecycleManager.setDefaultLifecycle(l);
+                    localLifecycleManager.setDefaultLifecycle(l);
                 }
             }
         } catch (DuplicateItemException e) {
@@ -1578,14 +1580,14 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void deleteLifecycle(String id) throws RPCException {
         try {
-            String fallback = lifecycleManager.getDefaultLifecycle().getId();
+            String fallback = localLifecycleManager.getDefaultLifecycle().getId();
             
             if (id.equals(fallback)) {
                 throw new RPCException("The default lifecycle cannot be deleted. Please assign " +
                                        "another lifecycle to be the default before deleting this one.");
             }
             
-            lifecycleManager.delete(id, fallback);
+            localLifecycleManager.delete(id, fallback);
         } catch (NotFoundException e) {
             throw new RPCException(e.getMessage());
         }
@@ -1739,7 +1741,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     public void setLifecycleManager(LifecycleManager lifecycleManager) {
-        this.lifecycleManager = lifecycleManager;
+        this.localLifecycleManager = lifecycleManager;
     }
 
     public void setArtifactTypeDao(ArtifactTypeDao artifactTypeDao) {

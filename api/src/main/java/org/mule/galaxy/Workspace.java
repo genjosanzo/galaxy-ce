@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Collection;
 
 import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
 
 public interface Workspace extends Item<Workspace> {
     
@@ -35,4 +36,6 @@ public interface Workspace extends Item<Workspace> {
     Calendar getCreated();
     
     Calendar getUpdated();
+    
+    LifecycleManager getLifecycleManager();
 }

@@ -174,4 +174,9 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
             throw new RuntimeException(e);
         }
     }
+
+    public LifecycleManager getLifecycleManager() {
+      return lifecycleManager;
+    }
+    
 }

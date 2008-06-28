@@ -19,18 +19,6 @@
 package org.mule.galaxy.atom;
 
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.User;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
@@ -46,11 +34,21 @@ import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.RequestContext.Scope;
 import org.apache.abdera.protocol.server.context.EmptyResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.security.User;
 
 public class SearchableArtifactCollection extends AbstractArtifactCollection {
     
-    public SearchableArtifactCollection(Registry registry, LifecycleManager lifecycleManager) {
-        super(registry, lifecycleManager);
+    public SearchableArtifactCollection(Registry registry) {
+        super(registry);
     }
 
     @Override
@@ -109,7 +107,7 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
         }
     }
 
-    protected Iterable<ArtifactVersion> createArtifactVersionIterable(final Iterator results, 
+    protected Iterable<ArtifactVersion> createArtifactVersionIterable(final Iterator<?> results, 
                                                                       final RequestContext context) {
         return new Iterable<ArtifactVersion>() {
 

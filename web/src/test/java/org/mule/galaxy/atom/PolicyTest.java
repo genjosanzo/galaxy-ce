@@ -39,7 +39,7 @@ public class PolicyTest extends AbstractAtomTest {
                     org.mule.galaxy.Workspace workspace = registry.getWorkspaces().iterator().next();
                     
                     PolicyManager policyManager = (PolicyManager) getApplicationContext().getBean("policyManager");
-                    LifecycleManager lifecycleManager = (LifecycleManager) getApplicationContext().getBean("lifecycleManager");
+                    LifecycleManager lifecycleManager = workspace.getLifecycleManager();
                     
                     // activate all polices
                     

@@ -39,8 +39,8 @@ import org.apache.abdera.protocol.server.context.ResponseContextException;
  */
 public class ArtifactWorkspaceCollection extends SearchableArtifactCollection {
 
-    public ArtifactWorkspaceCollection(Registry registry, LifecycleManager lifecycleManager) {
-        super(registry, lifecycleManager);
+    public ArtifactWorkspaceCollection(Registry registry) {
+        super(registry);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class ArtifactWorkspaceCollection extends SearchableArtifactCollection {
         
         Query query = new Query(Artifact.class).workspaceId(w.getId());
         
-        Iterator results;
+        Iterator<?> results;
         try {
             results = registry.search(query).getResults().iterator();
         } catch (QueryException e) {
