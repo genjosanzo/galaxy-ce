@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.Comment;
+import org.mule.galaxy.collab.Comment;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class CommentTest extends AbstractGalaxyTest {

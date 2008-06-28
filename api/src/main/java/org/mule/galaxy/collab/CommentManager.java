@@ -1,6 +1,8 @@
-package org.mule.galaxy;
+package org.mule.galaxy.collab;
 
 import java.util.List;
+
+import org.mule.galaxy.NotFoundException;
 
 public interface CommentManager {
     List<Comment> getComments(final String artifactId);

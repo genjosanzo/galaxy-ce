@@ -11,7 +11,6 @@
   
     <bean id="gwtRegistry" class="org.mule.galaxy.web.server.RegistryServiceImpl">
       <property name="registry" ref="registry"/>
-      <property name="commentManager" ref="commentManager"/>
       <property name="artifactTypeDao" ref="artifactTypeDao"/>
       <property name="indexManager" ref="indexManager"/>
       <property name="rendererManager" ref="rendererManager"/>

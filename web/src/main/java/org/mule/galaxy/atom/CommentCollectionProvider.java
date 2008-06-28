@@ -18,10 +18,10 @@
 
 package org.mule.galaxy.atom;
 
-import org.mule.galaxy.Comment;
-import org.mule.galaxy.CommentManager;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.collab.Comment;
+import org.mule.galaxy.collab.CommentManager;
 
 import java.util.Date;
 import java.util.List;

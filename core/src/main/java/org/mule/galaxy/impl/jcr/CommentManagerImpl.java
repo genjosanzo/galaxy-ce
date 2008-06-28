@@ -9,10 +9,10 @@ import javax.jcr.Session;
 import org.springmodules.jcr.JcrCallback;
 
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.Comment;
-import org.mule.galaxy.CommentManager;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.collab.Comment;
+import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 
 public class CommentManagerImpl extends AbstractReflectionDao<Comment> implements CommentManager {

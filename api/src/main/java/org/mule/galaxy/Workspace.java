@@ -3,6 +3,7 @@ package org.mule.galaxy;
 import java.util.Calendar;
 import java.util.Collection;
 
+import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 
@@ -38,4 +39,6 @@ public interface Workspace extends Item<Workspace> {
     Calendar getUpdated();
     
     LifecycleManager getLifecycleManager();
+    
+    CommentManager getCommentManager();
 }

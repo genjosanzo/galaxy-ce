@@ -26,8 +26,6 @@ import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.ArtifactTypeDao;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Comment;
-import org.mule.galaxy.CommentManager;
 import org.mule.galaxy.Dependency;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
@@ -37,6 +35,8 @@ import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.collab.Comment;
+import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexManager;
@@ -126,7 +126,6 @@ public class RegistryServiceImpl implements RegistryService {
     private PolicyManager policyManager;
     private IndexManager indexManager;
     private ActivityManager activityManager;
-    private CommentManager commentManager;
     private AccessControlManager accessControlManager;
     private ArtifactViewManager artifactViewManager;
     private UserManager userManager;
@@ -819,7 +818,7 @@ public class RegistryServiceImpl implements RegistryService {
 
             List wcs = info.getComments();
 
-            List<Comment> comments = commentManager.getComments(a.getId());
+            List<Comment> comments = a.getParent().getCommentManager().getComments(a.getId());
             for (Comment c : comments) {
                 final SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATETIME_FORMAT);
                 WComment wc = new WComment(c.getId(), c.getUser().getUsername(), dateFormat.format(c
@@ -941,6 +940,7 @@ public class RegistryServiceImpl implements RegistryService {
 
             comment.setUser(getCurrentUser());
 
+            CommentManager commentManager = artifact.getParent().getCommentManager();
             if (parentComment != null) {
                 Comment c = commentManager.getComment(parentComment);
                 if (c == null) {
@@ -1731,11 +1731,7 @@ public class RegistryServiceImpl implements RegistryService {
     public void setAccessControlManager(AccessControlManager accessControlManager) {
         this.accessControlManager = accessControlManager;
     }
-
-    public void setCommentManager(CommentManager commentManager) {
-        this.commentManager = commentManager;
-    }
-
+    
     public void setRegistry(Registry registry) {
         this.registry = registry;
     }
