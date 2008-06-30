@@ -16,7 +16,7 @@ import javax.jcr.Value;
 import org.apache.jackrabbit.value.StringValue;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.ActivityManager.EventType;
+import org.mule.galaxy.activity.ActivityManager.EventType;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.DateUtil;
 import org.mule.galaxy.util.Message;

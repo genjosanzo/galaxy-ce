@@ -40,7 +40,6 @@ import javax.xml.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.util.ISO9075;
-import org.mule.galaxy.ActivityManager;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
@@ -60,7 +59,8 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.XmlContentHandler;
-import org.mule.galaxy.ActivityManager.EventType;
+import org.mule.galaxy.activity.ActivityManager;
+import org.mule.galaxy.activity.ActivityManager.EventType;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.impl.jcr.query.QueryBuilder;
 import org.mule.galaxy.impl.jcr.query.SimpleQueryBuilder;
@@ -315,6 +315,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     
                     node.remove();
 
+                    
                     activityManager.logActivity(SecurityUtils.getCurrentUser(),
                                                 "Workspace " + path + " was deleted", 
                                                 EventType.INFO);
@@ -1701,5 +1702,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public void setArtifactTypeDao(ArtifactTypeDao artifactTypeDao) {
         this.artifactTypeDao = artifactTypeDao;
+    }
+
+    public void setCommentManager(CommentManager commentManager) {
+        this.commentManager = commentManager;
     }
 }

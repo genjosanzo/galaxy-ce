@@ -1,4 +1,4 @@
-package org.mule.galaxy;
+package org.mule.galaxy.activity;
 
 import java.util.Collection;
 import java.util.Date;
@@ -13,13 +13,13 @@ public interface ActivityManager {
         ERROR("Error"),
         WARNING("Warning"),
         INFO("Info");
-
+    
         private String text;
         
         EventType(String text) {
             this.text = text;
         }
-
+    
         public String getText() {
             return text;
         }
@@ -28,20 +28,10 @@ public interface ActivityManager {
 
     String SYSTEM = "system";
     
-    /**
-     * Log a system activity.
-     * @param activity
-     * @param eventType
-     */
+    Collection<Activity> getActivities(Date from, Date to, String user, 
+	    EventType eventType, int start, int results, boolean ascending) throws AccessException;
+    
     void logActivity(String activity, EventType eventType);
     
-    /**
-     * Log an activity from a user.
-     * @param user
-     * @param activity
-     * @param eventType
-     */
     void logActivity(User user, String activity, EventType eventType);
-    
-    Collection<Activity> getActivities(Date from, Date to, String user, EventType eventType, int start, int results, boolean ascending) throws AccessException;
 }

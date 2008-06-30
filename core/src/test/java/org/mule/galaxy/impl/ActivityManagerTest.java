@@ -4,9 +4,9 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
-import org.mule.galaxy.Activity;
-import org.mule.galaxy.ActivityManager;
-import org.mule.galaxy.ActivityManager.EventType;
+import org.mule.galaxy.activity.Activity;
+import org.mule.galaxy.activity.ActivityManager;
+import org.mule.galaxy.activity.ActivityManager.EventType;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class ActivityManagerTest extends AbstractGalaxyTest {

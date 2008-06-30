@@ -107,6 +107,7 @@
     <property name="accessControlManager" ref="accessControlManager" />
     <property name="activityManager" ref="activityManager" />
     <property name="artifactTypeDao" ref="artifactTypeDao" />
+    <property name="commentManager" ref="commentManager" />
     <property name="contentService" ref="contentService" />
     <property name="functionRegistry" ref="functionRegistry" />
     <property name="settings" ref="settings" />
