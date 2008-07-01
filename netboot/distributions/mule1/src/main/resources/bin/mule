@@ -48,7 +48,7 @@ STARTUP_DIR=`pwd`
 
 # add XML compatibility jars when running with JDK 1.4
 if [ "`java -version 2>&1 | grep 1.4`" ]; then
-	MULE_ENDORSED=-M-Djava.endorsed.dirs="${MULE_HOME}/lib/endorsed"
+    MULE_ENDORSED=-M-Djava.endorsed.dirs="${MULE_HOME}/lib/endorsed"
 fi
 
 MULE_OPTS="wrapper.working.dir=\"$STARTUP_DIR\" \

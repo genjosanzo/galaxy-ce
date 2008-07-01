@@ -28,7 +28,7 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
     private final JcrRegistryImpl registry;
     
     public JcrWorkspace(JcrRegistryImpl registry, 
-	    Node node) throws RepositoryException  {
+        Node node) throws RepositoryException  {
         super(node, null);
         this.registry = registry;
     }

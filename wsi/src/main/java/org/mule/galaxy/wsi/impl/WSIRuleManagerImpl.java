@@ -36,8 +36,8 @@ public class WSIRuleManagerImpl implements WSIRuleManager {
         String name = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).getClass().getName();
         if (name.startsWith("com.sun.org.apache.xerces") && isJDK5()) {
             System.err.println("WARNING: The Sun XML validator does not work correctly in Java 5.\n" +
-            		       "You must endorse Xerces for the WS-I Compliance validator to fully\n" +
-            		       "work. Schema validation rules will be disabled until then.");
+                           "You must endorse Xerces for the WS-I Compliance validator to fully\n" +
+                           "work. Schema validation rules will be disabled until then.");
         } else {
             wsi11Rules.add(new WsdlSchemaValidationRule());
             wsi11Rules.add(new WsdlSoapSchemaValidationRule());

@@ -29,7 +29,7 @@ public interface ActivityManager {
     String SYSTEM = "system";
     
     Collection<Activity> getActivities(Date from, Date to, String user, 
-	    EventType eventType, int start, int results, boolean ascending) throws AccessException;
+        EventType eventType, int start, int results, boolean ascending) throws AccessException;
     
     void logActivity(String activity, EventType eventType);
     

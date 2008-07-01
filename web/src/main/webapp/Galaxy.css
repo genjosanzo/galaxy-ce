@@ -179,7 +179,7 @@ a:visited {
 }
 
 .search-panel table {
-	color: white;
+    color: white;
 }
 
 .search-panel-field {
@@ -361,7 +361,7 @@ a:visited {
  **/
 
 .view-ListBox {
-	margin-left: 8px;
+    margin-left: 8px;
 }
 
 .recent-views {
@@ -375,7 +375,7 @@ a:visited {
 }
 
 .artifactToolbarItem {
-	margin-left: 8px;
+    margin-left: 8px;
     padding-left: 8px;
     border-left: 1px solid #ddd;
 }
@@ -420,7 +420,7 @@ a:visited {
 }
 
 .spacer {
-	margin: 5px;
+    margin: 5px;
 }
 
 .dependencyPanelHeader {
@@ -733,9 +733,9 @@ a:visited {
  **/
 .deleteIndexPanel {
     padding-top: 5px;
-	padding-left: 5px;
+    padding-left: 5px;
 }
-	
+
 
 /**
  **

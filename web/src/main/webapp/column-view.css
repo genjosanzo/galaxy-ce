@@ -1,6 +1,6 @@
 div.column-view
 {
-	background-color: white;
+    background-color: white;
     border: solid #333 1px;
     height: 138px;
     width: 603px;
@@ -30,7 +30,7 @@ div.column-view div.column
 
 div.column-view div.column a
 {
-	color: black;
+    color: black;
     display: block;
     text-decoration: none;
     padding: 3px 6px;

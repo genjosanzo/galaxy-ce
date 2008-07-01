@@ -1638,10 +1638,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     public LifecycleManager getLifecycleManager(Workspace w) {
-	return lifecycleManager;
+    return lifecycleManager;
     }
     public CommentManager getCommentManager(Workspace w) {
-	return commentManager;
+    return commentManager;
     }
     
     public ActivityManager getActivityManager() {
