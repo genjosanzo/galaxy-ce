@@ -45,6 +45,7 @@ public class ArtifactListPanel extends AbstractComposite {
     private FlowPanel activityNavPanel;
     private FlowPanel bulkEditPanel;
     private boolean editable;
+    private ArtifactPropertyListPanel propertyEditPanel;
 
     public ArtifactListPanel(AbstractBrowsePanel browsePanel) {
         super();
@@ -135,19 +136,28 @@ public class ArtifactListPanel extends AbstractComposite {
                 bulkEditPanel.add(asToolbarItem(imgCancel, h));
 
                 // Edit entire result set
+                ClickListener ec = new ClickListener() {
+                    public void onClick(Widget sender) {
+                        // toggle edit mode
+                        clear();
+                        ArtifactPropertyListPanel propertyEditPanel =
+                                new ArtifactPropertyListPanel(o);
+                        propertyEditPanel.render();                    }
+                };
+
                 Hyperlink ha = new Hyperlink();
                 ha.setText("Edit All (" + resultSize + ")");
-                ha.addClickListener(cl);
+                ha.addClickListener(ec);
                 Image imgAll = new Image("images/page_right.gif");
-                imgAll.addClickListener(cl);
+                imgAll.addClickListener(ec);
                 bulkEditPanel.add(asToolbarItem(imgAll, ha));
 
                 // Edit only the checked items
                 Hyperlink hc = new Hyperlink();
                 hc.setText("Edit Selected");
-                hc.addClickListener(cl);
+                hc.addClickListener(ec);
                 Image imgSelected = new Image("images/page_tick.gif");
-                imgSelected.addClickListener(cl);
+                imgSelected.addClickListener(ec);
                 bulkEditPanel.add(asToolbarItem(imgSelected, hc, "activity-bulkedit-item-first"));
 
             } else {
