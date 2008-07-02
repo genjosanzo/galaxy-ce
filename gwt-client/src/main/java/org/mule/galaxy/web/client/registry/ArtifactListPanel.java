@@ -19,6 +19,7 @@
 package org.mule.galaxy.web.client.registry;
 
 import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.WSearchResults;
@@ -46,9 +47,11 @@ public class ArtifactListPanel extends AbstractComposite {
     private FlowPanel bulkEditPanel;
     private boolean editable;
     private ArtifactPropertyListPanel propertyEditPanel;
+    private final Galaxy galaxy;
 
-    public ArtifactListPanel(AbstractBrowsePanel browsePanel) {
+    public ArtifactListPanel(AbstractBrowsePanel browsePanel, Galaxy galaxy) {
         super();
+        this.galaxy = galaxy;
         this.browsePanel = browsePanel;
 
         panel = new FlowPanel();
@@ -141,7 +144,7 @@ public class ArtifactListPanel extends AbstractComposite {
                         // toggle edit mode
                         clear();
                         ArtifactPropertyListPanel propertyEditPanel =
-                                new ArtifactPropertyListPanel(o);
+                                new ArtifactPropertyListPanel(o, galaxy);
                         propertyEditPanel.render();                    }
                 };
 
@@ -196,6 +199,10 @@ public class ArtifactListPanel extends AbstractComposite {
             p.setStyleName(overrideStyle);
         }
         return p;
+    }
+
+    private void clearEditToolBar() {
+
     }
 
 

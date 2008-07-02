@@ -90,7 +90,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
         }
 
         if (first) {
-            artifactListPanel = new ArtifactListPanel(this);
+            artifactListPanel = new ArtifactListPanel(this, galaxy);
         }
 
         artifactListPanel.setResultStart(resultStart);

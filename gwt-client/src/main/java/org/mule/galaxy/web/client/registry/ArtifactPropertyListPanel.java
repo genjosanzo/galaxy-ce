@@ -19,6 +19,7 @@
 package org.mule.galaxy.web.client.registry;
 
 import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.WSearchResults;
 
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -33,9 +34,12 @@ public class ArtifactPropertyListPanel extends AbstractComposite {
     private SimplePanel phasePanel;
     private SimplePanel securityPanel;
     private FlowPanel panel;
+    private final Galaxy galaxy;
 
-    public ArtifactPropertyListPanel(WSearchResults o) {
+
+    public ArtifactPropertyListPanel(WSearchResults o, Galaxy galaxy) {
         super();
+        this.galaxy = galaxy;
         this.wsearch = o;
         this.lifecyclePanel = new SimplePanel();
         this.securityPanel = new SimplePanel();
