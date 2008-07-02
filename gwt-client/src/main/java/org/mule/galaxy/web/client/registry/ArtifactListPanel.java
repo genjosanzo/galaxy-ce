@@ -145,7 +145,7 @@ public class ArtifactListPanel extends AbstractComposite {
                         clear();
                         ArtifactPropertyListPanel propertyEditPanel =
                                 new ArtifactPropertyListPanel(o, galaxy);
-                        propertyEditPanel.render();                    }
+                        propertyEditPanel.onShow();                    }
                 };
 
                 Hyperlink ha = new Hyperlink();

@@ -21,10 +21,15 @@ package org.mule.galaxy.web.client.registry;
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.WSearchResults;
+import org.mule.galaxy.web.rpc.WLifecycle;
+import org.mule.galaxy.web.rpc.WPermissionGrant;
+import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
+
+import java.util.Collection;
 
 
 public class ArtifactPropertyListPanel extends AbstractComposite {
@@ -50,23 +55,31 @@ public class ArtifactPropertyListPanel extends AbstractComposite {
 
     public void onShow() {
         super.onShow();
+
+        /*
+
+        galaxy.getRegistryService().getLifecycles(new AbstractCallback(errorPanel){
+            public void onSuccess(Object arg0) {
+                initLifecycleProperties((Collection)arg0);
+            }
+
+        });
+
+
+        initPhaseProperties(XXX);
+        initSecurityProperties(XXX);
+        */
     }
 
 
-    public void render() {
-        initLifecycleProperties();
-        initSecurityProperties();
-        initPhaseProperties();
-    }
-
-    private void initLifecycleProperties() {
+    private void initLifecycleProperties(Collection lifecycles) {
         Label label = new Label("LifeCycle");
         label.setStyleName("right-title");
         lifecyclePanel.add(label);
         panel.add(lifecyclePanel);
     }
 
-    private void initPhaseProperties() {
+    private void initPhaseProperties(WLifecycle phases) {
         Label label = new Label("Phase");
         label.setStyleName("right-title");
         phasePanel.add(label);
@@ -74,7 +87,7 @@ public class ArtifactPropertyListPanel extends AbstractComposite {
     }
 
 
-    private void initSecurityProperties() {
+    private void initSecurityProperties(WPermissionGrant pg) {
         Label label = new Label("Security");
         label.setStyleName("right-title");
         securityPanel.add(label);
