@@ -18,12 +18,12 @@
 
 package org.mule.galaxy.web.client.registry;
 
-import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.rpc.WSearchResults;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WPermissionGrant;
-import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.WSearchResults;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -32,25 +32,33 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import java.util.Collection;
 
 
-public class ArtifactPropertyListPanel extends AbstractComposite {
+public class ArtifactPropertyListPanel extends AbstractErrorShowingComposite {
 
-    private WSearchResults wsearch;
+    private WSearchResults artifacts;
     private SimplePanel lifecyclePanel;
     private SimplePanel phasePanel;
     private SimplePanel securityPanel;
     private FlowPanel panel;
     private final Galaxy galaxy;
+    private RegistryMenuPanel menuPanel;
+    protected RegistryServiceAsync service;
 
 
-    public ArtifactPropertyListPanel(WSearchResults o, Galaxy galaxy) {
+    public ArtifactPropertyListPanel(WSearchResults artifacts, Galaxy galaxy) {
         super();
         this.galaxy = galaxy;
-        this.wsearch = o;
+        this.artifacts = artifacts;
+        this.service = galaxy.getRegistryService();
+
+        this.panel = new FlowPanel();
         this.lifecyclePanel = new SimplePanel();
         this.securityPanel = new SimplePanel();
         this.phasePanel = new SimplePanel();
-        this.panel = new FlowPanel();
-        initWidget(panel);
+
+        menuPanel = new RegistryMenuPanel(galaxy);
+        menuPanel.setMain(panel);
+
+        initWidget(menuPanel);
     }
 
     public void onShow() {
@@ -58,14 +66,12 @@ public class ArtifactPropertyListPanel extends AbstractComposite {
 
         /*
 
-        galaxy.getRegistryService().getLifecycles(new AbstractCallback(errorPanel){
+        service.getLifecycles(new AbstractCallback(errorPanel){
             public void onSuccess(Object arg0) {
                 initLifecycleProperties((Collection)arg0);
             }
 
         });
-
-
         initPhaseProperties(XXX);
         initSecurityProperties(XXX);
         */

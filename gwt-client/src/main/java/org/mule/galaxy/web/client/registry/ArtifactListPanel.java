@@ -24,6 +24,7 @@ import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.WSearchResults;
 
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -33,6 +34,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 public class ArtifactListPanel extends AbstractComposite {
@@ -122,6 +124,9 @@ public class ArtifactListPanel extends AbstractComposite {
             //  we are in edit mode, offer new choices
             if (isEditable()) {
 
+                // Cancel
+                Hyperlink h = new Hyperlink();
+                h.setText("Cancel");
                 ClickListener cl = new ClickListener() {
                     public void onClick(Widget sender) {
                         // toggle edit mode
@@ -129,28 +134,24 @@ public class ArtifactListPanel extends AbstractComposite {
                         initArtifacts(o);
                     }
                 };
-
-                // Cancel
-                Hyperlink h = new Hyperlink();
-                h.setText("Cancel");
                 h.addClickListener(cl);
                 Image imgCancel = new Image("images/page_deny.gif");
                 imgCancel.addClickListener(cl);
                 bulkEditPanel.add(asToolbarItem(imgCancel, h));
 
                 // Edit entire result set
-                ClickListener ec = new ClickListener() {
-                    public void onClick(Widget sender) {
-                        // toggle edit mode
-                        clear();
-                        ArtifactPropertyListPanel propertyEditPanel =
-                                new ArtifactPropertyListPanel(o, galaxy);
-                        propertyEditPanel.onShow();                    }
-                };
-
                 Hyperlink ha = new Hyperlink();
                 ha.setText("Edit All (" + resultSize + ")");
+                ha.setTargetHistoryToken("bulk-edit");
+                ClickListener ec = new ClickListener() {
+                    public void onClick(Widget sender) {
+                        galaxy.createPageInfo("bulk-edit", new ArtifactPropertyListPanel(o, galaxy), 0);
+                        History.newItem("bulk-edit");
+                    }
+
+                };
                 ha.addClickListener(ec);
+
                 Image imgAll = new Image("images/page_right.gif");
                 imgAll.addClickListener(ec);
                 bulkEditPanel.add(asToolbarItem(imgAll, ha));
@@ -165,6 +166,9 @@ public class ArtifactListPanel extends AbstractComposite {
 
             } else {
 
+                // Bulk edit link
+                Hyperlink h = new Hyperlink();
+                h.setText("Bulk Edit");
                 ClickListener cl = new ClickListener() {
                     public void onClick(Widget sender) {
                         // toggle edit mode
@@ -172,9 +176,6 @@ public class ArtifactListPanel extends AbstractComposite {
                         initArtifacts(o);
                     }
                 };
-
-                Hyperlink h = new Hyperlink();
-                h.setText("Bulk Edit");
                 h.addClickListener(cl);
                 Image img = new Image("images/page_edit.gif");
                 img.addClickListener(cl);
