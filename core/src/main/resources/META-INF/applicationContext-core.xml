@@ -105,7 +105,9 @@
       <constructor-arg>
           <list>
               <bean class="org.mule.galaxy.events.listeners.SysOutLoggingEventListener"/>
-              <bean class="org.mule.galaxy.events.listeners.ActivityLoggerListener"/>
+              <bean class="org.mule.galaxy.events.listeners.ActivityLoggerListener">
+                  <property name="activityManager" ref="activityManager"/>
+              </bean>
           </list>
       </constructor-arg>
   </bean>

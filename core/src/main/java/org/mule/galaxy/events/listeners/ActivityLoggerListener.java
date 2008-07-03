@@ -7,6 +7,7 @@ import org.mule.galaxy.events.GalaxyEventListener;
 import org.mule.galaxy.events.WorkspaceCreatedEvent;
 import org.mule.galaxy.events.WorkspaceDeletedEvent;
 import org.mule.galaxy.events.annotations.BindToEvents;
+import org.mule.galaxy.activity.ActivityManager;
 
 @BindToEvents({
         WORKSPACE_CREATED,
@@ -14,11 +15,14 @@ import org.mule.galaxy.events.annotations.BindToEvents;
 // TODO refactor this
 public class ActivityLoggerListener implements GalaxyEventListener {
 
+    private ActivityManager activityManager;
+
     public void internalOnEvent(final WorkspaceCreatedEvent e) {
         System.out.println("WORKSPACE CREATED");
     }
 
     public void internalOnEvent(final WorkspaceDeletedEvent e) {
+        activityManager.logActivity(e.getUser(), " >listener< " + e.getMessage(), ActivityManager.EventType.INFO);
         System.out.println("WORKSPACE DELETED");
     }
 
@@ -32,5 +36,13 @@ public class ActivityLoggerListener implements GalaxyEventListener {
             System.out.println("NOT SUPPORTED");
         }
 
+    }
+
+    public ActivityManager getActivityManager() {
+        return activityManager;
+    }
+
+    public void setActivityManager(final ActivityManager activityManager) {
+        this.activityManager = activityManager;
     }
 }
