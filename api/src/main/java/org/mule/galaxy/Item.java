@@ -3,7 +3,7 @@ package org.mule.galaxy;
 import java.util.Iterator;
 
 /**
- * An item which exists inside the repsoitory.
+ * An item which exists inside the repository.
  */
 public interface Item<T extends Item> {
 
