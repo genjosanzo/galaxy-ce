@@ -100,7 +100,16 @@
     <property name="target" ref="registryTarget"/>
     <property name="proxyTargetClass" value="true"/>
   </bean>
-  
+
+  <bean id="eventManager" class="org.mule.galaxy.events.DefaultEventManager">
+      <constructor-arg>
+          <list>
+              <bean class="org.mule.galaxy.events.listeners.SysOutLoggingEventListener"/>
+              <bean class="org.mule.galaxy.events.listeners.ActivityLoggerListener"/>
+          </list>
+      </constructor-arg>
+  </bean>
+
   <bean id="registryTarget" class="org.mule.galaxy.impl.jcr.JcrRegistryImpl"
         init-method="initialize"
         depends-on="jcrInitializer">
@@ -118,6 +127,7 @@
     <property name="policyManager" ref="policyManager" />
     <property name="userManager" ref="userManager" />
     <property name="queryBuilders" ref="queryBuilders"/>
+    <property name="eventManager" ref="eventManager"/>
   </bean>
   
   <bean id="queryBuilders" class="java.util.ArrayList">

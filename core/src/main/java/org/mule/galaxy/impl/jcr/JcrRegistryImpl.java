@@ -1,6 +1,57 @@
 package org.mule.galaxy.impl.jcr;
 
 
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.ArtifactTypeDao;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.ContentService;
+import org.mule.galaxy.Dao;
+import org.mule.galaxy.Dependency;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyDescriptor;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Settings;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.XmlContentHandler;
+import org.mule.galaxy.activity.ActivityManager;
+import org.mule.galaxy.activity.ActivityManager.EventType;
+import org.mule.galaxy.collab.CommentManager;
+import org.mule.galaxy.events.EventManager;
+import org.mule.galaxy.events.WorkspaceCreatedEvent;
+import org.mule.galaxy.events.WorkspaceDeletedEvent;
+import org.mule.galaxy.impl.jcr.query.QueryBuilder;
+import org.mule.galaxy.impl.jcr.query.SimpleQueryBuilder;
+import org.mule.galaxy.index.IndexManager;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.query.AbstractFunction;
+import org.mule.galaxy.query.FunctionCall;
+import org.mule.galaxy.query.FunctionRegistry;
+import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.OpRestriction.Operator;
+import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.query.SearchResults;
+import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.security.Permission;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.security.UserManager;
+import org.mule.galaxy.util.BundleUtils;
+import org.mule.galaxy.util.DateUtil;
+import org.mule.galaxy.util.Message;
+import org.mule.galaxy.util.SecurityUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -40,53 +91,6 @@ import javax.xml.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.util.ISO9075;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
-import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.ArtifactTypeDao;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.ContentService;
-import org.mule.galaxy.Dao;
-import org.mule.galaxy.Dependency;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.Item;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.PropertyDescriptor;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Settings;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.XmlContentHandler;
-import org.mule.galaxy.activity.ActivityManager;
-import org.mule.galaxy.activity.ActivityManager.EventType;
-import org.mule.galaxy.collab.CommentManager;
-import org.mule.galaxy.impl.jcr.query.QueryBuilder;
-import org.mule.galaxy.impl.jcr.query.SimpleQueryBuilder;
-import org.mule.galaxy.index.IndexManager;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactPolicy;
-import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.query.AbstractFunction;
-import org.mule.galaxy.query.FunctionCall;
-import org.mule.galaxy.query.FunctionRegistry;
-import org.mule.galaxy.query.OpRestriction;
-import org.mule.galaxy.query.QueryException;
-import org.mule.galaxy.query.Restriction;
-import org.mule.galaxy.query.SearchResults;
-import org.mule.galaxy.query.OpRestriction.Operator;
-import org.mule.galaxy.security.AccessControlManager;
-import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.Permission;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.security.UserManager;
-import org.mule.galaxy.util.BundleUtils;
-import org.mule.galaxy.util.DateUtil;
-import org.mule.galaxy.util.Message;
-import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.dao.DataAccessException;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
@@ -127,6 +131,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private ActivityManager activityManager;
     
     private AccessControlManager accessControlManager;
+
+    private EventManager eventManager;
     
     private String id;
     
@@ -135,7 +141,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private Map<String, QueryBuilder> queryBuilders;
     
     private SimpleQueryBuilder simpleQueryBuilder = new SimpleQueryBuilder(new String[0], false);
-    
+
     public JcrRegistryImpl() {
         super();
     }
@@ -226,7 +232,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 node.setProperty(JcrWorkspace.UPDATED, now);
                 
                 session.save();
-                
+
+                eventManager.fireEvent(new WorkspaceCreatedEvent(workspace));
+
                 activityManager.logActivity(SecurityUtils.getCurrentUser(),
                                             "Workspace " + workspace.getPath() + " was created", 
                                             EventType.INFO);
@@ -315,9 +323,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     
                     node.remove();
 
-                    
+                    WorkspaceDeletedEvent evt = new WorkspaceDeletedEvent(SecurityUtils.getCurrentUser(),
+                                                                          "Workspace " + path + " was deleted");
+
+                    eventManager.fireEvent(evt);
+
                     activityManager.logActivity(SecurityUtils.getCurrentUser(),
-                                                "Workspace " + path + " was deleted", 
+                                                "Workspace " + path + " was deleted",
                                                 EventType.INFO);
                     session.save();
                     
@@ -1706,5 +1718,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public void setCommentManager(CommentManager commentManager) {
         this.commentManager = commentManager;
+    }
+
+    public EventManager getEventManager() {
+        return eventManager;
+    }
+
+    public void setEventManager(final EventManager eventManager) {
+        this.eventManager = eventManager;
     }
 }
