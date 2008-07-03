@@ -1,4 +1,4 @@
-package org.mule.galaxy.events.listeners;
+package org.mule.galaxy.events.listeners.activity;
 
 import static org.mule.galaxy.events.DefaultEvents.WORKSPACE_CREATED;
 import static org.mule.galaxy.events.DefaultEvents.WORKSPACE_DELETED;

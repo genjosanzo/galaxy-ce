@@ -52,6 +52,9 @@ import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.util.SecurityUtils;
+import org.mule.galaxy.events.EventManager;
+import org.mule.galaxy.events.PropertyUpdatedEvent;
 import org.mule.galaxy.activity.Activity;
 import org.mule.galaxy.activity.ActivityManager;
 import org.mule.galaxy.activity.ActivityManager.EventType;
@@ -132,6 +135,8 @@ public class RegistryServiceImpl implements RegistryService {
     private ContextPathResolver contextPathResolver;
 
     private LifecycleManager localLifecycleManager;
+
+    private EventManager eventManager;
 
     @SuppressWarnings("unchecked")
     public Collection getWorkspaces() throws RPCException {
@@ -1015,6 +1020,11 @@ public class RegistryServiceImpl implements RegistryService {
             Artifact artifact = registry.getArtifact(artifactId);
 
             artifact.setProperty(propertyName, propertyValue);
+
+            eventManager.fireEvent(new PropertyUpdatedEvent(SecurityUtils.getCurrentUser(),
+                                                            "Property " + propertyName + " of " + artifact.getName() + " updated to " + propertyValue,
+                                                            artifact, propertyName, propertyValue));
+
             registry.save(artifact);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
@@ -1775,5 +1785,13 @@ public class RegistryServiceImpl implements RegistryService {
     public void setContextPathResolver(final ContextPathResolver contextPathResolver)
     {
         this.contextPathResolver = contextPathResolver;
+    }
+
+    public EventManager getEventManager() {
+        return eventManager;
+    }
+
+    public void setEventManager(final EventManager eventManager) {
+        this.eventManager = eventManager;
     }
 }

@@ -1,6 +1,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:aop="http://www.springframework.org/schema/aop"
   xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:p="http://www.springframework.org/schema/p"
   xmlns:a="http://abdera.apache.org"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="
@@ -105,9 +106,8 @@
       <constructor-arg>
           <list>
               <bean class="org.mule.galaxy.events.listeners.SysOutLoggingEventListener"/>
-              <bean class="org.mule.galaxy.events.listeners.ActivityLoggerListener">
-                  <property name="activityManager" ref="activityManager"/>
-              </bean>
+              <bean class="org.mule.galaxy.events.listeners.activity.ActivityLoggerListener" p:activityManager-ref="activityManager"/>
+              <bean class="org.mule.galaxy.events.listeners.activity.PropertyUpdatedLoggerListener" p:activityManager-ref="activityManager"/>
           </list>
       </constructor-arg>
   </bean>

@@ -85,7 +85,8 @@ public abstract class AbstractJcrItem {
             } else {
                 ensureProperty(name);
             }
-            
+
+
             registry.getActivityManager().logActivity(SecurityUtils.getCurrentUser(), "Property " + name + " was set to: " + value, 
                                         EventType.INFO);
             update();

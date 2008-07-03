@@ -23,6 +23,7 @@
       <property name="contextPathResolver">
           <bean class="org.mule.galaxy.web.server.ContextPathResolver"/>
       </property>
+      <property name="eventManager" ref="eventManager"/>
     </bean>
 
     <bean id="gwtSecurityService" class="org.mule.galaxy.web.server.SecurityServiceImpl">
