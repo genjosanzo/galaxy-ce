@@ -4,6 +4,7 @@ import org.mule.galaxy.events.annotations.BindToEvent;
 import org.mule.galaxy.events.annotations.BindToEvents;
 import org.mule.galaxy.events.annotations.OnEvent;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.EventListener;
@@ -21,13 +22,11 @@ public class DefaultEventManager implements EventManager {
         for (Object listener : newListeners) {
             addListener(listener);
         }
-
-
     }
 
     public void addListener(final Object listenerCandidate) {
         if (listenerCandidate == null) {
-            throw new NullPointerException("Listener can't be null");
+            throw new IllegalArgumentException("Listener can't be null");
         }
 
         // get event binding annotation
@@ -35,14 +34,21 @@ public class DefaultEventManager implements EventManager {
 
         final String[] eventNames;
         GalaxyEventListener adapter = null;
-        if (clazz.isAnnotationPresent(BindToEvent.class)) {
-            eventNames = new String[] {clazz.getAnnotation(BindToEvent.class).value()};
+        final Annotation annotation = findAnnotation(clazz, BindToEvent.class);
+        if (annotation != null) {
+            eventNames = new String[] {((BindToEvent) annotation).value()};
             Method[] methods = clazz.getDeclaredMethods();
             // TODO detect and fail on multipe OnEvent entry points
             for (final Method method : methods) {
                 if (method.isAnnotationPresent(OnEvent.class)) {
                     adapter = new DelegatingMultiEventListener(listenerCandidate, method);
                 }
+            }
+
+            // no OnEvent annotation found, fail
+            if (adapter == null) {
+                throw new IllegalArgumentException(String.format("Listener %s is missing an @OnEvent entry point",
+                                                                 listenerCandidate.getClass().getName()));
             }
         } else if (clazz.isAnnotationPresent(BindToEvents.class)) {
             eventNames = clazz.getAnnotation(BindToEvents.class).value();
@@ -67,6 +73,22 @@ public class DefaultEventManager implements EventManager {
             //}
             //listeners.add(listener);
         //}
+    }
+
+    /**
+     * Check for annotation presence <strong>with inheritance</strong>. I.e. if a subclass doesn't have an annotation,
+     * but extends a class having one, this method would report the subclass as having the annotation.
+     * @return annotation or null if none found
+     */
+    protected Annotation findAnnotation(Class<?> clazz, final Class<? extends Annotation> annotation) {
+        boolean annotationPresent = clazz.isAnnotationPresent(annotation);
+        // TODO doesn't yet handle cases when a listener implements an interface which has an annotation
+        while (!annotationPresent && clazz.getSuperclass() != null) {
+            clazz = clazz.getSuperclass();
+            annotationPresent = clazz.isAnnotationPresent(annotation);
+        }
+
+        return annotationPresent ? clazz.getAnnotation(annotation) : null;
     }
 
     // TODO refactor and optimize for multiple event bindings for a single listener probably
