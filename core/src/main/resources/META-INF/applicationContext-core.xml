@@ -106,8 +106,8 @@
       <constructor-arg>
           <list>
               <bean class="org.mule.galaxy.events.listeners.SysOutLoggingEventListener"/>
-              <bean class="org.mule.galaxy.events.listeners.activity.ActivityLoggerListener" p:activityManager-ref="activityManager"/>
-              <bean class="org.mule.galaxy.events.listeners.activity.PropertyUpdatedLoggerListener" p:activityManager-ref="activityManager"/>
+              <!--<bean class="org.mule.galaxy.events.listeners.activity.ActivityLoggerListener" p:activityManager-ref="activityManager"/>-->
+              <!--<bean class="org.mule.galaxy.events.listeners.activity.PropertyUpdatedLoggerListener" p:activityManager-ref="activityManager"/>-->
           </list>
       </constructor-arg>
   </bean>

@@ -1,14 +1,16 @@
 package org.mule.galaxy.events.listeners;
 
+import static org.mule.galaxy.events.DefaultEvents.PROPERTY_UPDATED;
+import org.mule.galaxy.events.PropertyUpdatedEvent;
 import org.mule.galaxy.events.annotations.BindToEvent;
-import org.mule.galaxy.events.GalaxyEventListener;
-import org.mule.galaxy.events.GalaxyEvent;
+import org.mule.galaxy.events.annotations.OnEvent;
 
-@BindToEvent("WorkspaceCreated")
-public class SysOutLoggingEventListener implements GalaxyEventListener {
+@BindToEvent(PROPERTY_UPDATED)
+public class SysOutLoggingEventListener {
 
-    public void onEvent(final GalaxyEvent event) {
-        System.out.println(">>>>>>>> " + event);
+    @OnEvent
+    public void onEvent(final PropertyUpdatedEvent event) {
+        System.out.println(">>>>>>>> PropertyUpdated");
     }
 
 }

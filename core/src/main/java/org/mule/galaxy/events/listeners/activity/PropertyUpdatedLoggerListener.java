@@ -14,4 +14,8 @@ public class PropertyUpdatedLoggerListener extends ActivityLoggerListener {
         PropertyUpdatedEvent e = (PropertyUpdatedEvent) event;
         getActivityManager().logActivity(e.getUser(), e.getMessage(), ActivityManager.EventType.INFO);
     }
+
+    public void onEvent(final PropertyUpdatedEvent event) {
+        
+    }
 }
