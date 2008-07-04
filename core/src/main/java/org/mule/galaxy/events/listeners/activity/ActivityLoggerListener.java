@@ -1,19 +1,18 @@
 package org.mule.galaxy.events.listeners.activity;
 
+import org.mule.galaxy.activity.ActivityManager;
 import static org.mule.galaxy.events.DefaultEvents.WORKSPACE_CREATED;
 import static org.mule.galaxy.events.DefaultEvents.WORKSPACE_DELETED;
 import org.mule.galaxy.events.GalaxyEvent;
-import org.mule.galaxy.events.GalaxyEventListener;
 import org.mule.galaxy.events.WorkspaceCreatedEvent;
 import org.mule.galaxy.events.WorkspaceDeletedEvent;
 import org.mule.galaxy.events.annotations.BindToEvents;
-import org.mule.galaxy.activity.ActivityManager;
 
 @BindToEvents({
         WORKSPACE_CREATED,
         WORKSPACE_DELETED})
 // TODO refactor this
-public class ActivityLoggerListener implements GalaxyEventListener {
+public class ActivityLoggerListener {
 
     private ActivityManager activityManager;
 

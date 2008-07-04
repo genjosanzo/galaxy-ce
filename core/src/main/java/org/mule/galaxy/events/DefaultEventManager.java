@@ -4,11 +4,12 @@ import org.mule.galaxy.events.annotations.BindToEvent;
 import org.mule.galaxy.events.annotations.BindToEvents;
 import org.mule.galaxy.events.annotations.OnEvent;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.EventListener;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
 
 public class DefaultEventManager implements EventManager {
 
@@ -40,22 +41,7 @@ public class DefaultEventManager implements EventManager {
             // TODO detect and fail on multipe OnEvent entry points
             for (final Method method : methods) {
                 if (method.isAnnotationPresent(OnEvent.class)) {
-                    adapter = new GalaxyEventListener() {
-                        private Object delegate = listenerCandidate;
-
-                        public void onEvent(final GalaxyEvent event) {
-                            try {
-                                method.invoke(delegate, event);
-                            } catch (IllegalAccessException e) {
-                                throw new RuntimeException(e);
-                            } catch (InvocationTargetException itex) {
-                                final Throwable cause = itex.getTargetException();
-                                throw new RuntimeException(cause);
-                            }
-                        }
-                    };
-
-
+                    adapter = new DelegatingMultiEventListener(listenerCandidate, method);
                 }
             }
         } else if (clazz.isAnnotationPresent(BindToEvents.class)) {
@@ -103,7 +89,7 @@ public class DefaultEventManager implements EventManager {
         }
     }
 
-    public void removeListener(final GalaxyEventListener listener) {
+    public void removeListener(final Object listener) {
         //synchronized (listenersLock) {
         //    for (int i = 0; i < listeners.size(); i++) {
         //        GalaxyEventListener reference = listeners.get(i);
@@ -127,4 +113,57 @@ public class DefaultEventManager implements EventManager {
         }
     }
 
+    /**
+     * Delegates to a single method marked with the {@link OnEvent} annotation.
+     */
+    protected static class DelegatingGalaxyEventListener implements GalaxyEventListener {
+        private final Object delegate;
+        private final Method method;
+
+        public DelegatingGalaxyEventListener(final Object listenerCandidate, final Method method) {
+            this.method = method;
+            delegate = listenerCandidate;
+        }
+
+        public void onEvent(final GalaxyEvent event) {
+            try {
+                method.invoke(delegate, event);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException itex) {
+                final Throwable cause = itex.getTargetException();
+                throw new RuntimeException(cause);
+            }
+        }
+    }
+
+    /**
+     * Delegates to a listener observing multiple events (through the {@link BindToEvents} annotation and thus
+     * having multiple entry points annotated with {@link OnEvent}.
+     * TODO to be implemented
+     */
+    protected static class DelegatingMultiEventListener implements GalaxyEventListener {
+        private final Object delegate;
+        private final Method method;
+
+        public DelegatingMultiEventListener(final Object listenerCandidate, final Method method) {
+            this.method = method;
+            delegate = listenerCandidate;
+        }
+
+        public void onEvent(final GalaxyEvent event) {
+            try {
+                method.invoke(delegate, event);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException itex) {
+                final Throwable cause = itex.getTargetException();
+                throw new RuntimeException(cause);
+            }
+        }
+    }
+
+    protected static interface GalaxyEventListener extends EventListener {
+        void onEvent(GalaxyEvent event);
+    }
 }
