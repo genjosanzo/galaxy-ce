@@ -49,8 +49,8 @@ public class DefaultEventManager implements EventManager {
                             } catch (IllegalAccessException e) {
                                 throw new RuntimeException(e);
                             } catch (InvocationTargetException itex) {
-                                final Throwable cause = itex.getCause();
-                                throw new RuntimeException(cause != null ? cause : itex);
+                                final Throwable cause = itex.getTargetException();
+                                throw new RuntimeException(cause);
                             }
                         }
                     };
