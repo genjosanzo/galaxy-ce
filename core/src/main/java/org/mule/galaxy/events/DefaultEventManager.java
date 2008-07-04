@@ -37,7 +37,7 @@ public class DefaultEventManager implements EventManager {
         final Annotation annotation = findAnnotation(clazz, BindToEvent.class);
         if (annotation != null) {
             eventNames = new String[] {((BindToEvent) annotation).value()};
-            Method[] methods = clazz.getDeclaredMethods();
+            Method[] methods = clazz.getMethods();
             // TODO detect and fail on multipe OnEvent entry points
             for (final Method method : methods) {
                 if (method.isAnnotationPresent(OnEvent.class)) {
