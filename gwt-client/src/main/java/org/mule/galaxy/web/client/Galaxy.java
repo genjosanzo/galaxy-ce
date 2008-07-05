@@ -185,6 +185,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         RootPanel.get().add(base);
 
         createPageInfo("artifact_" + WILDCARD, new ArtifactPanel(this), 0);
+        createPageInfo("artifact-version_" + WILDCARD, new ArtifactPanel(this, true), 0);
         createPageInfo("add-artifact", new ArtifactForm(this), 0);
         createPageInfo("new-artifact-version_" + WILDCARD, new ArtifactForm(this), 0);
         createPageInfo("add-workspace", new WorkspaceForm(this), 0);

@@ -73,16 +73,22 @@ public class ArtifactPanel extends AbstractComposite {
     private int selectedTab = -1;
     private ListBox versionLB;
     private RegistryMenuPanel menuPanel;
+    private final boolean retrieveVersion;
+    private String versionId;
 
     public ArtifactPanel(Galaxy galaxy) {
+        this(galaxy, false);
+    }
+    
+    public ArtifactPanel(Galaxy galaxy, boolean retrieveVersion) {
         this.galaxy = galaxy;
+        this.retrieveVersion = retrieveVersion;
         
         menuPanel = new RegistryMenuPanel(galaxy);
         
         panel = new VerticalPanel();
         panel.setWidth("100%");
         menuPanel.setMain(panel);
-
         
         initWidget(menuPanel);
     }
@@ -100,14 +106,22 @@ public class ArtifactPanel extends AbstractComposite {
             selectedTab = 0;
         }
         
-        galaxy.getRegistryService().getArtifact(artifactId, new AbstractCallback(menuPanel) { 
+        AbstractCallback callback = new AbstractCallback(menuPanel) { 
             public void onSuccess(Object o) {
                 group = (ArtifactGroup) o;
                 info = (ExtendedArtifactInfo) group.getRows().get(0);
                 
                 init();
             }
-        });
+        };
+        
+        if (retrieveVersion) {
+            versionId = artifactId;
+            galaxy.getRegistryService().getArtifactByVersionId(versionId, callback);
+        } else {
+            versionId = null;
+            galaxy.getRegistryService().getArtifact(artifactId, callback);
+        }
     }
 
     private void init() {
@@ -126,19 +140,20 @@ public class ArtifactPanel extends AbstractComposite {
         titleTable.setStyleName("artifact-title");
         titleTable.setWidget(0, 0, newLabel(info.getName(), "artifact-name"));
         
-        ArtifactVersionInfo defaultVersion = null;
+        ArtifactVersionInfo selectedVersion = null;
         versionLB = new ListBox();
         for (Iterator itr = info.getVersions().iterator(); itr.hasNext();) {
             ArtifactVersionInfo v = (ArtifactVersionInfo)itr.next();
             
             versionLB.addItem(v.getVersionLabel(), v.getId());
-            if (v.isDefault()) {
-                defaultVersion = v;
+            if ((versionId == null && v.isDefault()) || 
+                (versionId != null && v.getId().equals(versionId))) {
+                selectedVersion = v;
                 versionLB.setSelectedIndex(versionLB.getItemCount()-1);
             }
         }
-        if (defaultVersion == null) {
-            defaultVersion = (ArtifactVersionInfo) info.getVersions().iterator().next();
+        if (selectedVersion == null) {
+            selectedVersion = (ArtifactVersionInfo) info.getVersions().iterator().next();
         }
         versionLB.addChangeListener(new ChangeListener() {
 
@@ -155,7 +170,7 @@ public class ArtifactPanel extends AbstractComposite {
         
         panel.insert(artifactTitle, 0);
         
-        initTabs(defaultVersion);
+        initTabs(selectedVersion);
     }
 
     protected void viewNewVersion() {

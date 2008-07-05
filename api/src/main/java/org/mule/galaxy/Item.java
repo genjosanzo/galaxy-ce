@@ -5,11 +5,13 @@ import java.util.Iterator;
 /**
  * An item which exists inside the repository.
  */
-public interface Item<T extends Item> {
+public interface Item<T extends Item<?>> {
 
     String getId();
 
     T getParent();
+    
+    String getPath();
     
     void setProperty(String name, Object value) throws PropertyException;
     

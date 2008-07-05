@@ -164,7 +164,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         
         lifecycleManager.delete(l.getId(), newLc.getId());
         
-        Workspace wkspc = registry.getWorkspaceByPath("Default Workspace");
+        Workspace wkspc = (Workspace) registry.getItemByPath("Default Workspace");
         Artifact artifact = registry.getArtifact(wkspc, "hello_world.wsdl");
         assertEquals(newLc, artifact.getDefaultOrLastVersion().getPhase().getLifecycle());
         
@@ -198,7 +198,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         w.setDefaultLifecycle(newLc);
         registry.save(w);
         
-        Workspace w2 = registry.getWorkspaceByPath(w.getPath());
+        Workspace w2 = (Workspace) registry.getItemByPath(w.getPath());
         assertEquals(newLc.getName(), w2.getDefaultLifecycle().getName());
     }
     

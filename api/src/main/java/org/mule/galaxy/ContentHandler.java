@@ -25,7 +25,7 @@ public interface ContentHandler {
     
     void write(Object o, OutputStream stream) throws IOException;
 
-    Set<Artifact> detectDependencies(Object o, Workspace w);
+    Set<Item<?>> detectDependencies(Object o, Workspace w);
     
     /**
      * This will be called after the registry is initialized so the ContentHandler

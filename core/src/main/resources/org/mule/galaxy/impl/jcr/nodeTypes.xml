@@ -47,6 +47,17 @@
     
   </nodeType>
   
+  <nodeType name="galaxy:link" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
+    
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+    
+  </nodeType>
+  
   <nodeType name="galaxy:activity" 
     isMixin="false" 
     hasOrderableChildNodes="false"

@@ -89,6 +89,8 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
                 throw (DuplicateItemException) cause;
             } else if (cause instanceof NotFoundException) {
                 throw (NotFoundException) cause;
+            } else {
+        	throw e;
             }
         }
     }
@@ -190,10 +192,8 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
         }
     }
 
-    @SuppressWarnings("unchecked")
     public abstract T build(Node node, Session session) throws Exception;
 
-    @SuppressWarnings("unchecked")
     protected List<T> doListAll(Session session) throws RepositoryException {
         ArrayList<T> objs = new ArrayList<T>();
         for (NodeIterator nodes = findAllNodes(session); nodes.hasNext();) {

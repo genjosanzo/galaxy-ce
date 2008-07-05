@@ -10,9 +10,10 @@ import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
 import org.mule.galaxy.Dao;
-import org.mule.galaxy.Dependency;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
+import org.mule.galaxy.Link;
+import org.mule.galaxy.LinkType;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.Registry;
@@ -122,6 +123,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     private Dao<PropertyDescriptor> propertyDescriptorDao;
     
+    private Dao<LinkType> linkTypeDao;
+    
     private String workspacesId;
 
     private String indexesId;
@@ -172,39 +175,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return new JcrWorkspace(this, node);
     }
 
-    public Workspace getWorkspaceByPath(String path) throws RegistryException, NotFoundException, AccessException {
-        try {
-            if (path.startsWith("/")) {
-                path = path.substring(1);
-            }
-            if (path.endsWith("/")) {
-                path = path.substring(0, path.length()-1);
-            }
-            
-            Node wNode = getWorkspacesNode();
-            
-            try {
-                // have to have the catch because jackrabbit is lame...
-                if (!wNode.hasNode(path)) throw new NotFoundException(path);
-            } catch (RepositoryException e) {
-                throw new NotFoundException(path);
-            }
-            
-            Node node = wNode.getNode(path);
-
-            if (node.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
-                Workspace w = buildWorkspace(node);
-                accessControlManager.assertAccess(Permission.READ_WORKSPACE, w);
-                return w;
-            }
-            
-            throw new NotFoundException(path);
-        } catch (PathNotFoundException e) {
-            throw new NotFoundException(e);
-        } catch (RepositoryException e) {
-            throw new RegistryException(e);
-        }
-    }
     
     public Workspace createWorkspace(final String name) throws RegistryException, AccessException, DuplicateItemException {
         // we should throw an error, but lets be defensive for now
@@ -521,6 +491,50 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
         });
     }
+    public Item<?> getItemByPath(String path) throws RegistryException, NotFoundException, AccessException {
+        try {
+            if (path.startsWith("/")) {
+                path = path.substring(1);
+            }
+            if (path.endsWith("/")) {
+                path = path.substring(0, path.length()-1);
+            }
+            
+            Node wNode = getWorkspacesNode();
+            
+            try {
+                // have to have the catch because jackrabbit is lame...
+                if (!wNode.hasNode(path)) throw new NotFoundException(path);
+            } catch (RepositoryException e) {
+                throw new NotFoundException(path);
+            }
+            
+            Node node = wNode.getNode(path);
+            String type = node.getPrimaryNodeType().getName();
+            
+            if (type.equals("galaxy:workspace")) {
+                Workspace w = buildWorkspace(node);
+                accessControlManager.assertAccess(Permission.READ_WORKSPACE, w);
+                return w;
+            } else if (type.equals("galaxy:artifact")) {
+        	Artifact a = buildArtifact(node);
+                accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
+                return a;
+            } else if (type.equals("galaxy:artifactVersion")) {
+        	Artifact a = buildArtifact(node.getParent());
+                accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
+                return a.getVersion(node.getName());
+            }
+            
+            throw new NotFoundException(path);
+        } catch (PathNotFoundException e) {
+            throw new NotFoundException(e);
+        } catch (RepositoryException e) {
+            throw new RegistryException(e);
+        }
+    }
+    
+    
     public ArtifactVersion getArtifactVersion(final String id) throws NotFoundException, RegistryException, AccessException {
         final JcrRegistryImpl registry = this;
         return (ArtifactVersion) executeWithNotFound(new JcrCallback() {
@@ -690,8 +704,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 jcrVersion.setEnabled(true);
                 
                 try {
-                    Set<Artifact> dependencies = ch.detectDependencies(loadedData, workspace);
-                    jcrVersion.addDependencies(dependencies, false);
+                    Set<Item<?>> dependencies = ch.detectDependencies(loadedData, workspace);
+                    
+                    jcrVersion.addLinks(dependencies, true, linkTypeDao.get(LinkType.DEPENDS));
                     
                     Lifecycle lifecycle = workspace.getDefaultLifecycle();
                     jcrVersion.setPhase(lifecycle.getInitialPhase());                    
@@ -708,7 +723,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 } catch (RegistryException e) {
                     // gets unwrapped by executeAndDewrap
                     throw new RuntimeException(e);
-                }
+                } catch (NotFoundException e) {
+                    throw new RuntimeException(e);
+		}
             }
 
         });
@@ -1153,18 +1170,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
         executeWithRegistryException(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Set<Dependency> deps;
-                try {
-                    deps = getDependedOnBy(artifact);
-                } catch (QueryException e) {
-                    throw new RuntimeException(e);
-                } catch (RegistryException e) {
-                    throw new RuntimeException(e);
-                }
-                
-                for (Dependency d : deps) {
-                    ((JcrDependency) d).getDependencyNode().remove();
-                }
                 String path = artifact.getPath();
                 ((JcrArtifact) artifact).getNode().remove();
 
@@ -1479,40 +1484,41 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     @SuppressWarnings("unchecked")
-    public Set<Dependency> getDependedOnBy(final Artifact artifact) 
+    public Set<Link> getReciprocalLinks(final Item<?> item) 
         throws RegistryException {
-        final JcrRegistryImpl registry = this;
         
-        return (Set<Dependency>) execute(new JcrCallback() {
+	final JcrRegistryImpl registry = this;
+	
+        return (Set<Link>) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                         
                 QueryManager qm = getQueryManager(session);
                 
                 StringBuilder qstr = new StringBuilder();
-                qstr.append("//element(*, galaxy:artifactVersion)/")
-                    .append(JcrVersion.DEPENDENCIES)
-                    .append("/")
-                    .append(ISO9075.encode(artifact.getId()))
-                    .append("");
+                qstr.append("//element(*, galaxy:link)[jcr:like(@path, '")
+                    .append(item.getPath())
+                    .append("%')]");
                 
-                Set<Dependency> artifacts = new HashSet<Dependency>();
+                Set<Link> links = new HashSet<Link>();
                 
                 Query query = qm.createQuery(qstr.toString(), Query.XPATH);
                 
                 QueryResult result = query.execute();
                 
                 for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
-                    final Node depNode = nodes.nextNode();
+                    final Node linkNode = nodes.nextNode();
                     
-                    final Node node = depNode.getParent().getParent().getParent();
+                    // dependencies->version->artifact
+                    Node versionNode = linkNode.getParent().getParent();
+                    final Node artifactNode = versionNode.getParent();
                     
-                    JcrWorkspace workspace = new JcrWorkspace(registry, node.getParent());
-                    final JcrArtifact artDep = new JcrArtifact(workspace, node, registry);
+                    JcrWorkspace workspace = new JcrWorkspace(registry, artifactNode.getParent());
+                    final JcrArtifact art = new JcrArtifact(workspace, artifactNode, registry);
+                    JcrVersion version = new JcrVersion(art, versionNode);
                     
-                    Dependency dependency = new JcrDependency(artDep, depNode);
-                    artifacts.add(dependency);
+                    links.add(new LinkImpl(version, linkNode, registry));
                 }
-                return artifacts;
+                return links;
             }
 
         });
@@ -1598,14 +1604,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         session.logout();
     }
 
-    public void addDependencies(ArtifactVersion artifactVersion, final Artifact... dependencies)
+    public void addLinks(Item<?> artifactVersion, final LinkType type, final Item<?>... toLinkTo)
         throws RegistryException {
-        final JcrVersion jcrVersion = (JcrVersion) artifactVersion;
-        
-        if (dependencies != null) {
+        final AbstractJcrItem jcrItem = (AbstractJcrItem) artifactVersion;
+        if (toLinkTo != null) {
             execute(new JcrCallback() {
                 public Object doInJcr(Session session) throws IOException, RepositoryException {
-                    jcrVersion.addDependencies(dependencies, true);
+                    jcrItem.addLinks(toLinkTo, false, type);
                     session.save();
                     return null;
                 }
@@ -1613,26 +1618,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
     
-    public void removeDependencies(ArtifactVersion artifactVersion, final Artifact... dependencies)
+    public void removeLinks(final Link... links)
         throws RegistryException {
-        final JcrVersion jcrVersion = (JcrVersion) artifactVersion;
-        
-        if (dependencies != null) {
+        if (links != null) {
             execute(new JcrCallback() {
                 public Object doInJcr(Session session) throws IOException, RepositoryException {
-                    Set<String> ids = new HashSet<String>();
-                    for (Artifact a : dependencies) {
-                        ids.add(a.getId());
+                    for (Link l : links) {
+                	((LinkImpl) l).getNode().remove();
                     }
-
-                    Node depsNode = JcrUtil.getOrCreate(jcrVersion.node, JcrVersion.DEPENDENCIES);
-                    for (NodeIterator nodes = depsNode.getNodes(); nodes.hasNext();) {
-                        Node dep = nodes.nextNode();
-                        Boolean user = JcrUtil.getBooleanOrNull(dep, JcrVersion.USER_SPECIFIED);
-                        if (user != null && user && ids.contains(dep.getName())) {
-                            dep.remove();
-                        }
-                    }
+                    
                     session.save();
                     return null;
                 }
@@ -1720,6 +1714,14 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         this.commentManager = commentManager;
     }
 
+    public Dao<LinkType> getLinkTypeDao() {
+        return linkTypeDao;
+    }
+
+    public void setLinkTypeDao(Dao<LinkType> linkTypeDao) {
+        this.linkTypeDao = linkTypeDao;
+    }
+    
     public EventManager getEventManager() {
         return eventManager;
     }

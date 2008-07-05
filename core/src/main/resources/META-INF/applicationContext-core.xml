@@ -121,6 +121,7 @@
     <property name="commentManager" ref="commentManager" />
     <property name="contentService" ref="contentService" />
     <property name="functionRegistry" ref="functionRegistry" />
+    <property name="linkTypeDao" ref="linkTypeManager" />
     <property name="settings" ref="settings" />
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="propertyDescriptorDao" ref="propertyDescriptorDao" />
@@ -167,6 +168,18 @@
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
   </bean>
+  
+  <bean id="linkTypeManager" parent="txProxyTemplate">
+    <property name="target" ref="linkTypeManagerTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="linkTypeManagerTarget" class="org.mule.galaxy.impl.jcr.LinkTypeManagerImpl"
+        init-method="initialize" depends-on="persisterManager">
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="persisterManager" ref="persisterManager" />
+  </bean>
+    
     
   <bean id="phaseLogEntryDao" parent="txProxyTemplate">
     <property name="target" ref="phaseLogEntryDaoTarget"/>

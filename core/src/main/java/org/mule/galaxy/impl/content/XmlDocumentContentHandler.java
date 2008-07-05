@@ -24,6 +24,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.impl.MapNamespaceContext;
@@ -75,8 +76,8 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
     }
 
     @Override
-    public Set<Artifact> detectDependencies(Object o, Workspace w) {
-        HashSet<Artifact> deps = new HashSet<Artifact>();
+    public Set<Item<?>> detectDependencies(Object o, Workspace w) {
+        HashSet<Item<?>> deps = new HashSet<Item<?>>();
         try {
             for (XPathExpression expr : imports) {
                 NodeList result = (NodeList) expr.evaluate((Document) o, 

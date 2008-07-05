@@ -43,8 +43,9 @@ import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.ArtifactTypeDao;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Dependency;
 import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.Link;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.PropertyException;
@@ -91,7 +92,7 @@ import org.mule.galaxy.web.rpc.ApplyPolicyException;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
 import org.mule.galaxy.web.rpc.BasicArtifactInfo;
-import org.mule.galaxy.web.rpc.DependencyInfo;
+import org.mule.galaxy.web.rpc.LinkInfo;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
@@ -345,7 +346,6 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public WSearchResults getArtifacts(String workspaceId, String workspacePath, boolean includeChildWkspcs,
                                        Set artifactTypes, Set searchPredicates, String freeformQuery, 
                                        int start, int maxResults) throws RPCException {
@@ -668,7 +668,6 @@ public class RegistryServiceImpl implements RegistryService {
         return v;
     }
 
-    @SuppressWarnings("unchecked")
     public Collection getIndexes() {
         ArrayList<WIndex> windexes = new ArrayList<WIndex>();
 
@@ -772,19 +771,17 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     @SuppressWarnings("unchecked")
-    public Collection getDependencyInfo(String artifactId) throws RPCException {
+    public Collection getLinks(String artifactId) throws RPCException {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
             List deps = new ArrayList();
             ArtifactVersion latest = artifact.getDefaultOrLastVersion();
-            for (Dependency d : latest.getDependencies()) {
-                Artifact depArt = d.getArtifact();
-                deps.add(new DependencyInfo(d.isUserSpecified(), true, depArt.getName(), depArt.getId()));
+            for (Link l : latest.getLinks()) {
+                deps.add(toWeb(l, false, l.getType().getRelationship()));
             }
 
-            for (Dependency d : registry.getDependedOnBy(artifact)) {
-                Artifact depArt = d.getArtifact();
-                deps.add(new DependencyInfo(d.isUserSpecified(), false, depArt.getName(), depArt.getId()));
+            for (Link l : registry.getReciprocalLinks(artifact)) {
+                deps.add(toWeb(l, true, l.getType().getReciprocal()));
             }
 
             return deps;
@@ -795,61 +792,38 @@ public class RegistryServiceImpl implements RegistryService {
 
     }
 
-    @SuppressWarnings("unchecked")
+    private Object toWeb(Link l, boolean recip, String relationship) {
+        Item<?> i = recip ? l.getParent() : l.getItem();
+        String name;
+        int itemType;
+        String id = null;
+        
+        if (i instanceof Artifact) {
+            itemType = LinkInfo.TYPE_ARTIFACT;
+            name = ((Artifact) i).getName();
+            id = i.getId();
+        } else if (i instanceof ArtifactVersion) {
+            itemType = LinkInfo.TYPE_ARTIFACT_VERSION;
+            ArtifactVersion av = ((ArtifactVersion) i);
+            name = av.getParent().getName() + " (" + av.getVersionLabel() + ")";
+            id = i.getId();
+        } else if (i == null) {
+            itemType = LinkInfo.TYPE_NOT_FOUND;
+            name = l.getPath();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+        return new LinkInfo(l.isAutoDetected(),
+                            id,
+                            name, 
+                            itemType,
+                            relationship);
+    }
+
     public ArtifactGroup getArtifact(String artifactId) throws RPCException, ItemNotFoundException {
         try {
             Artifact a = registry.getArtifact(artifactId);
-            ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), a
-                .getDocumentType());
-
-            ArtifactGroup g = new ArtifactGroup();
-            g.setName(type.getDescription());
-            ArtifactRenderer view = rendererManager.getArtifactRenderer(a.getDocumentType());
-            if (view == null) {
-                view = rendererManager.getArtifactRenderer(a.getContentType().toString());
-            }
-
-            for (int i = 0; i < view.getColumnNames().length; i++) {
-                if (view.isDetail(i)) {
-                    g.getColumns().add(view.getColumnNames()[i]);
-                }
-            }
-
-            ExtendedArtifactInfo info = new ExtendedArtifactInfo();
-            createBasicArtifactInfo(a, view, info, true);
-
-            info.setDescription(a.getDescription());
-
-            List wcs = info.getComments();
-
-            List<Comment> comments = a.getParent().getCommentManager().getComments(a.getId());
-            for (Comment c : comments) {
-                final SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATETIME_FORMAT);
-                WComment wc = new WComment(c.getId(), c.getUser().getUsername(), dateFormat.format(c
-                    .getDate().getTime()), c.getText());
-                wcs.add(wc);
-
-                Set<Comment> children = c.getComments();
-                if (children != null && children.size() > 0) {
-                    addComments(wc, children);
-                }
-            }
-
-            g.getRows().add(info);
-
-            final String context = contextPathResolver.getContextPath();
-
-            info.setArtifactLink(getLink(context + "/api/registry", a));
-            info.setArtifactFeedLink(getLink(context + "/api/registry", a) + ";history");
-            info.setCommentsFeedLink(context + "/api/comments");
-
-            List versions = new ArrayList();
-            for (ArtifactVersion av : a.getVersions()) {
-                versions.add(toWeb(av, false));
-            }
-            info.setVersions(versions);
-
-            return g;
+            return getArtifactGroup(a);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -858,6 +832,73 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
         }
+    }
+    public ArtifactGroup getArtifactByVersionId(String artifactVersionId) throws RPCException, ItemNotFoundException {
+        try {
+            ArtifactVersion av = registry.getArtifactVersion(artifactVersionId);
+            return getArtifactGroup(av.getParent());
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
+    @SuppressWarnings("unchecked")
+    private ArtifactGroup getArtifactGroup(Artifact a) {
+        ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), a
+            .getDocumentType());
+
+        ArtifactGroup g = new ArtifactGroup();
+        g.setName(type.getDescription());
+        ArtifactRenderer view = rendererManager.getArtifactRenderer(a.getDocumentType());
+        if (view == null) {
+            view = rendererManager.getArtifactRenderer(a.getContentType().toString());
+        }
+
+        for (int i = 0; i < view.getColumnNames().length; i++) {
+            if (view.isDetail(i)) {
+                g.getColumns().add(view.getColumnNames()[i]);
+            }
+        }
+
+        ExtendedArtifactInfo info = new ExtendedArtifactInfo();
+        createBasicArtifactInfo(a, view, info, true);
+
+        info.setDescription(a.getDescription());
+
+        List wcs = info.getComments();
+
+        List<Comment> comments = a.getParent().getCommentManager().getComments(a.getId());
+        for (Comment c : comments) {
+            final SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATETIME_FORMAT);
+            WComment wc = new WComment(c.getId(), c.getUser().getUsername(), dateFormat.format(c
+                .getDate().getTime()), c.getText());
+            wcs.add(wc);
+
+            Set<Comment> children = c.getComments();
+            if (children != null && children.size() > 0) {
+                addComments(wc, children);
+            }
+        }
+
+        g.getRows().add(info);
+
+        final String context = contextPathResolver.getContextPath();
+
+        info.setArtifactLink(getLink(context + "/api/registry", a));
+        info.setArtifactFeedLink(getLink(context + "/api/registry", a) + ";history");
+        info.setCommentsFeedLink(context + "/api/comments");
+
+        List versions = new ArrayList();
+        for (ArtifactVersion av : a.getVersions()) {
+            versions.add(toWeb(av, false));
+        }
+        info.setVersions(versions);
+
+        return g;
     }
 
     public ArtifactVersionInfo getArtifactVersionInfo(String artifactVersionId, boolean showHidden) throws RPCException,
@@ -1293,7 +1334,6 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public Collection getLifecycles() throws RPCException {
         Collection<Lifecycle> lifecycles = localLifecycleManager.getLifecycles();
         Lifecycle defaultLifecycle = localLifecycleManager.getDefaultLifecycle();

@@ -106,7 +106,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         List rows = g1.getRows();
         assertEquals(2, rows.size());
 
-        Collection deps = gwtRegistry.getDependencyInfo(info.getId());
+        Collection deps = gwtRegistry.getLinks(info.getId());
         assertEquals(1, deps.size());
 
         // Test reretrieving the artifact

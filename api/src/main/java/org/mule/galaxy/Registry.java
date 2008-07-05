@@ -30,8 +30,6 @@ public interface Registry {
     
     Workspace getWorkspace(String id) throws RegistryException, NotFoundException, AccessException;
     
-    Workspace getWorkspaceByPath(String path) throws RegistryException, NotFoundException, AccessException;
-    
     void save(Workspace w, String parentId)
         throws RegistryException, NotFoundException, AccessException;
 
@@ -39,7 +37,9 @@ public interface Registry {
     
     Collection<Workspace> getWorkspaces() throws RegistryException, AccessException;
     
-    Item getRegistryItem(String id) throws NotFoundException, RegistryException, AccessException;
+    Item<?> getRegistryItem(String id) throws NotFoundException, RegistryException, AccessException;
+    
+    Item<?> getItemByPath(String path) throws NotFoundException, RegistryException, AccessException;
     
     /**
      * Creates an artifact from a Java representation of it (as opposed
@@ -167,14 +167,12 @@ public interface Registry {
     PropertyDescriptor getPropertyDescriptorByName(final String propertyName);
     
 
-    /* Dependency related operations */
+    /* Link related operations */
     
-    void addDependencies(ArtifactVersion artifactVersion, Artifact... artifacts) throws RegistryException;
+    void addLinks(Item<?> item, LinkType type, Item<?>... toLinkTo) throws RegistryException;
 
-    void removeDependencies(ArtifactVersion artifactVersion, Artifact... artifact) throws RegistryException;
+    void removeLinks(Link... links) throws RegistryException;
     
-    Set<Dependency> getDependedOnBy(Artifact a) throws RegistryException;
-
-
+    Set<Link> getReciprocalLinks(Item<?> a) throws RegistryException;
 
 }

@@ -116,9 +116,11 @@ public interface RegistryService extends RemoteService {
      * @return
      * @throws Exception 
      */
-    Collection getDependencyInfo(String artifactId) throws RPCException;
+    Collection getLinks(String artifactId) throws RPCException;
     
     ArtifactGroup getArtifact(String artifactId) throws RPCException, ItemNotFoundException;
+    
+    ArtifactGroup getArtifactByVersionId(String artifactVersionId) throws RPCException, ItemNotFoundException;
     
     ArtifactVersionInfo getArtifactVersionInfo(String artifactVersionId,
                                                boolean showHidden) throws RPCException, ItemNotFoundException;

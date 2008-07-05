@@ -18,13 +18,6 @@
 
 package org.mule.galaxy.atom;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.security.AccessException;
-
 import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.protocol.Request;
 import org.apache.abdera.protocol.Resolver;
@@ -35,6 +28,13 @@ import org.apache.abdera.protocol.server.TargetType;
 import org.apache.abdera.protocol.server.impl.DefaultWorkspaceManager;
 import org.apache.abdera.protocol.server.impl.SimpleTarget;
 import org.apache.commons.lang.StringUtils;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.security.AccessException;
 
 public class ArtifactResolver implements Resolver<Target> {
 
@@ -130,60 +130,49 @@ public class ArtifactResolver implements Resolver<Target> {
         path = UrlEncoding.decode(path);
         
         try {
-            try {
-                return resolveWorkspace(path, classifier, context);
-            } catch (NotFoundException e) {
-                return resolveArtifact(path, classifier, context);
-            } catch (AccessException e) {
+            Item<?> item = registry.getItemByPath(path);
+            if (item instanceof Workspace) {
+                return resolveWorkspace((Workspace) item, classifier, context);
+            } else if (item instanceof Artifact) {
+                return resolveArtifact((Artifact) item, classifier, context);
+            } else {
                 return returnUnknownLocation(context);
-            } 
+            }
         } catch (RegistryException e) {
             throw new RuntimeException(e);
-        }
+        } catch (AccessException e) {
+            return returnUnknownLocation(context);
+        } catch (NotFoundException e) {
+            return returnUnknownLocation(context);
+        } 
+
     }
 
     private Target returnUnknownLocation(RequestContext context) {
         return new SimpleTarget(TargetType.TYPE_NOT_FOUND, context);
     }
 
-    private Target resolveArtifact(String path, String classifier, RequestContext context)
+    private Target resolveArtifact(Artifact artifact, String classifier, RequestContext context)
         throws RegistryException {
-        // The user is looking at an artifact
-        int idx = path.lastIndexOf('/');
+        context.setAttribute(WORKSPACE, artifact.getParent());
+        context.setAttribute(ARTIFACT, artifact);
         
-        String artifactName = path.substring(idx+1);
-        path = path.substring(0, idx);
+        context.setAttribute(COLLECTION_HREF, getPathWithoutArtifact(context));
         
-        try {
-            Workspace workspace = registry.getWorkspaceByPath(path);
-            
-            Artifact artifact = registry.getArtifact(workspace, artifactName);
-            
-            context.setAttribute(WORKSPACE, workspace);
-            context.setAttribute(ARTIFACT, artifact);
-            
-            context.setAttribute(COLLECTION_HREF, getPathWithoutArtifact(context));
-            
-            CollectionAdapter collection = (context.getParameter("version") != null) ? historyCollection : searchableCollection;
-            if ("atom".equals(classifier)) {
-                context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, collection);
-                return new SimpleTarget(TargetType.TYPE_ENTRY, context);
-            } else if ("categories".equals(classifier)) {
-                context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, collection);
-                return new SimpleTarget(TargetType.TYPE_CATEGORIES, context);
-            }  else if ("history".equals(classifier)) {
-                context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, historyCollection);
-                return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
-            } else if (classifier == null) {
-                context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, collection);
-                return new SimpleTarget(TargetType.TYPE_MEDIA, context);
-            }
-        } catch (NotFoundException e1) {
-        } catch (AccessException e) {
-            // don't let the user know there is an artifact/workspace here
-            return returnUnknownLocation(context);
+        CollectionAdapter collection = (context.getParameter("version") != null) ? historyCollection : searchableCollection;
+        if ("atom".equals(classifier)) {
+            context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, collection);
+            return new SimpleTarget(TargetType.TYPE_ENTRY, context);
+        } else if ("categories".equals(classifier)) {
+            context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, collection);
+            return new SimpleTarget(TargetType.TYPE_CATEGORIES, context);
+        }  else if ("history".equals(classifier)) {
+            context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, historyCollection);
+            return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
+        } else if (classifier == null) {
+            context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, collection);
+            return new SimpleTarget(TargetType.TYPE_MEDIA, context);
         }
-        
         return returnUnknownLocation(context);
     }
 
@@ -197,11 +186,8 @@ public class ArtifactResolver implements Resolver<Target> {
         return s;
     }
 
-    private Target resolveWorkspace(String path, String classifier, RequestContext context) throws RegistryException,
+    private Target resolveWorkspace(Workspace workspace, String classifier, RequestContext context) throws RegistryException,
         NotFoundException, AccessException {
-        // The user is browsing a workspace
-        Workspace workspace = registry.getWorkspaceByPath(path);
-        
         context.setAttribute(WORKSPACE, workspace);
         
         context.setAttribute(COLLECTION_HREF, context.getTargetPath());

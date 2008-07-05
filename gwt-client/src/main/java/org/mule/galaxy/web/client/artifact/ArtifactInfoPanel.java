@@ -18,20 +18,6 @@
 
 package org.mule.galaxy.web.client.artifact;
 
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.ErrorPanel;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.Toolbox;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextArea;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.DependencyInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
-import org.mule.galaxy.web.rpc.WComment;
-
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -50,7 +36,23 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextArea;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.LinkInfo;
+import org.mule.galaxy.web.rpc.WComment;
 
 public class ArtifactInfoPanel extends AbstractComposite {
 
@@ -113,10 +115,10 @@ public class ArtifactInfoPanel extends AbstractComposite {
         
         topPanel.add(rightGroup);
         
-        galaxy.getRegistryService().getDependencyInfo(info.getId(), new AbstractCallback(errorPanel) {
+        galaxy.getRegistryService().getLinks(info.getId(), new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object o) {
-                initDependencies((Collection) o);
+                initLinks((Collection) o);
             }
             
         });
@@ -331,44 +333,43 @@ public class ArtifactInfoPanel extends AbstractComposite {
         return isOk;
     }
 
-    protected void initDependencies(Collection o) {
-        Toolbox depPanel = new Toolbox(true);
-        depPanel.setTitle("Dependencies");
-        
-        Toolbox depOnPanel = new Toolbox(true);
-        depOnPanel.setTitle("Depended On By");
-        
-        boolean addedDeps = false;
-        boolean addedDependedOn = false;
-        
-        for (Iterator itr = o.iterator(); itr.hasNext();) {
-            final DependencyInfo info = (DependencyInfo) itr.next();
-            
-            Hyperlink hl = new Hyperlink(info.getArtifactName(), 
-                                         "artifact_" + info.getArtifactId());
-            hl.addClickListener(new ClickListener() {
+    protected void initLinks(Collection o) {
+        Map title2Toolbox = new HashMap();
 
-                public void onClick(Widget arg0) {
-                    History.newItem("artifact_" + info.getArtifactId());
-                }
-            });
+        for (Iterator itr = o.iterator(); itr.hasNext();) {
+            final LinkInfo info = (LinkInfo) itr.next();
             
-            if (info.isDependsOn()) {
-                depPanel.add(hl);
+            Toolbox toolbox = (Toolbox) title2Toolbox.get(info.getRelationship());
+            if (toolbox == null) {
+                toolbox = new Toolbox(true);
+                toolbox.setTitle(info.getRelationship());
+                title2Toolbox.put(info.getRelationship(), toolbox);
                 
-                if (!addedDeps) {
-                    rightGroup.add(depPanel);
-                    addedDeps = true;
-                }
+                rightGroup.add(toolbox);
+            }
+            
+            if (info.getItemType() == LinkInfo.TYPE_NOT_FOUND) {
+                toolbox.add(new Label(info.getItemName()));
             } else {
-                depOnPanel.add(hl);
-                
-                if (!addedDependedOn) {
-                    rightGroup.add(depOnPanel);
-                    addedDependedOn = true;
+                String prefix;
+                if (info.getItemType() == LinkInfo.TYPE_ARTIFACT) {
+                    prefix = "artifact_";
+                } else {
+                    prefix = "artifact-version_";
                 }
+                final String token = prefix + info.getItemId();
+                Hyperlink hl = new Hyperlink(info.getItemName(), token);
+                hl.addClickListener(new ClickListener() {
+    
+                    public void onClick(Widget arg0) {
+                        History.newItem(token);
+                    }
+                });
+                
+                toolbox.add(hl);
             }
         }
+        
         topPanel.add(rightGroup);
     }
 

@@ -2,7 +2,6 @@ package org.mule.galaxy;
 
 import java.io.InputStream;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.mule.galaxy.lifecycle.Phase;
@@ -11,7 +10,7 @@ import org.mule.galaxy.security.User;
 import org.w3c.dom.Document;
 
 
-public interface ArtifactVersion {
+public interface ArtifactVersion extends Item<Artifact> {
     
     String getId();
     
@@ -36,23 +35,7 @@ public interface ArtifactVersion {
 
     Phase getPhase();
     
-    Artifact getParent();
-
     ArtifactVersion getPrevious();
-    
-    void setProperty(String name, Object value) throws PropertyException;
-    
-    Object getProperty(String name);
-    
-    boolean hasProperty(String name);
-    
-    Iterator<PropertyInfo> getProperties();
-    
-    PropertyInfo getPropertyInfo(String name);
-
-    void setLocked(String name, boolean locked);
-
-    void setVisible(String property, boolean visible);
     
     /**
      * The author of this version. They may or may not be the actual author, but they
@@ -61,7 +44,7 @@ public interface ArtifactVersion {
      */
     User getAuthor();
     
-    Set<Dependency> getDependencies();
+    Set<Link> getLinks();
     
     boolean isDefault();
     

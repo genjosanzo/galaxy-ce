@@ -1,11 +1,5 @@
 package org.mule.galaxy.impl.content;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.Workspace;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -16,6 +10,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.activation.MimeType;
+
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.Workspace;
 
 public abstract class AbstractContentHandler implements ContentHandler {
 
@@ -77,7 +77,7 @@ public abstract class AbstractContentHandler implements ContentHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public Set<Artifact> detectDependencies(Object o, Workspace w) {
+    public Set<Item<?>> detectDependencies(Object o, Workspace w) {
         return Collections.EMPTY_SET;
     }
 

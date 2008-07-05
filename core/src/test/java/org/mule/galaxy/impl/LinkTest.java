@@ -2,16 +2,27 @@ package org.mule.galaxy.impl;
 
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Dependency;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.Link;
+import org.mule.galaxy.LinkType;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
-public class DependencyTest extends AbstractGalaxyTest {
+public class LinkTest extends AbstractGalaxyTest {
     
+    public void testLinkTypes() throws Exception {
+	List<LinkType> all = linkTypeManager.listAll();
+	assertTrue(all.size() > 0);
+	
+	LinkType type = linkTypeManager.get(LinkType.DEPENDS);
+	
+	assertNotNull(type);
+    }
     public void testWsdlDependencies() throws Exception {
 
         Collection<Workspace> workspaces = registry.getWorkspaces();
@@ -25,7 +36,7 @@ public class DependencyTest extends AbstractGalaxyTest {
                                                         getResourceAsStream("/wsdl/imports/hello.xsd"), 
                                                         getAdmin());
         
-        Set<Dependency> deps = schema.getArtifactVersion().getDependencies();
+        Set<Link> deps = schema.getArtifactVersion().getLinks();
         assertEquals(0, deps.size());
         
         ArtifactResult portType = registry.createArtifact(workspace, 
@@ -34,18 +45,21 @@ public class DependencyTest extends AbstractGalaxyTest {
                                                           "0.1", 
                                                           getResourceAsStream("/wsdl/imports/hello-portType.wsdl"), 
                                                           getAdmin());
-        deps = portType.getArtifactVersion().getDependencies();
+        deps = portType.getArtifactVersion().getLinks();
         assertEquals(1, deps.size());
         
-        Dependency dep = deps.iterator().next();
-        assertEquals(schema.getArtifact().getId(), dep.getArtifact().getId());
-        assertFalse(dep.isUserSpecified());
+        Link dep = deps.iterator().next();
+        assertEquals(schema.getArtifact().getId(), dep.getItem().getId());
+        assertNotNull(dep.getType());
+        assertEquals("Depends On", dep.getType().getRelationship());
         
-        deps = registry.getDependedOnBy(schema.getArtifact());
-        assertEquals(1, deps.size());
-        dep = deps.iterator().next();
-        assertEquals(portType.getArtifact().getId(), dep.getArtifact().getId());
-        assertFalse(dep.isUserSpecified());
+        // figure out if the we can figure out which things link *to* the schema. 
+        // We should find the portType
+        Set<Link> reciprocal = registry.getReciprocalLinks(schema.getArtifact());
+        assertEquals(1, reciprocal.size());
+        Link l = reciprocal.iterator().next();
+        assertEquals(portType.getArtifact().getId(), l.getParent().getParent().getId());
+        assertTrue(dep.isAutoDetected());
         
         ArtifactResult svcWsdl = registry.createArtifact(workspace, 
                                                          "application/wsdl+xml", 
@@ -53,25 +67,25 @@ public class DependencyTest extends AbstractGalaxyTest {
                                                          "0.1", 
                                                          getResourceAsStream("/wsdl/imports/hello.wsdl"), 
                                                          getAdmin());
-        deps = svcWsdl.getArtifactVersion().getDependencies();
+        deps = svcWsdl.getArtifactVersion().getLinks();
         assertEquals(1, deps.size());
         
         dep = deps.iterator().next();
-        assertEquals(portType.getArtifact().getId(), dep.getArtifact().getId());
-        assertFalse(dep.isUserSpecified());
+        assertEquals(portType.getArtifact().getId(), dep.getItem().getId());
+        assertTrue(dep.isAutoDetected());
         
         // yeah, this doesn't make sense dependency-wise, but we're just seeing if user specified dependencies work
         ArtifactVersion schemaV = schema.getArtifactVersion();
-        registry.addDependencies(schemaV, svcWsdl.getArtifact());
+        registry.addLinks(schemaV, linkTypeManager.get(LinkType.DEPENDS), svcWsdl.getArtifact());
         
-        deps = schemaV.getDependencies();
+        deps = schemaV.getLinks();
         assertEquals(1, deps.size());
         dep = deps.iterator().next();
-        assertEquals(svcWsdl.getArtifact().getId(), dep.getArtifact().getId());
-        assertTrue(dep.isUserSpecified());
+        assertEquals(svcWsdl.getArtifact().getId(), dep.getItem().getId());
+        assertFalse(dep.isAutoDetected());
         
-        registry.removeDependencies(schemaV, svcWsdl.getArtifact());
-        deps = schemaV.getDependencies();
+        registry.removeLinks(deps.iterator().next());
+        deps = schemaV.getLinks();
         assertEquals(0, deps.size());
     }
     
@@ -88,7 +102,7 @@ public class DependencyTest extends AbstractGalaxyTest {
                                                         getResourceAsStream("/schema/hello.xsd"), 
                                                         getAdmin());
         
-        Set<Dependency> deps = schema.getArtifactVersion().getDependencies();
+        Set<Link> deps = schema.getArtifactVersion().getLinks();
         assertEquals(0, deps.size());
         
         ArtifactResult schema2 = registry.createArtifact(workspace, 
@@ -98,11 +112,11 @@ public class DependencyTest extends AbstractGalaxyTest {
                                                          getResourceAsStream("/schema/hello-import.xsd"), 
                                                          getAdmin());
          
-        deps = schema2.getArtifactVersion().getDependencies();
+        deps = schema2.getArtifactVersion().getLinks();
         assertEquals(1, deps.size());
-        Dependency dep = deps.iterator().next();
-        assertEquals(schema.getArtifact().getId(), dep.getArtifact().getId());
-        assertFalse(dep.isUserSpecified());
+        Link dep = deps.iterator().next();
+        assertEquals(schema.getArtifact().getId(), dep.getItem().getId());
+        assertTrue(dep.isAutoDetected());
     }
     
     public void testMissingWsdlDependencies() throws Exception {
@@ -117,7 +131,7 @@ public class DependencyTest extends AbstractGalaxyTest {
                                                          "0.1", 
                                                          getResourceAsStream("/wsdl/imports/hello-missing.wsdl"), 
                                                          getAdmin());
-        Set<Dependency> deps = svcWsdl.getArtifactVersion().getDependencies();
+        Set<Link> deps = svcWsdl.getArtifactVersion().getLinks();
         assertEquals(0, deps.size());
     }
 

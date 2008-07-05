@@ -6,23 +6,22 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
-import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.Value;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Dependency;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.Link;
+import org.mule.galaxy.LinkType;
 import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
-import org.mule.galaxy.util.DateUtil;
 
 public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
     public static final String CREATED = "created";
@@ -31,8 +30,6 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
     public static final String DEFAULT = "default";
     public static final String ENABLED = "enabled";
     public static final String AUTHOR_ID = "authorId";
-    public static final String DEPENDENCIES = "dependencies";
-    public static final String USER_SPECIFIED = "userSpecified";
     public static final String INDEX_PROPERTIES_STALE = "indexedPropertiesStale";
 
     public static final String LIFECYCLE = "lifecycle";
@@ -70,6 +67,10 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
         }
     }
     
+    public String getPath() {
+	return getParent().getPath() + "?version=" + getVersionLabel();
+    }
+
     public void setPhase(Phase p) {
         try {
             node.setProperty(LIFECYCLE, p.getLifecycle().getId());
@@ -252,75 +253,6 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
         this.author = author;
         
         setNodeProperty(AUTHOR_ID, author.getId());
-    }
-    
-    public void addDependencies(Set<Artifact> dependencies, boolean userSpecified) {
-        try {
-            Node depsNode = JcrUtil.getOrCreate(node, DEPENDENCIES);
-            
-            for (Artifact a : dependencies) {
-                addDependency(userSpecified, depsNode, a);
-            }
-
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void addDependency(boolean userSpecified, Node depsNode, Artifact a) throws RepositoryException {
-        Node dep = depsNode.addNode(a.getId());
-        dep.addMixin("mix:referenceable");
-        dep.setProperty(USER_SPECIFIED, userSpecified);
-    }
-    
-    public void addDependencies(Artifact[] dependencies, boolean userSpecified) {
-        try {
-            Node depsNode = JcrUtil.getOrCreate(node, DEPENDENCIES);
-            
-            for (Artifact a : dependencies) {
-                addDependency(userSpecified, depsNode, a);
-            }
-
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-    public Set<Dependency> getDependencies() {
-        try {
-            Node depsNode = JcrUtil.getOrCreate(node, DEPENDENCIES);
-            Set<Dependency> deps = new HashSet<Dependency>();
-            for (NodeIterator nodes = depsNode.getNodes(); nodes.hasNext();) {
-                Node dep = nodes.nextNode();
-                final Boolean user = JcrUtil.getBooleanOrNull(dep, USER_SPECIFIED);
-                try {
-                    final Artifact a = parent.getRegistry().getArtifact(dep.getName());
-                    deps.add(new Dependency() {
-
-                        public Artifact getArtifact() {
-                            return a;
-                        }
-
-                        public boolean isUserSpecified() {
-                            if (user == null) {
-                                return false;
-                            }
-                            return user;
-                        }
-                        
-                    });
-                } catch (AccessException e) {
-                    // don't list dependencies which the user shouldn't see
-                } catch (NotFoundException e) {
-                    dep.remove();
-                } catch (RegistryException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            return deps;
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }
