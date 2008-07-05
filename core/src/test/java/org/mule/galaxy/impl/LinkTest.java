@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Item;
 import org.mule.galaxy.Link;
 import org.mule.galaxy.LinkType;
 import org.mule.galaxy.Workspace;
@@ -58,7 +58,8 @@ public class LinkTest extends AbstractGalaxyTest {
         Set<Link> reciprocal = registry.getReciprocalLinks(schema.getArtifact());
         assertEquals(1, reciprocal.size());
         Link l = reciprocal.iterator().next();
-        assertEquals(portType.getArtifact().getId(), l.getParent().getParent().getId());
+        Artifact parent = (Artifact) l.getParent().getParent();
+        assertEquals(portType.getArtifact().getId(), parent.getId());
         assertTrue(dep.isAutoDetected());
         
         ArtifactResult svcWsdl = registry.createArtifact(workspace, 
