@@ -1,4 +1,4 @@
-package org.mule.galaxy.events;
+package org.mule.galaxy.event;
 
 /**
  * A convenience Constants class for every standard event in Galaxy.

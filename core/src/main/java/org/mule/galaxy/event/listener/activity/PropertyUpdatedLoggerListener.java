@@ -1,10 +1,10 @@
-package org.mule.galaxy.events.listeners.activity;
+package org.mule.galaxy.event.listener.activity;
 
 import org.mule.galaxy.activity.ActivityManager;
-import static org.mule.galaxy.events.DefaultEvents.PROPERTY_UPDATED;
-import org.mule.galaxy.events.GalaxyEvent;
-import org.mule.galaxy.events.PropertyUpdatedEvent;
-import org.mule.galaxy.events.annotations.BindToEvent;
+import static org.mule.galaxy.event.DefaultEvents.PROPERTY_UPDATED;
+import org.mule.galaxy.event.GalaxyEvent;
+import org.mule.galaxy.event.PropertyUpdatedEvent;
+import org.mule.galaxy.event.annotation.BindToEvent;
 
 @BindToEvent(PROPERTY_UPDATED)
 public class PropertyUpdatedLoggerListener extends ActivityLoggerListener {

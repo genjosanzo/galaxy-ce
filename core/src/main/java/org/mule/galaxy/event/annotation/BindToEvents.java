@@ -1,4 +1,4 @@
-package org.mule.galaxy.events.annotations;
+package org.mule.galaxy.event.annotation;
 
 import static java.lang.annotation.ElementType.TYPE;
 import java.lang.annotation.Retention;
@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
 @Target(TYPE)
-public @interface BindToEvent {
-    String value();
+public @interface BindToEvents {
+    String[] value();
 }

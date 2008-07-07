@@ -1,4 +1,4 @@
-package org.mule.galaxy.events.annotations;
+package org.mule.galaxy.event.annotation;
 
 import static java.lang.annotation.ElementType.METHOD;
 import java.lang.annotation.Retention;

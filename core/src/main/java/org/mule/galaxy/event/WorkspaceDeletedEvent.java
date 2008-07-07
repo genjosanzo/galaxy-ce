@@ -1,4 +1,4 @@
-package org.mule.galaxy.events;
+package org.mule.galaxy.event;
 
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.security.User;

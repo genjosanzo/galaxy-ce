@@ -1,4 +1,4 @@
-package org.mule.galaxy.events;
+package org.mule.galaxy.event;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
@@ -6,9 +6,9 @@ import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
-import static org.mule.galaxy.events.DefaultEvents.PROPERTY_UPDATED;
-import org.mule.galaxy.events.annotations.BindToEvent;
-import org.mule.galaxy.events.annotations.OnEvent;
+import static org.mule.galaxy.event.DefaultEvents.PROPERTY_UPDATED;
+import org.mule.galaxy.event.annotation.BindToEvent;
+import org.mule.galaxy.event.annotation.OnEvent;
 import org.mule.galaxy.security.User;
 
 import java.util.Calendar;

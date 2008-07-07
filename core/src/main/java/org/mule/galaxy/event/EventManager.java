@@ -1,4 +1,4 @@
-package org.mule.galaxy.events;
+package org.mule.galaxy.event;
 
 public interface EventManager {
 

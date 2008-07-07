@@ -1,12 +1,12 @@
-package org.mule.galaxy.events.listeners.activity;
+package org.mule.galaxy.event.listener.activity;
 
 import org.mule.galaxy.activity.ActivityManager;
-import static org.mule.galaxy.events.DefaultEvents.WORKSPACE_CREATED;
-import static org.mule.galaxy.events.DefaultEvents.WORKSPACE_DELETED;
-import org.mule.galaxy.events.GalaxyEvent;
-import org.mule.galaxy.events.WorkspaceCreatedEvent;
-import org.mule.galaxy.events.WorkspaceDeletedEvent;
-import org.mule.galaxy.events.annotations.BindToEvents;
+import static org.mule.galaxy.event.DefaultEvents.WORKSPACE_CREATED;
+import static org.mule.galaxy.event.DefaultEvents.WORKSPACE_DELETED;
+import org.mule.galaxy.event.GalaxyEvent;
+import org.mule.galaxy.event.WorkspaceCreatedEvent;
+import org.mule.galaxy.event.WorkspaceDeletedEvent;
+import org.mule.galaxy.event.annotation.BindToEvents;
 
 @BindToEvents({
         WORKSPACE_CREATED,

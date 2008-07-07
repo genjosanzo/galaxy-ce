@@ -1,8 +1,8 @@
-package org.mule.galaxy.events;
+package org.mule.galaxy.event;
 
-import org.mule.galaxy.events.annotations.BindToEvent;
-import org.mule.galaxy.events.annotations.BindToEvents;
-import org.mule.galaxy.events.annotations.OnEvent;
+import org.mule.galaxy.event.annotation.BindToEvent;
+import org.mule.galaxy.event.annotation.BindToEvents;
+import org.mule.galaxy.event.annotation.OnEvent;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -94,7 +94,7 @@ public class DefaultEventManager implements EventManager {
     // TODO refactor and optimize for multiple event bindings for a single listener probably
     protected void registerListener(final GalaxyEventListener listener, final String eventName) {
         // get event name and load its class
-        String evtClassName = "org.mule.galaxy.events." + eventName + "Event";
+        String evtClassName = "org.mule.galaxy.event." + eventName + "Event";
         ClassLoader current = Thread.currentThread().getContextClassLoader();
         synchronized (listenersLock) {
             try {

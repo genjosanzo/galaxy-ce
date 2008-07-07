@@ -102,12 +102,12 @@
     <property name="proxyTargetClass" value="true"/>
   </bean>
 
-  <bean id="eventManager" class="org.mule.galaxy.events.DefaultEventManager">
+  <bean id="eventManager" class="org.mule.galaxy.event.DefaultEventManager">
       <constructor-arg>
           <list>
-              <bean class="org.mule.galaxy.events.listeners.SysOutLoggingEventListener"/>
-              <!--<bean class="org.mule.galaxy.events.listeners.activity.ActivityLoggerListener" p:activityManager-ref="activityManager"/>-->
-              <!--<bean class="org.mule.galaxy.events.listeners.activity.PropertyUpdatedLoggerListener" p:activityManager-ref="activityManager"/>-->
+              <bean class="org.mule.galaxy.event.listener.SysOutLoggingEventListener"/>
+              <!--<bean class="org.mule.galaxy.eventlisteners.activity.ActivityLoggerListener" p:activityManager-ref="activityManager"/>-->
+              <!--<bean class="org.mule.galaxy.eventlisteners.activity.PropertyUpdatedLoggerListener" p:activityManager-ref="activityManager"/>-->
           </list>
       </constructor-arg>
   </bean>
