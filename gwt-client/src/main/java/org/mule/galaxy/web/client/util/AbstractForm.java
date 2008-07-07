@@ -29,7 +29,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
@@ -175,7 +174,6 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
     }
 
     /**
-     *
      * @return list of validation receipts TODO class name
      */
     protected boolean validate() {
@@ -186,8 +184,8 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
     protected void cancel() {
         setEnabled(false);
         cancel.setText("Canceling...");
-        ((AdministrationPanel)errorPanel).getGalaxy().setMessageAndGoto(successToken,
-                                                 CANCEL_MESSAGE);
+        ((AdministrationPanel) errorPanel).getGalaxy().setMessageAndGoto(successToken,
+                                                                         CANCEL_MESSAGE);
     }
 
 
@@ -202,8 +200,8 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
 
             public void onSuccess(Object arg0) {
                 setEnabled(false);
-                ((AdministrationPanel)errorPanel).getGalaxy().setMessageAndGoto(successToken,
-                                                         successMessage);
+                ((AdministrationPanel) errorPanel).getGalaxy().setMessageAndGoto(successToken,
+                                                                                 successMessage);
             }
 
         };
@@ -211,7 +209,7 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
 
     protected void onSaveFailure(AbstractCallback callback, Throwable caught) {
         setEnabled(true);
-        
+
         if (caught instanceof ItemExistsException) {
             errorPanel.setMessage(existsMessage);
         } else {
@@ -229,8 +227,8 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
 
             public void onSuccess(Object arg0) {
                 setEnabled(false);
-                ((AdministrationPanel)errorPanel).getGalaxy().setMessageAndGoto(successToken,
-                                                         deleteMessage);
+                ((AdministrationPanel) errorPanel).getGalaxy().setMessageAndGoto(successToken,
+                                                                                 deleteMessage);
             }
 
         };

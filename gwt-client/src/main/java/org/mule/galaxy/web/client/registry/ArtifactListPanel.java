@@ -34,7 +34,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 public class ArtifactListPanel extends AbstractComposite {
@@ -48,7 +47,7 @@ public class ArtifactListPanel extends AbstractComposite {
     private FlowPanel activityNavPanel;
     private FlowPanel bulkEditPanel;
     private boolean editable;
-    private ArtifactPropertyListPanel propertyEditPanel;
+    private ArtifactBulkEditPanel propertyEditPanel;
     private final Galaxy galaxy;
 
     public ArtifactListPanel(AbstractBrowsePanel browsePanel, Galaxy galaxy) {
@@ -145,13 +144,12 @@ public class ArtifactListPanel extends AbstractComposite {
                 ha.setTargetHistoryToken("bulk-edit");
                 ClickListener ec = new ClickListener() {
                     public void onClick(Widget sender) {
-                        galaxy.createPageInfo("bulk-edit", new ArtifactPropertyListPanel(o, galaxy), 0);
+                        galaxy.createPageInfo("bulk-edit", new ArtifactBulkEditPanel(o.getResults(), galaxy), 0);
                         History.newItem("bulk-edit");
                     }
 
                 };
                 ha.addClickListener(ec);
-
                 Image imgAll = new Image("images/page_right.gif");
                 imgAll.addClickListener(ec);
                 bulkEditPanel.add(asToolbarItem(imgAll, ha));
