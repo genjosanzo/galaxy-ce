@@ -73,6 +73,21 @@ public class EventsTest extends TestCase {
         assertSame(event, listener.event);
     }
 
+    /**
+     * Single event, multiple @OnEvent entrypoints should fail
+     */
+    public void testMultipleOnEventAnnotationsSingleListener() throws Exception {
+        EventManager em = new DefaultEventManager(Collections.emptyList());
+        SingleEventMultipleEntryPoints listener = new SingleEventMultipleEntryPoints();
+        try {
+            em.addListener(listener);
+            fail("Should've failed");
+        } catch (IllegalArgumentException e) {
+            // expected
+            assertTrue(e.getMessage().startsWith("Multiple @OnEvent"));
+        }
+    }
+
     @BindToEvent(PROPERTY_UPDATED)
     private static class ClassAnnotationMissingOnEvent {
 
@@ -87,6 +102,20 @@ public class EventsTest extends TestCase {
         public void callback(PropertyUpdatedEvent e) {
             called = true;
             event = e;
+        }
+
+    }
+
+    private static class SingleEventMultipleEntryPoints extends ClassAnnotationMissingOnEvent {
+
+        @OnEvent
+        public void callback1(PropertyUpdatedEvent e) {
+
+        }
+
+        @OnEvent
+        public void callback2(PropertyUpdatedEvent e) {
+
         }
 
     }

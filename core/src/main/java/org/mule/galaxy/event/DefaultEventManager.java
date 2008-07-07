@@ -38,9 +38,12 @@ public class DefaultEventManager implements EventManager {
         if (annotation != null) {
             eventNames = new String[] {((BindToEvent) annotation).value()};
             Method[] methods = clazz.getMethods();
-            // TODO detect and fail on multipe OnEvent entry points
             for (final Method method : methods) {
                 if (method.isAnnotationPresent(OnEvent.class)) {
+                    // detect duplicate entry-points
+                    if (adapter != null) {
+                        throw new IllegalArgumentException("Multiple @OnEvent entry-points detected for " + clazz.getName());
+                    }
                     adapter = new DelegatingMultiEventListener(listenerCandidate, method);
                 }
             }
