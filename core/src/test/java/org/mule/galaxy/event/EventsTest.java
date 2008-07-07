@@ -7,7 +7,9 @@ import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import static org.mule.galaxy.event.DefaultEvents.PROPERTY_UPDATED;
+import static org.mule.galaxy.event.DefaultEvents.WORKSPACE_DELETED;
 import org.mule.galaxy.event.annotation.BindToEvent;
+import org.mule.galaxy.event.annotation.BindToEvents;
 import org.mule.galaxy.event.annotation.OnEvent;
 import org.mule.galaxy.security.User;
 
@@ -99,6 +101,21 @@ public class EventsTest extends TestCase {
         }
     }
 
+    public void testMultiEventListener() {
+        EventManager em = new DefaultEventManager(Collections.emptyList());
+        MultiEventListener listener = new MultiEventListener();
+        em.addListener(listener);
+        
+        final PropertyUpdatedEvent event1 = new PropertyUpdatedEvent(new User(), "test message 1", new DummyArtifact(), "testProperty", "newValue");
+        em.fireEvent(event1);
+
+        final WorkspaceDeletedEvent event2 = new WorkspaceDeletedEvent(new User(), "test message 2");
+        em.fireEvent(event2);
+
+        assertSame(event1, listener.puEvent);
+        assertSame(event2, listener.wdEvent);
+    }
+
     @BindToEvent(PROPERTY_UPDATED)
     private static class ClassAnnotationMissingOnEvent {
 
@@ -129,6 +146,23 @@ public class EventsTest extends TestCase {
 
         }
 
+    }
+
+    @BindToEvents({WORKSPACE_DELETED, PROPERTY_UPDATED})
+    private static class MultiEventListener {
+
+        public PropertyUpdatedEvent puEvent;
+        public WorkspaceDeletedEvent wdEvent;
+
+        @OnEvent
+        public void callbackProperty(PropertyUpdatedEvent e) {
+            puEvent = e;
+        }
+
+        @OnEvent
+        public void callbackWorkspace(WorkspaceDeletedEvent e) {
+            wdEvent = e;
+        }
     }
 
     @BindToEvent("NoSuch")

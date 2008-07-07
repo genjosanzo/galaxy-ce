@@ -8,9 +8,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.EventListener;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class DefaultEventManager implements EventManager {
 
@@ -34,6 +36,8 @@ public class DefaultEventManager implements EventManager {
 
         final String[] eventNames;
         GalaxyEventListener adapter = null;
+
+        // single-event listeners
         final Annotation annotation = findAnnotation(clazz, BindToEvent.class);
         if (annotation != null) {
             eventNames = new String[] {((BindToEvent) annotation).value()};
@@ -44,7 +48,7 @@ public class DefaultEventManager implements EventManager {
                     if (adapter != null) {
                         throw new IllegalArgumentException("Multiple @OnEvent entry-points detected for " + clazz.getName());
                     }
-                    adapter = new DelegatingMultiEventListener(listenerCandidate, method);
+                    adapter = new DelegatingSingleEventListener(listenerCandidate, method);
                 }
             }
 
@@ -54,7 +58,9 @@ public class DefaultEventManager implements EventManager {
                                                                  listenerCandidate.getClass().getName()));
             }
         } else if (clazz.isAnnotationPresent(BindToEvents.class)) {
+            // multi-event listeners
             eventNames = clazz.getAnnotation(BindToEvents.class).value();
+            adapter = new DelegatingMultiEventListener(listenerCandidate);
         } else {
             throw new IllegalArgumentException(clazz.getName() + " doesn't have a BindToEvent(s) annotation");
         }
@@ -96,6 +102,12 @@ public class DefaultEventManager implements EventManager {
 
     // TODO refactor and optimize for multiple event bindings for a single listener probably
     protected void registerListener(final GalaxyEventListener listener, final String eventName) {
+
+        if (listener == null) {
+            throw new IllegalArgumentException(
+                    String.format("Attempt detected to register a null listener for %s event", eventName));
+        }
+
         // get event name and load its class
         String evtClassName = "org.mule.galaxy.event." + eventName + "Event";
         ClassLoader current = Thread.currentThread().getContextClassLoader();
@@ -176,18 +188,56 @@ public class DefaultEventManager implements EventManager {
     /**
      * Delegates to a listener observing multiple events (through the {@link BindToEvents} annotation and thus
      * having multiple entry points annotated with {@link OnEvent}.
-     * TODO to be implemented
      */
     protected static class DelegatingMultiEventListener implements DelegatingGalaxyEventListener {
         private final Object delegate;
-        private final Method method;
 
-        public DelegatingMultiEventListener(final Object listenerCandidate, final Method method) {
-            this.method = method;
+        private Map<Class<GalaxyEvent>, Method> eventToMethodMap = new HashMap<Class<GalaxyEvent>, Method>();
+
+        public DelegatingMultiEventListener(final Object listenerCandidate) {
             delegate = listenerCandidate;
+            // discover and initialize event-to-method mappings
+            Method[] methods = listenerCandidate.getClass().getMethods();
+            for (Method method : methods) {
+                if (method.isAnnotationPresent(OnEvent.class)) {
+                    // validate the number of parameters
+                    Class<?>[] paramTypes = method.getParameterTypes();
+                    if (paramTypes.length == 0) {
+                        throw new IllegalArgumentException(
+                                String.format("Method %s has an @OnEvent annotation, but accepts no Galaxy event class",
+                                              method.toGenericString()));
+                    }
+
+                    if (paramTypes.length > 1) {
+                        throw new IllegalArgumentException(
+                                String.format("Method %s has an @OnEvent annotation, but accepts multiple parameters. Only a " +
+                                              "single parameter is allowed, and it must be a Galaxy event class",
+                                              method.toGenericString()));
+
+                    }
+
+                    Class<?> paramType = paramTypes[0];
+                    if (!GalaxyEvent.class.isAssignableFrom(paramType)) {
+                        throw new IllegalArgumentException(
+                                String.format("Method %s has an @OnEvent annotation, but doesn't accept a Galaxy event class",
+                                              method.toGenericString()));
+                    }
+
+                    eventToMethodMap.put((Class<GalaxyEvent>) paramType, method);
+                }
+            }
         }
 
         public void onEvent(final GalaxyEvent event) {
+            Method method = eventToMethodMap.get(event.getClass());
+
+            if (method == null) {
+                throw new IllegalArgumentException(
+                        String.format("Event %s is not supported by this listener. Supported types are %s",
+                                      event.getClass().getName(), eventToMethodMap.keySet())
+                );
+            }
+
             try {
                 method.invoke(delegate, event);
             } catch (IllegalAccessException e) {
