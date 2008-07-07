@@ -91,7 +91,7 @@ public class DefaultEventManager implements EventManager {
      */
     protected Annotation findAnnotation(Class<?> clazz, final Class<? extends Annotation> annotation) {
         boolean annotationPresent = clazz.isAnnotationPresent(annotation);
-        // TODO doesn't yet handle cases when a listener implements an interface which has an annotation
+        // doesn't handle cases when a listener implements an interface which has an annotation
         while (!annotationPresent && clazz.getSuperclass() != null) {
             clazz = clazz.getSuperclass();
             annotationPresent = clazz.isAnnotationPresent(annotation);
@@ -100,7 +100,6 @@ public class DefaultEventManager implements EventManager {
         return annotationPresent ? clazz.getAnnotation(annotation) : null;
     }
 
-    // TODO refactor and optimize for multiple event bindings for a single listener probably
     protected void registerListener(final GalaxyEventListener listener, final String eventName) {
 
         if (listener == null) {
