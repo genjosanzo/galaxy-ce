@@ -107,6 +107,8 @@ public interface RegistryServiceAsync {
     
     void transition(String artifactVersionId, String nextPhaseId, AsyncCallback c);
 
+    void transition(Collection artifactIds, String lifecycle, String phase, AsyncCallback c);
+
     void setDefault(String artifactVersionId, AsyncCallback c);
     
     void move(String artifactId, String workspaceId, String name, AsyncCallback c);
@@ -150,5 +152,4 @@ public interface RegistryServiceAsync {
     void deleteArtifactView(String id, AsyncCallback callback);
     
     void getRecentArtifactViews(AsyncCallback callback);
-    
 }

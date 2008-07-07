@@ -604,7 +604,7 @@ public class RegistryServiceImpl implements RegistryService {
      * the actual form. However, that is not a problem as we'll only ever encounter
      * queries which were created with the form. So there are some cases here
      * that we don't have to worry about.
-     * @param query
+     * @param q
      * @return
      * @throws RPCException
      */
@@ -1335,6 +1335,14 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
+    // TODO:
+    public TransitionResponse transition(Collection artifactIds, String lifecycle, String phase) throws RPCException, ItemNotFoundException {
+        TransitionResponse tr = new TransitionResponse();
+        return tr;
+    }
+
+
+    @SuppressWarnings("unchecked")
     public Collection getLifecycles() throws RPCException {
         Collection<Lifecycle> lifecycles = localLifecycleManager.getLifecycles();
         Lifecycle defaultLifecycle = localLifecycleManager.getDefaultLifecycle();

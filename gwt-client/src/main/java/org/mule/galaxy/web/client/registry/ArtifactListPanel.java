@@ -22,6 +22,7 @@ import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.BasicArtifactInfo;
 import org.mule.galaxy.web.rpc.WSearchResults;
 
 import com.google.gwt.user.client.History;
@@ -34,6 +35,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 public class ArtifactListPanel extends AbstractComposite {
@@ -144,7 +147,7 @@ public class ArtifactListPanel extends AbstractComposite {
                 ha.setTargetHistoryToken("bulk-edit");
                 ClickListener ec = new ClickListener() {
                     public void onClick(Widget sender) {
-                        galaxy.createPageInfo("bulk-edit", new ArtifactBulkEditPanel(o.getResults(), galaxy), 0);
+                        galaxy.createPageInfo("bulk-edit", new ArtifactBulkEditPanel(extractArtifactIds(o), galaxy), 0);
                         History.newItem("bulk-edit");
                     }
 
@@ -255,6 +258,28 @@ public class ArtifactListPanel extends AbstractComposite {
             panel.insert(activityNavPanel, 0);
         }
     }
+
+
+    // helper method to convert pull the artifactIds out
+    // from the searchResult collection
+    private Collection extractArtifactIds(WSearchResults o) {
+        Collection ag = (Collection) o.getResults();
+        Collection artifactIds = new ArrayList();
+
+        // groups will contain artifacts
+        for (Iterator itr = ag.iterator(); itr.hasNext();) {
+            ArtifactGroup g = (ArtifactGroup) itr.next();
+
+            // each artifact
+            for (Iterator it = g.getRows().iterator(); it.hasNext();) {
+                BasicArtifactInfo artifact = (BasicArtifactInfo) it.next();
+                artifactIds.add(artifact);
+            }
+
+        }
+        return artifactIds;
+    }
+
 
     public int getResultStart() {
         return resultStart;

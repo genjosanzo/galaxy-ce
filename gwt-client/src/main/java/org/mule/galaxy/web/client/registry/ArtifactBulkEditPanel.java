@@ -21,10 +21,10 @@ package org.mule.galaxy.web.client.registry;
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WLifecycle;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -42,7 +42,7 @@ import java.util.List;
 
 public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite {
 
-    private Collection artifacts;
+    private Collection artifactIds;
     private SimplePanel lifecyclePanel;
     private SimplePanel phasePanel;
     private SimplePanel securityPanel;
@@ -58,11 +58,11 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite {
     private Button cancel;
 
 
-    public ArtifactBulkEditPanel(Collection artifacts, Galaxy galaxy) {
+    public ArtifactBulkEditPanel(Collection artifactIds, Galaxy galaxy) {
         super();
         this.galaxy = galaxy;
         this.service = galaxy.getRegistryService();
-        this.artifacts = artifacts;
+        this.artifactIds = artifactIds;
 
         // main wrapper panel for this edit screen
         this.panel = new FlowPanel();
@@ -104,6 +104,7 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite {
         save = new Button("Save");
         save.addClickListener(new ClickListener() {
             public void onClick(Widget widget) {
+                Window.alert("Save!");
                 saveProperties();
             }
         });
@@ -149,10 +150,10 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite {
     }
 
 
-    private void saveLifeCycle(String name, String value) {
-        for (Iterator itr = artifacts.iterator(); itr.hasNext();) {
-            ArtifactGroup ag = (ArtifactGroup) itr.next();
-            service.setProperty(ag.getName(), name, value, new AbstractCallback(this) {
+    // in order the change the lifecycle you must also select an initial phase (?)
+    private void saveLifeCycle(String lifecycle, String phase) {
+
+            service.transition(artifactIds, lifecycle, phase, new AbstractCallback(this) {
 
                 public void onFailure(Throwable caught) {
                     super.onFailure(caught);
@@ -162,10 +163,6 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite {
                 }
 
             });
-
-        }
-
-
     }
 
     private void savePhase() {
@@ -203,7 +200,8 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite {
     // main save method for this class
     public void saveProperties() {
         if (lifecycleCB.isChecked()) {
-            saveLifeCycle("LifeCycle", lifecyclesLB.getValue(lifecyclesLB.getSelectedIndex()));
+            saveLifeCycle(lifecyclesLB.getValue(lifecyclesLB.getSelectedIndex()),
+                          null);
         }
     }
 

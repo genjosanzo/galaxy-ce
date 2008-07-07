@@ -172,6 +172,7 @@ public interface RegistryService extends RemoteService {
     
     TransitionResponse transition(String artifactVersionId, String nextPhase) throws RPCException, ItemNotFoundException;
 
+    TransitionResponse transition(Collection artifactIds, String lifecycle, String phase) throws RPCException, ItemNotFoundException;
 
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WArtifactPolicy>
