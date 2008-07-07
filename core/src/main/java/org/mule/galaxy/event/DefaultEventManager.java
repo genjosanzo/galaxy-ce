@@ -113,7 +113,7 @@ public class DefaultEventManager implements EventManager {
         ClassLoader current = Thread.currentThread().getContextClassLoader();
         synchronized (listenersLock) {
             try {
-                Class<GalaxyEvent> eventClass = (Class<GalaxyEvent>) Class.forName(evtClassName, true, current);
+                Class<? extends GalaxyEvent> eventClass = Class.forName(evtClassName, true, current).asSubclass(GalaxyEvent.class);
                 List<GalaxyEventListener> evtListeners = listeners.get(eventClass);
                 if (evtListeners == null) {
                     evtListeners = new LinkedList<GalaxyEventListener>();
@@ -124,9 +124,6 @@ public class DefaultEventManager implements EventManager {
                 final String realListenerClass = listener instanceof DelegatingGalaxyEventListener
                         ? ((DelegatingGalaxyEventListener) listener).getDelegateListener().getClass().getName()
                         : listener.getClass().getName();
-                if (listener instanceof DelegatingGalaxyEventListener) {
-
-                }
                 throw new IllegalArgumentException(String.format("Event class %s not found for listener %s",
                                                                  evtClassName, realListenerClass));
             }
