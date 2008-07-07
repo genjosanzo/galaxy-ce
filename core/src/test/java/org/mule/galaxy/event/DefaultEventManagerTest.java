@@ -23,7 +23,7 @@ import javax.xml.namespace.QName;
 
 import junit.framework.TestCase;
 
-public class EventsTest extends TestCase {
+public class DefaultEventManagerTest extends TestCase {
 
     public void testNullInput() throws Exception {
         EventManager em = new DefaultEventManager(Collections.emptyList());
