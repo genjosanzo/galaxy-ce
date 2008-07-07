@@ -88,6 +88,17 @@ public class EventsTest extends TestCase {
         }
     }
 
+    public void testEventClassNotFound() throws Exception {
+        EventManager em = new DefaultEventManager(Collections.emptyList());
+        try {
+            em.addListener(new EventDoesntExist());
+            fail("Should've failed");
+        } catch (IllegalArgumentException e) {
+            // expected
+            assertTrue(e.getMessage().contains(" for listener "));
+        }
+    }
+
     @BindToEvent(PROPERTY_UPDATED)
     private static class ClassAnnotationMissingOnEvent {
 
@@ -117,6 +128,14 @@ public class EventsTest extends TestCase {
         public void callback2(PropertyUpdatedEvent e) {
 
         }
+
+    }
+
+    @BindToEvent("NoSuch")
+    private static class EventDoesntExist {
+
+        @OnEvent
+        public void callback() {}
 
     }
 

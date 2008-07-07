@@ -109,7 +109,14 @@ public class DefaultEventManager implements EventManager {
                 evtListeners.add(listener);
                 listeners.put(eventClass, evtListeners);
             } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
+                final String realListenerClass = listener instanceof DelegatingGalaxyEventListener
+                        ? ((DelegatingGalaxyEventListener) listener).getDelegateListener().getClass().getName()
+                        : listener.getClass().getName();
+                if (listener instanceof DelegatingGalaxyEventListener) {
+
+                }
+                throw new IllegalArgumentException(String.format("Event class %s not found for listener %s",
+                                                                 evtClassName, realListenerClass));
             }
         }
     }
@@ -141,11 +148,11 @@ public class DefaultEventManager implements EventManager {
     /**
      * Delegates to a single method marked with the {@link OnEvent} annotation.
      */
-    protected static class DelegatingGalaxyEventListener implements GalaxyEventListener {
+    protected static class DelegatingSingleEventListener implements DelegatingGalaxyEventListener {
         private final Object delegate;
         private final Method method;
 
-        public DelegatingGalaxyEventListener(final Object listenerCandidate, final Method method) {
+        public DelegatingSingleEventListener(final Object listenerCandidate, final Method method) {
             this.method = method;
             delegate = listenerCandidate;
         }
@@ -160,6 +167,10 @@ public class DefaultEventManager implements EventManager {
                 throw new RuntimeException(cause);
             }
         }
+
+        public Object getDelegateListener() {
+            return delegate;
+        }
     }
 
     /**
@@ -167,7 +178,7 @@ public class DefaultEventManager implements EventManager {
      * having multiple entry points annotated with {@link OnEvent}.
      * TODO to be implemented
      */
-    protected static class DelegatingMultiEventListener implements GalaxyEventListener {
+    protected static class DelegatingMultiEventListener implements DelegatingGalaxyEventListener {
         private final Object delegate;
         private final Method method;
 
@@ -186,9 +197,17 @@ public class DefaultEventManager implements EventManager {
                 throw new RuntimeException(cause);
             }
         }
+
+        public Object getDelegateListener() {
+            return delegate;
+        }
     }
 
     protected static interface GalaxyEventListener extends EventListener {
         void onEvent(GalaxyEvent event);
+    }
+
+    protected static interface DelegatingGalaxyEventListener extends GalaxyEventListener {
+        Object getDelegateListener();
     }
 }
