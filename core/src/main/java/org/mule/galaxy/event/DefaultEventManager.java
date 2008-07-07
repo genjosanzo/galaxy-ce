@@ -166,6 +166,7 @@ public class DefaultEventManager implements EventManager {
 
         public DelegatingSingleEventListener(final Object listenerCandidate, final Method method) {
             this.method = method;
+            MethodParamValidator.validateMethodParam(method);
             delegate = listenerCandidate;
         }
 
@@ -183,6 +184,7 @@ public class DefaultEventManager implements EventManager {
         public Object getDelegateListener() {
             return delegate;
         }
+
     }
 
     /**
@@ -192,7 +194,7 @@ public class DefaultEventManager implements EventManager {
     protected static class DelegatingMultiEventListener implements DelegatingGalaxyEventListener {
         private final Object delegate;
 
-        private Map<Class<GalaxyEvent>, Method> eventToMethodMap = new HashMap<Class<GalaxyEvent>, Method>();
+        private Map<Class<? extends GalaxyEvent>, Method> eventToMethodMap = new HashMap<Class<? extends GalaxyEvent>, Method>();
 
         public DelegatingMultiEventListener(final Object listenerCandidate) {
             delegate = listenerCandidate;
@@ -200,30 +202,9 @@ public class DefaultEventManager implements EventManager {
             Method[] methods = listenerCandidate.getClass().getMethods();
             for (Method method : methods) {
                 if (method.isAnnotationPresent(OnEvent.class)) {
-                    // validate the number of parameters
-                    Class<?>[] paramTypes = method.getParameterTypes();
-                    if (paramTypes.length == 0) {
-                        throw new IllegalArgumentException(
-                                String.format("Method %s has an @OnEvent annotation, but accepts no Galaxy event class",
-                                              method.toGenericString()));
-                    }
-
-                    if (paramTypes.length > 1) {
-                        throw new IllegalArgumentException(
-                                String.format("Method %s has an @OnEvent annotation, but accepts multiple parameters. Only a " +
-                                              "single parameter is allowed, and it must be a Galaxy event class",
-                                              method.toGenericString()));
-
-                    }
-
-                    Class<?> paramType = paramTypes[0];
-                    if (!GalaxyEvent.class.isAssignableFrom(paramType)) {
-                        throw new IllegalArgumentException(
-                                String.format("Method %s has an @OnEvent annotation, but doesn't accept a Galaxy event class",
-                                              method.toGenericString()));
-                    }
-
-                    eventToMethodMap.put((Class<GalaxyEvent>) paramType, method);
+                    MethodParamValidator.validateMethodParam(method);
+                    Class<? extends GalaxyEvent> paramType = method.getParameterTypes()[0].asSubclass(GalaxyEvent.class);
+                    eventToMethodMap.put(paramType, method);
                 }
             }
         }
@@ -259,5 +240,37 @@ public class DefaultEventManager implements EventManager {
 
     protected static interface DelegatingGalaxyEventListener extends GalaxyEventListener {
         Object getDelegateListener();
+    }
+
+    /*
+        Ugly static method, but otherwise we face a listener hierarchy explosion.
+     */
+    protected static class MethodParamValidator {
+
+        protected static void validateMethodParam(final Method method) {
+            // validate the number of parameters
+            Class<?>[] paramTypes = method.getParameterTypes();
+            if (paramTypes.length == 0) {
+                throw new IllegalArgumentException(
+                        String.format("Method %s has an @OnEvent annotation, but accepts no Galaxy event class",
+                                      method.toGenericString()));
+            }
+
+            if (paramTypes.length > 1) {
+                throw new IllegalArgumentException(
+                        String.format("Method %s has an @OnEvent annotation, but accepts multiple parameters. Only a " +
+                                      "single parameter is allowed, and it must be a Galaxy event class",
+                                      method.toGenericString()));
+
+            }
+
+            Class<?> paramType = paramTypes[0];
+            if (!GalaxyEvent.class.isAssignableFrom(paramType)) {
+                throw new IllegalArgumentException(
+                        String.format("Method %s has an @OnEvent annotation, but doesn't accept a Galaxy event class",
+                                      method.toGenericString()));
+            }
+        }
+
     }
 }

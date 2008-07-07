@@ -169,7 +169,7 @@ public class DefaultEventManagerTest extends TestCase {
     private static class EventDoesntExist {
 
         @OnEvent
-        public void callback() {}
+        public void callback(PropertyUpdatedEvent e) {}
 
     }
 
