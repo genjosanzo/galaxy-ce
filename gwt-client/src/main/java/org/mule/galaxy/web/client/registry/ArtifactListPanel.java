@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class ArtifactListPanel extends AbstractComposite {
+public class ArtifactListPanel extends AbstractComposite implements ClickListener{
 
     private FlowPanel panel;
     private FlowPanel artifactPanel;
@@ -49,16 +49,23 @@ public class ArtifactListPanel extends AbstractComposite {
     private int maxResults = 15;
     private final AbstractBrowsePanel browsePanel;
     private FlowPanel activityNavPanel;
+
+    private final Galaxy galaxy;
     private FlowPanel bulkEditPanel;
     private boolean editable;
-    private final Galaxy galaxy;
+
     private ArrayList allCBs;
+    private WSearchResults searchResults;
+    private Hyperlink bulkEditLink;
+    private Hyperlink editSelected;
+    private Hyperlink cancelLink;
+    private Hyperlink editAll;
 
     public ArtifactListPanel(AbstractBrowsePanel browsePanel, Galaxy galaxy) {
         super();
         this.galaxy = galaxy;
         this.browsePanel = browsePanel;
-
+        
         panel = new FlowPanel();
 
         SimplePanel artifactPanelBase = new SimplePanel();
@@ -70,7 +77,6 @@ public class ArtifactListPanel extends AbstractComposite {
         artifactPanelBase.add(artifactPanel);
 
         initWidget(panel);
-
         clear();
     }
 
@@ -80,16 +86,18 @@ public class ArtifactListPanel extends AbstractComposite {
 
     public void initArtifacts(WSearchResults o) {
 
+        this.searchResults = o;
         clear();
-        createBulkEditPanel(o);
-        createNavigationPanel(o);
+        createBulkEditPanel();
+        createNavigationPanel();
 
         for (Iterator groups = o.getResults().iterator(); groups.hasNext();) {
             ArtifactGroup group = (ArtifactGroup) groups.next();
 
             ArtifactGroupListPanel list = new ArtifactGroupListPanel(group, isEditable());
 
-            // get the list of artifacts from each item in the group
+            // get the list of artifacts from each item (artifact) in the group
+            // and set them locally -- it's much easier to manipulate them this way
             if (isEditable()) allCBs.addAll(list.getCBCollection());
 
             SimplePanel rightTitlePanel = new SimplePanel();
@@ -113,9 +121,9 @@ public class ArtifactListPanel extends AbstractComposite {
     }
 
 
-    // each panel that links artifacts will have the option
+    // each panel that links artifacts will have the option to
     // bulk edit all or some -- this handles the controls for that.
-    private void createBulkEditPanel(final WSearchResults o) {
+    private void createBulkEditPanel() {
 
         allCBs = new ArrayList();
         if (bulkEditPanel != null) {
@@ -123,7 +131,7 @@ public class ArtifactListPanel extends AbstractComposite {
             bulkEditPanel = null;
         }
 
-        long resultSize = o.getTotal();
+        long resultSize = searchResults.getTotal();
 
         if (resultSize > 0) {
 
@@ -134,74 +142,74 @@ public class ArtifactListPanel extends AbstractComposite {
             if (isEditable()) {
 
                 // Cancel
-                Hyperlink cancelLink = new Hyperlink();
+                cancelLink = new Hyperlink();
                 cancelLink.setText("Cancel");
-                ClickListener cl = new ClickListener() {
-                    public void onClick(Widget sender) {
-                        // toggle edit mode
-                        setEditable(false);
-                        initArtifacts(o);
-                    }
-                };
-                cancelLink.addClickListener(cl);
+                cancelLink.addClickListener(this);
                 Image imgCancel = new Image("images/page_deny.gif");
-                imgCancel.addClickListener(cl);
                 bulkEditPanel.add(asToolbarItem(imgCancel, cancelLink));
 
                 // Edit entire result set
-                Hyperlink editAll = new Hyperlink();
+                editAll = new Hyperlink();
                 editAll.setText("Edit All (" + resultSize + ")");
                 editAll.setTargetHistoryToken("bulk-edit");
-                ClickListener editAllListner = new ClickListener() {
-                    public void onClick(Widget sender) {
-                        galaxy.createPageInfo("bulk-edit", new ArtifactBulkEditPanel(extractArtifactIds(o), galaxy), 0);
-                        History.newItem("bulk-edit");
-                    }
-
-                };
-                editAll.addClickListener(editAllListner);
+                editAll.addClickListener(this);
                 Image imgAll = new Image("images/page_right.gif");
-                imgAll.addClickListener(editAllListner);
                 bulkEditPanel.add(asToolbarItem(imgAll, editAll));
 
                 // Edit only the checked items
-                Hyperlink editSelected = new Hyperlink();
+                editSelected = new Hyperlink();
                 editSelected.setText("Edit Selected");
                 editSelected.setTargetHistoryToken("bulk-edit");
-                ClickListener editSelectedListener = new ClickListener() {
-                    public void onClick(Widget sender) {
-                        galaxy.createPageInfo("bulk-edit", new ArtifactBulkEditPanel(getSelectedArtifacts(allCBs), galaxy), 0);
-                        History.newItem("bulk-edit");
-                    }
-
-                };
-                editSelected.addClickListener(editSelectedListener);
+                editSelected.addClickListener(this);
                 Image imgSelected = new Image("images/page_tick.gif");
-                imgSelected.addClickListener(editSelectedListener);
                 bulkEditPanel.add(asToolbarItem(imgSelected, editSelected, "activity-bulkedit-item-first"));
 
             } else {
 
                 // Bulk edit link
-                Hyperlink bulkEditLink = new Hyperlink();
+                bulkEditLink = new Hyperlink();
                 bulkEditLink.setText("Bulk Edit");
-                ClickListener cl = new ClickListener() {
-                    public void onClick(Widget sender) {
-                        // toggle edit mode
-                        setEditable(true);
-                        initArtifacts(o);
-                    }
-                };
-                bulkEditLink.addClickListener(cl);
+                bulkEditLink.addClickListener(this);
                 Image img = new Image("images/page_edit.gif");
-                img.addClickListener(cl);
                 bulkEditPanel.add(asToolbarItem(img, bulkEditLink, "activity-bulkedit-item-first"));
-
             }
 
             panel.insert(bulkEditPanel, 0);
         }
     }
+
+
+    /**
+     * Too many anonymous inner classes will create a listener object overhead.
+     * This will allow a single listener to distinguish between multiple event publishers.
+     *
+     * @param sender
+     */
+    public void onClick(Widget sender) {
+
+        // toggle edit mode
+        if (sender == bulkEditLink) {
+            setEditable(true);
+            initArtifacts(searchResults);
+
+        // edit only what the user selectes via the checkboxes
+        } else if (sender == editSelected) {
+            galaxy.createPageInfo("bulk-edit", new ArtifactBulkEditPanel(getSelectedArtifacts(), galaxy), 0);
+            History.newItem("bulk-edit");
+
+        // edit the entire result set
+        } else if (sender == editAll) {
+            galaxy.createPageInfo("bulk-edit", new ArtifactBulkEditPanel(extractArtifactIds(), galaxy), 0);
+            History.newItem("bulk-edit");
+
+        // toggle edit mode
+        } else if (sender == cancelLink) {
+            setEditable(false);
+            initArtifacts(searchResults);
+        }
+
+    }
+
 
 
     private Widget asToolbarItem(Image img, Widget hl) {
@@ -218,24 +226,21 @@ public class ArtifactListPanel extends AbstractComposite {
         return p;
     }
 
-    private void clearEditToolBar() {
-
-    }
 
 
-    private void createNavigationPanel(WSearchResults o) {
+    private void createNavigationPanel() {
         if (activityNavPanel != null) {
             panel.remove(activityNavPanel);
             activityNavPanel = null;
         }
 
-        long resultSize = o.getTotal();
+        long resultSize = searchResults.getTotal();
         if (resultSize > maxResults || resultStart > 0) {
             activityNavPanel = new FlowPanel();
             activityNavPanel.setStyleName("activity-nav-panel");
             Hyperlink hl;
 
-            if (resultSize > maxResults && resultStart < o.getTotal()) {
+            if (resultSize > maxResults && resultStart < searchResults.getTotal()) {
                 hl = new Hyperlink("Next", browsePanel.getHistoryToken() + "_" + (resultStart + maxResults));
                 hl.setStyleName("activity-nav-next");
                 hl.addClickListener(new ClickListener() {
@@ -275,13 +280,13 @@ public class ArtifactListPanel extends AbstractComposite {
     }
 
 
-    // helper method to convert and pull the artifactIds out
+    // helper method to pull the artifactIds out
     // from the searchResult collection
-    private Collection extractArtifactIds(WSearchResults o) {
+    private Collection extractArtifactIds() {
         Collection artifactIds = new ArrayList();
 
         // groups will contain artifacts
-        for (Iterator itr = o.getResults().iterator(); itr.hasNext();) {
+        for (Iterator itr = searchResults.getResults().iterator(); itr.hasNext();) {
             ArtifactGroup g = (ArtifactGroup) itr.next();
 
             // each artifact
@@ -295,9 +300,9 @@ public class ArtifactListPanel extends AbstractComposite {
 
 
     // get the artifactIds from the selected checkboxes
-    private Collection getSelectedArtifacts(Collection cbs) {
+    private Collection getSelectedArtifacts() {
         Collection artifactIds = new ArrayList();
-        for (Iterator itr = cbs.iterator(); itr.hasNext();) {
+        for (Iterator itr = allCBs.iterator(); itr.hasNext();) {
             CheckBox cb = (CheckBox) itr.next();
             if (cb.isChecked()) {
                 artifactIds.add(cb);
