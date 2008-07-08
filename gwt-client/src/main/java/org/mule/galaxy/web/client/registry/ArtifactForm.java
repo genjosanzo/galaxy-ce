@@ -176,12 +176,12 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
                     History.newItem("artifact_" + artifactId2);
                 } else
 
-                // something bad happened...
-                if (msg.startsWith("ArtifactPolicyException")) {
-                    parseAndShowPolicyMessages(msg);
-                } else {
-                    setMessage(msg);
-                }
+                    // something bad happened...
+                    if (msg.startsWith("ArtifactPolicyException")) {
+                        parseAndShowPolicyMessages(msg);
+                    } else {
+                        setMessage(msg);
+                    }
             }
         });
 
@@ -206,21 +206,21 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
 
             if (s.startsWith("WARNING: ")) {
                 addWarningOrFailure(warnings, failures, lines, warning);
-                
+
                 warning = true;
                 lines = getMessage(s);
             } else if (s.startsWith("FAILURE: ")) {
                 addWarningOrFailure(warnings, failures, lines, warning);
-                
+
                 warning = false;
                 lines = getMessage(s);
             } else {
                 lines += s;
             }
         }
-        
+
         addWarningOrFailure(warnings, failures, lines, warning);
-        
+
         String token = "policy-failures";
         if (artifactId != null) {
             token += "-" + artifactId;
@@ -233,7 +233,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
 
     private void addWarningOrFailure(List warnings, List failures, String lines, boolean warning) {
         if (lines == null) return;
-        
+
         if (warning) {
             warnings.add(lines);
         } else {

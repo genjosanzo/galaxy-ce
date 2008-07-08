@@ -26,6 +26,8 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Hyperlink;
 
+import java.util.ArrayList;
+
 /**
  * Lists a group of artifacts.
  */
@@ -33,10 +35,13 @@ public class ArtifactGroupListPanel extends AbstractComposite {
 
     private ArtifactGroup group;
     private boolean editable;
+    private ArrayList CBCollection;
+
 
     public ArtifactGroupListPanel(final ArtifactGroup group, boolean editable) {
         this.group = group;
         this.editable = editable;
+        CBCollection = new ArrayList();
         renderArtifacts();
     }
 
@@ -68,6 +73,7 @@ public class ArtifactGroupListPanel extends AbstractComposite {
                 CheckBox checkbox = new CheckBox();
                 checkbox.setName(info.getId());
                 table.setWidget(i + 1, 0, checkbox);
+                CBCollection.add(checkbox);
             } else {
                 // draw nothing, we are not in edit mode
                 table.setText(0, 0, " ");
@@ -96,5 +102,10 @@ public class ArtifactGroupListPanel extends AbstractComposite {
     public String getTitle() {
         return group.getName();
     }
+
+    public ArrayList getCBCollection() {
+        return CBCollection;
+    }
+
 
 }

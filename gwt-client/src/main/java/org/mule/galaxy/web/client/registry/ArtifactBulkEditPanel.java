@@ -91,7 +91,7 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite {
 
     // main init method for this screen
     public void onShow() {
-        Label label = new Label("Bulk Edit Artifacts");
+        Label label = new Label("Bulk Edit Artifacts " + artifactIds.size() );
         label.setStyleName("title");
         panel.add(label);
 
@@ -153,16 +153,16 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite {
     // in order the change the lifecycle you must also select an initial phase (?)
     private void saveLifeCycle(String lifecycle, String phase) {
 
-            service.transition(artifactIds, lifecycle, phase, new AbstractCallback(this) {
+        service.transition(artifactIds, lifecycle, phase, new AbstractCallback(this) {
 
-                public void onFailure(Throwable caught) {
-                    super.onFailure(caught);
-                }
+            public void onFailure(Throwable caught) {
+                super.onFailure(caught);
+            }
 
-                public void onSuccess(Object arg0) {
-                }
+            public void onSuccess(Object arg0) {
+            }
 
-            });
+        });
     }
 
     private void savePhase() {

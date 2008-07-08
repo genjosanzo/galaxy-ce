@@ -26,6 +26,7 @@ import org.mule.galaxy.web.rpc.BasicArtifactInfo;
 import org.mule.galaxy.web.rpc.WSearchResults;
 
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -50,8 +51,8 @@ public class ArtifactListPanel extends AbstractComposite {
     private FlowPanel activityNavPanel;
     private FlowPanel bulkEditPanel;
     private boolean editable;
-    private ArtifactBulkEditPanel propertyEditPanel;
     private final Galaxy galaxy;
+    private ArrayList allCBs;
 
     public ArtifactListPanel(AbstractBrowsePanel browsePanel, Galaxy galaxy) {
         super();
@@ -78,6 +79,7 @@ public class ArtifactListPanel extends AbstractComposite {
     }
 
     public void initArtifacts(WSearchResults o) {
+
         clear();
         createBulkEditPanel(o);
         createNavigationPanel(o);
@@ -86,6 +88,9 @@ public class ArtifactListPanel extends AbstractComposite {
             ArtifactGroup group = (ArtifactGroup) groups.next();
 
             ArtifactGroupListPanel list = new ArtifactGroupListPanel(group, isEditable());
+
+            // get the list of artifacts from each item in the group
+            if (isEditable()) allCBs.addAll(list.getCBCollection());
 
             SimplePanel rightTitlePanel = new SimplePanel();
             rightTitlePanel.setStyleName("right-title-panel");
@@ -112,6 +117,7 @@ public class ArtifactListPanel extends AbstractComposite {
     // bulk edit all or some -- this handles the controls for that.
     private void createBulkEditPanel(final WSearchResults o) {
 
+        allCBs = new ArrayList();
         if (bulkEditPanel != null) {
             panel.remove(bulkEditPanel);
             bulkEditPanel = null;
@@ -120,6 +126,7 @@ public class ArtifactListPanel extends AbstractComposite {
         long resultSize = o.getTotal();
 
         if (resultSize > 0) {
+
             bulkEditPanel = new FlowPanel();
             bulkEditPanel.setStyleName("activity-bulkedit-panel");
 
@@ -127,8 +134,8 @@ public class ArtifactListPanel extends AbstractComposite {
             if (isEditable()) {
 
                 // Cancel
-                Hyperlink h = new Hyperlink();
-                h.setText("Cancel");
+                Hyperlink cancelLink = new Hyperlink();
+                cancelLink.setText("Cancel");
                 ClickListener cl = new ClickListener() {
                     public void onClick(Widget sender) {
                         // toggle edit mode
@@ -136,40 +143,48 @@ public class ArtifactListPanel extends AbstractComposite {
                         initArtifacts(o);
                     }
                 };
-                h.addClickListener(cl);
+                cancelLink.addClickListener(cl);
                 Image imgCancel = new Image("images/page_deny.gif");
                 imgCancel.addClickListener(cl);
-                bulkEditPanel.add(asToolbarItem(imgCancel, h));
+                bulkEditPanel.add(asToolbarItem(imgCancel, cancelLink));
 
                 // Edit entire result set
-                Hyperlink ha = new Hyperlink();
-                ha.setText("Edit All (" + resultSize + ")");
-                ha.setTargetHistoryToken("bulk-edit");
-                ClickListener ec = new ClickListener() {
+                Hyperlink editAll = new Hyperlink();
+                editAll.setText("Edit All (" + resultSize + ")");
+                editAll.setTargetHistoryToken("bulk-edit");
+                ClickListener editAllListner = new ClickListener() {
                     public void onClick(Widget sender) {
                         galaxy.createPageInfo("bulk-edit", new ArtifactBulkEditPanel(extractArtifactIds(o), galaxy), 0);
                         History.newItem("bulk-edit");
                     }
 
                 };
-                ha.addClickListener(ec);
+                editAll.addClickListener(editAllListner);
                 Image imgAll = new Image("images/page_right.gif");
-                imgAll.addClickListener(ec);
-                bulkEditPanel.add(asToolbarItem(imgAll, ha));
+                imgAll.addClickListener(editAllListner);
+                bulkEditPanel.add(asToolbarItem(imgAll, editAll));
 
                 // Edit only the checked items
-                Hyperlink hc = new Hyperlink();
-                hc.setText("Edit Selected");
-                hc.addClickListener(ec);
+                Hyperlink editSelected = new Hyperlink();
+                editSelected.setText("Edit Selected");
+                editSelected.setTargetHistoryToken("bulk-edit");
+                ClickListener editSelectedListener = new ClickListener() {
+                    public void onClick(Widget sender) {
+                        galaxy.createPageInfo("bulk-edit", new ArtifactBulkEditPanel(getSelectedArtifacts(allCBs), galaxy), 0);
+                        History.newItem("bulk-edit");
+                    }
+
+                };
+                editSelected.addClickListener(editSelectedListener);
                 Image imgSelected = new Image("images/page_tick.gif");
-                imgSelected.addClickListener(ec);
-                bulkEditPanel.add(asToolbarItem(imgSelected, hc, "activity-bulkedit-item-first"));
+                imgSelected.addClickListener(editSelectedListener);
+                bulkEditPanel.add(asToolbarItem(imgSelected, editSelected, "activity-bulkedit-item-first"));
 
             } else {
 
                 // Bulk edit link
-                Hyperlink h = new Hyperlink();
-                h.setText("Bulk Edit");
+                Hyperlink bulkEditLink = new Hyperlink();
+                bulkEditLink.setText("Bulk Edit");
                 ClickListener cl = new ClickListener() {
                     public void onClick(Widget sender) {
                         // toggle edit mode
@@ -177,10 +192,10 @@ public class ArtifactListPanel extends AbstractComposite {
                         initArtifacts(o);
                     }
                 };
-                h.addClickListener(cl);
+                bulkEditLink.addClickListener(cl);
                 Image img = new Image("images/page_edit.gif");
                 img.addClickListener(cl);
-                bulkEditPanel.add(asToolbarItem(img, h, "activity-bulkedit-item-first"));
+                bulkEditPanel.add(asToolbarItem(img, bulkEditLink, "activity-bulkedit-item-first"));
 
             }
 
@@ -260,14 +275,13 @@ public class ArtifactListPanel extends AbstractComposite {
     }
 
 
-    // helper method to convert pull the artifactIds out
+    // helper method to convert and pull the artifactIds out
     // from the searchResult collection
     private Collection extractArtifactIds(WSearchResults o) {
-        Collection ag = (Collection) o.getResults();
         Collection artifactIds = new ArrayList();
 
         // groups will contain artifacts
-        for (Iterator itr = ag.iterator(); itr.hasNext();) {
+        for (Iterator itr = o.getResults().iterator(); itr.hasNext();) {
             ArtifactGroup g = (ArtifactGroup) itr.next();
 
             // each artifact
@@ -275,7 +289,19 @@ public class ArtifactListPanel extends AbstractComposite {
                 BasicArtifactInfo artifact = (BasicArtifactInfo) it.next();
                 artifactIds.add(artifact);
             }
+        }
+        return artifactIds;
+    }
 
+
+    // get the artifactIds from the selected checkboxes
+    private Collection getSelectedArtifacts(Collection cbs) {
+        Collection artifactIds = new ArrayList();
+        for (Iterator itr = cbs.iterator(); itr.hasNext();) {
+            CheckBox cb = (CheckBox) itr.next();
+            if (cb.isChecked()) {
+                artifactIds.add(cb);
+            }
         }
         return artifactIds;
     }
