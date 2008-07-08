@@ -3,7 +3,7 @@
        xmlns:g="http://galaxy.mule.org/cxf/"
        xsi:schemaLocation="
 http://galaxy.mule.org/cxf/ http://galaxy.mule.org/schemas/cxf-galaxy.xsd
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <g:galaxy username="admin" password="admin">
     <g:policyQuery>
