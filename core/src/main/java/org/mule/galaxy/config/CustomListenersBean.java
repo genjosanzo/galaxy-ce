@@ -15,11 +15,13 @@ import org.springframework.context.ApplicationContextAware;
  * regular one in Spring configuration file and populate via {@link #setCustomListeners(java.util.List)}, e.g.:
  *
  * <pre>
- * &lt;bean class="org.mule.galaxy.event.CustomGalaxyListenersBean">
-        &lt;property name="customListeners">
-            &lt;bean class="com.example.galaxy.event.listener.MyCustomEventListener"/>
-        &lt;/property>
-    &lt;/bean>
+ * &lt;g:custom-listeners>
+        &lt;g:listener>
+            &lt;bean class="org.mule.galaxy.event.listener.SysOutLoggingEventListener">
+                &lt;property name="prefix" value="===> "/>
+            &lt;/bean>
+        &lt;/g:listener>
+    &lt;/g:custom-listeners>
     </pre>
 
  * The listener must adhere to the Galaxy listener conventions.
