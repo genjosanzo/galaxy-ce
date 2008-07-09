@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:g="http://www.mulesource.org/schema/galaxy-config"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+            http://www.mulesource.org/schema/galaxy-config http://www.mulesource.org/schema/galaxy-config/galaxy.xsd">
+
+    <g:custom-listeners>
+        <!-- Overriding an event manager is normally not required by a user, auto-discovered -->
+        <!--<g:eventManager ref="customEventManager"/>-->
+        <g:listener>
+            <bean class="org.mule.galaxy.event.listener.SysOutLoggingEventListener">
+                <property name="prefix" value="===> "/>
+            </bean>
+        </g:listener>
+    </g:custom-listeners>
+
+
+</beans>

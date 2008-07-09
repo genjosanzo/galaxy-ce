@@ -1,4 +1,6 @@
-package org.mule.galaxy.event;
+package org.mule.galaxy.config;
+
+import org.mule.galaxy.event.EventManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +25,12 @@ import org.springframework.context.ApplicationContextAware;
  * The listener must adhere to the Galaxy listener conventions.
  * <p/>
  * <strong>Note:</strong> this class will automatically discover a standard Galaxy's event manager
- * instance. If however, one needs to be overridden, just inject it via the {@link #setEventManager(EventManager)}.
+ * instance. If however, one needs to be overridden, just inject it via the {@link #setEventManager(org.mule.galaxy.event.EventManager)}.
  * <p/>
  * The custom listeners list is cleared once this bean finished registering those with the central event
  * manager..
  */
-public class CustomGalaxyListenersBean implements ApplicationContextAware, InitializingBean {
+public class CustomListenersBean implements ApplicationContextAware, InitializingBean {
 
     private ApplicationContext context;
 
