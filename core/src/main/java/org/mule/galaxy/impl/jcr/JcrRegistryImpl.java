@@ -203,7 +203,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 session.save();
 
-                eventManager.fireEvent(new WorkspaceCreatedEvent(workspace));
+                eventManager.fireEvent(new WorkspaceCreatedEvent());
+                //eventManager.fireEvent(new WorkspaceCreatedEvent(workspace));
 
                 activityManager.logActivity(SecurityUtils.getCurrentUser(),
                                             "Workspace " + workspace.getPath() + " was created", 
@@ -293,8 +294,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     
                     node.remove();
 
-                    WorkspaceDeletedEvent evt = new WorkspaceDeletedEvent(SecurityUtils.getCurrentUser(),
-                                                                          "Workspace " + path + " was deleted");
+                    WorkspaceDeletedEvent evt = new WorkspaceDeletedEvent();
+                    //WorkspaceDeletedEvent evt = new WorkspaceDeletedEvent(SecurityUtils.getCurrentUser(),
+                    //                                                      "Workspace " + path + " was deleted");
 
                     eventManager.fireEvent(evt);
 

@@ -109,7 +109,8 @@ public class DefaultEventManagerTest extends TestCase {
         final PropertyUpdatedEvent event1 = new PropertyUpdatedEvent(new User(), "test message 1", new DummyArtifact(), "testProperty", "newValue");
         em.fireEvent(event1);
 
-        final WorkspaceDeletedEvent event2 = new WorkspaceDeletedEvent(new User(), "test message 2");
+        final WorkspaceDeletedEvent event2 = new WorkspaceDeletedEvent();
+        //final WorkspaceDeletedEvent event2 = new WorkspaceDeletedEvent(new User(), "test message 2");
         em.fireEvent(event2);
 
         assertSame(event1, listener.puEvent);
