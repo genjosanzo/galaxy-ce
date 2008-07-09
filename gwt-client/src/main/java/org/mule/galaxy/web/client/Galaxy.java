@@ -25,6 +25,7 @@ import org.mule.galaxy.web.client.registry.BrowsePanel;
 import org.mule.galaxy.web.client.registry.SearchPanel;
 import org.mule.galaxy.web.client.registry.ViewPanel;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.workspace.ManageWorkspacePanel;
 import org.mule.galaxy.web.client.workspace.WorkspaceForm;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -169,13 +170,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
             public void onSuccess(Object o) {
                 user = (WUser) o;
                 rightPanel.add(new Label("Signed in as: " + user.getName()));
-
-                ExternalHyperlink logout = new ExternalHyperlink("Sign out", GWT.getHostPageBaseURL() + "j_logout");
+                ExternalHyperlink logout = new ExternalHyperlink(" Sign out", GWT.getHostPageBaseURL() + "j_logout");
                 rightPanel.add(logout);
-
                 loadTabs(galaxy);
             }
-
         });
 
 

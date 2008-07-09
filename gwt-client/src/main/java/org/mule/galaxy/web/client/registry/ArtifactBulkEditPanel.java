@@ -23,9 +23,13 @@ import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WLifecycle;
+import org.mule.galaxy.web.rpc.WPhase;
+import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -34,28 +38,41 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.TextBox;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 
-public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite {
+public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
+        implements ClickListener, ChangeListener {
 
     private Collection artifactIds;
+    private Collection lifecycles;
+
     private SimplePanel lifecyclePanel;
-    private SimplePanel phasePanel;
     private SimplePanel securityPanel;
-    private FlowPanel panel;
+    private SimplePanel propertyPanel;
+
+    private FlowPanel wrapperPanel;
     private final Galaxy galaxy;
     private RegistryMenuPanel menuPanel;
     private RegistryServiceAsync service;
+
     private CheckBox securityCB;
     private CheckBox lifecycleCB;
-    private CheckBox phaseCB;
-    private ListBox lifecyclesLB;
+    private CheckBox setPropertyCB;
+    private CheckBox delPropertyCB;
+
+    private ListBox lifecycleLB;
+    private ListBox phaseLB;
+    private ListBox setPropertyLB;
+    private ListBox delPropertyLB;
+
     private Button save;
     private Button cancel;
+    private TextBox setPropertyTB;
 
 
     public ArtifactBulkEditPanel(Collection artifactIds, Galaxy galaxy) {
@@ -65,93 +82,272 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite {
         this.artifactIds = artifactIds;
 
         // main wrapper panel for this edit screen
-        this.panel = new FlowPanel();
-        // subpanels and checkboxes for each editable section
+        this.wrapperPanel = new FlowPanel();
+
+        // subpanels for each editable section
         this.lifecyclePanel = new SimplePanel();
         this.securityPanel = new SimplePanel();
-        this.phasePanel = new SimplePanel();
+        this.propertyPanel = new SimplePanel();
+
+        // widgets
         this.lifecycleCB = new CheckBox();
         this.securityCB = new CheckBox();
-        this.phaseCB = new CheckBox();
+        this.setPropertyCB = new CheckBox();
+        this.delPropertyCB = new CheckBox();
+        this.lifecycleLB = new ListBox();
+        this.phaseLB = new ListBox();
+        this.setPropertyLB = new ListBox();
+        this.delPropertyLB = new ListBox();
+        this.setPropertyTB = new TextBox();
+
+        this.save = new Button("Save");
+        this.cancel = new Button("Cancel");
 
         // main root panel
         menuPanel = new RegistryMenuPanel(galaxy);
-        menuPanel.setMain(panel);
+        menuPanel.setMain(wrapperPanel);
         initWidget(menuPanel);
     }
 
 
+    /**
+     * tell the left side menu panel to draw itself
+     *
+     * @param params
+     */
     public void onShow(List params) {
-        // tell the left side menu panel to draw itself
         menuPanel.onShow();
         this.onShow();
 
     }
 
-
-    // main init method for this screen
+    /**
+     * main init method for this screen
+     */
     public void onShow() {
-        Label label = new Label("Bulk Edit Artifacts " + artifactIds.size() );
+
+        lifecycleLB.setEnabled(false);
+        phaseLB.setEnabled(false);
+        delPropertyLB.setEnabled(false);
+        setPropertyLB.setEnabled(false);
+
+        Label label = new Label("Bulk Edit (" + artifactIds.size() + ")");
         label.setStyleName("title");
-        panel.add(label);
+        wrapperPanel.add(label);
 
         // add whatever property panels we are allowed bulk edit
-        panel.add(createLifecyclePanel());
-        panel.add(createPhasePanel());
-        panel.add(createSecurityPanel());
+        wrapperPanel.add(createLifecyclePanel());
+        wrapperPanel.add(createSecurityPanel());
+        wrapperPanel.add(createPropertyPanel());
 
-        // create save and cancel buttons
-        save = new Button("Save");
-        save.addClickListener(new ClickListener() {
-            public void onClick(Widget widget) {
-                Window.alert("Save!");
-                saveProperties();
+        // save and cancel buttons
+        save.addClickListener(this);
+        cancel.addClickListener(this);
+        wrapperPanel.add(asHorizontal(save, cancel));
+        menuPanel.setMain(wrapperPanel);
+    }
+
+
+    /**
+     * Too many anonymous inner classes will create a listener object overhead.
+     * This will allow a single listener to distinguish between multiple event publishers.
+     *
+     * @param sender
+     */
+    public void onClick(Widget sender) {
+
+        boolean checked = false;
+        if(sender instanceof CheckBox) {
+            checked = ((CheckBox) sender).isChecked();            
+        }
+
+        if (sender == save) {
+            Window.alert("Save!");
+            save();
+
+        } else if (sender == cancel) {
+            cancel();
+
+        } else if (sender == lifecycleCB) {
+
+            // toggle visibility both off and on
+            lifecycleLB.setEnabled(checked);
+            phaseLB.setEnabled(checked);
+
+            // populate phases based on lifecycle value
+            updatePhaseListBox(getLifecycleById(lifecycleLB.getValue(lifecycleLB.getSelectedIndex())));
+
+        } else if (sender == setPropertyCB) {
+            setPropertyLB.setEnabled(checked);
+            setPropertyTB.setEnabled(checked);
+
+        } else if (sender == delPropertyCB) {
+            delPropertyLB.setEnabled(checked);
+        }
+    }
+
+
+    /**
+     * Too many anonymous inner classes will create a listener object overhead.
+     * This will allow a single listener to distinguish between multiple event publishers.
+     *
+     * @param sender
+     */
+    public void onChange(Widget sender) {
+        if (sender == lifecycleLB) {
+            updatePhaseListBox(getLifecycleById(lifecycleLB.getValue(lifecycleLB.getSelectedIndex())));
+        }
+    }
+
+
+    /**
+     * The available phases are dependant on lifecycle
+     *
+     * @param w
+     */
+    private void updatePhaseListBox(WLifecycle w) {
+        phaseLB.clear();
+        for (Iterator iterator = w.getPhases().iterator(); iterator.hasNext();) {
+            WPhase p = (WPhase) iterator.next();
+            phaseLB.addItem(p.getName(), p.getId());
+        }
+    }
+
+    private void updatePropertyListBox() {
+        service.getPropertyDescriptors(new AbstractCallback(this) {
+            public void onSuccess(Object result) {
+                Collection props = (Collection) result;
+
+                int i = 1;
+                for (Iterator itr = props.iterator(); itr.hasNext();) {
+                    final WPropertyDescriptor prop = (WPropertyDescriptor) itr.next();
+                    setPropertyLB.addItem(prop.getName(), prop.getId());
+                    delPropertyLB.addItem(prop.getName(), prop.getId());
+                }
             }
+
         });
-        cancel = new Button("Cancel");
-        cancel.addClickListener(new ClickListener() {
-            public void onClick(Widget widget) {
+
+    }
+
+
+    /**
+     * Available Lifecycles
+     */
+    private void updateLifeCycleListBox() {
+        lifecycleLB.clear();
+        service.getLifecycles(new AbstractCallback(this) {
+            public void onSuccess(Object arg0) {
+                lifecycles = (Collection) arg0;
+                for (Iterator iterator = lifecycles.iterator(); iterator.hasNext();) {
+                    WLifecycle l = (WLifecycle) iterator.next();
+                    lifecycleLB.addItem(l.getName(), l.getId());
+                }
             }
+
         });
-        panel.add(asHorizontal(save, cancel));
-        menuPanel.setMain(panel);
+
+
     }
 
 
     private SimplePanel createLifecyclePanel() {
         FlexTable table = createColumnTable();
 
-        lifecyclesLB = new ListBox();
-        lifecyclesLB.setEnabled(false);
+        // init the avialable lifecycles
+        updateLifeCycleListBox();
 
-        service.getLifecycles(new AbstractCallback(this) {
-            public void onSuccess(Object arg0) {
-                Collection o = (Collection) arg0;
-                for (Iterator iterator = o.iterator(); iterator.hasNext();) {
-                    WLifecycle l = (WLifecycle) iterator.next();
-                    lifecyclesLB.addItem(l.getName(), l.getId());
-                }
-            }
+        lifecycleCB.addClickListener(this);
+        lifecycleLB.addChangeListener(this);
 
-        });
-
-        lifecycleCB.addClickListener(new ClickListener() {
-            public void onClick(Widget widget) {
-                lifecyclesLB.setEnabled(((CheckBox) widget).isChecked());
-            }
-        });
-
-
+        // lifecycle
         table.setWidget(0, 0, lifecycleCB);
         table.setText(0, 1, "Lifecycle:");
-        table.setWidget(0, 2, lifecyclesLB);
+        table.setWidget(0, 2, lifecycleLB);
+
+        // phases
+        table.setText(1, 0, "");
+        table.setText(1, 1, "Phase:");
+        table.setWidget(1, 2, phaseLB);
+
         lifecyclePanel.add(table);
         return lifecyclePanel;
     }
 
 
-    // in order the change the lifecycle you must also select an initial phase (?)
-    private void saveLifeCycle(String lifecycle, String phase) {
+    private SimplePanel createSecurityPanel() {
+        FlexTable table = createColumnTable();
+
+        securityCB.addClickListener(this);
+
+        table.setWidget(0, 0, securityCB);
+        table.setText(0, 1, "Security:");
+        securityPanel.add(table);
+
+        return securityPanel;
+    }
+
+
+    private SimplePanel createPropertyPanel() {
+        FlexTable table = createColumnTable();
+
+        setPropertyCB.addClickListener(this);
+        delPropertyCB.addClickListener(this);
+
+        // init the available properties
+        updatePropertyListBox();
+
+        table.setWidget(0, 0, setPropertyCB);
+        table.setText(0, 1, "Set Property:");
+        table.setWidget(0, 2, setPropertyLB);
+        table.setText(0, 3, "Value:");
+        table.setWidget(0, 4, setPropertyTB);
+
+        table.setWidget(1, 0, delPropertyCB);
+        table.setText(1, 1, "Delete Property:");
+        table.setWidget(1, 2, delPropertyLB);
+
+        propertyPanel.add(table);
+
+        return propertyPanel;
+    }
+
+
+
+    // helper method to pop lifecycle out of collection by ID
+    private WLifecycle getLifecycleById(String id) {
+        for (Iterator itr = lifecycles.iterator(); itr.hasNext();) {
+            WLifecycle l = (WLifecycle) itr.next();
+            if (l.getId() != null && l.getId().equals(id)) {
+                return l;
+            }
+        }
+        return null;
+    }
+
+
+    // main save method for this class
+    public void save() {
+        if (lifecycleCB.isChecked()) {
+            saveLifecycleAndPhase(lifecycleLB.getValue(lifecycleLB.getSelectedIndex()),
+                                  phaseLB.getValue(phaseLB.getSelectedIndex()));
+        }
+        if (securityCB.isChecked()) {
+        }
+        if (setPropertyCB.isChecked()) {
+        }
+        if (delPropertyCB.isChecked()) {
+        }
+
+    }
+
+
+    public void cancel() {
+        History.back();
+    }
+
+
+    private void saveLifecycleAndPhase(String lifecycle, String phase) {
 
         service.transition(artifactIds, lifecycle, phase, new AbstractCallback(this) {
 
@@ -165,48 +361,19 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite {
         });
     }
 
-    private void savePhase() {
-
-    }
 
     private void saveSecurity() {
 
     }
 
 
-    private SimplePanel createPhasePanel() {
-        FlexTable table = createColumnTable();
+    private void saveProperty() {
 
-        // TODO: load the phases associated with the current lifcycle
-        table.setWidget(0, 0, phaseCB);
-        table.setText(0, 1, "Phase:");
-
-        phasePanel.add(table);
-        return phasePanel;
     }
 
 
-    private SimplePanel createSecurityPanel() {
-        FlexTable table = createColumnTable();
+    private void deleteProperty() {
 
-        table.setWidget(0, 0, securityCB);
-        table.setText(0, 1, "Security:");
-        securityPanel.add(table);
-
-        return securityPanel;
-    }
-
-
-    // main save method for this class
-    public void saveProperties() {
-        if (lifecycleCB.isChecked()) {
-            saveLifeCycle(lifecyclesLB.getValue(lifecyclesLB.getSelectedIndex()),
-                          null);
-        }
-    }
-
-
-    public void cancel() {
     }
 
 

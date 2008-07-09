@@ -121,7 +121,6 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
         } else if (sender == cancel) {
             cancel();
         }
-
     }
 
     protected abstract void fetchItem(String id);

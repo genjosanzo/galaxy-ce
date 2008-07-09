@@ -145,24 +145,24 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
                 cancelLink = new Hyperlink();
                 cancelLink.setText("Cancel");
                 cancelLink.addClickListener(this);
-                Image imgCancel = new Image("images/page_deny.gif");
-                bulkEditPanel.add(asToolbarItem(imgCancel, cancelLink));
+                bulkEditPanel.add(asToolbarItem(new Image("images/page_deny.gif"),
+                                                cancelLink));
 
                 // Edit entire result set
                 editAll = new Hyperlink();
                 editAll.setText("Edit All (" + resultSize + ")");
                 editAll.setTargetHistoryToken("bulk-edit");
                 editAll.addClickListener(this);
-                Image imgAll = new Image("images/page_right.gif");
-                bulkEditPanel.add(asToolbarItem(imgAll, editAll));
+                bulkEditPanel.add(asToolbarItem(new Image("images/page_right.gif"),
+                                                editAll));
 
                 // Edit only the checked items
                 editSelected = new Hyperlink();
                 editSelected.setText("Edit Selected");
                 editSelected.setTargetHistoryToken("bulk-edit");
                 editSelected.addClickListener(this);
-                Image imgSelected = new Image("images/page_tick.gif");
-                bulkEditPanel.add(asToolbarItem(imgSelected, editSelected, "activity-bulkedit-item-first"));
+                bulkEditPanel.add(asToolbarItem(new Image("images/page_tick.gif"),
+                                                editSelected, "activity-bulkedit-item-first"));
 
             } else {
 
@@ -170,8 +170,8 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
                 bulkEditLink = new Hyperlink();
                 bulkEditLink.setText("Bulk Edit");
                 bulkEditLink.addClickListener(this);
-                Image img = new Image("images/page_edit.gif");
-                bulkEditPanel.add(asToolbarItem(img, bulkEditLink, "activity-bulkedit-item-first"));
+                bulkEditPanel.add(asToolbarItem(new Image("images/page_edit.gif"),
+                                                bulkEditLink, "activity-bulkedit-item-first"));
             }
 
             panel.insert(bulkEditPanel, 0);

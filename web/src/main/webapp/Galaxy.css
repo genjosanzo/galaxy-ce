@@ -23,7 +23,7 @@ body {
 .header-right {
     float: right;
     padding: 10px;
-    font-size: 8pt;
+    font-size: 9pt;
     text-align: right;
 }
 .header-right a, .header-right a:visited {
@@ -1111,7 +1111,6 @@ a:visited {
 }
 
 .headerTabPanel .gwt-TabBar .gwt-TabBarItem {
-
   padding: 5px 10px 5px 10px;
   cursor: pointer;
   cursor: hand;
