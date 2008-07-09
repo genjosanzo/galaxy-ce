@@ -22,7 +22,10 @@ public class CustomListenersBeanDefinitionParser extends AbstractBeanDefinitionP
         BeanDefinitionBuilder listenerRegBean = BeanDefinitionBuilder.rootBeanDefinition(CustomListenersBean.class);
         Element emElement = DomUtils.getChildElementByTagName(element, "eventManager");
         if (emElement != null) {
-            listenerRegBean.addDependsOn(emElement.getAttribute("ref"));
+            // if the user overrides the default eventManager
+            final String beanName = emElement.getAttribute("ref");
+            listenerRegBean.addDependsOn(beanName);
+            listenerRegBean.addPropertyReference("eventManager", beanName);
         }
 
         List<Element> listenerElements =  DomUtils.getChildElementsByTagName(element, "listener");
