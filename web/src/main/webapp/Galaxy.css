@@ -17,6 +17,7 @@ body {
     background-image: url("images/img_banner.jpg");
     color: white;
     padding-top: 1px;
+    padding-left: 6px;
 }
 
 .header-right {
@@ -646,16 +647,12 @@ a:visited {
     margin-left: 8px;
     padding-left: 8px;
     border-left: 1px solid #ddd;
-    cursor: pointer;
-    cursor: hand;
 }
 
 .activity-bulkedit-item-first {
     float: right;
     margin-left: 8px;
     padding-left: 8px;
-    cursor: pointer;
-    cursor: hand;
 }
 
 
