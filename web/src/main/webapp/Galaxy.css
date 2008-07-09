@@ -14,7 +14,7 @@ body {
 }
 
 .header {
-    background-image: url("images/img_banner.jpg");
+    background-image: url("images/galaxy_bg.png");
     color: white;
     padding-top: 1px;
     padding-left: 6px;
@@ -23,6 +23,7 @@ body {
 .header-right {
     float: right;
     padding: 10px;
+    font-size: 8pt;
     text-align: right;
 }
 .header-right a, .header-right a:visited {
@@ -639,21 +640,20 @@ a:visited {
 
 .activity-bulkedit-panel a {
     background-color: #fff;
-    padding: 6px;
+    padding: 4px;
     text-decoration: none;
 }
 
-.activity-bulkedit-item {
-    float: right;
-    margin-left: 8px;
-    padding-left: 8px;
-    border-left: 1px solid #ddd;
-}
 
 .activity-bulkedit-item-first {
     float: right;
-    margin-left: 8px;
-    padding-left: 8px;
+    margin-left: 6px;
+    padding-left: 6px;
+}
+
+.activity-bulkedit-item-first
+.activity-bulkedit-item {
+    border-left: 1px solid #ddd;
 }
 
 
