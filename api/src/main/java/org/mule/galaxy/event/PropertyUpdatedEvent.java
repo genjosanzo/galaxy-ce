@@ -9,7 +9,6 @@ public class PropertyUpdatedEvent extends GalaxyEvent {
     private Object newValue;
 
     public PropertyUpdatedEvent(User user, String message, Artifact artifact, String propertyName, Object newValue) {
-        super(artifact, message);
         setUser(user);
         this.propertyName = propertyName;
         this.newValue = newValue;
