@@ -651,9 +651,11 @@ a:visited {
     padding-left: 6px;
 }
 
-.activity-bulkedit-item-first
 .activity-bulkedit-item {
     border-left: 1px solid #ddd;
+    float: right;
+    margin-left: 6px;
+    padding-left: 6px;
 }
 
 
