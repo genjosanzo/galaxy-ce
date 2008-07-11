@@ -25,6 +25,25 @@ import junit.framework.TestCase;
 
 public class DefaultEventManagerTest extends TestCase {
 
+    public void testRemoveListener() {
+        EventManager em = new DefaultEventManager(Collections.emptyList());
+        TestSingleEventListener listener = new TestSingleEventListener();
+        TestEvent event = new TestEvent(this);
+        em.addListener(listener);
+
+        em.fireEvent(event);
+
+        assertNotNull(listener.getEvent());
+        assertSame(event, listener.getEvent());
+
+        // now remove the listeners for the event and re-fire
+        em.removeListener(TestEvent.class);
+        listener.reset();
+        em.fireEvent(event);
+
+        assertNull(listener.getEvent());
+    }
+
     public void testNullInput() throws Exception {
         EventManager em = new DefaultEventManager(Collections.emptyList());
         try {

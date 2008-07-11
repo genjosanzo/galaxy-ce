@@ -16,4 +16,8 @@ public class TestSingleEventListener {
     public TestEvent getEvent() {
         return event;
     }
+
+    public void reset() {
+        this.event = null;
+    }
 }
