@@ -12,7 +12,7 @@ public class GalaxyNamespaceHandlerTest extends AbstractGalaxyTest {
 
     @Override
     protected void onTearDown() throws Exception {
-        eventManager.removeListener(TestSingleEventListener.class);
+        eventManager.removeListener(TestEvent.class);
         super.onTearDown();
     }
 

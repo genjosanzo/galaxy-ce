@@ -129,9 +129,11 @@ public class DefaultEventManager implements EventManager {
         }
     }
 
-    public void removeListener(final Class listenerClass) {
+    public void removeListener(final Class eventClass) {
         synchronized (listenersLock) {
-            listeners.remove(listenerClass);
+            if (listeners.remove(eventClass) == null) {
+                // TODO warn about incorrect usage
+            }
         }
     }
 
