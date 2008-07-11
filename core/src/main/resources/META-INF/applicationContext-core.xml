@@ -105,8 +105,11 @@
   <bean id="eventManager" class="org.mule.galaxy.event.DefaultEventManager">
       <constructor-arg>
           <list>
-              <bean class="org.mule.galaxy.event.listener.activity.WorkspaceDeletedEventListener" p:activityManager-ref="activityManager"/>
+              <!-- artifact version -->
+              <bean class="org.mule.galaxy.event.listener.activity.ArtifactVersionDeletedEventListener" p:activityManager-ref="activityManager"/>
+              <!-- workspace -->
               <bean class="org.mule.galaxy.event.listener.activity.WorkspaceCreatedEventListener" p:activityManager-ref="activityManager"/>
+              <bean class="org.mule.galaxy.event.listener.activity.WorkspaceDeletedEventListener" p:activityManager-ref="activityManager"/>
           </list>
       </constructor-arg>
   </bean>

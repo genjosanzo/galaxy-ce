@@ -24,6 +24,8 @@ import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.activity.ActivityManager;
 import org.mule.galaxy.activity.ActivityManager.EventType;
 import org.mule.galaxy.collab.CommentManager;
+import org.mule.galaxy.event.ArtifactDeletedEvent;
+import org.mule.galaxy.event.ArtifactVersionDeletedEvent;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.event.WorkspaceCreatedEvent;
 import org.mule.galaxy.event.WorkspaceDeletedEvent;
@@ -1167,11 +1169,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 String path = artifact.getPath();
                 ((JcrArtifact) artifact).getNode().remove();
 
-                activityManager.logActivity(SecurityUtils.getCurrentUser(),
-                                            "Artifact " + path + " was deleted", 
-                                            EventType.INFO);
-                
                 session.save();
+
+                ArtifactDeletedEvent event = new ArtifactDeletedEvent(path);
+                event.setUser(SecurityUtils.getCurrentUser());
+                eventManager.fireEvent(event);
+
                 return null;
             }
         });
@@ -1201,13 +1204,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     String label = version.getVersionLabel();
     
                     ((JcrVersion) version).getNode().remove();
-                    
-                    activityManager.logActivity(user,
-                                                "Version " + label + 
-                                                " of artifact " + artifact.getPath() + " was deleted", 
-                                                EventType.INFO);
+
+                    final String path = artifact.getPath();
     
                     session.save();
+
+                    ArtifactVersionDeletedEvent event = new ArtifactVersionDeletedEvent(path, label);
+                    event.setUser(SecurityUtils.getCurrentUser());
+                    eventManager.fireEvent(event);
+
                     return null;
 
                 } catch (RegistryException e) {
