@@ -203,12 +203,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 session.save();
 
-                eventManager.fireEvent(new WorkspaceCreatedEvent());
-                //eventManager.fireEvent(new WorkspaceCreatedEvent(workspace));
+                final WorkspaceCreatedEvent event = new WorkspaceCreatedEvent(workspace.getPath());
+                event.setUser(SecurityUtils.getCurrentUser());
+                eventManager.fireEvent(event);
 
-                activityManager.logActivity(SecurityUtils.getCurrentUser(),
-                                            "Workspace " + workspace.getPath() + " was created", 
-                                            EventType.INFO);
                 return workspace;
             }
         });
@@ -294,12 +292,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     
                     node.remove();
 
-                    activityManager.logActivity(SecurityUtils.getCurrentUser(),
-                                                "Workspace " + path + " was deleted",
-                                                EventType.INFO);
                     session.save();
                     
                     WorkspaceDeletedEvent evt = new WorkspaceDeletedEvent(path);
+                    evt.setUser(SecurityUtils.getCurrentUser());
                     eventManager.fireEvent(evt);
                 } catch (ItemNotFoundException e) {
                     throw new RuntimeException(new NotFoundException(id));

@@ -4,10 +4,10 @@ public class WorkspaceDeletedEvent extends GalaxyEvent {
 
     private String comment;
 
-    private String workspaceName;
+    private String workspacePath;
 
-    public WorkspaceDeletedEvent(final String workspaceName) {
-        this.workspaceName = workspaceName;
+    public WorkspaceDeletedEvent(final String workspacePath) {
+        this.workspacePath = workspacePath;
     }
 
     public String getComment() {
@@ -18,7 +18,7 @@ public class WorkspaceDeletedEvent extends GalaxyEvent {
         this.comment = comment;
     }
 
-    public String getWorkspaceName() {
-        return workspaceName;
+    public String getWorkspacePath() {
+        return workspacePath;
     }
 }

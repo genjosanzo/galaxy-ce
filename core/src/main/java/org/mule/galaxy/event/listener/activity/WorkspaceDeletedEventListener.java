@@ -13,7 +13,7 @@ public class WorkspaceDeletedEventListener extends AbstractActivityLoggingListen
 
     @OnEvent
     public void onEvent(WorkspaceDeletedEvent event) {
-        final String message = MessageFormat.format("Workspace {0} deleted", event.getWorkspaceName());
+        final String message = MessageFormat.format("Workspace {0} was deleted", event.getWorkspacePath());
         getActivityManager().logActivity(event.getUser(), message, ActivityManager.EventType.INFO);
     }
 }
