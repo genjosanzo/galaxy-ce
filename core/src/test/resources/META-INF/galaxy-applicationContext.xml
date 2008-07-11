@@ -7,13 +7,13 @@
             http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
             http://www.mulesource.org/schema/galaxy-config http://www.mulesource.org/schema/galaxy-config/galaxy.xsd">
 
+    <bean name="listener" class="org.mule.galaxy.event.TestSingleEventListener"/>
+
     <g:custom-listeners>
         <!-- Overriding an event manager is normally not required by a user, auto-discovered -->
         <!--<g:eventManager ref="customEventManager"/>-->
         <g:listener>
-            <bean class="org.mule.galaxy.event.listener.SysOutLoggingEventListener">
-                <property name="prefix" value="===> "/>
-            </bean>
+            <ref bean="listener"/>
         </g:listener>
     </g:custom-listeners>
 

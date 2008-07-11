@@ -9,6 +9,7 @@ public class GalaxyNamespaceHandlerTest extends AbstractGalaxyTest {
 
     private EventManager eventManager;
 
+    private TestSingleEventListener listener;
 
     @Override
     protected void onTearDown() throws Exception {
@@ -17,10 +18,10 @@ public class GalaxyNamespaceHandlerTest extends AbstractGalaxyTest {
     }
 
     public void testNSHandler() throws Exception {
-        //setDirty();
+
+        assertNotNull(listener);
+
         System.out.println("GalaxyNamespaceHandlerTest.testNSHandler");
-        TestSingleEventListener listener = new TestSingleEventListener();
-        eventManager.addListener(listener);
         final TestEvent event = new TestEvent(this);
         eventManager.fireEvent(event);
 
@@ -30,5 +31,9 @@ public class GalaxyNamespaceHandlerTest extends AbstractGalaxyTest {
 
     public void setEventManager(final EventManager eventManager) {
         this.eventManager = eventManager;
+    }
+
+    public void setListener(final TestSingleEventListener listener) {
+        this.listener = listener;
     }
 }
