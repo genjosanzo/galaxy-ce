@@ -136,7 +136,7 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
         if (resultSize > 0) {
 
             bulkEditPanel = new FlowPanel();
-            bulkEditPanel.setStyleName("activity-bulkedit-panel");
+            bulkEditPanel.setStyleName("bulkedit-panel");
 
             //  we are in edit mode, offer new choices
             if (isEditable()) {
@@ -162,7 +162,7 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
                 editSelected.setTargetHistoryToken("bulk-edit");
                 editSelected.addClickListener(this);
                 bulkEditPanel.add(asToolbarItem(new Image("images/page_tick.gif"),
-                                                editSelected, "activity-bulkedit-item-first"));
+                                                editSelected, "bulkedit-toolbar-item-first"));
 
             } else {
 
@@ -171,7 +171,7 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
                 bulkEditLink.setText("Bulk Edit");
                 bulkEditLink.addClickListener(this);
                 bulkEditPanel.add(asToolbarItem(new Image("images/page_edit.gif"),
-                                                bulkEditLink, "activity-bulkedit-item-first"));
+                                                bulkEditLink, "bulkedit-toolbar-item-first"));
             }
 
             panel.insert(bulkEditPanel, 0);
@@ -219,7 +219,7 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
     private Widget asToolbarItem(Image img, Widget hl, String overrideStyle) {
         InlineFlowPanel p = asHorizontal(img, new Label(" "), hl);
         if (overrideStyle == null) {
-            p.setStyleName("activity-bulkedit-item");
+            p.setStyleName("bulkedit-toolbar-item");
         } else {
             p.setStyleName(overrideStyle);
         }

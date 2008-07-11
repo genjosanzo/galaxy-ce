@@ -37,8 +37,9 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -51,12 +52,12 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
     private Collection artifactIds;
     private Collection lifecycles;
 
-    private SimplePanel lifecyclePanel;
-    private SimplePanel securityPanel;
-    private SimplePanel propertyPanel;
+    private VerticalPanel wrapperPanel;
+    private FlowPanel lifecyclePanel;
+    private FlowPanel securityPanel;
+    private FlowPanel propertyPanel;
 
-    private FlowPanel wrapperPanel;
-    private final Galaxy galaxy;
+    private Galaxy galaxy;
     private RegistryMenuPanel menuPanel;
     private RegistryServiceAsync service;
 
@@ -82,12 +83,12 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
         this.artifactIds = artifactIds;
 
         // main wrapper panel for this edit screen
-        this.wrapperPanel = new FlowPanel();
+        this.wrapperPanel = new VerticalPanel();
 
         // subpanels for each editable section
-        this.lifecyclePanel = new SimplePanel();
-        this.securityPanel = new SimplePanel();
-        this.propertyPanel = new SimplePanel();
+        this.lifecyclePanel = new FlowPanel();
+        this.securityPanel = new FlowPanel();
+        this.propertyPanel = new FlowPanel();
 
         // widgets
         this.lifecycleCB = new CheckBox();
@@ -99,9 +100,6 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
         this.setPropertyLB = new ListBox();
         this.delPropertyLB = new ListBox();
         this.setPropertyTB = new TextBox();
-
-        this.save = new Button("Save");
-        this.cancel = new Button("Cancel");
 
         // main root panel
         menuPanel = new RegistryMenuPanel(galaxy);
@@ -116,16 +114,19 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
      * @param params
      */
     public void onShow(List params) {
+        menuPanel.clearErrorMessage();
         menuPanel.onShow();
         this.onShow();
 
     }
+
 
     /**
      * main init method for this screen
      */
     public void onShow() {
 
+        wrapperPanel.clear();
         lifecycleLB.setEnabled(false);
         phaseLB.setEnabled(false);
         delPropertyLB.setEnabled(false);
@@ -134,6 +135,7 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
         Label label = new Label("Bulk Edit (" + artifactIds.size() + ")");
         label.setStyleName("title");
         wrapperPanel.add(label);
+        wrapperPanel.setStyleName("bulkedit-panel");
 
         // add whatever property panels we are allowed bulk edit
         wrapperPanel.add(createLifecyclePanel());
@@ -141,9 +143,12 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
         wrapperPanel.add(createPropertyPanel());
 
         // save and cancel buttons
+        save = new Button("Save");
+        cancel = new Button("Cancel");
         save.addClickListener(this);
         cancel.addClickListener(this);
         wrapperPanel.add(asHorizontal(save, cancel));
+
         menuPanel.setMain(wrapperPanel);
     }
 
@@ -157,8 +162,8 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
     public void onClick(Widget sender) {
 
         boolean checked = false;
-        if(sender instanceof CheckBox) {
-            checked = ((CheckBox) sender).isChecked();            
+        if (sender instanceof CheckBox) {
+            checked = ((CheckBox) sender).isChecked();
         }
 
         if (sender == save) {
@@ -251,8 +256,18 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
     }
 
 
-    private SimplePanel createLifecyclePanel() {
-        FlexTable table = createColumnTable();
+    private SimplePanel createTitlePanel(String title) {
+        SimplePanel s = new SimplePanel();
+        Label l = new Label(title);
+        l.setStyleName("bulkedit-section-title");
+        s.add(l);
+        s.setStyleName("bulkedit-section-header");
+        return s;
+    }
+
+
+    private FlowPanel createLifecyclePanel() {
+        FlexTable table = createItemTable();
 
         // init the avialable lifecycles
         updateLifeCycleListBox();
@@ -261,57 +276,58 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
         lifecycleLB.addChangeListener(this);
 
         // lifecycle
+        lifecyclePanel.add(createTitlePanel("Governance"));
         table.setWidget(0, 0, lifecycleCB);
-        table.setText(0, 1, "Lifecycle:");
+        table.setText(0, 1, " Lifecycle: ");
         table.setWidget(0, 2, lifecycleLB);
 
         // phases
-        table.setText(1, 0, "");
-        table.setText(1, 1, "Phase:");
-        table.setWidget(1, 2, phaseLB);
+        table.setText(0, 3, "");
+        table.setText(0, 4, " Phase: ");
+        table.setWidget(0, 5, phaseLB);
 
         lifecyclePanel.add(table);
         return lifecyclePanel;
     }
 
-
-    private SimplePanel createSecurityPanel() {
-        FlexTable table = createColumnTable();
+    private FlowPanel createSecurityPanel() {
+        FlexTable table = createItemTable();
 
         securityCB.addClickListener(this);
 
+        securityPanel.add(createTitlePanel("Security"));
         table.setWidget(0, 0, securityCB);
-        table.setText(0, 1, "Security:");
         securityPanel.add(table);
 
         return securityPanel;
     }
 
 
-    private SimplePanel createPropertyPanel() {
-        FlexTable table = createColumnTable();
+    private FlowPanel createPropertyPanel() {
+        FlexTable table = createItemTable();
 
         setPropertyCB.addClickListener(this);
         delPropertyCB.addClickListener(this);
+
+        propertyPanel.add(createTitlePanel("Set or Remove Property"));
 
         // init the available properties
         updatePropertyListBox();
 
         table.setWidget(0, 0, setPropertyCB);
-        table.setText(0, 1, "Set Property:");
+        table.setText(0, 1, "Set: ");
         table.setWidget(0, 2, setPropertyLB);
-        table.setText(0, 3, "Value:");
+        table.setText(0, 3, "Value: ");
         table.setWidget(0, 4, setPropertyTB);
 
         table.setWidget(1, 0, delPropertyCB);
-        table.setText(1, 1, "Delete Property:");
+        table.setText(1, 1, "Remove: ");
         table.setWidget(1, 2, delPropertyLB);
 
         propertyPanel.add(table);
 
         return propertyPanel;
     }
-
 
 
     // helper method to pop lifecycle out of collection by ID
@@ -333,10 +349,14 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
                                   phaseLB.getValue(phaseLB.getSelectedIndex()));
         }
         if (securityCB.isChecked()) {
+            saveSecurity();
         }
         if (setPropertyCB.isChecked()) {
+            saveProperty(setPropertyLB.getValue(setPropertyLB.getSelectedIndex()),
+                         setPropertyTB.getText());
         }
         if (delPropertyCB.isChecked()) {
+            deleteProperty(delPropertyLB.getValue(delPropertyLB.getSelectedIndex()));
         }
 
     }
@@ -367,13 +387,41 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
     }
 
 
-    private void saveProperty() {
+    private void saveProperty(String name, String value) {
+
+        service.setProperty(artifactIds, name, value, new AbstractCallback(this) {
+
+            public void onFailure(Throwable caught) {
+                super.onFailure(caught);
+            }
+
+            public void onSuccess(Object arg0) {
+            }
+
+        });
 
     }
 
 
-    private void deleteProperty() {
+    private void deleteProperty(String name) {
+        service.deleteProperty(artifactIds, name, new AbstractCallback(this) {
 
+            public void onFailure(Throwable caught) {
+                super.onFailure(caught);
+            }
+
+            public void onSuccess(Object arg0) {
+            }
+
+        });
+
+    }
+
+    private FlexTable createItemTable() {
+        FlexTable table = createTable();
+        table.setStyleName("bulkedit-section-table");
+        table.setCellSpacing(4);
+        return table;
     }
 
 

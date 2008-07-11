@@ -133,10 +133,16 @@ public interface RegistryService extends RemoteService {
                      String propertyName, 
                      String propertyValue) throws RPCException, ItemNotFoundException;
     
+    void setProperty(Collection artifactIds,
+                     String propertyName,
+                     String propertyValue) throws RPCException, ItemNotFoundException;
 
     void deleteProperty(String artifactId, 
                         String propertyName) throws RPCException, ItemNotFoundException;
     
+    void deleteProperty(Collection artifactIds, 
+                        String propertyName) throws RPCException, ItemNotFoundException;
+
     void savePropertyDescriptor(WPropertyDescriptor property) throws RPCException, ItemNotFoundException, ItemExistsException;
     
     void deletePropertyDescriptor(String id) throws RPCException;

@@ -85,10 +85,19 @@ public interface RegistryServiceAsync {
                      String propertyValue,
                      AsyncCallback callback);
     
-    void deleteProperty(String artifactId, 
+    void setProperty(Collection artifactIds, 
+                     String propertyName,
+                     String propertyValue,
+                     AsyncCallback callback);
+
+    void deleteProperty(String artifactId,
                         String propertyName, 
                         AsyncCallback callback);
     
+    void deleteProperty(Collection artifactIds,
+                        String propertyName,
+                        AsyncCallback callback);
+
     void addComment(String artifactId, String parentCommentId, String text, AsyncCallback callback);
     
     void setDescription(String artifactId, String description, AsyncCallback callback);
