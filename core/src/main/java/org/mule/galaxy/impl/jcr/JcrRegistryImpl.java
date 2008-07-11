@@ -340,11 +340,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 workspaces.add(workspace);
 
                 session.save();
-                
-                activityManager.logActivity(SecurityUtils.getCurrentUser(),
-                                            "Workspace " + workspace.getPath() + " was created", 
-                                            EventType.INFO);
-                
+
+                final String path = workspace.getPath();
+                WorkspaceCreatedEvent event = new WorkspaceCreatedEvent(path);
+                event.setUser(SecurityUtils.getCurrentUser());
+                eventManager.fireEvent(event);
+
                 return workspace;
             }
         });
