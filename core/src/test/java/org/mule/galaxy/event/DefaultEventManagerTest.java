@@ -135,6 +135,17 @@ public class DefaultEventManagerTest extends TestCase {
         assertSame(event2, listener.wdEvent);
     }
 
+    public void testNonMatchingOnEventParam() {
+        EventManager em = new DefaultEventManager(Collections.emptyList());
+        NonMatchingOnEventParam listener = new NonMatchingOnEventParam();
+        try {
+            em.addListener(listener);
+            fail("Should've failed");
+        } catch (IllegalArgumentException e) {
+            assertTrue("Wrong exception?", e.getMessage().contains("doesn't match"));
+        }
+    }
+
     @BindToEvent(PROPERTY_UPDATED)
     private static class ClassAnnotationMissingOnEvent {
 
@@ -189,6 +200,14 @@ public class DefaultEventManagerTest extends TestCase {
 
         @OnEvent
         public void callback(PropertyUpdatedEvent e) {}
+
+    }
+
+    @BindToEvent("Test")
+    private static class NonMatchingOnEventParam {
+
+        @OnEvent
+        public void onEvent(PropertyUpdatedEvent event) {}
 
     }
 

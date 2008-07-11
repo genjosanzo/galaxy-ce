@@ -48,7 +48,7 @@ public class DefaultEventManager implements EventManager {
                     if (adapter != null) {
                         throw new IllegalArgumentException("Multiple @OnEvent entry-points detected for " + clazz.getName());
                     }
-                    adapter = new DelegatingSingleEventListener(listenerCandidate, method);
+                    adapter = new DelegatingSingleEventListener(annotation, listenerCandidate, method);
                 }
             }
 
@@ -158,9 +158,18 @@ public class DefaultEventManager implements EventManager {
         private final Object delegate;
         private final Method method;
 
-        public DelegatingSingleEventListener(final Object listenerCandidate, final Method method) {
+        public DelegatingSingleEventListener(final Annotation annotation, final Object listenerCandidate, final Method method) {
             this.method = method;
             MethodParamValidator.validateMethodParam(method);
+            final String eventName = ((BindToEvent) annotation).value() + "Event";
+            final String callbackParam = method.getParameterTypes()[0].getSimpleName();
+            if (!callbackParam.equals(eventName)) {
+                throw new IllegalArgumentException(
+                        String.format("Listener %s is bound to the %s, but " +
+                                      "callback method param %s doesn't match it.",
+                                      listenerCandidate.getClass().getName(),
+                                      eventName, callbackParam));
+            }
             delegate = listenerCandidate;
         }
 
