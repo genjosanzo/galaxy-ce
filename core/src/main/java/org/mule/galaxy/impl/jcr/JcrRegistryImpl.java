@@ -514,11 +514,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 accessControlManager.assertAccess(Permission.READ_WORKSPACE, w);
                 return w;
             } else if (type.equals("galaxy:artifact")) {
-        	Artifact a = buildArtifact(node);
+            Artifact a = buildArtifact(node);
                 accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
                 return a;
             } else if (type.equals("galaxy:artifactVersion")) {
-        	Artifact a = buildArtifact(node.getParent());
+            Artifact a = buildArtifact(node.getParent());
                 accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
                 return a.getVersion(node.getName());
             }
@@ -722,7 +722,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     throw new RuntimeException(e);
                 } catch (NotFoundException e) {
                     throw new RuntimeException(e);
-		}
+        }
             }
 
         });
@@ -1487,8 +1487,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     public Set<Link> getReciprocalLinks(final Item<?> item) 
         throws RegistryException {
         
-	final JcrRegistryImpl registry = this;
-	
+    final JcrRegistryImpl registry = this;
+
         return (Set<Link>) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                         
@@ -1624,7 +1624,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             execute(new JcrCallback() {
                 public Object doInJcr(Session session) throws IOException, RepositoryException {
                     for (Link l : links) {
-                	((LinkImpl) l).getNode().remove();
+                    ((LinkImpl) l).getNode().remove();
                     }
                     
                     session.save();
