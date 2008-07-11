@@ -4,7 +4,7 @@ public interface EventManager {
 
     void addListener(Object listener);
 
-    void removeListener(Object listener);
+    void removeListener(Class listenerClass);
 
     void fireEvent(GalaxyEvent event);
 }

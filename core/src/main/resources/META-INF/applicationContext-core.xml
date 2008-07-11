@@ -105,6 +105,7 @@
   <bean id="eventManager" class="org.mule.galaxy.event.DefaultEventManager">
       <constructor-arg>
           <list>
+              <bean class="org.mule.galaxy.event.listener.activity.WorkspaceDeletedEventListener" p:activityManager-ref="activityManager"/>
               <!--<bean class="org.mule.galaxy.event.listener.SysOutLoggingEventListener"/>-->
               <!--<bean class="org.mule.galaxy.eventlisteners.activity.ActivityLoggerListener" p:activityManager-ref="activityManager"/>-->
               <!--<bean class="org.mule.galaxy.eventlisteners.activity.PropertyUpdatedLoggerListener" p:activityManager-ref="activityManager"/>-->

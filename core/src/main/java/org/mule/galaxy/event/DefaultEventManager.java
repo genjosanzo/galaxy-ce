@@ -129,15 +129,10 @@ public class DefaultEventManager implements EventManager {
         }
     }
 
-    public void removeListener(final Object listener) {
-        //synchronized (listenersLock) {
-        //    for (int i = 0; i < listeners.size(); i++) {
-        //        GalaxyEventListener reference = listeners.get(i);
-        //        if (reference == null || reference == listener) {
-        //            listeners.remove(reference);
-        //        }
-        //    }
-        //}
+    public void removeListener(final Class listenerClass) {
+        synchronized (listenersLock) {
+            listeners.remove(listenerClass);
+        }
     }
 
     public void fireEvent(final GalaxyEvent event) {

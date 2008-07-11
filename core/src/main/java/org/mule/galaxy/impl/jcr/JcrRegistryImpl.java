@@ -294,17 +294,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     
                     node.remove();
 
-                    WorkspaceDeletedEvent evt = new WorkspaceDeletedEvent();
-                    //WorkspaceDeletedEvent evt = new WorkspaceDeletedEvent(SecurityUtils.getCurrentUser(),
-                    //                                                      "Workspace " + path + " was deleted");
-
-                    eventManager.fireEvent(evt);
-
                     activityManager.logActivity(SecurityUtils.getCurrentUser(),
                                                 "Workspace " + path + " was deleted",
                                                 EventType.INFO);
                     session.save();
                     
+                    WorkspaceDeletedEvent evt = new WorkspaceDeletedEvent(path);
+                    eventManager.fireEvent(evt);
                 } catch (ItemNotFoundException e) {
                     throw new RuntimeException(new NotFoundException(id));
                 }
