@@ -109,17 +109,6 @@ public class DefaultEventManagerTest extends TestCase {
         }
     }
 
-    public void testEventClassNotFound() throws Exception {
-        EventManager em = new DefaultEventManager(Collections.emptyList());
-        try {
-            em.addListener(new EventDoesntExist());
-            fail("Should've failed");
-        } catch (IllegalArgumentException e) {
-            // expected
-            assertTrue(e.getMessage().contains(" for listener "));
-        }
-    }
-
     public void testMultiEventListener() {
         EventManager em = new DefaultEventManager(Collections.emptyList());
         MultiEventListener listener = new MultiEventListener();
@@ -193,14 +182,6 @@ public class DefaultEventManagerTest extends TestCase {
         public void callbackWorkspace(WorkspaceDeletedEvent e) {
             wdEvent = e;
         }
-    }
-
-    @BindToEvent("NoSuch")
-    private static class EventDoesntExist {
-
-        @OnEvent
-        public void callback(PropertyUpdatedEvent e) {}
-
     }
 
     @BindToEvent("Test")
