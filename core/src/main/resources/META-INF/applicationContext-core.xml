@@ -53,6 +53,7 @@
     <property name="phaseLogEntryDao" ref="phaseLogEntryDao"/>
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
+    <property name="eventManager" ref="eventManager" />
   </bean>
         
   <bean id="indexManager" parent="txProxyTemplate">
@@ -119,6 +120,8 @@
               <!-- workspace -->
               <bean class="org.mule.galaxy.event.listener.activity.WorkspaceCreatedEventListener" parent="abstractActivityLogger"/>
               <bean class="org.mule.galaxy.event.listener.activity.WorkspaceDeletedEventListener" parent="abstractActivityLogger"/>
+              <!-- misc -->
+              <bean class="org.mule.galaxy.event.listener.activity.LifecycleTransitionEventListener" parent="abstractActivityLogger"/>
           </list>
       </constructor-arg>
   </bean>

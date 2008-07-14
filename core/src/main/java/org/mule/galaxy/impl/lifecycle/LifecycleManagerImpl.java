@@ -1,5 +1,30 @@
 package org.mule.galaxy.impl.lifecycle;
 
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Dao;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.activity.ActivityManager;
+import org.mule.galaxy.event.EventManager;
+import org.mule.galaxy.event.LifecycleTransitionEvent;
+import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.impl.jcr.JcrVersion;
+import org.mule.galaxy.impl.jcr.onm.AbstractDao;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.lifecycle.PhaseLogEntry;
+import org.mule.galaxy.lifecycle.TransitionException;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.util.BundleUtils;
+import org.mule.galaxy.util.Message;
+import org.mule.galaxy.util.SecurityUtils;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,28 +46,6 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.apache.jackrabbit.util.ISO9075;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Dao;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.activity.ActivityManager;
-import org.mule.galaxy.activity.ActivityManager.EventType;
-import org.mule.galaxy.impl.jcr.JcrUtil;
-import org.mule.galaxy.impl.jcr.JcrVersion;
-import org.mule.galaxy.impl.jcr.onm.AbstractDao;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.lifecycle.PhaseLogEntry;
-import org.mule.galaxy.lifecycle.TransitionException;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactPolicy;
-import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.util.BundleUtils;
-import org.mule.galaxy.util.Message;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -61,6 +64,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
     private PolicyManager policyManager;
     private ApplicationContext context;
     private ActivityManager activityManager;
+    private EventManager eventManager;
     
     public LifecycleManagerImpl() throws Exception {
         super(Lifecycle.class, "lifecycles", false);
@@ -229,10 +233,10 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
         executeWithPolicyException(new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                JcrVersion ja = (JcrVersion) a;
-                ja.setPhase(p);
+                JcrVersion artifact = (JcrVersion) a;
+                artifact.setPhase(p);
                 
-                ArtifactVersion previous = a.getPrevious();
+                //ArtifactVersion previous = a.getPrevious();
                 
                 boolean approved = true;
                 List<ApprovalMessage> approvals = getPolicyManager().approve(previous, a);
@@ -246,7 +250,9 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
                 if (!approved) {
                     throw new RuntimeException(new ArtifactPolicyException(approvals));
                 }
-                
+
+                //final String previousPhase = previous.getPhase().getName();
+
                 PhaseLogEntry entry = new PhaseLogEntry();
                 entry.setUser(user);
                 entry.setPhase(p);
@@ -266,14 +272,14 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
                     throw new RuntimeException(e1);
                 }
 
-                getActivityManager().logActivity(user,
-                                                 "Artifact " + ja.getParent().getPath() 
-                                                     + " (version " + ja.getVersionLabel()
-                                                     + ") was transitioned to phase "
-                                                     + p.getName() + " in lifecycle "
-                                                     + p.getLifecycle().getName(), EventType.INFO);
-                                            
                 session.save();
+
+                LifecycleTransitionEvent event = new LifecycleTransitionEvent(
+                        artifact.getParent().getPath(), artifact.getVersionLabel(),
+                        "", p.getName(), p.getLifecycle().getName());
+                event.setUser(SecurityUtils.getCurrentUser());
+                eventManager.fireEvent(event);
+                                            
                 return null;
             }
             
@@ -566,5 +572,12 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
     protected String getObjectNodeName(Lifecycle t) {
         return t.getName();
     }
-    
+
+    public void setEventManager(final EventManager eventManager) {
+        this.eventManager = eventManager;
+    }
+
+    public EventManager getEventManager() {
+        return eventManager;
+    }
 }

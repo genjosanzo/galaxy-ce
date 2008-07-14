@@ -20,4 +20,7 @@ public class DefaultEvents {
     public static final String ARTIFACT_CREATED = "ArtifactCreated";
     public static final String ARTIFACT_DELETED = "ArtifactDeleted";
     public static final String ARTIFACT_MOVED = "ArtifactMoved";
+
+    // misc
+    public static final String LIFECYCLE_TRANSITION = "LifecycleTransition";
 }
