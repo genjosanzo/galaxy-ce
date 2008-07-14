@@ -22,10 +22,10 @@ import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.activity.ActivityManager;
-import org.mule.galaxy.activity.ActivityManager.EventType;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.ArtifactCreatedEvent;
 import org.mule.galaxy.event.ArtifactDeletedEvent;
+import org.mule.galaxy.event.ArtifactMovedEvent;
 import org.mule.galaxy.event.ArtifactVersionCreatedEvent;
 import org.mule.galaxy.event.ArtifactVersionDeletedEvent;
 import org.mule.galaxy.event.EventManager;
@@ -1154,23 +1154,26 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             return;
         }
 
+        final String oldPath = artifact.getPath();
+
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 
-                String p1 = artifact.getPath();
                 Node aNode = ((JcrArtifact) artifact).getNode();
                 Node wNode = ((JcrWorkspace) workspace).getNode();
-                
-                session.move(aNode.getPath(), wNode.getPath() + "/" + aNode.getName());
 
-                activityManager.logActivity(SecurityUtils.getCurrentUser(),
-                                            "Workspace " + p1 + " was moved to " + artifact.getPath(), 
-                                            EventType.INFO);
+                final String newPath = wNode.getPath() + "/" + aNode.getName();
+                session.move(aNode.getPath(), newPath);
+
                 session.save();
                 ((JcrArtifact) artifact).setWorkspace(workspace);
                 return null;
             }
         });
+
+        ArtifactMovedEvent event = new ArtifactMovedEvent(oldPath, artifact.getPath());
+        event.setUser(SecurityUtils.getCurrentUser());
+        eventManager.fireEvent(event);
     }
 
     public void delete(final Artifact artifact) throws RegistryException, AccessException {

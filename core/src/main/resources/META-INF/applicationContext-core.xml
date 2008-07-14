@@ -112,6 +112,7 @@
               <!-- artifact -->
               <bean class="org.mule.galaxy.event.listener.activity.ArtifactCreatedEventListener" parent="abstractActivityLogger"/>
               <bean class="org.mule.galaxy.event.listener.activity.ArtifactDeletedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.ArtifactMovedEventListener" parent="abstractActivityLogger"/>
               <!-- artifact version -->
               <bean class="org.mule.galaxy.event.listener.activity.ArtifactVersionCreatedEventListener" parent="abstractActivityLogger"/>
               <bean class="org.mule.galaxy.event.listener.activity.ArtifactVersionDeletedEventListener" parent="abstractActivityLogger"/>
