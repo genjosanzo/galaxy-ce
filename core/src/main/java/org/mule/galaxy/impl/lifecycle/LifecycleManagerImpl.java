@@ -236,7 +236,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
                 JcrVersion artifact = (JcrVersion) a;
                 artifact.setPhase(p);
                 
-                //ArtifactVersion previous = a.getPrevious();
+                ArtifactVersion previous = a.getPrevious();
                 
                 boolean approved = true;
                 List<ApprovalMessage> approvals = getPolicyManager().approve(previous, a);
