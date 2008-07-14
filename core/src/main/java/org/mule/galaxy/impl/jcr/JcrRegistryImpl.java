@@ -1067,7 +1067,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
                     // fire the event
                     ArtifactVersionCreatedEvent event = new ArtifactVersionCreatedEvent(
-                            result.getArtifactVersion().getPath(), result.getArtifactVersion().getVersionLabel());
+                            result.getArtifact().getPath(), result.getArtifactVersion().getVersionLabel());
                     event.setUser(SecurityUtils.getCurrentUser());
                     eventManager.fireEvent(event);
 
