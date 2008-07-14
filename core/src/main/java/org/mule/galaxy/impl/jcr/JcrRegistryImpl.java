@@ -24,6 +24,7 @@ import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.activity.ActivityManager;
 import org.mule.galaxy.activity.ActivityManager.EventType;
 import org.mule.galaxy.collab.CommentManager;
+import org.mule.galaxy.event.ArtifactCreatedEvent;
 import org.mule.galaxy.event.ArtifactDeletedEvent;
 import org.mule.galaxy.event.ArtifactVersionCreatedEvent;
 import org.mule.galaxy.event.ArtifactVersionDeletedEvent;
@@ -717,7 +718,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     {
                         log.debug("Created artifact " + artifact.getId());
                     }
-                    return approve(session, artifact, null, jcrVersion, user);
+
+                    ArtifactResult result = approve(session, artifact, null, jcrVersion, user);
+
+                    // fire the event
+                    ArtifactCreatedEvent event = new ArtifactCreatedEvent(result.getArtifactVersion().getPath());
+                    event.setUser(SecurityUtils.getCurrentUser());
+                    eventManager.fireEvent(event);
+
+                    return result;
                 } catch (RegistryException e) {
                     // gets unwrapped by executeAndDewrap
                     throw new RuntimeException(e);
@@ -904,11 +913,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         
         // save the "we're indexing" flag
         session.save();
-        
-        if (previous == null) {
-            activityManager.logActivity(user, "Artifact " + artifact.getName() + " was created in workspace "
-                                              + artifact.getParent().getPath() + ".", EventType.INFO);
-        }
         
         return new ArtifactResult(artifact, next, approvals);
     }

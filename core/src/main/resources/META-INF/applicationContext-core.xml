@@ -106,6 +106,7 @@
       <constructor-arg>
           <list>
               <!-- artifact -->
+              <bean class="org.mule.galaxy.event.listener.activity.ArtifactCreatedEventListener" p:activityManager-ref="activityManager"/>
               <bean class="org.mule.galaxy.event.listener.activity.ArtifactDeletedEventListener" p:activityManager-ref="activityManager"/>
               <!-- artifact version -->
               <bean class="org.mule.galaxy.event.listener.activity.ArtifactVersionCreatedEventListener" p:activityManager-ref="activityManager"/>
