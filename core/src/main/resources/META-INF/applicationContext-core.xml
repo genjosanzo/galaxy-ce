@@ -102,18 +102,22 @@
     <property name="proxyTargetClass" value="true"/>
   </bean>
 
+  <bean id="abstractActivityLogger" abstract="true">
+      <property name="activityManager" ref="activityManager"/>
+  </bean>
+
   <bean id="eventManager" class="org.mule.galaxy.event.DefaultEventManager">
       <constructor-arg>
           <list>
               <!-- artifact -->
-              <bean class="org.mule.galaxy.event.listener.activity.ArtifactCreatedEventListener" p:activityManager-ref="activityManager"/>
-              <bean class="org.mule.galaxy.event.listener.activity.ArtifactDeletedEventListener" p:activityManager-ref="activityManager"/>
+              <bean class="org.mule.galaxy.event.listener.activity.ArtifactCreatedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.ArtifactDeletedEventListener" parent="abstractActivityLogger"/>
               <!-- artifact version -->
-              <bean class="org.mule.galaxy.event.listener.activity.ArtifactVersionCreatedEventListener" p:activityManager-ref="activityManager"/>
-              <bean class="org.mule.galaxy.event.listener.activity.ArtifactVersionDeletedEventListener" p:activityManager-ref="activityManager"/>
+              <bean class="org.mule.galaxy.event.listener.activity.ArtifactVersionCreatedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.ArtifactVersionDeletedEventListener" parent="abstractActivityLogger"/>
               <!-- workspace -->
-              <bean class="org.mule.galaxy.event.listener.activity.WorkspaceCreatedEventListener" p:activityManager-ref="activityManager"/>
-              <bean class="org.mule.galaxy.event.listener.activity.WorkspaceDeletedEventListener" p:activityManager-ref="activityManager"/>
+              <bean class="org.mule.galaxy.event.listener.activity.WorkspaceCreatedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.WorkspaceDeletedEventListener" parent="abstractActivityLogger"/>
           </list>
       </constructor-arg>
   </bean>
