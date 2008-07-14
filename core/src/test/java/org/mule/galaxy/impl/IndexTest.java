@@ -172,6 +172,16 @@ public class IndexTest extends AbstractGalaxyTest {
         assertTrue(property instanceof Collection);
         Collection endpoints = (Collection) property;
         assertTrue(endpoints.contains("SoapPort"));
+
+        Collection ptDeps = (Collection) version.getProperty("wsdl.portType.dependencies");
+        assertNotNull(ptDeps);
+        QName q = (QName) ptDeps.iterator().next();
+        assertEquals(new QName("http://mule.org/hello_world", "HelloWorld"), q);
+        
+        Collection bDeps = (Collection) version.getProperty("wsdl.binding.dependencies");
+        assertNotNull(bDeps);
+        q = (QName) bDeps.iterator().next();
+        assertEquals(new QName("http://mule.org/hello_world", "HelloWorldBinding"), q);
         
         // Try out search!
         Set results = registry.search("select artifact where wsdl.service = 'HelloWorldService'", 0, 100).getResults();

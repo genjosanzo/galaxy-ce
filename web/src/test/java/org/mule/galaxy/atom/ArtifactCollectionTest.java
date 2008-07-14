@@ -230,7 +230,8 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         ExtensibleElement metadata = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "metadata"));
         List<Element> properties = metadata.getExtensions(new QName(AbstractArtifactCollection.NAMESPACE, "property"));
-        assertEquals(5, properties.size());
+        assertTrue(properties.size() > 0);
+        int size = properties.size();
         
         res.release();
         
@@ -274,7 +275,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         metadata = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "metadata"));
         properties = metadata.getExtensions(new QName(AbstractArtifactCollection.NAMESPACE, "property"));
-        assertEquals(7, properties.size());
+        assertEquals(size + 2, properties.size());
         
         res.release();
         

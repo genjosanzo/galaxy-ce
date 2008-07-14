@@ -204,6 +204,62 @@ declare variable $document external;
                   <expression><![CDATA[/*/@targetNamespace]]></expression>
                 </configuration>
             </index>
+            <index>
+                <description>WSDL PortType Dependency</description>
+                <indexer>xquery</indexer>
+                <search-input-type>javax.xml.namespace.QName</search-input-type>
+                <configuration>
+                  <property>wsdl.portType.dependencies</property>
+                  <expression><![CDATA[
+declare namespace wsdl="${namespace.uri}";
+declare variable $document external;
+<values> {
+    for $pt in $document//wsdl:binding
+    let $ptQName := $pt/@type
+    let $namespace := namespace-uri-for-prefix(substring-before($ptQName, ":"), $pt)
+    let $ptName := substring-after($ptQName, ":")
+    
+    return <value>{{{data($namespace)}}}{data($ptName)}</value>
+} </values>]]></expression>
+                </configuration>
+            </index>
+            <index>
+                <description>WSDL Binding Dependency</description>
+                <indexer>xquery</indexer>
+                <search-input-type>javax.xml.namespace.QName</search-input-type>
+                <configuration>
+                  <property>wsdl.binding.dependencies</property>
+                  <expression><![CDATA[
+declare namespace wsdl="${namespace.uri}";
+declare variable $document external;
+<values> {
+    for $pt in $document//wsdl:port
+    let $ptQName := $pt/@binding
+    let $namespace := namespace-uri-for-prefix(substring-before($ptQName, ":"), $pt)
+    let $ptName := substring-after($ptQName, ":")
+    
+    return <value>{{{data($namespace)}}}{data($ptName)}</value>
+} </values>]]></expression>
+                </configuration>
+            </index>
+            <index>
+                <description>WSDL Target Namespace</description>
+                <indexer>xpath</indexer>
+                <search-input-type>java.lang.String</search-input-type>
+                <configuration>
+                  <property>wsdl.targetNamespace</property>
+                  <expression><![CDATA[/*/@targetNamespace]]></expression>
+                </configuration>
+            </index>
+            <index>
+                <description>WSDL Target Namespace</description>
+                <indexer>xpath</indexer>
+                <search-input-type>java.lang.String</search-input-type>
+                <configuration>
+                  <property>wsdl.targetNamespace</property>
+                  <expression><![CDATA[/*/@targetNamespace]]></expression>
+                </configuration>
+            </index>
         </indexes>
         <views>
             <view>

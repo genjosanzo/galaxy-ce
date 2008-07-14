@@ -73,9 +73,14 @@ public class XQueryIndexer extends AbstractIndexer {
                 // loop through the values
                 Element value = DOMUtils.getFirstElement(values);
                 while (value != null) {
-                    Object content = DOMUtils.getContent(value);
+                    String content = DOMUtils.getContent(value);
+
+                    if (content == null) {
+                	content = "";
+                    }
+                    
                     if (index.getQueryType().equals(QName.class)) {
-                        results.add(QNameUtil.fromString(content.toString())); 
+                        results.add(QNameUtil.fromString(content)); 
                     } else {
                         results.add(content);
                     }
@@ -83,7 +88,7 @@ public class XQueryIndexer extends AbstractIndexer {
                     value = (Element) DOMUtils.getNext(value, "value", org.w3c.dom.Node.ELEMENT_NODE);
                 }
             }
-    
+            
             artifact.setProperty(property, results);
             artifact.setLocked(property, true);
             artifact.setVisible(property, visible);
