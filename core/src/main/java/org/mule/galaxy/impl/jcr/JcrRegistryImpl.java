@@ -25,6 +25,7 @@ import org.mule.galaxy.activity.ActivityManager;
 import org.mule.galaxy.activity.ActivityManager.EventType;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.ArtifactDeletedEvent;
+import org.mule.galaxy.event.ArtifactVersionCreatedEvent;
 import org.mule.galaxy.event.ArtifactVersionDeletedEvent;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.event.WorkspaceCreatedEvent;
@@ -907,11 +908,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         if (previous == null) {
             activityManager.logActivity(user, "Artifact " + artifact.getName() + " was created in workspace "
                                               + artifact.getParent().getPath() + ".", EventType.INFO);
-        } else {
-            activityManager.logActivity(user, "Version " + next.getVersionLabel() 
-                                        + " of artifact " + artifact.getPath() + " was created.", EventType.INFO);
         }
-        
         
         return new ArtifactResult(artifact, next, approvals);
     }
@@ -1059,8 +1056,18 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         
                         versionNode.setProperty(pNames.getName(), pNames.getValues());
                     } catch (PathNotFoundException e) {
+                        // ignore?
                     }
-                    return approve(session, artifact, previousLatest, next, user);
+
+                    ArtifactResult result = approve(session, artifact, previousLatest, next, user);
+
+                    // fire the event
+                    ArtifactVersionCreatedEvent event = new ArtifactVersionCreatedEvent(
+                            result.getArtifactVersion().getPath(), result.getArtifactVersion().getVersionLabel());
+                    event.setUser(SecurityUtils.getCurrentUser());
+                    eventManager.fireEvent(event);
+
+                    return result;
                 } catch (RegistryException e) {
                     // this will get dewrapped
                     throw new RuntimeException(e);
