@@ -77,7 +77,7 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
         artifactPanelBase.add(artifactPanel);
 
         initWidget(panel);
-        clear();
+        //clear();
     }
 
     public int getMaxResults() {
@@ -144,6 +144,7 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
                 // Cancel
                 cancelLink = new Hyperlink();
                 cancelLink.setText("Cancel");
+                cancelLink.setTargetHistoryToken(History.getToken());
                 cancelLink.addClickListener(this);
                 bulkEditPanel.add(asToolbarItem(new Image("images/page_deny.gif"),
                                                 cancelLink));
@@ -169,6 +170,7 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
                 // Bulk edit link
                 bulkEditLink = new Hyperlink();
                 bulkEditLink.setText("Bulk Edit");
+                bulkEditLink.setTargetHistoryToken(History.getToken());
                 bulkEditLink.addClickListener(this);
                 bulkEditPanel.add(asToolbarItem(new Image("images/page_edit.gif"),
                                                 bulkEditLink, "bulkedit-toolbar-item-first"));

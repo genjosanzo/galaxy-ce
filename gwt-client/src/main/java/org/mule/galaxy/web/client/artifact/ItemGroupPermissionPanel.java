@@ -51,7 +51,7 @@ public class ItemGroupPermissionPanel extends AbstractGroupPanel {
         pg.setGrant(lb.getSelectedIndex() - 1);
     }
 
-    protected Widget createGrantWidget(WPermissionGrant pg, boolean uberuser) {
+    protected Widget createGrantWidget(WPermissionGrant pg) {
         ListBox lb = new ListBox();
         lb.addItem("Revoked");
         lb.addItem("Inherited");
@@ -59,6 +59,10 @@ public class ItemGroupPermissionPanel extends AbstractGroupPanel {
 
         lb.setSelectedIndex(pg.getGrant() + 1);
         return lb;
+    }
+
+    protected Widget createGrantWidget(WPermissionGrant pg, boolean uberUser) {
+        return createGrantWidget(pg);        
     }
 
     protected void getPermissions(AbstractCallback callback) {

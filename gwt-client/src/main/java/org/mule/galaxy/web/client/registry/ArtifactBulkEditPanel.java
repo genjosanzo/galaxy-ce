@@ -22,6 +22,7 @@ import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.SecurityService;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WPhase;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
@@ -127,10 +128,13 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
     public void onShow() {
 
         wrapperPanel.clear();
+
+        // by default they are all disabled
         lifecycleLB.setEnabled(false);
         phaseLB.setEnabled(false);
         delPropertyLB.setEnabled(false);
         setPropertyLB.setEnabled(false);
+        setPropertyTB.setEnabled(false);
 
         Label label = new Label("Bulk Edit (" + artifactIds.size() + ")");
         label.setStyleName("title");
@@ -218,6 +222,10 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
         }
     }
 
+
+    /**
+     * Configure property select boxes
+     */
     private void updatePropertyListBox() {
         service.getPropertyDescriptors(new AbstractCallback(this) {
             public void onSuccess(Object result) {
@@ -293,6 +301,10 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
     private FlowPanel createSecurityPanel() {
         FlexTable table = createItemTable();
 
+        // get avaialable groups and permissions
+        getPermissions();
+        getGroups();
+
         securityCB.addClickListener(this);
 
         securityPanel.add(createTitlePanel("Security"));
@@ -300,6 +312,41 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
         securityPanel.add(table);
 
         return securityPanel;
+    }
+
+
+    private void getPermissions() {
+        galaxy.getSecurityService().getPermissions(SecurityService.ARTIFACT_PERMISSIONS, new AbstractCallback(this) {
+
+            public void onFailure(Throwable caught) {
+                super.onFailure(caught);
+            }
+
+            public void onSuccess(Object arg0) {
+            }
+
+        });
+    }
+
+    private void getGroups() {
+        galaxy.getSecurityService().getGroupPermissions(new AbstractCallback(this) {
+
+            public void onFailure(Throwable caught) {
+                super.onFailure(caught);
+            }
+
+            public void onSuccess(Object arg0) {
+            }
+
+        });
+    }
+
+    protected Widget createGrantWidget() {
+        ListBox lb = new ListBox();
+        lb.addItem("Revoked");
+        lb.addItem("Inherited");
+        lb.addItem("Granted");
+        return lb;
     }
 
 
@@ -381,7 +428,7 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
         });
     }
 
-
+    // TODO:
     private void saveSecurity() {
 
     }
@@ -423,6 +470,5 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
         table.setCellSpacing(4);
         return table;
     }
-
 
 }
