@@ -127,7 +127,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         FlowPanel header = new FlowPanel();
         header.setStyleName("header");
         header.add(rightPanel);
-        final Image logo = new Image("images/galaxy_logo_main.png");
+        final Image logo = new Image("images/galaxy_logo_main.gif");
         logo.setTitle("Home");
         logo.addStyleName("gwt-Hyperlink");
         logo.addClickListener(new ClickListener() {
