@@ -46,6 +46,14 @@ public abstract class AbstractJcrItem {
         this.manager = manager;
     }
 
+    public String getId() {
+        try {
+            return JcrWorkspaceManager.ID + "$" + node.getUUID();
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
     public Node getNode() {
         return node;
     }

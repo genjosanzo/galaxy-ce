@@ -50,14 +50,6 @@ public class JcrArtifact extends AbstractJcrItem implements Artifact {
         this.workspace = w;
         this.manager = registry;
     }
-
-    public String getId() {
-        try {
-            return node.getUUID();
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
-    }
     
     public String getPath() {
         StringBuilder sb = getBasePath();

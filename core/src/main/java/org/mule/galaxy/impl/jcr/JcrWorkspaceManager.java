@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -77,13 +79,17 @@ import org.mule.galaxy.workspace.WorkspaceManager;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
-public class JcrWorkspaceManager extends JcrTemplate {
+public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager {
 
-    private final Log log = LogFactory.getLog(getClass());
+    public static final String ID = "local";
     
     public static final String ARTIFACT_NODE_TYPE = "galaxy:artifact";
+    
     public static final String ARTIFACT_VERSION_NODE_TYPE = "galaxy:artifactVersion";
+    
     public static final String LATEST = "latest";
+    
+    private final Log log = LogFactory.getLog(getClass());
     
     private CommentManager commentManager;
     
@@ -108,7 +114,136 @@ public class JcrWorkspaceManager extends JcrTemplate {
     private ArtifactTypeDao artifactTypeDao;
     
     private Registry registry;
+
+    public String getId() {
+	return "local";
+    }
+
+    public Workspace getWorkspace(String id) throws RegistryException, AccessException {
+        try {
+            if (id == null) {
+                throw new NullPointerException("Workspace ID cannot be null.");
+            }
+            
+            id = trimWorkspaceManagerId(id);
+            
+            Node node = getNodeByUUID(id);
+
+            Workspace w = buildWorkspace(node);
+            
+            accessControlManager.assertAccess(Permission.READ_WORKSPACE, w);
+            
+            return w;
+        } catch (RepositoryException e) {
+            throw new RegistryException(e);
+        }
+    }
+
+    private String trimWorkspaceManagerId(String id) {
+	int idx = id.indexOf('$');
+	if (idx == -1) {
+	    throw new IllegalStateException("Illegal workspace manager id.");
+	}
+	    
+	return id.substring(idx + 1);
+    }
+
+    private Workspace buildWorkspace(Node node) throws RepositoryException {
+        return new JcrWorkspace(this, node);
+    }
+
+    public Artifact getArtifact(final String id) throws NotFoundException, RegistryException, AccessException {
+        if (id == null) {
+            throw new NotFoundException("No id specified.");
+        }
+        return (Artifact) executeWithNotFound(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node node = session.getNodeByUUID(trimWorkspaceManagerId(id));
+                Artifact a = buildArtifact(node);
+                
+                try {
+                    accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
+                } catch (AccessException e) {
+                    throw new RuntimeException(e);
+                }
+
+                return a;
+            }
+        });
+    }
+
+    protected Artifact buildArtifact(Node node)
+        throws ItemNotFoundException, AccessDeniedException, RepositoryException {
+        Node wNode = node.getParent();
+        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(this, wNode), node, this);
+
+        setupContentHandler(artifact);
+
+        return artifact;
+    }
+
+    protected void setupContentHandler(JcrArtifact artifact) {
+        ContentHandler ch = null;
+        if (artifact.getDocumentType() != null) {
+            ch = contentService.getContentHandler(artifact.getDocumentType());
+        } else {
+            ch = contentService.getContentHandler(artifact.getContentType());
+        }
+        artifact.setContentHandler(ch);
+    }
     
+    public Collection<Workspace> getWorkspaces() throws RegistryException, AccessException {
+        try {
+            List<Workspace> workspaceCol = new ArrayList<Workspace>();
+            for (NodeIterator itr = getWorkspacesNode().getNodes(); itr.hasNext();) {
+                Node n = itr.nextNode();
+
+                if (!n.getName().equals("jcr:system")) {
+
+                    JcrWorkspace wkspc = new JcrWorkspace(this, n);
+                    accessControlManager.assertAccess(Permission.READ_WORKSPACE, wkspc);
+                    
+                    workspaceCol.add(wkspc);
+                }
+                
+                Collections.sort(workspaceCol, new WorkspaceComparator());
+            }
+            return workspaceCol;
+        } catch (RepositoryException e) {
+            throw new RegistryException(e);
+        }
+    }
+    
+    public Collection<Artifact> getArtifacts(Workspace w) throws RegistryException {
+        JcrWorkspace jw = (JcrWorkspace)w;
+
+        Node node = jw.getNode();
+
+        ArrayList<Artifact> artifacts = new ArrayList<Artifact>();
+        try {
+            for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
+                JcrArtifact artifact = new JcrArtifact(jw, itr.nextNode(), this);
+                
+                try {
+                    accessControlManager.assertAccess(Permission.READ_ARTIFACT, artifact);
+                    
+                    artifact.setContentHandler(contentService.getContentHandler(artifact.getContentType()));
+                    artifacts.add(artifact);
+                } catch (AccessException e) {
+                    // don't list artifacts which the user doesn't have perms for
+                }
+            }
+        } catch (RepositoryException e) {
+            throw new RegistryException(e);
+        }
+
+        return artifacts;
+    }
+
+    private Node getWorkspacesNode() {
+	return ((JcrRegistryImpl) registry).getWorkspacesNode();
+    }
+
     public ArtifactResult newVersion(Artifact artifact, 
                                      Object data, 
                                      String versionLabel, 
@@ -650,6 +785,24 @@ public class JcrWorkspaceManager extends JcrTemplate {
             Throwable cause = e.getCause();
             if (cause instanceof RegistryException) {
                 throw (RegistryException) cause;
+            } else {
+                throw e;
+            }
+        }
+    }
+    
+    private Object executeWithNotFound(JcrCallback jcrCallback) 
+        throws RegistryException, NotFoundException, AccessException {
+        try {
+            return execute(jcrCallback);
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RegistryException) {
+                throw (RegistryException) cause;
+            } else if (cause instanceof NotFoundException) {
+                throw (NotFoundException) cause;
+            } else if (cause instanceof AccessException) {
+                throw (AccessException) cause;
             } else {
                 throw e;
             }

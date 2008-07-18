@@ -61,14 +61,6 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
     public JcrVersion(JcrArtifact parent, Node versionNode) throws RepositoryException {
        this(parent, versionNode, versionNode.getNode("jcr:content"));
     }
-
-    public String getId() {
-        try {
-            return node.getUUID();
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
-    }
     
     public String getPath() {
 	return getParent().getPath() + "?version=" + getVersionLabel();

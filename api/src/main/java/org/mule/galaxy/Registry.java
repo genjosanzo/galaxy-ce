@@ -39,7 +39,7 @@ public interface Registry {
     
     Item<?> getItemByPath(String path) throws NotFoundException, RegistryException, AccessException;
 
-    void move(Artifact artifact, String workspaceId) throws RegistryException, AccessException;
+    void move(Artifact artifact, String workspaceId) throws RegistryException, AccessException, NotFoundException;
     
     Collection<Artifact> getArtifacts(Workspace workspace) throws RegistryException;
     
@@ -49,13 +49,15 @@ public interface Registry {
 
     void save(Artifact artifact) throws RegistryException, AccessException;
 
-    SearchResults search(String queryString, int start, int maxResults) throws RegistryException, QueryException;
-
-    SearchResults search(Query query) throws RegistryException, QueryException;
-
     Artifact getArtifact(Workspace w, String name) throws NotFoundException;
 
     Artifact resolve(Workspace w, String location);
+    
+    /* Search functions */
+
+    SearchResults search(String queryString, int start, int maxResults) throws RegistryException, QueryException;
+
+    SearchResults search(Query query) throws RegistryException, QueryException;
     
 
     /* Property related methods */

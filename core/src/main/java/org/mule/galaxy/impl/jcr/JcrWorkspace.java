@@ -42,14 +42,6 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
         this.manager = manager;
     }
 
-    public String getId() {
-        try {
-            return node.getUUID();
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public String getName() {
         return getStringOrNull(NAME);
     }

@@ -1,11 +1,31 @@
 package org.mule.galaxy.impl.jcr;
 
 
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.jcr.AccessDeniedException;
+import javax.jcr.ItemExistsException;
+import javax.jcr.ItemNotFoundException;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
-import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.ArtifactTypeDao;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
@@ -20,82 +40,32 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.activity.ActivityManager;
-import org.mule.galaxy.collab.CommentManager;
-import org.mule.galaxy.event.ArtifactCreatedEvent;
-import org.mule.galaxy.event.ArtifactDeletedEvent;
 import org.mule.galaxy.event.ArtifactMovedEvent;
-import org.mule.galaxy.event.ArtifactVersionCreatedEvent;
-import org.mule.galaxy.event.ArtifactVersionDeletedEvent;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.event.WorkspaceCreatedEvent;
-import org.mule.galaxy.event.WorkspaceDeletedEvent;
 import org.mule.galaxy.impl.jcr.query.QueryBuilder;
 import org.mule.galaxy.impl.jcr.query.SimpleQueryBuilder;
-import org.mule.galaxy.index.IndexManager;
-import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.AbstractFunction;
 import org.mule.galaxy.query.FunctionCall;
 import org.mule.galaxy.query.FunctionRegistry;
 import org.mule.galaxy.query.OpRestriction;
-import org.mule.galaxy.query.OpRestriction.Operator;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.query.SearchResults;
+import org.mule.galaxy.query.OpRestriction.Operator;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Permission;
-import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.DateUtil;
 import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.SecurityUtils;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
-import javax.jcr.AccessDeniedException;
-import javax.jcr.ItemExistsException;
-import javax.jcr.ItemNotFoundException;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
-import javax.jcr.ValueFormatException;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.nodetype.NoSuchNodeTypeException;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
-import javax.jcr.version.VersionException;
-import javax.xml.namespace.QName;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jackrabbit.util.ISO9075;
+import org.mule.galaxy.workspace.WorkspaceManager;
 import org.springframework.dao.DataAccessException;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
@@ -141,6 +111,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     private JcrWorkspaceManager localWorkspaceManager;
     
+    private Map<String, WorkspaceManager> idToWorkspaceManager = new HashMap<String, WorkspaceManager>();
+    
     public JcrRegistryImpl() {
         super();
     }
@@ -149,29 +121,25 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return id;
     }
 
-    public Workspace getWorkspace(String id) throws RegistryException, AccessException {
-        try {
-            if (id == null) {
-                throw new NullPointerException("Workspace ID cannot be null.");
-            }
-            
-            Node node = getNodeByUUID(id);
+    public Artifact getArtifact(String id) throws NotFoundException,
+	    RegistryException, AccessException {
+	return getWorkspaceManagerByItemId(id).getArtifact(id);
+    }
 
-            Workspace w = buildWorkspace(node);
-            
-            accessControlManager.assertAccess(Permission.READ_WORKSPACE, w);
-            
-            return w;
-        } catch (RepositoryException e) {
-            throw new RegistryException(e);
-        }
+    public Workspace getWorkspace(String id) throws RegistryException,
+	    NotFoundException, AccessException {
+	return getWorkspaceManagerByItemId(id).getWorkspace(id);
+    }
+
+    public Collection<Workspace> getWorkspaces() throws RegistryException,
+	    AccessException {
+	return localWorkspaceManager.getWorkspaces();
     }
 
     private Workspace buildWorkspace(Node node) throws RepositoryException {
         return new JcrWorkspace(localWorkspaceManager, node);
     }
 
-    
     public Workspace createWorkspace(final String name) throws RegistryException, AccessException, DuplicateItemException {
         // we should throw an error, but lets be defensive for now
         final String escapedName = JcrUtil.escape(name);
@@ -222,8 +190,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public void save(final Workspace w, final String parentId) 
         throws RegistryException, NotFoundException, AccessException {
-        
         accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, w);
+
+        final String trimmedParentId = trimWorkspaceManagerId(parentId);
         
         executeWithNotFound(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
@@ -231,13 +200,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 JcrWorkspace jw = (JcrWorkspace) w;
                 Node node = jw.getNode();
                 
-                if (parentId != null && !parentId.equals(node.getParent().getUUID())) {
+                if (trimmedParentId != null && !trimmedParentId.equals(node.getParent().getUUID())) {
                     Node parentNode = null;
                     if (parentId != null) {
                         try {
-                            parentNode = getNodeByUUID(parentId);
+                            parentNode = getNodeByUUID(trimmedParentId);
                         } catch (DataAccessException e) {
-                            throw new RuntimeException(new NotFoundException(parentId));
+                            throw new RuntimeException(new NotFoundException(trimmedParentId));
                         }
                     } else {
                         parentNode = node.getParent();
@@ -347,72 +316,28 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return getNodeByUUID(artifactTypesId);
     }
     
-    public Collection<Workspace> getWorkspaces() throws RegistryException, AccessException {
-        try {
-            List<Workspace> workspaceCol = new ArrayList<Workspace>();
-            for (NodeIterator itr = getWorkspacesNode().getNodes(); itr.hasNext();) {
-                Node n = itr.nextNode();
-
-                if (!n.getName().equals("jcr:system")) {
-
-                    JcrWorkspace wkspc = new JcrWorkspace(localWorkspaceManager, n);
-                    accessControlManager.assertAccess(Permission.READ_WORKSPACE, wkspc);
-                    
-                    workspaceCol.add(wkspc);
-                }
-                
-                Collections.sort(workspaceCol, new WorkspaceComparator());
-            }
-            return workspaceCol;
-        } catch (RepositoryException e) {
-            throw new RegistryException(e);
-        }
-    }
-
     public Collection<Artifact> getArtifacts(Workspace w) throws RegistryException {
-        JcrWorkspace jw = (JcrWorkspace)w;
-
-        Node node = jw.getNode();
-
-        ArrayList<Artifact> artifacts = new ArrayList<Artifact>();
-        try {
-            for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
-                JcrArtifact artifact = new JcrArtifact(jw, itr.nextNode(), localWorkspaceManager);
-                
-                try {
-                    accessControlManager.assertAccess(Permission.READ_ARTIFACT, artifact);
-                    
-                    artifact.setContentHandler(contentService.getContentHandler(artifact.getContentType()));
-                    artifacts.add(artifact);
-                } catch (AccessException e) {
-                    // don't list artifacts which the user doesn't have perms for
-                }
-            }
-        } catch (RepositoryException e) {
-            throw new RegistryException(e);
-        }
-
-        return artifacts;
+	WorkspaceManager wm = getWorkspaceManager(w);
+	
+	return wm.getArtifacts(w);
     }
 
-    public Artifact getArtifact(final String id) throws NotFoundException, RegistryException, AccessException {
-        if (id == null) {
-            throw new NotFoundException("No id specified.");
-        }
-        return (Artifact) executeWithNotFound(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node node = session.getNodeByUUID(id);
-                Artifact a = buildArtifact(node);
-                
-                try {
-                    accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
-                } catch (AccessException e) {
-                    throw new RuntimeException(e);
-                }
+    private WorkspaceManager getWorkspaceManager(Item<?> i) {
+	return getWorkspaceManagerByItemId(i.getId());
+    }
 
-                return a;
-            }
-        });
+    private WorkspaceManager getWorkspaceManager(String wmId) {
+	return idToWorkspaceManager.get(wmId);
+    }
+
+    private WorkspaceManager getWorkspaceManagerByItemId(String itemId) {
+	int idx = itemId.indexOf('$');
+	
+	if (idx == -1) {
+	    throw new IllegalStateException("Invalid item id: " + itemId);
+	}
+	
+	return getWorkspaceManager(itemId.substring(0, idx));
     }
 
     private Artifact buildArtifact(Node node)
@@ -429,7 +354,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     public Item<?> getRegistryItem(final String id) throws NotFoundException, RegistryException, AccessException {
         return (Item<?>) executeWithNotFound(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node node = session.getNodeByUUID(id);
+                Node node = session.getNodeByUUID(trimWorkspaceManagerId(id));
                 
                 try {
                     if (node.getPrimaryNodeType().getName().equals("galaxy:artifact")) {
@@ -498,7 +423,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     public ArtifactVersion getArtifactVersion(final String id) throws NotFoundException, RegistryException, AccessException {
         return (ArtifactVersion) executeWithNotFound(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node node = session.getNodeByUUID(id);
+                Node node = session.getNodeByUUID(trimWorkspaceManagerId(id));
                 Node aNode = node.getParent();
                 Node wNode = aNode.getParent();
                 
@@ -521,6 +446,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
         });
     }
+    
     protected void setupContentHandler(JcrArtifact artifact) {
         ContentHandler ch = null;
         if (artifact.getDocumentType() != null) {
@@ -529,6 +455,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             ch = contentService.getContentHandler(artifact.getContentType());
         }
         artifact.setContentHandler(ch);
+    }
+
+    private String trimWorkspaceManagerId(String id) {
+	int idx = id.indexOf('$');
+	if (idx == -1) {
+	    throw new IllegalStateException("Illegal workspace manager id.");
+	}
+	    
+	return id.substring(idx + 1);
     }
     
     public Artifact getArtifact(final Workspace w, final String name) throws NotFoundException {
@@ -632,7 +567,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         });
     }
 
-    public void move(final Artifact artifact, final String workspaceId) throws RegistryException, AccessException {
+    public void move(final Artifact artifact, final String workspaceId) throws RegistryException, AccessException, NotFoundException {
         final Workspace workspace = getWorkspace(workspaceId);
         
         accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE, workspace);
@@ -800,7 +735,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         // Search by workspace id, workspace path, or any workspace
         if (query.getWorkspaceId() != null) {
             base.append("//*[@jcr:uuid='")
-                .append(query.getWorkspaceId())
+                .append(trimWorkspaceManagerId(query.getWorkspaceId()))
                 .append("'][@jcr:primaryType=\"galaxy:workspace\"]");
 
             if (query.isWorkspaceSearchRecursive()) {
@@ -1030,6 +965,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
         
         session.logout();
+        
+        idToWorkspaceManager.put(localWorkspaceManager.getId(), localWorkspaceManager);
     }
 
     public void addLinks(Item<?> artifactVersion, final LinkType type, final Item<?>... toLinkTo)
