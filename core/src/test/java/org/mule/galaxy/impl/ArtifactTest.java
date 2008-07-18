@@ -72,7 +72,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         assertEquals(1, newWork.getWorkspaces().size());
         
-        registry.deleteWorkspace(newWork.getId());
+        newWork.delete();
         
         assertEquals(1, registry.getWorkspaces().size());
         
@@ -96,11 +96,11 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        registry.createArtifact(workspace, "application/wsdl+xml", "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
+        workspace.createArtifact("application/wsdl+xml", "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
         
         helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
         try {
-            registry.createArtifact(workspace, "application/wsdl+xml", "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
+            workspace.createArtifact("application/wsdl+xml", "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
             fail("Expected a duplicate item exception");
         } catch (DuplicateItemException e) {
             // great! expected
@@ -117,7 +117,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        ArtifactResult ar = registry.createArtifact(workspace, "application/octet-stream", 
+        ArtifactResult ar = workspace.createArtifact("application/octet-stream", 
                                                     "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
         
         Artifact artifact = ar.getArtifact();
@@ -133,7 +133,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         Workspace workspace = workspaces.iterator().next();
         
         // Try application/xml
-        ArtifactResult ar = registry.createArtifact(workspace, "application/xml", 
+        ArtifactResult ar = workspace.createArtifact("application/xml", 
                                                     "hello_world.xml", "0.1", helloMule, getAdmin());
         
         Artifact artifact = ar.getArtifact();
@@ -144,7 +144,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
 
         // Try application/octent-stream
         helloMule = getResourceAsStream("/mule/hello-config.xml");
-        ar = registry.createArtifact(workspace, "application/octet-stream", "hello_world2.xml", "0.1",
+        ar = workspace.createArtifact("application/octet-stream", "hello_world2.xml", "0.1",
                                      helloMule, getAdmin());
         
         artifact = ar.getArtifact();
@@ -160,7 +160,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        ArtifactResult ar = registry.createArtifact(workspace, "application/wsdl+xml", 
+        ArtifactResult ar = workspace.createArtifact("application/wsdl+xml", 
                                                     "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
         
         Artifact artifact = ar.getArtifact();
@@ -233,7 +233,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         InputStream helloWsdl2 = getResourceAsStream("/wsdl/hello.wsdl");
         
-        ar = registry.newVersion(artifact, helloWsdl2, "0.2", getAdmin());
+        ar = artifact.newVersion(helloWsdl2, "0.2", getAdmin());
         assertTrue(waitForIndexing(ar.getArtifactVersion()));
         JcrVersion newVersion = (JcrVersion) ar.getArtifactVersion();
         assertTrue(newVersion.isLatest());
@@ -260,13 +260,13 @@ public class ArtifactTest extends AbstractGalaxyTest {
         Artifact a2 = registry.getArtifact(workspace, artifact.getName());
         assertNotNull(a2);
         
-        registry.setDefaultVersion(version, getAdmin());
+        version.setAsDefaultVersion();
         
         assertEquals(2, a2.getVersions().size());
         ArtifactVersion activeVersion = a2.getDefaultOrLastVersion();
         assertEquals("0.1", activeVersion.getVersionLabel());
         
-        registry.delete(activeVersion);
+        activeVersion.delete();
         
         assertEquals(1, a2.getVersions().size());
         
@@ -284,7 +284,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
             }
         }
         assertTrue(found);
-        registry.delete(a2);
+        a2.delete();
     }
 
     /**
@@ -302,12 +302,11 @@ public class ArtifactTest extends AbstractGalaxyTest {
 
         ByteArrayInputStream bais = new ByteArrayInputStream(version1.getBytes("UTF-8"));
 
-        ArtifactResult ar = registry.createArtifact(workspace,
-                                                    "text/plain",
-                                                    "test.txt",
-                                                    "1",
-                                                    bais,
-                                                    getAdmin());
+        ArtifactResult ar = workspace.createArtifact("text/plain",
+                                                     "test.txt",
+                                                     "1",
+                                                     bais,
+                                                     getAdmin());
         assertNotNull(ar);
         assertTrue(ar.isApproved());
 
@@ -315,13 +314,13 @@ public class ArtifactTest extends AbstractGalaxyTest {
 
         final Artifact artifact = ar.getArtifact();
 
-        ar = registry.newVersion(artifact, bais, "2", getAdmin());
+        ar = artifact.newVersion(bais, "2", getAdmin());
         assertNotNull(ar);
         assertTrue(ar.isApproved());
 
         assertNotNull(ar.getArtifactVersion().getPrevious());
         
-        registry.setDefaultVersion(artifact.getVersion("1"), getAdmin());
+        artifact.getVersion("1").setAsDefaultVersion();
 
         Artifact a = registry.getArtifact(workspace, "test.txt");
         assertNotNull(a);
@@ -340,12 +339,11 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        ArtifactResult ar = registry.createArtifact(workspace,
-                                                    "text/plain", 
-                                                    "log4j.properties", 
-                                                    "0.1", 
-                                                    logProps, 
-                                                    getAdmin());
+        ArtifactResult ar = workspace.createArtifact("text/plain", 
+                                                     "log4j.properties", 
+                                                     "0.1", 
+                                                     logProps, 
+                                                     getAdmin());
         
         assertNotNull(ar);
     }

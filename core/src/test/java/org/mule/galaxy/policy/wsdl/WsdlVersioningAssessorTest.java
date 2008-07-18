@@ -17,10 +17,10 @@ public class WsdlVersioningAssessorTest extends AbstractGalaxyTest {
         assertNotNull(a1.getDefaultOrLastVersion().getData());
         BackwardCompatibilityPolicy assessor = new BackwardCompatibilityPolicy();
 
-        ArtifactResult ar = registry.newVersion(a1, 
-                                                getResourceAsStream("/wsdl/hello-noOperation.wsdl"), 
-                                                "0.2", 
-                                                getAdmin());
+        ArtifactResult ar = a1.newVersion(
+		getResourceAsStream("/wsdl/hello-noOperation.wsdl"), 
+		"0.2",
+		getAdmin());
         ArtifactVersion next = ar.getArtifactVersion();
         
         assertNotNull(next.getData());

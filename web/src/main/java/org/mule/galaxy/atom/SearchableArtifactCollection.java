@@ -88,7 +88,6 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public Iterable<ArtifactVersion> getEntries(RequestContext request) throws ResponseContextException {
         try {
             String q = request.getParameter("q");
@@ -158,18 +157,18 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
             throw new ResponseContextException(ctx);
         }
         
-        return registry.createArtifact(workspace, 
-                                       mimeType.toString(), 
-                                       slug, 
-                                       version, inputStream, 
-                                       user);
+        return workspace.createArtifact(mimeType.toString(), 
+                                        slug, 
+                                        version, 
+                                        inputStream, 
+                                        user);
     }
 
     public void deleteEntry(String name, RequestContext request) throws ResponseContextException {
         Artifact artifact = getArtifact(request);
 
         try {
-            registry.delete(artifact);
+            artifact.delete();
         } catch (RegistryException e) {
             throw new RuntimeException(e);
         } catch (AccessException e) {
@@ -181,7 +180,7 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
         Artifact artifact = getArtifact(request);
 
         try {
-            registry.delete(artifact);
+            artifact.delete();
         } catch (RegistryException e) {
             throw new RuntimeException(e);
         } catch (AccessException e) {
@@ -197,7 +196,7 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
         Artifact a = artifactVersion.getParent();
         
         try {
-            registry.newVersion(a, inputStream, getVersion(request), getUser());
+            a.newVersion(inputStream, getVersion(request), getUser());
         } catch (RegistryException e) {
             throw new ResponseContextException(500, e);
         } catch (ArtifactPolicyException e) {

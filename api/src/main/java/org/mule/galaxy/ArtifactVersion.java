@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Set;
 
 import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
 import org.w3c.dom.Document;
@@ -50,7 +51,20 @@ public interface ArtifactVersion extends Item<Artifact> {
     
     boolean isEnabled();
     
-    void setEnabled(boolean enabled);
+    void setEnabled(boolean enabled)
+    	throws RegistryException, ArtifactPolicyException;
     
     boolean isIndexedPropertiesStale();
+
+    /**
+     * Sets the default version of an artifact to the specified one. It may
+     * fail due to increased policy restrictions which have been enforced on 
+     * the artifact.
+     * 
+     * @return
+     * @throws RegistryException
+     * @throws ArtifactPolicyException
+     */
+    void setAsDefaultVersion() throws RegistryException, ArtifactPolicyException;
+
 }

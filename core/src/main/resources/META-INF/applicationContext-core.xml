@@ -65,6 +65,7 @@
         init-method="initialize" destroy-method="destroy">
     <property name="activityManager" ref="activityManager" />
     <property name="contentService" ref="contentService"/>
+    <property name="localWorkspaceManager" ref="localWorkspaceManager" />
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
   </bean>
@@ -97,12 +98,6 @@
   <bean id="jcrTemplate" class="org.springmodules.jcr.JcrTemplate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
-  
-  <bean id="registry" parent="txProxyTemplate">
-    <property name="target" ref="registryTarget"/>
-    <property name="proxyTargetClass" value="true"/>
-  </bean>
-
   <bean id="abstractActivityLogger" abstract="true">
       <property name="activityManager" ref="activityManager"/>
   </bean>
@@ -125,14 +120,17 @@
           </list>
       </constructor-arg>
   </bean>
-
+  
+  <bean id="registry" parent="txProxyTemplate">
+    <property name="target" ref="registryTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
   <bean id="registryTarget" class="org.mule.galaxy.impl.jcr.JcrRegistryImpl"
         init-method="initialize"
         depends-on="jcrInitializer">
     <property name="accessControlManager" ref="accessControlManager" />
     <property name="activityManager" ref="activityManager" />
-    <property name="artifactTypeDao" ref="artifactTypeDao" />
-    <property name="commentManager" ref="commentManager" />
     <property name="contentService" ref="contentService" />
     <property name="functionRegistry" ref="functionRegistry" />
     <property name="linkTypeDao" ref="linkTypeManager" />
@@ -140,10 +138,32 @@
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="propertyDescriptorDao" ref="propertyDescriptorDao" />
     <property name="lifecycleManager" ref="lifecycleManager" />
-    <property name="indexManager" ref="indexManager" />
     <property name="policyManager" ref="policyManager" />
     <property name="userManager" ref="userManager" />
     <property name="queryBuilders" ref="queryBuilders"/>
+    <property name="eventManager" ref="eventManager"/>
+    <property name="localWorkspaceManager" ref="localWorkspaceManager"/>
+  </bean>
+    
+  <bean id="localWorkspaceManager" parent="txProxyTemplate">
+    <property name="target" ref="localWorkspaceManagerTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="localWorkspaceManagerTarget"
+        class="org.mule.galaxy.impl.jcr.JcrWorkspaceManager"
+        depends-on="jcrInitializer">
+    <property name="accessControlManager" ref="accessControlManager" />
+    <property name="activityManager" ref="activityManager" />
+    <property name="artifactTypeDao" ref="artifactTypeDao" />
+    <property name="commentManager" ref="commentManager" />
+    <property name="contentService" ref="contentService" />
+    <property name="linkTypeDao" ref="linkTypeManager" />
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="lifecycleManager" ref="lifecycleManager" />
+    <property name="indexManager" ref="indexManager" />
+    <property name="policyManager" ref="policyManager" />
+    <property name="userManager" ref="userManager" />
     <property name="eventManager" ref="eventManager"/>
   </bean>
   

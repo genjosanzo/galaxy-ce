@@ -1,6 +1,7 @@
 package org.mule.galaxy.impl.jcr;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -17,11 +18,17 @@ import javax.jcr.Session;
 import javax.xml.namespace.QName;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.security.User;
 import org.mule.galaxy.util.QNameUtil;
 import org.springmodules.jcr.JcrCallback;
 
@@ -34,14 +41,14 @@ public class JcrArtifact extends AbstractJcrItem implements Artifact {
     
     private List<ArtifactVersion> versions;
     private Workspace workspace;
-    private JcrRegistryImpl registry;
+    private JcrWorkspaceManager manager;
     private ContentHandler contentHandler;
     
-    public JcrArtifact(Workspace w, Node node, JcrRegistryImpl registry) 
+    public JcrArtifact(Workspace w, Node node, JcrWorkspaceManager registry) 
         throws RepositoryException {
         super(node, registry);
         this.workspace = w;
-        this.registry = registry;
+        this.manager = registry;
     }
 
     public String getId() {
@@ -137,7 +144,7 @@ public class JcrArtifact extends AbstractJcrItem implements Artifact {
         try {
             
             if (!node.getName().equals(name)) {
-                registry.execute(new JcrCallback() {
+                manager.execute(new JcrCallback() {
     
                     public Object doInJcr(Session session) throws IOException, RepositoryException {
                         String dest = node.getParent().getPath() + "/" + name;
@@ -163,7 +170,7 @@ public class JcrArtifact extends AbstractJcrItem implements Artifact {
                 for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
                     Node node = itr.nextNode();
                     
-                    if (node.getPrimaryNodeType().getName().equals(JcrRegistryImpl.ARTIFACT_VERSION_NODE_TYPE)) {
+                    if (node.getPrimaryNodeType().getName().equals(JcrWorkspaceManager.ARTIFACT_VERSION_NODE_TYPE)) {
                         versions.add(new JcrVersion(this, node));
                     }
                 }
@@ -236,7 +243,6 @@ public class JcrArtifact extends AbstractJcrItem implements Artifact {
         getDefaultOrLastVersion().setLocked(name, locked);
     }
 
-
     @Override
     public boolean hasProperty(String name) {
         update();
@@ -249,12 +255,30 @@ public class JcrArtifact extends AbstractJcrItem implements Artifact {
         getDefaultOrLastVersion().setVisible(name, visible);
     }
 
+    public ArtifactResult newVersion(Object data,
+	    String versionLabel, User user) throws RegistryException,
+	    ArtifactPolicyException, IOException, DuplicateItemException,
+	    AccessException {
+	return manager.newVersion(this, data, versionLabel, user);
+    }
+
+    public ArtifactResult newVersion(InputStream inputStream,
+	    String versionLabel, User user) throws RegistryException,
+	    ArtifactPolicyException, IOException, DuplicateItemException,
+	    AccessException {
+	return manager.newVersion(this, inputStream, versionLabel, user);
+    }
+
+    public void delete() throws RegistryException, AccessException {
+	manager.delete(this);
+    }
+
     public void setWorkspace(Workspace workspace) {
         this.workspace = workspace;
     }
 
-    public JcrRegistryImpl getRegistry() {
-        return registry;
+    public JcrWorkspaceManager getManager() {
+        return manager;
     }
 
     public ContentHandler getContentHandler() {

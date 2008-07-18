@@ -28,7 +28,7 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
         policyManager.setActivePolicies(lifecycleManager.getDefaultLifecycle(), p);
 
         try {
-            registry.createArtifact(workspace, "application/xml", "hello-invalid.wsdl", "0.1", helloWsdl,
+            workspace.createArtifact("application/xml", "hello-invalid.wsdl", "0.1", helloWsdl,
                                     getAdmin());
             fail("Expected ArtifactPolicyException");
         } catch (ArtifactPolicyException e) {
@@ -45,7 +45,7 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
         }
         
         try {
-            registry.createArtifact(workspace, "application/xml", "hello.wsdl", "0.1", 
+            workspace.createArtifact("application/xml", "hello.wsdl", "0.1", 
                                     getResourceAsStream("/wsdl/wsi/soapbinding/r2710.wsdl"),
                                     getAdmin());
             fail("Expected ArtifactPolicyException");

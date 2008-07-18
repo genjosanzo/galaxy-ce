@@ -60,10 +60,11 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
 
-        ArtifactResult ar = registry.createArtifact(workspace,
-                                                    "application/xml",
-                                                    "hello-noOperation.wsdl",
-                                                    "0.1", helloWsdl, getAdmin());
+        ArtifactResult ar = workspace.createArtifact("application/xml",
+                                                     "hello-noOperation.wsdl",
+                                                     "0.1", 
+                                                     helloWsdl, 
+                                                     getAdmin());
         return ar.getArtifact();
     }
 
@@ -272,7 +273,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         Artifact a = (Artifact) result.iterator().next();
         
-        registry.newVersion(a, getResourceAsStream("/wsdl/imports/hello.wsdl"), "0.2", getAdmin());
+        a.newVersion(getResourceAsStream("/wsdl/imports/hello.wsdl"), "0.2", getAdmin());
         
         ExtendedArtifactInfo ext = (ExtendedArtifactInfo) gwtRegistry.getArtifact(a.getId()).getRows().get(0);
         

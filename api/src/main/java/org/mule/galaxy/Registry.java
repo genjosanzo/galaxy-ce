@@ -26,8 +26,6 @@ public interface Registry {
 
     Workspace createWorkspace(Workspace parent, String name) throws DuplicateItemException, RegistryException, AccessException;
     
-    void deleteWorkspace(String id) throws RegistryException, NotFoundException, AccessException;
-    
     Workspace getWorkspace(String id) throws RegistryException, NotFoundException, AccessException;
     
     void save(Workspace w, String parentId)
@@ -40,97 +38,6 @@ public interface Registry {
     Item<?> getRegistryItem(String id) throws NotFoundException, RegistryException, AccessException;
     
     Item<?> getItemByPath(String path) throws NotFoundException, RegistryException, AccessException;
-    
-    /**
-     * Creates an artifact from a Java representation of it (as opposed
-     * to a byte[] level representation). The artifact must be apporved
-     * by the appropriate policies, or an ArtifactPolicyException will be
-     * throw.
-     * 
-     * @param workspace
-     * @param data
-     * @param versionLabel
-     * @param user
-     * @return
-     * @throws RegistryException
-     * @throws ArtifactPolicyException
-     * @throws MimeTypeParseException
-     */
-    ArtifactResult createArtifact(Workspace workspace, 
-                                  Object data, 
-                                  String versionLabel, 
-                                  User user) 
-        throws DuplicateItemException, RegistryException, ArtifactPolicyException, MimeTypeParseException, AccessException;
-    
-    ArtifactResult createArtifact(Workspace workspace, 
-                                  String contentType, 
-                                  String name,
-                                  String versionLabel, 
-                                  InputStream inputStream, 
-                                  User user) 
-        throws DuplicateItemException, RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, AccessException;
-    
-    /**
-     * Create a new ArtifactVersion from a POJOish object.
-     * @param artifact
-     * @param data
-     * @param versionLabel
-     * @param user TODO
-     * @return
-     * @throws RegistryException
-     * @throws IOException
-     * @throws DuplicateItemException 
-     */
-    ArtifactResult newVersion(Artifact artifact, 
-                              Object data, 
-                              String versionLabel, 
-                              User user) 
-        throws RegistryException, ArtifactPolicyException, IOException, DuplicateItemException, AccessException;
-    
-    /**
-     * Create a new ArtifactVersion its byte form. 
-     * @param artifact
-     * @param versionLabel
-     * @param user TODO
-     * @param data
-     * @return
-     * @throws RegistryException
-     * @throws IOException
-     * @throws DuplicateItemException 
-     */
-    ArtifactResult newVersion(Artifact artifact, 
-                               InputStream inputStream, 
-                               String versionLabel, 
-                               User user) 
-        throws RegistryException, ArtifactPolicyException, IOException, DuplicateItemException, AccessException;
-
-    /**
-     * Sets the default version of an artifact to the specified one. It may
-     * fail due to increased policy restrictions which have been enforced on 
-     * the artifact.
-     * @param version 
-     * @param user
-     * 
-     * @return
-     * @throws RegistryException
-     * @throws ArtifactPolicyException
-     */
-    void setDefaultVersion(ArtifactVersion version, User user) 
-        throws RegistryException, ArtifactPolicyException;
-    
-    /**
-     * Enables or disables an artifac version. Reenabling an artifact may
-     * fail due to increased policy restrictions which have been enforced on 
-     * the artifact.
-     * @param version 
-     * @param user
-     * 
-     * @return
-     * @throws RegistryException
-     * @throws ArtifactPolicyException
-     */
-    void setEnabled(ArtifactVersion version, boolean enabled, User user) 
-        throws RegistryException, ArtifactPolicyException;
 
     void move(Artifact artifact, String workspaceId) throws RegistryException, AccessException;
     
@@ -139,10 +46,6 @@ public interface Registry {
     Artifact getArtifact(String id) throws NotFoundException, RegistryException, AccessException;
 
     ArtifactVersion getArtifactVersion(String id) throws NotFoundException, RegistryException, AccessException;
-    
-    void delete(Artifact artifact) throws RegistryException, AccessException;
-
-    void delete(ArtifactVersion version) throws RegistryException, AccessException;
 
     void save(Artifact artifact) throws RegistryException, AccessException;
 
@@ -153,6 +56,7 @@ public interface Registry {
     Artifact getArtifact(Workspace w, String name) throws NotFoundException;
 
     Artifact resolve(Workspace w, String location);
+    
 
     /* Property related methods */
      

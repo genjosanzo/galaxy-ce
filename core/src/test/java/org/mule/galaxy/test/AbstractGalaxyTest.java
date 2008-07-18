@@ -136,12 +136,11 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         
         Workspace workspace = getTestWorkspace();
         
-        ArtifactResult ar = registry.createArtifact(workspace, 
-                                                    "application/xml", 
-                                                    "hello_world.wsdl", 
-                                                    "0.1", 
-                                                    helloWsdl, 
-                                                    getAdmin());
+        ArtifactResult ar = workspace.createArtifact("application/xml", 
+                                                     "hello_world.wsdl", 
+                                                     "0.1", 
+                                                     helloWsdl, 
+                                                     getAdmin());
         return ar.getArtifact();
     }
 
@@ -156,12 +155,11 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         
         Workspace workspace = getTestWorkspace();
         
-        ArtifactResult ar = registry.createArtifact(workspace, 
-                                                    "application/xml", 
-                                                    "test.xsd", 
-                                                    "0.1", 
-                                                    xsd, 
-                                                    getAdmin());
+        ArtifactResult ar = workspace.createArtifact("application/xml", 
+                                                     "test.xsd", 
+                                                     "0.1", 
+                                                     xsd, 
+                                                     getAdmin());
         
         Artifact a = ar.getArtifact();
         return a;
@@ -172,10 +170,9 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         
         Workspace workspace = getTestWorkspace();
         
-        ArtifactResult ar = registry.createArtifact(workspace, 
-                                                    "application/xml", 
-                                                    "hello-config.xml", 
-                                                    "0.1", helloWsdl, getAdmin());
+        ArtifactResult ar = workspace.createArtifact("application/xml", 
+                                                     "hello-config.xml", 
+                                                     "0.1", helloWsdl, getAdmin());
         return ar.getArtifact();
     }
 

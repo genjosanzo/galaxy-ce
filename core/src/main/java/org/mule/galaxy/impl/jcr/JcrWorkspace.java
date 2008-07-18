@@ -1,21 +1,30 @@
 package org.mule.galaxy.impl.jcr;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javax.activation.MimeTypeParseException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
+import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.security.User;
 import org.springmodules.jcr.JcrCallback;
 
 public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Workspace {
@@ -25,12 +34,12 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
     public static final String LIFECYCLE = "lifecycle";
     private List<Workspace> workspaces;
     private Lifecycle lifecycle;
-    private final JcrRegistryImpl registry;
+    private final JcrWorkspaceManager manager;
     
-    public JcrWorkspace(JcrRegistryImpl registry, 
+    public JcrWorkspace(JcrWorkspaceManager manager, 
         Node node) throws RepositoryException  {
-        super(node, null);
-        this.registry = registry;
+        super(node, manager);
+        this.manager = manager;
     }
 
     public String getId() {
@@ -49,7 +58,7 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
         try {
             Node parent = node.getParent();
             if (parent.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
-                return new JcrWorkspace(registry, parent);
+                return new JcrWorkspace(manager, parent);
             } 
             
             return null;
@@ -67,7 +76,7 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
                     Node n = nodes.nextNode();
                     
                     if (n.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
-                        workspaces.add(new JcrWorkspace(registry, n));
+                        workspaces.add(new JcrWorkspace(manager, n));
                     }
                 }
                 Collections.sort(workspaces, new WorkspaceComparator());
@@ -88,7 +97,7 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
         
         try {
             if (!node.getName().equals(name)) {
-                registry.execute(new JcrCallback() {
+                manager.execute(new JcrCallback() {
     
                     public Object doInJcr(Session session) throws IOException, RepositoryException {
                         String dest = node.getParent().getPath() + "/" + name;
@@ -117,7 +126,7 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
                     String wname = JcrUtil.getStringOrNull(n, NAME);
                     
                     if (wname != null && wname.equals(name)) {
-                        return new JcrWorkspace(registry, n);
+                        return new JcrWorkspace(manager, n);
                     }
                 }
             }
@@ -173,12 +182,31 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
         }
     }
 
+    public ArtifactResult createArtifact(Object data, String versionLabel,
+	    User user) throws DuplicateItemException, RegistryException,
+	    ArtifactPolicyException, MimeTypeParseException, AccessException {
+	// TODO Auto-generated method stub
+	return manager.createArtifact(this, data, versionLabel, user);
+    }
+
+    public ArtifactResult createArtifact(String contentType, String name,
+	    String versionLabel, InputStream inputStream, User user)
+	    throws DuplicateItemException, RegistryException,
+	    ArtifactPolicyException, IOException, MimeTypeParseException,
+	    AccessException {
+	return manager.createArtifact(this, contentType, name, versionLabel, inputStream, user);
+    }
+
+    public void delete() throws RegistryException, AccessException {
+	manager.delete(this);
+    }
+
     public LifecycleManager getLifecycleManager() {
-      return registry.getLifecycleManager(this);
+      return manager.getLifecycleManager();
     }
 
     public CommentManager getCommentManager() {
-        return registry.getCommentManager(this);
+        return manager.getCommentManager();
     }
     
 }

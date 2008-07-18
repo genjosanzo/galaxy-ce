@@ -34,9 +34,9 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.activity.ActivityManager;
 import org.mule.galaxy.activity.ActivityManager.EventType;
-import org.mule.galaxy.impl.jcr.JcrRegistryImpl;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.JcrVersion;
+import org.mule.galaxy.impl.jcr.JcrWorkspaceManager;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexException;
@@ -69,6 +69,8 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
     private Registry registry;
 
+    private JcrWorkspaceManager localWorkspaceManager;
+
     private ApplicationContext context;
 
     private ActivityManager activityManager;
@@ -95,7 +97,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
             reindex(t);
         }
     }
-    @SuppressWarnings("unchecked")
+    
     public Collection<Index> getIndexes() {
         return listAll();
     }
@@ -195,7 +197,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 Node n = itr.nextNode();
                 
                 try {
-                    new JcrVersion(n, (JcrRegistryImpl) registry).setProperty(propName, null);
+                    new JcrVersion(n, getWorkspaceManager()).setProperty(propName, null);
                 } catch (PropertyException e) {
                     throw new RuntimeException(e);
                 }
@@ -469,6 +471,13 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         return registry;
     }
     
+    private JcrWorkspaceManager getWorkspaceManager() {
+        if (localWorkspaceManager == null) {
+            localWorkspaceManager = (JcrWorkspaceManager) context.getBean("localWorkspaceManager");
+        }
+        return localWorkspaceManager;
+    }
+
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
         this.context = ctx;
     }

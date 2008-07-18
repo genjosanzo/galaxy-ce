@@ -18,6 +18,26 @@
 
 package org.mule.galaxy.web.server;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
+
+import org.acegisecurity.context.SecurityContextHolder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactType;
@@ -52,11 +72,11 @@ import org.mule.galaxy.policy.ArtifactCollectionPolicyException;
 import org.mule.galaxy.policy.ArtifactPolicy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.OpRestriction;
-import org.mule.galaxy.query.OpRestriction.Operator;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.query.SearchResults;
+import org.mule.galaxy.query.OpRestriction.Operator;
 import org.mule.galaxy.render.ArtifactRenderer;
 import org.mule.galaxy.render.RendererManager;
 import org.mule.galaxy.security.AccessControlManager;
@@ -94,27 +114,6 @@ import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 import org.mule.galaxy.web.rpc.WSearchResults;
 import org.mule.galaxy.web.rpc.WUser;
 import org.mule.galaxy.web.rpc.WWorkspace;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
-import org.acegisecurity.context.SecurityContextHolder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 public class RegistryServiceImpl implements RegistryService {
 
@@ -235,7 +234,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void deleteWorkspace(String workspaceId) throws RPCException, ItemNotFoundException {
         try {
-            registry.deleteWorkspace(workspaceId);
+            registry.getWorkspace(workspaceId).delete();
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -1249,7 +1248,7 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
 
-            registry.delete(artifact);
+            artifact.delete();
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -1265,7 +1264,7 @@ public class RegistryServiceImpl implements RegistryService {
             ArtifactVersion artifact = registry.getArtifactVersion(artifactVersionId);
             boolean last = artifact.getParent().getVersions().size() == 1;
 
-            registry.delete(artifact);
+            artifact.delete();
 
             return last;
         } catch (RegistryException e) {
@@ -1352,8 +1351,6 @@ public class RegistryServiceImpl implements RegistryService {
         return tr;
     }
 
-
-    @SuppressWarnings("unchecked")
     public Collection getLifecycles() throws RPCException {
         Collection<Lifecycle> lifecycles = localLifecycleManager.getLifecycles();
         Lifecycle defaultLifecycle = localLifecycleManager.getDefaultLifecycle();
@@ -1556,7 +1553,7 @@ public class RegistryServiceImpl implements RegistryService {
             TransitionResponse tr = new TransitionResponse();
 
             try {
-                registry.setDefaultVersion(artifact, getCurrentUser());
+                artifact.setAsDefaultVersion();
 
                 tr.setSuccess(true);
             } catch (ArtifactPolicyException e) {
@@ -1585,7 +1582,7 @@ public class RegistryServiceImpl implements RegistryService {
             TransitionResponse tr = new TransitionResponse();
 
             try {
-                registry.setEnabled(artifact, enabled, getCurrentUser());
+                artifact.setEnabled(enabled);
 
                 if (!enabled) {
                     return null;

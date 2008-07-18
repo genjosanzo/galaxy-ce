@@ -238,12 +238,11 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
 
-        ArtifactResult ar = registry.createArtifact(workspace,
-                                                    "application/java-archive",
-                                                    "test.jar",
-                                                    "1",
-                                                    stream,
-                                                    getAdmin());
+        ArtifactResult ar = workspace.createArtifact("application/java-archive",
+                                                     "test.jar",
+                                                     "1",
+                                                     stream,
+                                                     getAdmin());
 
         Artifact artifact = ar.getArtifact();
 
@@ -299,12 +298,11 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
 
-        ArtifactResult ar = registry.createArtifact(workspace,
-                                                    "application/java-archive",
-                                                    "test.jar",
-                                                    "1",
-                                                    stream,
-                                                    getAdmin());
+        ArtifactResult ar = workspace.createArtifact("application/java-archive",
+                                                     "test.jar",
+                                                     "1",
+                                                     stream,
+                                                     getAdmin());
 
         Artifact artifact = ar.getArtifact();
 

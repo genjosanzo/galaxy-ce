@@ -39,11 +39,11 @@ public abstract class AbstractJcrItem {
     private static final String LINK_NODE_TYPE = "galaxy:link";
     
     protected Node node;
-    private JcrRegistryImpl registry;
+    private JcrWorkspaceManager manager;
 
-    public AbstractJcrItem(Node node, JcrRegistryImpl registry) throws RepositoryException {
+    public AbstractJcrItem(Node node, JcrWorkspaceManager manager) throws RepositoryException {
         this.node = node;
-        this.registry = registry;
+        this.manager = manager;
     }
 
     public Node getNode() {
@@ -93,9 +93,9 @@ public abstract class AbstractJcrItem {
             } else {
                 ensureProperty(name);
             }
-
-
-            registry.getActivityManager().logActivity(SecurityUtils.getCurrentUser(), "Property " + name + " was set to: " + value, 
+            
+            manager.getActivityManager().logActivity(SecurityUtils.getCurrentUser(), 
+        	    "Property " + name + " was set to: " + value, 
                                         EventType.INFO);
             update();
         } catch (RepositoryException e) {
@@ -200,7 +200,7 @@ public abstract class AbstractJcrItem {
                 public PropertyInfo next() {
                     i++;
                     try {
-                        return new PropertyInfoImpl(values[i-1].getString(), node, registry);
+                        return new PropertyInfoImpl(values[i-1].getString(), node, manager.getRegistry());
                     } catch (RepositoryException e) {
                         throw new RuntimeException(e);
                     }
@@ -235,7 +235,7 @@ public abstract class AbstractJcrItem {
             throw new RuntimeException(e);
         }
         
-        return new PropertyInfoImpl(name, node, registry);
+        return new PropertyInfoImpl(name, node, manager.getRegistry());
     }
 
     public void setLocked(String name, boolean locked) {
@@ -262,10 +262,6 @@ public abstract class AbstractJcrItem {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public JcrRegistryImpl getRegistry() {
-        return registry;
     }
 
     public void addLinks(Set<Item<?>> links, boolean autoDetected, LinkType type) {
@@ -314,7 +310,7 @@ public abstract class AbstractJcrItem {
                 
                 // wonder if we can avoid the cast here? But the compiler doesn't
                 // like it when AbstractJcrItem extends Item<?>
-                links.add(new LinkImpl((Item<?>)this, dep, registry));
+                links.add(new LinkImpl((Item<?>)this, dep, (JcrRegistryImpl) manager.getRegistry()));
             }
             return links;
         } catch (RepositoryException e) {

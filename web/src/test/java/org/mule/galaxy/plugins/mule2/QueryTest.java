@@ -75,10 +75,11 @@ public class QueryTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
 
-        ArtifactResult ar = registry.createArtifact(workspace,
-                                                    "application/xml",
-                                                    "hello-config.xml",
-                                                    "0.1", helloWsdl, getAdmin());
+        ArtifactResult ar = workspace.createArtifact("application/xml",
+                                                     "hello-config.xml",
+                                                     "0.1", 
+                                                     helloWsdl, 
+                                                     getAdmin());
         return ar.getArtifact();
     }
 

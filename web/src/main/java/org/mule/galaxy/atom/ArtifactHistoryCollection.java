@@ -67,7 +67,7 @@ public class ArtifactHistoryCollection extends AbstractArtifactCollection {
         ArtifactVersion version = getEntry(entry, request);
         
         try {
-            registry.delete(version);
+            version.delete();
         } catch (RegistryException e) {
             log.error(e);
             throw new ResponseContextException(500, e);

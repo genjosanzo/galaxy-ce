@@ -29,22 +29,20 @@ public class LinkTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        ArtifactResult schema = registry.createArtifact(workspace, 
-                                                        "application/xml", 
-                                                        "hello.xsd", 
-                                                        "0.1", 
-                                                        getResourceAsStream("/wsdl/imports/hello.xsd"), 
-                                                        getAdmin());
-        
+        ArtifactResult schema = workspace.createArtifact("application/xml", 
+                                                         "hello.xsd", 
+                                                         "0.1", 
+                                                         getResourceAsStream("/wsdl/imports/hello.xsd"), 
+                                                         getAdmin());
+         
         Set<Link> deps = schema.getArtifactVersion().getLinks();
         assertEquals(0, deps.size());
         
-        ArtifactResult portType = registry.createArtifact(workspace, 
-                                                          "application/wsdl+xml", 
-                                                          "hello-portType.wsdl", 
-                                                          "0.1", 
-                                                          getResourceAsStream("/wsdl/imports/hello-portType.wsdl"), 
-                                                          getAdmin());
+        ArtifactResult portType = workspace.createArtifact("application/wsdl+xml", 
+                                                           "hello-portType.wsdl", 
+                                                           "0.1", 
+                                                           getResourceAsStream("/wsdl/imports/hello-portType.wsdl"), 
+                                                           getAdmin());
         deps = portType.getArtifactVersion().getLinks();
         assertEquals(1, deps.size());
         
@@ -62,12 +60,11 @@ public class LinkTest extends AbstractGalaxyTest {
         assertEquals(portType.getArtifact().getId(), parent.getId());
         assertTrue(dep.isAutoDetected());
         
-        ArtifactResult svcWsdl = registry.createArtifact(workspace, 
-                                                         "application/wsdl+xml", 
-                                                         "hello.wsdl", 
-                                                         "0.1", 
-                                                         getResourceAsStream("/wsdl/imports/hello.wsdl"), 
-                                                         getAdmin());
+        ArtifactResult svcWsdl = workspace.createArtifact("application/wsdl+xml", 
+                                                          "hello.wsdl", 
+                                                          "0.1", 
+                                                          getResourceAsStream("/wsdl/imports/hello.wsdl"), 
+                                                          getAdmin());
         deps = svcWsdl.getArtifactVersion().getLinks();
         assertEquals(1, deps.size());
         
@@ -96,7 +93,7 @@ public class LinkTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        ArtifactResult schema = registry.createArtifact(workspace, 
+        ArtifactResult schema = workspace.createArtifact(
                                                         "application/xml", 
                                                         "hello.xsd", 
                                                         "0.1", 
@@ -106,12 +103,11 @@ public class LinkTest extends AbstractGalaxyTest {
         Set<Link> deps = schema.getArtifactVersion().getLinks();
         assertEquals(0, deps.size());
         
-        ArtifactResult schema2 = registry.createArtifact(workspace, 
-                                                         "application/xml", 
-                                                         "hello-import.xsd", 
-                                                         "0.1", 
-                                                         getResourceAsStream("/schema/hello-import.xsd"), 
-                                                         getAdmin());
+        ArtifactResult schema2 = workspace.createArtifact("application/xml", 
+                                                          "hello-import.xsd", 
+                                                          "0.1", 
+                                                          getResourceAsStream("/schema/hello-import.xsd"), 
+                                                          getAdmin());
          
         deps = schema2.getArtifactVersion().getLinks();
         assertEquals(1, deps.size());
@@ -126,12 +122,11 @@ public class LinkTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
 
-        ArtifactResult svcWsdl = registry.createArtifact(workspace, 
-                                                         "application/wsdl+xml", 
-                                                         "hello.wsdl", 
-                                                         "0.1", 
-                                                         getResourceAsStream("/wsdl/imports/hello-missing.wsdl"), 
-                                                         getAdmin());
+        ArtifactResult svcWsdl = workspace.createArtifact("application/wsdl+xml", 
+                                                          "hello.wsdl", 
+                                                          "0.1", 
+                                                          getResourceAsStream("/wsdl/imports/hello-missing.wsdl"), 
+                                                          getAdmin());
         Set<Link> deps = svcWsdl.getArtifactVersion().getLinks();
         assertEquals(0, deps.size());
     }

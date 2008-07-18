@@ -2,6 +2,8 @@ package org.mule.galaxy;
 
 import java.util.Iterator;
 
+import org.mule.galaxy.security.AccessException;
+
 /**
  * An item which exists inside the repository.
  */
@@ -26,4 +28,6 @@ public interface Item<T extends Item<?>> {
     void setLocked(String name, boolean locked);
 
     void setVisible(String property, boolean visible);
+
+    void delete() throws RegistryException, AccessException;
 }

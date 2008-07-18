@@ -33,7 +33,7 @@ public abstract class AbstractPolicyTest extends AbstractGalaxyTest
 
         try
         {
-            registry.createArtifact(workspace, "application/xml",
+            workspace.createArtifact("application/xml",
                     "http-policy-test.xml", "0.1", stream,
                     getAdmin());
             if (fail)

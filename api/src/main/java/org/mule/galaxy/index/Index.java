@@ -19,7 +19,6 @@ public class Index implements Identifiable {
     private String indexer;
     private Map<String,String> configuration;
 
-    @SuppressWarnings("unchecked")
     public Index(String description, 
                  String mediaType,
                  Class<?> queryType,
@@ -28,7 +27,6 @@ public class Index implements Identifiable {
         this(description, mediaType, (Set<QName>) null, queryType, indexer, configuration);
     }
     
-    @SuppressWarnings("unchecked")
     public Index(String description, 
                  String mediaType,
                  QName documentType, 

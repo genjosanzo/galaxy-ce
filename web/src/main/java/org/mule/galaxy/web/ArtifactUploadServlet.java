@@ -21,6 +21,7 @@ package org.mule.galaxy.web;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
@@ -139,14 +140,18 @@ public class ArtifactUploadServlet implements Controller {
                     contentType = "application/octet-stream";
                 }
 
-                result = registry.createArtifact(wkspc, contentType, name, versionLabel, uploadItem.getInputStream(), user);
+                result = wkspc.createArtifact(contentType, name, versionLabel, uploadItem.getInputStream(), user);
             } else {
                 Artifact a = registry.getArtifact(artifactId);
 
-                result = registry.newVersion(a, uploadItem.getInputStream(), versionLabel, user);
+                result = a.newVersion(uploadItem.getInputStream(), versionLabel, user);
 
                 if (disablePrevious) {
-                    registry.setEnabled( result.getArtifactVersion().getPrevious(), false, user);
+                    ArtifactVersion previous = result.getArtifactVersion().getPrevious();
+                    
+                    if (previous != null) {
+                        previous.setEnabled(false);
+                    }
                 }
             }
 

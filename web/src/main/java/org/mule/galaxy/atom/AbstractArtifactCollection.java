@@ -432,7 +432,7 @@ public abstract class AbstractArtifactCollection
             if (defBool != av.isDefault()) 
             {
                 if (defBool) {
-                    registry.setDefaultVersion(av, getUser());
+                    av.setAsDefaultVersion();
                 } else {
                     throwMalformed("You can only set an artifact default version to true!");
                 }
@@ -444,7 +444,7 @@ public abstract class AbstractArtifactCollection
             boolean enabledBool = BooleanUtils.toBoolean(enabled);
             
             if (enabledBool != av.isEnabled()) {
-                registry.setEnabled(av, enabledBool, getUser());
+                av.setEnabled(enabledBool);
             }
         }
     }

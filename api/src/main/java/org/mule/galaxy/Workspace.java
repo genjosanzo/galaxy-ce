@@ -1,11 +1,17 @@
 package org.mule.galaxy;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Collection;
+
+import javax.activation.MimeTypeParseException;
 
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.security.User;
 
 public interface Workspace extends Item<Workspace> {
     
@@ -40,5 +46,33 @@ public interface Workspace extends Item<Workspace> {
     
     LifecycleManager getLifecycleManager();
     
-    CommentManager getCommentManager();
+    CommentManager getCommentManager();    
+    
+    /**
+     * Creates an artifact from a Java representation of it (as opposed
+     * to a byte[] level representation). The artifact must be apporved
+     * by the appropriate policies, or an ArtifactPolicyException will be
+     * throw.
+     * 
+     * @param workspace
+     * @param data
+     * @param versionLabel
+     * @param user
+     * @return
+     * @throws RegistryException
+     * @throws ArtifactPolicyException
+     * @throws MimeTypeParseException
+     */
+    ArtifactResult createArtifact(Object data, 
+                                  String versionLabel, 
+                                  User user) 
+        throws DuplicateItemException, RegistryException, ArtifactPolicyException, MimeTypeParseException, AccessException;
+    
+    ArtifactResult createArtifact(String contentType, 
+                                  String name,
+                                  String versionLabel, 
+                                  InputStream inputStream, 
+                                  User user) 
+        throws DuplicateItemException, RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, AccessException;
+    
 }

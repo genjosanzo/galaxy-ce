@@ -47,12 +47,11 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
     private void add(Workspace w, User user, String name, String resource) 
         throws Exception {
 
-        registry.createArtifact(w,
-                                "application/xml", 
-                                name, 
-                                "0.1", 
-                                getClass().getResourceAsStream(resource), 
-                                user);
+        w.createArtifact("application/xml", 
+                         name, 
+                         "0.1", 
+                         getClass().getResourceAsStream(resource), 
+                         user);
     }
 
     public void setUserManager(UserManager userManager) {

@@ -101,17 +101,11 @@ import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
 public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistry {
-
-    public static final String ARTIFACT_NODE_TYPE = "galaxy:artifact";
-    public static final String ARTIFACT_VERSION_NODE_TYPE = "galaxy:artifactVersion";
-    public static final String LATEST = "latest";
     private static final String REPOSITORY_LAYOUT_VERSION = "version";
 
     private final Log log = LogFactory.getLog(getClass());
 
     private Settings settings;
-    
-    private CommentManager commentManager;
     
     private ContentService contentService;
 
@@ -123,8 +117,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     private UserManager userManager;
 
-    private IndexManager indexManager;
-    
     private Dao<PropertyDescriptor> propertyDescriptorDao;
     
     private Dao<LinkType> linkTypeDao;
@@ -143,12 +135,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     private String id;
     
-    private ArtifactTypeDao artifactTypeDao;
-    
     private Map<String, QueryBuilder> queryBuilders;
     
     private SimpleQueryBuilder simpleQueryBuilder = new SimpleQueryBuilder(new String[0], false);
 
+    private JcrWorkspaceManager localWorkspaceManager;
+    
     public JcrRegistryImpl() {
         super();
     }
@@ -176,14 +168,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     private Workspace buildWorkspace(Node node) throws RepositoryException {
-        return new JcrWorkspace(this, node);
+        return new JcrWorkspace(localWorkspaceManager, node);
     }
 
     
     public Workspace createWorkspace(final String name) throws RegistryException, AccessException, DuplicateItemException {
         // we should throw an error, but lets be defensive for now
         final String escapedName = JcrUtil.escape(name);
-        final JcrRegistryImpl registry = this;
         
         accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE);
 
@@ -197,7 +188,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 }
                 node.addMixin("mix:referenceable");
     
-                JcrWorkspace workspace = new JcrWorkspace(registry, node);
+                JcrWorkspace workspace = new JcrWorkspace(localWorkspaceManager, node);
                 workspace.setName(escapedName);
                 workspace.setDefaultLifecycle(lifecycleManager.getDefaultLifecycle());
                 
@@ -234,7 +225,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         
         accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, w);
         
-        final JcrRegistryImpl registry = this;
         executeWithNotFound(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 
@@ -263,7 +253,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         checked = checked.getParent();
                     }
                     
-                    JcrWorkspace toWkspc = new JcrWorkspace(registry, parentNode);
+                    JcrWorkspace toWkspc = new JcrWorkspace(localWorkspaceManager, parentNode);
                     try {
                         accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, toWkspc);
                     } catch (AccessException e) {
@@ -281,33 +271,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         });
     }
 
-    public void deleteWorkspace(final String id) throws RegistryException, NotFoundException, AccessException {
-        accessControlManager.assertAccess(Permission.DELETE_WORKSPACE);
-
-        final JcrRegistryImpl registry = this;
-        executeWithNotFound(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                
-                try {
-                    Node node = getNodeByUUID(id);
-
-                    JcrWorkspace wkspc = new JcrWorkspace(registry, node);
-                    String path = wkspc.getPath();
-                    
-                    node.remove();
-
-                    session.save();
-                    
-                    WorkspaceDeletedEvent evt = new WorkspaceDeletedEvent(path);
-                    evt.setUser(SecurityUtils.getCurrentUser());
-                    eventManager.fireEvent(evt);
-                } catch (ItemNotFoundException e) {
-                    throw new RuntimeException(new NotFoundException(id));
-                }
-                return null;
-            }
-        });
-    }
 
     public Workspace createWorkspace(final Workspace parent, 
                                      final String name) throws DuplicateItemException, RegistryException, AccessException {
@@ -316,8 +279,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         // we should throw an error, but lets be defensive for now
         final String escapedName = JcrUtil.escape(name);
 
-        final JcrRegistryImpl registry = this;
-        
         return (Workspace) executeAndDewrapWithDuplicate(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Collection<Workspace> workspaces = parent.getWorkspaces();
@@ -336,7 +297,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 node.setProperty(JcrWorkspace.CREATED, now);
                 node.setProperty(JcrWorkspace.UPDATED, now);
                 
-                JcrWorkspace workspace = new JcrWorkspace(registry, node);
+                JcrWorkspace workspace = new JcrWorkspace(localWorkspaceManager, node);
                 workspace.setName(escapedName);
                 workspace.setDefaultLifecycle(lifecycleManager.getDefaultLifecycle());
                 workspaces.add(workspace);
@@ -394,7 +355,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
                 if (!n.getName().equals("jcr:system")) {
 
-                    JcrWorkspace wkspc = new JcrWorkspace(this, n);
+                    JcrWorkspace wkspc = new JcrWorkspace(localWorkspaceManager, n);
                     accessControlManager.assertAccess(Permission.READ_WORKSPACE, wkspc);
                     
                     workspaceCol.add(wkspc);
@@ -416,7 +377,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         ArrayList<Artifact> artifacts = new ArrayList<Artifact>();
         try {
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
-                JcrArtifact artifact = new JcrArtifact(jw, itr.nextNode(), this);
+                JcrArtifact artifact = new JcrArtifact(jw, itr.nextNode(), localWorkspaceManager);
                 
                 try {
                     accessControlManager.assertAccess(Permission.READ_ARTIFACT, artifact);
@@ -457,8 +418,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private Artifact buildArtifact(Node node)
         throws ItemNotFoundException, AccessDeniedException, RepositoryException {
         Node wNode = node.getParent();
-        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(this, wNode), 
-                                               node, this);
+        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(localWorkspaceManager, wNode), 
+                                               node, localWorkspaceManager);
 
         setupContentHandler(artifact);
 
@@ -535,15 +496,14 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     
     public ArtifactVersion getArtifactVersion(final String id) throws NotFoundException, RegistryException, AccessException {
-        final JcrRegistryImpl registry = this;
         return (ArtifactVersion) executeWithNotFound(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node node = session.getNodeByUUID(id);
                 Node aNode = node.getParent();
                 Node wNode = aNode.getParent();
                 
-                JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(registry, wNode), 
-                                                       aNode, registry);
+                JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(localWorkspaceManager, wNode), 
+                                                       aNode, localWorkspaceManager);
 
                 try {
                     accessControlManager.assertAccess(Permission.READ_ARTIFACT, artifact);
@@ -572,7 +532,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
     
     public Artifact getArtifact(final Workspace w, final String name) throws NotFoundException {
-        final JcrRegistryImpl registry = this;
         Artifact a = (Artifact) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 QueryManager qm = getQueryManager(session);
@@ -588,7 +547,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 if (nodes.hasNext()) {
                     Node node = nodes.nextNode();
-                    JcrArtifact artifact = new JcrArtifact(w, node, registry);
+                    JcrArtifact artifact = new JcrArtifact(w, node, localWorkspaceManager);
                     
                     try {
                         accessControlManager.assertAccess(Permission.READ_ARTIFACT, artifact);
@@ -611,213 +570,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return a;
     }
 
-    public ArtifactResult createArtifact(Workspace workspace, Object data, String versionLabel, User user) 
-        throws RegistryException, ArtifactPolicyException, MimeTypeParseException, DuplicateItemException, AccessException {
-        accessControlManager.assertAccess(Permission.READ_ARTIFACT);
-
-        ContentHandler ch = contentService.getContentHandler(data.getClass());
-        
-        if (ch == null) {
-            throw new RegistryException(new Message("UNKNOWN_TYPE", BundleUtils.getBundle(getClass()), data.getClass()));
-        }
-        
-        MimeType ct = ch.getContentType(data);
-        String name = ch.getName(data);
-        
-        return createArtifact(workspace, null, data, name, versionLabel, ct, user);
-    }
-
-    public ArtifactResult createArtifact(final Workspace workspace, 
-                                         final InputStream is, 
-                                         final Object data,
-                                         final String name, 
-                                         final String versionLabel,
-                                         final MimeType contentType,
-                                         final User user)
-        throws RegistryException, ArtifactPolicyException, DuplicateItemException {
-        
-        if (user == null) {
-            throw new NullPointerException("User cannot be null.");
-        }
-        if (name == null) {
-            throw new NullPointerException("Artifact name cannot be null.");
-        }
-        
-        final JcrRegistryImpl registry = this;
-        return (ArtifactResult) executeAndDewrap(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node workspaceNode = ((JcrWorkspace)workspace).getNode();
-                Node artifactNode;
-                try {
-                    artifactNode = workspaceNode.addNode(ISO9075.encode(name), ARTIFACT_NODE_TYPE);
-                } catch (javax.jcr.ItemExistsException e) {
-                    throw new RuntimeException(new DuplicateItemException(name));
-                }
-                
-                artifactNode.addMixin("mix:referenceable");
-                Node versionNode = artifactNode.addNode(versionLabel, ARTIFACT_VERSION_NODE_TYPE);
-                versionNode.addMixin("mix:referenceable");
-
-                // set the version as a property so we can search via it as local-name() isn't supported.
-                // See JCR-696
-                versionNode.setProperty(JcrVersion.VERSION, versionLabel);
-                
-                JcrArtifact artifact = new JcrArtifact(workspace, artifactNode, registry);
-                artifact.setName(name);
-                
-                ContentHandler ch = initializeContentHandler(artifact, name, contentType);
-                
-                // set up the initial version
-                
-                Calendar now = Calendar.getInstance();
-                now.setTime(new Date());
-                versionNode.setProperty(JcrVersion.CREATED, now);
-                versionNode.setProperty(JcrVersion.LATEST, true);
-                
-                Node resNode = createVersionContentNode(versionNode, is, contentType, now);
-                
-                JcrVersion jcrVersion = new JcrVersion(artifact, versionNode, resNode);
-
-                // Store the data
-                Object loadedData = null;
-                if (data != null) {
-                    jcrVersion.setData(data);
-                    InputStream dataStream = ch.read(data);
-                    resNode.setProperty("jcr:data", dataStream);
-                    loadedData = data;
-                } else {
-                    InputStream dataStream = jcrVersion.getStream();
-                    jcrVersion.setData(ch.read(dataStream, workspace));
-                    loadedData = jcrVersion.getData();
-                }
-                
-                if (ch instanceof XmlContentHandler) {
-                    XmlContentHandler xch = (XmlContentHandler) ch;
-                    artifact.setDocumentType(xch.getDocumentType(loadedData));
-                    ch = contentService.getContentHandler(artifact.getDocumentType());
-                }
-    
-                jcrVersion.setAuthor(user);
-                jcrVersion.setLatest(true);
-                jcrVersion.setDefault(true);
-                jcrVersion.setEnabled(true);
-                
-                try {
-                    Set<Item<?>> dependencies = ch.detectDependencies(loadedData, workspace);
-                    
-                    jcrVersion.addLinks(dependencies, true, linkTypeDao.get(LinkType.DEPENDS));
-                    
-                    Lifecycle lifecycle = workspace.getDefaultLifecycle();
-                    jcrVersion.setPhase(lifecycle.getInitialPhase());                    
-                    
-                    List<ArtifactVersion> versions = new ArrayList<ArtifactVersion>();
-                    versions.add(jcrVersion);
-                    artifact.setVersions(versions);
-
-                    if (log.isDebugEnabled())
-                    {
-                        log.debug("Created artifact " + artifact.getId());
-                    }
-
-                    ArtifactResult result = approve(session, artifact, null, jcrVersion, user);
-
-                    // fire the event
-                    ArtifactCreatedEvent event = new ArtifactCreatedEvent(result.getArtifactVersion().getPath());
-                    event.setUser(SecurityUtils.getCurrentUser());
-                    eventManager.fireEvent(event);
-
-                    return result;
-                } catch (RegistryException e) {
-                    // gets unwrapped by executeAndDewrap
-                    throw new RuntimeException(e);
-                } catch (NotFoundException e) {
-                    throw new RuntimeException(e);
-        }
-            }
-
-        });
-    }
-
-    protected Node createVersionContentNode(Node versionNode, final InputStream is,
-                                            final MimeType contentType, Calendar now)
-        throws ItemExistsException, PathNotFoundException, NoSuchNodeTypeException, LockException,
-        VersionException, ConstraintViolationException, RepositoryException, ValueFormatException {
-        // these are required since we inherit from nt:file
-        Node resNode = versionNode.addNode("jcr:content", "nt:resource");
-        resNode.setProperty("jcr:mimeType", contentType.toString());
-//        resNode.setProperty("jcr:encoding", "");
-        resNode.setProperty("jcr:lastModified", now);
-
-        if (is != null) {
-            resNode.setProperty(JcrVersion.JCR_DATA, is);
-        }
-        return resNode;
-    }
-
-    protected ContentHandler initializeContentHandler(JcrArtifact artifact, 
-                                                      final String name,
-                                                      MimeType contentType) {
-        ContentHandler ch = null;
-        if ("application/octet-stream".equals(contentType.toString())) {
-            String ext = getExtension(name);
-            ArtifactType type = artifactTypeDao.getArtifactType(ext);
-            
-            try {
-                if (type == null && "xml".equals(ext)) {
-                    contentType = new MimeType("application/xml");
-                } else if (type != null) {
-                    contentType = new MimeType(type.getContentType());
-                    
-                    if (type.getDocumentTypes() != null && type.getDocumentTypes().size() > 0) {
-                        for (QName q : type.getDocumentTypes()) {
-                            ch = contentService.getContentHandler(q);
-                            if (ch != null) {
-                                break;
-                            }
-                        }
-                    }
-                }
-            } catch (MimeTypeParseException e) {
-                throw new RuntimeException(e);
-            }
-        } 
-        
-        if (ch == null) {
-            ch = contentService.getContentHandler(contentType);
-        }
-        
-        artifact.setContentType(contentType);
-        artifact.setContentHandler(ch);
-        
-        return ch;
-    }
-
-    private String getExtension(String name) {
-        int idx = name.lastIndexOf('.');
-        if (idx > 0) {
-            return name.substring(idx+1);
-        }
-        
-        return "";
-    }
-
-    private Object executeAndDewrap(JcrCallback jcrCallback) 
-        throws RegistryException, ArtifactPolicyException, DuplicateItemException {
-        try {
-            return execute(jcrCallback);
-        } catch (RuntimeException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof RegistryException) {
-                throw (RegistryException) cause;
-            } else if (cause instanceof DuplicateItemException) {
-                throw (DuplicateItemException) cause;
-            } else if (cause instanceof ArtifactPolicyException) {
-                throw (ArtifactPolicyException) cause;
-            } else {
-                throw e;
-            }
-        }
-    }
     private Object executeAndDewrapWithDuplicate(JcrCallback jcrCallback) 
         throws RegistryException, DuplicateItemException {
         try {
@@ -851,35 +603,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
         }
     }
-
-    private Object executeWithPolicy(JcrCallback jcrCallback) 
-        throws RegistryException, ArtifactPolicyException {
-        try {
-            return execute(jcrCallback);
-        } catch (RuntimeException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof RegistryException) {
-                throw (RegistryException) cause;
-            } else if (cause instanceof ArtifactPolicyException) {
-                throw (ArtifactPolicyException) cause;
-            } else {
-                throw e;
-            }
-        }
-    }
-    private Object executeWithRegistryException(JcrCallback jcrCallback) 
-        throws RegistryException, AccessException {
-        try {
-            return execute(jcrCallback);
-        } catch (RuntimeException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof RegistryException) {
-                throw (RegistryException) cause;
-            } else {
-                throw e;
-            }
-        }
-    }    
     
     private Object executeWithQueryException(JcrCallback jcrCallback) 
         throws RegistryException, QueryException {
@@ -896,242 +619,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
         }
     }
-
-    private ArtifactResult approve(Session session, 
-                                   Artifact artifact, 
-                                   JcrVersion previous, 
-                                   JcrVersion next,
-                                   User user)
-        throws RegistryException, RepositoryException {
-        List<ApprovalMessage> approvals = approve(previous, next);
-
-        // save this so the indexer will work
-        session.save();
-        
-        // index in a separate thread
-        indexManager.index(next);
-        
-        // save the "we're indexing" flag
-        session.save();
-        
-        return new ArtifactResult(artifact, next, approvals);
-    }
-
-    private List<ApprovalMessage> approve(ArtifactVersion previous, ArtifactVersion next) {
-        boolean approved = true;
-        
-        List<ApprovalMessage> approvals = policyManager.approve(previous, next);
-        for (ApprovalMessage a : approvals) {
-            if (!a.isWarning()) {
-                approved = false;
-                break;
-            }
-        }
-        
-        if (!approved) {
-            throw new RuntimeException(new ArtifactPolicyException(approvals));
-        }
-        return approvals;
-    }
     
-    public ArtifactResult createArtifact(Workspace workspace, 
-                                         String contentType, 
-                                         String name,
-                                         String versionLabel, 
-                                         InputStream inputStream, 
-                                         User user) 
-        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, DuplicateItemException, AccessException {
-        accessControlManager.assertAccess(Permission.READ_ARTIFACT);
-        contentType = trimContentType(contentType);
-        MimeType ct = new MimeType(contentType);
-
-        return createArtifact(workspace, inputStream, null, name, versionLabel, ct, user);
-    }
-
-    private Object getData(Workspace workspace, MimeType contentType, InputStream inputStream) 
-        throws RegistryException, IOException {
-        ContentHandler ch = contentService.getContentHandler(contentType);
-
-        if (ch == null) {
-            throw new RegistryException(new Message("UNSUPPORTED_CONTENT_TYPE", BundleUtils.getBundle(getClass()), contentType));
-        }
-
-        return ch.read(inputStream, workspace);
-    }
-
-
-    public ArtifactResult newVersion(Artifact artifact, 
-                                     Object data, 
-                                     String versionLabel, 
-                                     User user)
-        throws RegistryException, ArtifactPolicyException, IOException, DuplicateItemException, AccessException {
-        return newVersion(artifact, null, data, versionLabel, user);
-    }
-
-    public ArtifactResult newVersion(final Artifact artifact, 
-                                     final InputStream inputStream, 
-                                     final String versionLabel, 
-                                     final User user) 
-        throws RegistryException, ArtifactPolicyException, IOException, DuplicateItemException, AccessException {
-        return newVersion(artifact, inputStream, null, versionLabel, user);
-    }
-    
-    protected ArtifactResult newVersion(final Artifact artifact, 
-                                        final InputStream inputStream, 
-                                        final Object data,
-                                        final String versionLabel, 
-                                        final User user) 
-        throws RegistryException, ArtifactPolicyException, IOException, DuplicateItemException, AccessException {
-        accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, artifact);
-        
-        if (user == null) {
-            throw new NullPointerException("User cannot be null!");
-        }
-        
-        return (ArtifactResult) executeAndDewrap(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                JcrArtifact jcrArtifact = (JcrArtifact) artifact;
-                Node artifactNode = jcrArtifact.getNode();
-                artifactNode.refresh(false);
-                JcrVersion previousLatest = ((JcrVersion)jcrArtifact.getDefaultOrLastVersion());
-                Node previousNode = previousLatest.getNode();
-                
-                previousLatest.setDefault(false);
-                previousLatest.setLatest(false);
-
-                ContentHandler ch = contentService.getContentHandler(jcrArtifact.getContentType());
-                
-                // create a new version node
-                Node versionNode = artifactNode.addNode(versionLabel, ARTIFACT_VERSION_NODE_TYPE);
-                versionNode.addMixin("mix:referenceable");
-
-                // set the version as a property so we can search via it as local-name() isn't supported.
-                // See JCR-696
-                versionNode.setProperty(JcrVersion.VERSION, versionLabel);
-                
-                Calendar now = Calendar.getInstance();
-                now.setTime(new Date());
-                versionNode.setProperty(JcrVersion.CREATED, now);
-                
-                Node resNode = createVersionContentNode(versionNode, 
-                                                        inputStream, 
-                                                        jcrArtifact.getContentType(), 
-                                                        now);
-                
-                JcrVersion next = new JcrVersion(jcrArtifact, versionNode, resNode);
-                next.setDefault(true);
-                next.setLatest(true);
-                
-                try {
-                    // Store the data
-                    if (inputStream != null) {
-                        InputStream s = next.getStream();
-                        Object data = getData(artifact.getParent(), artifact.getContentType(), s);
-                        next.setData(data);
-                    } else {
-                        next.setData(data);
-                        resNode.setProperty(JcrVersion.JCR_DATA, ch.read(data));
-                    }
-                    
-                    next.setAuthor(user);
-                    next.setLatest(true);
-                    next.setEnabled(true);
-                    
-                    // Add it as the most recent version
-                    ((List<ArtifactVersion>)jcrArtifact.getVersions()).add(next);
-                    
-                    Lifecycle lifecycle = jcrArtifact.getParent().getDefaultLifecycle();
-                    next.setPhase(lifecycle.getInitialPhase());        
-                    
-                    ch.addMetadata(next);
-                    
-                    try {
-                        Property pNames = previousNode.getProperty(AbstractJcrItem.PROPERTIES);
-                    
-                        for (Value name : pNames.getValues()) {
-                            Property prop = previousNode.getProperty(name.getString());
-                            
-                            if (prop.getDefinition().isMultiple()) {
-                                versionNode.setProperty(prop.getName(), prop.getValues());
-                            } else {
-                                versionNode.setProperty(prop.getName(), prop.getValue());
-                            }
-                        }
-                        
-                        versionNode.setProperty(pNames.getName(), pNames.getValues());
-                    } catch (PathNotFoundException e) {
-                        // ignore?
-                    }
-
-                    ArtifactResult result = approve(session, artifact, previousLatest, next, user);
-
-                    // fire the event
-                    ArtifactVersionCreatedEvent event = new ArtifactVersionCreatedEvent(
-                            result.getArtifact().getPath(), result.getArtifactVersion().getVersionLabel());
-                    event.setUser(SecurityUtils.getCurrentUser());
-                    eventManager.fireEvent(event);
-
-                    return result;
-                } catch (RegistryException e) {
-                    // this will get dewrapped
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-    }
-
-    protected void copy(Node original, Node parent) throws RepositoryException {
-        Node node = parent.addNode(original.getName());
-        node.addMixin("mix:referenceable");
-        
-        for (PropertyIterator props = original.getProperties(); props.hasNext();) {
-            Property p = props.nextProperty();
-            if (!p.getName().startsWith("jcr:")) {
-                node.setProperty(p.getName(), p.getValue());
-            }
-        }
-        
-        for (NodeIterator nodes = original.getNodes(); nodes.hasNext();) {
-            Node child = nodes.nextNode();
-            if (!child.getName().startsWith("jcr:")) {
-                copy(child, node);
-            }
-        }
-    }
-    
-    public void setDefaultVersion(final ArtifactVersion version, 
-                                  final User user) throws RegistryException,
-        ArtifactPolicyException {
-        execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                ArtifactVersion oldDefault = version.getParent().getDefaultOrLastVersion();
-                
-                ((JcrVersion) oldDefault).setDefault(false);
-                ((JcrVersion) version).setDefault(true);
-                
-                session.save();
-                return null;
-            }
-        });
-    }
-    
-    public void setEnabled(final ArtifactVersion version, 
-                           final boolean enabled,
-                           final User user) throws RegistryException,
-        ArtifactPolicyException {
-        executeWithPolicy(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                if (enabled) approve(version.getPrevious(), version);
-                
-                ((JcrVersion) version).setEnabled(enabled);
-                
-                session.save();
-                return null;
-            }
-        });
-        
-    }
-
     public void save(Artifact artifact) throws RegistryException, AccessException {
         accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, artifact);
         
@@ -1176,69 +664,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         eventManager.fireEvent(event);
     }
 
-    public void delete(final Artifact artifact) throws RegistryException, AccessException {
-        accessControlManager.assertAccess(Permission.DELETE_ARTIFACT, artifact);
-
-        executeWithRegistryException(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                String path = artifact.getPath();
-                ((JcrArtifact) artifact).getNode().remove();
-
-                session.save();
-
-                ArtifactDeletedEvent event = new ArtifactDeletedEvent(path);
-                event.setUser(SecurityUtils.getCurrentUser());
-                eventManager.fireEvent(event);
-
-                return null;
-            }
-        });
-    }
     
-    public void delete(final ArtifactVersion version) throws RegistryException, AccessException {
-        accessControlManager.assertAccess(Permission.DELETE_ARTIFACT, version.getParent());
-
-        executeWithRegistryException(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                try {
-                    if (version.getParent().getVersions().size() == 1) {
-                        delete(version.getParent());
-                        return null;
-                    }
-                    
-                    User user = SecurityUtils.getCurrentUser();
-                    Artifact artifact = version.getParent();
-                    artifact.getVersions().remove(version);
-                    
-                    if (((JcrVersion)version).isLatest()) {
-                        JcrVersion newLatest = (JcrVersion) artifact.getVersions().get(0);
-                        
-                        newLatest.setLatest(true);
-                    }
-                    
-                    String label = version.getVersionLabel();
-    
-                    ((JcrVersion) version).getNode().remove();
-
-                    final String path = artifact.getPath();
-    
-                    session.save();
-
-                    ArtifactVersionDeletedEvent event = new ArtifactVersionDeletedEvent(path, label);
-                    event.setUser(SecurityUtils.getCurrentUser());
-                    eventManager.fireEvent(event);
-
-                    return null;
-
-                } catch (RegistryException e) {
-                    throw new RuntimeException(e);
-                } catch (AccessException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-    }
-
     private QueryManager getQueryManager(Session session) throws RepositoryException {
         return session.getWorkspace().getQueryManager();
     }
@@ -1253,7 +679,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public SearchResults search(final org.mule.galaxy.query.Query query) 
         throws RegistryException, QueryException {
-        final JcrRegistryImpl registry = this;
         return (SearchResults) executeWithQueryException(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                         
@@ -1306,12 +731,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     // so we need to traverse the hierarchy to find the right node
                     if (av) {
                         Node artifactNode = node;
-                        while (!artifactNode.getPrimaryNodeType().getName().equals(ARTIFACT_NODE_TYPE)) {
+                        while (!artifactNode.getPrimaryNodeType().getName().equals(JcrWorkspaceManager.ARTIFACT_NODE_TYPE)) {
                             artifactNode = node.getParent();
                         }
-                        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(registry, artifactNode.getParent()), 
+                        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(localWorkspaceManager, artifactNode.getParent()), 
                                                                artifactNode, 
-                                                               registry);
+                                                               localWorkspaceManager);
                         try {
                             accessControlManager.assertAccess(Permission.READ_ARTIFACT, artifact);
 
@@ -1321,11 +746,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                             // don't include artifacts the user can't read in the search
                         }
                     } else {
-                        while (!node.getPrimaryNodeType().getName().equals(ARTIFACT_NODE_TYPE)) {
+                        while (!node.getPrimaryNodeType().getName().equals(JcrWorkspaceManager.ARTIFACT_NODE_TYPE)) {
                             node = node.getParent();
                         }
-                        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(registry, node.getParent()), node,
-                                                               registry);
+                        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(localWorkspaceManager, node.getParent()), node,
+                        	localWorkspaceManager);
                         
                         try {
                             accessControlManager.assertAccess(Permission.READ_ARTIFACT, artifact);
@@ -1526,8 +951,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     Node versionNode = linkNode.getParent().getParent();
                     final Node artifactNode = versionNode.getParent();
                     
-                    JcrWorkspace workspace = new JcrWorkspace(registry, artifactNode.getParent());
-                    final JcrArtifact art = new JcrArtifact(workspace, artifactNode, registry);
+                    JcrWorkspace workspace = new JcrWorkspace(localWorkspaceManager, artifactNode.getParent());
+                    JcrArtifact art = new JcrArtifact(workspace, artifactNode, localWorkspaceManager);
                     JcrVersion version = new JcrVersion(art, versionNode);
                     
                     links.add(new LinkImpl(version, linkNode, registry));
@@ -1568,18 +993,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     public void deletePropertyDescriptor(String id) throws RegistryException {
         propertyDescriptorDao.delete(id);
     }
-    protected String escapeNodeName(String right) {
-        return ISO9075.encode(right);
-    }
-
-    private String trimContentType(String contentType) {
-        int comma = contentType.indexOf(';');
-        if (comma != -1) {
-            contentType = contentType.substring(0, comma);
-        }
-        return contentType;
-    }
-
+    
     public void initialize() throws Exception {
         
         Session session = getSessionFactory().getSession();
@@ -1598,7 +1012,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                                            "galaxy:workspace");
             node.addMixin("mix:referenceable");
 
-            JcrWorkspace w = new JcrWorkspace(this, node);
+            JcrWorkspace w = new JcrWorkspace(localWorkspaceManager, node);
             w.setName(settings.getDefaultWorkspaceName());
 
             workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "2");
@@ -1657,12 +1071,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
 
-    public LifecycleManager getLifecycleManager(Workspace w) {
-    return lifecycleManager;
-    }
-    public CommentManager getCommentManager(Workspace w) {
-    return commentManager;
-    }
     
     public ActivityManager getActivityManager() {
         return activityManager;
@@ -1695,11 +1103,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     public void setUserManager(UserManager userManager) {
         this.userManager = userManager;
     }
-
-    public void setIndexManager(IndexManager indexManager) {
-        this.indexManager = indexManager;
-    }
-
     public void setPolicyManager(PolicyManager policyManager) {
         this.policyManager = policyManager;
     }
@@ -1720,14 +1123,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         this.propertyDescriptorDao = propertyDescriptorDao;
     }
 
-    public void setArtifactTypeDao(ArtifactTypeDao artifactTypeDao) {
-        this.artifactTypeDao = artifactTypeDao;
-    }
-
-    public void setCommentManager(CommentManager commentManager) {
-        this.commentManager = commentManager;
-    }
-
     public Dao<LinkType> getLinkTypeDao() {
         return linkTypeDao;
     }
@@ -1736,6 +1131,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         this.linkTypeDao = linkTypeDao;
     }
     
+    public void setLocalWorkspaceManager(JcrWorkspaceManager localWorkspaceManager) {
+        this.localWorkspaceManager = localWorkspaceManager;
+        localWorkspaceManager.setRegistry(this);
+    }
+
     public EventManager getEventManager() {
         return eventManager;
     }

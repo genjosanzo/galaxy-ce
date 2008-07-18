@@ -46,7 +46,6 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
     public static final String ID_PREFIX = "urn:galaxy:workspaces:";
     
     private Registry registry;
-    private PolicyManager policyManager;
     
     public WorkspaceCollection(Registry registry) {
         super();
@@ -69,9 +68,7 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
         }
         
         try {
-            registry.deleteWorkspace(w.getId());
-        } catch (NotFoundException e) {
-            throw new ResponseContextException(404);
+            w.delete();
         } catch (RegistryException e) {
             throw new ResponseContextException(500, e);
         } catch (AccessException e) {

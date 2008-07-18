@@ -15,12 +15,15 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Link;
 import org.mule.galaxy.LinkType;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
 public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
@@ -43,14 +46,14 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
     private Node contentNode;
     
     public JcrVersion(Node v,
-                      JcrRegistryImpl registry) throws RepositoryException  {
-        super(v, registry);
+                      JcrWorkspaceManager manager) throws RepositoryException  {
+        super(v, manager);
     }
     
     public JcrVersion(JcrArtifact parent, 
                       Node v,
                       Node contentNode) throws RepositoryException  {
-        super(v, parent != null ? parent.getRegistry() : null);
+        super(v, parent != null ? parent.getManager() : null);
         this.parent = parent;
         this.contentNode = contentNode;
     }
@@ -87,7 +90,7 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
             return null;
         }
         
-        Phase p = parent.getRegistry().getLifecycleManager().getPhaseById(phase);
+        Phase p = parent.getManager().getLifecycleManager().getPhaseById(phase);
         
         return p;
     }
@@ -115,16 +118,6 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
             } else {
                 JcrUtil.setProperty(JcrVersion.LATEST, Boolean.TRUE, node);
             }
-            
-            update();
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void setEnabled(boolean enabled) {
-        try {
-            JcrUtil.setProperty(JcrVersion.ENABLED, enabled, node);
             
             update();
         } catch (RepositoryException e) {
@@ -240,7 +233,7 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
             
             if (authId != null) {
                 try {
-                    author = parent.getRegistry().getUserManager().get(authId);
+                    author = parent.getManager().getUserManager().get(authId);
                 } catch (NotFoundException e) {
                     // TODO
                 }
@@ -255,4 +248,28 @@ public class JcrVersion extends AbstractJcrItem implements ArtifactVersion {
         setNodeProperty(AUTHOR_ID, author.getId());
     }
 
+    public void delete() throws RegistryException,
+	    AccessException {
+	parent.getManager().delete(this);
+    }
+
+    public void setAsDefaultVersion()
+	    throws RegistryException, ArtifactPolicyException {
+	parent.getManager().setDefaultVersion(this);
+    }
+
+    public void setEnabled(boolean enabled)
+	    throws RegistryException, ArtifactPolicyException {
+	parent.getManager().setEnabled(this, enabled);
+    }
+
+    public void setEnabledInternal(boolean enabled) {
+        try {
+            JcrUtil.setProperty(JcrVersion.ENABLED, enabled, node);
+            
+            update();
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
