@@ -210,6 +210,11 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl?version=0.2", e.getContentSrc().toString());
         assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl?version=0.2", 
                      e.getLink("edit-media").getHref().toString());
+       
+        Element info = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "artifact-info"));
+        assertNotNull(info);
+        assertEquals("application/xml", info.getAttributeValue("mediaType"));
+        assertEquals("{http://schemas.xmlsoap.org/wsdl/}definitions", info.getAttributeValue("documentType"));
         
         Element lifecycleEl = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "lifecycle"));
         assertNotNull(lifecycleEl);

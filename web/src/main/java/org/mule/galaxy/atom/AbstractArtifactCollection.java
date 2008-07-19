@@ -102,6 +102,16 @@ public abstract class AbstractArtifactCollection
         throws ResponseContextException {
         String link = super.addEntryDetails(request, e, feedIri, entryObj);
 
+        Artifact artifact = entryObj.getParent();
+
+        Element info = factory.newElement(new QName(NAMESPACE, "artifact-info"));
+        info.setAttributeValue("mediaType", artifact.getContentType().toString());
+        e.addExtension(info);
+        
+        if (artifact.getDocumentType() != null) {
+            info.setAttributeValue("documentType", artifact.getDocumentType().toString());
+        }
+        
         Element metadata = factory.newElement(new QName(NAMESPACE, "metadata"));
         
         boolean showHidden = BooleanUtils.toBoolean(request.getParameter("showHiddenProperties"));
