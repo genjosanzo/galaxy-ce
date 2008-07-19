@@ -389,7 +389,7 @@ public class JcrUtil {
         }
     }
 
-    public static void doInTransaction(SessionFactory sf, JcrCallback jcrCallback) throws IOException, RepositoryException {
+    public static Object doInTransaction(SessionFactory sf, JcrCallback jcrCallback) throws IOException, RepositoryException {
         Session session = null;
         boolean participate = false;
         if (TransactionSynchronizationManager.hasResource(sf)) {
@@ -403,7 +403,7 @@ public class JcrUtil {
         }
 
         try {
-            jcrCallback.doInJcr(session);
+            return jcrCallback.doInJcr(session);
         } finally {
             if (!participate) {
                 TransactionSynchronizationManager.unbindResource(sf);

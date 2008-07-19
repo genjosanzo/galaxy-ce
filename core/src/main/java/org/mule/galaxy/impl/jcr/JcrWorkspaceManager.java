@@ -742,14 +742,14 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
         });
     }
     
-    public void delete(final JcrWorkspace wkspc) throws RegistryException, AccessException {
+    public void delete(final Workspace wkspc) throws RegistryException, AccessException {
         accessControlManager.assertAccess(Permission.DELETE_WORKSPACE);
 
         executeWithRegistryException(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
         	String path = wkspc.getPath();
                 
-        	wkspc.getNode().remove();
+        	((JcrWorkspace)wkspc).getNode().remove();
 
         	session.save();
         	
@@ -762,6 +762,10 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
         });
     }
     
+    public void attachTo(Workspace workspace) {
+	throw new UnsupportedOperationException();
+    }
+
     private Object executeWithPolicy(JcrCallback jcrCallback) 
         throws RegistryException, ArtifactPolicyException {
         try {

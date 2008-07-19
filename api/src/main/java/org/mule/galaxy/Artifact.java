@@ -38,8 +38,6 @@ public interface Artifact extends Item<Workspace> {
     
     QName getDocumentType();
     
-    void setDocumentType(QName documentType);
-    
     List<ArtifactVersion> getVersions();
 
     ArtifactVersion getVersion(String versionName);

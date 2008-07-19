@@ -148,7 +148,7 @@ public class AbstractAtomTest extends TestCase {
      * The webapp relative directory varies depending on run from Maven, Eclipse and IDEA
      * this will check each possiblilty to return an existing location
      */
-    protected final File getWebappDirectory() 
+    protected File getWebappDirectory() 
     {
         File f = new File("./src/main/webapp");
         if(!f.exists())
