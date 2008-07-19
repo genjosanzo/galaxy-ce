@@ -46,7 +46,7 @@ public class IndexTest extends AbstractGalaxyTest
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
 
-        ArtifactResult ar = registry.createArtifact(workspace, "application/xml",
+        ArtifactResult ar = workspace.createArtifact("application/xml",
                                                     "test-applicationContext.xml",
                                                     "0.1", stream, getAdmin());
         Artifact artifact = ar.getArtifact();
