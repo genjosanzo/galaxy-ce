@@ -1,7 +1,7 @@
 package org.mule.galaxy.plugins.mule2;
 
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.OpRestriction;
@@ -21,7 +21,7 @@ public class QueryTest extends AbstractGalaxyTest {
         // Import a document which should now be indexed
         Artifact muleArtifact = importHelloMule2();
 
-        Workspace workspace = muleArtifact.getParent();
+        Workspace workspace = (Workspace) muleArtifact.getParent();
 
         // Try out search!
         Set results = registry.search(new Query(Artifact.class).workspaceId(workspace.getId())).getResults();
@@ -75,12 +75,12 @@ public class QueryTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
 
-        ArtifactResult ar = workspace.createArtifact("application/xml",
+        EntryResult ar = workspace.createArtifact("application/xml",
                                                      "hello-config.xml",
                                                      "0.1", 
                                                      helloWsdl, 
                                                      getAdmin());
-        return ar.getArtifact();
+        return (Artifact) ar.getEntry();
     }
 
 }

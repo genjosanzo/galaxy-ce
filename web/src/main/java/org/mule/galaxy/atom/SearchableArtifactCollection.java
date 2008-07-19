@@ -35,13 +35,13 @@ import org.apache.abdera.protocol.server.RequestContext.Scope;
 import org.apache.abdera.protocol.server.context.EmptyResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
@@ -84,7 +84,7 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
         if (doc.getParent().getName() != null) {
             return doc.getParent().getName();
         } else {
-            return "(No title) " + doc.getParent().getDocumentType().toString();
+            return "(No title) " + ((Artifact)doc.getParent()).getDocumentType().toString();
         }
     }
 
@@ -123,7 +123,7 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
                         if (next instanceof ArtifactVersion) {
                             av = (ArtifactVersion) next;
                         } else {
-                            av = ((Artifact) next).getDefaultOrLastVersion();
+                            av = (ArtifactVersion) ((Artifact) next).getDefaultOrLastVersion();
                         }
                         
                         return av;
@@ -140,13 +140,13 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
     }
 
     @Override
-    protected ArtifactResult postMediaEntry(String slug, 
+    protected EntryResult postMediaEntry(String slug, 
                                             MimeType mimeType, 
                                             String version,
                                             InputStream inputStream, 
                                             User user,
                                             RequestContext request)
-        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, ResponseContextException, DuplicateItemException, AccessException  {
+        throws RegistryException, PolicyException, IOException, MimeTypeParseException, ResponseContextException, DuplicateItemException, AccessException  {
 
         Workspace workspace = (Workspace) request.getAttribute(Scope.REQUEST, ArtifactResolver.WORKSPACE);
 
@@ -193,13 +193,13 @@ public class SearchableArtifactCollection extends AbstractArtifactCollection {
                          MimeType contentType, String slug, 
                          InputStream inputStream, RequestContext request)
         throws ResponseContextException {
-        Artifact a = artifactVersion.getParent();
+        Artifact a = (Artifact) artifactVersion.getParent();
         
         try {
             a.newVersion(inputStream, getVersion(request), getUser());
         } catch (RegistryException e) {
             throw new ResponseContextException(500, e);
-        } catch (ArtifactPolicyException e) {
+        } catch (PolicyException e) {
            throw createArtifactPolicyExceptionResponse(e);
         } catch (IOException e) {
             throw new ResponseContextException(500, e);

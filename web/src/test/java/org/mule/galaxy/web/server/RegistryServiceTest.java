@@ -13,7 +13,7 @@ import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.providers.AuthenticationProvider;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.Registry;
@@ -60,12 +60,12 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
 
-        ArtifactResult ar = workspace.createArtifact("application/xml",
+        EntryResult ar = workspace.createArtifact("application/xml",
                                                      "hello-noOperation.wsdl",
                                                      "0.1", 
                                                      helloWsdl, 
                                                      getAdmin());
-        return ar.getArtifact();
+        return (Artifact) ar.getEntry();
     }
 
     public void testArtifactOperations() throws Exception

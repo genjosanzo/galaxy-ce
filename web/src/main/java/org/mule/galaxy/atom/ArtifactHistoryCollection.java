@@ -27,7 +27,7 @@ import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
@@ -52,7 +52,7 @@ public class ArtifactHistoryCollection extends AbstractArtifactCollection {
     }
 
     @Override
-    protected ArtifactResult postMediaEntry(String slug,
+    protected EntryResult postMediaEntry(String slug,
                                             MimeType mimeType, 
                                             String version,
                                             InputStream inputStream, 
@@ -76,9 +76,10 @@ public class ArtifactHistoryCollection extends AbstractArtifactCollection {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Iterable<ArtifactVersion> getEntries(RequestContext request) throws ResponseContextException {
-        return getArtifact(request).getVersions();
+        return (Iterable<ArtifactVersion>) getArtifact(request).getVersions();
     }
 
     @Override

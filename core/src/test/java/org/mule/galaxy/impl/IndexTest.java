@@ -10,8 +10,9 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.index.XPathIndexer;
 import org.mule.galaxy.impl.index.XQueryIndexer;
@@ -155,7 +156,7 @@ public class IndexTest extends AbstractGalaxyTest {
         // Import a document which should now be indexed
         Artifact artifact = importHelloWsdl();
 
-        ArtifactVersion version = artifact.getDefaultOrLastVersion();
+        EntryVersion version = artifact.getDefaultOrLastVersion();
         Object property = version.getProperty("wsdl.service");
         assertNotNull(property);
         assertTrue(property instanceof Collection);
@@ -238,13 +239,13 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
 
-        ArtifactResult ar = workspace.createArtifact("application/java-archive",
+        EntryResult ar = workspace.createArtifact("application/java-archive",
                                                      "test.jar",
                                                      "1",
                                                      stream,
                                                      getAdmin());
 
-        Artifact artifact = ar.getArtifact();
+        Artifact artifact = (Artifact) ar.getEntry();
 
         assertNotNull(artifact);
 
@@ -263,7 +264,7 @@ public class IndexTest extends AbstractGalaxyTest {
         String scriptSource = indexConfig.get("scriptSource");
         assertEquals("Wrong configuration saved to the JCR repo", "JarIndex.groovy", scriptSource);
 
-        ArtifactVersion latest = artifact.getDefaultOrLastVersion();
+        EntryVersion latest = artifact.getDefaultOrLastVersion();
 
         assertEquals(false, latest.getPropertyInfo("jar.entries").isVisible());
         // normal manifest property
@@ -298,17 +299,17 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
 
-        ArtifactResult ar = workspace.createArtifact("application/java-archive",
+        EntryResult ar = workspace.createArtifact("application/java-archive",
                                                      "test.jar",
                                                      "1",
                                                      stream,
                                                      getAdmin());
 
-        Artifact artifact = ar.getArtifact();
+        Artifact artifact = (Artifact) ar.getEntry();
 
         assertNotNull(artifact);
 
-        ArtifactVersion latest = artifact.getDefaultOrLastVersion();
+        EntryVersion latest = artifact.getDefaultOrLastVersion();
 
         // class
         List<String> annotations = (List<String>) latest.getProperty("java.annotations.level.class");

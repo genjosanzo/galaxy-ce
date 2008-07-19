@@ -47,7 +47,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         Phase dev = created.getNextPhases().iterator().next();
         
         Artifact artifact = importHelloWsdl();
-        ArtifactVersion version = artifact.getDefaultOrLastVersion();
+        ArtifactVersion version = (ArtifactVersion) artifact.getDefaultOrLastVersion();
         assertEquals(created, version.getPhase());
         
         assertFalse(lifecycleManager.isTransitionAllowed(version, created));

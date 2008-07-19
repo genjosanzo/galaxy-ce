@@ -35,9 +35,9 @@ public interface Registry {
     
     Collection<Workspace> getWorkspaces() throws RegistryException, AccessException;
     
-    Item<?> getRegistryItem(String id) throws NotFoundException, RegistryException, AccessException;
+    Item getRegistryItem(String id) throws NotFoundException, RegistryException, AccessException;
     
-    Item<?> getItemByPath(String path) throws NotFoundException, RegistryException, AccessException;
+    Item getItemByPath(String path) throws NotFoundException, RegistryException, AccessException;
 
     void move(Artifact artifact, String workspaceId) throws RegistryException, AccessException, NotFoundException;
     
@@ -75,10 +75,10 @@ public interface Registry {
 
     /* Link related operations */
     
-    void addLinks(Item<?> item, LinkType type, Item<?>... toLinkTo) throws RegistryException;
+    void addLinks(Item item, LinkType type, Item... toLinkTo) throws RegistryException;
 
     void removeLinks(Link... links) throws RegistryException;
     
-    Set<Link> getReciprocalLinks(Item<?> a) throws RegistryException;
+    Set<Link> getReciprocalLinks(Item a) throws RegistryException;
 
 }

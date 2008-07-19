@@ -23,13 +23,15 @@ import org.mule.galaxy.Link;
 import org.mule.galaxy.LinkType;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.activity.ActivityManager.EventType;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.DateUtil;
 import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.SecurityUtils;
 
-public abstract class AbstractJcrItem {
+public abstract class AbstractJcrItem implements Item {
 
     public static final String PROPERTIES = "properties";
     public static final String LOCKED = ".locked";
@@ -46,12 +48,21 @@ public abstract class AbstractJcrItem {
         this.manager = manager;
     }
 
+    public JcrWorkspaceManager getManager() {
+        return manager;
+    }
+
     public String getId() {
         try {
             return JcrWorkspaceManager.ID + "$" + node.getUUID();
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void delete() throws RegistryException,
+	    AccessException {
+	manager.delete(this);
     }
     
     public Node getNode() {
@@ -104,7 +115,7 @@ public abstract class AbstractJcrItem {
             
             manager.getActivityManager().logActivity(SecurityUtils.getCurrentUser(), 
         	    "Property " + name + " was set to: " + value, 
-                                        EventType.INFO);
+                    EventType.INFO);
             update();
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
@@ -272,11 +283,11 @@ public abstract class AbstractJcrItem {
         }
     }
 
-    public void addLinks(Set<Item<?>> links, boolean autoDetected, LinkType type) {
+    public void addLinks(Set<Item> links, boolean autoDetected, LinkType type) {
         try {
             Node linksNode = JcrUtil.getOrCreate(node, LINKS);
             
-            for (Item<?> i : links) {
+            for (Item i : links) {
                 addLink(autoDetected, linksNode, i, type);
             }
 
@@ -287,7 +298,7 @@ public abstract class AbstractJcrItem {
 
     private void addLink(boolean autoDetected, 
 	    Node linksNode, 
-	    org.mule.galaxy.Item<?> item,
+	    Item item,
 	    LinkType type) throws RepositoryException {
         Node dep = linksNode.addNode(UUID.randomUUID().toString(), LINK_NODE_TYPE);
         dep.addMixin("mix:referenceable");
@@ -296,7 +307,7 @@ public abstract class AbstractJcrItem {
         dep.setProperty(LinkImpl.RELATIONSHIP, type.getId());
     }
     
-    public void addLinks(Item<?>[] dependencies, boolean autoDetected, LinkType type) {
+    public void addLinks(Item[] dependencies, boolean autoDetected, LinkType type) {
         try {
             Node linksNode = JcrUtil.getOrCreate(node, LINKS);
             
@@ -317,8 +328,8 @@ public abstract class AbstractJcrItem {
                 Node dep = nodes.nextNode();
                 
                 // wonder if we can avoid the cast here? But the compiler doesn't
-                // like it when AbstractJcrItem extends Item<?>
-                links.add(new LinkImpl((Item<?>)this, dep, (JcrRegistryImpl) manager.getRegistry()));
+                // like it when AbstractJcrItem extends Item
+                links.add(new LinkImpl((Item)this, dep, (JcrRegistryImpl) manager.getRegistry()));
             }
             return links;
         } catch (RepositoryException e) {

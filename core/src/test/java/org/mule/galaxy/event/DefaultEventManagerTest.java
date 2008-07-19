@@ -1,11 +1,11 @@
 package org.mule.galaxy.event;
 
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.RegistryException;
@@ -15,6 +15,7 @@ import static org.mule.galaxy.event.DefaultEvents.WORKSPACE_DELETED;
 import org.mule.galaxy.event.annotation.BindToEvent;
 import org.mule.galaxy.event.annotation.BindToEvents;
 import org.mule.galaxy.event.annotation.OnEvent;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
@@ -271,7 +272,7 @@ public class DefaultEventManagerTest extends TestCase {
         public void setDocumentType(final QName documentType) {
         }
 
-        public List<ArtifactVersion> getVersions() {
+        public List<EntryVersion> getVersions() {
             return null;
         }
 
@@ -287,15 +288,15 @@ public class DefaultEventManagerTest extends TestCase {
             return null;
         }
 
-	public ArtifactResult newVersion(InputStream inputStream,
+	public EntryResult newVersion(InputStream inputStream,
 		String versionLabel, User user) throws RegistryException,
-		ArtifactPolicyException, IOException, DuplicateItemException,
+		PolicyException, IOException, DuplicateItemException,
 		AccessException {
 	    return null;
 	}
 
-	public ArtifactResult newVersion(Object data, String versionLabel,
-		User user) throws RegistryException, ArtifactPolicyException,
+	public EntryResult newVersion(Object data, String versionLabel,
+		User user) throws RegistryException, PolicyException,
 		IOException, DuplicateItemException, AccessException {
 	    return null;
 	}

@@ -1,6 +1,6 @@
-package org.mule.galaxy;
+package org.mule.galaxy.policy;
 
-import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.GalaxyException;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.Message;
 
@@ -10,13 +10,13 @@ import java.util.ResourceBundle;
 
 import org.apache.commons.lang.SystemUtils;
 
-public class ArtifactPolicyException extends GalaxyException {
+public class PolicyException extends GalaxyException {
 
-    private static final ResourceBundle BUNDLE = BundleUtils.getBundle(ArtifactPolicyException.class);
+    private static final ResourceBundle BUNDLE = BundleUtils.getBundle(PolicyException.class);
     
     private List<ApprovalMessage> approvals = Collections.emptyList();
 
-    public ArtifactPolicyException(List<ApprovalMessage> approvals) {
+    public PolicyException(List<ApprovalMessage> approvals) {
         super(new Message("ARTIFACT_NOT_APPROVED", BUNDLE));
         this.approvals = approvals;
     }

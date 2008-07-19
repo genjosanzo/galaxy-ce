@@ -4,14 +4,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 
+import javax.activation.MimeTypeParseException;
+
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
-import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.Entry;
+import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
@@ -29,23 +33,36 @@ public interface WorkspaceManager {
     
     Collection<Workspace> getWorkspaces() throws RegistryException, AccessException;
 
-    void delete(Workspace workspace) throws RegistryException, AccessException;
-    	
-    void delete(Artifact artifact) throws RegistryException, AccessException;
-    	
-    void delete(ArtifactVersion version) throws RegistryException, AccessException;
+    void delete(Item item) throws RegistryException, AccessException;
     
-    ArtifactResult newVersion(Artifact artifact, 
+    void setEnabled(final EntryVersion version, 
+            final boolean enabled) throws RegistryException, PolicyException;
+
+    EntryResult newVersion(Artifact artifact, 
             Object data, 
             String versionLabel, 
             User user)
-    	throws RegistryException, ArtifactPolicyException, IOException, DuplicateItemException, AccessException;
+    	throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException;
     
-    ArtifactResult newVersion(final Artifact artifact, 
+    EntryResult newVersion(final Artifact artifact, 
             final InputStream inputStream, 
             final String versionLabel, 
             final User user) 
-    	throws RegistryException, ArtifactPolicyException, IOException, DuplicateItemException, AccessException;
+    	throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException;
+    
+    EntryResult createArtifact(Workspace workspace, Object data, String versionLabel, User user) 
+    	throws RegistryException, PolicyException, MimeTypeParseException, DuplicateItemException, AccessException;
+    
+    EntryResult createArtifact(Workspace workspace, 
+            String contentType, 
+            String name,
+            String versionLabel, 
+            InputStream inputStream, 
+            User user) 
+    	throws RegistryException, PolicyException, IOException, MimeTypeParseException, DuplicateItemException, AccessException;
+    
+    EntryResult newEntry(Workspace workspace, String name, String versionLabel)
+   	throws DuplicateItemException, RegistryException, PolicyException, AccessException;
     
     /**
      * Attach this manager to the specified workspace.

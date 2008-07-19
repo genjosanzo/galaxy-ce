@@ -9,10 +9,10 @@
  */
 package org.mule.galaxy.plugins;
 
-import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 import java.io.InputStream;
@@ -41,7 +41,7 @@ public abstract class AbstractPolicyTest extends AbstractGalaxyTest
                 fail("Expected ArtifactPolicyException");
             }
         }
-        catch (ArtifactPolicyException e)
+        catch (PolicyException e)
         {
             if (!fail)
             {

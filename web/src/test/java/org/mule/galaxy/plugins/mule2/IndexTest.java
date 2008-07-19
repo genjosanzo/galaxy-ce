@@ -1,7 +1,7 @@
 package org.mule.galaxy.plugins.mule2;
 
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
@@ -49,10 +49,10 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
 
-        ArtifactResult ar = workspace.createArtifact("application/xml",
+        EntryResult ar = workspace.createArtifact("application/xml",
                                                     "hello-config.xml",
                                                     "0.1", helloWsdl, getAdmin());
-        Artifact artifact = ar.getArtifact();
+        Artifact artifact = (Artifact) ar.getEntry();
 
         JcrVersion version = (JcrVersion) artifact.getDefaultOrLastVersion();
         Object property = version.getProperty("mule2.service");

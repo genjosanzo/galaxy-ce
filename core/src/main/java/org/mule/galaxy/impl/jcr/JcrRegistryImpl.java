@@ -31,6 +31,7 @@ import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Link;
 import org.mule.galaxy.LinkType;
@@ -291,7 +292,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             
             // TODO: escaping?
             if (p.equals("..")) {
-                w = w.getParent();
+                w = ((Workspace)w.getParent());
             } else if (!p.equals(".")) {
                 w = w.getWorkspace(p);
             }
@@ -322,7 +323,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 	return wm.getArtifacts(w);
     }
 
-    private WorkspaceManager getWorkspaceManager(Item<?> i) {
+    private WorkspaceManager getWorkspaceManager(Item i) {
 	return getWorkspaceManagerByItemId(i.getId());
     }
 
@@ -351,8 +352,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return artifact;
     }
 
-    public Item<?> getRegistryItem(final String id) throws NotFoundException, RegistryException, AccessException {
-        return (Item<?>) executeWithNotFound(new JcrCallback() {
+    public Item getRegistryItem(final String id) throws NotFoundException, RegistryException, AccessException {
+        return (Item) executeWithNotFound(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node node = session.getNodeByUUID(trimWorkspaceManagerId(id));
                 
@@ -376,7 +377,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
         });
     }
-    public Item<?> getItemByPath(String path) throws RegistryException, NotFoundException, AccessException {
+    public Item getItemByPath(String path) throws RegistryException, NotFoundException, AccessException {
         try {
             if (path.startsWith("/")) {
                 path = path.substring(1);
@@ -438,7 +439,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 setupContentHandler(artifact);
 
-                ArtifactVersion av = artifact.getVersion(node.getName());
+                EntryVersion av = artifact.getVersion(node.getName());
                 if (av == null) {
                     throw new RuntimeException(new NotFoundException(id));
                 }
@@ -622,7 +623,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 Set<Object> artifacts = new HashSet<Object>();
                 
                 boolean av = false;
-                Class<?> selectType = query.getSelectType();
+                Class selectType = query.getSelectType();
                 if (selectType.equals(ArtifactVersion.class)) {
                     av = true;
                 } else if (!selectType.equals(Artifact.class)) {
@@ -858,7 +859,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     @SuppressWarnings("unchecked")
-    public Set<Link> getReciprocalLinks(final Item<?> item) 
+    public Set<Link> getReciprocalLinks(final Item item) 
         throws RegistryException {
         
     final JcrRegistryImpl registry = this;
@@ -969,7 +970,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         idToWorkspaceManager.put(localWorkspaceManager.getId(), localWorkspaceManager);
     }
 
-    public void addLinks(Item<?> artifactVersion, final LinkType type, final Item<?>... toLinkTo)
+    public void addLinks(Item artifactVersion, final LinkType type, final Item... toLinkTo)
         throws RegistryException {
         final AbstractJcrItem jcrItem = (AbstractJcrItem) artifactVersion;
         if (toLinkTo != null) {

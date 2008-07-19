@@ -1,6 +1,5 @@
 package org.mule.galaxy.impl.lifecycle;
 
-import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.DuplicateItemException;
@@ -19,6 +18,7 @@ import org.mule.galaxy.lifecycle.PhaseLogEntry;
 import org.mule.galaxy.lifecycle.TransitionException;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.util.BundleUtils;
@@ -225,7 +225,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
     
     public void transition(final ArtifactVersion a, 
                            final Phase p, 
-                           final User user) throws TransitionException, ArtifactPolicyException {
+                           final User user) throws TransitionException, PolicyException {
         if (!isTransitionAllowed(a, p)) {
             throw new TransitionException(p);
         }
@@ -236,7 +236,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
                 JcrVersion artifact = (JcrVersion) a;
                 artifact.setPhase(p);
                 
-                ArtifactVersion previous = a.getPrevious();
+                ArtifactVersion previous = (ArtifactVersion) a.getPrevious();
                 
                 boolean approved = true;
                 List<ApprovalMessage> approvals = getPolicyManager().approve(previous, a);
@@ -248,7 +248,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
                 }
                 
                 if (!approved) {
-                    throw new RuntimeException(new ArtifactPolicyException(approvals));
+                    throw new RuntimeException(new PolicyException(approvals));
                 }
 
                 //final String previousPhase = previous.getPhase().getName();
@@ -293,12 +293,12 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
         return policyManager;
     }
 
-    private void executeWithPolicyException(JcrCallback jcrCallback) throws ArtifactPolicyException {
+    private void executeWithPolicyException(JcrCallback jcrCallback) throws PolicyException {
         try {
             execute(jcrCallback);
         } catch (RuntimeException e) {
-            if (e.getCause() instanceof ArtifactPolicyException) {
-                throw (ArtifactPolicyException) e.getCause();
+            if (e.getCause() instanceof PolicyException) {
+                throw (PolicyException) e.getCause();
             }
             throw e;
         }

@@ -12,7 +12,7 @@ public class RemoveArtifactsWithOddNumberOfCharsFunction extends AbstractFunctio
     @Override
     public void modifyArtifactVersions(Object[] args, Set<ArtifactVersion> artifacts) {
         for (Iterator<ArtifactVersion> itr = artifacts.iterator(); itr.hasNext();) {
-            Artifact next = itr.next().getParent();
+            Artifact next = (Artifact) itr.next().getParent();
             
             if (next.getName().length() % 2 == 1) itr.remove();
             else {

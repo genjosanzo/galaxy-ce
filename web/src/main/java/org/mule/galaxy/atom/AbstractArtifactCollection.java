@@ -57,10 +57,11 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
@@ -72,6 +73,7 @@ import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.lifecycle.TransitionException;
 import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
@@ -102,7 +104,7 @@ public abstract class AbstractArtifactCollection
         throws ResponseContextException {
         String link = super.addEntryDetails(request, e, feedIri, entryObj);
 
-        Artifact artifact = entryObj.getParent();
+        Artifact artifact = (Artifact)entryObj.getParent();
 
         Element info = factory.newElement(new QName(NAMESPACE, "artifact-info"));
         info.setAttributeValue("mediaType", artifact.getContentType().toString());
@@ -187,7 +189,7 @@ public abstract class AbstractArtifactCollection
     public Text getSummary(ArtifactVersion entry, RequestContext request) {
         Text summary = factory.newSummary();
         
-        String d = entry.getParent().getDescription();
+        String d = ((Artifact)entry.getParent()).getDescription();
         if (d == null) d = "";
         
         summary.setText(d);
@@ -202,7 +204,7 @@ public abstract class AbstractArtifactCollection
     
     @Override
     public String getContentType(ArtifactVersion entry) {
-        return entry.getParent().getContentType().toString();
+        return ((Artifact)entry.getParent()).getContentType().toString();
     }
 
     public String getAuthor(RequestContext request) {
@@ -212,11 +214,11 @@ public abstract class AbstractArtifactCollection
     protected StringBuilder getBasePath(Artifact a) {
         StringBuilder sb = new StringBuilder();
         
-        Workspace w = a.getParent();
+        Workspace w = (Workspace) a.getParent();
         while (w != null) {
             sb.insert(0, '/');
             sb.insert(0, UrlEncoding.encode(w.getName(), Profile.PATH.filter()));
-            w = w.getParent();
+            w = (Workspace) w.getParent();
         }
         return sb;
     }
@@ -240,9 +242,9 @@ public abstract class AbstractArtifactCollection
             
             User user = getUser();
             
-            ArtifactResult result = postMediaEntry(slug, mimeType, version, inputStream, user, request);
+            EntryResult result = postMediaEntry(slug, mimeType, version, inputStream, user, request);
             
-            return result.getArtifactVersion();
+            return (ArtifactVersion) result.getEntryVersion();
         } catch (DuplicateItemException e) {
             throw newErrorMessage("Duplicate artifact.", "An artifact with that name already exists in this workspace.", 409);
         } catch (RegistryException e) {
@@ -252,14 +254,14 @@ public abstract class AbstractArtifactCollection
             throw new ResponseContextException(500, e);
         } catch (MimeTypeParseException e) {
             throw new ResponseContextException(500, e);
-        } catch (ArtifactPolicyException e) {
+        } catch (PolicyException e) {
             throw createArtifactPolicyExceptionResponse(e);
         } catch (AccessException e) {
             throw new ResponseContextException(401, e);
         }
     }
 
-    protected ResponseContextException createArtifactPolicyExceptionResponse(ArtifactPolicyException e) {
+    protected ResponseContextException createArtifactPolicyExceptionResponse(PolicyException e) {
         final StringBuilder s = new StringBuilder();
         s.append("<html><head><title>Artifact Policy Failure</title></head><body>");
         
@@ -314,9 +316,9 @@ public abstract class AbstractArtifactCollection
         return version;
     }
 
-    protected abstract ArtifactResult postMediaEntry(String slug, MimeType mimeType, String version,
+    protected abstract EntryResult postMediaEntry(String slug, MimeType mimeType, String version,
                                                      InputStream inputStream, User user, RequestContext ctx)
-        throws RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, ResponseContextException, DuplicateItemException, AccessException;
+        throws RegistryException, PolicyException, IOException, MimeTypeParseException, ResponseContextException, DuplicateItemException, AccessException;
     
     @Override
     public boolean isMediaEntry(ArtifactVersion entry) {
@@ -351,7 +353,7 @@ public abstract class AbstractArtifactCollection
 
     @Override
     protected String getFeedIriForEntry(ArtifactVersion entryObj, RequestContext request) {
-        Artifact a = entryObj.getParent();
+        Artifact a = (Artifact)entryObj.getParent();
         
         return request.getTargetBasePath() 
                + "/registry" 
@@ -373,15 +375,17 @@ public abstract class AbstractArtifactCollection
 
     protected ArtifactVersion selectVersion(Artifact next, String version) throws ResponseContextException {
         if (version != null) {
-            ArtifactVersion v = next.getVersion(version);
+            EntryVersion v = next.getVersion(version);
             
             if (v == null || "".equals(version)) {
                 EmptyResponseContext res = new EmptyResponseContext(404);
                 res.setStatusText("Version " + version + " was not found.");
                 throw new ResponseContextException(res);
             }
+            
+            return (ArtifactVersion) v;
         }
-        return next.getDefaultOrLastVersion();
+        return (ArtifactVersion) next.getDefaultOrLastVersion();
     }
 
     protected Artifact getArtifact(RequestContext request) {
@@ -396,7 +400,7 @@ public abstract class AbstractArtifactCollection
                          String summary,
                          Content content, 
                          RequestContext request) throws ResponseContextException {
-        Artifact artifact = av.getParent();
+        Artifact artifact = (Artifact) av.getParent();
         artifact.setDescription(summary);
 //        artifact.setName(title);
         
@@ -422,13 +426,13 @@ public abstract class AbstractArtifactCollection
             throw new ResponseContextException(500, e);
         } catch (RegistryException e) {
             throw new ResponseContextException(500, e);
-        } catch (ArtifactPolicyException e) {
+        } catch (PolicyException e) {
             throw createArtifactPolicyExceptionResponse(e);
         }
     }
 
     private void updateVersion(ArtifactVersion av, Element e) 
-        throws RegistryException, ArtifactPolicyException, ResponseContextException {
+        throws RegistryException, PolicyException, ResponseContextException {
         String label = e.getAttributeValue("label");
         
         if (label != null && !av.getVersionLabel().equals(label)) {
@@ -472,7 +476,8 @@ public abstract class AbstractArtifactCollection
             return;
         }
             
-        LifecycleManager lifecycleManager = av.getParent().getParent().getLifecycleManager();
+        Workspace w = (Workspace) av.getParent().getParent();
+        LifecycleManager lifecycleManager = w.getLifecycleManager();
         Lifecycle lifecycle = lifecycleManager.getLifecycle(name);
         
         if (lifecycle == null)
@@ -487,7 +492,7 @@ public abstract class AbstractArtifactCollection
             lifecycleManager.transition(av, phase, getUser());
         } catch (TransitionException e1) {
             throwMalformed(e1.getMessage());
-        } catch (ArtifactPolicyException e1) {
+        } catch (PolicyException e1) {
             throw createArtifactPolicyExceptionResponse(e1);
         }
     }

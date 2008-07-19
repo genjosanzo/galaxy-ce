@@ -4,9 +4,9 @@ public interface Link {
     
     String getPath();
     
-    Item<?> getParent();
+    Item getParent();
     
-    Item<?> getItem();
+    Item getItem();
     
     boolean exists();
     

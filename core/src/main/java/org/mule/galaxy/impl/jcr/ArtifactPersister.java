@@ -36,7 +36,6 @@ public class ArtifactPersister implements FieldPersister, ApplicationContextAwar
         return build(val, fd, session);
     }
 
-    @SuppressWarnings("unchecked")
     public Object build(String id, FieldDescriptor fd, Session session) throws Exception {
         return getRegistry().getArtifact(id);
     }

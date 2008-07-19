@@ -28,12 +28,14 @@ import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
 import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.activity.ActivityManager;
 import org.mule.galaxy.activity.ActivityManager.EventType;
+import org.mule.galaxy.impl.jcr.JcrArtifact;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.impl.jcr.JcrWorkspaceManager;
@@ -121,10 +123,11 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 QueryManager qm = getQueryManager(session);
                 StringBuilder qstr = new StringBuilder("//element(*, galaxy:index)");
 
-                QName dt = av.getParent().getDocumentType();
+                Artifact artifact = (Artifact) av.getParent();
+                QName dt = artifact.getDocumentType();
                 if (dt == null) {
                     qstr.append("[@mediaType=")
-                       .append(JcrUtil.stringToXPathLiteral(av.getParent().getContentType().toString()))
+                       .append(JcrUtil.stringToXPathLiteral(artifact.getContentType().toString()))
                        .append("]");
                 } else {
                     qstr.append("[@documentTypes=")
@@ -197,7 +200,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 Node n = itr.nextNode();
                 
                 try {
-                    new JcrVersion(n, getWorkspaceManager()).setProperty(propName, null);
+                    new JcrVersion(new JcrArtifact(null, n.getParent(), getWorkspaceManager()), n).setProperty(propName, null);
                 } catch (PropertyException e) {
                     throw new RuntimeException(e);
                 }
@@ -366,11 +369,11 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
             for (Object o : results) {
                 Artifact a = (Artifact) o;
 
-                for (ArtifactVersion v : a.getVersions()) {
-                    ContentHandler ch = contentService.getContentHandler(v.getParent().getContentType());
+                for (EntryVersion v : a.getVersions()) {
+                    ContentHandler ch = contentService.getContentHandler(a.getContentType());
 
                     try {
-                        getIndexer(idx.getIndexer()).index(v, ch, idx);
+                        getIndexer(idx.getIndexer()).index((ArtifactVersion)v, ch, idx);
                     } catch (IndexException e) {
                         handleIndexingException(idx, e);
                     } catch (IOException e) {
@@ -433,7 +436,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         SecurityUtils.doPriveleged(new Runnable() {
             public void run() {
                 for (Index idx : indices) {
-                    ContentHandler ch = version.getParent().getContentHandler();
+                    ContentHandler ch = ((Artifact)version.getParent()).getContentHandler();
                     
                     try {
                         getIndexer(idx.getIndexer()).index(version, ch, idx);

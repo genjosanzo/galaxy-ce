@@ -76,8 +76,8 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
     }
 
     @Override
-    public Set<Item<?>> detectDependencies(Object o, Workspace w) {
-        HashSet<Item<?>> deps = new HashSet<Item<?>>();
+    public Set<Item> detectDependencies(Object o, Workspace w) {
+        HashSet<Item> deps = new HashSet<Item>();
         try {
             for (XPathExpression expr : imports) {
                 NodeList result = (NodeList) expr.evaluate((Document) o, 

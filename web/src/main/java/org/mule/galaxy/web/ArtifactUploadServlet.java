@@ -19,8 +19,7 @@
 package org.mule.galaxy.web;
 
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
@@ -29,6 +28,7 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
@@ -116,7 +116,7 @@ public class ArtifactUploadServlet implements Controller {
                     .getAuthentication().getPrincipal();
             User user = wrapper.getUser();
 
-            ArtifactResult result = null;
+            EntryResult result = null;
             if (artifactId == null) {
                 if (wkspcId == null) {
                     writer.write("No workspace was specified.");
@@ -147,7 +147,7 @@ public class ArtifactUploadServlet implements Controller {
                 result = a.newVersion(uploadItem.getInputStream(), versionLabel, user);
 
                 if (disablePrevious) {
-                    ArtifactVersion previous = result.getArtifactVersion().getPrevious();
+                    ArtifactVersion previous = (ArtifactVersion) result.getEntryVersion().getPrevious();
                     
                     if (previous != null) {
                         previous.setEnabled(false);
@@ -155,12 +155,12 @@ public class ArtifactUploadServlet implements Controller {
                 }
             }
 
-            writer.write("OK " + result.getArtifact().getId());
+            writer.write("OK " + result.getEntry().getId());
         } catch (NotFoundException e) {
             writer.write("Workspace could not be found.");
         } catch (RegistryException e) {
             writer.write("No version label was specified.");
-        } catch (ArtifactPolicyException e) {
+        } catch (PolicyException e) {
             writer.write("ArtifactPolicyException\n");
 
             List<ApprovalMessage> approvals = e.getApprovals();

@@ -33,7 +33,6 @@ public class ArtifactVersionPersister implements FieldPersister, ApplicationCont
         return build(val, fd, session);
     }
 
-    @SuppressWarnings("unchecked")
     public Object build(String id, FieldDescriptor fd, Session session) throws Exception {
         return getRegistry().getArtifactVersion(id);
     }

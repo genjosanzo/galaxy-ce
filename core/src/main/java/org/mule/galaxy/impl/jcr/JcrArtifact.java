@@ -18,67 +18,47 @@ import javax.jcr.Session;
 import javax.xml.namespace.QName;
 
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.util.QNameUtil;
 import org.springmodules.jcr.JcrCallback;
 
-public class JcrArtifact extends AbstractJcrItem implements Artifact {
+public class JcrArtifact extends JcrEntry implements Artifact {
     public static final String CONTENT_TYPE = "contentType";
     public static final String CREATED = "created";
     public static final String DESCRIPTION = "description";
     public static final String NAME = "name";
     public static final String DOCUMENT_TYPE = "documentType";
     
-    private List<ArtifactVersion> versions;
-    private Workspace workspace;
     private JcrWorkspaceManager manager;
     private ContentHandler contentHandler;
     
-    public JcrArtifact(Workspace w, Node node, JcrWorkspaceManager registry) 
+    public JcrArtifact(Workspace w, Node node, JcrWorkspaceManager manager) 
         throws RepositoryException {
-        super(node, registry);
-        this.workspace = w;
-        this.manager = registry;
-    }
-    
-    public String getPath() {
-        StringBuilder sb = getBasePath();
-        
-        sb.append(getName());
-        return sb.toString();
-    }
-    
-    private StringBuilder getBasePath() {
-        StringBuilder sb = new StringBuilder();
-        
-        Workspace w = workspace;
-        while (w != null) {
-            sb.insert(0, '/');
-            sb.insert(0, w.getName());
-            w = w.getParent();
-        }
-        sb.insert(0, '/');
-        return sb;
-    }
-    
-    public Workspace getParent() {
-        return workspace;
+        super(w, node, manager);
+        this.manager = manager;
     }
 
-    public Calendar getCreated() {
-        return getCalendarOrNull(CREATED);
+    @Override
+    protected EntryVersion createVersion(Node node) throws RepositoryException {
+	return new JcrVersion(this, node);
     }
 
+    @Override
+    protected String getNodeType() {
+	return JcrWorkspaceManager.ARTIFACT_VERSION_NODE_TYPE;
+    }
+    
     public MimeType getContentType() {
         String ct = getStringOrNull(CONTENT_TYPE);
         
@@ -93,32 +73,14 @@ public class JcrArtifact extends AbstractJcrItem implements Artifact {
             throw new RuntimeException(e);
         }
     }
-
     
     public QName getDocumentType() {
         return QNameUtil.fromString(getStringOrNull(DOCUMENT_TYPE));
     }
 
-    public String getName() {
-        return getStringOrNull(NAME);
-    }
-    
-    public String getDescription() {
-        return getStringOrNull(DESCRIPTION);
-    }
-    
     public void setContentType(MimeType contentType) {
         try {
             node.setProperty(CONTENT_TYPE, contentType.toString());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-    public void setDescription(String desc) {
-        try {
-            node.setProperty(DESCRIPTION, desc);
-            update();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -130,83 +92,6 @@ public class JcrArtifact extends AbstractJcrItem implements Artifact {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void setName(final String name) {
-        try {
-            
-            if (!node.getName().equals(name)) {
-                manager.execute(new JcrCallback() {
-    
-                    public Object doInJcr(Session session) throws IOException, RepositoryException {
-                        String dest = node.getParent().getPath() + "/" + name;
-                        session.move(node.getPath(), dest);
-                        return null;
-                    }
-                    
-                });
-            }
-            node.setProperty(NAME, name);
-            update();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    public List<ArtifactVersion> getVersions() {
-        if (versions == null) {
-            versions = new ArrayList<ArtifactVersion>();
-            
-            try {
-                for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
-                    Node node = itr.nextNode();
-                    
-                    if (node.getPrimaryNodeType().getName().equals(JcrWorkspaceManager.ARTIFACT_VERSION_NODE_TYPE)) {
-                        versions.add(new JcrVersion(this, node));
-                    }
-                }
-            } catch (RepositoryException e) {
-                throw new RuntimeException(e);
-            }
-            
-            Collections.sort(versions, new Comparator<ArtifactVersion>() {
-
-                public int compare(ArtifactVersion o1, ArtifactVersion o2) {
-                    return - o1.getCreated().getTime().compareTo(o2.getCreated().getTime());
-                }
-                
-            });
-        }
-            
-        return versions;
-    }
-
-    public ArtifactVersion getVersion(String versionName) {
-        for (ArtifactVersion v : getVersions()) {
-            if (v.getVersionLabel().equals(versionName)) {
-                return v;
-            }
-        }
-        return null;
-    }
-
-    public Node getNode() {
-        return node;
-    }
-
-    public ArtifactVersion getDefaultOrLastVersion() {
-        for (ArtifactVersion v : getVersions()) {
-            if (v.isDefault()) {
-                return v;
-            }
-        }
-        
-        return getVersions().get(0);
-    }
-    
-    public void setVersions(List<ArtifactVersion> versions2) {
-        this.versions = versions2;
     }
 
     @Override
@@ -247,26 +132,22 @@ public class JcrArtifact extends AbstractJcrItem implements Artifact {
         getDefaultOrLastVersion().setVisible(name, visible);
     }
 
-    public ArtifactResult newVersion(Object data,
+    public EntryResult newVersion(Object data,
 	    String versionLabel, User user) throws RegistryException,
-	    ArtifactPolicyException, IOException, DuplicateItemException,
+	    PolicyException, IOException, DuplicateItemException,
 	    AccessException {
 	return manager.newVersion(this, data, versionLabel, user);
     }
 
-    public ArtifactResult newVersion(InputStream inputStream,
+    public EntryResult newVersion(InputStream inputStream,
 	    String versionLabel, User user) throws RegistryException,
-	    ArtifactPolicyException, IOException, DuplicateItemException,
+	    PolicyException, IOException, DuplicateItemException,
 	    AccessException {
 	return manager.newVersion(this, inputStream, versionLabel, user);
     }
 
     public void delete() throws RegistryException, AccessException {
 	manager.delete(this);
-    }
-
-    public void setWorkspace(Workspace workspace) {
-        this.workspace = workspace;
     }
 
     public JcrWorkspaceManager getManager() {

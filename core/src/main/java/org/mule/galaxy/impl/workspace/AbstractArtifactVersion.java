@@ -6,16 +6,9 @@ import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.workspace.WorkspaceManager;
 
 public abstract class AbstractArtifactVersion extends AbstractItem implements ArtifactVersion {
-    private final WorkspaceManager workspaceManager;
 
-    public AbstractArtifactVersion(WorkspaceManager workspaceManager) {
-	super();
-	
-	this.workspaceManager = workspaceManager;
+    public AbstractArtifactVersion(WorkspaceManager manager, ItemMetadataHandler metadata) {
+	super(manager, metadata);
     }
 
-    @Override
-    public void delete() throws RegistryException, AccessException {
-        workspaceManager.delete(this);
-    }
 }

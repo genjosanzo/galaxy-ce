@@ -21,7 +21,6 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
         super(Comment.class, "comments", true);
     }
 
-    @SuppressWarnings("unchecked")
     public List<Comment> getComments(final String artifactId) {
         return getComments(artifactId, false);
     }

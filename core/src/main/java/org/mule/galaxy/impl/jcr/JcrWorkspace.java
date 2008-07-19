@@ -15,14 +15,15 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
-import org.mule.galaxy.ArtifactResult;
+import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.Entry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 import org.springmodules.jcr.JcrCallback;
@@ -135,7 +136,7 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
         while (w != null) {
             sb.insert(0, '/');
             sb.insert(0, w.getName());
-            w = w.getParent();
+            w = ((Workspace)w.getParent());
         }
         sb.insert(0, '/');
         return sb.toString();
@@ -174,19 +175,24 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
         }
     }
 
-    public ArtifactResult createArtifact(Object data, String versionLabel,
+    public EntryResult createArtifact(Object data, String versionLabel,
 	    User user) throws DuplicateItemException, RegistryException,
-	    ArtifactPolicyException, MimeTypeParseException, AccessException {
-	// TODO Auto-generated method stub
+	    PolicyException, MimeTypeParseException, AccessException {
 	return manager.createArtifact(this, data, versionLabel, user);
     }
 
-    public ArtifactResult createArtifact(String contentType, String name,
+    public EntryResult createArtifact(String contentType, String name,
 	    String versionLabel, InputStream inputStream, User user)
 	    throws DuplicateItemException, RegistryException,
-	    ArtifactPolicyException, IOException, MimeTypeParseException,
+	    PolicyException, IOException, MimeTypeParseException,
 	    AccessException {
 	return manager.createArtifact(this, contentType, name, versionLabel, inputStream, user);
+    }
+
+    public EntryResult newEntry(String name, String versionLabel)
+	    throws DuplicateItemException, RegistryException, PolicyException,
+	    AccessException {
+	return manager.newEntry(this, name, versionLabel);
     }
 
     public void delete() throws RegistryException, AccessException {

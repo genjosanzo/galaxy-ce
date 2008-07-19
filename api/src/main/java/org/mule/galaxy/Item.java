@@ -7,11 +7,13 @@ import org.mule.galaxy.security.AccessException;
 /**
  * An item which exists inside the repository.
  */
-public interface Item<T extends Item<?>> {
+public interface Item {
 
     String getId();
 
-    T getParent();
+    Item getParent();
+    
+    String getName();
     
     String getPath();
     

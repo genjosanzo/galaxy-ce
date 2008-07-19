@@ -3,10 +3,10 @@ package org.mule.galaxy.policy.wsdl;
 import java.io.InputStream;
 import java.util.Collection;
 
-import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class BasicProfilePolicyTest extends AbstractGalaxyTest {
@@ -31,7 +31,7 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
             workspace.createArtifact("application/xml", "hello-invalid.wsdl", "0.1", helloWsdl,
                                     getAdmin());
             fail("Expected ArtifactPolicyException");
-        } catch (ArtifactPolicyException e) {
+        } catch (PolicyException e) {
             Collection<ApprovalMessage> approvals = e.getApprovals();
             for (ApprovalMessage a : approvals) {
                 System.out.println(a.getMessage());
@@ -49,7 +49,7 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
                                     getResourceAsStream("/wsdl/wsi/soapbinding/r2710.wsdl"),
                                     getAdmin());
             fail("Expected ArtifactPolicyException");
-        } catch (ArtifactPolicyException e) {
+        } catch (PolicyException e) {
             Collection<ApprovalMessage> approvals = e.getApprovals();
             assertEquals(1, approvals.size());
 

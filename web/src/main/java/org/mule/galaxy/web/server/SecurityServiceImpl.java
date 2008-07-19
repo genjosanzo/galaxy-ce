@@ -321,7 +321,7 @@ public class SecurityServiceImpl implements SecurityService {
         }
             
     }
-    @SuppressWarnings("unchecked")
+    
     public void save(WGroup wgroup) throws RPCException, ItemExistsException {
         Group g = null;
         if (wgroup.getId() != null) {

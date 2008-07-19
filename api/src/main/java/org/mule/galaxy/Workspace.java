@@ -10,16 +10,17 @@ import javax.activation.MimeTypeParseException;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
-public interface Workspace extends Item<Workspace> {
+public interface Workspace extends Item {
     
     String getName();
     
     void setName(String name);
     
-    Workspace getParent();
+    Item getParent();
     
     Collection<Workspace> getWorkspaces();
 
@@ -60,19 +61,22 @@ public interface Workspace extends Item<Workspace> {
      * @param user
      * @return
      * @throws RegistryException
-     * @throws ArtifactPolicyException
+     * @throws PolicyException
      * @throws MimeTypeParseException
      */
-    ArtifactResult createArtifact(Object data, 
+    EntryResult createArtifact(Object data, 
                                   String versionLabel, 
                                   User user) 
-        throws DuplicateItemException, RegistryException, ArtifactPolicyException, MimeTypeParseException, AccessException;
+        throws DuplicateItemException, RegistryException, PolicyException, MimeTypeParseException, AccessException;
     
-    ArtifactResult createArtifact(String contentType, 
+    EntryResult createArtifact(String contentType, 
                                   String name,
                                   String versionLabel, 
                                   InputStream inputStream, 
                                   User user) 
-        throws DuplicateItemException, RegistryException, ArtifactPolicyException, IOException, MimeTypeParseException, AccessException;
+        throws DuplicateItemException, RegistryException, PolicyException, IOException, MimeTypeParseException, AccessException;
+
+    EntryResult newEntry(String name, String versionLabel)
+   	throws DuplicateItemException, RegistryException, PolicyException, AccessException;
     
 }

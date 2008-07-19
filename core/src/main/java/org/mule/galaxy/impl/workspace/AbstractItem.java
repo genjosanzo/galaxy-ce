@@ -7,50 +7,56 @@ import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.workspace.WorkspaceManager;
 
 public abstract class AbstractItem {
 
     protected String id;
     
-    public abstract void delete() throws RegistryException, AccessException;
+    protected ItemMetadataHandler metadata;
+
+    protected final WorkspaceManager manager;
+    
+    public AbstractItem(WorkspaceManager manager, ItemMetadataHandler metadata) {
+	super();
+	this.manager = manager;
+	this.metadata = metadata;
+    }
 
     public String getId() {
 	return id;
     }
 
     public Iterator<PropertyInfo> getProperties() {
-	// TODO Auto-generated method stub
-	return null;
+	return metadata.getProperties(this);
     }
 
     public Object getProperty(String name) {
-	// TODO Auto-generated method stub
-	return null;
+	return metadata.getProperty(this, name);
     }
 
     public PropertyInfo getPropertyInfo(String name) {
-	// TODO Auto-generated method stub
-	return null;
+	return metadata.getPropertyInfo(this, name);
     }
 
     public boolean hasProperty(String name) {
-	// TODO Auto-generated method stub
-	return false;
+	return metadata.hasProperty(this, name);
     }
 
     public void setLocked(String name, boolean locked) {
-	// TODO Auto-generated method stub
-	
+	metadata.setLocked(this, name, locked);
     }
 
     public void setProperty(String name, Object value) throws PropertyException {
-	// TODO Auto-generated method stub
-	
+	metadata.setProperty(this, name, value);
     }
 
-    public void setVisible(String property, boolean visible) {
-	// TODO Auto-generated method stub
-	
+    public void setVisible(String name, boolean visible) {
+	metadata.setVisible(this, name, visible);
+    }
+    
+    public void delete() throws RegistryException, AccessException {
+        manager.delete((Item) this);
     }
 
 }

@@ -4,6 +4,7 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Workspace;
 
+@SuppressWarnings("unchecked")
 public enum Permission {
     READ_ARTIFACT("Read Artifact", Artifact.class, Workspace.class),
     MODIFY_ARTIFACT("Modify Artifact", Artifact.class, Workspace.class),
@@ -30,13 +31,7 @@ public enum Permission {
     public String getDescription() {
         return description;
     }
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    public Class[] getAppliesTo() {
+    public Class<? extends Item>[] getAppliesTo() {
         return appliesTo;
-    }
-    public void setAppliesTo(Class[] appliesTo) {
-        this.appliesTo = appliesTo;
     }
 }

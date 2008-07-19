@@ -4,15 +4,15 @@ import java.util.Collection;
 
 import org.mule.galaxy.policy.ApprovalMessage;
 
-public class ArtifactResult {
-    private Artifact artifact;
-    private ArtifactVersion artifactVersion;
+public class EntryResult {
+    private Entry artifact;
+    private EntryVersion artifactVersion;
     private Collection<ApprovalMessage> approvals;
     private boolean approved = true;
     
-    public ArtifactResult(Artifact artifact, 
-                          ArtifactVersion artifactVersion, 
-                          Collection<ApprovalMessage> approvals) {
+    public EntryResult(Entry artifact, 
+                       EntryVersion artifactVersion, 
+                       Collection<ApprovalMessage> approvals) {
         super();
         this.artifact = artifact;
         this.artifactVersion = artifactVersion;
@@ -26,11 +26,11 @@ public class ArtifactResult {
         }
     }
 
-    public Artifact getArtifact() {
+    public Entry getEntry() {
         return artifact;
     }
 
-    public ArtifactVersion getArtifactVersion() {
+    public EntryVersion getEntryVersion() {
         return artifactVersion;
     }
 

@@ -20,9 +20,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactResult;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Dao;
+import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.LinkType;
 import org.mule.galaxy.PluginManager;
 import org.mule.galaxy.Registry;
@@ -136,12 +136,12 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         
         Workspace workspace = getTestWorkspace();
         
-        ArtifactResult ar = workspace.createArtifact("application/xml", 
+        EntryResult ar = workspace.createArtifact("application/xml", 
                                                      "hello_world.wsdl", 
                                                      "0.1", 
                                                      helloWsdl, 
                                                      getAdmin());
-        return ar.getArtifact();
+        return (Artifact) ar.getEntry();
     }
 
     protected Workspace getTestWorkspace() throws RegistryException, AccessException {
@@ -155,14 +155,13 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         
         Workspace workspace = getTestWorkspace();
         
-        ArtifactResult ar = workspace.createArtifact("application/xml", 
+        EntryResult ar = workspace.createArtifact("application/xml", 
                                                      "test.xsd", 
                                                      "0.1", 
                                                      xsd, 
                                                      getAdmin());
         
-        Artifact a = ar.getArtifact();
-        return a;
+        return (Artifact) ar.getEntry();
     }
 
     protected Artifact importHelloMule() throws Exception {
@@ -170,10 +169,10 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         
         Workspace workspace = getTestWorkspace();
         
-        ArtifactResult ar = workspace.createArtifact("application/xml", 
+        EntryResult ar = workspace.createArtifact("application/xml", 
                                                      "hello-config.xml", 
                                                      "0.1", helloWsdl, getAdmin());
-        return ar.getArtifact();
+        return (Artifact) ar.getEntry();
     }
 
     private void clearJcrRepository() {

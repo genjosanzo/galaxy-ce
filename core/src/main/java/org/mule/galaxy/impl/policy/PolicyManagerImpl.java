@@ -24,8 +24,9 @@ import javax.jcr.query.QueryResult;
 
 import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Entry;
+import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
@@ -36,10 +37,11 @@ import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactCollectionPolicyException;
 import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.policy.PolicyInfo;
 import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.SearchResults;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -104,12 +106,12 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         this.lifecycleManager = lifecycleManager;
     }
 
-    public List<ApprovalMessage> approve(ArtifactVersion previous, 
-                                        ArtifactVersion next) {
+    public List<ApprovalMessage> approve(EntryVersion previous, 
+                                         EntryVersion next) {
         Collection<ArtifactPolicy> policies = getActivePolicies(next);
         List<ApprovalMessage> approvals = new ArrayList<ApprovalMessage>();
         for (ArtifactPolicy p : policies) {
-            Collection<ApprovalMessage> list = p.isApproved(next.getParent(), previous, next);
+            Collection<ApprovalMessage> list = p.isApproved((Artifact)next.getParent(), (ArtifactVersion) previous, (ArtifactVersion) next);
             if (list != null) {
                 approvals.addAll(list);
             }
@@ -126,30 +128,30 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         return policies.values();
     }
     
-    public void setActivePolicies(Artifact a, Collection<Phase> phases, ArtifactPolicy... policies) 
-        throws ArtifactPolicyException {
-        for (ArtifactVersion v : a.getVersions()) {
+    public void setActivePolicies(Entry a, Collection<Phase> phases, ArtifactPolicy... policies) 
+        throws PolicyException {
+        for (EntryVersion v : a.getVersions()) {
             if (phases.contains(v.getPhase())) {
-                approveArtifact(v, policies);
+                approveArtifact((EntryVersion)v, policies);
             }
         }
         activatePolicy(artifactsPhasesNodeId, phases, policies, a.getId());
     }
 
-    private void approveArtifact(ArtifactVersion v, ArtifactPolicy... policies) throws ArtifactPolicyException {
+    private void approveArtifact(EntryVersion v, ArtifactPolicy... policies) throws PolicyException {
         List<ApprovalMessage> messages = approve(v, policies);
         
         if (messages != null) {
-            throw new ArtifactPolicyException(messages);
+            throw new PolicyException(messages);
         }
     }
 
-    private List<ApprovalMessage> approve(ArtifactVersion a, ArtifactPolicy... policies) {
+    private List<ApprovalMessage> approve(EntryVersion a, ArtifactPolicy... policies) {
         List<ApprovalMessage> messages = null;
         for (ArtifactPolicy p : policies) {
-            if (!p.applies(a.getParent())) return null;
+            if (!p.applies((Artifact)a.getParent())) return null;
             
-            Collection<ApprovalMessage> approved = p.isApproved(a.getParent(), a.getPrevious(), a);
+            Collection<ApprovalMessage> approved = p.isApproved((Artifact)a.getParent(), (ArtifactVersion)a.getPrevious(), (ArtifactVersion) a);
             boolean failed = false;
             if (approved != null) {
                 for (ApprovalMessage m : approved) {
@@ -170,11 +172,11 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         return messages;
     }
 
-    public void setActivePolicies(Artifact a, Lifecycle lifecycle, ArtifactPolicy... policies) 
-        throws ArtifactPolicyException {
-        for (ArtifactVersion v : a.getVersions()) {
+    public void setActivePolicies(Entry a, Lifecycle lifecycle, ArtifactPolicy... policies) 
+        throws PolicyException {
+        for (EntryVersion v : a.getVersions()) {
             if (lifecycle.getId().equals(v.getPhase().getLifecycle().getId())) {
-                approveArtifact(v, policies);
+                approveArtifact((EntryVersion)v, policies);
             }
         }
         
@@ -196,15 +198,15 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         try {
             q.add(OpRestriction.eq("enabled", true));
             SearchResults results = getRegistry().search(q);
-            Map<ArtifactVersion, List<ApprovalMessage>> approvals = null;
+            Map<EntryVersion, List<ApprovalMessage>> approvals = null;
             
             for (Object o : results.getResults()) {
-                ArtifactVersion a = (ArtifactVersion) o;
+                EntryVersion a = (EntryVersion) o;
                 
                 List<ApprovalMessage> messages = approve(a, policies);
                 if (messages != null) {
                     if (approvals == null) {
-                        approvals = new HashMap<ArtifactVersion, List<ApprovalMessage>>();
+                        approvals = new HashMap<EntryVersion, List<ApprovalMessage>>();
                     }
                     approvals.put(a, messages);
                 }
@@ -298,7 +300,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         });
     }
 
-    public Collection<PolicyInfo> getActivePolicies(final Artifact a, 
+    public Collection<PolicyInfo> getActivePolicies(final Entry a, 
                                                     final boolean includeInherited) {
         final Set<PolicyInfo> activePolicies = new HashSet<PolicyInfo>();
         jcrTemplate.execute(new JcrCallback() {
@@ -406,11 +408,11 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         return activePolicies;
     }
 
-    public Collection<ArtifactPolicy> getActivePolicies(final ArtifactVersion v) {
+    public Collection<ArtifactPolicy> getActivePolicies(final EntryVersion v) {
         final Set<ArtifactPolicy> activePolicies = new HashSet<ArtifactPolicy>();
         jcrTemplate.execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Artifact a = v.getParent();
+                Entry a = (Artifact)v.getParent();
                 String lifecycle = v.getPhase().getLifecycle().getId();
                 String workspace = a.getParent().getId();
 
@@ -434,7 +436,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     }
     
     private void addPolicies(final Set<ArtifactPolicy> activePolicies,
-                             final Artifact artifact,
+                             final Entry artifact,
                              final Session session,
                              final String rootNodeId,
                              String... nodeIds) throws ItemNotFoundException, RepositoryException {
@@ -446,7 +448,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
             
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
                 ArtifactPolicy p = policies.get(itr.nextNode().getName());
-                if (p != null && p.applies(artifact)) {
+                if (p != null && p.applies((Artifact) artifact)) {
                     activePolicies.add(p);
                 }
             }
@@ -459,7 +461,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         this.jcrTemplate = jcrTemplate;
     }
 
-    private void addArtifactPhasePolicies(final Artifact a, final Set<PolicyInfo> activePolicies,
+    private void addArtifactPhasePolicies(final Entry a, final Set<PolicyInfo> activePolicies,
                                           QueryManager qm) throws InvalidQueryException, RepositoryException {
         StringBuilder qstr = new StringBuilder();
         qstr.append("//*[@jcr:uuid='")
@@ -489,7 +491,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         }
     }
 
-    private void addArtifactLifecyclePolicies(final Artifact a, final Set<PolicyInfo> activePolicies,
+    private void addArtifactLifecyclePolicies(final Entry a, final Set<PolicyInfo> activePolicies,
                                               QueryManager qm) throws InvalidQueryException, RepositoryException {
         StringBuilder qstr = new StringBuilder();
         qstr.append("//*[@jcr:uuid='")

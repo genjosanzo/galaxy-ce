@@ -1,17 +1,6 @@
 package org.mule.galaxy.impl;
 
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactResult;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.jcr.JcrVersion;
-import org.mule.galaxy.query.Query;
-import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.util.IOUtils;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Calendar;
@@ -20,6 +9,18 @@ import java.util.Iterator;
 import java.util.Set;
 
 import javax.jcr.Node;
+
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.EntryResult;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.jcr.JcrVersion;
+import org.mule.galaxy.query.Query;
+import org.mule.galaxy.test.AbstractGalaxyTest;
+import org.mule.galaxy.util.IOUtils;
 
 import org.w3c.dom.Document;
 
@@ -117,10 +118,10 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        ArtifactResult ar = workspace.createArtifact("application/octet-stream", 
+        EntryResult ar = workspace.createArtifact("application/octet-stream", 
                                                     "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
         
-        Artifact artifact = ar.getArtifact();
+        Artifact artifact = (Artifact) ar.getEntry();
         
         assertEquals("application/wsdl+xml", artifact.getContentType().toString());
     }   
@@ -133,10 +134,10 @@ public class ArtifactTest extends AbstractGalaxyTest {
         Workspace workspace = workspaces.iterator().next();
         
         // Try application/xml
-        ArtifactResult ar = workspace.createArtifact("application/xml", 
+        EntryResult ar = workspace.createArtifact("application/xml", 
                                                     "hello_world.xml", "0.1", helloMule, getAdmin());
         
-        Artifact artifact = ar.getArtifact();
+        Artifact artifact = (Artifact) ar.getEntry();
         
         assertEquals("application/xml", artifact.getContentType().toString());
         assertEquals("mule-configuration", artifact.getDocumentType().getLocalPart());
@@ -147,7 +148,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         ar = workspace.createArtifact("application/octet-stream", "hello_world2.xml", "0.1",
                                      helloMule, getAdmin());
         
-        artifact = ar.getArtifact();
+        artifact = (Artifact) ar.getEntry();
         
         assertEquals("application/xml", artifact.getContentType().toString());
         assertEquals("mule-configuration", artifact.getDocumentType().getLocalPart());
@@ -160,18 +161,18 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        ArtifactResult ar = workspace.createArtifact("application/wsdl+xml", 
+        EntryResult ar = workspace.createArtifact("application/wsdl+xml", 
                                                     "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
         
-        Artifact artifact = ar.getArtifact();
+        Artifact artifact = (Artifact) ar.getEntry();
 
-        assertTrue(waitForIndexing(ar.getArtifactVersion()));
+        assertTrue(waitForIndexing((ArtifactVersion)ar.getEntryVersion()));
         assertNotNull(artifact.getId());
         assertEquals("application/wsdl+xml", artifact.getContentType().toString());
         assertNotNull(artifact.getDocumentType());
         assertEquals("definitions", artifact.getDocumentType().getLocalPart());
         
-        Collection<? extends ArtifactVersion> versions = artifact.getVersions();
+        Collection<? extends EntryVersion> versions = artifact.getVersions();
         assertNotNull(versions);
         assertEquals(1, versions.size());
         
@@ -234,12 +235,12 @@ public class ArtifactTest extends AbstractGalaxyTest {
         InputStream helloWsdl2 = getResourceAsStream("/wsdl/hello.wsdl");
         
         ar = artifact.newVersion(helloWsdl2, "0.2", getAdmin());
-        assertTrue(waitForIndexing(ar.getArtifactVersion()));
-        JcrVersion newVersion = (JcrVersion) ar.getArtifactVersion();
+        assertTrue(waitForIndexing((ArtifactVersion)ar.getEntryVersion()));
+        JcrVersion newVersion = (JcrVersion) ar.getEntryVersion();
         assertTrue(newVersion.isLatest());
         assertFalse(version.isLatest());
         
-        assertSame(newVersion, ar.getArtifact().getDefaultOrLastVersion());
+        assertSame(newVersion, ar.getEntry().getDefaultOrLastVersion());
         
         versions = artifact.getVersions();
         assertEquals(2, versions.size());
@@ -263,7 +264,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         version.setAsDefaultVersion();
         
         assertEquals(2, a2.getVersions().size());
-        ArtifactVersion activeVersion = a2.getDefaultOrLastVersion();
+        EntryVersion activeVersion = a2.getDefaultOrLastVersion();
         assertEquals("0.1", activeVersion.getVersionLabel());
         
         activeVersion.delete();
@@ -275,7 +276,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         assertTrue(((JcrVersion)activeVersion).isLatest());
         
-        Collection<Artifact> artifacts = registry.getArtifacts(a2.getParent());
+        Collection<Artifact> artifacts = registry.getArtifacts((Workspace)a2.getParent());
         boolean found = false;
         for (Artifact a : artifacts) {
             if (a.getId().equals(a2.getId())) {
@@ -302,7 +303,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
 
         ByteArrayInputStream bais = new ByteArrayInputStream(version1.getBytes("UTF-8"));
 
-        ArtifactResult ar = workspace.createArtifact("text/plain",
+        EntryResult ar = workspace.createArtifact("text/plain",
                                                      "test.txt",
                                                      "1",
                                                      bais,
@@ -312,22 +313,22 @@ public class ArtifactTest extends AbstractGalaxyTest {
 
         bais = new ByteArrayInputStream(version2.getBytes());
 
-        final Artifact artifact = ar.getArtifact();
+        final Artifact artifact = (Artifact) ar.getEntry();
 
         ar = artifact.newVersion(bais, "2", getAdmin());
         assertNotNull(ar);
         assertTrue(ar.isApproved());
 
-        assertNotNull(ar.getArtifactVersion().getPrevious());
+        assertNotNull(ar.getEntryVersion().getPrevious());
         
         artifact.getVersion("1").setAsDefaultVersion();
 
         Artifact a = registry.getArtifact(workspace, "test.txt");
         assertNotNull(a);
         assertEquals("1", a.getDefaultOrLastVersion().getVersionLabel());
-        assertEquals(version1, IOUtils.readStringFromStream(a.getDefaultOrLastVersion().getStream()));
+        assertEquals(version1, IOUtils.readStringFromStream(((ArtifactVersion)a.getDefaultOrLastVersion()).getStream()));
 
-        ArtifactVersion artifactVersion = a.getVersion("2");
+        ArtifactVersion artifactVersion = (ArtifactVersion) a.getVersion("2");
         assertEquals(version2, IOUtils.readStringFromStream(artifactVersion.getStream()));
     }
 
@@ -339,7 +340,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        ArtifactResult ar = workspace.createArtifact("text/plain", 
+        EntryResult ar = workspace.createArtifact("text/plain", 
                                                      "log4j.properties", 
                                                      "0.1", 
                                                      logProps, 

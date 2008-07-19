@@ -2,10 +2,10 @@ package org.mule.galaxy.lifecycle;
 
 import java.util.Collection;
 
-import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.User;
 
 public interface LifecycleManager {
@@ -19,7 +19,7 @@ public interface LifecycleManager {
     boolean isTransitionAllowed(ArtifactVersion a, Phase p);
     
     void transition(ArtifactVersion a, Phase p, User user) 
-        throws TransitionException, ArtifactPolicyException;
+        throws TransitionException, PolicyException;
     
     Lifecycle getLifecycle(String lifecycleName);
 

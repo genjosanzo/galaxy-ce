@@ -130,7 +130,7 @@ public class ArtifactResolver implements Resolver<Target> {
         path = UrlEncoding.decode(path);
         
         try {
-            Item<?> item = registry.getItemByPath(path);
+            Item item = registry.getItemByPath(path);
             if (item instanceof Workspace) {
                 return resolveWorkspace((Workspace) item, classifier, context);
             } else if (item instanceof Artifact) {

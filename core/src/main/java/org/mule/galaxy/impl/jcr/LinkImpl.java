@@ -17,13 +17,13 @@ public class LinkImpl implements Link {
     
     private final String path;
     private final JcrRegistryImpl registry;
-    private Item<?> item;
+    private Item item;
     private final String type;
     private boolean autoDetected;
     private final Node node;
-    private final Item<?> parent;
+    private final Item parent;
     
-    public LinkImpl(Item<?> parent, Node node, JcrRegistryImpl registry) {
+    public LinkImpl(Item parent, Node node, JcrRegistryImpl registry) {
 	this.parent = parent;
 	this.node = node;
 	this.registry = registry;
@@ -39,7 +39,7 @@ public class LinkImpl implements Link {
         this.autoDetected = detected;
     }
 
-    public Item<?> getParent() {
+    public Item getParent() {
         return parent;
     }
 
@@ -47,7 +47,7 @@ public class LinkImpl implements Link {
 	return getItem() != null;
     }
 
-    public Item<?> getItem() {
+    public Item getItem() {
 	if (item == null) {
 	    try {
 		item = registry.getItemByPath(path);

@@ -44,7 +44,7 @@ public abstract class AbstractContentHandler implements ContentHandler {
     }
 
     public String describe(ArtifactVersion v) {
-        ArtifactVersion prev = v.getPrevious();
+        ArtifactVersion prev = (ArtifactVersion) v.getPrevious();
         
         if (prev == null)
             return "Initial version.";
@@ -77,7 +77,7 @@ public abstract class AbstractContentHandler implements ContentHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public Set<Item<?>> detectDependencies(Object o, Workspace w) {
+    public Set<Item> detectDependencies(Object o, Workspace w) {
         return Collections.EMPTY_SET;
     }
 

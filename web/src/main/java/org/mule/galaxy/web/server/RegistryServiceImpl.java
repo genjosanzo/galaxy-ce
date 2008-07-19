@@ -39,11 +39,11 @@ import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactPolicyException;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.ArtifactTypeDao;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Link;
 import org.mule.galaxy.NotFoundException;
@@ -70,6 +70,7 @@ import org.mule.galaxy.lifecycle.TransitionException;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.ArtifactCollectionPolicyException;
 import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.Query;
@@ -776,7 +777,7 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
             List deps = new ArrayList();
-            ArtifactVersion latest = artifact.getDefaultOrLastVersion();
+            EntryVersion latest = artifact.getDefaultOrLastVersion();
             for (Link l : latest.getLinks()) {
                 deps.add(toWeb(l, false, l.getType().getRelationship()));
             }
@@ -794,7 +795,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     private Object toWeb(Link l, boolean recip, String relationship) {
-        Item<?> i = recip ? l.getParent() : l.getItem();
+        Item i = recip ? l.getParent() : l.getItem();
         String name;
         int itemType;
         String id = null;
@@ -838,7 +839,7 @@ public class RegistryServiceImpl implements RegistryService {
     public ArtifactGroup getArtifactByVersionId(String artifactVersionId) throws RPCException, ItemNotFoundException {
         try {
             ArtifactVersion av = registry.getArtifactVersion(artifactVersionId);
-            return getArtifactGroup(av.getParent());
+            return getArtifactGroup((Artifact)av.getParent());
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -874,7 +875,8 @@ public class RegistryServiceImpl implements RegistryService {
 
         List wcs = info.getComments();
 
-        List<Comment> comments = a.getParent().getCommentManager().getComments(a.getId());
+        Workspace workspace = (Workspace) a.getParent();
+        List<Comment> comments = workspace.getCommentManager().getComments(a.getId());
         for (Comment c : comments) {
             final SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATETIME_FORMAT);
             WComment wc = new WComment(c.getId(), c.getUser().getUsername(), dateFormat.format(c
@@ -896,8 +898,8 @@ public class RegistryServiceImpl implements RegistryService {
         info.setCommentsFeedLink(context + "/api/comments");
 
         List versions = new ArrayList();
-        for (ArtifactVersion av : a.getVersions()) {
-            versions.add(toWeb(av, false));
+        for (EntryVersion av : a.getVersions()) {
+            versions.add(toWeb((ArtifactVersion)av, false));
         }
         info.setVersions(versions);
 
@@ -969,7 +971,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     private String getLink(String base, Artifact a) {
         StringBuilder sb = new StringBuilder();
-        Workspace w = a.getParent();
+        Workspace w = (Workspace) a.getParent();
 
         sb.append(base).append(w.getPath()).append(a.getName());
         return sb.toString();
@@ -988,7 +990,8 @@ public class RegistryServiceImpl implements RegistryService {
 
             comment.setUser(getCurrentUser());
 
-            CommentManager commentManager = artifact.getParent().getCommentManager();
+            Workspace w = (Workspace)artifact.getParent();
+            CommentManager commentManager = w.getCommentManager();
             if (parentComment != null) {
                 Comment c = commentManager.getComment(parentComment);
                 if (c == null) {
@@ -1261,10 +1264,11 @@ public class RegistryServiceImpl implements RegistryService {
 
     public boolean deleteArtifactVersion(String artifactVersionId) throws RPCException, ItemNotFoundException {
         try {
-            ArtifactVersion artifact = registry.getArtifactVersion(artifactVersionId);
-            boolean last = artifact.getParent().getVersions().size() == 1;
+            ArtifactVersion av = registry.getArtifactVersion(artifactVersionId);
+            Artifact a = (Artifact) av.getParent();
+            boolean last = a.getVersions().size() == 1;
 
-            artifact.delete();
+            av.delete();
 
             return last;
         } catch (RegistryException e) {
@@ -1314,8 +1318,9 @@ public class RegistryServiceImpl implements RegistryService {
     public TransitionResponse transition(String artifactVersionId, String nextPhaseId) throws RPCException, ItemNotFoundException {
         try {
             ArtifactVersion artifact = registry.getArtifactVersion(artifactVersionId);
-
-            LifecycleManager lifecycleManager = artifact.getParent().getParent().getLifecycleManager();
+            Workspace w = (Workspace) artifact.getParent().getParent();
+            
+            LifecycleManager lifecycleManager = w.getLifecycleManager();
             Phase nextPhase = lifecycleManager.getPhaseById(nextPhaseId);
 
             TransitionResponse tr = new TransitionResponse();
@@ -1327,7 +1332,7 @@ public class RegistryServiceImpl implements RegistryService {
             } catch (TransitionException e) {
                 tr.setSuccess(false);
                 tr.addMessage("Phase " + nextPhase.getName() + " isn't a valid next phase!", false);
-            } catch (ArtifactPolicyException e) {
+            } catch (PolicyException e) {
                 tr.setSuccess(false);
                 for (ApprovalMessage app : e.getApprovals()) {
                     tr.addMessage(app.getMessage(), app.isWarning());
@@ -1500,11 +1505,11 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (ArtifactCollectionPolicyException e) {
             Map<BasicArtifactInfo, Collection<WApprovalMessage>> failures = new HashMap<BasicArtifactInfo, Collection<WApprovalMessage>>();
-            for (Map.Entry<ArtifactVersion, List<ApprovalMessage>> entry : e.getPolicyFailures().entrySet()) {
-                ArtifactVersion av = entry.getKey();
+            for (Map.Entry<EntryVersion, List<ApprovalMessage>> entry : e.getPolicyFailures().entrySet()) {
+                EntryVersion av = entry.getKey();
                 List<ApprovalMessage> approvals = entry.getValue();
 
-                Artifact a = av.getParent();
+                Artifact a = (Artifact) av.getParent();
                 ArtifactRenderer view = rendererManager.getArtifactRenderer(a.getDocumentType());
                 if (view == null) {
                     view = rendererManager.getArtifactRenderer(a.getContentType().toString());
@@ -1556,7 +1561,7 @@ public class RegistryServiceImpl implements RegistryService {
                 artifact.setAsDefaultVersion();
 
                 tr.setSuccess(true);
-            } catch (ArtifactPolicyException e) {
+            } catch (PolicyException e) {
                 tr.setSuccess(false);
                 for (ApprovalMessage app : e.getApprovals()) {
                     tr.addMessage(app.getMessage(), app.isWarning());
@@ -1589,7 +1594,7 @@ public class RegistryServiceImpl implements RegistryService {
                 }
 
                 tr.setSuccess(true);
-            } catch (ArtifactPolicyException e) {
+            } catch (PolicyException e) {
                 tr.setSuccess(false);
                 for (ApprovalMessage app : e.getApprovals()) {
                     tr.addMessage(app.getMessage(), app.isWarning());
@@ -1707,9 +1712,9 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     private String getVersionLink(ArtifactVersion av) {
-        Artifact a = av.getParent();
+        Artifact a = (Artifact) av.getParent();
         StringBuilder sb = new StringBuilder();
-        Workspace w = a.getParent();
+        Workspace w = (Workspace) a.getParent();
 
         final String context = contextPathResolver.getContextPath();
         sb.append(context).append("/api/registry").append(w.getPath()).append(a.getName()).append("?version=")
