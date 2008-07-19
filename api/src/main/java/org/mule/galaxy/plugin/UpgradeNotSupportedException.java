@@ -1,5 +1,5 @@
 /*
- * $Id: LicenseHeader-GPLv2.txt 288 2008-01-29 00:59:35Z andrew $
+ * $Id$
  * --------------------------------------------------------------------------------------
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,25 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.mule.galaxy;
+package org.mule.galaxy.plugin;
 
-public interface Plugin {
-
-    void setRegistry(Registry r);
-
-    /**
-     * Previous version will be <code>null</code> if previous plugin version detected,
-     * otherwise a version number of the installed plugin.
-     * @param previousVersion currently installed plugin version or null
-     * @throws UpgradeNotSupportedException
-     * @throws DowngradeNotSupportedException
-     */
-    void update(Integer previousVersion) throws Exception;
-    boolean isDowngradeSupported();
-    boolean isUpgradeSupported();
+public class UpgradeNotSupportedException extends UnsupportedOperationException
+{
     
-    String getName();
-    int getVersion();
-
-    void initialize() throws Exception;
 }

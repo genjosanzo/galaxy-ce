@@ -1,4 +1,4 @@
-package org.mule.galaxy;
+package org.mule.galaxy.plugin;
 
 import java.util.List;
 

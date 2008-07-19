@@ -336,7 +336,7 @@
     <property name="proxyTargetClass" value="true"/>
   </bean>
   
-  <bean id="pluginManagerTarget" class="org.mule.galaxy.impl.jcr.PluginManagerImpl"
+  <bean id="pluginManagerTarget" class="org.mule.galaxy.impl.plugin.PluginManagerImpl"
          parent="abstractArtifactPlugin" init-method="initialize">
     <property name="jcrTemplate" ref="jcrTemplate"/>
     <property name="policyManager" ref="policyManager"/>
@@ -344,9 +344,9 @@
     <property name="persisterManager" ref="persisterManager" />
   </bean>
 
-  <bean class="org.mule.galaxy.impl.artifact.OtherArtifactPlugin" parent="abstractArtifactPlugin"/>
+  <bean class="org.mule.galaxy.impl.plugin.OtherArtifactPlugin" parent="abstractArtifactPlugin"/>
 
-    <bean class="org.mule.galaxy.impl.artifact.JarArtifactPlugin" parent="abstractArtifactPlugin">
+    <bean class="org.mule.galaxy.impl.plugin.JarArtifactPlugin" parent="abstractArtifactPlugin">
         <property name="contentService" ref="contentService"/>
         <property name="jcrTemplate" ref="jcrTemplate" />
     </bean>

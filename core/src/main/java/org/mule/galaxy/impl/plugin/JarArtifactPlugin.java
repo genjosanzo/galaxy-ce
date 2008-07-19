@@ -1,4 +1,4 @@
-package org.mule.galaxy.impl.artifact;
+package org.mule.galaxy.impl.plugin;
 
 import java.io.IOException;
 import java.util.HashMap;

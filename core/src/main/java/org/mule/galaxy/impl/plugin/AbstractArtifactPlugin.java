@@ -16,15 +16,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.mule.galaxy.impl.artifact;
+package org.mule.galaxy.impl.plugin;
 
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.Dao;
-import org.mule.galaxy.DowngradeNotSupportedException;
-import org.mule.galaxy.Plugin;
 import org.mule.galaxy.Registry;
-import org.mule.galaxy.UpgradeNotSupportedException;
 import org.mule.galaxy.index.IndexManager;
+import org.mule.galaxy.plugin.DowngradeNotSupportedException;
+import org.mule.galaxy.plugin.Plugin;
+import org.mule.galaxy.plugin.UpgradeNotSupportedException;
 import org.mule.galaxy.render.RendererManager;
 
 import org.apache.commons.logging.Log;

@@ -1,4 +1,6 @@
-package org.mule.galaxy;
+package org.mule.galaxy.plugin;
+
+import org.mule.galaxy.Identifiable;
 
 
 public class PluginInfo implements Identifiable {
