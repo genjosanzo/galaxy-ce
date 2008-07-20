@@ -702,7 +702,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         break;
                     }
                 }                                                   
-                
+
+                // TODO Dan, this for doesn't loop
                 for (Map.Entry<FunctionCall, AbstractFunction> e : functions.entrySet()) {
                     if (av) {
                         Set<ArtifactVersion> artifacts2 = new HashSet<ArtifactVersion>();
