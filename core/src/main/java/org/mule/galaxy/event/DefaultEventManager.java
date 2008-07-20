@@ -175,6 +175,10 @@ public class DefaultEventManager implements EventManager {
                                                    event.getClass().getName()), t);
                     }
                 }
+            } else {
+                if (logger.isInfoEnabled()) {
+                    logger.info("No listeners registered for " + event.getClass().getName() + ", ignoring");
+                }
             }
         }
     }
