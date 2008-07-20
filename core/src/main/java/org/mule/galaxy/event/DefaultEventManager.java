@@ -7,6 +7,7 @@ import org.mule.galaxy.event.annotation.OnEvent;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -124,6 +125,17 @@ public class DefaultEventManager implements EventManager {
                 }
                 evtListeners.add(listener);
                 listeners.put(eventClass, evtListeners);
+
+                if (logger.isDebugEnabled()) {
+                    Object listenerObj = listener instanceof DelegatingGalaxyEventListener
+                            ? ((DelegatingGalaxyEventListener) listener).getDelegateListener()
+                            : listener;
+
+                    final String message =
+                            MessageFormat.format("Registered {0} as a listener for {1}", listenerObj, eventClass.getName());
+                    logger.debug(message);
+                }
+
             } catch (ClassNotFoundException e) {
                 final String realListenerClass = listener instanceof DelegatingGalaxyEventListener
                         ? ((DelegatingGalaxyEventListener) listener).getDelegateListener().getClass().getName()
@@ -138,7 +150,9 @@ public class DefaultEventManager implements EventManager {
         synchronized (listenersLock) {
             // TODO don't like the way it's done really
             if (listeners.remove(eventClass) == null) {
-                // TODO warn about incorrect usage
+                if (logger.isWarnEnabled()) {
+                    logger.warn("Attempt to remove listeners which were never registered for " + eventClass);
+                }
             }
         }
     }
@@ -150,6 +164,9 @@ public class DefaultEventManager implements EventManager {
             if (eventListeners != null && !eventListeners.isEmpty()) {
                 for (GalaxyEventListener listener : eventListeners) {
                     try {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Firing event: " + event);
+                        }
                         // TODO blocking/non-blocking
                         listener.onEvent(event);
                     } catch (Throwable t) {
