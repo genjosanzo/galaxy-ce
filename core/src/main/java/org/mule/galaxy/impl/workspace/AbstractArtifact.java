@@ -15,7 +15,7 @@ import org.mule.galaxy.workspace.WorkspaceManager;
 public abstract class AbstractArtifact extends AbstractItem implements Artifact {
 
     public AbstractArtifact(WorkspaceManager manager, ItemMetadataHandler metadata) {
-	super(manager, metadata);
+        super(manager, metadata);
     }
 
     public String getPath() {

@@ -51,12 +51,12 @@ public class JcrArtifact extends JcrEntry implements Artifact {
 
     @Override
     protected EntryVersion createVersion(Node node) throws RepositoryException {
-	return new JcrVersion(this, node);
+        return new JcrVersion(this, node);
     }
 
     @Override
     protected String getNodeType() {
-	return JcrWorkspaceManager.ARTIFACT_VERSION_NODE_TYPE;
+        return JcrWorkspaceManager.ARTIFACT_VERSION_NODE_TYPE;
     }
     
     public MimeType getContentType() {
@@ -132,22 +132,18 @@ public class JcrArtifact extends JcrEntry implements Artifact {
         getDefaultOrLastVersion().setVisible(name, visible);
     }
 
-    public EntryResult newVersion(Object data,
-	    String versionLabel, User user) throws RegistryException,
-	    PolicyException, IOException, DuplicateItemException,
-	    AccessException {
-	return manager.newVersion(this, data, versionLabel, user);
+    public EntryResult newVersion(Object data, String versionLabel, User user)
+            throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException {
+        return manager.newVersion(this, data, versionLabel, user);
     }
 
-    public EntryResult newVersion(InputStream inputStream,
-	    String versionLabel, User user) throws RegistryException,
-	    PolicyException, IOException, DuplicateItemException,
-	    AccessException {
-	return manager.newVersion(this, inputStream, versionLabel, user);
+    public EntryResult newVersion(InputStream inputStream, String versionLabel, User user)
+            throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException {
+        return manager.newVersion(this, inputStream, versionLabel, user);
     }
 
     public void delete() throws RegistryException, AccessException {
-	manager.delete(this);
+        manager.delete(this);
     }
 
     public JcrWorkspaceManager getManager() {

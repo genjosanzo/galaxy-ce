@@ -8,7 +8,7 @@ import org.mule.galaxy.workspace.WorkspaceManager;
 public abstract class AbstractArtifactVersion extends AbstractItem implements ArtifactVersion {
 
     public AbstractArtifactVersion(WorkspaceManager manager, ItemMetadataHandler metadata) {
-	super(manager, metadata);
+        super(manager, metadata);
     }
 
 }

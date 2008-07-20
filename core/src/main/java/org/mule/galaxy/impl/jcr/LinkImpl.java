@@ -24,10 +24,10 @@ public class LinkImpl implements Link {
     private final Item parent;
     
     public LinkImpl(Item parent, Node node, JcrRegistryImpl registry) {
-	this.parent = parent;
-	this.node = node;
-	this.registry = registry;
-	path = JcrUtil.getStringOrNull(node, PATH);
+        this.parent = parent;
+        this.node = node;
+        this.registry = registry;
+        path = JcrUtil.getStringOrNull(node, PATH);
         type = JcrUtil.getStringOrNull(node, RELATIONSHIP);
         Boolean detected = JcrUtil.getBooleanOrNull(node, AUTO_DETECTED);
         
@@ -44,34 +44,34 @@ public class LinkImpl implements Link {
     }
 
     public boolean exists() {
-	return getItem() != null;
+        return getItem() != null;
     }
 
     public Item getItem() {
-	if (item == null) {
-	    try {
-		item = registry.getItemByPath(path);
-    	    } catch (AccessException e) {
+        if (item == null) {
+            try {
+                item = registry.getItemByPath(path);
+            } catch (AccessException e) {
                 // don't list dependencies which the user shouldn't see
             } catch (NotFoundException e) {
                 // Guess its not in our repository
             } catch (RegistryException e) {
                 throw new RuntimeException(e);
             }
-	}
-	return item;
+        }
+        return item;
     }
 
     public String getPath() {
-	return path;
-    }		
+        return path;
+    }
 
     public LinkType getType() {
-	try {
-	    return registry.getLinkTypeDao().get(type);
-	} catch (NotFoundException e) {
-	    throw new RuntimeException(e);
-	}
+        try {
+            return registry.getLinkTypeDao().get(type);
+        } catch (NotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean isAutoDetected() {
@@ -79,7 +79,7 @@ public class LinkImpl implements Link {
     }
 
     public Node getNode() {
-	return node;
+        return node;
     }
 
 }

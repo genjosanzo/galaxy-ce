@@ -122,19 +122,16 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return id;
     }
 
-    public Artifact getArtifact(String id) throws NotFoundException,
-	    RegistryException, AccessException {
-	return getWorkspaceManagerByItemId(id).getArtifact(id);
+    public Artifact getArtifact(String id) throws NotFoundException, RegistryException, AccessException {
+        return getWorkspaceManagerByItemId(id).getArtifact(id);
     }
 
-    public Workspace getWorkspace(String id) throws RegistryException,
-	    NotFoundException, AccessException {
-	return getWorkspaceManagerByItemId(id).getWorkspace(id);
+    public Workspace getWorkspace(String id) throws RegistryException, NotFoundException, AccessException {
+        return getWorkspaceManagerByItemId(id).getWorkspace(id);
     }
 
-    public Collection<Workspace> getWorkspaces() throws RegistryException,
-	    AccessException {
-	return localWorkspaceManager.getWorkspaces();
+    public Collection<Workspace> getWorkspaces() throws RegistryException, AccessException {
+        return localWorkspaceManager.getWorkspaces();
     }
 
     private Workspace buildWorkspace(Node node) throws RepositoryException {
@@ -318,27 +315,27 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
     
     public Collection<Artifact> getArtifacts(Workspace w) throws RegistryException {
-	WorkspaceManager wm = getWorkspaceManager(w);
-	
-	return wm.getArtifacts(w);
+        WorkspaceManager wm = getWorkspaceManager(w);
+    
+        return wm.getArtifacts(w);
     }
 
     private WorkspaceManager getWorkspaceManager(Item i) {
-	return getWorkspaceManagerByItemId(i.getId());
+        return getWorkspaceManagerByItemId(i.getId());
     }
 
     private WorkspaceManager getWorkspaceManager(String wmId) {
-	return idToWorkspaceManager.get(wmId);
+        return idToWorkspaceManager.get(wmId);
     }
 
     private WorkspaceManager getWorkspaceManagerByItemId(String itemId) {
-	int idx = itemId.indexOf('$');
-	
-	if (idx == -1) {
-	    throw new IllegalStateException("Invalid item id: " + itemId);
-	}
-	
-	return getWorkspaceManager(itemId.substring(0, idx));
+        int idx = itemId.indexOf('$');
+
+        if (idx == -1) {
+            throw new IllegalStateException("Invalid item id: " + itemId);
+        }
+
+        return getWorkspaceManager(itemId.substring(0, idx));
     }
 
     private Artifact buildArtifact(Node node)
@@ -459,12 +456,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     private String trimWorkspaceManagerId(String id) {
-	int idx = id.indexOf('$');
-	if (idx == -1) {
-	    throw new IllegalStateException("Illegal workspace manager id.");
-	}
-	    
-	return id.substring(idx + 1);
+        int idx = id.indexOf('$');
+        if (idx == -1) {
+            throw new IllegalStateException("Illegal workspace manager id.");
+        }
+
+        return id.substring(idx + 1);
     }
     
     public Artifact getArtifact(final Workspace w, final String name) throws NotFoundException {
@@ -685,9 +682,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         while (!node.getPrimaryNodeType().getName().equals(JcrWorkspaceManager.ARTIFACT_NODE_TYPE)) {
                             node = node.getParent();
                         }
-                        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(localWorkspaceManager, node.getParent()), node,
-                        	localWorkspaceManager);
-                        
+                        JcrArtifact artifact = new JcrArtifact(
+                                                        new JcrWorkspace(localWorkspaceManager, node.getParent()),
+                                                        node, localWorkspaceManager);
+
                         try {
                             accessControlManager.assertAccess(Permission.READ_ARTIFACT, artifact);
 

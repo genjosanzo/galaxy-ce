@@ -44,11 +44,11 @@ public class JcrEntryVersion extends AbstractJcrItem implements EntryVersion {
     }
     
     public String getPath() {
-	return getParent().getPath() + "?version=" + getVersionLabel();
+        return getParent().getPath() + "?version=" + getVersionLabel();
     }
 
     public String getName() {
-	return getParent().getName() + " (" + getVersionLabel() + ")";
+        return getParent().getName() + " (" + getVersionLabel() + ")";
     }
 
     public void setPhase(Phase p) {
@@ -194,14 +194,12 @@ public class JcrEntryVersion extends AbstractJcrItem implements EntryVersion {
         setNodeProperty(AUTHOR_ID, author.getId());
     }
     
-    public void setAsDefaultVersion()
-	    throws RegistryException, PolicyException {
-	getManager().setDefaultVersion(this);
+    public void setAsDefaultVersion() throws RegistryException, PolicyException {
+        getManager().setDefaultVersion(this);
     }
 
-    public void setEnabled(boolean enabled)
-	    throws RegistryException, PolicyException {
-	getManager().setEnabled(this, enabled);
+    public void setEnabled(boolean enabled) throws RegistryException, PolicyException {
+        getManager().setEnabled(this, enabled);
     }
 
     public void setEnabledInternal(boolean enabled) {

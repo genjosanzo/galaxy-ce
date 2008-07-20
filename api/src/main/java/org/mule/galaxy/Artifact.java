@@ -26,9 +26,9 @@ public interface Artifact extends Entry {
     QName getDocumentType();
     
     EntryResult newVersion(InputStream inputStream, String versionLabel, User user) 
-    	throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException;
+        throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException;
 
     EntryResult newVersion(Object data, String versionLabel, User user) 
-	throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException;
+        throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException;
 
 }

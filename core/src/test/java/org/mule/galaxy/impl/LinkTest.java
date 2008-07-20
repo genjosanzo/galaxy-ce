@@ -17,12 +17,12 @@ import org.mule.galaxy.test.AbstractGalaxyTest;
 public class LinkTest extends AbstractGalaxyTest {
     
     public void testLinkTypes() throws Exception {
-	List<LinkType> all = linkTypeManager.listAll();
-	assertTrue(all.size() > 0);
-	
-	LinkType type = linkTypeManager.get(LinkType.DEPENDS);
-	
-	assertNotNull(type);
+        List<LinkType> all = linkTypeManager.listAll();
+        assertTrue(all.size() > 0);
+
+        LinkType type = linkTypeManager.get(LinkType.DEPENDS);
+
+        assertNotNull(type);
     }
     public void testWsdlDependencies() throws Exception {
 

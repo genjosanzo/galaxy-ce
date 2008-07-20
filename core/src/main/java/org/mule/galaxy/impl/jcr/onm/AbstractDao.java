@@ -90,7 +90,7 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
             } else if (cause instanceof NotFoundException) {
                 throw (NotFoundException) cause;
             } else {
-        	throw e;
+                throw e;
             }
         }
     }

@@ -288,21 +288,21 @@ public class DefaultEventManagerTest extends TestCase {
             return null;
         }
 
-	public EntryResult newVersion(InputStream inputStream,
-		String versionLabel, User user) throws RegistryException,
-		PolicyException, IOException, DuplicateItemException,
-		AccessException {
-	    return null;
-	}
+        public EntryResult newVersion(InputStream inputStream, String versionLabel, User user)
+                throws RegistryException,
+                       PolicyException, IOException, DuplicateItemException,
+                       AccessException {
+            return null;
+        }
 
-	public EntryResult newVersion(Object data, String versionLabel,
-		User user) throws RegistryException, PolicyException,
-		IOException, DuplicateItemException, AccessException {
-	    return null;
-	}
+        public EntryResult newVersion(Object data, String versionLabel, User user)
+                throws RegistryException, PolicyException,
+                       IOException, DuplicateItemException, AccessException {
+            return null;
+        }
 
-	public void delete() throws RegistryException, AccessException {
-	}
+        public void delete() throws RegistryException, AccessException {
+        }
 
     }
 }

@@ -18,41 +18,41 @@ public abstract class AbstractItem {
     protected final WorkspaceManager manager;
     
     public AbstractItem(WorkspaceManager manager, ItemMetadataHandler metadata) {
-	super();
-	this.manager = manager;
-	this.metadata = metadata;
+        super();
+        this.manager = manager;
+        this.metadata = metadata;
     }
 
     public String getId() {
-	return id;
+        return id;
     }
 
     public Iterator<PropertyInfo> getProperties() {
-	return metadata.getProperties(this);
+        return metadata.getProperties(this);
     }
 
     public Object getProperty(String name) {
-	return metadata.getProperty(this, name);
+        return metadata.getProperty(this, name);
     }
 
     public PropertyInfo getPropertyInfo(String name) {
-	return metadata.getPropertyInfo(this, name);
+        return metadata.getPropertyInfo(this, name);
     }
 
     public boolean hasProperty(String name) {
-	return metadata.hasProperty(this, name);
+    return metadata.hasProperty(this, name);
     }
 
     public void setLocked(String name, boolean locked) {
-	metadata.setLocked(this, name, locked);
+        metadata.setLocked(this, name, locked);
     }
 
     public void setProperty(String name, Object value) throws PropertyException {
-	metadata.setProperty(this, name, value);
+        metadata.setProperty(this, name, value);
     }
 
     public void setVisible(String name, boolean visible) {
-	metadata.setVisible(this, name, visible);
+        metadata.setVisible(this, name, visible);
     }
     
     public void delete() throws RegistryException, AccessException {

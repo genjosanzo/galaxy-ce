@@ -175,28 +175,23 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
         }
     }
 
-    public EntryResult createArtifact(Object data, String versionLabel,
-	    User user) throws DuplicateItemException, RegistryException,
-	    PolicyException, MimeTypeParseException, AccessException {
-	return manager.createArtifact(this, data, versionLabel, user);
+    public EntryResult createArtifact(Object data, String versionLabel, User user)
+            throws DuplicateItemException, RegistryException, PolicyException, MimeTypeParseException, AccessException {
+        return manager.createArtifact(this, data, versionLabel, user);
     }
 
-    public EntryResult createArtifact(String contentType, String name,
-	    String versionLabel, InputStream inputStream, User user)
-	    throws DuplicateItemException, RegistryException,
-	    PolicyException, IOException, MimeTypeParseException,
-	    AccessException {
-	return manager.createArtifact(this, contentType, name, versionLabel, inputStream, user);
+    public EntryResult createArtifact(String contentType, String name, String versionLabel, InputStream inputStream, User user)
+        throws DuplicateItemException, RegistryException, PolicyException, IOException, MimeTypeParseException, AccessException {
+        return manager.createArtifact(this, contentType, name, versionLabel, inputStream, user);
     }
 
     public EntryResult newEntry(String name, String versionLabel)
-	    throws DuplicateItemException, RegistryException, PolicyException,
-	    AccessException {
-	return manager.newEntry(this, name, versionLabel);
+            throws DuplicateItemException, RegistryException, PolicyException, AccessException {
+        return manager.newEntry(this, name, versionLabel);
     }
 
     public void delete() throws RegistryException, AccessException {
-	manager.delete(this);
+        manager.delete(this);
     }
 
     public LifecycleManager getLifecycleManager() {

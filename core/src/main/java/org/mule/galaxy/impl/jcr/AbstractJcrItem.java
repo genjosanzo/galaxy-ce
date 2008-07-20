@@ -60,9 +60,8 @@ public abstract class AbstractJcrItem implements Item {
         }
     }
 
-    public void delete() throws RegistryException,
-	    AccessException {
-	manager.delete(this);
+    public void delete() throws RegistryException, AccessException {
+        manager.delete(this);
     }
     
     public Node getNode() {
@@ -114,8 +113,7 @@ public abstract class AbstractJcrItem implements Item {
             }
             
             manager.getActivityManager().logActivity(SecurityUtils.getCurrentUser(), 
-        	    "Property " + name + " was set to: " + value, 
-                    EventType.INFO);
+                "Property " + name + " was set to: " + value, EventType.INFO);
             update();
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
@@ -296,10 +294,7 @@ public abstract class AbstractJcrItem implements Item {
         }
     }
 
-    private void addLink(boolean autoDetected, 
-	    Node linksNode, 
-	    Item item,
-	    LinkType type) throws RepositoryException {
+    private void addLink(boolean autoDetected, Node linksNode, Item item, LinkType type) throws RepositoryException {
         Node dep = linksNode.addNode(UUID.randomUUID().toString(), LINK_NODE_TYPE);
         dep.addMixin("mix:referenceable");
         dep.setProperty(LinkImpl.AUTO_DETECTED, autoDetected);

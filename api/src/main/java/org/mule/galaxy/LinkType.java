@@ -8,20 +8,20 @@ public class LinkType implements Identifiable {
     private String reciprocal;
     
     public LinkType() {
-	super();
+        super();
     }
 
     public LinkType(String id, String relationship) {
-	super();
-	this.id = id;
-	this.relationship = relationship;
+        super();
+        this.id = id;
+        this.relationship = relationship;
     }
 
     public LinkType(String id, String relationship, String reciprical) {
-	super();
-	this.id = id;
-	this.relationship = relationship;
-	this.reciprocal = reciprical;
+        super();
+        this.id = id;
+        this.relationship = relationship;
+        this.reciprocal = reciprical;
     }
 
     public String getId() {

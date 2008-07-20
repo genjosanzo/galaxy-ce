@@ -76,7 +76,7 @@ public class XQueryIndexer extends AbstractIndexer {
                     String content = DOMUtils.getContent(value);
 
                     if (content == null) {
-                	content = "";
+                        content = "";
                     }
                     
                     if (index.getQueryType().equals(QName.class)) {

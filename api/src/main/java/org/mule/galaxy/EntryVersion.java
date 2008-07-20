@@ -41,8 +41,7 @@ public interface EntryVersion extends Item {
     
     boolean isEnabled();
     
-    void setEnabled(boolean enabled)
-    	throws RegistryException, PolicyException;
+    void setEnabled(boolean enabled) throws RegistryException, PolicyException;
     
     boolean isIndexedPropertiesStale();
 

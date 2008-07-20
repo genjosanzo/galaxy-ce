@@ -42,16 +42,16 @@ public interface WorkspaceManager {
             Object data, 
             String versionLabel, 
             User user)
-    	throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException;
+        throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException;
     
     EntryResult newVersion(final Artifact artifact, 
             final InputStream inputStream, 
             final String versionLabel, 
             final User user) 
-    	throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException;
+        throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException;
     
     EntryResult createArtifact(Workspace workspace, Object data, String versionLabel, User user) 
-    	throws RegistryException, PolicyException, MimeTypeParseException, DuplicateItemException, AccessException;
+        throws RegistryException, PolicyException, MimeTypeParseException, DuplicateItemException, AccessException;
     
     EntryResult createArtifact(Workspace workspace, 
             String contentType, 
@@ -59,10 +59,10 @@ public interface WorkspaceManager {
             String versionLabel, 
             InputStream inputStream, 
             User user) 
-    	throws RegistryException, PolicyException, IOException, MimeTypeParseException, DuplicateItemException, AccessException;
+        throws RegistryException, PolicyException, IOException, MimeTypeParseException, DuplicateItemException, AccessException;
     
     EntryResult newEntry(Workspace workspace, String name, String versionLabel)
-   	throws DuplicateItemException, RegistryException, PolicyException, AccessException;
+       throws DuplicateItemException, RegistryException, PolicyException, AccessException;
     
     /**
      * Attach this manager to the specified workspace.

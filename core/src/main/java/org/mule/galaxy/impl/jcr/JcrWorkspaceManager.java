@@ -118,7 +118,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     private Registry registry;
 
     public String getId() {
-	return "local";
+        return "local";
     }
 
     public Workspace getWorkspace(String id) throws RegistryException, AccessException {
@@ -142,12 +142,12 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     }
 
     private String trimWorkspaceManagerId(String id) {
-	int idx = id.indexOf('$');
-	if (idx == -1) {
-	    throw new IllegalStateException("Illegal workspace manager id.");
-	}
-	    
-	return id.substring(idx + 1);
+        int idx = id.indexOf('$');
+        if (idx == -1) {
+            throw new IllegalStateException("Illegal workspace manager id.");
+        }
+
+        return id.substring(idx + 1);
     }
 
     private Workspace buildWorkspace(Node node) throws RepositoryException {
@@ -243,7 +243,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     }
 
     private Node getWorkspacesNode() {
-	return ((JcrRegistryImpl) registry).getWorkspacesNode();
+        return ((JcrRegistryImpl) registry).getWorkspacesNode();
     }
 
     public EntryResult newVersion(Artifact artifact, 
@@ -603,7 +603,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     public EntryResult newEntry(final Workspace workspace, final String name, final String versionLabel)
         throws RegistryException, PolicyException, DuplicateItemException {
         
-	final User user = SecurityUtils.getCurrentUser();
+        final User user = SecurityUtils.getCurrentUser();
 
         if (user == null) {
             throw new NullPointerException("User cannot be null.");
@@ -725,17 +725,21 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     
 
     public void delete(Item item) throws RegistryException, AccessException {
-	if (item instanceof ArtifactVersion) {
-	    delete((ArtifactVersion) item);
-	} else if (item instanceof Artifact) {
-	    delete((Artifact) item);
-	} else if (item instanceof Workspace) {
-	    delete((Workspace) item);
-	} else if (item instanceof Entry) {
-	    //delete((ArtifactVersion) item);
-	} else if (item instanceof EntryVersion) {
-	    //delete((ArtifactVersion) item);
-	}
+        if (item instanceof ArtifactVersion) {
+            delete((ArtifactVersion) item);
+        } else
+            if (item instanceof Artifact) {
+                delete((Artifact) item);
+            } else
+                if (item instanceof Workspace) {
+                    delete((Workspace) item);
+                } else
+                    if (item instanceof Entry) {
+                        //delete((ArtifactVersion) item);
+                    } else
+                        if (item instanceof EntryVersion) {
+                            //delete((ArtifactVersion) item);
+                        }
     }
 
     public void delete(final ArtifactVersion version) throws RegistryException, AccessException {
@@ -745,7 +749,8 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 try {
                     Artifact artifact = (Artifact) version.getParent();
-		    if (artifact.getVersions().size() == 1) {
+
+                    if (artifact.getVersions().size() == 1) {
                         delete(artifact);
                         return null;
                     }
@@ -806,7 +811,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
         executeWithPolicy(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 
-        	if (enabled && version instanceof ArtifactVersion) {
+                if (enabled && version instanceof ArtifactVersion) {
                     approve((ArtifactVersion) version.getPrevious(), (ArtifactVersion) version);
                 }
                 
@@ -823,7 +828,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
         PolicyException {
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-        	EntryVersion oldDefault = ((Entry)version.getParent()).getDefaultOrLastVersion();
+                EntryVersion oldDefault = ((Entry)version.getParent()).getDefaultOrLastVersion();
                 
                 ((JcrVersion) oldDefault).setDefault(false);
                 ((JcrVersion) version).setDefault(true);
@@ -839,23 +844,23 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
 
         executeWithRegistryException(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-        	String path = wkspc.getPath();
-                
-        	((JcrWorkspace)wkspc).getNode().remove();
+                String path = wkspc.getPath();
 
-        	session.save();
-        	
-        	WorkspaceDeletedEvent evt = new WorkspaceDeletedEvent(path);
-        	evt.setUser(SecurityUtils.getCurrentUser());
-        	eventManager.fireEvent(evt);
-                
+                ((JcrWorkspace) wkspc).getNode().remove();
+
+                session.save();
+
+                WorkspaceDeletedEvent evt = new WorkspaceDeletedEvent(path);
+                evt.setUser(SecurityUtils.getCurrentUser());
+                eventManager.fireEvent(evt);
+
                 return null;
             }
         });
     }
     
     public void attachTo(Workspace workspace) {
-	throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     private Object executeWithPolicy(JcrCallback jcrCallback) 
@@ -905,8 +910,8 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
         }
     }
     
-    private Object executeAndDewrap(JcrCallback jcrCallback) 
-    	throws RegistryException, PolicyException, DuplicateItemException {
+    private Object executeAndDewrap(JcrCallback jcrCallback)
+        throws RegistryException, PolicyException, DuplicateItemException {
         try {
             return execute(jcrCallback);
         } catch (RuntimeException e) {
@@ -924,7 +929,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     }
         
     public LifecycleManager getLifecycleManager(Workspace w) {
-	return lifecycleManager;
+        return lifecycleManager;
     }
 
     public ContentService getContentService() {
@@ -992,7 +997,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     }
 
     public Registry getRegistry() {
-	return registry;
+        return registry;
     }
 
     public void setRegistry(Registry registry) {
@@ -1000,7 +1005,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     }
 
     public CommentManager getCommentManager() {
-	return commentManager;
+        return commentManager;
     }
 
     public void setCommentManager(CommentManager commentManager) {

@@ -147,11 +147,11 @@ public class JcrEntry extends AbstractJcrItem implements Entry {
     }
 
     protected String getNodeType() {
-	return JcrWorkspaceManager.ENTRY_VERSION_NODE_TYPE;
+        return JcrWorkspaceManager.ENTRY_VERSION_NODE_TYPE;
     }
 
     protected EntryVersion createVersion(Node node) throws RepositoryException {
-	return new JcrEntryVersion(this, node);
+        return new JcrEntryVersion(this, node);
     }
 
     public EntryVersion getVersion(String versionName) {
@@ -182,7 +182,7 @@ public class JcrEntry extends AbstractJcrItem implements Entry {
     }
 
     public void delete() throws RegistryException, AccessException {
-	manager.delete(this);
+        manager.delete(this);
     }
 
     public void setWorkspace(Workspace workspace) {

@@ -32,8 +32,8 @@ public class JcrVersion extends JcrEntryVersion implements ArtifactVersion {
                       Node v,
                       Node contentNode) throws RepositoryException  {
         super(parent, v);
-	this.parent = parent;
-	this.contentNode = contentNode;
+        this.parent = parent;
+        this.contentNode = contentNode;
     }
     
     public JcrVersion(JcrArtifact parent, Node versionNode) throws RepositoryException {

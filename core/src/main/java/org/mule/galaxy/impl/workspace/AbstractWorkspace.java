@@ -19,7 +19,7 @@ import org.mule.galaxy.workspace.WorkspaceManager;
 public abstract class AbstractWorkspace extends AbstractItem implements Workspace {
 
     public AbstractWorkspace(WorkspaceManager manager, ItemMetadataHandler metadata) {
-	super(manager, metadata);
+        super(manager, metadata);
     }
 
     public String getPath() {
