@@ -14,7 +14,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class DefaultEventManager implements EventManager {
+
+    protected final Log logger = LogFactory.getLog(getClass());
 
     protected final Object listenersLock = new Object();
 
@@ -144,8 +149,14 @@ public class DefaultEventManager implements EventManager {
 
             if (eventListeners != null && !eventListeners.isEmpty()) {
                 for (GalaxyEventListener listener : eventListeners) {
-                    // TODO blocking/non-blocking
-                    listener.onEvent(event);
+                    try {
+                        // TODO blocking/non-blocking
+                        listener.onEvent(event);
+                    } catch (Throwable t) {
+                        logger.error(String.format("Listener %s failed to process event %s",
+                                                   listener.getClass().getName(),
+                                                   event.getClass().getName()), t);
+                    }
                 }
             }
         }
