@@ -10,7 +10,7 @@ public class DefaultEvents {
     public static final String WORKSPACE_DELETED = "WorkspaceDeleted";
 
     // property
-    public static final String PROPERTY_UPDATED = "PropertyUpdated";
+    public static final String PROPERTY_CHANGED = "PropertyChanged";
 
     // artifact
     public static final String ARTIFACT_VERSION_CREATED = "ArtifactVersionCreated";

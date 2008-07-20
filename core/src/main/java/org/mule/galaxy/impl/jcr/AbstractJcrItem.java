@@ -1,5 +1,19 @@
 package org.mule.galaxy.impl.jcr;
 
+import org.mule.galaxy.Item;
+import org.mule.galaxy.Link;
+import org.mule.galaxy.LinkType;
+import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.activity.ActivityManager.EventType;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.util.BundleUtils;
+import org.mule.galaxy.util.DateUtil;
+import org.mule.galaxy.util.Message;
+import org.mule.galaxy.util.SecurityUtils;
+
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,18 +32,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
 import org.apache.jackrabbit.value.StringValue;
-import org.mule.galaxy.Item;
-import org.mule.galaxy.Link;
-import org.mule.galaxy.LinkType;
-import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.activity.ActivityManager.EventType;
-import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.util.BundleUtils;
-import org.mule.galaxy.util.DateUtil;
-import org.mule.galaxy.util.Message;
-import org.mule.galaxy.util.SecurityUtils;
 
 public abstract class AbstractJcrItem implements Item {
 
@@ -111,9 +113,10 @@ public abstract class AbstractJcrItem implements Item {
             } else {
                 ensureProperty(name);
             }
-            
-            manager.getActivityManager().logActivity(SecurityUtils.getCurrentUser(), 
-                "Property " + name + " was set to: " + value, EventType.INFO);
+
+            final String message = MessageFormat.format("Property {0} of {1} was set to: {2}", name, getPath(), value);
+            manager.getActivityManager().logActivity(SecurityUtils.getCurrentUser(),
+                                                     message, EventType.INFO);
             update();
         } catch (RepositoryException e) {
             throw new RuntimeException(e);

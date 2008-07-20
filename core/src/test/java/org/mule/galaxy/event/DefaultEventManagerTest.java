@@ -1,33 +1,13 @@
 package org.mule.galaxy.event;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.EntryResult;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.EntryVersion;
-import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
-import static org.mule.galaxy.event.DefaultEvents.PROPERTY_UPDATED;
+import static org.mule.galaxy.event.DefaultEvents.PROPERTY_CHANGED;
 import static org.mule.galaxy.event.DefaultEvents.WORKSPACE_DELETED;
 import org.mule.galaxy.event.annotation.BindToEvent;
 import org.mule.galaxy.event.annotation.BindToEvents;
 import org.mule.galaxy.event.annotation.OnEvent;
-import org.mule.galaxy.policy.PolicyException;
-import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.activation.MimeType;
-import javax.xml.namespace.QName;
 
 import junit.framework.TestCase;
 
@@ -95,7 +75,7 @@ public class DefaultEventManagerTest extends TestCase {
         final InheritedBindingWithOnEvent listener = new InheritedBindingWithOnEvent();
         em.addListener(listener);
 
-        final PropertyUpdatedEvent event = new PropertyUpdatedEvent(new User(), "test message", new DummyArtifact(), "testProperty", "newValue");
+        final PropertyChangedEvent event = new PropertyChangedEvent(new User(), "/some/artifact", "testProperty", "newValue");
         em.fireEvent(event);
 
         assertTrue(listener.called);
@@ -122,7 +102,7 @@ public class DefaultEventManagerTest extends TestCase {
         MultiEventListener listener = new MultiEventListener();
         em.addListener(listener);
         
-        final PropertyUpdatedEvent event1 = new PropertyUpdatedEvent(new User(), "test message 1", new DummyArtifact(), "testProperty", "newValue");
+        final PropertyChangedEvent event1 = new PropertyChangedEvent(new User(), "/some/artifact", "testProperty", "newValue");
         em.fireEvent(event1);
 
         final WorkspaceDeletedEvent event2 = new WorkspaceDeletedEvent("test workspace");
@@ -143,7 +123,7 @@ public class DefaultEventManagerTest extends TestCase {
         }
     }
 
-    @BindToEvent(PROPERTY_UPDATED)
+    @BindToEvent(PROPERTY_CHANGED)
     private static class ClassAnnotationMissingOnEvent {
 
     }
@@ -151,10 +131,10 @@ public class DefaultEventManagerTest extends TestCase {
     private static class InheritedBindingWithOnEvent extends ClassAnnotationMissingOnEvent {
 
         public volatile boolean called;
-        public PropertyUpdatedEvent event;
+        public PropertyChangedEvent event;
 
         @OnEvent
-        public void callback(PropertyUpdatedEvent e) {
+        public void callback(PropertyChangedEvent e) {
             called = true;
             event = e;
         }
@@ -164,25 +144,25 @@ public class DefaultEventManagerTest extends TestCase {
     private static class SingleEventMultipleEntryPoints extends ClassAnnotationMissingOnEvent {
 
         @OnEvent
-        public void callback1(PropertyUpdatedEvent e) {
+        public void callback1(PropertyChangedEvent e) {
 
         }
 
         @OnEvent
-        public void callback2(PropertyUpdatedEvent e) {
+        public void callback2(PropertyChangedEvent e) {
 
         }
 
     }
 
-    @BindToEvents({WORKSPACE_DELETED, PROPERTY_UPDATED})
+    @BindToEvents({WORKSPACE_DELETED, PROPERTY_CHANGED})
     private static class MultiEventListener {
 
-        public PropertyUpdatedEvent puEvent;
+        public PropertyChangedEvent puEvent;
         public WorkspaceDeletedEvent wdEvent;
 
         @OnEvent
-        public void callbackProperty(PropertyUpdatedEvent e) {
+        public void callbackProperty(PropertyChangedEvent e) {
             puEvent = e;
         }
 
@@ -196,113 +176,8 @@ public class DefaultEventManagerTest extends TestCase {
     private static class NonMatchingOnEventParam {
 
         @OnEvent
-        public void onEvent(PropertyUpdatedEvent event) {}
+        public void onEvent(PropertyChangedEvent event) {}
 
     }
 
-    private static final class DummyArtifact implements Artifact {
-
-        public String getPath() {
-            return null;
-        }
-
-        public String getId() {
-            return null;
-        }
-
-        public Workspace getParent() {
-            return null;
-        }
-
-        public void setProperty(final String name, final Object value) throws PropertyException {
-        }
-
-        public Object getProperty(final String name) {
-            return null;
-        }
-
-        public boolean hasProperty(final String name) {
-            return false;
-        }
-
-        public Iterator<PropertyInfo> getProperties() {
-            return null;
-        }
-
-        public PropertyInfo getPropertyInfo(final String name) {
-            return null;
-        }
-
-        public void setLocked(final String name, final boolean locked) {
-        }
-
-        public void setVisible(final String property, final boolean visible) {
-        }
-
-        public Calendar getCreated() {
-            return null;
-        }
-
-        public Calendar getUpdated() {
-            return null;
-        }
-
-        public String getName() {
-            return null;
-        }
-
-        public void setName(final String name) {
-        }
-
-        public String getDescription() {
-            return null;
-        }
-
-        public void setDescription(final String description) {
-        }
-
-        public MimeType getContentType() {
-            return null;
-        }
-
-        public QName getDocumentType() {
-            return null;
-        }
-
-        public void setDocumentType(final QName documentType) {
-        }
-
-        public List<EntryVersion> getVersions() {
-            return null;
-        }
-
-        public ArtifactVersion getVersion(final String versionName) {
-            return null;
-        }
-
-        public ArtifactVersion getDefaultOrLastVersion() {
-            return null;
-        }
-
-        public ContentHandler getContentHandler() {
-            return null;
-        }
-
-        public EntryResult newVersion(InputStream inputStream, String versionLabel, User user)
-                throws RegistryException,
-                       PolicyException, IOException, DuplicateItemException,
-                       AccessException {
-            return null;
-        }
-
-        public EntryResult newVersion(Object data, String versionLabel, User user)
-                throws RegistryException, PolicyException,
-                       IOException, DuplicateItemException, AccessException {
-            return null;
-        }
-
-        public void delete() throws RegistryException, AccessException {
-        }
-
-    }
 }
