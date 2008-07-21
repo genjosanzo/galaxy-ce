@@ -165,7 +165,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 session.save();
 
-                final WorkspaceCreatedEvent event = new WorkspaceCreatedEvent(workspace.getPath());
+                final WorkspaceCreatedEvent event = new WorkspaceCreatedEvent(workspace.getId(), workspace.getPath());
                 event.setUser(SecurityUtils.getCurrentUser());
                 eventManager.fireEvent(event);
 
@@ -273,7 +273,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 session.save();
 
                 final String path = workspace.getPath();
-                WorkspaceCreatedEvent event = new WorkspaceCreatedEvent(path);
+                WorkspaceCreatedEvent event = new WorkspaceCreatedEvent(workspace.getId(), path);
                 event.setUser(SecurityUtils.getCurrentUser());
                 eventManager.fireEvent(event);
 

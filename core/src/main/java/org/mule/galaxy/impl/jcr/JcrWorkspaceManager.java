@@ -372,8 +372,9 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                     EntryResult result = approve(session, artifact, previousLatest, next, user);
 
                     // fire the event
+                    final EntryVersion entryVersion = result.getEntryVersion();
                     ItemVersionCreatedEvent event = new ItemVersionCreatedEvent(
-                            result.getEntry().getPath(), result.getEntryVersion().getVersionLabel());
+                            entryVersion.getId(), result.getEntry().getPath(), entryVersion.getVersionLabel());
                     event.setUser(SecurityUtils.getCurrentUser());
                     eventManager.fireEvent(event);
 
@@ -511,7 +512,8 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                     EntryResult result = approve(session, artifact, null, jcrVersion, user);
 
                     // fire the event
-                    ItemCreatedEvent event = new ItemCreatedEvent(result.getEntryVersion().getPath());
+                    final EntryVersion entryVersion = result.getEntryVersion();
+                    ItemCreatedEvent event = new ItemCreatedEvent(result.getEntry().getId(), entryVersion.getPath());
                     event.setUser(SecurityUtils.getCurrentUser());
                     eventManager.fireEvent(event);
 
