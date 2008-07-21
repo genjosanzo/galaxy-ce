@@ -4,8 +4,8 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.mule.galaxy.LinkType;
 import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.LinkType;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 

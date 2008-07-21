@@ -5,13 +5,13 @@ import javax.jcr.Session;
 
 import org.mule.galaxy.Identifiable;
 
-public abstract class AbstractReflectionDao<T extends Identifiable> extends AbstractDao<T> {
+public class AbstractReflectionDao<T extends Identifiable> extends AbstractDao<T> {
 
-    protected AbstractReflectionDao(Class t, String rootNode) throws Exception {
+    protected AbstractReflectionDao(Class<T> t, String rootNode) throws Exception {
         this(t, rootNode, false);
     }
     
-    protected AbstractReflectionDao(Class t, String rootNode,  boolean generateId) throws Exception {
+    protected AbstractReflectionDao(Class<T> t, String rootNode,  boolean generateId) throws Exception {
         super(t, rootNode, generateId);
     }
 

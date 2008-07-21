@@ -7,6 +7,10 @@ public abstract class QueryBuilder {
     private String[] properties;
     private boolean artifactProperty;
     
+    public QueryBuilder(boolean artifactProperty) {
+        this(null, artifactProperty);
+    }
+
     public QueryBuilder(String[] properties, boolean artifactProperty) {
         super();
         this.properties = properties;

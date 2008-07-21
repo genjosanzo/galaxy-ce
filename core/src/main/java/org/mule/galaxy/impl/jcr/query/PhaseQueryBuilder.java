@@ -18,7 +18,7 @@ public class PhaseQueryBuilder extends SimpleQueryBuilder {
     }
     
     @Override
-    protected String getValueAsString(Object o) throws QueryException {
+    protected String getValueAsString(Object o, String property, Operator operator) throws QueryException {
         String[] lp = o.toString().split(":");
         
         if (lp.length != 2) {

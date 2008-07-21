@@ -100,7 +100,7 @@ public class JcrArtifact extends JcrEntry implements Artifact {
     }
 
     @Override
-    public void setProperty(String name, Object value) throws PropertyException {
+    public void setProperty(String name, Object value) throws PropertyException, PolicyException {
         getDefaultOrLastVersion().setProperty(name, value);
     }
     

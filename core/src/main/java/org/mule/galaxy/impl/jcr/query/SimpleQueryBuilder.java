@@ -7,6 +7,11 @@ import org.mule.galaxy.query.OpRestriction.Operator;
 
 public class SimpleQueryBuilder extends QueryBuilder {
     
+    
+    public SimpleQueryBuilder(boolean artifactProperty) {
+	super(artifactProperty);
+    }
+
     public SimpleQueryBuilder(String[] properties, boolean artifactProperty) {
         super(properties, artifactProperty);
     }
@@ -28,7 +33,7 @@ public class SimpleQueryBuilder extends QueryBuilder {
             if (rightCol.size() > 0) {
                 boolean first = true;
                 for (Object o : rightCol) {
-                    String value = getValueAsString(o);
+                    String value = getValueAsString(o, property, operator);
                     
                     if (value == null) {
                         continue;
@@ -53,7 +58,7 @@ public class SimpleQueryBuilder extends QueryBuilder {
             query.append("@")
                 .append(property)
                 .append("='")
-                .append(getValueAsString(right))
+                .append(getValueAsString(right, property, operator))
                 .append("'");
         }
         
@@ -62,7 +67,7 @@ public class SimpleQueryBuilder extends QueryBuilder {
         }
     }
 
-    protected String getValueAsString(Object o) throws QueryException {
+    protected String getValueAsString(Object o, String property, Operator operator) throws QueryException {
         return o.toString();
     }
 

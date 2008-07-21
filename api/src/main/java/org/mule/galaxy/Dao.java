@@ -13,4 +13,6 @@ public interface Dao<T extends Identifiable> {
     List<T> listAll();
     
     List<T> find(String property, String value);
+
+    Class<T> getTypeClass();
 }

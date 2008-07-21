@@ -1,18 +1,15 @@
 package org.mule.galaxy;
 
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
-import javax.activation.MimeTypeParseException;
-
+import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.User;
 
 public interface Registry {
     
@@ -59,7 +56,9 @@ public interface Registry {
 
     SearchResults search(Query query) throws RegistryException, QueryException;
     
-
+    /* Extensions */
+    List<Extension> getExtensions();
+    
     /* Property related methods */
      
     Collection<PropertyDescriptor> getPropertyDescriptors() throws RegistryException;

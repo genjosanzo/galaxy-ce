@@ -35,20 +35,24 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     protected String idAttributeName;
     protected boolean generateId;
     protected PersisterManager persisterManager;
-    protected Class type;
+    protected Class<T> type;
     protected ClassPersister persister;
     
-    protected AbstractDao(Class t, String rootNode) throws Exception {
+    protected AbstractDao(Class<T> t, String rootNode) throws Exception {
         this(t, rootNode, false);
     }
     
-    protected AbstractDao(Class t, String rootNode,  boolean generateId) throws Exception {
+    protected AbstractDao(Class<T> t, String rootNode,  boolean generateId) throws Exception {
         this.rootNode = rootNode;
         this.generateId = generateId;
         this.type = t;
     }
 
     
+    public Class<T> getTypeClass() {
+	return type;
+    }
+
     public void setPersisterManager(PersisterManager persisterManager) {
         this.persisterManager = persisterManager;
     }

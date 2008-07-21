@@ -1083,6 +1083,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
+        } catch (PolicyException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
@@ -1105,6 +1107,8 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        } catch (PolicyException e) {
             throw new RPCException(e.getMessage());
         }
     }

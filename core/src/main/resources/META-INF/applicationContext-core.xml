@@ -135,6 +135,7 @@
     <property name="accessControlManager" ref="accessControlManager" />
     <property name="activityManager" ref="activityManager" />
     <property name="contentService" ref="contentService" />
+    <property name="extensions" ref="extensions" />
     <property name="functionRegistry" ref="functionRegistry" />
     <property name="linkTypeDao" ref="linkTypeManager" />
     <property name="settings" ref="settings" />
@@ -147,7 +148,7 @@
     <property name="eventManager" ref="eventManager"/>
     <property name="localWorkspaceManager" ref="localWorkspaceManager"/>
   </bean>
-    
+  
   <bean id="localWorkspaceManager" parent="txProxyTemplate">
     <property name="target" ref="localWorkspaceManagerTarget"/>
     <property name="proxyTargetClass" value="true"/>
@@ -170,6 +171,39 @@
     <property name="eventManager" ref="eventManager"/>
   </bean>
   
+  <bean id="extensions" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <ref bean="contactExtension"/>
+      </list>
+    </constructor-arg>
+  </bean>
+  
+  <bean id="contactExtension" class="org.mule.galaxy.impl.extension.IdentifiableExtension">
+    <property name="dao" ref="contactDao"/>
+    <property name="id" value="contactExtension"/>
+  </bean>
+  
+  <bean id="contactDao" parent="txProxyTemplate">
+    <property name="target" ref="contactDaoTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="contactDaoTarget" 
+        class="org.mule.galaxy.impl.jcr.onm.IdentifiableReflectionDao"
+        init-method="initialize" 
+        depends-on="persisterManager">
+    <constructor-arg value="org.mule.galaxy.contact.Contact"/>
+    <constructor-arg value="contacts"/>
+    <constructor-arg value="true"/>
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="persisterManager" ref="persisterManager" />
+  </bean>
+  
+  <bean id="contactQueryBuilder" class="org.mule.galaxy.impl.extension.IdentifiableExtensionQueryBuilder">
+    <constructor-arg ref="contactExtension"/>
+  </bean>
+  
   <bean id="queryBuilders" class="java.util.ArrayList">
     <constructor-arg>
       <list>
@@ -180,6 +214,7 @@
           <property name="lifecycleManager" ref="lifecycleManager"/>
         </bean>
         <bean class="org.mule.galaxy.impl.jcr.query.ArtifactPropertyQueryBuilder"/>
+        <ref bean="contactQueryBuilder"/>
       </list>
     </constructor-arg>
   </bean>
@@ -286,6 +321,9 @@
         </entry>
         <entry key="org.mule.galaxy.ArtifactVersion">
           <bean class="org.mule.galaxy.impl.jcr.ArtifactVersionPersister"/>
+        </entry>
+        <entry key="org.mule.galaxy.extension.Extension">
+          <bean class="org.mule.galaxy.impl.extension.ExtensionPersister"/>
         </entry>
         <entry key="java.util.Map">
           <bean class="org.mule.galaxy.impl.jcr.onm.MapPersister"/>

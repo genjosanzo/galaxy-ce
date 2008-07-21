@@ -44,6 +44,7 @@ import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexException;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.index.Indexer;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.security.AccessException;
@@ -203,7 +204,9 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                     new JcrVersion(new JcrArtifact(null, n.getParent(), getWorkspaceManager()), n).setProperty(propName, null);
                 } catch (PropertyException e) {
                     throw new RuntimeException(e);
-                }
+                } catch (PolicyException e) {
+		    handleIndexingException(idx, e);
+		}
             }
             session.save();
         }

@@ -1,18 +1,5 @@
 package org.mule.galaxy.impl.jcr;
 
-import org.mule.galaxy.Item;
-import org.mule.galaxy.Link;
-import org.mule.galaxy.LinkType;
-import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.activity.ActivityManager.EventType;
-import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.util.BundleUtils;
-import org.mule.galaxy.util.DateUtil;
-import org.mule.galaxy.util.Message;
-import org.mule.galaxy.util.SecurityUtils;
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,6 +19,22 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
 import org.apache.jackrabbit.value.StringValue;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.Link;
+import org.mule.galaxy.LinkType;
+import org.mule.galaxy.PropertyDescriptor;
+import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.activity.ActivityManager.EventType;
+import org.mule.galaxy.extension.Extension;
+import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.util.BundleUtils;
+import org.mule.galaxy.util.DateUtil;
+import org.mule.galaxy.util.Message;
+import org.mule.galaxy.util.SecurityUtils;
+
 
 public abstract class AbstractJcrItem implements Item {
 
@@ -100,12 +103,16 @@ public abstract class AbstractJcrItem implements Item {
             throw new RuntimeException(e);
         }
     }
-    public void setProperty(String name, Object value) throws PropertyException {
+    public void setProperty(String name, Object value) throws PropertyException, PolicyException {
         try {
             if (name.contains(" ")) {
                 throw new PropertyException(new Message("SPACE_NOT_ALLOWED", getBundle()));
             }
             
+            PropertyDescriptor pd = getManager().getRegistry().getPropertyDescriptorByName(name);
+            if (pd != null && pd.getExtension() != null) {
+        	value = pd.getExtension().getInternalValue(this, pd, value);
+    	    }
             JcrUtil.setProperty(name, value, node);
             
             if (value == null) {
@@ -183,7 +190,13 @@ public abstract class AbstractJcrItem implements Item {
     }
 
     public Object getProperty(String name) {
-        return JcrUtil.getProperty(name, node);
+	PropertyDescriptor pd = manager.getRegistry().getPropertyDescriptorByName(name);
+	
+	Object value = JcrUtil.getProperty(name, node);
+	if (pd != null && pd.getExtension() != null) {
+	    value = pd.getExtension().getExternalValue(this, pd, value);
+	}
+        return value;
     }
 
     public Iterator<PropertyInfo> getProperties() {

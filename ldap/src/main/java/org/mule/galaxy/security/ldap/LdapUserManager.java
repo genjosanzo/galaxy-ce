@@ -138,6 +138,10 @@ public class LdapUserManager
         
     }
 
+    public Class<User> getTypeClass() {
+        return User.class;
+    }
+
     public User authenticate(String username, String password) {
         try {
             return get(username);

@@ -2,6 +2,7 @@ package org.mule.galaxy;
 
 import java.util.Iterator;
 
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 
 /**
@@ -17,7 +18,7 @@ public interface Item {
     
     String getPath();
     
-    void setProperty(String name, Object value) throws PropertyException;
+    void setProperty(String name, Object value) throws PropertyException, PolicyException;
     
     Object getProperty(String name);
 

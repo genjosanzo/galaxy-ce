@@ -530,7 +530,7 @@ public abstract class AbstractArtifactCollection
         return new ResponseContextException(rc);
     }
 
-    private void updateMetadata(ArtifactVersion av, Element e) throws ResponseContextException {
+    private void updateMetadata(ArtifactVersion av, Element e) throws ResponseContextException, PolicyException {
         for (Element propEl : e.getElements()) {
             String name = propEl.getAttributeValue("name");
             if (name == null)
