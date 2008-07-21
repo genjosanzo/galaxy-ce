@@ -1,11 +1,11 @@
 package org.mule.galaxy.event;
 
-public class ArtifactVersionDeletedEvent extends GalaxyEvent {
+public class ItemVersionDeletedEvent extends GalaxyEvent {
 
     private String artifactPath;
     private String versionLabel;
 
-    public ArtifactVersionDeletedEvent(final String path, final String versionLabel) {
+    public ItemVersionDeletedEvent(final String path, final String versionLabel) {
         this.artifactPath = path;
         this.versionLabel = versionLabel;
     }

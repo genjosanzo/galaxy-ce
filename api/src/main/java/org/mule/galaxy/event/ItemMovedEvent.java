@@ -1,11 +1,11 @@
 package org.mule.galaxy.event;
 
-public class ArtifactMovedEvent extends GalaxyEvent {
+public class ItemMovedEvent extends GalaxyEvent {
 
     private String artifactOldPath;
     private String artifactNewPath;
 
-    public ArtifactMovedEvent(final String oldPath, final String newPath) {
+    public ItemMovedEvent(final String oldPath, final String newPath) {
         this.artifactOldPath = oldPath;
         this.artifactNewPath = newPath;
     }

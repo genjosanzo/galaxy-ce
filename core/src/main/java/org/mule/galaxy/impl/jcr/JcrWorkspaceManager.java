@@ -1,5 +1,47 @@
 package org.mule.galaxy.impl.jcr;
 
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.ArtifactTypeDao;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.ContentService;
+import org.mule.galaxy.Dao;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.Entry;
+import org.mule.galaxy.EntryResult;
+import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.LinkType;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.XmlContentHandler;
+import org.mule.galaxy.activity.ActivityManager;
+import org.mule.galaxy.collab.CommentManager;
+import org.mule.galaxy.event.EventManager;
+import org.mule.galaxy.event.ItemCreatedEvent;
+import org.mule.galaxy.event.ItemDeletedEvent;
+import org.mule.galaxy.event.ItemVersionCreatedEvent;
+import org.mule.galaxy.event.ItemVersionDeletedEvent;
+import org.mule.galaxy.event.WorkspaceDeletedEvent;
+import org.mule.galaxy.index.IndexManager;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.security.Permission;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.security.UserManager;
+import org.mule.galaxy.util.BundleUtils;
+import org.mule.galaxy.util.Message;
+import org.mule.galaxy.util.SecurityUtils;
+import org.mule.galaxy.workspace.WorkspaceManager;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,47 +75,6 @@ import javax.xml.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.util.ISO9075;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.EntryResult;
-import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.ArtifactTypeDao;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.ContentService;
-import org.mule.galaxy.Dao;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.Entry;
-import org.mule.galaxy.EntryVersion;
-import org.mule.galaxy.Item;
-import org.mule.galaxy.LinkType;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.XmlContentHandler;
-import org.mule.galaxy.activity.ActivityManager;
-import org.mule.galaxy.collab.CommentManager;
-import org.mule.galaxy.event.ArtifactCreatedEvent;
-import org.mule.galaxy.event.ArtifactDeletedEvent;
-import org.mule.galaxy.event.ArtifactVersionCreatedEvent;
-import org.mule.galaxy.event.ArtifactVersionDeletedEvent;
-import org.mule.galaxy.event.EventManager;
-import org.mule.galaxy.event.WorkspaceDeletedEvent;
-import org.mule.galaxy.index.IndexManager;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.PolicyException;
-import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.security.AccessControlManager;
-import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.Permission;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.security.UserManager;
-import org.mule.galaxy.util.BundleUtils;
-import org.mule.galaxy.util.Message;
-import org.mule.galaxy.util.SecurityUtils;
-import org.mule.galaxy.workspace.WorkspaceManager;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
@@ -371,7 +372,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                     EntryResult result = approve(session, artifact, previousLatest, next, user);
 
                     // fire the event
-                    ArtifactVersionCreatedEvent event = new ArtifactVersionCreatedEvent(
+                    ItemVersionCreatedEvent event = new ItemVersionCreatedEvent(
                             result.getEntry().getPath(), result.getEntryVersion().getVersionLabel());
                     event.setUser(SecurityUtils.getCurrentUser());
                     eventManager.fireEvent(event);
@@ -510,7 +511,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                     EntryResult result = approve(session, artifact, null, jcrVersion, user);
 
                     // fire the event
-                    ArtifactCreatedEvent event = new ArtifactCreatedEvent(result.getEntryVersion().getPath());
+                    ItemCreatedEvent event = new ItemCreatedEvent(result.getEntryVersion().getPath());
                     event.setUser(SecurityUtils.getCurrentUser());
                     eventManager.fireEvent(event);
 
@@ -665,7 +666,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                 session.save();
 
                 // fire the event
-//                    ArtifactCreatedEvent event = new ArtifactCreatedEvent(result.getEntryVersion().getPath());
+//                    ItemCreatedEvent event = new ItemCreatedEvent(result.getEntryVersion().getPath());
 //                    event.setUser(SecurityUtils.getCurrentUser());
 //                    eventManager.fireEvent(event);
 
@@ -771,7 +772,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     
                     session.save();
 
-                    ArtifactVersionDeletedEvent event = new ArtifactVersionDeletedEvent(path, label);
+                    ItemVersionDeletedEvent event = new ItemVersionDeletedEvent(path, label);
                     event.setUser(SecurityUtils.getCurrentUser());
                     eventManager.fireEvent(event);
 
@@ -796,7 +797,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
 
                 session.save();
 
-                ArtifactDeletedEvent event = new ArtifactDeletedEvent(path);
+                ItemDeletedEvent event = new ItemDeletedEvent(path);
                 event.setUser(SecurityUtils.getCurrentUser());
                 eventManager.fireEvent(event);
 

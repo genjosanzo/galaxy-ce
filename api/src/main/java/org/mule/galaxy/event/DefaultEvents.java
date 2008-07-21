@@ -12,14 +12,14 @@ public class DefaultEvents {
     // property
     public static final String PROPERTY_CHANGED = "PropertyChanged";
 
-    // artifact
-    public static final String ARTIFACT_VERSION_CREATED = "ArtifactVersionCreated";
-    public static final String ARTIFACT_VERSION_DELETED = "ArtifactVersionDeleted";
+    // item
+    public static final String ITEM_VERSION_CREATED = "ItemVersionCreated";
+    public static final String ITEM_VERSION_DELETED = "ItemVersionDeleted";
 
-    // artifact version
-    public static final String ARTIFACT_CREATED = "ArtifactCreated";
-    public static final String ARTIFACT_DELETED = "ArtifactDeleted";
-    public static final String ARTIFACT_MOVED = "ArtifactMoved";
+    // item version
+    public static final String ITEM_CREATED = "ItemCreated";
+    public static final String ITEM_DELETED = "ItemDeleted";
+    public static final String ITEM_MOVED = "ItemMoved";
 
     // misc
     public static final String LIFECYCLE_TRANSITION = "LifecycleTransition";
