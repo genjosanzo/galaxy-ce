@@ -58,7 +58,7 @@ public class DefaultEventManager implements EventManager {
                     if (adapter != null) {
                         throw new IllegalArgumentException("Multiple @OnEvent entry-points detected for " + clazz.getName());
                     }
-                    adapter = new DelegatingSingleEventListener(this, annotation, listenerCandidate, method);
+                    adapter = new DelegatingSingleEventListener(annotation, listenerCandidate, method, executor);
                 }
             }
 
@@ -70,7 +70,7 @@ public class DefaultEventManager implements EventManager {
         } else if (clazz.isAnnotationPresent(BindToEvents.class)) {
             // multi-event listeners
             eventNames = clazz.getAnnotation(BindToEvents.class).value();
-            adapter = new DelegatingMultiEventListener(listenerCandidate);
+            adapter = new DelegatingMultiEventListener(listenerCandidate, executor);
         } else {
             throw new IllegalArgumentException(clazz.getName() + " doesn't have a BindToEvent(s) annotation");
         }
