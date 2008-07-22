@@ -386,6 +386,88 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
             }
         });
     }
+
+    public EntryResult newVersion(final Entry entry, final String versionLabel) 
+    	throws RegistryException, PolicyException, DuplicateItemException, AccessException {
+	accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, entry);
+        
+	final User user = SecurityUtils.getCurrentUser();
+        if (user == null) {
+            throw new NullPointerException("User cannot be null!");
+        }
+        
+        return (EntryResult) executeAndDewrap(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                JcrEntry jcrArtifact = (JcrEntry) entry;
+                Node artifactNode = jcrArtifact.getNode();
+                artifactNode.refresh(false);
+                JcrEntryVersion previousLatest = ((JcrEntryVersion)jcrArtifact.getDefaultOrLastVersion());
+                Node previousNode = previousLatest.getNode();
+                
+                previousLatest.setDefault(false);
+                previousLatest.setLatest(false);
+
+                // create a new version node
+                Node versionNode = artifactNode.addNode(versionLabel, ENTRY_VERSION_NODE_TYPE);
+                versionNode.addMixin("mix:referenceable");
+
+                // set the version as a property so we can search via it as local-name() isn't supported.
+                // See JCR-696
+                versionNode.setProperty(JcrVersion.VERSION, versionLabel);
+                
+                Calendar now = Calendar.getInstance();
+                now.setTime(new Date());
+                versionNode.setProperty(JcrVersion.CREATED, now);
+                versionNode.setProperty(JcrVersion.ENABLED, true);
+                
+                JcrEntryVersion next = new JcrEntryVersion(jcrArtifact, versionNode);
+                next.setDefault(true);
+                next.setLatest(true);
+                next.setAuthor(user);
+                next.setLatest(true);
+                
+                // Add it as the most recent version
+                jcrArtifact.getVersions().add(next);
+                
+                Lifecycle lifecycle = jcrArtifact.getParent().getDefaultLifecycle();
+                next.setPhase(lifecycle.getInitialPhase());        
+                
+                try {
+                    Property pNames = previousNode.getProperty(AbstractJcrItem.PROPERTIES);
+                
+                    for (Value name : pNames.getValues()) {
+                        Property prop = previousNode.getProperty(name.getString());
+                        
+                        if (prop.getDefinition().isMultiple()) {
+                            versionNode.setProperty(prop.getName(), prop.getValues());
+                        } else {
+                            versionNode.setProperty(prop.getName(), prop.getValue());
+                        }
+                    }
+                    
+                    versionNode.setProperty(pNames.getName(), pNames.getValues());
+                } catch (PathNotFoundException e) {
+                    // ignore?
+                }
+                
+                List<ApprovalMessage> approvals = approve(previousLatest, next);
+
+                session.save();
+
+                // fire the event
+                EntryResult result = new EntryResult(entry, next, approvals);
+
+                // fire the event
+                final EntryVersion entryVersion = result.getEntryVersion();
+                ItemVersionCreatedEvent event = new ItemVersionCreatedEvent(
+                        entryVersion.getId(), result.getEntry().getPath(), entryVersion.getVersionLabel());
+                event.setUser(SecurityUtils.getCurrentUser());
+                eventManager.fireEvent(event);
+
+                return result;
+            }
+        });
+    }
     
     public EntryResult createArtifact(Workspace workspace, 
                                          String contentType, 
@@ -668,11 +750,13 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                 session.save();
 
                 // fire the event
-//                    ItemCreatedEvent event = new ItemCreatedEvent(result.getEntryVersion().getPath());
-//                    event.setUser(SecurityUtils.getCurrentUser());
-//                    eventManager.fireEvent(event);
+                EntryResult result = new EntryResult(artifact, version, approvals);
+                ItemCreatedEvent event = new ItemCreatedEvent(result.getEntry().getId(),
+                	result.getEntryVersion().getPath());
+                event.setUser(SecurityUtils.getCurrentUser());
+                eventManager.fireEvent(event);
 
-                return new EntryResult(artifact, version, approvals);
+                return result;
             }
         });
     }

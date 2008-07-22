@@ -65,15 +65,15 @@ public interface Workspace extends Item {
      * @throws MimeTypeParseException
      */
     EntryResult createArtifact(Object data, 
-                                  String versionLabel, 
-                                  User user) 
+                               String versionLabel, 
+                               User user) 
         throws DuplicateItemException, RegistryException, PolicyException, MimeTypeParseException, AccessException;
     
     EntryResult createArtifact(String contentType, 
-                                  String name,
-                                  String versionLabel, 
-                                  InputStream inputStream, 
-                                  User user) 
+                               String name,
+                               String versionLabel, 
+                               InputStream inputStream, 
+                               User user) 
         throws DuplicateItemException, RegistryException, PolicyException, IOException, MimeTypeParseException, AccessException;
 
     EntryResult newEntry(String name, String versionLabel)

@@ -177,6 +177,13 @@ public class JcrEntry extends AbstractJcrItem implements Entry {
         return getVersions().get(0);
     }
     
+    
+    public EntryResult newVersion(String versionLabel)
+	    throws RegistryException, PolicyException, DuplicateItemException,
+	    AccessException {
+	return manager.newVersion(this, versionLabel);
+    }
+
     public void setVersions(List<EntryVersion> versions2) {
         this.versions = versions2;
     }

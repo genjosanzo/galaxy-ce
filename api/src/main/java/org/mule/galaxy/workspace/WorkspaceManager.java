@@ -64,6 +64,9 @@ public interface WorkspaceManager {
     EntryResult newEntry(Workspace workspace, String name, String versionLabel)
        throws DuplicateItemException, RegistryException, PolicyException, AccessException;
     
+    EntryResult newVersion(Entry jcrEntry, String versionLabel)
+    	throws DuplicateItemException, RegistryException, PolicyException, AccessException;
+    
     /**
      * Attach this manager to the specified workspace.
      * @param workspace

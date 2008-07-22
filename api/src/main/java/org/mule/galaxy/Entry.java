@@ -8,6 +8,7 @@ import java.util.List;
 import javax.activation.MimeType;
 import javax.xml.namespace.QName;
 
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
@@ -36,5 +37,8 @@ public interface Entry extends Item {
      * its the latest version of the entry.
      */
     EntryVersion getDefaultOrLastVersion();
+    
+    EntryResult newVersion(String versionLabel) 
+    	throws RegistryException, PolicyException, DuplicateItemException, AccessException;
 
 }
