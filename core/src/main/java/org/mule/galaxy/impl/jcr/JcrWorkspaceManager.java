@@ -20,11 +20,11 @@ import org.mule.galaxy.Workspace;
 import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.activity.ActivityManager;
 import org.mule.galaxy.collab.CommentManager;
+import org.mule.galaxy.event.EntryCreatedEvent;
+import org.mule.galaxy.event.EntryDeletedEvent;
+import org.mule.galaxy.event.EntryVersionCreatedEvent;
+import org.mule.galaxy.event.EntryVersionDeletedEvent;
 import org.mule.galaxy.event.EventManager;
-import org.mule.galaxy.event.ItemCreatedEvent;
-import org.mule.galaxy.event.ItemDeletedEvent;
-import org.mule.galaxy.event.ItemVersionCreatedEvent;
-import org.mule.galaxy.event.ItemVersionDeletedEvent;
 import org.mule.galaxy.event.WorkspaceDeletedEvent;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.lifecycle.Lifecycle;
@@ -373,7 +373,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
 
                     // fire the event
                     final EntryVersion entryVersion = result.getEntryVersion();
-                    ItemVersionCreatedEvent event = new ItemVersionCreatedEvent(
+                    EntryVersionCreatedEvent event = new EntryVersionCreatedEvent(
                             entryVersion.getId(), result.getEntry().getPath(), entryVersion.getVersionLabel());
                     event.setUser(SecurityUtils.getCurrentUser());
                     eventManager.fireEvent(event);
@@ -458,7 +458,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
 
                 // fire the event
                 final EntryVersion entryVersion = result.getEntryVersion();
-                ItemVersionCreatedEvent event = new ItemVersionCreatedEvent(
+                EntryVersionCreatedEvent event = new EntryVersionCreatedEvent(
                         entryVersion.getId(), result.getEntry().getPath(), entryVersion.getVersionLabel());
                 event.setUser(SecurityUtils.getCurrentUser());
                 eventManager.fireEvent(event);
@@ -594,7 +594,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
 
                     // fire the event
                     final EntryVersion entryVersion = result.getEntryVersion();
-                    ItemCreatedEvent event = new ItemCreatedEvent(result.getEntry().getId(), entryVersion.getPath());
+                    EntryCreatedEvent event = new EntryCreatedEvent(result.getEntry().getId(), entryVersion.getPath());
                     event.setUser(SecurityUtils.getCurrentUser());
                     eventManager.fireEvent(event);
 
@@ -750,7 +750,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
 
                 // fire the event
                 EntryResult result = new EntryResult(artifact, version, approvals);
-                ItemCreatedEvent event = new ItemCreatedEvent(result.getEntry().getId(),
+                EntryCreatedEvent event = new EntryCreatedEvent(result.getEntry().getId(),
                 	result.getEntryVersion().getPath());
                 event.setUser(SecurityUtils.getCurrentUser());
                 eventManager.fireEvent(event);
@@ -857,7 +857,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     
                     session.save();
 
-                    ItemVersionDeletedEvent event = new ItemVersionDeletedEvent(path, label);
+                    EntryVersionDeletedEvent event = new EntryVersionDeletedEvent(path, label);
                     event.setUser(SecurityUtils.getCurrentUser());
                     eventManager.fireEvent(event);
 
@@ -882,7 +882,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
 
                 session.save();
 
-                ItemDeletedEvent event = new ItemDeletedEvent(path);
+                EntryDeletedEvent event = new EntryDeletedEvent(path);
                 event.setUser(SecurityUtils.getCurrentUser());
                 eventManager.fireEvent(event);
 

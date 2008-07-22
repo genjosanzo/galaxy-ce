@@ -19,8 +19,8 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.activity.ActivityManager;
+import org.mule.galaxy.event.EntryMovedEvent;
 import org.mule.galaxy.event.EventManager;
-import org.mule.galaxy.event.ItemMovedEvent;
 import org.mule.galaxy.event.WorkspaceCreatedEvent;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.jcr.query.QueryBuilder;
@@ -597,7 +597,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
         });
 
-        ItemMovedEvent event = new ItemMovedEvent(oldPath, artifact.getPath());
+        EntryMovedEvent event = new EntryMovedEvent(oldPath, artifact.getPath());
         event.setUser(SecurityUtils.getCurrentUser());
         eventManager.fireEvent(event);
     }
