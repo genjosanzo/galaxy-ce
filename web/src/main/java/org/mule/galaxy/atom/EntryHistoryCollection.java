@@ -19,35 +19,46 @@
 package org.mule.galaxy.atom;
 
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
+import java.util.List;
 
 import javax.activation.MimeType;
 
+import org.apache.abdera.i18n.iri.IRI;
+import org.apache.abdera.model.Content;
+import org.apache.abdera.model.Document;
+import org.apache.abdera.model.Element;
+import org.apache.abdera.model.Person;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryResult;
-import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
-public class ArtifactHistoryCollection extends AbstractArtifactCollection {
+public class EntryHistoryCollection extends AbstractEntryCollection {
     private final Log log = LogFactory.getLog(getClass());
 
-    public ArtifactHistoryCollection(Registry registry) {
+    public EntryHistoryCollection(Registry registry) {
         super(registry);
     }
 
     @Override
-    public String getMediaName(ArtifactVersion version) {
+    public String getMediaName(EntryVersion version) {
         return super.getMediaName(version);
     }
     
     @Override
-    public String getQueryParameters(ArtifactVersion version, RequestContext request) {
+    public String getQueryParameters(EntryVersion version, RequestContext request) {
         return "version=" + version.getVersionLabel();
     }
 
@@ -63,8 +74,36 @@ public class ArtifactHistoryCollection extends AbstractArtifactCollection {
     }
     
     @Override
+    public EntryVersion postEntry(String title, IRI id, String summary, Date updated, List<Person> authors,
+                                  Content content, RequestContext request) throws ResponseContextException {
+        Entry entry = getRegistryEntry(request);
+        
+        try {
+            Document<org.apache.abdera.model.Entry> document = request.getDocument();
+            org.apache.abdera.model.Entry atomEntry = document.getRoot();
+            
+            EntryResult result = entry.newVersion(getVersionLabel(atomEntry));
+            EntryVersion version = result.getEntryVersion();
+            
+            
+            return version;
+        } catch (DuplicateItemException e) {
+            throw newErrorMessage("Duplicate version.", "An entry with that version label already exists.", 409);
+        } catch (RegistryException e) {
+            log.error("Could not add artifact.", e);
+            throw new ResponseContextException(500, e);
+        } catch (IOException e) {
+            throw new ResponseContextException(500, e);
+        } catch (PolicyException e) {
+            throw createArtifactPolicyExceptionResponse(e);
+        } catch (AccessException e) {
+            throw new ResponseContextException(401, e);
+        }
+    }
+
+    @Override
     public void deleteEntry(String entry, RequestContext request) throws ResponseContextException {
-        ArtifactVersion version = getEntry(entry, request);
+        EntryVersion version = getEntry(entry, request);
         
         try {
             version.delete();
@@ -78,8 +117,8 @@ public class ArtifactHistoryCollection extends AbstractArtifactCollection {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Iterable<ArtifactVersion> getEntries(RequestContext request) throws ResponseContextException {
-        return (Iterable<ArtifactVersion>) getArtifact(request).getVersions();
+    public Iterable<EntryVersion> getEntries(RequestContext request) throws ResponseContextException {
+        return (Iterable<EntryVersion>) getRegistryEntry(request).getVersions();
     }
 
     @Override
@@ -88,15 +127,15 @@ public class ArtifactHistoryCollection extends AbstractArtifactCollection {
     }
 
     @Override
-    public String getName(ArtifactVersion version) {
+    public String getName(EntryVersion version) {
         return super.getName(version);
     }
 
     public String getTitle(RequestContext request) {
-        return getArtifact(request).getName() + " Revisions";
+        return getRegistryEntry(request).getName() + " Revisions";
     }
 
-    public String getTitle(ArtifactVersion entry) {
+    public String getTitle(EntryVersion entry) {
         return entry.getParent().getName() + " Version " + entry.getVersionLabel();
     }
 

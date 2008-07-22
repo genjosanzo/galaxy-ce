@@ -29,6 +29,7 @@ import org.apache.abdera.protocol.server.impl.DefaultWorkspaceManager;
 import org.apache.abdera.protocol.server.impl.SimpleTarget;
 import org.apache.commons.lang.StringUtils;
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.Entry;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
@@ -36,17 +37,17 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.security.AccessException;
 
-public class ArtifactResolver implements Resolver<Target> {
+public class EntryResolver implements Resolver<Target> {
 
     private static final String WORKSPACES_CLASSIFIER = "workspaces";
     public static final String WORKSPACE = "workspace";
-    public static final String ARTIFACT = "artifact";
+    public static final String ENTRY = "entry";
     public static final String COLLECTION_HREF = "collectionHref";
     
     private Registry registry;
-    private ArtifactHistoryCollection historyCollection;
-    private SearchableArtifactCollection searchableCollection;
-    private ArtifactWorkspaceCollection artifactWorkspaceCollection;
+    private EntryHistoryCollection historyCollection;
+    private SearchableEntryCollection searchableCollection;
+    private EntryWorkspaceCollection entryWorkspaceCollection;
     private CommentCollectionProvider commentCollection;
     private WorkspaceCollection workspaceCollection;
     
@@ -133,8 +134,8 @@ public class ArtifactResolver implements Resolver<Target> {
             Item item = registry.getItemByPath(path);
             if (item instanceof Workspace) {
                 return resolveWorkspace((Workspace) item, classifier, context);
-            } else if (item instanceof Artifact) {
-                return resolveArtifact((Artifact) item, classifier, context);
+            } else if (item instanceof Entry) {
+                return resolveEntry((Entry) item, classifier, context);
             } else {
                 return returnUnknownLocation(context);
             }
@@ -152,10 +153,10 @@ public class ArtifactResolver implements Resolver<Target> {
         return new SimpleTarget(TargetType.TYPE_NOT_FOUND, context);
     }
 
-    private Target resolveArtifact(Artifact artifact, String classifier, RequestContext context)
+    private Target resolveEntry(Entry entry, String classifier, RequestContext context)
         throws RegistryException {
-        context.setAttribute(WORKSPACE, artifact.getParent());
-        context.setAttribute(ARTIFACT, artifact);
+        context.setAttribute(WORKSPACE, entry.getParent());
+        context.setAttribute(ENTRY, entry);
         
         context.setAttribute(COLLECTION_HREF, getPathWithoutArtifact(context));
         
@@ -194,7 +195,7 @@ public class ArtifactResolver implements Resolver<Target> {
         if (WORKSPACES_CLASSIFIER.equals(classifier) || "atom".equals(classifier)) {
             context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, workspaceCollection);
         } else {
-            context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, artifactWorkspaceCollection);
+            context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, entryWorkspaceCollection);
         }
          
         if ("GET".equals(context.getMethod()) || "POST".equals(context.getMethod()) || "HEAD".equals(context.getMethod())) {
@@ -215,29 +216,28 @@ public class ArtifactResolver implements Resolver<Target> {
         this.registry = registry;
     }
 
-    public ArtifactHistoryCollection getHistoryCollection() {
+    public EntryHistoryCollection getHistoryCollection() {
         return historyCollection;
     }
 
-    public void setHistoryCollection(ArtifactHistoryCollection historyCollection) {
+    public void setHistoryCollection(EntryHistoryCollection historyCollection) {
         this.historyCollection = historyCollection;
     }
 
-    public SearchableArtifactCollection getSearchableCollection() {
+    public SearchableEntryCollection getSearchableCollection() {
         return searchableCollection;
     }
 
-    public void setSearchableCollection(SearchableArtifactCollection searchableCollection) {
+    public void setSearchableCollection(SearchableEntryCollection searchableCollection) {
         this.searchableCollection = searchableCollection;
     }
 
-
-    public ArtifactWorkspaceCollection getArtifactWorkspaceCollection() {
-        return artifactWorkspaceCollection;
+    public EntryWorkspaceCollection getEntryWorkspaceCollection() {
+        return entryWorkspaceCollection;
     }
 
-    public void setArtifactWorkspaceCollection(ArtifactWorkspaceCollection artifactWorkspaceCollection) {
-        this.artifactWorkspaceCollection = artifactWorkspaceCollection;
+    public void setEntryWorkspaceCollection(EntryWorkspaceCollection entryWorkspaceCollection) {
+        this.entryWorkspaceCollection = entryWorkspaceCollection;
     }
 
     public CommentCollectionProvider getCommentCollection() {

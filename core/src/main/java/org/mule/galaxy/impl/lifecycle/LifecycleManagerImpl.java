@@ -1,35 +1,8 @@
 package org.mule.galaxy.impl.lifecycle;
 
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Dao;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.activity.ActivityManager;
-import org.mule.galaxy.event.EventManager;
-import org.mule.galaxy.event.LifecycleTransitionEvent;
-import org.mule.galaxy.impl.jcr.JcrUtil;
-import org.mule.galaxy.impl.jcr.JcrVersion;
-import org.mule.galaxy.impl.jcr.onm.AbstractDao;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.lifecycle.PhaseLogEntry;
-import org.mule.galaxy.lifecycle.TransitionException;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactPolicy;
-import org.mule.galaxy.policy.PolicyException;
-import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.util.BundleUtils;
-import org.mule.galaxy.util.Message;
-import org.mule.galaxy.util.SecurityUtils;
-
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,6 +19,28 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.apache.jackrabbit.util.ISO9075;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.activity.ActivityManager;
+import org.mule.galaxy.event.EventManager;
+import org.mule.galaxy.event.LifecycleTransitionEvent;
+import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.impl.jcr.JcrVersion;
+import org.mule.galaxy.impl.jcr.onm.AbstractDao;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.lifecycle.TransitionException;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.util.BundleUtils;
+import org.mule.galaxy.util.Message;
+import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -60,7 +55,6 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
     private static final String NEXT_PHASES = "nextPhases";
 
     private List<ArtifactPolicy> phaseApprovalListeners = new ArrayList<ArtifactPolicy>();
-    private Dao<PhaseLogEntry> entryDao;
     private PolicyManager policyManager;
     private ApplicationContext context;
     private ActivityManager activityManager;
@@ -155,7 +149,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
                 Phase p = fallbackLifecycle.getInitialPhase();
                 
                 // update all the artifacts using this lifecycle
-                NodeIterator nodes = getArtifactVersionsInLifecycle(lifecycle.getId(), session);
+                NodeIterator nodes = getEntryVersionsInLifecycle(lifecycle.getId(), session);
                 
                 while (nodes.hasNext()) {
                     Node n = nodes.nextNode();
@@ -210,7 +204,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
         return pNode;
     }
     
-    public boolean isTransitionAllowed(ArtifactVersion a, Phase p2) {
+    public boolean isTransitionAllowed(EntryVersion a, Phase p2) {
         Phase p = a.getPhase();
         Lifecycle l = p2.getLifecycle();
         
@@ -223,7 +217,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
         }
     }
     
-    public void transition(final ArtifactVersion a, 
+    public void transition(final EntryVersion a, 
                            final Phase p, 
                            final User user) throws TransitionException, PolicyException {
         if (!isTransitionAllowed(a, p)) {
@@ -236,7 +230,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
                 JcrVersion artifact = (JcrVersion) a;
                 artifact.setPhase(p);
                 
-                ArtifactVersion previous = (ArtifactVersion) a.getPrevious();
+                EntryVersion previous = (EntryVersion) a.getPrevious();
                 
                 boolean approved = true;
                 List<ApprovalMessage> approvals = getPolicyManager().approve(previous, a);
@@ -252,25 +246,6 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
                 }
 
                 //final String previousPhase = previous.getPhase().getName();
-
-                PhaseLogEntry entry = new PhaseLogEntry();
-                entry.setUser(user);
-                entry.setPhase(p);
-                entry.setArtifactVersion(a);
-                
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(new Date());
-                entry.setCalendar(cal);
-                
-                try {
-                    entryDao.save(entry);
-                } catch (DuplicateItemException e1) {
-                    // should never happen
-                    throw new RuntimeException(e1);
-                } catch (NotFoundException e1) {
-                    // should never happen
-                    throw new RuntimeException(e1);
-                }
 
                 session.save();
 
@@ -520,16 +495,12 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
     protected String getNodeType() {
         return "galaxy:lifecycle";
     }
-
-    public void setPhaseLogEntryDao(Dao<PhaseLogEntry> entryDao) {
-        this.entryDao = entryDao;
-    }
-
+    
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
     }
 
-    private NodeIterator getArtifactVersionsInLifecycle(final String lifecycleId, Session session)
+    private NodeIterator getEntryVersionsInLifecycle(final String lifecycleId, Session session)
         throws RepositoryException, InvalidQueryException {
         QueryManager qm = getQueryManager(session);
         javax.jcr.query.Query query = 

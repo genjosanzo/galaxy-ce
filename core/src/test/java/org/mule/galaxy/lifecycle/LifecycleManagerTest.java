@@ -15,7 +15,6 @@ import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class LifecycleManagerTest extends AbstractGalaxyTest {
     protected LifecycleManager lifecycleManager;
-    protected Dao<PhaseLogEntry> phaseLogEntryDao;
     
     public void testLifecycleInitialization() throws Exception {
         Collection<Lifecycle> lifecycles = lifecycleManager.getLifecycles();
@@ -67,14 +66,6 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         } catch (TransitionException e) {
             // expected
         }
-        
-        List<PhaseLogEntry> entries = phaseLogEntryDao.listAll();
-        assertEquals(1, entries.size());
-        PhaseLogEntry e = entries.get(0);
-        assertNotNull(e.getUser());
-        assertEquals(artifact.getId(), e.getArtifactVersion().getParent().getId());
-        assertNotNull(e.getCalendar());
-        assertNotNull(e.getPhase());
         
         Phase next = l.getPhase("Tested");
         lifecycleManager.transition(version, next, getAdmin());

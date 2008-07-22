@@ -26,7 +26,7 @@ import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.easymock.classextension.EasyMock;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.atom.AbstractArtifactCollection;
+import org.mule.galaxy.atom.AbstractEntryCollection;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.test.AbstractAtomTest;
 import org.springmodules.jcr.JcrCallback;
@@ -207,7 +207,7 @@ public class PublishMojoTest extends AbstractAtomTest {
         
         Entry e = feed.getEntries().get(0);
         
-        Element versionEl = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "version"));
+        Element versionEl = e.getExtension(new QName(AbstractEntryCollection.NAMESPACE, "version"));
         assertNotNull(versionEl);
         assertEquals("2.0", versionEl.getAttributeValue("label"));
         

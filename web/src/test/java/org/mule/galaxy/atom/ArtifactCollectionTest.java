@@ -211,30 +211,30 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl?version=0.2", 
                      e.getLink("edit-media").getHref().toString());
        
-        Element info = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "artifact-info"));
+        Element info = e.getExtension(new QName(AbstractEntryCollection.NAMESPACE, "artifact-info"));
         assertNotNull(info);
         assertEquals("application/xml", info.getAttributeValue("mediaType"));
         assertEquals("{http://schemas.xmlsoap.org/wsdl/}definitions", info.getAttributeValue("documentType"));
         
-        Element lifecycleEl = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "lifecycle"));
+        Element lifecycleEl = e.getExtension(new QName(AbstractEntryCollection.NAMESPACE, "lifecycle"));
         assertNotNull(lifecycleEl);
         assertEquals("Default", lifecycleEl.getAttributeValue("name"));
         assertEquals("Created", lifecycleEl.getAttributeValue("phase"));
         
-        Element next = lifecycleEl.getFirstChild(new QName(AbstractArtifactCollection.NAMESPACE, "next-phases"));
+        Element next = lifecycleEl.getFirstChild(new QName(AbstractEntryCollection.NAMESPACE, "next-phases"));
         assertNotNull(next);
         
-        Element previous = lifecycleEl.getFirstChild(new QName(AbstractArtifactCollection.NAMESPACE, "previous-phases"));
+        Element previous = lifecycleEl.getFirstChild(new QName(AbstractEntryCollection.NAMESPACE, "previous-phases"));
         assertNotNull(previous);
         
-        Element versionEl = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "version"));
+        Element versionEl = e.getExtension(new QName(AbstractEntryCollection.NAMESPACE, "version"));
         assertNotNull(lifecycleEl);
         assertEquals("0.2", versionEl.getAttributeValue("label"));
         assertEquals("true", versionEl.getAttributeValue("default"));
         assertEquals("true", versionEl.getAttributeValue("enabled"));
         
-        ExtensibleElement metadata = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "metadata"));
-        List<Element> properties = metadata.getExtensions(new QName(AbstractArtifactCollection.NAMESPACE, "property"));
+        ExtensibleElement metadata = e.getExtension(new QName(AbstractEntryCollection.NAMESPACE, "metadata"));
+        List<Element> properties = metadata.getExtensions(new QName(AbstractEntryCollection.NAMESPACE, "property"));
         assertTrue(properties.size() > 0);
         int size = properties.size();
         
@@ -247,18 +247,18 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
             propEl.discard();
         }
         
-        Element prop = factory.newElement(new QName(AbstractArtifactCollection.NAMESPACE, "property"), metadata);
+        Element prop = factory.newElement(new QName(AbstractEntryCollection.NAMESPACE, "property"), metadata);
         prop.setAttributeValue("name", "test1");
         prop.setAttributeValue("value", "test1");
         
-        prop = factory.newElement(new QName(AbstractArtifactCollection.NAMESPACE, "property"), metadata);
+        prop = factory.newElement(new QName(AbstractEntryCollection.NAMESPACE, "property"), metadata);
         prop.setAttributeValue("name", "test2");
-        Element valueEl = factory.newElement(new QName(AbstractArtifactCollection.NAMESPACE, "value"), prop);
+        Element valueEl = factory.newElement(new QName(AbstractEntryCollection.NAMESPACE, "value"), prop);
         valueEl.setText("test2");
-        valueEl = factory.newElement(new QName(AbstractArtifactCollection.NAMESPACE, "value"), prop);
+        valueEl = factory.newElement(new QName(AbstractEntryCollection.NAMESPACE, "value"), prop);
         valueEl.setText("test2");
         
-        prop = factory.newElement(new QName(AbstractArtifactCollection.NAMESPACE, "property"), metadata);
+        prop = factory.newElement(new QName(AbstractEntryCollection.NAMESPACE, "property"), metadata);
         prop.setAttributeValue("name", "test3");
         prop.setAttributeValue("value", "test3");
         prop.setAttributeValue("visible", "false");
@@ -278,8 +278,8 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         prettyPrint(entryDoc);
         e = entryDoc.getRoot();
         
-        metadata = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "metadata"));
-        properties = metadata.getExtensions(new QName(AbstractArtifactCollection.NAMESPACE, "property"));
+        metadata = e.getExtension(new QName(AbstractEntryCollection.NAMESPACE, "metadata"));
+        properties = metadata.getExtensions(new QName(AbstractEntryCollection.NAMESPACE, "property"));
         assertEquals(size + 2, properties.size());
         
         res.release();
@@ -292,12 +292,12 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         prettyPrint(entryDoc);
         e = entryDoc.getRoot();
         
-        lifecycleEl = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "lifecycle"));
+        lifecycleEl = e.getExtension(new QName(AbstractEntryCollection.NAMESPACE, "lifecycle"));
         assertNotNull(lifecycleEl);
         assertEquals("Default", lifecycleEl.getAttributeValue("name"));
         assertEquals("Developed", lifecycleEl.getAttributeValue("phase"));
         
-        versionEl = e.getExtension(new QName(AbstractArtifactCollection.NAMESPACE, "version"));
+        versionEl = e.getExtension(new QName(AbstractEntryCollection.NAMESPACE, "version"));
         assertNotNull(lifecycleEl);
 //        assertEquals("3.0", versionEl.getAttributeValue("label"));
         

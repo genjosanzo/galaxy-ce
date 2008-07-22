@@ -50,7 +50,6 @@
   <bean id="lifecycleManagerTarget" 
         class="org.mule.galaxy.impl.lifecycle.LifecycleManagerImpl" 
         init-method="initialize">
-    <property name="phaseLogEntryDao" ref="phaseLogEntryDao"/>
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
     <property name="eventManager" ref="eventManager" />
@@ -266,18 +265,6 @@
     <property name="persisterManager" ref="persisterManager" />
   </bean>
     
-    
-  <bean id="phaseLogEntryDao" parent="txProxyTemplate">
-    <property name="target" ref="phaseLogEntryDaoTarget"/>
-    <property name="proxyTargetClass" value="true"/>
-  </bean>
-  
-  <bean id="phaseLogEntryDaoTarget" class="org.mule.galaxy.impl.lifecycle.PhaseLogEntryDaoImpl"
-        init-method="initialize" >
-    <property name="sessionFactory" ref="sessionFactory" />
-    <property name="persisterManager" ref="persisterManager" />
-  </bean>
-          
   <bean id="activityManager" parent="txProxyTemplate">
     <property name="target" ref="activityManagerTarget"/>
     <property name="proxyTargetClass" value="true"/>

@@ -45,7 +45,7 @@ public class CommentCollectionProvider extends AbstractEntityCollectionAdapter<C
     }
     @Override
     public String getHref(RequestContext request) {
-        String href = (String) request.getAttribute(Scope.REQUEST, ArtifactResolver.COLLECTION_HREF);
+        String href = (String) request.getAttribute(Scope.REQUEST, EntryResolver.COLLECTION_HREF);
         if (href == null) {
             href = request.getTargetBasePath() + "/comments";
         }

@@ -37,6 +37,14 @@ public class Query {
         this.maxResults = maxResults;
     }
 
+    public Query() {
+	super();
+    }
+    
+    public Query(OpRestriction restriction) {
+        restrictions.add(restriction);
+    }
+    
     public Query(Class selectType, OpRestriction restriction) {
         this.selectType = selectType;
         restrictions.add(restriction);

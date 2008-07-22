@@ -77,7 +77,7 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
     }
 
     private Workspace getResolvedWorkspace(RequestContext request) {
-        return (Workspace) request.getAttribute(Scope.REQUEST, ArtifactResolver.WORKSPACE);
+        return (Workspace) request.getAttribute(Scope.REQUEST, EntryResolver.WORKSPACE);
     }
 
     @Override
@@ -181,7 +181,7 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
     
     @Override
     public String getHref(RequestContext request) {
-        String href = (String) request.getAttribute(Scope.REQUEST, ArtifactResolver.COLLECTION_HREF);
+        String href = (String) request.getAttribute(Scope.REQUEST, EntryResolver.COLLECTION_HREF);
         if (href == null) {
             // this is the url we use when pulling down the services document
             href = request.getTargetBasePath() + "/registry/";

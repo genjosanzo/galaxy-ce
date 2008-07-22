@@ -43,6 +43,43 @@ public class EntryTest extends AbstractGalaxyTest {
         assertEquals("2.0", ev.getVersionLabel());
     }
     
+    public void testQueries() throws Exception {
+        Workspace root = registry.getWorkspaces().iterator().next();
+    
+        EntryResult r = root.newEntry("MyService", "1.0");
+        assertNotNull(r);
+    
+        Entry e = r.getEntry();
+        assertNotNull(e);
+    
+        EntryVersion ev = e.getDefaultOrLastVersion();
+        assertNotNull(ev);
+        String address = "http://localhost:9000/foo";
+        ev.setProperty("endpoint", address);
+    
+        Query q = new Query().add(OpRestriction.eq("endpoint", address));
+        
+        SearchResults results = registry.search(q);
+        
+        assertEquals(1, results.getTotal());
+        
+        q = new Query();
+        
+        importHelloWsdl();
+        
+        results = registry.search(q);
+        assertEquals(2, results.getTotal());
+        
+        Entry entry = null;
+        for (Object o : results.getResults()) {
+            if ("MyService".equals(((Entry) o).getName())) {
+                entry = (Entry) o;
+            }
+        }
+        
+        assertNotNull(entry);
+    }
+    
     public void testExtension() throws Exception {
 	Workspace root = registry.getWorkspaces().iterator().next();
 	
@@ -85,6 +122,5 @@ public class EntryTest extends AbstractGalaxyTest {
 	SearchResults result = registry.search(q);
 	
 	assertEquals(1, result.getTotal());
-	
     }
 }
