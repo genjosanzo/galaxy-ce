@@ -129,7 +129,7 @@ public class DefaultEventManagerTest extends TestCase {
 
     }
 
-    private static class InheritedBindingWithOnEvent extends ClassAnnotationMissingOnEvent {
+    public static class InheritedBindingWithOnEvent extends ClassAnnotationMissingOnEvent {
 
         public volatile boolean called;
         public PropertyChangedEvent event;
@@ -157,7 +157,7 @@ public class DefaultEventManagerTest extends TestCase {
     }
 
     @BindToEvents({WORKSPACE_DELETED, PROPERTY_CHANGED})
-    private static class MultiEventListener {
+    public static class MultiEventListener {
 
         public PropertyChangedEvent puEvent;
         public WorkspaceDeletedEvent wdEvent;
