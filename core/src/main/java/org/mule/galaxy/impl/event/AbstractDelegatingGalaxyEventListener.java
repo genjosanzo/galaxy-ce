@@ -90,7 +90,7 @@ public abstract class AbstractDelegatingGalaxyEventListener implements Delegatin
             final long timeout = async.timeoutMs();
 
             // if timeout has not been set
-            if (timeout == DelegatingSingleEventListener.TIMEOUT_NOT_SET) {
+            if (timeout == TIMEOUT_NOT_SET) {
                 try {
                     // execute without timeout
                     executor.execute(wrapper);
