@@ -5,18 +5,15 @@ import org.mule.galaxy.event.annotation.BindToEvents;
 import org.mule.galaxy.event.annotation.OnEvent;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
-import java.util.EventListener;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class DefaultEventManager implements EventManager {
 
@@ -24,7 +21,12 @@ public class DefaultEventManager implements EventManager {
 
     protected final Object listenersLock = new Object();
 
-    protected LinkedHashMap<Class, List<GalaxyEventListener>> listeners = new LinkedHashMap<Class, List<GalaxyEventListener>>();
+    protected LinkedHashMap<Class, List<InternalGalaxyEventListener>> listeners = new LinkedHashMap<Class, List<InternalGalaxyEventListener>>();
+
+    /**
+     * Use Spring's wrapper around TPTE, exposes config properties as a JavaBean.
+     */
+    private ThreadPoolTaskExecutor executor;
 
     public DefaultEventManager(final List<?> newListeners) {
         for (Object listener : newListeners) {
@@ -41,7 +43,7 @@ public class DefaultEventManager implements EventManager {
         final Class<?> clazz = listenerCandidate.getClass();
 
         final String[] eventNames;
-        GalaxyEventListener adapter = null;
+        InternalGalaxyEventListener adapter = null;
 
         // single-event listeners
         final Annotation annotation = findAnnotation(clazz, BindToEvent.class);
@@ -54,7 +56,7 @@ public class DefaultEventManager implements EventManager {
                     if (adapter != null) {
                         throw new IllegalArgumentException("Multiple @OnEvent entry-points detected for " + clazz.getName());
                     }
-                    adapter = new DelegatingSingleEventListener(annotation, listenerCandidate, method);
+                    adapter = new DelegatingSingleEventListener(this, annotation, listenerCandidate, method);
                 }
             }
 
@@ -106,7 +108,7 @@ public class DefaultEventManager implements EventManager {
         return annotationPresent ? clazz.getAnnotation(annotation) : null;
     }
 
-    protected void registerListener(final GalaxyEventListener listener, final String eventName) {
+    protected void registerListener(final InternalGalaxyEventListener listener, final String eventName) {
 
         if (listener == null) {
             throw new IllegalArgumentException(
@@ -119,9 +121,9 @@ public class DefaultEventManager implements EventManager {
         synchronized (listenersLock) {
             try {
                 Class<? extends GalaxyEvent> eventClass = Class.forName(evtClassName, true, current).asSubclass(GalaxyEvent.class);
-                List<GalaxyEventListener> evtListeners = listeners.get(eventClass);
+                List<InternalGalaxyEventListener> evtListeners = listeners.get(eventClass);
                 if (evtListeners == null) {
-                    evtListeners = new LinkedList<GalaxyEventListener>();
+                    evtListeners = new LinkedList<InternalGalaxyEventListener>();
                 }
                 evtListeners.add(listener);
                 listeners.put(eventClass, evtListeners);
@@ -159,10 +161,10 @@ public class DefaultEventManager implements EventManager {
 
     public void fireEvent(final GalaxyEvent event) {
         synchronized (listenersLock) {
-            List<GalaxyEventListener> eventListeners = listeners.get(event.getClass());
+            List<InternalGalaxyEventListener> eventListeners = listeners.get(event.getClass());
 
             if (eventListeners != null && !eventListeners.isEmpty()) {
-                for (GalaxyEventListener listener : eventListeners) {
+                for (InternalGalaxyEventListener listener : eventListeners) {
                     try {
                         if (logger.isDebugEnabled()) {
                             logger.debug("Firing event: " + event);
@@ -183,129 +185,12 @@ public class DefaultEventManager implements EventManager {
         }
     }
 
-    /**
-     * Delegates to a single method marked with the {@link OnEvent} annotation.
-     */
-    protected static class DelegatingSingleEventListener implements DelegatingGalaxyEventListener {
-        private final Object delegate;
-        private final Method method;
-
-        public DelegatingSingleEventListener(final Annotation annotation, final Object listenerCandidate, final Method method) {
-            this.method = method;
-            MethodParamValidator.validateMethodParam(method);
-            final String eventName = ((BindToEvent) annotation).value() + "Event";
-            final String callbackParam = method.getParameterTypes()[0].getSimpleName();
-            if (!callbackParam.equals(eventName)) {
-                throw new IllegalArgumentException(
-                        String.format("Listener %s is bound to the %s, but " +
-                                      "callback method param %s doesn't match it.",
-                                      listenerCandidate.getClass().getName(),
-                                      eventName, callbackParam));
-            }
-            delegate = listenerCandidate;
-        }
-
-        public void onEvent(final GalaxyEvent event) {
-            try {
-                method.invoke(delegate, event);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (InvocationTargetException itex) {
-                final Throwable cause = itex.getTargetException();
-                throw new RuntimeException(cause);
-            }
-        }
-
-        public Object getDelegateListener() {
-            return delegate;
-        }
-
+    public ThreadPoolTaskExecutor getExecutor() {
+        return executor;
     }
 
-    /**
-     * Delegates to a listener observing multiple events (through the {@link BindToEvents} annotation and thus
-     * having multiple entry points annotated with {@link OnEvent}.
-     */
-    protected static class DelegatingMultiEventListener implements DelegatingGalaxyEventListener {
-        private final Object delegate;
-
-        private Map<Class<? extends GalaxyEvent>, Method> eventToMethodMap = new HashMap<Class<? extends GalaxyEvent>, Method>();
-
-        public DelegatingMultiEventListener(final Object listenerCandidate) {
-            delegate = listenerCandidate;
-            // discover and initialize event-to-method mappings
-            Method[] methods = listenerCandidate.getClass().getMethods();
-            for (Method method : methods) {
-                if (method.isAnnotationPresent(OnEvent.class)) {
-                    MethodParamValidator.validateMethodParam(method);
-                    Class<? extends GalaxyEvent> paramType = method.getParameterTypes()[0].asSubclass(GalaxyEvent.class);
-                    eventToMethodMap.put(paramType, method);
-                }
-            }
-        }
-
-        public void onEvent(final GalaxyEvent event) {
-            Method method = eventToMethodMap.get(event.getClass());
-
-            if (method == null) {
-                throw new IllegalArgumentException(
-                        String.format("Event %s is not supported by this listener. Supported types are %s",
-                                      event.getClass().getName(), eventToMethodMap.keySet())
-                );
-            }
-
-            try {
-                method.invoke(delegate, event);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (InvocationTargetException itex) {
-                final Throwable cause = itex.getTargetException();
-                throw new RuntimeException(cause);
-            }
-        }
-
-        public Object getDelegateListener() {
-            return delegate;
-        }
+    public void setExecutor(final ThreadPoolTaskExecutor executor) {
+        this.executor = executor;
     }
 
-    protected static interface GalaxyEventListener extends EventListener {
-        void onEvent(GalaxyEvent event);
-    }
-
-    protected static interface DelegatingGalaxyEventListener extends GalaxyEventListener {
-        Object getDelegateListener();
-    }
-
-    /*
-        Ugly static method, but otherwise we face a listener hierarchy explosion.
-     */
-    protected static class MethodParamValidator {
-
-        protected static void validateMethodParam(final Method method) {
-            // validate the number of parameters
-            Class<?>[] paramTypes = method.getParameterTypes();
-            if (paramTypes.length == 0) {
-                throw new IllegalArgumentException(
-                        String.format("Method %s has an @OnEvent annotation, but accepts no Galaxy event class",
-                                      method.toGenericString()));
-            }
-
-            if (paramTypes.length > 1) {
-                throw new IllegalArgumentException(
-                        String.format("Method %s has an @OnEvent annotation, but accepts multiple parameters. Only a " +
-                                      "single parameter is allowed, and it must be a Galaxy event class",
-                                      method.toGenericString()));
-
-            }
-
-            Class<?> paramType = paramTypes[0];
-            if (!GalaxyEvent.class.isAssignableFrom(paramType)) {
-                throw new IllegalArgumentException(
-                        String.format("Method %s has an @OnEvent annotation, but doesn't accept a Galaxy event class",
-                                      method.toGenericString()));
-            }
-        }
-
-    }
 }
