@@ -12,14 +12,14 @@ public class DefaultEvents {
     // property
     public static final String PROPERTY_CHANGED = "PropertyChanged";
 
-    // item
-    public static final String ITEM_VERSION_CREATED = "ItemVersionCreated";
-    public static final String ITEM_VERSION_DELETED = "ItemVersionDeleted";
+    // entry
+    public static final String ENTRY_VERSION_CREATED = "EntryVersionCreated";
+    public static final String ENTRY_VERSION_DELETED = "EntryVersionDeleted";
 
-    // item version
-    public static final String ITEM_CREATED = "ItemCreated";
-    public static final String ITEM_DELETED = "ItemDeleted";
-    public static final String ITEM_MOVED = "ItemMoved";
+    // entry version
+    public static final String ENTRY_CREATED = "EntryCreated";
+    public static final String ENTRY_DELETED = "EntryDeleted";
+    public static final String ENTRY_MOVED = "EntryMoved";
 
     // misc
     public static final String LIFECYCLE_TRANSITION = "LifecycleTransition";

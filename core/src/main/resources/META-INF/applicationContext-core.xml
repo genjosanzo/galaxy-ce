@@ -105,13 +105,13 @@
   <bean id="eventManager" class="org.mule.galaxy.impl.event.DefaultEventManager">
       <constructor-arg>
           <list>
-              <!-- item -->
-              <bean class="org.mule.galaxy.event.listener.activity.ItemCreatedEventListener" parent="abstractActivityLogger"/>
-              <bean class="org.mule.galaxy.event.listener.activity.ItemDeletedEventListener" parent="abstractActivityLogger"/>
-              <bean class="org.mule.galaxy.event.listener.activity.ItemMovedEventListener" parent="abstractActivityLogger"/>
-              <!-- item version -->
-              <bean class="org.mule.galaxy.event.listener.activity.ItemVersionCreatedEventListener" parent="abstractActivityLogger"/>
-              <bean class="org.mule.galaxy.event.listener.activity.ItemVersionDeletedEventListener" parent="abstractActivityLogger"/>
+              <!-- entry -->
+              <bean class="org.mule.galaxy.event.listener.activity.EntryCreatedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.EntryDeletedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.EntryMovedEventListener" parent="abstractActivityLogger"/>
+              <!-- entry version -->
+              <bean class="org.mule.galaxy.event.listener.activity.EntryVersionCreatedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.EntryVersionDeletedEventListener" parent="abstractActivityLogger"/>
               <!-- workspace -->
               <bean class="org.mule.galaxy.event.listener.activity.WorkspaceCreatedEventListener" parent="abstractActivityLogger"/>
               <bean class="org.mule.galaxy.event.listener.activity.WorkspaceDeletedEventListener" parent="abstractActivityLogger"/>
