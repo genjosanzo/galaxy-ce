@@ -15,7 +15,7 @@ public class EntryVersionCreatedEventListener extends AbstractActivityLoggingLis
     @OnEvent
     @Async
     public void onEvent(EntryVersionCreatedEvent event) {
-        final String message = MessageFormat.format("Version {0} was created for item {1}",
+        final String message = MessageFormat.format("Version {0} was created for entry {1}",
                                                     event.getVersionLabel(), event.getArtifactPath());
         getActivityManager().logActivity(event.getUser(), message, ActivityManager.EventType.INFO);
     }

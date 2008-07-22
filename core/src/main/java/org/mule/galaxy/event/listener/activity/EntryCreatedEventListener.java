@@ -15,7 +15,7 @@ public class EntryCreatedEventListener extends AbstractActivityLoggingListener {
     @OnEvent
     @Async
     public void onEvent(EntryCreatedEvent event) {
-        final String message = MessageFormat.format("Item {0} was created", event.getArtifactPath());
+        final String message = MessageFormat.format("Entry {0} was created", event.getArtifactPath());
         getActivityManager().logActivity(event.getUser(), message, ActivityManager.EventType.INFO);
     }
 }
