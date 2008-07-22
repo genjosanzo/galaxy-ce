@@ -3,6 +3,7 @@ package org.mule.galaxy.event.listener.activity;
 import org.mule.galaxy.activity.ActivityManager;
 import static org.mule.galaxy.event.DefaultEvents.LIFECYCLE_TRANSITION;
 import org.mule.galaxy.event.LifecycleTransitionEvent;
+import org.mule.galaxy.event.annotation.Async;
 import org.mule.galaxy.event.annotation.BindToEvent;
 import org.mule.galaxy.event.annotation.OnEvent;
 
@@ -12,6 +13,7 @@ import java.text.MessageFormat;
 public class LifecycleTransitionEventListener extends AbstractActivityLoggingListener {
 
     @OnEvent
+    @Async
     public void onEvent(LifecycleTransitionEvent event) {
         final String message = MessageFormat.format("Artifact {0} (version {1}) was transitioned to phase {2} " +
                                                     "in lifecycle {3}",
