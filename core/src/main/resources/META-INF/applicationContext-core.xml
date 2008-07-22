@@ -102,7 +102,7 @@
       <property name="activityManager" ref="activityManager"/>
   </bean>
 
-  <bean id="eventManager" class="org.mule.galaxy.event.DefaultEventManager">
+  <bean id="eventManager" class="org.mule.galaxy.impl.event.DefaultEventManager">
       <constructor-arg>
           <list>
               <!-- item -->

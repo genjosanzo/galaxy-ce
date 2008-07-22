@@ -5,6 +5,7 @@ import static org.mule.galaxy.event.DefaultEvents.WORKSPACE_DELETED;
 import org.mule.galaxy.event.annotation.BindToEvent;
 import org.mule.galaxy.event.annotation.BindToEvents;
 import org.mule.galaxy.event.annotation.OnEvent;
+import org.mule.galaxy.impl.event.DefaultEventManager;
 import org.mule.galaxy.security.User;
 
 import java.util.Collections;

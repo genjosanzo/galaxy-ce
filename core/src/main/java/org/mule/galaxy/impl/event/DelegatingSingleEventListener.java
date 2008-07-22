@@ -1,5 +1,6 @@
-package org.mule.galaxy.event;
+package org.mule.galaxy.impl.event;
 
+import org.mule.galaxy.event.GalaxyEvent;
 import org.mule.galaxy.event.annotation.Async;
 import org.mule.galaxy.event.annotation.BindToEvent;
 

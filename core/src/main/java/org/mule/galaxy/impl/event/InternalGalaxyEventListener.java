@@ -1,4 +1,6 @@
-package org.mule.galaxy.event;
+package org.mule.galaxy.impl.event;
+
+import org.mule.galaxy.event.GalaxyEvent;
 
 import java.util.EventListener;
 
