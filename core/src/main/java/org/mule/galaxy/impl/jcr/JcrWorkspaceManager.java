@@ -454,7 +454,6 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
 
                 session.save();
 
-                // fire the event
                 EntryResult result = new EntryResult(entry, next, approvals);
 
                 // fire the event
