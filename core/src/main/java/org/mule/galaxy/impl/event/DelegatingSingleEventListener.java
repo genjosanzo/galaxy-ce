@@ -18,7 +18,7 @@ import org.springframework.core.task.TaskRejectedException;
 /**
  * Delegates to a single method marked with the {@link org.mule.galaxy.event.annotation.OnEvent} annotation.
  */
-class DelegatingSingleEventListener implements DelegatingGalaxyEventListener {
+class DelegatingSingleEventListener extends AbstractDelegatingGalaxyEventListener {
     protected static final int TIMEOUT_NOT_SET = -1;
     private final Object delegate;
     private final Method method;
@@ -27,7 +27,7 @@ class DelegatingSingleEventListener implements DelegatingGalaxyEventListener {
     public DelegatingSingleEventListener(final DefaultEventManager defaultEventManager, final Annotation annotation, final Object listenerCandidate, final Method method) {
         this.defaultEventManager = defaultEventManager;
         this.method = method;
-        MethodParamValidator.validateMethodParam(method);
+        validateMethodParams(method);
         final String eventName = ((BindToEvent) annotation).value() + "Event";
         final String callbackParam = method.getParameterTypes()[0].getSimpleName();
         if (!callbackParam.equals(eventName)) {

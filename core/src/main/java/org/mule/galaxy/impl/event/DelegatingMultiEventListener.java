@@ -12,7 +12,7 @@ import java.util.Map;
  * Delegates to a listener observing multiple events (through the {@link org.mule.galaxy.event.annotation.BindToEvents} annotation and thus
  * having multiple entry points annotated with {@link org.mule.galaxy.event.annotation.OnEvent}.
  */
-class DelegatingMultiEventListener implements DelegatingGalaxyEventListener {
+class DelegatingMultiEventListener extends AbstractDelegatingGalaxyEventListener {
     private final Object delegate;
 
     private Map<Class<? extends GalaxyEvent>, Method> eventToMethodMap = new HashMap<Class<? extends GalaxyEvent>, Method>();
@@ -23,7 +23,7 @@ class DelegatingMultiEventListener implements DelegatingGalaxyEventListener {
         Method[] methods = listenerCandidate.getClass().getMethods();
         for (Method method : methods) {
             if (method.isAnnotationPresent(OnEvent.class)) {
-                MethodParamValidator.validateMethodParam(method);
+                validateMethodParams(method);
                 Class<? extends GalaxyEvent> paramType = method.getParameterTypes()[0].asSubclass(GalaxyEvent.class);
                 eventToMethodMap.put(paramType, method);
             }

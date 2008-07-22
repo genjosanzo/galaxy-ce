@@ -4,13 +4,16 @@ import org.mule.galaxy.event.GalaxyEvent;
 
 import java.lang.reflect.Method;
 
-/*
-    Ugly static method, but otherwise we face a listener hierarchy explosion.
-    TODO this class is to be refactored and will go.
+/**
+ * A supporting class for delegating galaxy listener implementations.
  */
-class MethodParamValidator {
+public abstract class AbstractDelegatingGalaxyEventListener implements DelegatingGalaxyEventListener {
 
-    protected static void validateMethodParam(final Method method) {
+    /**
+     * Validates method parameters for the entry point to be invoked.
+     * @param method method to invoke on the listener, marked with {@link org.mule.galaxy.event.annotation.OnEvent}
+     */
+    protected void validateMethodParams(final Method method) {
         // validate the number of parameters
         Class<?>[] paramTypes = method.getParameterTypes();
         if (paramTypes.length == 0) {
@@ -33,6 +36,6 @@ class MethodParamValidator {
                     String.format("Method %s has an @OnEvent annotation, but doesn't accept a Galaxy event class",
                                   method.toGenericString()));
         }
+        
     }
-
 }
