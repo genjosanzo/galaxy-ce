@@ -171,7 +171,6 @@ public class DefaultEventManager implements EventManager {
                         if (logger.isDebugEnabled()) {
                             logger.debug("Firing event: " + event);
                         }
-                        // TODO blocking/non-blocking
                         listener.onEvent(event);
                     } catch (Throwable t) {
                         logger.error(String.format("Listener %s failed to process event %s",
