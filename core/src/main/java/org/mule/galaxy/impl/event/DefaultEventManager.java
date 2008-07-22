@@ -30,7 +30,8 @@ public class DefaultEventManager implements EventManager {
      */
     private ThreadPoolTaskExecutor executor;
 
-    public DefaultEventManager(final List<?> newListeners) {
+    public DefaultEventManager(final List<?> newListeners, final ThreadPoolTaskExecutor executor) {
+        this.executor = executor;
         for (Object listener : newListeners) {
             addListener(listener);
         }
@@ -189,9 +190,4 @@ public class DefaultEventManager implements EventManager {
     public ThreadPoolTaskExecutor getExecutor() {
         return executor;
     }
-
-    public void setExecutor(final ThreadPoolTaskExecutor executor) {
-        this.executor = executor;
-    }
-
 }
