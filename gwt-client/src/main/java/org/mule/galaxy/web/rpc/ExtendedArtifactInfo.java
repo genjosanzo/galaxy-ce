@@ -35,7 +35,7 @@ public class ExtendedArtifactInfo extends BasicArtifactInfo {
     private String artifactFeedLink;
     
     /*
-     * @gwt.typeArgs <java.lang.String,java.lang.String>
+     * @gwt.typeArgs <java.lang.String>
      */
     private Collection versions;
     
