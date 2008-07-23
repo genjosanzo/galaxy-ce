@@ -1,30 +1,6 @@
 package org.mule.galaxy.impl.jcr;
 
 
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.jcr.AccessDeniedException;
-import javax.jcr.ItemExistsException;
-import javax.jcr.ItemNotFoundException;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
@@ -56,10 +32,10 @@ import org.mule.galaxy.query.AbstractFunction;
 import org.mule.galaxy.query.FunctionCall;
 import org.mule.galaxy.query.FunctionRegistry;
 import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.OpRestriction.Operator;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.query.SearchResults;
-import org.mule.galaxy.query.OpRestriction.Operator;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Permission;
@@ -69,6 +45,31 @@ import org.mule.galaxy.util.DateUtil;
 import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.SecurityUtils;
 import org.mule.galaxy.workspace.WorkspaceManager;
+
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.jcr.AccessDeniedException;
+import javax.jcr.ItemExistsException;
+import javax.jcr.ItemNotFoundException;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jackrabbit.util.ISO9075;
 import org.springframework.dao.DataAccessException;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
@@ -558,36 +559,55 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         });
     }
 
-    public void move(final Artifact artifact, final String workspaceId) throws RegistryException, AccessException, NotFoundException {
-        final Workspace workspace = getWorkspace(workspaceId);
-        
-        accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE, workspace);
-        accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, artifact);
-        
-        if (artifact.getParent().getId().equals(workspaceId)) {
-            return;
-        }
-
+    public void move(final Artifact artifact, final String newWorkspaceId, final String newName) throws RegistryException, AccessException, NotFoundException {
+        boolean wasRenamed = false;
+        boolean wasMoved = false;
         final String oldPath = artifact.getPath();
 
-        execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                
-                Node aNode = ((JcrArtifact) artifact).getNode();
-                Node wNode = ((JcrWorkspace) workspace).getNode();
+        try {
+            // handle artifact renaming
+            accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, artifact);
 
-                final String newPath = wNode.getPath() + "/" + aNode.getName();
-                session.move(aNode.getPath(), newPath);
 
-                session.save();
-                ((JcrArtifact) artifact).setWorkspace(workspace);
-                return null;
+            if (!artifact.getName().equals(newName)) {
+                // save only if name changed
+                artifact.setName(newName);
+                save(artifact);
+                wasRenamed = true;
             }
-        });
 
-        EntryMovedEvent event = new EntryMovedEvent(oldPath, artifact.getPath());
-        event.setUser(SecurityUtils.getCurrentUser());
-        eventManager.fireEvent(event);
+            // handle workspace move
+            final Workspace workspace = getWorkspace(newWorkspaceId);
+            accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE, workspace);
+
+            // only if workspace changed
+            if (!artifact.getParent().getId().equals(newWorkspaceId)) {
+
+                execute(new JcrCallback() {
+                    public Object doInJcr(Session session) throws IOException, RepositoryException {
+
+                        Node aNode = ((JcrArtifact) artifact).getNode();
+                        Node wNode = ((JcrWorkspace) workspace).getNode();
+
+                        final String newPath = wNode.getPath() + "/" + aNode.getName();
+                        session.move(aNode.getPath(), newPath);
+
+                        session.save();
+                        ((JcrArtifact) artifact).setWorkspace(workspace);
+                        return null;
+                    }
+                });
+
+                wasMoved = true;
+            }
+        } finally {
+            // fire an event only if there was an actual action taken, and guarantee it will be fired
+            if (wasRenamed || wasMoved) {
+                EntryMovedEvent event = new EntryMovedEvent(oldPath, artifact.getPath());
+                event.setUser(SecurityUtils.getCurrentUser());
+                eventManager.fireEvent(event);
+            }
+        }
     }
 
     

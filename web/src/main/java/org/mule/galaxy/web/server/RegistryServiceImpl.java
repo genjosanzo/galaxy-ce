@@ -1236,10 +1236,7 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             Artifact artifact = registry.getArtifact(artifactId);
 
-            artifact.setName(name);
-            registry.save(artifact);
-
-            registry.move(artifact, workspaceId);
+            registry.move(artifact, workspaceId, name);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());

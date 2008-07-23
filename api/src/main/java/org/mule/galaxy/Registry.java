@@ -1,15 +1,15 @@
 package org.mule.galaxy;
 
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.security.AccessException;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 public interface Registry {
     
@@ -36,7 +36,7 @@ public interface Registry {
     
     Item getItemByPath(String path) throws NotFoundException, RegistryException, AccessException;
 
-    void move(Artifact artifact, String workspaceId) throws RegistryException, AccessException, NotFoundException;
+    void move(Artifact artifact, String newWorkspaceId, final String newName) throws RegistryException, AccessException, NotFoundException;
     
     Collection<Artifact> getArtifacts(Workspace workspace) throws RegistryException;
     

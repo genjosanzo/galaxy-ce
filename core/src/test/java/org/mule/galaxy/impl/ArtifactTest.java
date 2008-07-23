@@ -1,6 +1,18 @@
 package org.mule.galaxy.impl;
 
 
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.EntryResult;
+import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.jcr.JcrVersion;
+import org.mule.galaxy.query.Query;
+import org.mule.galaxy.test.AbstractGalaxyTest;
+import org.mule.galaxy.util.IOUtils;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Calendar;
@@ -10,18 +22,6 @@ import java.util.Set;
 
 import javax.jcr.Node;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.EntryResult;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.EntryVersion;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.jcr.JcrVersion;
-import org.mule.galaxy.query.Query;
-import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.util.IOUtils;
-
 import org.w3c.dom.Document;
 
 public class ArtifactTest extends AbstractGalaxyTest {
@@ -30,7 +30,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         Workspace w = registry.createWorkspace("test");
         
-        registry.move(a, w.getId());
+        registry.move(a, w.getId(), a.getName());
         
         assertEquals(w.getId(), a.getParent().getId());
         
@@ -49,7 +49,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals("test.wsdl", a2.getName());
         
         // test moving it into the workspace its already in.
-        registry.move(a, w.getId());
+        registry.move(a, w.getId(), a.getName());
     }
 
     public void testWorkspaces() throws Exception {
