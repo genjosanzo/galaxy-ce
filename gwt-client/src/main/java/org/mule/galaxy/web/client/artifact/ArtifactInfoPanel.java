@@ -18,6 +18,20 @@
 
 package org.mule.galaxy.web.client.artifact;
 
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextArea;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.LinkInfo;
+import org.mule.galaxy.web.rpc.WComment;
+
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -38,21 +52,8 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.ErrorPanel;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.Toolbox;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextArea;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
-import org.mule.galaxy.web.rpc.LinkInfo;
-import org.mule.galaxy.web.rpc.WComment;
 
 public class ArtifactInfoPanel extends AbstractComposite {
 
@@ -64,11 +65,11 @@ public class ArtifactInfoPanel extends AbstractComposite {
     private ExtendedArtifactInfo info;
     private final ErrorPanel errorPanel;
     
-    public ArtifactInfoPanel(final Galaxy galaxy, 
+    public ArtifactInfoPanel(final Galaxy galaxy,
                              ErrorPanel errorPanel,
                              ArtifactGroup group,
-                             ExtendedArtifactInfo info, 
-                             ArtifactVersionInfo version) {
+                             ExtendedArtifactInfo info,
+                             ArtifactVersionInfo version, final ArtifactPanel artifactPanel, final List callbackParams) {
         this.galaxy = galaxy;
         this.errorPanel = errorPanel;
         this.info = info;
@@ -87,7 +88,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
                                                     errorPanel,
                                                     info.getId(), 
                                                     (String) info.getValue(0),
-                                                    info.getWorkspaceId());
+                                                    info.getWorkspaceId(), artifactPanel, callbackParams);
         
         table.setWidget(0, 0, new Label("Name:"));
         table.setWidget(0, 1, nep);

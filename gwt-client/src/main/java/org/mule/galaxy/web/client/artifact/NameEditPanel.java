@@ -37,6 +37,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
+import java.util.List;
 
 public class NameEditPanel extends Composite {
 
@@ -47,11 +48,14 @@ public class NameEditPanel extends Composite {
     private final Galaxy galaxy;
     private final ErrorPanel errorPanel;
 
-    public NameEditPanel(Galaxy galaxy, 
-                         ErrorPanel errorPanel, 
-                         String artifactId, 
-                         String name, 
-                         String workspaceId) {
+    private final ArtifactPanel callbackPanel;
+    private final List callbackParams;
+
+    public NameEditPanel(Galaxy galaxy,
+                         ErrorPanel errorPanel,
+                         String artifactId,
+                         String name,
+                         String workspaceId, final ArtifactPanel callbackPanel, final List callbackParams) {
         super();
         this.galaxy = galaxy;
         this.errorPanel = errorPanel;
@@ -60,7 +64,10 @@ public class NameEditPanel extends Composite {
         this.workspaceId = workspaceId;
 
         panel = new InlineFlowPanel();
-       
+
+        this.callbackPanel = callbackPanel;
+        this.callbackParams = callbackParams;
+
         initName();
         
         initWidget(panel);
@@ -140,9 +147,8 @@ public class NameEditPanel extends Composite {
         galaxy.getRegistryService().move(artifactId, workspaceId, newName, new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object arg0) {
-                panel.clear();
-                NameEditPanel.this.name = newName;
-                initName();
+                // need to refresh the whole panel to fetch new workspace location and entry name
+                callbackPanel.onShow(callbackParams);
             }
             
         });
