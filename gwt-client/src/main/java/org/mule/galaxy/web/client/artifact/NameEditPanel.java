@@ -143,15 +143,22 @@ public class NameEditPanel extends Composite {
         panel.add(row);
     }
 
-    protected void save(final String workspaceId, final String newName) {
-        galaxy.getRegistryService().move(artifactId, workspaceId, newName, new AbstractCallback(errorPanel) {
+    protected void save(final String newWorkspaceId, final String newName) {
+        if (!newWorkspaceId.equals(this.workspaceId) || !newName.equals(this.name)) {
+            // save only if name or workspace changed
+            galaxy.getRegistryService().move(artifactId, newWorkspaceId, newName, new AbstractCallback(errorPanel) {
 
-            public void onSuccess(Object arg0) {
-                // need to refresh the whole panel to fetch new workspace location and entry name
-                callbackPanel.onShow(callbackParams);
-            }
-            
-        });
+                public void onSuccess(Object arg0) {
+                    // need to refresh the whole panel to fetch new workspace location and entry name
+                    callbackPanel.onShow(callbackParams);
+                }
+
+            });
+        } else {
+            // restore the original view
+            panel.clear();
+            initName();
+        }
     }
 
     protected boolean validateName(final ValidatableTextBox nameTB) {
