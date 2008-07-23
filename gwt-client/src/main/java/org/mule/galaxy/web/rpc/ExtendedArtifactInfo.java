@@ -25,7 +25,7 @@ import java.util.List;
 public class ExtendedArtifactInfo extends BasicArtifactInfo {
     
     /*
-     * @gwt typeArgs org.mule.galaxy.rpc.WComment
+     * @gwt.typeArgs org.mule.galaxy.rpc.WComment
      */
     private List comments = new ArrayList();
     
