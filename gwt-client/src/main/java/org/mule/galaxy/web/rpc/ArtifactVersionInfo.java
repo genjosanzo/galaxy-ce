@@ -22,6 +22,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 public class ArtifactVersionInfo implements IsSerializable {
@@ -33,7 +34,6 @@ public class ArtifactVersionInfo implements IsSerializable {
     private String authorUsername;
     private boolean _default;
     private boolean enabled;
-    private String phase;
     private boolean indexInformationStale;
     
     /*
@@ -45,7 +45,6 @@ public class ArtifactVersionInfo implements IsSerializable {
                                boolean enabled,
                                String authorName, 
                                String authorUsername,
-                               String phase,
                                boolean indexInformationStale) {
         super();
         this.id = id;
@@ -56,7 +55,6 @@ public class ArtifactVersionInfo implements IsSerializable {
         this.created = created;
         this.authorName = authorName;
         this.authorUsername = authorUsername;
-        this.phase = phase;
         this.indexInformationStale = indexInformationStale;
     }
 
@@ -80,14 +78,6 @@ public class ArtifactVersionInfo implements IsSerializable {
         return properties;
     }
     
-    public String getPhase() {
-        return phase;
-    }
-
-    public void setPhase(String phase) {
-        this.phase = phase;
-    }
-
     public String getId() {
         return id;
     }
@@ -150,6 +140,18 @@ public class ArtifactVersionInfo implements IsSerializable {
     
     public void setCreated(Date created) {
         this.created = created;
+    }
+    
+    public WProperty getProperty(String name) {
+        for (Iterator itr = properties.iterator(); itr.hasNext();) {
+            WProperty p = (WProperty) itr.next();
+            
+            if (name.equals(p.getName())) {
+                return p;
+            }
+        }
+        
+        return null;
     }
     
 }

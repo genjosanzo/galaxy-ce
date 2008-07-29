@@ -10,11 +10,12 @@ import javax.wsdl.xml.WSDLReader;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.RegistryLocator;
 import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.util.Constants;
 import org.mule.galaxy.wsi.Message;
 import org.mule.galaxy.wsi.WSIRule;
@@ -26,7 +27,7 @@ import org.mule.galaxy.wsi.wsdl.WsdlRule;
 
 import org.w3c.dom.Document;
 
-public class BasicProfilePolicy implements ArtifactPolicy
+public class BasicProfilePolicy implements Policy
 {
 
     public static final String WSI_BP_1_1_WSDL = "WSI_BP_1_1_WSDL";
@@ -47,8 +48,9 @@ public class BasicProfilePolicy implements ArtifactPolicy
         wsdlReader = WSDLFactory.newInstance().newWSDLReader();
     }
     
-    public boolean applies(Artifact a) {
-        return Constants.WSDL_DEFINITION_QNAME.equals(a.getDocumentType());
+    public boolean applies(Item item) {
+        return item instanceof ArtifactVersion && 
+            Constants.WSDL_DEFINITION_QNAME.equals(((Artifact)item.getParent()).getDocumentType());
     }
 
     public String getDescription() {
@@ -59,18 +61,18 @@ public class BasicProfilePolicy implements ArtifactPolicy
         return "WSDL: WS-I BasicProfile 1.1 Compliance";
     }
 
-    public Collection<ApprovalMessage> isApproved(Artifact a, ArtifactVersion previous, ArtifactVersion next) {
+    public Collection<ApprovalMessage> isApproved(Item item) {
         ArrayList<ApprovalMessage> messages = new ArrayList<ApprovalMessage>();
-        
+        ArtifactVersion v = (ArtifactVersion) item;
         List<ValidationResult> results = new ArrayList<ValidationResult>();
         for (WSIRule r : rules) {
             if (r instanceof WsdlRule) {
                 WsdlRule wr = (WsdlRule) r;
                 
-                Document doc = (Document) next.getData();
+                Document doc = (Document) v.getData();
                 Definition def = null;
                 try {
-                    def = wsdlReader.readWSDL(new RegistryLocator(registry, (Workspace)a.getParent()), 
+                    def = wsdlReader.readWSDL(new RegistryLocator(registry, (Workspace)v.getParent().getParent()), 
                                               doc.getDocumentElement());
                 } catch (Exception e) {
                     // Ignore - its not parsable

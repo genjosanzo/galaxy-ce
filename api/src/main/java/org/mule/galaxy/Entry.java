@@ -1,16 +1,11 @@
 package org.mule.galaxy;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
 
-import javax.activation.MimeType;
-import javax.xml.namespace.QName;
-
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.User;
+import org.mule.galaxy.type.Type;
 
 public interface Entry extends Item {
     
@@ -20,11 +15,17 @@ public interface Entry extends Item {
     
     Calendar getUpdated();
     
+    Workspace getParent();
+    
     String getName();
     
     void setName(String name);
     
     String getDescription();
+    
+    Type getType();
+    
+    void setType(Type type);
     
     void setDescription(String description);
     

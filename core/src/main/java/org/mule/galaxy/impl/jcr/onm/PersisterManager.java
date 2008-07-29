@@ -1,7 +1,9 @@
 package org.mule.galaxy.impl.jcr.onm;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,6 +22,7 @@ public class PersisterManager {
         super();
         
         persisters.put(Set.class.getName(), new CollectionPersister(HashSet.class, this));
+        persisters.put(List.class.getName(), new CollectionPersister(ArrayList.class, this));
         persisters.put(Class.class.getName(), new ClassFieldPersister());
     }
 

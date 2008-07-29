@@ -2,25 +2,29 @@ package org.mule.galaxy.impl.jcr;
 
 import javax.jcr.Node;
 
-import org.mule.galaxy.PropertyDescriptor;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.index.Index;
+import org.mule.galaxy.type.PropertyDescriptor;
+import org.mule.galaxy.type.TypeManager;
 
 public class PropertyInfoImpl implements PropertyInfo {
 
     private Node node;
     private String name;
-    private Registry registry;
     private boolean index;
     private String description;
     private Object desc;
     private boolean loadedDescriptor;
+    private final TypeManager tm;
+    private final Item item;
     
-    public PropertyInfoImpl(String name, Node node, Registry registry) {
+    public PropertyInfoImpl(Item item, String name, Node node, TypeManager tm) {
+        this.item = item;
         this.node = node;
         this.name= name;
-        this.registry = registry;
+        this.tm = tm;
     }
 
     public String getName() {
@@ -28,7 +32,11 @@ public class PropertyInfoImpl implements PropertyInfo {
     }
 
     public Object getValue() {
-        return JcrUtil.getProperty(getName(), node);
+        return item.getProperty(getName());
+    }
+
+    public Object getInternalValue() {
+        return item.getInternalProperty(getName());
     }
 
     public boolean isLocked() {
@@ -56,7 +64,7 @@ public class PropertyInfoImpl implements PropertyInfo {
     private void loadPropertyOrIndex() {
         if (loadedDescriptor) return;
         
-        desc = registry.getPropertyDescriptorByName(getName());
+        desc = tm.getPropertyDescriptorByName(getName());
         
         if (desc instanceof Index) {
             index = true;

@@ -87,8 +87,8 @@ public class QueryTest extends AbstractGalaxyTest {
 
         // Try out search!
         Query q = new Query(Artifact.class)
-            .add(OpRestriction.in("phase", 
-                                Arrays.asList(new String[] { "Default:Created", "Default:Developed" })));
+            .add(OpRestriction.in("primary.lifecycle.phase", 
+                     Arrays.asList(new String[] { "Default:Created", "Default:Developed" })));
         Set results = registry.search(q).getResults();
 
         assertEquals(1, results.size());
@@ -110,25 +110,25 @@ public class QueryTest extends AbstractGalaxyTest {
         assertEquals(1, results.size());
         
         // search by lifecycle
-        q = new Query(Artifact.class).add(OpRestriction.eq("phase", "Default:Created"));
+        q = new Query(Artifact.class).add(OpRestriction.eq("primary.lifecycle.phase", "Default:Created"));
         results = registry.search(q).getResults();
     
         assertEquals(1, results.size());
 
-        q = new Query(Artifact.class).add(OpRestriction.eq("lifecycle", "Default"));
+        q = new Query(Artifact.class).add(OpRestriction.eq("primary.lifecycle", "Default"));
         results = registry.search(q).getResults();
     
         assertEquals(1, results.size());
         
         q = new Query(Artifact.class)
-            .add(OpRestriction.in("phase", 
+            .add(OpRestriction.in("primary.lifecycle.phase", 
                                 Arrays.asList(new String[] { "Default:XXXX", "Default:Developed" })));
         results = registry.search(q).getResults();
     
         assertEquals(0, results.size());
         
         q = new Query(Artifact.class)
-            .add(OpRestriction.in("lifecycle", 
+            .add(OpRestriction.in("primary.lifecycle", 
                                 Arrays.asList(new String[] { "Default", "notinthisone" })));
         results = registry.search(q).getResults();
     

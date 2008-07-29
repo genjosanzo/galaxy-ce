@@ -1,47 +1,5 @@
 package org.mule.galaxy.impl.jcr;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.ArtifactTypeDao;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.ContentService;
-import org.mule.galaxy.Dao;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.Entry;
-import org.mule.galaxy.EntryResult;
-import org.mule.galaxy.EntryVersion;
-import org.mule.galaxy.Item;
-import org.mule.galaxy.LinkType;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.XmlContentHandler;
-import org.mule.galaxy.activity.ActivityManager;
-import org.mule.galaxy.collab.CommentManager;
-import org.mule.galaxy.event.EntryCreatedEvent;
-import org.mule.galaxy.event.EntryDeletedEvent;
-import org.mule.galaxy.event.EntryVersionCreatedEvent;
-import org.mule.galaxy.event.EntryVersionDeletedEvent;
-import org.mule.galaxy.event.EventManager;
-import org.mule.galaxy.event.WorkspaceDeletedEvent;
-import org.mule.galaxy.index.IndexManager;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.PolicyException;
-import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.security.AccessControlManager;
-import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.Permission;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.security.UserManager;
-import org.mule.galaxy.util.BundleUtils;
-import org.mule.galaxy.util.Message;
-import org.mule.galaxy.util.SecurityUtils;
-import org.mule.galaxy.workspace.WorkspaceManager;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -50,6 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.activation.MimeType;
@@ -75,6 +34,51 @@ import javax.xml.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.util.ISO9075;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.ArtifactTypeDao;
+import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.ContentService;
+import org.mule.galaxy.Dao;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.Entry;
+import org.mule.galaxy.EntryResult;
+import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.LinkType;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.XmlContentHandler;
+import org.mule.galaxy.activity.ActivityManager;
+import org.mule.galaxy.collab.CommentManager;
+import org.mule.galaxy.event.EntryCreatedEvent;
+import org.mule.galaxy.event.EntryDeletedEvent;
+import org.mule.galaxy.event.EntryVersionCreatedEvent;
+import org.mule.galaxy.event.EntryVersionDeletedEvent;
+import org.mule.galaxy.event.EventManager;
+import org.mule.galaxy.event.WorkspaceDeletedEvent;
+import org.mule.galaxy.impl.lifecycle.LifecycleExtension;
+import org.mule.galaxy.index.IndexManager;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.security.Permission;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.security.UserManager;
+import org.mule.galaxy.type.PropertyDescriptor;
+import org.mule.galaxy.type.TypeManager;
+import org.mule.galaxy.util.BundleUtils;
+import org.mule.galaxy.util.Message;
+import org.mule.galaxy.util.SecurityUtils;
+import org.mule.galaxy.workspace.WorkspaceManager;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
@@ -118,6 +122,8 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     
     private Registry registry;
 
+    private TypeManager typeManager;
+    
     public String getId() {
         return "local";
     }
@@ -178,21 +184,8 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     protected Artifact buildArtifact(Node node)
         throws ItemNotFoundException, AccessDeniedException, RepositoryException {
         Node wNode = node.getParent();
-        JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(this, wNode), node, this);
-
-        setupContentHandler(artifact);
-
-        return artifact;
-    }
-
-    protected void setupContentHandler(JcrArtifact artifact) {
-        ContentHandler ch = null;
-        if (artifact.getDocumentType() != null) {
-            ch = contentService.getContentHandler(artifact.getDocumentType());
-        } else {
-            ch = contentService.getContentHandler(artifact.getContentType());
-        }
-        artifact.setContentHandler(ch);
+        
+        return new JcrArtifact(new JcrWorkspace(this, wNode), node, this);
     }
     
     public Collection<Workspace> getWorkspaces() throws RegistryException, AccessException {
@@ -209,7 +202,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                     workspaceCol.add(wkspc);
                 }
                 
-                Collections.sort(workspaceCol, new WorkspaceComparator());
+                Collections.sort(workspaceCol, new ItemComparator());
             }
             return workspaceCol;
         } catch (RepositoryException e) {
@@ -346,28 +339,11 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                     // Add it as the most recent version
                     jcrArtifact.getVersions().add(next);
                     
-                    Lifecycle lifecycle = jcrArtifact.getParent().getDefaultLifecycle();
-                    next.setPhase(lifecycle.getInitialPhase());        
+                    initializeLifecycle(jcrArtifact, next);        
                     
                     ch.addMetadata(next);
                     
-                    try {
-                        Property pNames = previousNode.getProperty(AbstractJcrItem.PROPERTIES);
-                    
-                        for (Value name : pNames.getValues()) {
-                            Property prop = previousNode.getProperty(name.getString());
-                            
-                            if (prop.getDefinition().isMultiple()) {
-                                versionNode.setProperty(prop.getName(), prop.getValues());
-                            } else {
-                                versionNode.setProperty(prop.getName(), prop.getValue());
-                            }
-                        }
-                        
-                        versionNode.setProperty(pNames.getName(), pNames.getValues());
-                    } catch (PathNotFoundException e) {
-                        // ignore?
-                    }
+                    copyProperties(previousNode, versionNode);
 
                     EntryResult result = approve(session, artifact, previousLatest, next, user);
 
@@ -387,6 +363,22 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
         });
     }
 
+    protected void initializeLifecycle(Entry entry, EntryVersion v) {
+        Lifecycle lifecycle = entry.getParent().getDefaultLifecycle();
+        
+        for (PropertyDescriptor pd : entry.getType().getProperties()) {
+            if (pd.getExtension() instanceof LifecycleExtension) {
+                try {
+                    v.setProperty(pd.getProperty(), lifecycle.getInitialPhase());
+                } catch (PropertyException e) {
+                    throw new RuntimeException(e);
+                } catch (PolicyException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+    
     public EntryResult newVersion(final Entry entry, final String versionLabel) 
     	throws RegistryException, PolicyException, DuplicateItemException, AccessException {
 	accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, entry);
@@ -429,28 +421,11 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                 // Add it as the most recent version
                 jcrArtifact.getVersions().add(next);
                 
-                Lifecycle lifecycle = jcrArtifact.getParent().getDefaultLifecycle();
-                next.setPhase(lifecycle.getInitialPhase());        
+                initializeLifecycle(entry, next);
                 
-                try {
-                    Property pNames = previousNode.getProperty(AbstractJcrItem.PROPERTIES);
+                copyProperties(previousNode, versionNode);
                 
-                    for (Value name : pNames.getValues()) {
-                        Property prop = previousNode.getProperty(name.getString());
-                        
-                        if (prop.getDefinition().isMultiple()) {
-                            versionNode.setProperty(prop.getName(), prop.getValues());
-                        } else {
-                            versionNode.setProperty(prop.getName(), prop.getValue());
-                        }
-                    }
-                    
-                    versionNode.setProperty(pNames.getName(), pNames.getValues());
-                } catch (PathNotFoundException e) {
-                    // ignore?
-                }
-                
-                List<ApprovalMessage> approvals = approve(previousLatest, next);
+                Map<Item, List<ApprovalMessage>> approvals = approve(next);
 
                 session.save();
 
@@ -535,6 +510,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                 
                 JcrArtifact artifact = new JcrArtifact(workspace, artifactNode, registry);
                 artifact.setName(name);
+                artifact.setType(typeManager.getDefaultType());
                 
                 ContentHandler ch = initializeContentHandler(artifact, name, contentType);
                 
@@ -578,8 +554,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                     
                     jcrVersion.addLinks(dependencies, true, linkTypeDao.get(LinkType.DEPENDS));
                     
-                    Lifecycle lifecycle = workspace.getDefaultLifecycle();
-                    jcrVersion.setPhase(lifecycle.getInitialPhase());                    
+                    initializeLifecycle(artifact, jcrVersion);            
                     
                     List<EntryVersion> versions = new ArrayList<EntryVersion>();
                     versions.add(jcrVersion);
@@ -684,6 +659,14 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
         return ch.read(inputStream, workspace);
     }
 
+    protected Map<Item, List<ApprovalMessage>> approve(Item item) {
+        try {
+            return policyManager.approve(item);
+        } catch (PolicyException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public EntryResult newEntry(final Workspace workspace, final String name, final String versionLabel)
         throws RegistryException, PolicyException, DuplicateItemException {
         
@@ -715,8 +698,9 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                 // See JCR-696
                 versionNode.setProperty(JcrVersion.VERSION, versionLabel);
                 
-                JcrArtifact artifact = new JcrArtifact(workspace, artifactNode, registry);
-                artifact.setName(name);
+                JcrEntry entry = new JcrEntry(workspace, artifactNode, registry);
+                entry.setName(name);
+                entry.setType(typeManager.getDefaultType());
                 
                 // set up the initial version
                 Calendar now = Calendar.getInstance();
@@ -725,31 +709,30 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                 versionNode.setProperty(JcrVersion.LATEST, true);
                 versionNode.setProperty(JcrVersion.ENABLED, true);
                 
-                JcrEntryVersion version = new JcrEntryVersion(artifact, versionNode);
+                JcrEntryVersion version = new JcrEntryVersion(entry, versionNode);
     
                 version.setAuthor(user);
                 version.setLatest(true);
                 version.setDefault(true);
                 
-                Lifecycle lifecycle = workspace.getDefaultLifecycle();
-                version.setPhase(lifecycle.getInitialPhase());                    
+                initializeLifecycle(entry, version);
                 
                 List<EntryVersion> versions = new ArrayList<EntryVersion>();
                 versions.add(version);
-                artifact.setVersions(versions);
+                entry.setVersions(versions);
 
                 if (log.isDebugEnabled())
                 {
-                    log.debug("Created artifact " + artifact.getId());
+                    log.debug("Created artifact " + entry.getId());
                 }
 
-                List<ApprovalMessage> approvals = approve(null, version);
+                Map<Item, List<ApprovalMessage>> approvals = approve(version);
 
                 // save this so the indexer will work
                 session.save();
 
                 // fire the event
-                EntryResult result = new EntryResult(artifact, version, approvals);
+                EntryResult result = new EntryResult(entry, version, approvals);
                 EntryCreatedEvent event = new EntryCreatedEvent(result.getEntry().getId(),
                 	result.getEntryVersion().getPath());
                 event.setUser(SecurityUtils.getCurrentUser());
@@ -766,7 +749,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                                 JcrVersion next,
                                 User user)
         throws RegistryException, RepositoryException {
-        List<ApprovalMessage> approvals = approve(previous, next);
+        Map<Item, List<ApprovalMessage>> approvals = approve(next);
 
         // save this so the indexer will work
         session.save();
@@ -778,23 +761,6 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
         session.save();
         
         return new EntryResult(artifact, next, approvals);
-    }
-
-    private List<ApprovalMessage> approve(EntryVersion previous, EntryVersion next) {
-        boolean approved = true;
-        
-        List<ApprovalMessage> approvals = policyManager.approve(previous, next);
-        for (ApprovalMessage a : approvals) {
-            if (!a.isWarning()) {
-                approved = false;
-                break;
-            }
-        }
-        
-        if (!approved) {
-            throw new RuntimeException(new PolicyException(approvals));
-        }
-        return approvals;
     }
 
     protected String escapeNodeName(String right) {
@@ -811,40 +777,32 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     
 
     public void delete(Item item) throws RegistryException, AccessException {
-        if (item instanceof ArtifactVersion) {
-            delete((ArtifactVersion) item);
-        } else
-            if (item instanceof Artifact) {
-                delete((Artifact) item);
-            } else
-                if (item instanceof Workspace) {
-                    delete((Workspace) item);
-                } else
-                    if (item instanceof Entry) {
-                        //delete((ArtifactVersion) item);
-                    } else
-                        if (item instanceof EntryVersion) {
-                            //delete((ArtifactVersion) item);
-                        }
+        if (item instanceof EntryVersion) {
+            delete((EntryVersion)item);
+        } else if (item instanceof Entry) {
+            delete((Entry)item);
+        } else if (item instanceof Workspace) {
+            delete((Workspace)item);
+        }
     }
 
-    public void delete(final ArtifactVersion version) throws RegistryException, AccessException {
+    public void delete(final EntryVersion version) throws RegistryException, AccessException {
         accessControlManager.assertAccess(Permission.DELETE_ARTIFACT, version.getParent());
 
         executeWithRegistryException(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 try {
-                    Artifact artifact = (Artifact) version.getParent();
+                    Entry entry = version.getParent();
 
-                    if (artifact.getVersions().size() == 1) {
-                        delete(artifact);
+                    if (entry.getVersions().size() == 1) {
+                        delete(entry);
                         return null;
                     }
                     
-                    artifact.getVersions().remove(version);
+                    entry.getVersions().remove(version);
                     
                     if (((JcrVersion)version).isLatest()) {
-                        JcrVersion newLatest = (JcrVersion) artifact.getVersions().get(0);
+                        JcrVersion newLatest = (JcrVersion) entry.getVersions().get(0);
                         
                         newLatest.setLatest(true);
                     }
@@ -853,7 +811,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     
                     ((JcrVersion) version).getNode().remove();
 
-                    final String path = artifact.getPath();
+                    final String path = entry.getPath();
     
                     session.save();
 
@@ -872,13 +830,13 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
         });
     }
 
-    public void delete(final Artifact artifact) throws RegistryException, AccessException {
-        accessControlManager.assertAccess(Permission.DELETE_ARTIFACT, artifact);
+    public void delete(final Entry entry) throws RegistryException, AccessException {
+        accessControlManager.assertAccess(Permission.DELETE_ARTIFACT, entry);
 
         executeWithRegistryException(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                String path = artifact.getPath();
-                ((JcrArtifact) artifact).getNode().remove();
+                String path = entry.getPath();
+                ((JcrEntry) entry).getNode().remove();
 
                 session.save();
 
@@ -897,8 +855,8 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
         executeWithPolicy(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 
-                if (enabled && version instanceof ArtifactVersion) {
-                    approve((ArtifactVersion) version.getPrevious(), (ArtifactVersion) version);
+                if (enabled && version instanceof EntryVersion) {
+                    approve((EntryVersion) version);
                 }
                 
                 ((JcrVersion) version).setEnabledInternal(enabled);
@@ -1113,4 +1071,34 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     public void setEventManager(EventManager eventManager) {
         this.eventManager = eventManager;
     }
+
+    public TypeManager getTypeManager() {
+        return typeManager;
+    }
+
+    public void setTypeManager(TypeManager typeManager) {
+        this.typeManager = typeManager;
+    }
+
+    private void copyProperties(Node previousNode, Node versionNode) throws RepositoryException,
+        ValueFormatException, VersionException, LockException, ConstraintViolationException {
+        try {
+            Property pNames = previousNode.getProperty(AbstractJcrItem.PROPERTIES);
+        
+            for (Value name : pNames.getValues()) {
+                Property prop = previousNode.getProperty(name.getString());
+                
+                if (prop.getDefinition().isMultiple()) {
+                    versionNode.setProperty(prop.getName(), prop.getValues());
+                } else {
+                    versionNode.setProperty(prop.getName(), prop.getValue());
+                }
+            }
+            
+            versionNode.setProperty(pNames.getName(), pNames.getValues());
+        } catch (PathNotFoundException e) {
+            // ignore?
+        }
+    }
+
 }

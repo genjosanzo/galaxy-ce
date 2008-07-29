@@ -1,6 +1,11 @@
-package org.mule.galaxy;
+package org.mule.galaxy.type;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.extension.Extension;
+import org.mule.galaxy.mapping.OneToMany;
 
 public class PropertyDescriptor implements Identifiable {
     private String id;
@@ -8,6 +13,7 @@ public class PropertyDescriptor implements Identifiable {
     private String description;
     private boolean multivalued;
     private Extension extension;
+    private List<Class> appliesTo;
     
     public PropertyDescriptor(String property, String description, boolean multivalued) {
         super();
@@ -60,4 +66,19 @@ public class PropertyDescriptor implements Identifiable {
         this.extension = extension;
     }
 
+    @OneToMany(treatAsField=true)
+    public List<Class> getAppliesTo() {
+        return appliesTo;
+    }
+
+    public void setAppliesTo(List<Class> appliesTo) {
+        this.appliesTo = appliesTo;
+    }
+    
+    public void addAppliesTo(Class c) {
+	if (appliesTo == null) {
+	    appliesTo = new ArrayList<Class>();
+	}
+	appliesTo.add(c);
+    }
 }

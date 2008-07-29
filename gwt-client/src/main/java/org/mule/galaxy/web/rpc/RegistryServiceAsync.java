@@ -79,7 +79,7 @@ public interface RegistryServiceAsync {
                                String description, 
                                boolean multivalued, 
                                AsyncCallback callback);
-    
+
     void setProperty(String artifactId, 
                      String propertyName, 
                      String propertyValue,
@@ -88,6 +88,16 @@ public interface RegistryServiceAsync {
     void setProperty(Collection artifactIds, 
                      String propertyName,
                      String propertyValue,
+                     AsyncCallback callback);
+
+    void setProperty(String artifactId, 
+                     String propertyName, 
+                     Collection propertyValue,
+                     AsyncCallback callback);
+    
+    void setProperty(Collection artifactIds, 
+                     String propertyName,
+                     Collection propertyValue,
                      AsyncCallback callback);
 
     void deleteProperty(String artifactId,
@@ -102,20 +112,12 @@ public interface RegistryServiceAsync {
     
     void setDescription(String artifactId, String description, AsyncCallback callback);
     
-    void getPropertyList(AsyncCallback c);
-
     void savePropertyDescriptor(WPropertyDescriptor property, AsyncCallback c);
     
     void deletePropertyDescriptor(String id, AsyncCallback c);
 
     void getPropertyDescriptors(AsyncCallback abstractCallback);
     
-    void getProperties(AsyncCallback c);
-    
-    void getGovernanceInfo(String artifactVersionId, AsyncCallback c);
-    
-    void transition(String artifactVersionId, String nextPhaseId, AsyncCallback c);
-
     void transition(Collection artifactIds, String lifecycle, String phase, AsyncCallback c);
 
     void setDefault(String artifactVersionId, AsyncCallback c);

@@ -9,14 +9,17 @@
  */
 package org.mule.galaxy.plugins;
 
+import org.mule.galaxy.Item;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractPolicyTest extends AbstractGalaxyTest
 {
@@ -26,7 +29,7 @@ public abstract class AbstractPolicyTest extends AbstractGalaxyTest
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
 
-        ArtifactPolicy p = policyManager.getPolicy(policyId);
+        Policy p = policyManager.getPolicy(policyId);
         assertNotNull(p);
 
         policyManager.setActivePolicies(lifecycleManager.getDefaultLifecycle(), p);
@@ -45,16 +48,18 @@ public abstract class AbstractPolicyTest extends AbstractGalaxyTest
         {
             if (!fail)
             {
-                Collection<ApprovalMessage> approvals = e.getApprovals();
-                assertNotNull("Returned approval messages can't be null", approvals);
-                for (ApprovalMessage a : approvals)
-                {
-                    System.out.println(a.getMessage());
+                Map<Item, List<ApprovalMessage>> approvals = e.getPolicyFailures();
+                int count = 0;
+                for (List<ApprovalMessage> msgs : approvals.values()) {
+                    count += msgs.size();
+                    for (ApprovalMessage a : msgs) {
+                        System.out.println(a.getMessage());
+                    }
                 }
+                
+                assertEquals(1, count);
 
-                assertEquals(1, approvals.size());
-
-                ApprovalMessage a = approvals.iterator().next();
+                ApprovalMessage a = approvals.values().iterator().next().get(0);
                 assertFalse(a.isWarning());
                 assertNotNull(a.getMessage());
             }

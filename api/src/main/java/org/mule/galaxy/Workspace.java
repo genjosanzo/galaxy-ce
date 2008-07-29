@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.List;
 
 import javax.activation.MimeTypeParseException;
 
@@ -48,6 +49,8 @@ public interface Workspace extends Item {
     LifecycleManager getLifecycleManager();
     
     CommentManager getCommentManager();    
+
+    List<Item> getItems();
     
     /**
      * Creates an artifact from a Java representation of it (as opposed

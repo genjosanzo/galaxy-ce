@@ -6,10 +6,11 @@ import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.workspace.WorkspaceManager;
 
-public abstract class AbstractItem {
+public abstract class AbstractItem implements Item {
 
     protected String id;
     
@@ -23,8 +24,20 @@ public abstract class AbstractItem {
         this.metadata = metadata;
     }
 
+    public String getPath() {
+        return getParent().getPath() + getName();
+    }
+    
     public String getId() {
         return id;
+    }
+
+    public void setInternalProperty(String name, Object value) throws PropertyException, PolicyException {
+
+    }
+
+    public Object getInternalProperty(String name) {
+        return metadata.getInternalProperty(name);
     }
 
     public Iterator<PropertyInfo> getProperties() {

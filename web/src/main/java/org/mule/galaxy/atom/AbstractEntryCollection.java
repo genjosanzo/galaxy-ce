@@ -18,6 +18,9 @@
 
 package org.mule.galaxy.atom;
 
+import static org.mule.galaxy.util.AbderaUtils.newErrorMessage;
+import static org.mule.galaxy.util.AbderaUtils.throwMalformed;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -27,7 +30,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
@@ -66,15 +68,16 @@ import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.extension.AtomExtension;
+import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.lifecycle.TransitionException;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
+import org.mule.galaxy.type.PropertyDescriptor;
+import org.mule.galaxy.util.AbderaUtils;
+import org.mule.galaxy.util.SecurityUtils;
 
 public abstract class AbstractEntryCollection 
     extends AbstractEntityCollectionAdapter<EntryVersion> {
@@ -126,43 +129,39 @@ public abstract class AbstractEntryCollection
        
         for (Iterator<PropertyInfo> props = entryObj.getProperties(); props.hasNext();) {
             PropertyInfo p = props.next();
+            PropertyDescriptor pd = p.getPropertyDescriptor();
+            
             if (p.isVisible() || showHidden) {
-                Element prop = factory.newElement(new QName(NAMESPACE, "property"), metadata);
-                prop.setAttributeValue("name", p.getName());
-                prop.setAttributeValue("locked", new Boolean(p.isLocked()).toString());
-                
-                if (p.isVisible()) {
-                    prop.setAttributeValue("visible", new Boolean(p.isVisible()).toString());
-                }
-                
-                Object value = p.getValue();
-                if (value == null) {
-                    value = "";
-                }
-                
-                if (value instanceof Collection) {
-                    for (Object o : ((Collection) value)) {
-                        Element valueEl = factory.newElement(new QName(NAMESPACE, "value"), prop);
-                        
-                        valueEl.setText(o.toString());
-                    }
+                if (pd != null && pd.getExtension() instanceof AtomExtension) {
+                    ((AtomExtension) pd.getExtension()).annotateAtomEntry(entryObj, pd, atomEntry, factory);
                 } else {
-                    prop.setAttributeValue("value", value.toString());
+                    Element prop = factory.newElement(new QName(NAMESPACE, "property"), metadata);
+                    prop.setAttributeValue("name", p.getName());
+                    prop.setAttributeValue("locked", new Boolean(p.isLocked()).toString());
+                    
+                    if (p.isVisible()) {
+                        prop.setAttributeValue("visible", new Boolean(p.isVisible()).toString());
+                    }
+                    
+                    Object value = p.getValue();
+                    if (value == null) {
+                        value = "";
+                    }
+                    
+                    if (value instanceof Collection) {
+                        for (Object o : ((Collection) value)) {
+                            Element valueEl = factory.newElement(new QName(NAMESPACE, "value"), prop);
+                            
+                            valueEl.setText(o.toString());
+                        }
+                    } else {
+                        prop.setAttributeValue("value", value.toString());
+                    }
                 }
             }
         }
         
         atomEntry.addExtension(metadata);
-        
-        Element lifecycle = factory.newElement(new QName(NAMESPACE, "lifecycle"));
-        Phase phase = entryObj.getPhase();
-        lifecycle.setAttributeValue("name", phase.getLifecycle().getName());
-        lifecycle.setAttributeValue("phase", phase.getName());
-        
-        atomEntry.addExtension(lifecycle);
-        
-        buildAvailablePhases(phase, phase.getNextPhases(), "next-phases", lifecycle);
-        buildAvailablePhases(phase, phase.getPreviousPhases(), "previous-phases", lifecycle);
         
         Element version = factory.newElement(new QName(NAMESPACE, "version"));
         version.setAttributeValue("label", entryObj.getVersionLabel());
@@ -172,23 +171,6 @@ public abstract class AbstractEntryCollection
         atomEntry.addExtension(version);
         
         return link;
-    }
-
-    private Element buildAvailablePhases(Phase phase, Set<Phase> phases, String name, Element lifecycle) {
-        Element availPhases = factory.newElement(new QName(NAMESPACE, name), lifecycle);
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-        for (Phase p : phases) {
-            if (!first) {
-                sb.append(", ");
-            } else {
-                first = false;
-            }
-            
-            sb.append(p.getName());
-        }
-        availPhases.setText(sb.toString());
-        return availPhases;
     }
 
     @Override
@@ -261,53 +243,14 @@ public abstract class AbstractEntryCollection
         } catch (MimeTypeParseException e) {
             throw new ResponseContextException(500, e);
         } catch (PolicyException e) {
-            throw createArtifactPolicyExceptionResponse(e);
+            throw AbderaUtils.createArtifactPolicyExceptionResponse(e);
         } catch (AccessException e) {
             throw new ResponseContextException(401, e);
         }
     }
-
-    protected ResponseContextException createArtifactPolicyExceptionResponse(PolicyException e) {
-        final StringBuilder s = new StringBuilder();
-        s.append("<html><head><title>Artifact Policy Failure</title></head><body>");
-        
-        List<ApprovalMessage> approvals = e.getApprovals();
-        
-        for (ApprovalMessage m : approvals) {
-            if (m.isWarning()) {
-                s.append("<div class=\"warning\">");
-            } else {
-                s.append("<div class=\"failure\">");
-            }
-            
-            s.append(m.getMessage());
-            s.append("</div>");
-        }
-        
-        s.append("</body></html>");
-        SimpleResponseContext rc = new SimpleResponseContext() {
-            @Override
-            protected void writeEntity(Writer writer) throws IOException {
-                writer.write(s.toString());
-                writer.flush();
-            }
-
-            public boolean hasEntity() {
-                return true;
-            }
-        };
-        rc.setContentType("application/xhtml");
-        // bad request code
-        rc.setStatus(400);
-        
-        return new ResponseContextException(rc);
-    }
-
+    
     protected User getUser() {
-        UserDetailsWrapper wrapper = 
-            (UserDetailsWrapper) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = wrapper.getUser();
-        return user;
+        return SecurityUtils.getCurrentUser();
     }
 
     protected String getVersion(RequestContext request) throws ResponseContextException {
@@ -433,7 +376,7 @@ public abstract class AbstractEntryCollection
         } catch (RegistryException e) {
             throw new ResponseContextException(500, e);
         } catch (PolicyException e) {
-            throw createArtifactPolicyExceptionResponse(e);
+            throw AbderaUtils.createArtifactPolicyExceptionResponse(e);
         }
     }
 
@@ -441,16 +384,27 @@ public abstract class AbstractEntryCollection
         PolicyException, RegistryException {
         for (Element e : entry.getElements()) {
             QName q = e.getQName();
-            if (NAMESPACE.equals(q.getNamespaceURI())) {
-                if ("lifecycle".equals(q.getLocalPart())) {
-                    updateLifecycle(av, e);
-                } else if ("metadata".equals(q.getLocalPart())) {
+            
+            AtomExtension atomExt = getExtension(q);
+            if (atomExt != null) {
+                atomExt.updateItem(av, factory, e);
+            } else if (NAMESPACE.equals(q.getNamespaceURI())) {
+                if ("metadata".equals(q.getLocalPart())) {
                     updateMetadata(av, e);
                 } else if ("version".equals(q.getLocalPart())) {
                     updateVersion(av, e);
                 }
             }
         }
+    }
+
+    private AtomExtension getExtension(QName q) {
+        for (Extension e : registry.getExtensions()) {
+            if (e instanceof AtomExtension && ((AtomExtension) e).getUnderstoodElements().contains(q)) {
+                return (AtomExtension) e;
+            }
+        }
+        return null;
     }
 
     private void updateVersion(EntryVersion av, Element e) 
@@ -484,74 +438,6 @@ public abstract class AbstractEntryCollection
             }
         }
     }
-
-    private void updateLifecycle(EntryVersion av, Element e) throws ResponseContextException {
-        String name = e.getAttributeValue("name");
-        assertNotEmpty(name, "Lifecycle name attribute cannot be null.");
-        
-        String phaseName = e.getAttributeValue("phase");
-        assertNotEmpty(phaseName, "Lifecycle phase attribute cannot be null.");
-        
-        Phase current = av.getPhase();
-        if (name.equals(current.getLifecycle().getName()) 
-            && phaseName.equals(current.getName())) {
-            return;
-        }
-            
-        Workspace w = (Workspace) av.getParent().getParent();
-        LifecycleManager lifecycleManager = w.getLifecycleManager();
-        Lifecycle lifecycle = lifecycleManager.getLifecycle(name);
-        
-        if (lifecycle == null)
-            throwMalformed("Lifecycle \"" + name + "\" does not exist.");
-        
-        Phase phase = lifecycle.getPhase(phaseName);
-
-        if (phase == null)
-            throwMalformed("Lifecycle phase \"" + phaseName + "\" does not exist.");
-        
-        try {
-            lifecycleManager.transition(av, phase, getUser());
-        } catch (TransitionException e1) {
-            throwMalformed(e1.getMessage());
-        } catch (PolicyException e1) {
-            throw createArtifactPolicyExceptionResponse(e1);
-        }
-    }
-
-    protected void assertNotEmpty(String name, String message) throws ResponseContextException {
-        if (name == null || "".equals(name)) {
-            throwMalformed(message);
-        }
-    }
-
-    protected void throwMalformed(final String message) throws ResponseContextException {
-        throw newErrorMessage("Malformed Atom Entry", message, 400);
-    }
-
-    protected ResponseContextException newErrorMessage(final String title,
-                                   final String message, int status) throws ResponseContextException {
-        SimpleResponseContext rc = new SimpleResponseContext() {
-
-            @Override
-            protected void writeEntity(Writer writer) throws IOException {
-                writer.write("<html><head><title>)");
-                writer.write(title);
-                writer.write("</title></head><body><div class=\"error\">");
-                writer.write(message);
-                writer.write("</div></body></html>");
-            }
-
-            public boolean hasEntity() {
-                return true;
-            }
-        };
-        
-        rc.setStatus(status);
-        
-        return new ResponseContextException(rc);
-    }
-
     private void updateMetadata(EntryVersion av, Element e) throws ResponseContextException, PolicyException {
         for (Element propEl : e.getElements()) {
             String name = propEl.getAttributeValue("name");

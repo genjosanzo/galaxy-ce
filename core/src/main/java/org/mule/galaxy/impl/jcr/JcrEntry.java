@@ -25,13 +25,16 @@ import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
+import org.mule.galaxy.type.Type;
 import org.mule.galaxy.util.QNameUtil;
 import org.springmodules.jcr.JcrCallback;
 
@@ -39,6 +42,7 @@ public class JcrEntry extends AbstractJcrItem implements Entry {
     public static final String CREATED = "created";
     public static final String DESCRIPTION = "description";
     public static final String NAME = "name";
+    public static final String TYPE = "type";
     
     private List<EntryVersion> versions;
     private Workspace workspace;
@@ -87,6 +91,7 @@ public class JcrEntry extends AbstractJcrItem implements Entry {
     public String getDescription() {
         return getStringOrNull(DESCRIPTION);
     }
+
     
     public void setDescription(String desc) {
         try {
@@ -97,6 +102,26 @@ public class JcrEntry extends AbstractJcrItem implements Entry {
         }
     }
 
+    public Type getType() {
+        String id = getStringOrNull(TYPE);
+        
+        try {
+            return manager.getTypeManager().getType(id);
+        } catch (Exception e) {
+           throw new RuntimeException(e);
+        }
+    }
+    
+    public void setType(Type t) {
+        try {
+            node.setProperty(TYPE, t.getId());
+            update();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    
     public void setName(final String name) {
         try {
             

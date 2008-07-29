@@ -1,11 +1,11 @@
 package org.mule.galaxy.mule1.policy;
 
 
-import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.util.Constants;
 
 import java.util.Arrays;
@@ -19,7 +19,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 
-public class RequireJMXPolicy implements ArtifactPolicy
+public class RequireJMXPolicy extends AbstractMulePolicy
 {
     public static final String ID = "RequireJMXPolicy";
 
@@ -28,14 +28,9 @@ public class RequireJMXPolicy implements ArtifactPolicy
 
     public RequireJMXPolicy() throws XPathExpressionException {
         super();
-
-
         xpath = factory.newXPath().compile("/mule-configuration/agents/agent/@className = 'org.mule.management.agents.JmxAgent'");
     }
 
-    public boolean applies(Artifact a) {
-        return Constants.MULE_QNAME.equals(a.getDocumentType());
-    }
 
     public String getDescription() {
         return "Requires that Jmx Monitoring is enabled enabled.";
@@ -49,10 +44,10 @@ public class RequireJMXPolicy implements ArtifactPolicy
         return "Mule: Require JMX Policy";
     }
 
-    public Collection<ApprovalMessage> isApproved(Artifact a, ArtifactVersion previous, ArtifactVersion next) {
+    public Collection<ApprovalMessage> isApproved(Item item) {
         try {
 
-            if(!(Boolean) xpath.evaluate((Document) next.getData(), XPathConstants.BOOLEAN))
+            if(!(Boolean) xpath.evaluate((Document) ((ArtifactVersion) item).getData(), XPathConstants.BOOLEAN))
             {
                 return Arrays.asList(new ApprovalMessage("The Mule configuration does not have JMX support Enabled", false));
             }

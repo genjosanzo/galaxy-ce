@@ -3,6 +3,7 @@ package org.mule.galaxy.impl.workspace;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 
 import javax.activation.MimeTypeParseException;
 

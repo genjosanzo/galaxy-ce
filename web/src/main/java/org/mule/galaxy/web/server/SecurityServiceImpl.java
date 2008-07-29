@@ -239,7 +239,7 @@ public class SecurityServiceImpl implements SecurityService {
 
     public void applyPermissions(String itemId, Map groupToPermissionGrant) throws RPCException {
         try {
-            Item item = registry.getRegistryItem(itemId);
+            Item item = registry.getItemById(itemId);
             for (Iterator itr = groupToPermissionGrant.entrySet().iterator(); itr.hasNext();) {
                 Map.Entry e = (Map.Entry)itr.next();
                 
@@ -282,7 +282,7 @@ public class SecurityServiceImpl implements SecurityService {
         List<Group> groups = accessControlManager.getGroups();
         
         try {
-            Item item = registry.getRegistryItem(itemId);
+            Item item = registry.getItemById(itemId);
             
             for (Group g : groups) {
                 WGroup wgroup = toWeb(g);

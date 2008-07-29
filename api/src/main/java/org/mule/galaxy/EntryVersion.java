@@ -18,16 +18,16 @@ public interface EntryVersion extends Item {
     
     Calendar getUpdated();
     
+    Entry getParent();
+    
     /**
      * Get the version label - i.e. "1.0".
      * @return
      */
     String getVersionLabel();
     
-    Phase getPhase();
-    
     EntryVersion getPrevious();
-    
+
     /**
      * The author of this version. They may or may not be the actual author, but they
      * are the entity responsible for adding it to the repository.

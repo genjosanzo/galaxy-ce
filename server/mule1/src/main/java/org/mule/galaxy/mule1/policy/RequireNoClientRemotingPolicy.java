@@ -1,12 +1,5 @@
 package org.mule.galaxy.mule1.policy;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactPolicy;
-import org.mule.galaxy.util.Constants;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,9 +9,14 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.policy.ApprovalMessage;
+
 import org.w3c.dom.Document;
 
-public class RequireNoClientRemotingPolicy implements ArtifactPolicy
+public class RequireNoClientRemotingPolicy extends AbstractMulePolicy
 {
     public static final String ID = "RequireNoClientRemotingPolicy";
 
@@ -29,10 +27,6 @@ public class RequireNoClientRemotingPolicy implements ArtifactPolicy
         super();
 
         xpath = factory.newXPath().compile("/mule-configuration/mule-environment-properties/@serverUrl = ''");
-    }
-
-    public boolean applies(Artifact a) {
-        return Constants.MULE_QNAME.equals(a.getDocumentType());
     }
 
     public String getDescription() {
@@ -47,10 +41,10 @@ public class RequireNoClientRemotingPolicy implements ArtifactPolicy
         return "Mule: Require No Client Remoting Policy";
     }
 
-    public Collection<ApprovalMessage> isApproved(Artifact a, ArtifactVersion previous, ArtifactVersion next) {
+    public Collection<ApprovalMessage> isApproved(Item item) {
         try {
 
-            if(!(Boolean) xpath.evaluate((Document) next.getData(), XPathConstants.BOOLEAN))
+            if(!(Boolean) xpath.evaluate((Document) ((ArtifactVersion) item).getData(), XPathConstants.BOOLEAN))
             {
                 return Arrays.asList(new ApprovalMessage("The Mule configuration has the serverUrl set for client remoting. set /mule-configuration/mule-environment-properties/@serverUrl to \"\"", false));
             }

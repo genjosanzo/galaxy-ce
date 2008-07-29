@@ -22,15 +22,15 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.util.Map;
 
-public class ApplyPolicyException extends Exception implements IsSerializable {
+public class WPolicyException extends Exception implements IsSerializable {
     
     private Map artifactToMessages;
 
-    public ApplyPolicyException() {
+    public WPolicyException() {
         super();
     }
 
-    public ApplyPolicyException(Map artifactToMessages) {
+    public WPolicyException(Map artifactToMessages) {
         super();
         this.artifactToMessages = artifactToMessages;
     }

@@ -39,6 +39,9 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * A panel for editing the name of a registry entry.
+ */
 public class NameEditPanel extends Composite {
 
     private InlineFlowPanel panel;

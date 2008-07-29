@@ -18,6 +18,8 @@
 
 package org.mule.galaxy.impl.plugin;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Registry;
@@ -26,9 +28,7 @@ import org.mule.galaxy.plugin.DowngradeNotSupportedException;
 import org.mule.galaxy.plugin.Plugin;
 import org.mule.galaxy.plugin.UpgradeNotSupportedException;
 import org.mule.galaxy.render.RendererManager;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.type.TypeManager;
 
 /**
  * Makes it easy to add indexes and views for a new artifact type.
@@ -39,7 +39,8 @@ public abstract class AbstractArtifactPlugin implements Plugin {
     protected Dao<ArtifactType> artifactTypeDao;
     protected RendererManager rendererManager;
     protected IndexManager indexManager;
-
+    protected TypeManager typeManager;
+    
     protected final Log log = LogFactory.getLog(getClass());
 
     public void setRegistry(Registry registry) {
@@ -56,6 +57,10 @@ public abstract class AbstractArtifactPlugin implements Plugin {
 
     public void setIndexManager(IndexManager indexManager) {
         this.indexManager = indexManager;
+    }
+
+    public void setTypeManager(TypeManager typeManager) {
+        this.typeManager = typeManager;
     }
 
     public String getName() {

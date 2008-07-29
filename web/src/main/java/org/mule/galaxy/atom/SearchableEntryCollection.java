@@ -51,6 +51,7 @@ import org.mule.galaxy.Workspace;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
+import static org.mule.galaxy.util.AbderaUtils.*;
 
 public class SearchableEntryCollection extends AbstractEntryCollection {
 

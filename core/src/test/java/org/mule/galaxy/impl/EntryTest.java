@@ -1,21 +1,20 @@
 package org.mule.galaxy.impl;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
-import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.EntryVersion;
-import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.contact.Contact;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.extension.IdentifiableExtensionQueryBuilder;
+import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.test.AbstractGalaxyTest;
+import org.mule.galaxy.type.PropertyDescriptor;
 
 public class EntryTest extends AbstractGalaxyTest {
     public void testEntries() throws Exception {
@@ -33,6 +32,9 @@ public class EntryTest extends AbstractGalaxyTest {
         ev.setProperty("serviceType", "HTTP");
     
         assertEquals("1.0", ev.getVersionLabel());
+        
+        Phase phase = getPhase(ev);
+        assertNotNull(phase);
         
         r = e.newVersion("2.0");
         assertNotNull(r);
@@ -91,10 +93,10 @@ public class EntryTest extends AbstractGalaxyTest {
 	pd.setDescription("Primary Contact");
 	pd.setProperty("contact");
 	
-	registry.savePropertyDescriptor(pd);
+	typeManager.savePropertyDescriptor(pd);
 	assertNotNull(pd.getId());
 	
-	pd = registry.getPropertyDescriptor(pd.getId());
+	pd = typeManager.getPropertyDescriptor(pd.getId());
 	assertNotNull(pd);
 	assertNotNull(pd.getExtension());
 	
@@ -111,8 +113,7 @@ public class EntryTest extends AbstractGalaxyTest {
 	IdentifiableExtensionQueryBuilder qb = (IdentifiableExtensionQueryBuilder) applicationContext.getBean("contactQueryBuilder");
 	assertNotNull(qb);
 	
-	String[] propArray = qb.getProperties();
-	List<String> props = Arrays.asList(propArray);
+	Collection<String> props = qb.getProperties();
 	
 	assertTrue(props.contains("contact.name"));
 	assertTrue(props.contains("contact.email"));

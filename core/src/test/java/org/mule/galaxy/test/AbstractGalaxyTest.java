@@ -23,6 +23,7 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.EntryResult;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.LinkType;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
@@ -34,6 +35,7 @@ import org.mule.galaxy.impl.index.IndexManagerImpl;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.plugin.PluginManager;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.FunctionRegistry;
@@ -41,6 +43,7 @@ import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
+import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.view.ArtifactViewManager;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -69,6 +72,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     protected AccessControlManager accessControlManager;
     protected ArtifactViewManager artifactViewManager;
     protected Dao<LinkType> linkTypeManager;
+    protected TypeManager typeManager;
     
     private boolean participate;
     
@@ -170,11 +174,15 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         Workspace workspace = getTestWorkspace();
         
         EntryResult ar = workspace.createArtifact("application/xml", 
-                                                     "hello-config.xml", 
-                                                     "0.1", helloWsdl, getAdmin());
+                                                  "hello-config.xml", 
+                                                  "0.1", helloWsdl, getAdmin());
         return (Artifact) ar.getEntry();
     }
 
+    protected Phase getPhase(Item item) {
+        return (Phase) item.getProperty(Registry.PRIMARY_LIFECYCLE);
+    }
+    
     private void clearJcrRepository() {
         try {
             Session session = repository.login(new SimpleCredentials("username", "password".toCharArray()));

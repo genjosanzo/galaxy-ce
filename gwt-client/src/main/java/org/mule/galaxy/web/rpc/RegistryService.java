@@ -23,6 +23,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -112,7 +113,7 @@ public interface RegistryService extends RemoteService {
     void deleteIndex(String id, boolean removeArtifactMetadata) throws RPCException;
     
     /**
-     * @gwt.typeArgs <org.mule.galaxy.web.rpc.DependencyInfo>
+     * @gwt.typeArgs <org.mule.galaxy.web.rpc.LinkInfo>
      * @return
      * @throws Exception 
      */
@@ -131,11 +132,25 @@ public interface RegistryService extends RemoteService {
     
     void setProperty(String artifactId, 
                      String propertyName, 
-                     String propertyValue) throws RPCException, ItemNotFoundException;
+                     String propertyValue) throws RPCException, ItemNotFoundException, WPolicyException;
     
+    /**
+     * @gwt.typeArgs propertyValue <java.lang.String>
+     */
+    void setProperty(String artifactId, 
+                     String propertyName, 
+                     Collection propertyValue) throws RPCException, WPolicyException, ItemNotFoundException;
+        
     void setProperty(Collection artifactIds,
                      String propertyName,
-                     String propertyValue) throws RPCException, ItemNotFoundException;
+                     String propertyValue) throws RPCException, WPolicyException, ItemNotFoundException;
+    
+    /**
+     * @gwt.typeArgs propertyValue <java.lang.String>
+     */
+    void setProperty(Collection artifactIds,
+                     String propertyName,
+                     Collection propertyValue) throws RPCException, WPolicyException, ItemNotFoundException;
 
     void deleteProperty(String artifactId, 
                         String propertyName) throws RPCException, ItemNotFoundException;
@@ -149,36 +164,23 @@ public interface RegistryService extends RemoteService {
 
     WPropertyDescriptor getPropertyDescriptor(String id) throws RPCException, ItemNotFoundException;
     
-    Collection getPropertyDescriptors() throws RPCException;
+    List getPropertyDescriptors() throws RPCException;
     
     void move(String artifactId, String workspaceId, String name) throws RPCException, ItemNotFoundException;
     
     void delete(String artifactId) throws RPCException, ItemNotFoundException;
 
     boolean deleteArtifactVersion(String artifactVersionId) throws RPCException, ItemNotFoundException;
-    
-    Map getPropertyList() throws RPCException;
-    
-    /**
-     * @gwt.typeArgs <java.lang.String,java.lang.String>
-     * @return
-     * @throws Exception 
-     */
-    Map getProperties() throws RPCException;
 
     WComment addComment(String artifactId, String parentCommentId, String text) throws RPCException, ItemNotFoundException;
     
     void setDescription(String artifactId, String description) throws RPCException, ItemNotFoundException;
 
-    WGovernanceInfo getGovernanceInfo(String artifactVersionId) throws RPCException, ItemNotFoundException;
+    void setDefault(String artifactVersionId) throws RPCException, WPolicyException, ItemNotFoundException;
 
-    TransitionResponse setDefault(String artifactVersionId) throws RPCException, ItemNotFoundException;
+    void setEnabled(String artifactVersionId, boolean enabled) throws RPCException, WPolicyException, ItemNotFoundException;
 
-    TransitionResponse setEnabled(String artifactVersionId, boolean enabled) throws RPCException, ItemNotFoundException;
-    
-    TransitionResponse transition(String artifactVersionId, String nextPhase) throws RPCException, ItemNotFoundException;
-
-    TransitionResponse transition(Collection artifactIds, String lifecycle, String phase) throws RPCException, ItemNotFoundException;
+    void transition(Collection artifactIds, String lifecycle, String phase) throws RPCException, WPolicyException, ItemNotFoundException;
 
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WArtifactPolicy>
@@ -215,11 +217,11 @@ public interface RegistryService extends RemoteService {
     Collection getActivePoliciesForPhase(String lifecycle, String phase, String workspaceId) throws RPCException;
 
     /**
-     * @throws ApplyPolicyException 
+     * @throws WPolicyException 
      * @throws ItemNotFoundException 
      * @gwt.typeArgs ids <java.lang.String>
      */
-    void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids) throws RPCException, ApplyPolicyException, ItemNotFoundException;
+    void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids) throws RPCException, WPolicyException, ItemNotFoundException;
 
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WActivity>

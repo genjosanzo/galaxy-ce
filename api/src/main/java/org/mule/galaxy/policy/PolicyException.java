@@ -1,39 +1,30 @@
 package org.mule.galaxy.policy;
 
-import org.mule.galaxy.GalaxyException;
-import org.mule.galaxy.util.BundleUtils;
-import org.mule.galaxy.util.Message;
-
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.Map;
 
-import org.apache.commons.lang.SystemUtils;
+import org.mule.galaxy.Item;
 
-public class PolicyException extends GalaxyException {
+public class PolicyException extends Exception {
+    private Map<Item,List<ApprovalMessage>> policyFailures;
 
-    private static final ResourceBundle BUNDLE = BundleUtils.getBundle(PolicyException.class);
-    
-    private List<ApprovalMessage> approvals = Collections.emptyList();
-
-    public PolicyException(List<ApprovalMessage> approvals) {
-        super(new Message("ARTIFACT_NOT_APPROVED", BUNDLE));
-        this.approvals = approvals;
+    public PolicyException(Map<Item, List<ApprovalMessage>> policyFailures) {
+        super();
+        this.policyFailures = policyFailures;
     }
 
-    public List<ApprovalMessage> getApprovals() {
-        return approvals;
+    public PolicyException(Item item, String string) {
+	this.policyFailures = new HashMap<Item, List<ApprovalMessage>>();
+	
+	List<ApprovalMessage> msgs = new ArrayList<ApprovalMessage>();
+	msgs.add(new ApprovalMessage(string, false));
+	
+	policyFailures.put(item, msgs);
     }
 
-    @Override
-    public String toString()
-    {
-        StringBuilder messages = new StringBuilder(approvals.size() * 100);
-        for (ApprovalMessage approval : approvals)
-        {
-            messages.append(approval.toString()).append(SystemUtils.LINE_SEPARATOR);
-        }
-
-        return super.toString() + SystemUtils.LINE_SEPARATOR + messages.toString();
+    public Map<Item, List<ApprovalMessage>> getPolicyFailures() {
+        return policyFailures;
     }
 }

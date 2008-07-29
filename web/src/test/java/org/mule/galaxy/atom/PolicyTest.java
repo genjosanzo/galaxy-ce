@@ -19,9 +19,10 @@ import org.apache.commons.io.IOUtils;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.policy.ArtifactCollectionPolicyException;
-import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.policy.wsdl.BasicProfilePolicy;
 import org.mule.galaxy.test.AbstractAtomTest;
 import org.mule.galaxy.util.DOMUtils;
 import org.springmodules.jcr.JcrCallback;
@@ -45,7 +46,7 @@ public class PolicyTest extends AbstractAtomTest {
                     
                     policyManager.setActivePolicies(workspace, 
                                                     lifecycleManager.getDefaultLifecycle(), 
-                                                    policyManager.getPolicies().toArray(new ArtifactPolicy[0]));
+                                                    policyManager.getPolicy(BasicProfilePolicy.WSI_BP_1_1_WSDL));
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -80,8 +81,11 @@ public class PolicyTest extends AbstractAtomTest {
         Node body = DOMUtils.getChild(root, "body");
         assertNotNull(body);
         
-        Node failure = DOMUtils.getChild(body, "div");
-        assertNotNull(body);
+        Node artifact = DOMUtils.getChild(body, "div");
+        assertNotNull(artifact);
+        
+        Node failure = DOMUtils.getChild(artifact, "div");
+        assertNotNull(failure);
         
         String content = DOMUtils.getContent(failure);
         

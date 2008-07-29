@@ -24,7 +24,7 @@ public class SimpleQueryBuilder extends QueryBuilder {
         
         if (operator.equals(Operator.LIKE)) {
             query.append("jcr:like(@")
-            .append(property)
+            .append(getProperty(property))
             .append(", '%")
             .append(right)
             .append("%')");
@@ -47,7 +47,7 @@ public class SimpleQueryBuilder extends QueryBuilder {
                     }
     
                     query.append("@")
-                         .append(property)
+                         .append(getProperty(property))
                          .append("='")
                          .append(value)
                          .append("'");
@@ -56,7 +56,7 @@ public class SimpleQueryBuilder extends QueryBuilder {
             }
         } else {
             query.append("@")
-                .append(property)
+                .append(getProperty(property))
                 .append("='")
                 .append(getValueAsString(right, property, operator))
                 .append("'");
@@ -65,6 +65,10 @@ public class SimpleQueryBuilder extends QueryBuilder {
         if (not) {
             query.append(")");
         }
+    }
+
+    protected String getProperty(String property) {
+        return property;
     }
 
     protected String getValueAsString(Object o, String property, Operator operator) throws QueryException {

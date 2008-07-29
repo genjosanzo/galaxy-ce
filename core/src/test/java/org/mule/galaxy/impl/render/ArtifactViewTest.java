@@ -14,14 +14,14 @@ public class ArtifactViewTest extends AbstractGalaxyTest {
         
         CustomArtifactRenderer view = (CustomArtifactRenderer) rendererManager.getArtifactRenderer(Constants.WSDL_DEFINITION_QNAME);
         
-        assertEquals(9, view.getColumns().size());
+        assertEquals(8, view.getColumns().size());
         
         // Import a document which should now be indexed
         Artifact artifact = importHelloWsdl();
         
         // Check and see if our view works
         String[] columns = view.getColumnNames();
-        assertEquals(9, columns.length);
+        assertEquals(8, columns.length);
         
         String name = artifact.getName();
         assertEquals(name, view.getColumnValue(artifact, 0));
@@ -29,8 +29,7 @@ public class ArtifactViewTest extends AbstractGalaxyTest {
         assertEquals("application/xml", view.getColumnValue(artifact, 2));
         assertEquals("http://mule.org/hello_world", view.getColumnValue(artifact, 3));
         assertEquals("0.1", view.getColumnValue(artifact, 4));
-        assertEquals("Created", view.getColumnValue(artifact, 5));
-        assertEquals("1", view.getColumnValue(artifact, 6));
+        assertEquals("1", view.getColumnValue(artifact, 5));
     }
     
 }

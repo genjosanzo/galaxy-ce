@@ -18,8 +18,6 @@
 
 package org.mule.galaxy.web.client.registry;
 
-import org.mule.galaxy.web.rpc.SearchPredicate;
-
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -30,8 +28,13 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.Arrays;
-import java.util.Map;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import org.mule.galaxy.web.client.util.PropertyDescriptorComparator;
+import org.mule.galaxy.web.rpc.SearchPredicate;
+import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 
 public class SearchFormRow
     extends Composite
@@ -95,17 +98,15 @@ public class SearchFormRow
         initWidget(dock);
     }
     
-    public void addPropertySet(String setName, Map nameIdMap) {
-        Object[] names = nameIdMap.keySet().toArray();
-        Arrays.sort(names);
+    public void addPropertySet(String setName, List propertyDescriptors) {
+        Collections.sort(propertyDescriptors, new PropertyDescriptorComparator());
         
         propertyList.addItem("", "");
         propertyList.addItem(setName, "");
-        for (int i=0; i<names.length; i++) {
-            String name = (String) names[i];
-            String id   = (String) nameIdMap.get(name);
-            
-            propertyList.addItem(name, id);
+        for (Iterator itr = propertyDescriptors.iterator(); itr.hasNext();) {
+            WPropertyDescriptor pd = (WPropertyDescriptor) itr.next();
+
+            propertyList.addItem(pd.getDescription(), pd.getName());
         }
     }
     

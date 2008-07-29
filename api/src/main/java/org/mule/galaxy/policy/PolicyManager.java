@@ -2,61 +2,43 @@ package org.mule.galaxy.policy;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Entry;
-import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.Phase;
 
 public interface PolicyManager {
-    /**
-     * Approve the next artifact version. NOTE: previous may be null here!
-     * @param previous
-     * @param next
-     * @return
-     * @throws RegistryException
-     */
-    public List<ApprovalMessage> approve(EntryVersion previous, EntryVersion next);
     
-    Collection<ArtifactPolicy> getPolicies();
+    Map<Item, List<ApprovalMessage>> approve(Item item) throws PolicyException;
     
-    Collection<ArtifactPolicy> getActivePolicies(EntryVersion a);
+    Collection<Policy> getPolicies();
+    
+    Collection<PolicyInfo> getActivePolicies(Item item);
 
-    Collection<PolicyInfo> getActivePolicies(Entry a, boolean includeInherited);
+    Collection<Policy> getActivePolicies(Phase p);
 
-    Collection<ArtifactPolicy> getActivePolicies(Phase p);
+    Collection<Policy> getActivePolicies(Lifecycle p);
 
-    Collection<ArtifactPolicy> getActivePolicies(Lifecycle p);
+    Collection<Policy> getActivePolicies(Item i, Phase p);
 
-    Collection<ArtifactPolicy> getActivePolicies(Workspace w, Phase p);
+    Collection<Policy> getActivePolicies(Item i, Lifecycle p);
+    
+    void setActivePolicies(Item i, Collection<Phase> phases, Policy... policies)
+        throws PolicyException, RegistryException;
+    
+    void setActivePolicies(Collection<Phase> phases, Policy... policies)
+        throws PolicyException, RegistryException;
+    
+    void setActivePolicies(Item i, Lifecycle lifecycle, Policy... policies) 
+        throws PolicyException, RegistryException;
 
-    Collection<ArtifactPolicy> getActivePolicies(Workspace w, Lifecycle p);
+    void setActivePolicies(Lifecycle lifecycle, Policy... policies) 
+        throws PolicyException, RegistryException;
     
     
-    void setActivePolicies(Workspace w, Collection<Phase> phases, ArtifactPolicy... policies)
-        throws ArtifactCollectionPolicyException, RegistryException;
-    
-    void setActivePolicies(Entry a, Collection<Phase> phases, ArtifactPolicy... policies)
-        throws PolicyException;
-    
-    void setActivePolicies(Collection<Phase> phases, ArtifactPolicy... policies)
-        throws ArtifactCollectionPolicyException, RegistryException;
-    
-    void setActivePolicies(Workspace w, Lifecycle lifecycle, ArtifactPolicy... policies) 
-        throws ArtifactCollectionPolicyException, RegistryException;
-    
-    void setActivePolicies(Entry a, Lifecycle lifecycle, ArtifactPolicy... policies)
-        throws PolicyException;
+    Policy getPolicy(String id);
 
-    void setActivePolicies(Lifecycle lifecycle, ArtifactPolicy... policies) 
-        throws ArtifactCollectionPolicyException, RegistryException;
-    
-
-    ArtifactPolicy getPolicy(String id);
-
-    void addPolicy(ArtifactPolicy artifactPolicy);
+    void addPolicy(Policy policy);
 }

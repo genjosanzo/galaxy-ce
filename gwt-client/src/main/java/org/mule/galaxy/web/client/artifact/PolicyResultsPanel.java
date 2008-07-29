@@ -32,14 +32,13 @@ import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
 import org.mule.galaxy.web.rpc.BasicArtifactInfo;
 import org.mule.galaxy.web.rpc.WApprovalMessage;
 
-public class ArtifactCollectionPolicyResultsPanel extends AbstractErrorShowingComposite {
+public class PolicyResultsPanel extends AbstractErrorShowingComposite {
 
-    
     private final Map policyFailures;
     private FlowPanel panel;
     private RegistryMenuPanel menuPanel;
 
-    public ArtifactCollectionPolicyResultsPanel(Galaxy galaxy, Map policyFailures) {
+    public PolicyResultsPanel(Galaxy galaxy, Map policyFailures) {
         super();
         this.policyFailures = policyFailures;
         
@@ -61,8 +60,8 @@ public class ArtifactCollectionPolicyResultsPanel extends AbstractErrorShowingCo
         menuPanel.onShow();
         panel.clear();
         
-        panel.add(createTitle("Artifact Policy Failures"));
-        panel.add(new Label("The policies could not be applied as not all artifacts met the specified policies."));
+        panel.add(createTitle("Policy Failures"));
+        panel.add(new Label("This change was not allowed as not all policies were met."));
         
         for (Iterator itr = policyFailures.entrySet().iterator(); itr.hasNext();) {
             Map.Entry e = (Map.Entry) itr.next();
@@ -81,7 +80,7 @@ public class ArtifactCollectionPolicyResultsPanel extends AbstractErrorShowingCo
         FlowPanel warningPanel = new FlowPanel();
         FlowPanel failurePanel = new FlowPanel();
 
-        Hyperlink hl = new Hyperlink(info.getValue(0), "artifact-" + info.getId());
+        Hyperlink hl = new Hyperlink(info.getValue(0), "artifact_" + info.getId());
         hl.setStyleName("policy-result-artifact-link");
         artifactPanel.add(hl); 
         

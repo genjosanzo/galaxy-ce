@@ -22,7 +22,6 @@ import javax.xml.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.impl.render.CustomArtifactRenderer;
 import org.mule.galaxy.impl.render.MvelColumn;
 import org.mule.galaxy.index.Index;
@@ -34,6 +33,7 @@ import org.mule.galaxy.plugins.config.jaxb.NamespaceType;
 import org.mule.galaxy.plugins.config.jaxb.ViewType;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.render.Column;
+import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.util.TemplateParser;
 import org.springframework.util.ClassUtils;
 
@@ -131,7 +131,7 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
                     pd.setProperty(property);
                     pd.setDescription(indexType.getDescription());
                     
-                    registry.savePropertyDescriptor(pd);
+                    typeManager.savePropertyDescriptor(pd);
                 }
                 
                 if (logger.isDebugEnabled())

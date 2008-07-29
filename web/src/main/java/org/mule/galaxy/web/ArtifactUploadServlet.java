@@ -18,25 +18,12 @@
 
 package org.mule.galaxy.web;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.EntryResult;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.PolicyException;
-import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.User;
-
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.activation.MimeTypeParseException;
 import javax.servlet.ServletException;
@@ -50,6 +37,20 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.BooleanUtils;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.EntryResult;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.security.User;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -161,26 +162,30 @@ public class ArtifactUploadServlet implements Controller {
         } catch (RegistryException e) {
             writer.write("No version label was specified.");
         } catch (PolicyException e) {
-            writer.write("ArtifactPolicyException\n");
+            writer.write("PolicyException\n");
 
-            List<ApprovalMessage> approvals = e.getApprovals();
-            for (ApprovalMessage a : approvals) {
-                if (a.isWarning()) {
-                    writer.write("WARNING: ");
-                } else {
-                    writer.write("FAILURE: ");
+            for (Map.Entry<Item, List<ApprovalMessage>> entry : e.getPolicyFailures().entrySet()) {
+                List<ApprovalMessage> approvals = entry.getValue();
+
+                Collections.sort(approvals, new Comparator<ApprovalMessage>() {
+
+                    public int compare(ApprovalMessage o1, ApprovalMessage o2) {
+                        return o1.getMessage().compareTo(o2.getMessage());
+                    }
+
+                });
+                
+                for (ApprovalMessage a : approvals) {
+                    if (a.isWarning()) {
+                        writer.write("WARNING: ");
+                    } else {
+                        writer.write("FAILURE: ");
+                    }
+                    writer.write(a.getMessage());
+                    writer.write("\n");
                 }
-                writer.write(a.getMessage());
-                writer.write("\n");
             }
 
-            Collections.sort(approvals, new Comparator<ApprovalMessage>() {
-
-                public int compare(ApprovalMessage o1, ApprovalMessage o2) {
-                    return o1.getMessage().compareTo(o2.getMessage());
-                }
-
-            });
         } catch (MimeTypeParseException e) {
             writer.write("Invalid mime type.");
         } catch (DuplicateItemException e) {

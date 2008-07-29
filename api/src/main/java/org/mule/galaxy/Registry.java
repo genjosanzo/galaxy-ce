@@ -13,6 +13,8 @@ import java.util.Set;
 
 public interface Registry {
     
+    String PRIMARY_LIFECYCLE = "primary.lifecycle";
+
     /**
      * Get a universally unique ID for this registry, which can be used for things such as atom feeds.
      * @return
@@ -28,11 +30,11 @@ public interface Registry {
     void save(Workspace w, String parentId)
         throws RegistryException, NotFoundException, AccessException;
 
-    void save(Workspace w) throws AccessException;
+    void save(Item item) throws AccessException;
     
     Collection<Workspace> getWorkspaces() throws RegistryException, AccessException;
     
-    Item getRegistryItem(String id) throws NotFoundException, RegistryException, AccessException;
+    Item getItemById(String id) throws NotFoundException, RegistryException, AccessException;
     
     Item getItemByPath(String path) throws NotFoundException, RegistryException, AccessException;
 
@@ -43,8 +45,6 @@ public interface Registry {
     Artifact getArtifact(String id) throws NotFoundException, RegistryException, AccessException;
 
     ArtifactVersion getArtifactVersion(String id) throws NotFoundException, RegistryException, AccessException;
-
-    void save(Artifact artifact) throws RegistryException, AccessException;
 
     Artifact getArtifact(Workspace w, String name) throws NotFoundException;
 
@@ -58,19 +58,7 @@ public interface Registry {
     
     /* Extensions */
     List<Extension> getExtensions();
-    
-    /* Property related methods */
-     
-    Collection<PropertyDescriptor> getPropertyDescriptors() throws RegistryException;
 
-    PropertyDescriptor getPropertyDescriptor(String propertyId) throws RegistryException, NotFoundException;
-
-    void savePropertyDescriptor(PropertyDescriptor pd) throws RegistryException, AccessException, DuplicateItemException, NotFoundException;
-    
-    void deletePropertyDescriptor(String id) throws RegistryException;
-    
-    PropertyDescriptor getPropertyDescriptorByName(final String propertyName);
-    
 
     /* Link related operations */
     

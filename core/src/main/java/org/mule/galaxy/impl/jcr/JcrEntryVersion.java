@@ -51,27 +51,6 @@ public class JcrEntryVersion extends AbstractJcrItem implements EntryVersion {
         return getParent().getName() + " (" + getVersionLabel() + ")";
     }
 
-    public void setPhase(Phase p) {
-        try {
-            node.setProperty(LIFECYCLE, p.getLifecycle().getId());
-            node.setProperty(PHASE, p.getId());
-            update();
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-    public Phase getPhase() {
-        String phase = getStringOrNull(PHASE);
-        if (phase == null) {
-            return null;
-        }
-        
-        Phase p = parent.getManager().getLifecycleManager().getPhaseById(phase);
-        
-        return p;
-    }
-    
     public boolean isLatest() {
         Boolean b = JcrUtil.getBooleanOrNull(node, LATEST);
         if (b == null) {
@@ -142,7 +121,7 @@ public class JcrEntryVersion extends AbstractJcrItem implements EntryVersion {
         }
     }
 
-    public Item getParent() {
+    public Entry getParent() {
         return parent;
     }
 

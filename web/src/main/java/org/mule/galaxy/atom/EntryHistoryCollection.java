@@ -44,6 +44,7 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
+import static org.mule.galaxy.util.AbderaUtils.*;
 
 public class EntryHistoryCollection extends AbstractEntryCollection {
     private final Log log = LogFactory.getLog(getClass());

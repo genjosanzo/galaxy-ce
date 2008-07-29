@@ -9,6 +9,8 @@ public final class Constants {
         // never instantiate
     }
 
+    public static final String ATOM_NAMESPACE = "http://galaxy.mule.org/1.0";
+    
     public static final QName WSDL_DEFINITION_QNAME = new QName("http://schemas.xmlsoap.org/wsdl/",
                                       "definitions");
 

@@ -12,14 +12,10 @@ import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.workspace.WorkspaceManager;
 
-public abstract class AbstractArtifact extends AbstractItem implements Artifact {
+public abstract class AbstractArtifact extends AbstractEntry implements Artifact {
 
     public AbstractArtifact(WorkspaceManager manager, ItemMetadataHandler metadata) {
         super(manager, metadata);
-    }
-
-    public String getPath() {
-        return getParent().getPath() + getName();
     }
 
     public EntryResult newVersion(InputStream inputStream, String versionLabel, User user)

@@ -11,13 +11,13 @@ import org.mule.galaxy.Entry;
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.type.PropertyDescriptor;
 
-public class IdentifiableExtension<T extends Identifiable> implements Extension, Identifiable {
-    private String id;
-    private Dao<T> dao;
+public class IdentifiableExtension<T extends Identifiable> implements Extension {
+    protected String id;
+    protected Dao<T> dao;
 
     @SuppressWarnings("unchecked")
     public Object getExternalValue(Item entry, PropertyDescriptor pd, Object storedValue) {
@@ -69,6 +69,13 @@ public class IdentifiableExtension<T extends Identifiable> implements Extension,
 	} else {
 	    return null;
 	}
+    }
+
+    public void validate(Item entry, PropertyDescriptor pd, Object valueToStore) throws PolicyException {
+    }
+
+    public boolean isMultivalueSupported() {
+        return true;
     }
 
     public Dao<T> getDao() {

@@ -1,7 +1,9 @@
-package org.mule.galaxy.impl.jcr.query;
+package org.mule.galaxy.impl.lifecycle;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.mule.galaxy.impl.extension.ExtensionQueryBuilder;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
@@ -10,15 +12,19 @@ import org.mule.galaxy.query.OpRestriction.Operator;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.Message;
 
-public class PhaseQueryBuilder extends SimpleQueryBuilder {
+public class PhaseQueryBuilder extends ExtensionQueryBuilder {
     private LifecycleManager lifecycleManager;
     
     public PhaseQueryBuilder() {
-        super(new String[] { "phase" }, false);
+        super(false);
+        suffixes.add("phase");
     }
     
     @Override
     protected String getValueAsString(Object o, String property, Operator operator) throws QueryException {
+        if (o instanceof Phase) {
+            return ((Phase) o).getId();
+        }
         String[] lp = o.toString().split(":");
         
         if (lp.length != 2) {
@@ -34,6 +40,10 @@ public class PhaseQueryBuilder extends SimpleQueryBuilder {
         }
         
         return pid;
+    }
+    
+    protected String getProperty(String property) {
+        return property.substring(0, property.length() - ".phase".length());
     }
 
     public void setLifecycleManager(LifecycleManager lifecycleManager) {

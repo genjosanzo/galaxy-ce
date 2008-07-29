@@ -20,25 +20,46 @@ package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 public class WProperty implements IsSerializable {
     private boolean locked;
     private String name;
     private String description;
     private String value;
+    /*
+     * @gwt.typeArgs <java.lang.String>
+     */
+    private List listValue;
+    private String extension;
     
-    public WProperty(String name, String description, String value, boolean locked) {
+    public WProperty(String name, String description, 
+                     Object value, String extension,
+                     boolean locked) {
         super();
+        this.extension = extension;
         this.locked = locked;
         this.name = name;
         this.description = description;
-        this.value = value;
+        
+        setValue(value);
     }
+    
     public WProperty() {
         super();
-        // TODO Auto-generated constructor stub
     }
+    
+    public String getExtension() {
+        return extension;
+    }
+
+    public boolean isMultiValued() {
+        return listValue != null;
+    }
+    
     public boolean isLocked() {
-        
         return locked;
     }
     public void setLocked(boolean locked) {
@@ -59,9 +80,20 @@ public class WProperty implements IsSerializable {
     public String getValue() {
         return value;
     }
-    public void setValue(String value) {
-        this.value = value;
+
+    public void setValue(Object value) {
+        if (value instanceof String) {
+            this.value = (String) value;
+        } else if (value instanceof List) {
+            this.listValue = (List) value;
+        } else if (value instanceof Collection) {
+            this.listValue = new ArrayList();
+            listValue.addAll((Collection) value);
+        }
     }
-    
+
+    public List getListValue() {
+        return listValue;
+    }
     
 }

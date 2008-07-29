@@ -11,23 +11,24 @@ import java.util.List;
 
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Identifiable;
-import org.mule.galaxy.impl.jcr.query.QueryBuilder;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.OpRestriction.Operator;
 
-public class IdentifiableExtensionQueryBuilder extends QueryBuilder {
+public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
 
-    private String[] properties;
     private Dao dao;
     private String root;
     
     public IdentifiableExtensionQueryBuilder(IdentifiableExtension e) throws IntrospectionException {
-	super(false);
+	super(true);
+	
+	this.extension = e;
 	
 	dao = e.getDao();
 	Class<?> typeClass = dao.getTypeClass();
 	
 	initProperties(typeClass);
+	
     }
 
     private void initProperties(Class<?> type) throws IntrospectionException {
@@ -35,17 +36,10 @@ public class IdentifiableExtensionQueryBuilder extends QueryBuilder {
 	
 	root = root.substring(0, 1).toLowerCase() + root.substring(1);
 	
-	List<String> listOfProps = new ArrayList<String>();
-        BeanInfo info = Introspector.getBeanInfo(type);
+	BeanInfo info = Introspector.getBeanInfo(type);
         for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
-            listOfProps.add(root + "." + pd.getName());
+            suffixes.add(pd.getName());
         }
-        properties = listOfProps.toArray(new String[0]);
-    }
-
-    @Override
-    public String[] getProperties() {
-	return properties;
     }
 
     public void build(StringBuilder query, String property, Object right, boolean not, Operator operator)
@@ -100,7 +94,7 @@ public class IdentifiableExtensionQueryBuilder extends QueryBuilder {
     
     @SuppressWarnings("unchecked")
     protected List<String> getMatches(Object o, String property, Operator operator) throws QueryException {
-	property = property.substring(property.indexOf('.') + 1);
+	property = property.substring(property.lastIndexOf('.') + 1);
 	if (Operator.EQUALS == operator) {
 	    List results = dao.find(property, o.toString());
 	   

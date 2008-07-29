@@ -1,15 +1,22 @@
 package org.mule.galaxy.impl;
 
 
-import org.mule.galaxy.Dao;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.PropertyDescriptor;
-import org.mule.galaxy.test.AbstractGalaxyTest;
-
 import java.util.Collection;
 
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.test.AbstractGalaxyTest;
+import org.mule.galaxy.type.PropertyDescriptor;
+import org.mule.galaxy.type.Type;
+
 public class PropertyTest extends AbstractGalaxyTest {
-    protected Dao<PropertyDescriptor> propertyDescriptorDao;
+    
+    public void testTypes() throws Exception {
+        Type type = typeManager.getDefaultType();
+        
+        assertNotNull(type);
+        
+        assertEquals(1, type.getProperties().size());
+    }
     
     public void testProperties() throws Exception {
        importHelloWsdl();
@@ -18,23 +25,24 @@ public class PropertyTest extends AbstractGalaxyTest {
                                                       "Geographic Location",
                                                       false);
        
-       registry.savePropertyDescriptor(pd);
+       typeManager.savePropertyDescriptor(pd);
        assertEquals("location", pd.getProperty());
        
-       PropertyDescriptor pd2 = registry.getPropertyDescriptor(pd.getId());
+       PropertyDescriptor pd2 = typeManager.getPropertyDescriptor(pd.getId());
        assertNotNull(pd2);
        assertEquals(pd.getDescription(), pd2.getDescription());
        
-       Collection<PropertyDescriptor> pds = registry.getPropertyDescriptors();
+       Collection<PropertyDescriptor> pds = typeManager.getPropertyDescriptors();
        // 12 of these are index related
 //       assertEquals(23, pds.size());
+       assertNotNull(pds);
        
-       PropertyDescriptor pd3 = registry.getPropertyDescriptorByName(pd.getProperty());
+       PropertyDescriptor pd3 = typeManager.getPropertyDescriptorByName(pd.getProperty());
        assertNotNull(pd3);
        
        pd.setId(null);
        try {
-           registry.savePropertyDescriptor(pd);
+           typeManager.savePropertyDescriptor(pd);
            fail("DuplicateItemException expected");
        } catch (DuplicateItemException e) {
        }

@@ -16,7 +16,7 @@
         </namespace>
         <indexes>
             <index>
-                <description>The description for the Mule configuration</description>
+                <description>Mule Configuration Description</description>
                 <indexer>xpath</indexer>
                 <search-input-type>java.lang.String</search-input-type>
                 <configuration>

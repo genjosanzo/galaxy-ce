@@ -25,10 +25,12 @@ public class WPropertyDescriptor implements IsSerializable {
     private boolean multiValued;
     private String name;
     private String description;
+    private String extension;
     
-    public WPropertyDescriptor(String id, String name, String description, boolean multiValued) {
+    public WPropertyDescriptor(String id, String name, String description, String extension, boolean multiValued) {
         super();
         this.id = id;
+        this.extension = extension;
         this.multiValued = multiValued;
         this.name = name;
         this.description = description;
@@ -59,5 +61,11 @@ public class WPropertyDescriptor implements IsSerializable {
     }
     public void setDescription(String description) {
         this.description = description;
+    }
+    public String getExtension() {
+        return extension;
+    }
+    public void setExtension(String extension) {
+        this.extension = extension;
     }
 }

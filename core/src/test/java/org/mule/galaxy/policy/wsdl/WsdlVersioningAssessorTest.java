@@ -21,7 +21,7 @@ public class WsdlVersioningAssessorTest extends AbstractGalaxyTest {
         ArtifactVersion next = (ArtifactVersion) ar.getEntryVersion();
         
         assertNotNull(next.getData());
-        Collection<ApprovalMessage> approvals = assessor.isApproved(a1, prev, next);
+        Collection<ApprovalMessage> approvals = assessor.isApproved(next);
         assertEquals(2, approvals.size());
         
         ApprovalMessage app = approvals.iterator().next();

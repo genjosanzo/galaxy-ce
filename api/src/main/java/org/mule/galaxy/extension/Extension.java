@@ -2,15 +2,16 @@ package org.mule.galaxy.extension;
 
 import java.util.Collection;
 
+import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.Item;
-import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.type.PropertyDescriptor;
 
-public interface Extension {
+public interface Extension extends Identifiable {
 
     /**
      * Properties could be lifecycle information, associated contacts, links, etc.
-     * This method will store them in  
+     * 
      * @param entry
      * @param properties
      */
@@ -18,4 +19,7 @@ public interface Extension {
     
     Object getExternalValue(Item entry, PropertyDescriptor pd, Object storedValue);
     
+    void validate(Item entry, PropertyDescriptor pd, Object valueToStore) throws PolicyException;
+    
+    boolean isMultivalueSupported();
 }

@@ -2,10 +2,13 @@ package org.mule.galaxy.policy.wsdl;
 
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
+import org.mule.galaxy.Item;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
@@ -23,7 +26,7 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
 
-        ArtifactPolicy p = policyManager.getPolicy(BasicProfilePolicy.WSI_BP_1_1_WSDL);
+        Policy p = policyManager.getPolicy(BasicProfilePolicy.WSI_BP_1_1_WSDL);
 
         policyManager.setActivePolicies(lifecycleManager.getDefaultLifecycle(), p);
 
@@ -32,14 +35,18 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
                                     getAdmin());
             fail("Expected ArtifactPolicyException");
         } catch (PolicyException e) {
-            Collection<ApprovalMessage> approvals = e.getApprovals();
-            for (ApprovalMessage a : approvals) {
-                System.out.println(a.getMessage());
+            Map<Item, List<ApprovalMessage>> approvals = e.getPolicyFailures();
+            int count = 0;
+            for (List<ApprovalMessage> msgs : approvals.values()) {
+                count += msgs.size();
+                for (ApprovalMessage a : msgs) {
+                    System.out.println(a.getMessage());
+                }
             }
             
-            assertEquals(1, approvals.size());
+            assertEquals(1, count);
 
-            ApprovalMessage a = approvals.iterator().next();
+            ApprovalMessage a = approvals.values().iterator().next().get(0);
             assertFalse(a.isWarning());
             assertNotNull(a.getMessage());
         }
@@ -50,12 +57,19 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
                                     getAdmin());
             fail("Expected ArtifactPolicyException");
         } catch (PolicyException e) {
-            Collection<ApprovalMessage> approvals = e.getApprovals();
-            assertEquals(1, approvals.size());
+            Map<Item, List<ApprovalMessage>> approvals = e.getPolicyFailures();
+            int count = 0;
+            for (List<ApprovalMessage> msgs : approvals.values()) {
+                count += msgs.size();
+                for (ApprovalMessage a : msgs) {
+                    System.out.println(a.getMessage());
+                }
+            }
+            
+            assertEquals(1, count);
 
-            ApprovalMessage a = approvals.iterator().next();
+            ApprovalMessage a = approvals.values().iterator().next().get(0);
             assertFalse(a.isWarning());
-
             assertNotNull(a.getMessage());
         }
     }

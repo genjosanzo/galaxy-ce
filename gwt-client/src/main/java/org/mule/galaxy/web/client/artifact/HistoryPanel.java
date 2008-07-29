@@ -18,20 +18,6 @@
 
 package org.mule.galaxy.web.client.artifact;
 
-import org.gwtwidgets.client.ui.LightBox;
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.ErrorPanel;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.ExternalHyperlink;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
-import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.rpc.TransitionResponse;
-
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -41,6 +27,21 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Iterator;
+
+import org.gwtwidgets.client.ui.LightBox;
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.admin.PolicyPanel;
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
+import org.mule.galaxy.web.client.util.ExternalHyperlink;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.WPolicyException;
 
 public class HistoryPanel extends AbstractComposite {
 
@@ -186,42 +187,28 @@ public class HistoryPanel extends AbstractComposite {
         });
     }
     protected void setDefault(String versionId) {
-        registryService.setDefault(versionId, new AbstractCallback(errorPanel) {
-
-            public void onSuccess(Object o) {
-                TransitionResponse tr = (TransitionResponse) o;
-                
-                if (tr.isSuccess()) {
-                    History.newItem("artifact_" + info.getId() + "_2");
-                } else {
-                    displayMessages(tr);
-                }
-            }
-
-        });
+        registryService.setDefault(versionId, getPolicyCallback());
     }
 
     protected void setEnabled(String versionId, boolean enabled) {
-        registryService.setEnabled(versionId, enabled, new AbstractCallback(errorPanel) {
+        registryService.setEnabled(versionId, enabled, getPolicyCallback());
+    }
+    
+    private AbstractCallback getPolicyCallback() {
+        return new AbstractCallback(errorPanel) {
 
-            public void onSuccess(Object o) {
-                TransitionResponse tr = (TransitionResponse) o;
-                
-                if (tr == null || tr.isSuccess()) {
-                    // reload the artifact form and show tab 2
-                    History.newItem("artifact_" + info.getId() + "_2");
+            public void onFailure(Throwable caught) {
+                if (caught instanceof WPolicyException) {
+                    PolicyPanel.handlePolicyFailure(galaxy, (WPolicyException) caught);
                 } else {
-                    displayMessages(tr);
+                    super.onFailure(caught);
                 }
             }
 
-        });
-    }
-    
-    protected void displayMessages(TransitionResponse tr) {
-        errorPanel.setMessage("Policies were not met!");
-    }
+            public void onSuccess(Object o) {
+                History.newItem("artifact_" + info.getId() + "_2");
+            }
 
-    
-
+        };
+    }
 }

@@ -77,7 +77,7 @@
   <bean id="policyManagerTarget" 
         class="org.mule.galaxy.impl.policy.PolicyManagerImpl" init-method="initilaize">
     <property name="jcrTemplate" ref="jcrTemplate" />
-    <property name="lifecycleManager" ref="lifecycleManager"/>
+    <property name="typeManager" ref="typeManager" />
   </bean>
     
   <bean id="accessControlManager" parent="txProxyTemplate">
@@ -153,7 +153,6 @@
     <property name="linkTypeDao" ref="linkTypeManager" />
     <property name="settings" ref="settings" />
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="propertyDescriptorDao" ref="propertyDescriptorDao" />
     <property name="lifecycleManager" ref="lifecycleManager" />
     <property name="policyManager" ref="policyManager" />
     <property name="userManager" ref="userManager" />
@@ -180,6 +179,7 @@
     <property name="lifecycleManager" ref="lifecycleManager" />
     <property name="indexManager" ref="indexManager" />
     <property name="policyManager" ref="policyManager" />
+    <property name="typeManager" ref="typeManager" />
     <property name="userManager" ref="userManager" />
     <property name="eventManager" ref="eventManager"/>
   </bean>
@@ -188,8 +188,15 @@
     <constructor-arg>
       <list>
         <ref bean="contactExtension"/>
+        <ref bean="lifecycleExtension"/>
       </list>
     </constructor-arg>
+  </bean>
+  
+  <bean id="lifecycleExtension" class="org.mule.galaxy.impl.lifecycle.LifecycleExtension">
+    <property name="lifecycleManager" ref="lifecycleManager"/>
+    <property name="eventManager" ref="eventManager"/>
+    <property name="id" value="lifecycleExtension"/>
   </bean>
   
   <bean id="contactExtension" class="org.mule.galaxy.impl.extension.IdentifiableExtension">
@@ -215,16 +222,21 @@
   
   <bean id="contactQueryBuilder" class="org.mule.galaxy.impl.extension.IdentifiableExtensionQueryBuilder">
     <constructor-arg ref="contactExtension"/>
+    <property name="typeManager" ref="typeManager"/>
   </bean>
   
   <bean id="queryBuilders" class="java.util.ArrayList">
     <constructor-arg>
       <list>
-        <bean class="org.mule.galaxy.impl.jcr.query.PhaseQueryBuilder">
+        <bean class="org.mule.galaxy.impl.lifecycle.PhaseQueryBuilder">
           <property name="lifecycleManager" ref="lifecycleManager"/>
+          <property name="extension" ref="lifecycleExtension"/>
+          <property name="typeManager" ref="typeManager"/>
         </bean>
-        <bean class="org.mule.galaxy.impl.jcr.query.LifecycleQueryBuilder">
+        <bean class="org.mule.galaxy.impl.lifecycle.LifecycleQueryBuilder">
           <property name="lifecycleManager" ref="lifecycleManager"/>
+          <property name="extension" ref="lifecycleExtension"/>
+          <property name="typeManager" ref="typeManager"/>
         </bean>
         <bean class="org.mule.galaxy.impl.jcr.query.ArtifactPropertyQueryBuilder"/>
         <ref bean="contactQueryBuilder"/>
@@ -277,17 +289,6 @@
     <property name="persisterManager" ref="persisterManager" />
   </bean>
   
-  <bean id="propertyDescriptorDao" parent="txProxyTemplate">
-    <property name="target" ref="propertyDescriptorDaoTarget"/>
-    <property name="proxyTargetClass" value="true"/>
-  </bean>
-  
-  <bean id="propertyDescriptorDaoTarget" class="org.mule.galaxy.impl.jcr.PropertyDescriptorDaoImpl"
-        init-method="initialize" >
-    <property name="sessionFactory" ref="sessionFactory" />
-    <property name="persisterManager" ref="persisterManager" />
-  </bean>
-  
   <bean id="artifactTypeDao" parent="txProxyTemplate">
     <property name="target" ref="artifactTypeDaoTarget"/>
     <property name="proxyTargetClass" value="true"/>
@@ -295,6 +296,33 @@
   
   <bean id="artifactTypeDaoTarget" class="org.mule.galaxy.impl.jcr.ArtifactTypeDaoImpl"
     init-method="initialize" >
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="persisterManager" ref="persisterManager" />
+  </bean>
+    
+  <bean id="typeManager" parent="txProxyTemplate">
+    <property name="target" ref="typeManagerTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="typeManagerTarget" class="org.mule.galaxy.impl.jcr.TypeManagerImpl">
+    <property name="propertyDescriptorDao" ref="propertyDescriptorDao" />
+    <property name="jcrTemplate" ref="jcrTemplate" />
+    <property name="typeDao" ref="typeDao" />
+    <property name="accessControlManager" ref="accessControlManager" />
+  </bean>
+  
+  <bean id="propertyDescriptorDao" class="org.mule.galaxy.impl.jcr.PropertyDescriptorDaoImpl"
+        init-method="initialize" >
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="persisterManager" ref="persisterManager" />
+  </bean>
+  
+  <bean id="typeDao" class="org.mule.galaxy.impl.jcr.onm.IdentifiableReflectionDao"
+        init-method="initialize" >
+    <constructor-arg value="org.mule.galaxy.type.Type"/>
+    <constructor-arg value="types"/>
+    <constructor-arg value="true"/>
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
   </bean>
@@ -370,6 +398,7 @@
     <property name="artifactTypeDao" ref="artifactTypeDao"/>
     <property name="rendererManager" ref="rendererManager"/>
     <property name="indexManager" ref="indexManager"/>
+    <property name="typeManager" ref="typeManager"/>
     <property name="registry" ref="registry"/>
   </bean>
 

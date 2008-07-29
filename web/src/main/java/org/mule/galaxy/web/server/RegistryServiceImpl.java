@@ -18,84 +18,6 @@
 
 package org.mule.galaxy.web.server;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.ArtifactTypeDao;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.EntryVersion;
-import org.mule.galaxy.Item;
-import org.mule.galaxy.Link;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.PropertyDescriptor;
-import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.activity.Activity;
-import org.mule.galaxy.activity.ActivityManager;
-import org.mule.galaxy.activity.ActivityManager.EventType;
-import org.mule.galaxy.collab.Comment;
-import org.mule.galaxy.collab.CommentManager;
-import org.mule.galaxy.event.EventManager;
-import org.mule.galaxy.event.PropertyChangedEvent;
-import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
-import org.mule.galaxy.index.Index;
-import org.mule.galaxy.index.IndexManager;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.lifecycle.TransitionException;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactCollectionPolicyException;
-import org.mule.galaxy.policy.ArtifactPolicy;
-import org.mule.galaxy.policy.PolicyException;
-import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.query.OpRestriction;
-import org.mule.galaxy.query.OpRestriction.Operator;
-import org.mule.galaxy.query.Query;
-import org.mule.galaxy.query.QueryException;
-import org.mule.galaxy.query.Restriction;
-import org.mule.galaxy.query.SearchResults;
-import org.mule.galaxy.render.ArtifactRenderer;
-import org.mule.galaxy.render.RendererManager;
-import org.mule.galaxy.security.AccessControlManager;
-import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.Permission;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.security.UserManager;
-import org.mule.galaxy.util.SecurityUtils;
-import org.mule.galaxy.view.ArtifactView;
-import org.mule.galaxy.view.ArtifactViewManager;
-import org.mule.galaxy.web.client.RPCException;
-import org.mule.galaxy.web.rpc.ApplyPolicyException;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.BasicArtifactInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
-import org.mule.galaxy.web.rpc.ItemExistsException;
-import org.mule.galaxy.web.rpc.ItemNotFoundException;
-import org.mule.galaxy.web.rpc.LinkInfo;
-import org.mule.galaxy.web.rpc.RegistryService;
-import org.mule.galaxy.web.rpc.SearchPredicate;
-import org.mule.galaxy.web.rpc.TransitionResponse;
-import org.mule.galaxy.web.rpc.WActivity;
-import org.mule.galaxy.web.rpc.WApprovalMessage;
-import org.mule.galaxy.web.rpc.WArtifactPolicy;
-import org.mule.galaxy.web.rpc.WArtifactType;
-import org.mule.galaxy.web.rpc.WArtifactView;
-import org.mule.galaxy.web.rpc.WComment;
-import org.mule.galaxy.web.rpc.WGovernanceInfo;
-import org.mule.galaxy.web.rpc.WIndex;
-import org.mule.galaxy.web.rpc.WLifecycle;
-import org.mule.galaxy.web.rpc.WPhase;
-import org.mule.galaxy.web.rpc.WProperty;
-import org.mule.galaxy.web.rpc.WPropertyDescriptor;
-import org.mule.galaxy.web.rpc.WSearchResults;
-import org.mule.galaxy.web.rpc.WUser;
-import org.mule.galaxy.web.rpc.WWorkspace;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,6 +38,81 @@ import javax.xml.namespace.QName;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.ArtifactTypeDao;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.Link;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.activity.Activity;
+import org.mule.galaxy.activity.ActivityManager;
+import org.mule.galaxy.activity.ActivityManager.EventType;
+import org.mule.galaxy.collab.Comment;
+import org.mule.galaxy.collab.CommentManager;
+import org.mule.galaxy.event.EventManager;
+import org.mule.galaxy.event.PropertyChangedEvent;
+import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
+import org.mule.galaxy.index.Index;
+import org.mule.galaxy.index.IndexManager;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.Policy;
+import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.Query;
+import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.Restriction;
+import org.mule.galaxy.query.SearchResults;
+import org.mule.galaxy.query.OpRestriction.Operator;
+import org.mule.galaxy.render.ArtifactRenderer;
+import org.mule.galaxy.render.RendererManager;
+import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.security.Permission;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.security.UserManager;
+import org.mule.galaxy.type.PropertyDescriptor;
+import org.mule.galaxy.type.TypeManager;
+import org.mule.galaxy.util.SecurityUtils;
+import org.mule.galaxy.view.ArtifactView;
+import org.mule.galaxy.view.ArtifactViewManager;
+import org.mule.galaxy.web.client.RPCException;
+import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
+import org.mule.galaxy.web.rpc.BasicArtifactInfo;
+import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.ItemExistsException;
+import org.mule.galaxy.web.rpc.ItemNotFoundException;
+import org.mule.galaxy.web.rpc.LinkInfo;
+import org.mule.galaxy.web.rpc.RegistryService;
+import org.mule.galaxy.web.rpc.SearchPredicate;
+import org.mule.galaxy.web.rpc.WActivity;
+import org.mule.galaxy.web.rpc.WApprovalMessage;
+import org.mule.galaxy.web.rpc.WArtifactPolicy;
+import org.mule.galaxy.web.rpc.WArtifactType;
+import org.mule.galaxy.web.rpc.WArtifactView;
+import org.mule.galaxy.web.rpc.WComment;
+import org.mule.galaxy.web.rpc.WGovernanceInfo;
+import org.mule.galaxy.web.rpc.WIndex;
+import org.mule.galaxy.web.rpc.WLifecycle;
+import org.mule.galaxy.web.rpc.WPhase;
+import org.mule.galaxy.web.rpc.WPolicyException;
+import org.mule.galaxy.web.rpc.WProperty;
+import org.mule.galaxy.web.rpc.WPropertyDescriptor;
+import org.mule.galaxy.web.rpc.WSearchResults;
+import org.mule.galaxy.web.rpc.WUser;
+import org.mule.galaxy.web.rpc.WWorkspace;
 
 public class RegistryServiceImpl implements RegistryService {
 
@@ -133,6 +130,7 @@ public class RegistryServiceImpl implements RegistryService {
     private ActivityManager activityManager;
     private AccessControlManager accessControlManager;
     private ArtifactViewManager artifactViewManager;
+    private TypeManager typeManager;
     private UserManager userManager;
 
     private ContextPathResolver contextPathResolver;
@@ -933,7 +931,6 @@ public class RegistryServiceImpl implements RegistryService {
                                                          av.isEnabled(),
                                                          av.getAuthor().getName(),
                                                          av.getAuthor().getUsername(),
-                                                         av.getPhase().getName(),
                                                          av.isIndexedPropertiesStale());
         for (Iterator<PropertyInfo> props = av.getProperties(); props.hasNext();) {
             PropertyInfo p = props.next();
@@ -942,21 +939,17 @@ public class RegistryServiceImpl implements RegistryService {
                 continue;
             }
 
-            Object val = p.getValue();
-            if (val instanceof Collection) {
-                String s = val.toString();
-                val = s.substring(1, s.length() - 1);
-            } else if (val != null) {
-                val = val.toString();
-            } else {
-                val = "";
-            }
+            Object val = p.getInternalValue();
 
+            val = convertQNames(val);
+            
             String desc = p.getDescription();
             if (desc == null) {
                 desc = p.getName();
             }
-            vi.getProperties().add(new WProperty(p.getName(), desc, val.toString(), p.isLocked()));
+            PropertyDescriptor pd = p.getPropertyDescriptor();
+            String ext = pd != null && pd.getExtension() != null ? pd.getExtension().getId() : null;
+            vi.getProperties().add(new WProperty(p.getName(), desc, val, ext, p.isLocked()));
         }
 
         Collections.sort(vi.getProperties(), new Comparator() {
@@ -968,6 +961,21 @@ public class RegistryServiceImpl implements RegistryService {
         });
 
         return vi;
+    }
+
+    /**
+     * This method is here temporarily until we can serialize qnames remotely
+     * @param val
+     */
+    private Object convertQNames(Object val) {
+        if (val instanceof Collection) {
+            List<String> objs = new ArrayList<String>();
+            for (Object o : (Collection) val) {
+                objs.add(o.toString());
+            }
+            return objs;
+        }
+        return val;
     }
 
     private String getLink(String base, Artifact a) {
@@ -1050,10 +1058,7 @@ public class RegistryServiceImpl implements RegistryService {
         PropertyDescriptor pd = new PropertyDescriptor(name, description, multivalued);
 
         try {
-            registry.savePropertyDescriptor(pd);
-        } catch (RegistryException e) {
-            log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            typeManager.savePropertyDescriptor(pd);
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
         } catch (DuplicateItemException e) {
@@ -1063,15 +1068,23 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void setProperty(String artifactId, String propertyName, String propertyValue) throws RPCException, ItemNotFoundException {
+    public void setProperty(String artifactId, String propertyName, Collection propertyValue)
+        throws RPCException, ItemNotFoundException, WPolicyException {
+        setProperty(artifactId, propertyName, (Object)propertyValue);
+    }
+
+    public void setProperty(String artifactId, String propertyName, String propertyValue)
+        throws RPCException, ItemNotFoundException, WPolicyException {
+        setProperty(artifactId, propertyName, (Object)propertyValue);
+    }
+
+    protected void setProperty(String itemId, String propertyName, Object propertyValue) throws RPCException, ItemNotFoundException, WPolicyException {
         try {
-            Artifact artifact = registry.getArtifact(artifactId);
+            Item item = registry.getItemById(itemId);
 
-            artifact.setProperty(propertyName, propertyValue);
-            eventManager.fireEvent(new PropertyChangedEvent(SecurityUtils.getCurrentUser(),
-                                                            artifact.getDefaultOrLastVersion().getPath(), propertyName, propertyValue));
+            item.setInternalProperty(propertyName, propertyValue);
 
-            registry.save(artifact);
+            registry.save(item);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -1084,19 +1097,26 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
         } catch (PolicyException e) {
-            throw new RPCException(e.getMessage());
+            throw toWeb(e);
         }
     }
 
-    public void setProperty(Collection artifactIds, String propertyName, String propertyValue) throws RPCException, ItemNotFoundException {
+    public void setProperty(Collection artifactIds, String propertyName, Collection propertyValue)
+        throws RPCException, ItemNotFoundException {
+    }
+
+    public void setProperty(Collection artifactIds, String propertyName, String propertyValue)
+        throws RPCException, ItemNotFoundException {
+    }
+    public void setProperty(Collection artifactIds, String propertyName, Object propertyValue) throws RPCException, ItemNotFoundException {
 
     }
 
-    public void deleteProperty(String artifactId, String propertyName) throws RPCException, ItemNotFoundException {
+    public void deleteProperty(String itemId, String propertyName) throws RPCException, ItemNotFoundException {
         try {
-            Artifact artifact = registry.getArtifact(artifactId);
-            artifact.setProperty(propertyName, null);
-            registry.save(artifact);
+            Item item = registry.getItemById(itemId);
+            item.setProperty(propertyName, null);
+            registry.save(item);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -1117,73 +1137,30 @@ public class RegistryServiceImpl implements RegistryService {
 
     }
 
-    public Map getPropertyList() throws RPCException {
-        try {
-            Collection<PropertyDescriptor> pds = registry.getPropertyDescriptors();
-
-            HashMap<Object, Object> props = new HashMap<Object, Object>();
-            for (PropertyDescriptor pd : pds) {
-                props.put(pd.getDescription(), pd.getProperty());
-            }
-
-            return props;
-        } catch (RegistryException e) {
-            log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
-        }
-    }
-
-    public Map getProperties() throws RPCException {
-        try {
-            Collection<PropertyDescriptor> pds = registry.getPropertyDescriptors();
-
-            HashMap<Object, Object> props = new HashMap<Object, Object>();
-            for (PropertyDescriptor pd : pds) {
-                props.put(pd.getProperty(), pd.getDescription());
-            }
-
-            return props;
-        } catch (RegistryException e) {
-            log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
-        }
-    }
-
     public void deletePropertyDescriptor(String id) throws RPCException {
-        try {
-            registry.deletePropertyDescriptor(id);
-        } catch (RegistryException e) {
-            log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
-        }
+        typeManager.deletePropertyDescriptor(id);
     }
 
     public WPropertyDescriptor getPropertyDescriptor(String id) throws RPCException, ItemNotFoundException {
         try {
-            return toWeb(registry.getPropertyDescriptor(id));
+            return toWeb(typeManager.getPropertyDescriptor(id));
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
-        } catch (RegistryException e) {
-            log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
         }
     }
 
-    public Collection getPropertyDescriptors() throws RPCException {
-        try {
-            List<WPropertyDescriptor> pds = new ArrayList<WPropertyDescriptor>();
-            for (PropertyDescriptor pd : registry.getPropertyDescriptors()) {
-                pds.add(toWeb(pd));
-            }
-            return pds;
-        } catch (RegistryException e) {
-            log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+    public List getPropertyDescriptors() throws RPCException {
+        List<WPropertyDescriptor> pds = new ArrayList<WPropertyDescriptor>();
+        for (PropertyDescriptor pd : typeManager.getPropertyDescriptors()) {
+            pds.add(toWeb(pd));
         }
+        return pds;
     }
 
     private WPropertyDescriptor toWeb(PropertyDescriptor pd) {
-        return new WPropertyDescriptor(pd.getId(), pd.getProperty(), pd.getDescription(), pd.isMultivalued());
+        String ext = pd.getExtension() != null ? pd.getExtension().getId() : null;
+        
+        return new WPropertyDescriptor(pd.getId(), pd.getProperty(), pd.getDescription(), ext, pd.isMultivalued());
     }
 
     public void savePropertyDescriptor(WPropertyDescriptor wpd) throws RPCException, ItemNotFoundException, ItemExistsException {
@@ -1193,19 +1170,16 @@ public class RegistryServiceImpl implements RegistryService {
             if (wpd.getId() == null) {
                 pd = new PropertyDescriptor();
             } else {
-                pd = registry.getPropertyDescriptor(wpd.getId());
+                pd = typeManager.getPropertyDescriptor(wpd.getId());
             }
 
             pd.setProperty(wpd.getName());
             pd.setDescription(wpd.getDescription());
             pd.setMultivalued(wpd.isMultiValued());
 
-            registry.savePropertyDescriptor(pd);
+            typeManager.savePropertyDescriptor(pd);
 
             wpd.setId(pd.getId());
-        } catch (RegistryException e) {
-            log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
         } catch (DuplicateItemException e) {
             throw new ItemExistsException();
         } catch (NotFoundException e) {
@@ -1286,7 +1260,8 @@ public class RegistryServiceImpl implements RegistryService {
             ArtifactVersion artifact = registry.getArtifactVersion(artifactVersionId);
 
             WGovernanceInfo gov = new WGovernanceInfo();
-            Phase phase = artifact.getPhase();
+            
+            Phase phase = (Phase) artifact.getProperty(Registry.PRIMARY_LIFECYCLE);
             gov.setCurrentPhase(phase.getName());
             gov.setLifecycle(phase.getLifecycle().getName());
 
@@ -1315,45 +1290,9 @@ public class RegistryServiceImpl implements RegistryService {
         return wNextPhases;
     }
 
-    public TransitionResponse transition(String artifactVersionId, String nextPhaseId) throws RPCException, ItemNotFoundException {
-        try {
-            ArtifactVersion artifact = registry.getArtifactVersion(artifactVersionId);
-            Workspace w = (Workspace) artifact.getParent().getParent();
-            
-            LifecycleManager lifecycleManager = w.getLifecycleManager();
-            Phase nextPhase = lifecycleManager.getPhaseById(nextPhaseId);
-
-            TransitionResponse tr = new TransitionResponse();
-
-            try {
-                lifecycleManager.transition(artifact, nextPhase, getCurrentUser());
-
-                tr.setSuccess(true);
-            } catch (TransitionException e) {
-                tr.setSuccess(false);
-                tr.addMessage("Phase " + nextPhase.getName() + " isn't a valid next phase!", false);
-            } catch (PolicyException e) {
-                tr.setSuccess(false);
-                for (ApprovalMessage app : e.getApprovals()) {
-                    tr.addMessage(app.getMessage(), app.isWarning());
-                }
-            }
-
-            return tr;
-        } catch (RegistryException e) {
-            log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
-        } catch (NotFoundException e) {
-            throw new ItemNotFoundException();
-        } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
-        }
-    }
-
     // TODO:
-    public TransitionResponse transition(Collection artifactIds, String lifecycle, String phase) throws RPCException, ItemNotFoundException {
-        TransitionResponse tr = new TransitionResponse();
-        return tr;
+    public void transition(Collection artifactIds, String lifecycle, String phase) throws RPCException, ItemNotFoundException {
+        
     }
 
     public Collection getLifecycles() throws RPCException {
@@ -1425,7 +1364,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     public Collection getActivePoliciesForLifecycle(String lifecycleName, String workspaceId)
             throws RPCException {
-        Collection<ArtifactPolicy> pols = null;
+        Collection<Policy> pols = null;
         Lifecycle lifecycle = localLifecycleManager.getLifecycle(lifecycleName);
         try {
             if (workspaceId != null) {
@@ -1447,7 +1386,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     public Collection getActivePoliciesForPhase(String lifecycle, String phaseName, String workspaceId)
             throws RPCException {
-        Collection<ArtifactPolicy> pols = null;
+        Collection<Policy> pols = null;
         Phase phase = localLifecycleManager.getLifecycle(lifecycle).getPhase(phaseName);
         try {
             if (workspaceId != null) {
@@ -1469,9 +1408,9 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     public void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids)
-            throws RPCException, ApplyPolicyException, ItemNotFoundException {
+            throws RPCException, WPolicyException, ItemNotFoundException {
         Lifecycle l = localLifecycleManager.getLifecycle(lifecycle);
-        List<ArtifactPolicy> policies = getArtifactPolicies(ids);
+        List<Policy> policies = getArtifactPolicies(ids);
 
         try {
             if (phase != null) {
@@ -1484,47 +1423,27 @@ public class RegistryServiceImpl implements RegistryService {
                 List<Phase> phases = Arrays.asList(p);
 
                 if (workspace == null || "".equals(workspace)) {
-                    policyManager.setActivePolicies(phases, policies.toArray(new ArtifactPolicy[policies
+                    policyManager.setActivePolicies(phases, policies.toArray(new Policy[policies
                             .size()]));
                 } else {
                     Workspace w = registry.getWorkspace(workspace);
-                    policyManager.setActivePolicies(w, phases, policies.toArray(new ArtifactPolicy[policies
+                    policyManager.setActivePolicies(w, phases, policies.toArray(new Policy[policies
                             .size()]));
                 }
             } else {
                 if (workspace == null || "".equals(workspace)) {
-                    policyManager.setActivePolicies(l, policies.toArray(new ArtifactPolicy[policies.size()]));
+                    policyManager.setActivePolicies(l, policies.toArray(new Policy[policies.size()]));
                 } else {
                     Workspace w = registry.getWorkspace(workspace);
                     policyManager.setActivePolicies(w, l, policies
-                            .toArray(new ArtifactPolicy[policies.size()]));
+                            .toArray(new Policy[policies.size()]));
                 }
             }
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
-        } catch (ArtifactCollectionPolicyException e) {
-            Map<BasicArtifactInfo, Collection<WApprovalMessage>> failures = new HashMap<BasicArtifactInfo, Collection<WApprovalMessage>>();
-            for (Map.Entry<EntryVersion, List<ApprovalMessage>> entry : e.getPolicyFailures().entrySet()) {
-                EntryVersion av = entry.getKey();
-                List<ApprovalMessage> approvals = entry.getValue();
-
-                Artifact a = (Artifact) av.getParent();
-                ArtifactRenderer view = rendererManager.getArtifactRenderer(a.getDocumentType());
-                if (view == null) {
-                    view = rendererManager.getArtifactRenderer(a.getContentType().toString());
-                }
-
-                BasicArtifactInfo info = createBasicArtifactInfo(a, view);
-
-                ArrayList<WApprovalMessage> wapprovals = new ArrayList<WApprovalMessage>();
-                for (ApprovalMessage app : approvals) {
-                    wapprovals.add(new WApprovalMessage(app.getMessage(), app.isWarning()));
-                }
-
-                failures.put(info, wapprovals);
-            }
-            throw new ApplyPolicyException(failures);
+        } catch (PolicyException e) {
+            throw toWeb(e);
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
@@ -1532,43 +1451,55 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    private List<ArtifactPolicy> getArtifactPolicies(Collection ids) {
-        List<ArtifactPolicy> policies = new ArrayList<ArtifactPolicy>();
+    private WPolicyException toWeb(PolicyException e) {
+        Map<BasicArtifactInfo, Collection<WApprovalMessage>> failures = new HashMap<BasicArtifactInfo, Collection<WApprovalMessage>>();
+        for (Map.Entry<Item, List<ApprovalMessage>> entry : e.getPolicyFailures().entrySet()) {
+            Item i = entry.getKey();
+            List<ApprovalMessage> approvals = entry.getValue();
+
+            Artifact a = (Artifact) i.getParent();
+            ArtifactRenderer view = rendererManager.getArtifactRenderer(a.getDocumentType());
+            if (view == null) {
+                view = rendererManager.getArtifactRenderer(a.getContentType().toString());
+            }
+
+            BasicArtifactInfo info = createBasicArtifactInfo(a, view);
+
+            ArrayList<WApprovalMessage> wapprovals = new ArrayList<WApprovalMessage>();
+            for (ApprovalMessage app : approvals) {
+                wapprovals.add(new WApprovalMessage(app.getMessage(), app.isWarning()));
+            }
+
+            failures.put(info, wapprovals);
+        }
+        WPolicyException e2 = new WPolicyException(failures);
+        return e2;
+    }
+
+    private List<Policy> getArtifactPolicies(Collection ids) {
+        List<Policy> policies = new ArrayList<Policy>();
         for (Iterator itr = ids.iterator(); itr.hasNext();) {
             String id = (String) itr.next();
 
-            ArtifactPolicy policy = policyManager.getPolicy(id);
+            Policy policy = policyManager.getPolicy(id);
             policies.add(policy);
         }
         return policies;
     }
 
-    private Collection getArtifactPolicyIds(Collection<ArtifactPolicy> pols) {
+    private Collection getArtifactPolicyIds(Collection<Policy> pols) {
         ArrayList<String> polNames = new ArrayList<String>();
-        for (ArtifactPolicy ap : pols) {
+        for (Policy ap : pols) {
             polNames.add(ap.getId());
         }
         return polNames;
     }
 
-    public TransitionResponse setDefault(String artifactVersionId) throws RPCException, ItemNotFoundException {
+    public void setDefault(String artifactVersionId) throws RPCException, ItemNotFoundException, WPolicyException {
         try {
             ArtifactVersion artifact = registry.getArtifactVersion(artifactVersionId);
 
-            TransitionResponse tr = new TransitionResponse();
-
-            try {
-                artifact.setAsDefaultVersion();
-
-                tr.setSuccess(true);
-            } catch (PolicyException e) {
-                tr.setSuccess(false);
-                for (ApprovalMessage app : e.getApprovals()) {
-                    tr.addMessage(app.getMessage(), app.isWarning());
-                }
-            }
-
-            return tr;
+            artifact.setAsDefaultVersion();
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -1576,32 +1507,16 @@ public class RegistryServiceImpl implements RegistryService {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
+        } catch (PolicyException e) {
+            throw toWeb(e);
         }
     }
 
-    public TransitionResponse setEnabled(String artifactVersionId, boolean enabled) throws RPCException,
-                                                                                           ItemNotFoundException {
+    public void setEnabled(String artifactVersionId, boolean enabled) throws RPCException, ItemNotFoundException, WPolicyException {
         try {
             ArtifactVersion artifact = registry.getArtifactVersion(artifactVersionId);
 
-            TransitionResponse tr = new TransitionResponse();
-
-            try {
-                artifact.setEnabled(enabled);
-
-                if (!enabled) {
-                    return null;
-                }
-
-                tr.setSuccess(true);
-            } catch (PolicyException e) {
-                tr.setSuccess(false);
-                for (ApprovalMessage app : e.getApprovals()) {
-                    tr.addMessage(app.getMessage(), app.isWarning());
-                }
-            }
-
-            return tr;
+            artifact.setEnabled(enabled);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -1609,13 +1524,15 @@ public class RegistryServiceImpl implements RegistryService {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
+        } catch (PolicyException e) {
+            throw toWeb(e);
         }
     }
 
     public Collection getPolicies() throws RPCException {
-        Collection<ArtifactPolicy> policies = policyManager.getPolicies();
+        Collection<Policy> policies = policyManager.getPolicies();
         List<WArtifactPolicy> gwtPolicies = new ArrayList<WArtifactPolicy>();
-        for (ArtifactPolicy p : policies) {
+        for (Policy p : policies) {
             gwtPolicies.add(toWeb(p));
         }
         Collections.sort(gwtPolicies, new Comparator<WArtifactPolicy>() {
@@ -1702,7 +1619,7 @@ public class RegistryServiceImpl implements RegistryService {
         return l;
     }
 
-    private WArtifactPolicy toWeb(ArtifactPolicy p) {
+    private WArtifactPolicy toWeb(Policy p) {
         WArtifactPolicy wap = new WArtifactPolicy();
         wap.setId(p.getId());
         wap.setDescription(p.getDescription());
@@ -1805,6 +1722,10 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void setRegistry(Registry registry) {
         this.registry = registry;
+    }
+
+    public void setTypeManager(TypeManager typeManager) {
+        this.typeManager = typeManager;
     }
 
     public void setLifecycleManager(LifecycleManager lifecycleManager) {

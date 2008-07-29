@@ -17,12 +17,12 @@ import org.mule.galaxy.ContentService;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.GalaxyException;
 import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.PropertyDescriptor;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.impl.content.JarContentHandler;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.type.PropertyDescriptor;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
@@ -140,23 +140,19 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin
     protected void registerJarPropertyDescriptors()
             throws RegistryException, AccessException, DuplicateItemException, NotFoundException
     {
-        registry.savePropertyDescriptor(new PropertyDescriptor("jar.entries", "JAR Contents List", true));
-        registry.savePropertyDescriptor(new PropertyDescriptor("jar.manifest.foo",
-                                                               "A placeholder property. Actual MANIFEST.MF " +
-                                                               "keys are prefixed with 'jar.manifest.'",
-                                                               false));
-        registry.savePropertyDescriptor(new PropertyDescriptor("jar.osgi.Export-Package", "OSGi Package Exports", true));
-        registry.savePropertyDescriptor(new PropertyDescriptor("jar.osgi.Import-Package", "OSGi Package Imports", true));
-        registry.savePropertyDescriptor(new PropertyDescriptor("jar.osgi.Ignore-Package", "OSGi Ignore Packages", true));
-        registry.savePropertyDescriptor(new PropertyDescriptor("jar.osgi.Private-Package", "OSGi Private Packages", true));
+        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.entries", "JAR Contents List", true));
+        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.osgi.Export-Package", "OSGi Package Exports", true));
+        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.osgi.Import-Package", "OSGi Package Imports", true));
+        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.osgi.Ignore-Package", "OSGi Ignore Packages", true));
+        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.osgi.Private-Package", "OSGi Private Packages", true));
     }
 
     protected void registerJavaAnnotationsPropertyDescriptors()
             throws RegistryException, AccessException, DuplicateItemException, NotFoundException
     {
-        registry.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.class", "Java Class-Level Annotations", true));
-        registry.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.field", "Java Field-Level Annotations", true));
-        registry.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.method", "Java Method-Level Annotations", true));
-        registry.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.param", "Java Param-Level Annotations", true));
+        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.class", "Java Class-Level Annotations", true));
+        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.field", "Java Field-Level Annotations", true));
+        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.method", "Java Method-Level Annotations", true));
+        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.param", "Java Param-Level Annotations", true));
     }
 }

@@ -193,7 +193,6 @@ public class ArtifactPanel extends AbstractComposite {
 
     private void initTabs(ArtifactVersionInfo version) {
         artifactTabs.add(new ArtifactInfoPanel(galaxy, menuPanel, group, info, version, this, params), "Info");
-        artifactTabs.add(new GovernancePanel(galaxy, menuPanel, version), "Governance");
         artifactTabs.add(new HistoryPanel(galaxy, menuPanel, info), "History");
         if (galaxy.hasPermission("MANAGE_GROUPS")) {
             artifactTabs.add(new ItemGroupPermissionPanel(galaxy, menuPanel, info.getId(), SecurityService.ARTIFACT_PERMISSIONS), "Security");

@@ -3,10 +3,9 @@ package org.mule.galaxy.lifecycle;
 import java.util.Collection;
 
 import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.policy.PolicyException;
-import org.mule.galaxy.security.User;
 
 public interface LifecycleManager {
     
@@ -16,11 +15,8 @@ public interface LifecycleManager {
     
     void setDefaultLifecycle(Lifecycle l);
     
-    boolean isTransitionAllowed(EntryVersion a, Phase p);
-    
-    void transition(EntryVersion a, Phase p, User user) 
-        throws TransitionException, PolicyException;
-    
+    boolean isTransitionAllowed(Item item, String property, Phase p);
+
     Lifecycle getLifecycle(String lifecycleName);
 
     Lifecycle getLifecycleById(String id);

@@ -20,4 +20,6 @@ public abstract class ItemMetadataHandler {
     public abstract void setLocked(AbstractItem o, String name, boolean locked);
 
     public abstract void setVisible(AbstractItem o, String property, boolean visible);
+
+    public abstract Object getInternalProperty(String name);
 }

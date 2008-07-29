@@ -21,6 +21,7 @@ package org.mule.galaxy.web.client.artifact;
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.property.EntryMetadataPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
@@ -125,7 +126,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
         });
         
         panel.add(newSpacer());
-        panel.add(new ArtifactMetadataPanel(galaxy, errorPanel, info, version));
+        panel.add(new EntryMetadataPanel(galaxy, errorPanel, info, version));
         panel.add(newSpacer());
         
         initComments();

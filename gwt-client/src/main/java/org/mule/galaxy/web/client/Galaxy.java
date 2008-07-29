@@ -20,6 +20,7 @@ package org.mule.galaxy.web.client;
 import org.mule.galaxy.web.client.activity.ActivityPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.artifact.ArtifactPanel;
+import org.mule.galaxy.web.client.property.PropertyPanelFactory;
 import org.mule.galaxy.web.client.registry.ArtifactForm;
 import org.mule.galaxy.web.client.registry.BrowsePanel;
 import org.mule.galaxy.web.client.registry.SearchPanel;
@@ -85,7 +86,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
     private int adminTabIndex;
     private BrowsePanel browsePanel;
     protected FlowPanel base;
-
+    protected PropertyPanelFactory propertyPanelFactory = new PropertyPanelFactory();
+    
     /**
      * This is the entry point method.
      */
@@ -336,6 +338,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
         History.newItem(token);
 
         ep.setMessage(message);
+    }
+
+    public PropertyPanelFactory getPropertyPanelFactory() {
+        return propertyPanelFactory;
     }
 
     public RegistryServiceAsync getRegistryService() {

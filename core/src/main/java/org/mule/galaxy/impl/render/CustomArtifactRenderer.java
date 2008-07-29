@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Registry;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.render.ArtifactRenderer;
 import org.mule.galaxy.render.Column;
@@ -34,15 +36,6 @@ public class CustomArtifactRenderer implements ArtifactRenderer {
         columns.add(new Column("Version", true, false, new ColumnEvaluator() {
             public Object getValue(Object artifact) {
                 return ((Artifact) artifact).getDefaultOrLastVersion().getVersionLabel();
-            }
-        }));
-        columns.add(new Column("Phase", true, false, new ColumnEvaluator() {
-            public Object getValue(Object artifact) {
-                Phase p = ((Artifact) artifact).getDefaultOrLastVersion().getPhase();
-                if (p != null)
-                    return p.getName();
-                
-                return "";
             }
         }));
     }

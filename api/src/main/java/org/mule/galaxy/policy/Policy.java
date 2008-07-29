@@ -1,7 +1,6 @@
 package org.mule.galaxy.policy;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 
 import java.util.Collection;
@@ -11,7 +10,7 @@ import java.util.Collection;
  * For instance, you could implement a WSDL versioning policy which enforced backward 
  * compatability.
  */
-public interface ArtifactPolicy {
+public interface Policy {
     
     String getId();
     
@@ -19,9 +18,9 @@ public interface ArtifactPolicy {
     
     String getDescription();
     
-    boolean applies(Artifact a);
+    boolean applies(Item item);
     
-    Collection<ApprovalMessage> isApproved(Artifact a, ArtifactVersion previous, ArtifactVersion next);
+    Collection<ApprovalMessage> isApproved(Item item);
     
     void setRegistry(Registry registry);
 }

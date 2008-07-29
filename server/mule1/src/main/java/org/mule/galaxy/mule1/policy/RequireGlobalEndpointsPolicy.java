@@ -1,12 +1,5 @@
 package org.mule.galaxy.mule1.policy;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactPolicy;
-import org.mule.galaxy.util.Constants;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,10 +9,18 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.policy.ApprovalMessage;
+import org.mule.galaxy.policy.Policy;
+import org.mule.galaxy.util.Constants;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-public class RequireGlobalEndpointsPolicy implements ArtifactPolicy
+public class RequireGlobalEndpointsPolicy extends AbstractMulePolicy
 {
     public static final String ID = "RequireGlobalEPPolicy";
 
@@ -32,9 +33,6 @@ public class RequireGlobalEndpointsPolicy implements ArtifactPolicy
         xpath = factory.newXPath().compile("/mule-configuration/*/mule-descriptor/endpoint");
     }
 
-    public boolean applies(Artifact a) {
-        return Constants.MULE_QNAME.equals(a.getDocumentType());
-    }
 
     public String getDescription() {
         return "Requires all All Endpoints are defined as top level Endpoints";
@@ -48,10 +46,10 @@ public class RequireGlobalEndpointsPolicy implements ArtifactPolicy
         return "Mule: Require Non-Local Endpoints Policy";
     }
 
-    public Collection<ApprovalMessage> isApproved(Artifact a, ArtifactVersion previous, ArtifactVersion next) {
+    public Collection<ApprovalMessage> isApproved(Item item) {
         try {
 
-            NodeList result = (NodeList) xpath.evaluate((Document) next.getData(), XPathConstants.NODESET);
+            NodeList result = (NodeList) xpath.evaluate((Document) ((ArtifactVersion) item).getData(), XPathConstants.NODESET);
 
             if (result.getLength() > 0) {
                 return Arrays.asList(new ApprovalMessage("The Mule configuration contains local endpoints!", false));

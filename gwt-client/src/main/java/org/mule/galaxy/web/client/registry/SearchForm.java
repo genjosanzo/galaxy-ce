@@ -25,15 +25,13 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
@@ -48,7 +46,7 @@ public class SearchForm
     protected FlowPanel panel;
     private FlowPanel fieldPanel;
     private Set rows;
-    private Map artifactPropertyMap;
+    private List propertyDescriptors;
     private Button searchButton;
     private Button clearButton;
     private InlineFlowPanel buttonPanel;
@@ -67,10 +65,10 @@ public class SearchForm
         
         fieldPanel = new FlowPanel();
         
-        galaxy.getRegistryService().getPropertyList(new AbstractCallback(this) {
+        galaxy.getRegistryService().getPropertyDescriptors(new AbstractCallback(this) {
             
             public void onSuccess(Object o) {
-                initArtifactProperties((Map) o);
+                initArtifactProperties((List) o);
             }
         });
 
@@ -158,18 +156,18 @@ public class SearchForm
         searchButton.addClickListener(listener);
     }
     
-    public void initArtifactProperties(Map map) {
-        artifactPropertyMap = map;
+    public void initArtifactProperties(List pds) {
+        propertyDescriptors = pds;
         for (Iterator itr = rows.iterator(); itr.hasNext();) {
             SearchFormRow row = (SearchFormRow) itr.next();
-            row.addPropertySet("----", artifactPropertyMap);
+            row.addPropertySet("----", propertyDescriptors);
         }
     }
     
     public SearchFormRow addPredicate() {
         SearchFormRow pred = new SearchFormRow(this);
-        if (artifactPropertyMap != null)
-            pred.addPropertySet("Properties:", artifactPropertyMap);
+        if (propertyDescriptors != null)
+            pred.addPropertySet("Properties:", propertyDescriptors);
         
         fieldPanel.insert(pred, fieldPanel.getWidgetCount());
         rows.add(pred);

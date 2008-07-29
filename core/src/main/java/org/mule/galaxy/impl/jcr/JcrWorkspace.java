@@ -18,6 +18,7 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Entry;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.collab.CommentManager;
@@ -36,6 +37,7 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
     private List<Workspace> workspaces;
     private Lifecycle lifecycle;
     private final JcrWorkspaceManager manager;
+    private List<Item> items;
     
     public JcrWorkspace(JcrWorkspaceManager manager, 
         Node node) throws RepositoryException  {
@@ -72,13 +74,38 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
                         workspaces.add(new JcrWorkspace(manager, n));
                     }
                 }
-                Collections.sort(workspaces, new WorkspaceComparator());
+                Collections.sort(workspaces, new ItemComparator());
             } catch (RepositoryException e) {
                 throw new RuntimeException(e);
             } 
         }
         
         return workspaces;
+    }
+
+    public List<Item> getItems() {
+        if (items == null) {
+            items = new ArrayList<Item>();
+            try {
+                NodeIterator nodes = node.getNodes();
+                while (nodes.hasNext()) {
+                    Node n = nodes.nextNode();
+                    
+                    if (n.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
+                        items.add(new JcrWorkspace(manager, n));
+                    } else if (n.getPrimaryNodeType().getName().equals("galaxy:entry")) {
+                        items.add(new JcrEntry(this, n, manager));
+                    } else if (n.getPrimaryNodeType().getName().equals("galaxy:artifact")) {
+                        items.add(new JcrArtifact(this, n, manager));
+                    }
+                }
+                Collections.sort(items, new ItemComparator());
+            } catch (RepositoryException e) {
+                throw new RuntimeException(e);
+            } 
+        }
+        
+        return items;
     }
 
     public Node getNode() {

@@ -1,23 +1,5 @@
 package org.mule.galaxy.impl.plugin;
 
-import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.Dao;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.impl.jcr.JcrUtil;
-import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
-import org.mule.galaxy.index.IndexManager;
-import org.mule.galaxy.plugin.Plugin;
-import org.mule.galaxy.plugin.PluginInfo;
-import org.mule.galaxy.plugin.PluginManager;
-import org.mule.galaxy.plugins.config.jaxb.ArtifactPolicyType;
-import org.mule.galaxy.plugins.config.jaxb.GalaxyArtifactType;
-import org.mule.galaxy.plugins.config.jaxb.GalaxyPoliciesType;
-import org.mule.galaxy.plugins.config.jaxb.GalaxyType;
-import org.mule.galaxy.policy.ArtifactPolicy;
-import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.render.RendererManager;
-import org.mule.galaxy.util.SecurityUtils;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -33,6 +15,24 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.Dao;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+import org.mule.galaxy.index.IndexManager;
+import org.mule.galaxy.plugin.Plugin;
+import org.mule.galaxy.plugin.PluginInfo;
+import org.mule.galaxy.plugin.PluginManager;
+import org.mule.galaxy.plugins.config.jaxb.ArtifactPolicyType;
+import org.mule.galaxy.plugins.config.jaxb.GalaxyArtifactType;
+import org.mule.galaxy.plugins.config.jaxb.GalaxyPoliciesType;
+import org.mule.galaxy.plugins.config.jaxb.GalaxyType;
+import org.mule.galaxy.policy.Policy;
+import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.render.RendererManager;
+import org.mule.galaxy.type.TypeManager;
+import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -56,6 +56,7 @@ public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo>
     private ApplicationContext context;
     private JcrTemplate jcrTemplate;
     private List<Plugin> plugins = new ArrayList<Plugin>();
+    private TypeManager typeManager;
     
     public PluginManagerImpl() throws Exception {
         super(PluginInfo.class, "plugins", true);
@@ -152,6 +153,7 @@ public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo>
                             plugin.setRegistry(registry);
                             plugin.setRendererManager(rendererManager);
                             plugin.setPolicyManager(policyManager);
+                            plugin.setTypeManager(typeManager);
                             
                             plugins.add(plugin);
                         }
@@ -160,7 +162,7 @@ public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo>
                         if (policies != null) {
                             for (ArtifactPolicyType p : policies.getArtifactPolicy()) {
                                 Class clazz = ClassUtils.forName(p.getClazz());
-                                ArtifactPolicy policy = (ArtifactPolicy)clazz.newInstance();
+                                Policy policy = (Policy)clazz.newInstance();
                                 policy.setRegistry(registry);
                                 policyManager.addPolicy(policy);
                             }
@@ -201,4 +203,8 @@ public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo>
     {
         this.policyManager = policyManager;
     }
+    public void setTypeManager(TypeManager typeManager) {
+        this.typeManager = typeManager;
+    }
+    
 }

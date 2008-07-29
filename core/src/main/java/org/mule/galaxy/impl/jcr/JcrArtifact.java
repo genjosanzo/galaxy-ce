@@ -127,6 +127,16 @@ public class JcrArtifact extends JcrEntry implements Artifact {
     }
 
     @Override
+    public Object getInternalProperty(String name) {
+        return getDefaultOrLastVersion().getInternalProperty(name);
+    }
+
+    @Override
+    public void setInternalProperty(String name, Object value) throws PropertyException, PolicyException {
+        getDefaultOrLastVersion().setInternalProperty(name, value);
+    }
+
+    @Override
     public void setVisible(String name, boolean visible) {
         update();
         getDefaultOrLastVersion().setVisible(name, visible);
@@ -151,11 +161,15 @@ public class JcrArtifact extends JcrEntry implements Artifact {
     }
 
     public ContentHandler getContentHandler() {
+        if (contentHandler == null) {
+            if (getDocumentType() != null) {
+                contentHandler = manager.getContentService().getContentHandler(getDocumentType());
+            } else {
+                contentHandler = manager.getContentService().getContentHandler(getContentType());
+            }
+        }
         return contentHandler;
     }
 
-    public void setContentHandler(ContentHandler contentHandler) {
-        this.contentHandler = contentHandler;
-    }
 
 }

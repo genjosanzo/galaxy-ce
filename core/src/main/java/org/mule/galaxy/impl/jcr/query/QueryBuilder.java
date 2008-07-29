@@ -1,10 +1,14 @@
 package org.mule.galaxy.impl.jcr.query;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.OpRestriction.Operator;
 
 public abstract class QueryBuilder {
-    private String[] properties;
+    protected Collection<String> properties = new ArrayList<String>();
     private boolean artifactProperty;
     
     public QueryBuilder(boolean artifactProperty) {
@@ -13,11 +17,13 @@ public abstract class QueryBuilder {
 
     public QueryBuilder(String[] properties, boolean artifactProperty) {
         super();
-        this.properties = properties;
+        if (properties != null) {
+            Collections.addAll(this.properties, properties);
+        }
         this.artifactProperty = artifactProperty;
     }
 
-    public String[] getProperties() {
+    public Collection<String> getProperties() {
         return properties;
     }
 

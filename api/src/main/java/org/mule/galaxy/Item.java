@@ -19,9 +19,13 @@ public interface Item {
     String getPath();
     
     void setProperty(String name, Object value) throws PropertyException, PolicyException;
+
+    void setInternalProperty(String name, Object value) throws PropertyException, PolicyException;
     
     Object getProperty(String name);
 
+    Object getInternalProperty(String name);
+    
     boolean hasProperty(String name);
 
     Iterator<PropertyInfo> getProperties();

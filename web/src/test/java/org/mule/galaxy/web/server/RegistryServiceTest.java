@@ -10,36 +10,32 @@ import java.util.Set;
 
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.providers.AuthenticationProvider;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.EntryResult;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.PropertyDescriptor;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.ArtifactPolicy;
+import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.test.AbstractGalaxyTest;
+import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
 import org.mule.galaxy.web.rpc.BasicArtifactInfo;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
-import org.mule.galaxy.web.rpc.TransitionResponse;
 import org.mule.galaxy.web.rpc.WApprovalMessage;
 import org.mule.galaxy.web.rpc.WComment;
-import org.mule.galaxy.web.rpc.WGovernanceInfo;
 import org.mule.galaxy.web.rpc.WIndex;
 import org.mule.galaxy.web.rpc.WLifecycle;
-import org.mule.galaxy.web.rpc.WPhase;
+import org.mule.galaxy.web.rpc.WPolicyException;
 import org.mule.galaxy.web.rpc.WProperty;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 import org.mule.galaxy.web.rpc.WUser;
 import org.mule.galaxy.web.rpc.WWorkspace;
-import org.springframework.context.ApplicationContext;
 
 public class RegistryServiceTest extends AbstractGalaxyTest {
     protected RegistryService gwtRegistry;
@@ -229,43 +225,36 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         Collection versions = ext.getVersions();
         ArtifactVersionInfo v = (ArtifactVersionInfo) versions.iterator().next();
+     
+        Phase created = lifecycleManager.getLifecycle("Default").getPhase("Created");
         
-        WGovernanceInfo gov = gwtRegistry.getGovernanceInfo(v.getId());
+        WProperty property = v.getProperty(Registry.PRIMARY_LIFECYCLE);
+        assertNotNull(property);
+        assertNotNull(property.getListValue());
         
-        assertEquals("Created", gov.getCurrentPhase());
+        List ids = property.getListValue();
+        assertEquals(created.getId(), ids.get(1));
         
-        Collection nextPhases = gov.getNextPhases();
-        assertNotNull(nextPhases);
-        assertEquals(1, nextPhases.size());
-        
-        WPhase next = (WPhase) nextPhases.iterator().next();
-        TransitionResponse res = gwtRegistry.transition(v.getId(), next.getId());
-        
-        assertTrue(res.isSuccess());
+        Phase developed = created.getNextPhases().iterator().next();
+        gwtRegistry.setProperty(a.getId(), Registry.PRIMARY_LIFECYCLE, Arrays.asList(developed.getLifecycle().getId(), developed.getId()));
         
         // activate a policy which will make transitioning fail
         FauxPolicy policy = new FauxPolicy();
         policyManager.addPolicy(policy);
 
         // Try transitioning
-        gov = gwtRegistry.getGovernanceInfo(v.getId());
-        
-        nextPhases = gov.getNextPhases();
-        assertNotNull(nextPhases);
-        assertEquals(1, nextPhases.size());
-
-        next = (WPhase) nextPhases.iterator().next();
-        
-        policyManager.setActivePolicies(Arrays.asList(lifecycleManager.getPhaseById(next.getId())), policy);
-        
-        res = gwtRegistry.transition(v.getId(), next.getId());
-        
-        assertFalse(res.isSuccess());
-        assertEquals(1, res.getMessages().size());
-        
-        WApprovalMessage msg = (WApprovalMessage) res.getMessages().iterator().next();
-        assertEquals("Not approved", msg.getMessage());
-        assertFalse(msg.isWarning());
+        Phase tested = created.getNextPhases().iterator().next();
+        try {
+            gwtRegistry.setProperty(a.getId(), Registry.PRIMARY_LIFECYCLE, Arrays.asList(tested.getLifecycle().getId(), tested.getId()));
+        } catch (WPolicyException e) {
+            assertEquals(1, e.getPolicyFailures().size());
+            
+            List messages = (List) e.getPolicyFailures().values().iterator().next();
+            
+            WApprovalMessage msg = (WApprovalMessage) messages.iterator().next();
+            assertEquals("Not approved", msg.getMessage());
+            assertFalse(msg.isWarning());
+        }
     }
     
     public void testVersioningOperations() throws Exception {
@@ -287,8 +276,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals("Administrator", info.getAuthorName());
         assertEquals("admin", info.getAuthorUsername());
         
-        TransitionResponse res = gwtRegistry.setDefault(info.getId());
-        assertTrue(res.isSuccess());
+        gwtRegistry.setDefault(info.getId());
     }
     
     public void testIndexes() throws Exception {
@@ -331,7 +319,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         gwtRegistry.savePropertyDescriptor(wpd);
         
-        PropertyDescriptor pd = registry.getPropertyDescriptor(wpd.getId());
+        PropertyDescriptor pd = typeManager.getPropertyDescriptor(wpd.getId());
         
         assertNotNull(pd);
     }
@@ -350,12 +338,12 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals("name", sp.getProperty());
         assertEquals("foo", sp.getValue());
     }
-    private final class FauxPolicy implements ArtifactPolicy {
+    private final class FauxPolicy implements Policy {
         public String getDescription() {
             return "Faux policy description";
         }
 
-        public boolean applies(Artifact a) {
+        public boolean applies(Item item) {
             return true;
         }
 
@@ -367,7 +355,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
             return "Faux policy";
         }
 
-        public Collection<ApprovalMessage> isApproved(Artifact a, ArtifactVersion previous, ArtifactVersion next) {
+        public Collection<ApprovalMessage> isApproved(Item item) {
             return Arrays.asList(new ApprovalMessage("Not approved"));
         }
 

@@ -22,12 +22,12 @@ import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.PageInfo;
-import org.mule.galaxy.web.client.artifact.ArtifactCollectionPolicyResultsPanel;
+import org.mule.galaxy.web.client.artifact.PolicyResultsPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LifecycleSelectionPanel;
 import org.mule.galaxy.web.client.util.PolicySelectionPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ApplyPolicyException;
+import org.mule.galaxy.web.rpc.WPolicyException;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 
 import com.google.gwt.user.client.History;
@@ -125,8 +125,8 @@ public class PolicyPanel extends AbstractComposite {
             public void onFailure(Throwable caught) {
                 reenable();
                 
-                if (caught instanceof ApplyPolicyException) {
-                    handlePolicyFailure((ApplyPolicyException) caught);
+                if (caught instanceof WPolicyException) {
+                    handlePolicyFailure(galaxy, (WPolicyException) caught);
                 } else {
                     super.onFailure(caught);
                 }
@@ -178,10 +178,10 @@ public class PolicyPanel extends AbstractComposite {
 
     }
 
-    protected void handlePolicyFailure(final ApplyPolicyException caught) {
+    public static void handlePolicyFailure(Galaxy galaxy, WPolicyException caught) {
         PageInfo page = 
             galaxy.createPageInfo("policy-failure-" + caught.hashCode(), 
-                                  new ArtifactCollectionPolicyResultsPanel(galaxy, caught.getPolicyFailures()),
+                                  new PolicyResultsPanel(galaxy, caught.getPolicyFailures()),
                                   0);
         
         History.newItem(page.getName());
