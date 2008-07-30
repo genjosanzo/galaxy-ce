@@ -16,6 +16,7 @@
     <property name="contentService" ref="contentService"/>
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
+    <property name="typeManager" ref="typeManager" />
     <property name="indexArtifactsAsynchronously" value="false"/>
   </bean>
   
