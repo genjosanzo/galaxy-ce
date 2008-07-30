@@ -125,7 +125,6 @@ public abstract class AbstractEditPropertyPanel extends PropertyPanel {
         AbstractCallback saveCallback = new AbstractCallback(errorPanel) {
 
             public void onFailure(Throwable caught) {
-                
                 onSaveFailure(caught, this);
             }
 
@@ -135,6 +134,10 @@ public abstract class AbstractEditPropertyPanel extends PropertyPanel {
                 onSave(value);
                 
                 showView();
+                
+                if (saveListener != null) {
+                    saveListener.onClick(save);
+                }
             }
             
         };

@@ -63,8 +63,10 @@ public class LinkExtension extends IdentifiableExtension<Link> {
         final PropertyDescriptor pd = new PropertyDescriptor(property, name, true);
         pd.setExtension(this);
         
+        List<String> keys = getPropertyDescriptorConfigurationKeys();
         HashMap<String, String> configuration = new HashMap<String, String>();
-        configuration.put(configuration.get(0), inverse);
+        configuration.put(keys.get(0), inverse);
+        pd.setConfiguration(configuration);
         
         SecurityUtils.doPriveleged(new Runnable() {
 

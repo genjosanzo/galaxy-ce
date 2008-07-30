@@ -13,6 +13,7 @@ import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WProperty;
+import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 
 /**
  * Encapsulates the rendering and editing of a property value.
@@ -131,5 +132,4 @@ public abstract class PropertyPanel extends AbstractComposite {
     }
 
     public abstract void showEdit();
-    
 }

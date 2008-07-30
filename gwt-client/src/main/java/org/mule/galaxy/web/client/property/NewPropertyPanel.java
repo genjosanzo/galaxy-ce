@@ -127,6 +127,7 @@ public class NewPropertyPanel extends Composite {
         renderer = galaxy.getPropertyPanelFactory().createRenderer(pd.getExtension(), pd.isMultiValued());
         
         property = new WProperty(pd.getName(), pd.getDescription(), null, pd.getExtension(), false);
+        property.setMultiValued(pd.isMultiValued());
         renderer.setProperty(property);
         renderer.setGalaxy(galaxy);
         renderer.setItemId(itemId);

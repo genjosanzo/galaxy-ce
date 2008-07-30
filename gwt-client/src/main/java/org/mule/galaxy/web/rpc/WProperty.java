@@ -34,6 +34,7 @@ public class WProperty implements IsSerializable {
      */
     private List listValue;
     private String extension;
+    private boolean multiValued;
     
     public WProperty(String name, String description, 
                      Object value, String extension,
@@ -56,7 +57,7 @@ public class WProperty implements IsSerializable {
     }
 
     public boolean isMultiValued() {
-        return listValue != null;
+        return multiValued;
     }
     
     public boolean isLocked() {
@@ -86,14 +87,20 @@ public class WProperty implements IsSerializable {
             this.value = (String) value;
         } else if (value instanceof List) {
             this.listValue = (List) value;
+            multiValued = true;
         } else if (value instanceof Collection) {
             this.listValue = new ArrayList();
             listValue.addAll((Collection) value);
+            multiValued = true;
         }
     }
 
     public List getListValue() {
         return listValue;
+    }
+
+    public void setMultiValued(boolean multiValued) {
+        this.multiValued = multiValued;
     }
     
 }
