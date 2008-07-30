@@ -15,7 +15,7 @@ import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WPhase;
 
-public class LifecyclePropertyPanel extends PropertyPanel {
+public class LifecyclePropertyPanel extends AbstractEditPropertyPanel {
 
     private FlexTable lifecycleTable;
     private Label valueLabel;

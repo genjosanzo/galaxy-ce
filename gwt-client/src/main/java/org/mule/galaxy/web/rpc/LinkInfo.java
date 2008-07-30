@@ -21,28 +21,29 @@ package org.mule.galaxy.web.rpc;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class LinkInfo implements IsSerializable {
-    public static final int TYPE_ARTIFACT = 0;
-    public static final int TYPE_ARTIFACT_VERSION = 1;
+    public static final int TYPE_ENTRY = 0;
+    public static final int TYPE_ENTRY_VERSION = 1;
     public static final int TYPE_NOT_FOUND = 2;
     
     private boolean autoDetected;
-    private String relationship;
     private String itemName;
     private String itemId;
     private int itemType;
+    private boolean reciprocal;
+    private String linkId;
     
     public LinkInfo() {
         super();
     }
 
-    public LinkInfo(boolean autoDetected, String itemId, String itemName, int itemType,
-                          String relationship) {
+    public LinkInfo(String linkId, boolean autoDetected, String itemId, String itemName, int itemType, boolean reciprocal) {
         super();
+        this.linkId = linkId;
         this.autoDetected = autoDetected;
         this.itemId = itemId;
         this.itemName = itemName;
         this.itemType = itemType;
-        this.relationship = relationship;
+        this.reciprocal = reciprocal;
     }
 
     public boolean isAutoDetected() {
@@ -51,14 +52,6 @@ public class LinkInfo implements IsSerializable {
 
     public void setAutoDetected(boolean autoDetected) {
         this.autoDetected = autoDetected;
-    }
-
-    public String getRelationship() {
-        return relationship;
-    }
-
-    public void setRelationship(String relationship) {
-        this.relationship = relationship;
     }
 
     public String getItemName() {
@@ -84,4 +77,17 @@ public class LinkInfo implements IsSerializable {
     public void setItemType(int itemType) {
         this.itemType = itemType;
     }
+
+    public boolean isReciprocal() {
+        return reciprocal;
+    }
+
+    public void setReciprocal(boolean reciprocal) {
+        this.reciprocal = reciprocal;
+    }
+
+    public String getLinkId() {
+        return linkId;
+    }
+    
 }

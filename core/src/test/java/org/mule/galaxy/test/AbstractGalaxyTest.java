@@ -21,10 +21,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Dao;
 import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.Item;
-import org.mule.galaxy.LinkType;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
@@ -71,7 +69,6 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     protected PluginManager pluginManager;
     protected AccessControlManager accessControlManager;
     protected ArtifactViewManager artifactViewManager;
-    protected Dao<LinkType> linkTypeManager;
     protected TypeManager typeManager;
     
     private boolean participate;

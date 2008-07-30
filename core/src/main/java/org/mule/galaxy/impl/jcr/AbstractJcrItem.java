@@ -5,16 +5,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.UUID;
 
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
@@ -22,8 +18,6 @@ import javax.jcr.Value;
 
 import org.apache.jackrabbit.value.StringValue;
 import org.mule.galaxy.Item;
-import org.mule.galaxy.Link;
-import org.mule.galaxy.LinkType;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.RegistryException;
@@ -43,8 +37,7 @@ public abstract class AbstractJcrItem implements Item {
     public static final String LOCKED = ".locked";
     public static final String VISIBLE = ".visible";
     public static final String UPDATED = "updated";
-    public static final String LINKS = "dependencies";
-    private static final String LINK_NODE_TYPE = "galaxy:link";
+    
     protected Node node;
     private JcrWorkspaceManager manager;
     private Map<String, Object> propertyCache = new HashMap<String, Object>();
@@ -123,7 +116,7 @@ public abstract class AbstractJcrItem implements Item {
                 propertyCache.remove(name);
             } else {
                 ensureProperty(name);
-                propertyCache.put(name, origValue);
+//                propertyCache.put(name, origValue);
             }
 
             final String message = MessageFormat.format("Property {0} of {1} was set to: {2}", name, getPath(), value);
@@ -334,57 +327,6 @@ public abstract class AbstractJcrItem implements Item {
         try {
             node.setProperty(UPDATED, DateUtil.getCalendarForNow());
         } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void addLinks(Set<Item> links, boolean autoDetected, LinkType type) {
-        try {
-            Node linksNode = JcrUtil.getOrCreate(node, LINKS);
-            
-            for (Item i : links) {
-                addLink(autoDetected, linksNode, i, type);
-            }
-
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void addLink(boolean autoDetected, Node linksNode, Item item, LinkType type) throws RepositoryException {
-        Node dep = linksNode.addNode(UUID.randomUUID().toString(), LINK_NODE_TYPE);
-        dep.addMixin("mix:referenceable");
-        dep.setProperty(LinkImpl.AUTO_DETECTED, autoDetected);
-        dep.setProperty(LinkImpl.PATH, item.getPath());
-        dep.setProperty(LinkImpl.RELATIONSHIP, type.getId());
-    }
-    
-    public void addLinks(Item[] dependencies, boolean autoDetected, LinkType type) {
-        try {
-            Node linksNode = JcrUtil.getOrCreate(node, LINKS);
-            
-            for (Item i : dependencies) {
-                addLink(autoDetected, linksNode, i, type);
-            }
-
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-    public Set<Link> getLinks() {
-        try {
-            Node linksNode = JcrUtil.getOrCreate(node, LINKS);
-            Set<Link> links = new HashSet<Link>();
-            for (NodeIterator nodes = linksNode.getNodes(); nodes.hasNext();) {
-                Node dep = nodes.nextNode();
-                
-                // wonder if we can avoid the cast here? But the compiler doesn't
-                // like it when AbstractJcrItem extends Item
-                links.add(new LinkImpl((Item)this, dep, (JcrRegistryImpl) manager.getRegistry()));
-            }
-            return links;
-        } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
     }

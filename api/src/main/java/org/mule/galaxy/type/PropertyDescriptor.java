@@ -2,6 +2,7 @@ package org.mule.galaxy.type;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.extension.Extension;
@@ -14,6 +15,7 @@ public class PropertyDescriptor implements Identifiable {
     private boolean multivalued;
     private Extension extension;
     private List<Class> appliesTo;
+    private Map<String, String> configuration;
     
     public PropertyDescriptor(String property, String description, boolean multivalued) {
         super();
@@ -80,5 +82,13 @@ public class PropertyDescriptor implements Identifiable {
 	    appliesTo = new ArrayList<Class>();
 	}
 	appliesTo.add(c);
+    }
+
+    public Map<String, String> getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(Map<String, String> configuration) {
+        this.configuration = configuration;
     }
 }

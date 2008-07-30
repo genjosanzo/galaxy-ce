@@ -1,25 +1,16 @@
 package org.mule.galaxy.impl.jcr;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
-import javax.jcr.Value;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryVersion;
-import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.PolicyException;
-import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
 public class JcrEntryVersion extends AbstractJcrItem implements EntryVersion {

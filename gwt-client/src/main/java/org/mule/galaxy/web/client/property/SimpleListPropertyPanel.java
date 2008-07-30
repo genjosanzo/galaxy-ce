@@ -9,7 +9,7 @@ import java.util.Collection;
 
 import org.mule.galaxy.web.client.util.StringListBox;
 
-public class SimpleListPropertyPanel extends PropertyPanel {
+public class SimpleListPropertyPanel extends AbstractEditPropertyPanel {
 
     private TextBox valueTB;
     private Label valueLabel;

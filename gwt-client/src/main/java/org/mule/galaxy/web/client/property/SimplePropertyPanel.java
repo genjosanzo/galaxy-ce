@@ -4,7 +4,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SimplePropertyPanel extends PropertyPanel {
+public class SimplePropertyPanel extends AbstractEditPropertyPanel {
 
     private TextBox valueTB;
     private Label valueLabel;

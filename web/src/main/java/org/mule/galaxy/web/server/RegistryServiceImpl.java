@@ -43,9 +43,11 @@ import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.ArtifactTypeDao;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Link;
+import org.mule.galaxy.Links;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
@@ -58,7 +60,6 @@ import org.mule.galaxy.activity.ActivityManager.EventType;
 import org.mule.galaxy.collab.Comment;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.EventManager;
-import org.mule.galaxy.event.PropertyChangedEvent;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexManager;
@@ -84,7 +85,6 @@ import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.TypeManager;
-import org.mule.galaxy.util.SecurityUtils;
 import org.mule.galaxy.view.ArtifactView;
 import org.mule.galaxy.view.ArtifactViewManager;
 import org.mule.galaxy.web.client.RPCException;
@@ -772,53 +772,56 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     @SuppressWarnings("unchecked")
-    public Collection getLinks(String artifactId) throws RPCException {
+    public Collection getLinks(String itemId, String property) throws RPCException {
         try {
-            Artifact artifact = registry.getArtifact(artifactId);
+            Item item = registry.getItemById(itemId);
+            Links links = (Links) item.getProperty(property);
+            
             List deps = new ArrayList();
-            EntryVersion latest = artifact.getDefaultOrLastVersion();
-            for (Link l : latest.getLinks()) {
-                deps.add(toWeb(l, false, l.getType().getRelationship()));
+            
+            for (Link l : links.getLinks()) {
+                deps.add(toWeb(l, false));
             }
 
-            for (Link l : registry.getReciprocalLinks(artifact)) {
-                deps.add(toWeb(l, true, l.getType().getReciprocal()));
+            for (Link l : links.getReciprocalLinks()) {
+                deps.add(toWeb(l, true));
             }
 
             return deps;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new RPCException("Could not find artifact " + artifactId);
+            throw new RPCException("Could not find artifact " + itemId);
         }
 
     }
 
-    private Object toWeb(Link l, boolean recip, String relationship) {
-        Item i = recip ? l.getParent() : l.getItem();
+    private Object toWeb(Link l, boolean recip) {
+        Item i = recip ? l.getItem() : l.getLinkedTo();
         String name;
         int itemType;
         String id = null;
 
-        if (i instanceof Artifact) {
-            itemType = LinkInfo.TYPE_ARTIFACT;
-            name = ((Artifact) i).getName();
+        if (i instanceof Entry) {
+            itemType = LinkInfo.TYPE_ENTRY;
+            name = ((Entry) i).getName();
             id = i.getId();
-        } else if (i instanceof ArtifactVersion) {
-            itemType = LinkInfo.TYPE_ARTIFACT_VERSION;
-            ArtifactVersion av = ((ArtifactVersion) i);
+        } else if (i instanceof EntryVersion) {
+            itemType = LinkInfo.TYPE_ENTRY_VERSION;
+            EntryVersion av = ((EntryVersion) i);
             name = av.getParent().getName() + " (" + av.getVersionLabel() + ")";
             id = i.getId();
         } else if (i == null) {
             itemType = LinkInfo.TYPE_NOT_FOUND;
-            name = l.getPath();
+            name = l.getLinkedToPath();
         } else {
             throw new UnsupportedOperationException();
         }
-        return new LinkInfo(l.isAutoDetected(),
+        return new LinkInfo(l.getId(),
+                            l.isAutoDetected(),
                             id,
                             name,
                             itemType,
-                            relationship);
+                            recip);
     }
 
     public ArtifactGroup getArtifact(String artifactId) throws RPCException, ItemNotFoundException {
@@ -1008,7 +1011,7 @@ public class RegistryServiceImpl implements RegistryService {
                 }
                 comment.setParent(c);
             } else {
-                comment.setArtifact(artifact);
+                comment.setItem(artifact);
             }
             commentManager.addComment(comment);
 

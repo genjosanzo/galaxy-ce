@@ -15,7 +15,7 @@ public class CommentTest extends AbstractGalaxyTest {
         Artifact artifact = importHelloWsdl();
         
         Comment c = new Comment();
-        c.setArtifact(artifact);
+        c.setItem(artifact);
         
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());

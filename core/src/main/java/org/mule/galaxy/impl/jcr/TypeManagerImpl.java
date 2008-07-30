@@ -3,6 +3,7 @@ package org.mule.galaxy.impl.jcr;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -10,7 +11,7 @@ import javax.jcr.Session;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Permission;
@@ -57,6 +58,17 @@ public class TypeManagerImpl implements TypeManager {
 
     public void savePropertyDescriptor(PropertyDescriptor pd) throws AccessException, DuplicateItemException, NotFoundException {
         accessControlManager.assertAccess(Permission.MANAGE_PROPERTIES);
+        
+        Map<String, String> config = pd.getConfiguration();
+        if (config != null && pd.getExtension() != null) {
+            Extension extension = pd.getExtension();
+            for (String key : extension.getPropertyDescriptorConfigurationKeys()) {
+                if (!config.keySet().contains(key)) {
+                    throw new RuntimeException("Configuration key " + key + " must be specified.");
+                }
+            }
+        }
+        
         propertyDescriptorDao.save(pd);
     }
     

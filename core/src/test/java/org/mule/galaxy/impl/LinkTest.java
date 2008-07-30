@@ -3,27 +3,23 @@ package org.mule.galaxy.impl;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryResult;
-import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Link;
-import org.mule.galaxy.LinkType;
+import org.mule.galaxy.Links;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.link.LinkExtension;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class LinkTest extends AbstractGalaxyTest {
     
     public void testLinkTypes() throws Exception {
-        List<LinkType> all = linkTypeManager.listAll();
-        assertTrue(all.size() > 0);
-
-        LinkType type = linkTypeManager.get(LinkType.DEPENDS);
-
-        assertNotNull(type);
+        typeManager.getPropertyDescriptorByName(LinkExtension.DEPENDS);
     }
+    
     public void testWsdlDependencies() throws Exception {
 
         Collection<Workspace> workspaces = registry.getWorkspaces();
@@ -36,28 +32,33 @@ public class LinkTest extends AbstractGalaxyTest {
                                                          getResourceAsStream("/wsdl/imports/hello.xsd"), 
                                                          getAdmin());
          
-        Set<Link> deps = schema.getEntryVersion().getLinks();
+        Links links = (Links) schema.getEntryVersion().getProperty(LinkExtension.DEPENDS);
+        Collection<Link> deps = links.getLinks();
         assertEquals(0, deps.size());
         
         EntryResult portType = workspace.createArtifact("application/wsdl+xml", 
-                                                           "hello-portType.wsdl", 
-                                                           "0.1", 
-                                                           getResourceAsStream("/wsdl/imports/hello-portType.wsdl"), 
-                                                           getAdmin());
-        deps = portType.getEntryVersion().getLinks();
+                                                        "hello-portType.wsdl", 
+                                                        "0.1", 
+                                                        getResourceAsStream("/wsdl/imports/hello-portType.wsdl"), 
+                                                        getAdmin());
+        links = (Links) portType.getEntryVersion().getProperty(LinkExtension.DEPENDS);
+        deps = links.getLinks();
         assertEquals(1, deps.size());
         
         Link dep = deps.iterator().next();
-        assertEquals(schema.getEntry().getId(), dep.getItem().getId());
-        assertNotNull(dep.getType());
-        assertEquals("Depends On", dep.getType().getRelationship());
+        Entry schemaEntry = schema.getEntry();
         
+        assertEquals("hello.xsd", dep.getLinkedToPath());
+        assertNotNull(dep.getLinkedTo());
+        assertEquals(schemaEntry.getId(), dep.getLinkedTo().getId());
+
         // figure out if the we can figure out which things link *to* the schema. 
         // We should find the portType
-        Set<Link> reciprocal = registry.getReciprocalLinks(schema.getEntry());
+        links = (Links) schemaEntry.getProperty(LinkExtension.DEPENDS);
+        Collection<Link> reciprocal = links.getReciprocalLinks();
         assertEquals(1, reciprocal.size());
         Link l = reciprocal.iterator().next();
-        Artifact parent = (Artifact) l.getParent().getParent();
+        Artifact parent = (Artifact) l.getItem().getParent();
         assertEquals(portType.getEntry().getId(), parent.getId());
         assertTrue(dep.isAutoDetected());
         
@@ -66,25 +67,28 @@ public class LinkTest extends AbstractGalaxyTest {
                                                           "0.1", 
                                                           getResourceAsStream("/wsdl/imports/hello.wsdl"), 
                                                           getAdmin());
-        deps = svcWsdl.getEntryVersion().getLinks();
+        links = (Links) svcWsdl.getEntryVersion().getProperty(LinkExtension.DEPENDS);
+        deps = links.getLinks();
         assertEquals(1, deps.size());
         
         dep = deps.iterator().next();
-        assertEquals(portType.getEntry().getId(), dep.getItem().getId());
+        assertEquals(portType.getEntry().getId(), dep.getLinkedTo().getId());
         assertTrue(dep.isAutoDetected());
         
         // yeah, this doesn't make sense dependency-wise, but we're just seeing if user specified dependencies work
         EntryVersion schemaV = schema.getEntryVersion();
-        registry.addLinks(schemaV, linkTypeManager.get(LinkType.DEPENDS), svcWsdl.getEntry());
+        links = (Links) schemaV.getProperty(LinkExtension.DEPENDS);
         
-        deps = schemaV.getLinks();
+        links.addLinks(new Link(schemaV, svcWsdl.getEntry(), null, false));
+        
+        deps = links.getLinks();
         assertEquals(1, deps.size());
         dep = deps.iterator().next();
-        assertEquals(svcWsdl.getEntry().getId(), dep.getItem().getId());
+        assertEquals(svcWsdl.getEntry().getId(), dep.getLinkedTo().getId());
         assertFalse(dep.isAutoDetected());
         
-        registry.removeLinks(deps.iterator().next());
-        deps = schemaV.getLinks();
+        links.removeLinks(deps.iterator().next());
+        deps = links.getLinks();
         assertEquals(0, deps.size());
     }
     
@@ -101,7 +105,9 @@ public class LinkTest extends AbstractGalaxyTest {
                                                         getResourceAsStream("/schema/hello.xsd"), 
                                                         getAdmin());
         
-        Set<Link> deps = schema.getEntryVersion().getLinks();
+        Links links = (Links) schema.getEntryVersion().getProperty(LinkExtension.DEPENDS);
+        Collection<Link> deps = links.getLinks();
+        assertNotNull(deps);
         assertEquals(0, deps.size());
         
         EntryResult schema2 = workspace.createArtifact("application/xml", 
@@ -109,11 +115,17 @@ public class LinkTest extends AbstractGalaxyTest {
                                                           "0.1", 
                                                           getResourceAsStream("/schema/hello-import.xsd"), 
                                                           getAdmin());
-         
-        deps = schema2.getEntryVersion().getLinks();
+        
+        EntryVersion s2version = schema2.getEntryVersion();
+        
+        // reload so the cache is fresh
+        s2version = (EntryVersion) registry.getItemById(s2version.getId());
+        
+        links = (Links) s2version.getProperty(LinkExtension.DEPENDS);
+        deps = links.getLinks();
         assertEquals(1, deps.size());
         Link dep = deps.iterator().next();
-        assertEquals(schema.getEntry().getId(), dep.getItem().getId());
+        assertEquals(schema.getEntry().getId(), dep.getLinkedTo().getId());
         assertTrue(dep.isAutoDetected());
     }
     
@@ -124,12 +136,18 @@ public class LinkTest extends AbstractGalaxyTest {
         Workspace workspace = workspaces.iterator().next();
 
         EntryResult svcWsdl = workspace.createArtifact("application/wsdl+xml", 
-                                                          "hello.wsdl", 
-                                                          "0.1", 
-                                                          getResourceAsStream("/wsdl/imports/hello-missing.wsdl"), 
-                                                          getAdmin());
-        Set<Link> deps = svcWsdl.getEntryVersion().getLinks();
-        assertEquals(0, deps.size());
+                                                       "hello.wsdl", 
+                                                       "0.1", 
+                                                       getResourceAsStream("/wsdl/imports/hello-missing.wsdl"), 
+                                                       getAdmin());
+        Links links = (Links) svcWsdl.getEntryVersion().getProperty(LinkExtension.DEPENDS);
+        Collection<Link> deps = links.getLinks();
+        assertEquals(1, deps.size());
+        
+        Link link = deps.iterator().next();
+        assertNull(link.getLinkedTo());
+        assertNotNull(link.getLinkedToPath());
+        
     }
 
 }

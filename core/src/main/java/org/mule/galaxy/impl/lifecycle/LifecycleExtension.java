@@ -5,6 +5,7 @@ import static org.mule.galaxy.util.AbderaUtils.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -161,6 +162,10 @@ public class LifecycleExtension implements Extension, AtomExtension {
         }
         availPhases.setText(sb.toString());
         return availPhases;
+    }
+
+    public List<String> getPropertyDescriptorConfigurationKeys() {
+        return Collections.emptyList();
     }
 
     public boolean isMultivalueSupported() {

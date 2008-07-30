@@ -3,18 +3,16 @@ package org.mule.galaxy.impl.jcr;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
+import org.mule.galaxy.Identifiable;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.impl.jcr.onm.FieldDescriptor;
+import org.mule.galaxy.impl.jcr.onm.FieldPersister;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.Identifiable;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.impl.jcr.onm.FieldDescriptor;
-import org.mule.galaxy.impl.jcr.onm.FieldPersister;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-
-public class ArtifactPersister implements FieldPersister, ApplicationContextAware {
+public class ItemPersister implements FieldPersister, ApplicationContextAware {
     private Registry registry;
     private ApplicationContext context;
     
@@ -37,14 +35,14 @@ public class ArtifactPersister implements FieldPersister, ApplicationContextAwar
     }
 
     public Object build(String id, FieldDescriptor fd, Session session) throws Exception {
-        return getRegistry().getArtifact(id);
+        return getRegistry().getItemById(id);
     }
 
     public void persist(Object o, Node n, FieldDescriptor fd, Session session) throws Exception {
         if (o == null) {
             n.setProperty(fd.getName(), (String) null);
         } else {
-            n.setProperty(fd.getName(), ((Artifact) o).getId());
+            n.setProperty(fd.getName(), ((Item) o).getId());
         }
     }
 

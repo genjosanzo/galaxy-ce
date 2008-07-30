@@ -36,7 +36,6 @@ import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Link;
-import org.mule.galaxy.LinkType;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
@@ -92,8 +91,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private PolicyManager policyManager;
     
     private UserManager userManager;
-    
-    private Dao<LinkType> linkTypeDao;
     
     private String workspacesId;
 
@@ -290,8 +287,14 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         });
     }
 
-    public Artifact resolve(Workspace w, String location) {
+    public Item resolve(Item item, String location) {
         String[] paths = location.split("/");
+        
+        while (!(item instanceof Workspace)) {
+            item = item.getParent();
+        }
+        
+        Workspace w = (Workspace) item;
         
         for (int i = 0; i < paths.length - 1; i++) {
             String p = paths[i];
@@ -929,46 +932,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return simpleQueryBuilder;
     }
 
-    @SuppressWarnings("unchecked")
-    public Set<Link> getReciprocalLinks(final Item item) 
-        throws RegistryException {
-        
-    final JcrRegistryImpl registry = this;
-
-        return (Set<Link>) execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                        
-                QueryManager qm = getQueryManager(session);
-                
-                StringBuilder qstr = new StringBuilder();
-                qstr.append("//element(*, galaxy:link)[jcr:like(@path, '")
-                    .append(item.getPath())
-                    .append("%')]");
-                
-                Set<Link> links = new HashSet<Link>();
-                
-                Query query = qm.createQuery(qstr.toString(), Query.XPATH);
-                
-                QueryResult result = query.execute();
-                
-                for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
-                    final Node linkNode = nodes.nextNode();
-                    
-                    // dependencies->version->artifact
-                    Node versionNode = linkNode.getParent().getParent();
-                    final Node artifactNode = versionNode.getParent();
-                    
-                    JcrWorkspace workspace = new JcrWorkspace(localWorkspaceManager, artifactNode.getParent());
-                    JcrArtifact art = new JcrArtifact(workspace, artifactNode, localWorkspaceManager);
-                    JcrVersion version = new JcrVersion(art, versionNode);
-                    
-                    links.add(new LinkImpl(version, linkNode, registry));
-                }
-                return links;
-            }
-
-        });
-    }
 
     public void initialize() throws Exception {
         
@@ -1043,36 +1006,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return null;
     }
 
-    public void addLinks(Item artifactVersion, final LinkType type, final Item... toLinkTo)
-        throws RegistryException {
-        final AbstractJcrItem jcrItem = (AbstractJcrItem) artifactVersion;
-        if (toLinkTo != null) {
-            execute(new JcrCallback() {
-                public Object doInJcr(Session session) throws IOException, RepositoryException {
-                    jcrItem.addLinks(toLinkTo, false, type);
-                    session.save();
-                    return null;
-                }
-            });
-        }
-    }
-    
-    public void removeLinks(final Link... links)
-        throws RegistryException {
-        if (links != null) {
-            execute(new JcrCallback() {
-                public Object doInJcr(Session session) throws IOException, RepositoryException {
-                    for (Link l : links) {
-                    ((LinkImpl) l).getNode().remove();
-                    }
-                    
-                    session.save();
-                    return null;
-                }
-            });
-        }
-    }
-    
     public void setQueryBuilders(List<QueryBuilder> qbs) {
         queryBuilders = qbs;
     }
@@ -1130,14 +1063,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public UserManager getUserManager() {
         return userManager;
-    }
-
-    public Dao<LinkType> getLinkTypeDao() {
-        return linkTypeDao;
-    }
-
-    public void setLinkTypeDao(Dao<LinkType> linkTypeDao) {
-        this.linkTypeDao = linkTypeDao;
     }
     
     public void setLocalWorkspaceManager(JcrWorkspaceManager localWorkspaceManager) {

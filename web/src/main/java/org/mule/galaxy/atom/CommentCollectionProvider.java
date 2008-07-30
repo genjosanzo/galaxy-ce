@@ -103,7 +103,7 @@ public class CommentCollectionProvider extends AbstractEntityCollectionAdapter<C
 
     @Override
     public String getTitle(Comment c) throws ResponseContextException {
-        return "Comment on " + c.getArtifact().getPath() + " by " + c.getUser().getName();
+        return "Comment on " + c.getItem().getPath() + " by " + c.getUser().getName();
     }
 
     public String getTitle(RequestContext request) {

@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
 
@@ -65,9 +66,9 @@ public class RegistryLocator implements WSDLLocator {
         
         Workspace w = workspace;
         if (importLoc.indexOf("://") == -1) {
-            Artifact artifact = registry.resolve(w, importLoc);
+            Item artifact = registry.resolve(w, importLoc);
             if (artifact != null) {
-                InputStream is = ((ArtifactVersion)artifact.getDefaultOrLastVersion()).getStream();
+                InputStream is = ((ArtifactVersion)((Artifact)artifact).getDefaultOrLastVersion()).getStream();
                 InputSource source = new InputSource(is);
                 source.setSystemId(artifact.getPath());
                 return source;

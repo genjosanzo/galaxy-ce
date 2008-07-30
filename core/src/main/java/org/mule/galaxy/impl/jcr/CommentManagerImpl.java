@@ -34,7 +34,7 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
                 if (!includeChildren) {
                     qstr.append("not(@parent) and"); 
                 }
-                qstr.append("@artifact='")
+                qstr.append("@item='")
                     .append(artifactId)
                     .append("'] order by @date ascending");
                 return query(qstr.toString(), session);

@@ -22,9 +22,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Item;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.impl.MapNamespaceContext;
@@ -76,8 +74,8 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
     }
 
     @Override
-    public Set<Item> detectDependencies(Object o, Workspace w) {
-        HashSet<Item> deps = new HashSet<Item>();
+    public Set<String> detectDependencies(Object o, Workspace w) {
+        HashSet<String> deps = new HashSet<String>();
         try {
             for (XPathExpression expr : imports) {
                 NodeList result = (NodeList) expr.evaluate((Document) o, 
@@ -86,16 +84,11 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
                 for (int i = 0; i < result.getLength(); i++) {
                     Node item = result.item(i);
                     
-                    String location = item.getNodeValue();
-                    
-                    Artifact a = registry.resolve(w, location);
-                    if (a != null) {
-                        deps.add(a);
-                    }
+                    deps.add(item.getNodeValue());
                 }
             }
         } catch (XPathExpressionException e) {
-            e.printStackTrace();
+            // skip
         }
         
         return deps;

@@ -1,13 +1,12 @@
 package org.mule.galaxy.web.client.property;
 
-import java.util.Collection;
-
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.mule.galaxy.web.client.AbstractComposite;
+
+import java.util.Collection;
+
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
@@ -17,33 +16,108 @@ import org.mule.galaxy.web.rpc.WProperty;
 /**
  * Encapsulates the rendering and editing of a property value.
  */
-public abstract class PropertyPanel extends AbstractComposite {
+public abstract class AbstractEditPropertyPanel extends PropertyPanel {
 
-    protected SimplePanel panel;
-    protected ErrorPanel errorPanel;
-    protected String itemId;
-    protected WProperty property;
-    protected Galaxy galaxy;
-    protected ClickListener saveListener;
-    protected ClickListener deleteListener;
-    protected ClickListener cancelListener;
+    private InlineFlowPanel viewPanel;
+    private InlineFlowPanel editPanel;
+    private Button save;
+    private Button cancel;
+    private WProperty property;
+    private Hyperlink editHL;
+    private Hyperlink deleteHL;
 
-    public PropertyPanel() {
+    public AbstractEditPropertyPanel() {
         super();
-        
-        this.panel = new SimplePanel();
+    }
 
-        initWidget(panel);
-    }
-    
     public void initialize() {
+        editHL = new Hyperlink("Edit", "edit-property");
+        editHL.setStyleName("propertyLink");
+        editHL.addClickListener(new ClickListener() {
+
+            public void onClick(Widget widget) {
+                showEdit();
+             }
+            
+        });
+        
+        deleteHL = new Hyperlink("Delete", "delete-property");
+        deleteHL.setStyleName("propertyLink");
+        deleteHL.addClickListener(new ClickListener() {
+
+            public void onClick(Widget widget) {
+               delete();
+            }
+            
+        });
+        
+        viewPanel = new InlineFlowPanel();
+        viewPanel.add(createViewWidget());
+        
+        if (!property.isLocked()) {
+            viewPanel.add(editHL);
+            viewPanel.add(deleteHL);
+        }
+        
+        editPanel = new InlineFlowPanel();
+        editPanel.add(createEditForm());
+        
+        cancel = new Button("Cancel");
+        cancel.addClickListener(new ClickListener() {
+
+            public void onClick(Widget arg0) {
+                showView();
+            }
+            
+        });
+        
+        if (cancelListener != null) {
+            cancel.addClickListener(cancelListener);
+        }
+        
+        save = new Button("Save");
+        save.addClickListener(new ClickListener() {
+
+            public void onClick(Widget arg0) {
+                cancel.setEnabled(false);
+                save.setEnabled(false);
+                
+                save();
+            }
+            
+        });
+        
+        editPanel.add(cancel);
+        editPanel.add(save);
     }
     
+    protected abstract Widget createViewWidget();
+
+    protected abstract Widget createEditForm();
+    
+    public void showView() {
+        panel.clear();
+        panel.add(viewPanel);
+    }
+    
+    protected void delete() {
+        galaxy.getRegistryService().deleteProperty(itemId, property.getName(), new AbstractCallback(errorPanel) {
+
+            public void onSuccess(Object arg0) {
+                deleteListener.onClick(deleteHL);
+            }
+            
+        });
+    }
+    
+    public void showEdit() {
+        panel.clear();
+        panel.add(editPanel);
+    }
+
     public boolean saveAsCollection() {
         return property.isMultiValued();
     }
-    
-    public abstract void showView();
     
     protected void save() {
         final Object value = getValueToSave();
@@ -61,10 +135,6 @@ public abstract class PropertyPanel extends AbstractComposite {
                 onSave(value);
                 
                 showView();
-
-                if (saveListener != null) {
-                    saveListener.onClick(null);
-                }
             }
             
         };
@@ -116,20 +186,10 @@ public abstract class PropertyPanel extends AbstractComposite {
         this.itemId = entryid;
     }
 
-    protected void setEnabled(boolean b) {
+    public void setEnabled(boolean b) {
+        cancel.setEnabled(b);
+        save.setEnabled(b);
     }
 
-    public void setSaveListener(ClickListener saveListener) {
-        this.saveListener = saveListener;
-    }
 
-    public void setDeleteListener(ClickListener deleteListener) {
-        this.deleteListener = deleteListener;
-    }
-    public void setCancelListener(ClickListener cancelListener) {
-        this.cancelListener = cancelListener;
-    }
-
-    public abstract void showEdit();
-    
 }

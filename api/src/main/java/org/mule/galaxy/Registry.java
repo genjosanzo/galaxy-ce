@@ -48,7 +48,7 @@ public interface Registry {
 
     Artifact getArtifact(Workspace w, String name) throws NotFoundException;
 
-    Artifact resolve(Workspace w, String location);
+    Item resolve(Item w, String location);
     
     /* Search functions */
 
@@ -58,14 +58,5 @@ public interface Registry {
     
     /* Extensions */
     List<Extension> getExtensions();
-
-
-    /* Link related operations */
-    
-    void addLinks(Item item, LinkType type, Item... toLinkTo) throws RegistryException;
-
-    void removeLinks(Link... links) throws RegistryException;
-    
-    Set<Link> getReciprocalLinks(Item a) throws RegistryException;
 
 }

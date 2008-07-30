@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,16 +38,14 @@ import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.ArtifactTypeDao;
-import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
-import org.mule.galaxy.Dao;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
-import org.mule.galaxy.LinkType;
+import org.mule.galaxy.Link;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.Registry;
@@ -62,6 +61,7 @@ import org.mule.galaxy.event.EntryVersionDeletedEvent;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.event.WorkspaceDeletedEvent;
 import org.mule.galaxy.impl.lifecycle.LifecycleExtension;
+import org.mule.galaxy.impl.link.LinkExtension;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
@@ -109,8 +109,6 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     private UserManager userManager;
 
     private IndexManager indexManager;
-    
-    private Dao<LinkType> linkTypeDao;
 
     private ActivityManager activityManager;
     
@@ -489,7 +487,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
             throw new NullPointerException("Artifact name cannot be null.");
         }
         
-        final JcrWorkspaceManager registry = this;
+        final JcrWorkspaceManager wm = this;
         return (EntryResult) executeAndDewrap(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node workspaceNode = ((JcrWorkspace)workspace).getNode();
@@ -508,7 +506,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                 // See JCR-696
                 versionNode.setProperty(JcrVersion.VERSION, versionLabel);
                 
-                JcrArtifact artifact = new JcrArtifact(workspace, artifactNode, registry);
+                JcrArtifact artifact = new JcrArtifact(workspace, artifactNode, wm);
                 artifact.setName(name);
                 artifact.setType(typeManager.getDefaultType());
                 
@@ -550,9 +548,17 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                 jcrVersion.setDefault(true);
                 
                 try {
-                    Set<Item> dependencies = ch.detectDependencies(loadedData, workspace);
+                    Set<String> dependencies = ch.detectDependencies(loadedData, workspace);
+                    Set<Link> links = new HashSet<Link>();
+                    for (String p : dependencies) {
+                        Item resolved = registry.resolve(jcrVersion, p);
+                        if (resolved != null) {
+                            
+                        }
+                        links.add(new Link(jcrVersion, null, p, true));
+                    }
                     
-                    jcrVersion.addLinks(dependencies, true, linkTypeDao.get(LinkType.DEPENDS));
+                    jcrVersion.setProperty(LinkExtension.DEPENDS, links);
                     
                     initializeLifecycle(artifact, jcrVersion);            
                     
@@ -577,9 +583,13 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                 } catch (RegistryException e) {
                     // gets unwrapped by executeAndDewrap
                     throw new RuntimeException(e);
-                } catch (NotFoundException e) {
+                } catch (PropertyException e) {
+                    // won't happen
                     throw new RuntimeException(e);
-        }
+                } catch (PolicyException e) {
+                    // won't happen
+                    throw new RuntimeException(e);
+                }
             }
 
         });
@@ -1055,15 +1065,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     public void setCommentManager(CommentManager commentManager) {
         this.commentManager = commentManager;
     }
-
-    public Dao<LinkType> getLinkTypeDao() {
-        return linkTypeDao;
-    }
-
-    public void setLinkTypeDao(Dao<LinkType> linkTypeDao) {
-        this.linkTypeDao = linkTypeDao;
-    }
-
+    
     public EventManager getEventManager() {
         return eventManager;
     }

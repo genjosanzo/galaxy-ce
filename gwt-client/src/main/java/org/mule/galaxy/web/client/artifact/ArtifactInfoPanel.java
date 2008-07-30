@@ -117,14 +117,6 @@ public class ArtifactInfoPanel extends AbstractComposite {
         
         topPanel.add(rightGroup);
         
-        galaxy.getRegistryService().getLinks(info.getId(), new AbstractCallback(errorPanel) {
-
-            public void onSuccess(Object o) {
-                initLinks((Collection) o);
-            }
-            
-        });
-        
         panel.add(newSpacer());
         panel.add(new EntryMetadataPanel(galaxy, errorPanel, info, version));
         panel.add(newSpacer());
@@ -333,46 +325,6 @@ public class ArtifactInfoPanel extends AbstractComposite {
         boolean isOk = true;
         isOk &= textArea.validate();
         return isOk;
-    }
-
-    protected void initLinks(Collection o) {
-        Map title2Toolbox = new HashMap();
-
-        for (Iterator itr = o.iterator(); itr.hasNext();) {
-            final LinkInfo info = (LinkInfo) itr.next();
-            
-            Toolbox toolbox = (Toolbox) title2Toolbox.get(info.getRelationship());
-            if (toolbox == null) {
-                toolbox = new Toolbox(true);
-                toolbox.setTitle(info.getRelationship());
-                title2Toolbox.put(info.getRelationship(), toolbox);
-                
-                rightGroup.add(toolbox);
-            }
-            
-            if (info.getItemType() == LinkInfo.TYPE_NOT_FOUND) {
-                toolbox.add(new Label(info.getItemName()));
-            } else {
-                String prefix;
-                if (info.getItemType() == LinkInfo.TYPE_ARTIFACT) {
-                    prefix = "artifact_";
-                } else {
-                    prefix = "artifact-version_";
-                }
-                final String token = prefix + info.getItemId();
-                Hyperlink hl = new Hyperlink(info.getItemName(), token);
-                hl.addClickListener(new ClickListener() {
-    
-                    public void onClick(Widget arg0) {
-                        History.newItem(token);
-                    }
-                });
-                
-                toolbox.add(hl);
-            }
-        }
-        
-        topPanel.add(rightGroup);
     }
 
     private void initDescriptionForm(final FlowPanel descPanel) {

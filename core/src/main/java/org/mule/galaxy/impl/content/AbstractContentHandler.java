@@ -77,7 +77,7 @@ public abstract class AbstractContentHandler implements ContentHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public Set<Item> detectDependencies(Object o, Workspace w) {
+    public Set<String> detectDependencies(Object o, Workspace w) {
         return Collections.EMPTY_SET;
     }
 

@@ -150,7 +150,6 @@
     <property name="contentService" ref="contentService" />
     <property name="extensions" ref="extensions" />
     <property name="functionRegistry" ref="functionRegistry" />
-    <property name="linkTypeDao" ref="linkTypeManager" />
     <property name="settings" ref="settings" />
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="lifecycleManager" ref="lifecycleManager" />
@@ -174,7 +173,6 @@
     <property name="artifactTypeDao" ref="artifactTypeDao" />
     <property name="commentManager" ref="commentManager" />
     <property name="contentService" ref="contentService" />
-    <property name="linkTypeDao" ref="linkTypeManager" />
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="lifecycleManager" ref="lifecycleManager" />
     <property name="indexManager" ref="indexManager" />
@@ -225,6 +223,31 @@
     <property name="typeManager" ref="typeManager"/>
   </bean>
   
+  <bean id="linkExtension" class="org.mule.galaxy.impl.link.LinkExtension" init-method="initialize">
+    <property name="dao" ref="linkDao"/>
+    <property name="id" value="linkExtension"/>
+    <property name="registry" ref="registry"/>
+    <property name="typeManager" ref="typeManager"/>
+  </bean>
+  
+  <bean id="linkDao" parent="txProxyTemplate">
+    <property name="target" ref="linkDaoTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="linkDaoTarget" 
+        class="org.mule.galaxy.impl.link.LinkDaoImpl"
+        init-method="initialize" 
+        depends-on="persisterManager">
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="persisterManager" ref="persisterManager" />
+  </bean>
+  
+  <bean id="linkQueryBuilder" class="org.mule.galaxy.impl.extension.IdentifiableExtensionQueryBuilder">
+    <constructor-arg ref="linkExtension"/>
+    <property name="typeManager" ref="typeManager"/>
+  </bean>
+  
   <bean id="queryBuilders" class="java.util.ArrayList">
     <constructor-arg>
       <list>
@@ -261,17 +284,6 @@
   </bean>
   
   <bean id="commentManagerTarget" class="org.mule.galaxy.impl.jcr.CommentManagerImpl"
-        init-method="initialize" depends-on="persisterManager">
-    <property name="sessionFactory" ref="sessionFactory" />
-    <property name="persisterManager" ref="persisterManager" />
-  </bean>
-  
-  <bean id="linkTypeManager" parent="txProxyTemplate">
-    <property name="target" ref="linkTypeManagerTarget"/>
-    <property name="proxyTargetClass" value="true"/>
-  </bean>
-  
-  <bean id="linkTypeManagerTarget" class="org.mule.galaxy.impl.jcr.LinkTypeManagerImpl"
         init-method="initialize" depends-on="persisterManager">
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
@@ -345,8 +357,8 @@
         <entry key="org.mule.galaxy.lifecycle.Phase">
           <bean class="org.mule.galaxy.impl.lifecycle.PhasePersister"/>
         </entry>
-        <entry key="org.mule.galaxy.Artifact">
-          <bean class="org.mule.galaxy.impl.jcr.ArtifactPersister"/>
+        <entry key="org.mule.galaxy.Item">
+          <bean class="org.mule.galaxy.impl.jcr.ItemPersister"/>
         </entry>
         <entry key="org.mule.galaxy.ArtifactVersion">
           <bean class="org.mule.galaxy.impl.jcr.ArtifactVersionPersister"/>

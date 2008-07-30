@@ -3,8 +3,8 @@ package org.mule.galaxy.collab;
 import java.util.Calendar;
 import java.util.Set;
 
-import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Identifiable;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.mapping.OneToMany;
 import org.mule.galaxy.security.User;
 
@@ -13,7 +13,7 @@ public class Comment implements Identifiable {
     private User user;
     private Calendar date;
     private Comment parent;
-    private Artifact artifact;
+    private Item item;
     private String text;
     
     private Set<Comment> comments;
@@ -42,11 +42,11 @@ public class Comment implements Identifiable {
     public void setParent(Comment parent) {
         this.parent = parent;
     }
-    public Artifact getArtifact() {
-        return artifact;
+    public Item getItem() {
+        return item;
     }
-    public void setArtifact(Artifact artifact) {
-        this.artifact = artifact;
+    public void setItem(Item item) {
+        this.item = item;
     }
     public String getText() {
         return text;

@@ -35,8 +35,6 @@ public interface EntryVersion extends Item {
      */
     User getAuthor();
     
-    Set<Link> getLinks();
-    
     boolean isDefault();
     
     boolean isEnabled();

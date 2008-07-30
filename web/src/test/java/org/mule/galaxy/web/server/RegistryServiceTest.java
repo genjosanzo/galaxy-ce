@@ -15,6 +15,7 @@ import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.impl.link.LinkExtension;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.Policy;
@@ -103,7 +104,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         List rows = g1.getRows();
         assertEquals(2, rows.size());
 
-        Collection deps = gwtRegistry.getLinks(info.getId());
+        Collection deps = gwtRegistry.getLinks(info.getId(), LinkExtension.DEPENDS);
         assertEquals(1, deps.size());
 
         // Test reretrieving the artifact

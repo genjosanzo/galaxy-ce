@@ -1,6 +1,8 @@
 package org.mule.galaxy.extension;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.Item;
@@ -22,4 +24,6 @@ public interface Extension extends Identifiable {
     void validate(Item entry, PropertyDescriptor pd, Object valueToStore) throws PolicyException;
     
     boolean isMultivalueSupported();
+    
+    List<String> getPropertyDescriptorConfigurationKeys();
 }

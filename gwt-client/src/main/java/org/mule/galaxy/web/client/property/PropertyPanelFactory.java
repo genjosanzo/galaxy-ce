@@ -10,6 +10,8 @@ public class PropertyPanelFactory {
     public PropertyPanel createRenderer(String ext, boolean multivalued) {
         if ("lifecycleExtension".equals(ext)) {
             return new LifecyclePropertyPanel();
+        } else if ("linkExtension".equals(ext)) {
+            return new LinksPropertyPanel();
         } else if (multivalued) {
             return new SimpleListPropertyPanel();
         } else {
