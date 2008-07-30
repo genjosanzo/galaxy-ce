@@ -18,6 +18,8 @@
 
 package org.mule.galaxy.web.rpc;
 
+import java.util.Map;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class WPropertyDescriptor implements IsSerializable {
@@ -26,14 +28,16 @@ public class WPropertyDescriptor implements IsSerializable {
     private String name;
     private String description;
     private String extension;
+    private Map configuration;
     
-    public WPropertyDescriptor(String id, String name, String description, String extension, boolean multiValued) {
+    public WPropertyDescriptor(String id, String name, String description, String extension, boolean multiValued, Map configuration) {
         super();
         this.id = id;
         this.extension = extension;
         this.multiValued = multiValued;
         this.name = name;
         this.description = description;
+        this.configuration = configuration;
     }
     public WPropertyDescriptor() {
         super();
@@ -67,5 +71,11 @@ public class WPropertyDescriptor implements IsSerializable {
     }
     public void setExtension(String extension) {
         this.extension = extension;
+    }
+    public Map getConfiguration() {
+        return configuration;
+    }
+    public void setConfiguration(Map configuration) {
+        this.configuration = configuration;
     }
 }

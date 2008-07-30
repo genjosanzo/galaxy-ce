@@ -558,8 +558,9 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                         links.add(new Link(jcrVersion, null, p, true));
                     }
                     
-                    jcrVersion.setProperty(LinkExtension.DEPENDS, links);
-                    
+                    if (links.size() > 0) {
+                        jcrVersion.setProperty(LinkExtension.DEPENDS, links);
+                    }
                     initializeLifecycle(artifact, jcrVersion);            
                     
                     List<EntryVersion> versions = new ArrayList<EntryVersion>();

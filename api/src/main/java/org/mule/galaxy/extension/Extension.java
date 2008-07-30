@@ -25,5 +25,7 @@ public interface Extension extends Identifiable {
     
     boolean isMultivalueSupported();
     
+    String getName();
+    
     List<String> getPropertyDescriptorConfigurationKeys();
 }

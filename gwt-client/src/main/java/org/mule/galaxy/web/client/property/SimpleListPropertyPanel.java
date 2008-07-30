@@ -11,7 +11,6 @@ import org.mule.galaxy.web.client.util.StringListBox;
 
 public class SimpleListPropertyPanel extends AbstractEditPropertyPanel {
 
-    private TextBox valueTB;
     private Label valueLabel;
     private SimplePanel listBoxPanel;
     private StringListBox listBox;
@@ -22,7 +21,7 @@ public class SimpleListPropertyPanel extends AbstractEditPropertyPanel {
     }
 
     protected Object getValueToSave() {
-        return valueTB.getText();
+        return listBox.getItems();
     }
 
     protected String getRenderedText() {

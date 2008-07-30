@@ -2,13 +2,10 @@ package org.mule.galaxy.impl.extension;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.Entry;
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
@@ -19,7 +16,8 @@ import org.mule.galaxy.type.PropertyDescriptor;
 public class IdentifiableExtension<T extends Identifiable> implements Extension {
     protected String id;
     protected Dao<T> dao;
-
+    protected String name;
+    
     @SuppressWarnings("unchecked")
     public Object getExternalValue(Item entry, PropertyDescriptor pd, Object storedValue) {
 	if (pd.isMultivalued()) {
@@ -27,7 +25,7 @@ public class IdentifiableExtension<T extends Identifiable> implements Extension 
 	    List<String> ids = (List<String>) storedValue;
 	    
 	    if (ids == null) {
-	        return Collections.emptyList();
+	        return new ArrayList<String>();
 	    }
 	    for (String id : ids) {
 		// TODO - account for deleted items
@@ -45,6 +43,14 @@ public class IdentifiableExtension<T extends Identifiable> implements Extension 
 		return null;
 	    }
 	}
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Object getInternalValue(Item entry, PropertyDescriptor pd, Object value)
@@ -83,7 +89,7 @@ public class IdentifiableExtension<T extends Identifiable> implements Extension 
     }
 
     public List<String> getPropertyDescriptorConfigurationKeys() {
-        return Collections.emptyList();
+        return new ArrayList<String>();
     }
 
     public boolean isMultivalueSupported() {

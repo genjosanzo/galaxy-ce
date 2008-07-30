@@ -125,11 +125,7 @@ public interface RegistryService extends RemoteService {
     
     ArtifactVersionInfo getArtifactVersionInfo(String artifactVersionId,
                                                boolean showHidden) throws RPCException, ItemNotFoundException;
-    
-    void newPropertyDescriptor(String name, 
-                               String description, 
-                               boolean multivalued) throws RPCException, ItemExistsException;
-    
+
     void setProperty(String artifactId, 
                      String propertyName, 
                      String propertyValue) throws RPCException, ItemNotFoundException, WPolicyException;
@@ -165,6 +161,8 @@ public interface RegistryService extends RemoteService {
     WPropertyDescriptor getPropertyDescriptor(String id) throws RPCException, ItemNotFoundException;
     
     List getPropertyDescriptors() throws RPCException;
+    
+    List getExtensions() throws RPCException;
     
     void move(String artifactId, String workspaceId, String name) throws RPCException, ItemNotFoundException;
     

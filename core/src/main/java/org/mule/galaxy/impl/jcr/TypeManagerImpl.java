@@ -60,10 +60,10 @@ public class TypeManagerImpl implements TypeManager {
         accessControlManager.assertAccess(Permission.MANAGE_PROPERTIES);
         
         Map<String, String> config = pd.getConfiguration();
-        if (config != null && pd.getExtension() != null) {
+        if (pd.getExtension() != null) {
             Extension extension = pd.getExtension();
             for (String key : extension.getPropertyDescriptorConfigurationKeys()) {
-                if (!config.keySet().contains(key)) {
+                if (config == null || !config.keySet().contains(key)) {
                     throw new RuntimeException("Configuration key " + key + " must be specified.");
                 }
             }

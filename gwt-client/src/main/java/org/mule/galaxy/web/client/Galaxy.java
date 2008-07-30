@@ -36,6 +36,7 @@ import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.SecurityService;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
+import org.mule.galaxy.web.rpc.WExtensionInfo;
 import org.mule.galaxy.web.rpc.WUser;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -87,6 +88,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     private BrowsePanel browsePanel;
     protected FlowPanel base;
     protected PropertyPanelFactory propertyPanelFactory = new PropertyPanelFactory();
+    protected List extensions;
     
     /**
      * This is the entry point method.
@@ -96,7 +98,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         // prefetch the image, so that e.g. SessionKilled dialog can be properly displayed for the first time
         // when the server is already down and cannot serve it.
         Image.prefetch("images/lightbox.png");
-
+        
         History.addHistoryListener(this);
 
         this.registryService = (RegistryServiceAsync) GWT.create(RegistryService.class);
@@ -112,6 +114,14 @@ public class Galaxy implements EntryPoint, HistoryListener {
         this.heartbeatService = (HeartbeatServiceAsync) GWT.create(HeartbeatService.class);
         target = (ServiceDefTarget) heartbeatService;
         target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/heartbeat.rpc");
+
+        // prefetch extensions
+        registryService.getExtensions(new AbstractCallback(browsePanel) {
+            public void onSuccess(Object o) {
+                extensions = (List) o;
+                Collections.sort(extensions);
+            }
+        });
 
         base = new FlowPanel();
         base.setStyleName("base");
@@ -177,8 +187,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
                 loadTabs(galaxy);
             }
         });
-
-
+        
+        
         Label footer = new Label(getProductName() + ", Copyright 2008 MuleSource, Inc.");
         footer.setStyleName("footer");
         base.add(footer);
@@ -344,6 +354,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
         return propertyPanelFactory;
     }
 
+    public List getExtensions() {
+        return extensions;
+    }
+
     public RegistryServiceAsync getRegistryService() {
         return registryService;
     }
@@ -375,6 +389,17 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
     public void addHistoryListener(String token, AbstractComposite composite) {
         historyListeners.put(token, composite);
+    }
+
+    public WExtensionInfo getExtension(String id) {
+        for (Iterator itr = extensions.iterator(); itr.hasNext();) {
+            WExtensionInfo ei = (WExtensionInfo) itr.next();
+            
+            if (id.equals(ei.getId())) {
+                return ei;
+            }
+        }
+        return null;
     }
 
 }

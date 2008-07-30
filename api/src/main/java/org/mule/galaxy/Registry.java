@@ -59,4 +59,6 @@ public interface Registry {
     /* Extensions */
     List<Extension> getExtensions();
 
+    Extension getExtension(String extension);
+
 }

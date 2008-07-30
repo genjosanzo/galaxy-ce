@@ -148,7 +148,6 @@
     <property name="accessControlManager" ref="accessControlManager" />
     <property name="activityManager" ref="activityManager" />
     <property name="contentService" ref="contentService" />
-    <property name="extensions" ref="extensions" />
     <property name="functionRegistry" ref="functionRegistry" />
     <property name="settings" ref="settings" />
     <property name="sessionFactory" ref="sessionFactory" />
@@ -182,15 +181,6 @@
     <property name="eventManager" ref="eventManager"/>
   </bean>
   
-  <bean id="extensions" class="java.util.ArrayList">
-    <constructor-arg>
-      <list>
-        <ref bean="contactExtension"/>
-        <ref bean="lifecycleExtension"/>
-      </list>
-    </constructor-arg>
-  </bean>
-  
   <bean id="lifecycleExtension" class="org.mule.galaxy.impl.lifecycle.LifecycleExtension">
     <property name="lifecycleManager" ref="lifecycleManager"/>
     <property name="eventManager" ref="eventManager"/>
@@ -200,6 +190,7 @@
   <bean id="contactExtension" class="org.mule.galaxy.impl.extension.IdentifiableExtension">
     <property name="dao" ref="contactDao"/>
     <property name="id" value="contactExtension"/>
+    <property name="name" value="Contact"/>
   </bean>
   
   <bean id="contactDao" parent="txProxyTemplate">

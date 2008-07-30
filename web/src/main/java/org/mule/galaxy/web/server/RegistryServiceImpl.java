@@ -60,6 +60,7 @@ import org.mule.galaxy.activity.ActivityManager.EventType;
 import org.mule.galaxy.collab.Comment;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.EventManager;
+import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexManager;
@@ -103,6 +104,7 @@ import org.mule.galaxy.web.rpc.WArtifactPolicy;
 import org.mule.galaxy.web.rpc.WArtifactType;
 import org.mule.galaxy.web.rpc.WArtifactView;
 import org.mule.galaxy.web.rpc.WComment;
+import org.mule.galaxy.web.rpc.WExtensionInfo;
 import org.mule.galaxy.web.rpc.WGovernanceInfo;
 import org.mule.galaxy.web.rpc.WIndex;
 import org.mule.galaxy.web.rpc.WLifecycle;
@@ -138,6 +140,14 @@ public class RegistryServiceImpl implements RegistryService {
     private LifecycleManager localLifecycleManager;
 
     private EventManager eventManager;
+
+    public List getExtensions() throws RPCException {
+        ArrayList<WExtensionInfo> exts = new ArrayList<WExtensionInfo>();
+        for (Extension e : registry.getExtensions()) {
+            exts.add(new WExtensionInfo(e.getId(), e.getName(), e.getPropertyDescriptorConfigurationKeys(), e.isMultivalueSupported()));
+        }
+        return exts;
+    }
 
     @SuppressWarnings("unchecked")
     public Collection getWorkspaces() throws RPCException {
@@ -1052,24 +1062,6 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void newPropertyDescriptor(String name, String description, boolean multivalued)
-            throws RPCException, ItemExistsException {
-        if (name.contains(" ")) {
-            throw new RPCException("The property name cannot contain a space.");
-        }
-
-        PropertyDescriptor pd = new PropertyDescriptor(name, description, multivalued);
-
-        try {
-            typeManager.savePropertyDescriptor(pd);
-        } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
-        } catch (DuplicateItemException e) {
-            throw new ItemExistsException();
-        } catch (NotFoundException e) {
-            throw new RPCException(e.getMessage());
-        }
-    }
 
     public void setProperty(String artifactId, String propertyName, Collection propertyValue)
         throws RPCException, ItemNotFoundException, WPolicyException {
@@ -1163,9 +1155,10 @@ public class RegistryServiceImpl implements RegistryService {
     private WPropertyDescriptor toWeb(PropertyDescriptor pd) {
         String ext = pd.getExtension() != null ? pd.getExtension().getId() : null;
         
-        return new WPropertyDescriptor(pd.getId(), pd.getProperty(), pd.getDescription(), ext, pd.isMultivalued());
+        return new WPropertyDescriptor(pd.getId(), pd.getProperty(), pd.getDescription(), ext, pd.isMultivalued(), pd.getConfiguration());
     }
 
+    @SuppressWarnings("unchecked")
     public void savePropertyDescriptor(WPropertyDescriptor wpd) throws RPCException, ItemNotFoundException, ItemExistsException {
         try {
             PropertyDescriptor pd;
@@ -1179,7 +1172,9 @@ public class RegistryServiceImpl implements RegistryService {
             pd.setProperty(wpd.getName());
             pd.setDescription(wpd.getDescription());
             pd.setMultivalued(wpd.isMultiValued());
-
+            pd.setConfiguration(wpd.getConfiguration());
+            pd.setExtension(registry.getExtension(wpd.getExtension()));
+            
             typeManager.savePropertyDescriptor(pd);
 
             wpd.setId(pd.getId());

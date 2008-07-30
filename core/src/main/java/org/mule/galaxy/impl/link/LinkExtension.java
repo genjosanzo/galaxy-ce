@@ -43,6 +43,7 @@ public class LinkExtension extends IdentifiableExtension<Link> {
     private Registry registry;
     
     public void initialize() throws Exception {
+        setName("Link");
         
 	configuration.add("Reciprocal Name");
 	
@@ -53,6 +54,11 @@ public class LinkExtension extends IdentifiableExtension<Link> {
         add(CONFLICTS, "Conflicts With", "Is Conflicted By");
     }
     
+    @Override
+    public boolean isMultivalueSupported() {
+        return false;
+    }
+
     private void add(String property, String name, String inverse) {
         final PropertyDescriptor pd = new PropertyDescriptor(property, name, true);
         pd.setExtension(this);

@@ -44,6 +44,10 @@ public class LifecycleExtension implements Extension, AtomExtension {
     private LifecycleManager lifecycleManager;
     private EventManager eventManager;
     
+    public String getName() {
+        return "Lifecycle";
+    }
+
     public Object getExternalValue(Item entry, PropertyDescriptor pd, Object storedValue) {
         if (storedValue == null) {
             return null;
@@ -165,7 +169,7 @@ public class LifecycleExtension implements Extension, AtomExtension {
     }
 
     public List<String> getPropertyDescriptorConfigurationKeys() {
-        return Collections.emptyList();
+        return new ArrayList<String>();
     }
 
     public boolean isMultivalueSupported() {

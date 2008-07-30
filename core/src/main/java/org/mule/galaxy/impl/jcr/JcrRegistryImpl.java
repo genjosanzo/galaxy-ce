@@ -2,6 +2,7 @@ package org.mule.galaxy.impl.jcr;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -30,12 +31,10 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
-import org.mule.galaxy.Dao;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
-import org.mule.galaxy.Link;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
@@ -71,11 +70,14 @@ import org.mule.galaxy.util.DateUtil;
 import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.SecurityUtils;
 import org.mule.galaxy.workspace.WorkspaceManager;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.dao.DataAccessException;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
-public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistry {
+public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistry, ApplicationContextAware {
     private static final String REPOSITORY_LAYOUT_VERSION = "version";
 
     private final Log log = LogFactory.getLog(getClass());
@@ -115,6 +117,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private Map<String, WorkspaceManager> idToWorkspaceManager = new HashMap<String, WorkspaceManager>();
     
     private List<Extension> extensions;
+
+    private ApplicationContext context;
     
     public JcrRegistryImpl() {
         super();
@@ -997,7 +1001,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         idToWorkspaceManager.put(localWorkspaceManager.getId(), localWorkspaceManager);
     }
 
-    private Extension getExtension(String id) {
+    public Extension getExtension(String id) {
         for (Extension e : getExtensions()) {
             if (e.getId().equals(id)) {
                 return e;
@@ -1010,7 +1014,14 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         queryBuilders = qbs;
     }
 
+    @SuppressWarnings("unchecked")
     public List<Extension> getExtensions() {
+        if (extensions == null) {
+             Map beansOfType = context.getBeansOfType(Extension.class);
+             
+             extensions = new ArrayList<Extension>();
+             extensions.addAll(beansOfType.values());
+        }
         return extensions;
     }
 
@@ -1076,5 +1087,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public void setEventManager(final EventManager eventManager) {
         this.eventManager = eventManager;
+    }
+
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.context = applicationContext;
     }
 }

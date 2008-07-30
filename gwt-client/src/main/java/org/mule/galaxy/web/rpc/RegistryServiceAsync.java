@@ -65,6 +65,8 @@ public interface RegistryServiceAsync {
     
     void deleteIndex(String id, boolean removeArtifactMetadata, AsyncCallback callback);
     
+    void getExtensions(AsyncCallback callback);
+    
     void getLinks(String artifactId, String property, AsyncCallback callback);
 
     void getArtifact(String artifactId, AsyncCallback callback);
@@ -75,11 +77,6 @@ public interface RegistryServiceAsync {
                                 boolean showHidden, 
                                 AsyncCallback callback);
     
-    void newPropertyDescriptor(String name, 
-                               String description, 
-                               boolean multivalued, 
-                               AsyncCallback callback);
-
     void setProperty(String artifactId, 
                      String propertyName, 
                      String propertyValue,
