@@ -99,7 +99,7 @@ public class NewPropertyPanel extends Composite {
         propPanelContainer.add(propertyPanel);
         panel.add(propPanelContainer);
         
-        svc.getPropertyDescriptors(new AbstractCallback(registryPanel) {
+        svc.getPropertyDescriptors(false, new AbstractCallback(registryPanel) {
             public void onSuccess(Object o) {
                 initProperties((List) o);
             }

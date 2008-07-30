@@ -48,6 +48,8 @@ import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.type.PropertyDescriptor;
+import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -81,6 +83,8 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     private AtomicBoolean destroyed = new AtomicBoolean(false);
 
     private boolean indexArtifactsAsynchronously = true;
+    
+    private TypeManager typeManager;
     
     public IndexManagerImpl() throws Exception {
         super(Index.class, "indexes", true);
@@ -173,6 +177,13 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     public void delete(final String id, final boolean removeArtifactMetadata) {
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Index idx = doGet(id, session);
+                if (idx.getPropertyDescriptors() != null) {
+                    for (PropertyDescriptor pd : idx.getPropertyDescriptors()) {
+                        typeManager.deletePropertyDescriptor(pd.getId());
+                    }
+                }
+                
                 doDelete(id, removeArtifactMetadata, session);
                 session.save();
                 return null;
@@ -468,6 +479,10 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     
     public void setContentService(ContentService contentService) {
         this.contentService = contentService;
+    }
+
+    public void setTypeManager(TypeManager typeManager) {
+        this.typeManager = typeManager;
     }
 
     private Registry getRegistry() {

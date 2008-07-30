@@ -23,6 +23,7 @@ public class PropertyTest extends AbstractGalaxyTest {
        
        PropertyDescriptor pd = new PropertyDescriptor("location", 
                                                       "Geographic Location",
+                                                      false,
                                                       false);
        
        typeManager.savePropertyDescriptor(pd);
@@ -32,7 +33,7 @@ public class PropertyTest extends AbstractGalaxyTest {
        assertNotNull(pd2);
        assertEquals(pd.getDescription(), pd2.getDescription());
        
-       Collection<PropertyDescriptor> pds = typeManager.getPropertyDescriptors();
+       Collection<PropertyDescriptor> pds = typeManager.getPropertyDescriptors(true);
        // 12 of these are index related
 //       assertEquals(23, pds.size());
        assertNotNull(pds);

@@ -65,7 +65,7 @@ public class SearchForm
         
         fieldPanel = new FlowPanel();
         
-        galaxy.getRegistryService().getPropertyDescriptors(new AbstractCallback(this) {
+        galaxy.getRegistryService().getPropertyDescriptors(true, new AbstractCallback(this) {
             
             public void onSuccess(Object o) {
                 initArtifactProperties((List) o);

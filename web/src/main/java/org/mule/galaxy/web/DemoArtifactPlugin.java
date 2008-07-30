@@ -40,7 +40,7 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
         add(w, user, "hello-portType.wsdl", "/wsdl/imports/hello-portType.wsdl");
         add(w, user, "hello.wsdl", "/wsdl/imports/hello.wsdl");   
         
-        PropertyDescriptor pd = new PropertyDescriptor("location", "Location", false);
+        PropertyDescriptor pd = new PropertyDescriptor("location", "Location", false, false);
         typeManager.savePropertyDescriptor(pd);
     }
 

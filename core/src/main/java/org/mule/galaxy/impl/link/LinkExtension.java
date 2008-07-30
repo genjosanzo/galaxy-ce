@@ -60,7 +60,7 @@ public class LinkExtension extends IdentifiableExtension<Link> {
     }
 
     private void add(String property, String name, String inverse) {
-        final PropertyDescriptor pd = new PropertyDescriptor(property, name, true);
+        final PropertyDescriptor pd = new PropertyDescriptor(property, name, true, false);
         pd.setExtension(this);
         
         List<String> keys = getPropertyDescriptorConfigurationKeys();

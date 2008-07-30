@@ -160,7 +160,7 @@ public interface RegistryService extends RemoteService {
 
     WPropertyDescriptor getPropertyDescriptor(String id) throws RPCException, ItemNotFoundException;
     
-    List getPropertyDescriptors() throws RPCException;
+    List getPropertyDescriptors(boolean includeIndex) throws RPCException;
     
     List getExtensions() throws RPCException;
     

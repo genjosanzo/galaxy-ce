@@ -52,8 +52,12 @@ public class TypeManagerImpl implements TypeManager {
         return propertyDescriptorDao.get(id);
     }
     
-    public Collection<PropertyDescriptor> getPropertyDescriptors() {
-        return propertyDescriptorDao.listAll();
+    public Collection<PropertyDescriptor> getPropertyDescriptors(boolean includeIndex) {
+        if (includeIndex) {
+            return propertyDescriptorDao.listAll();
+        } else {
+            return propertyDescriptorDao.find("index", "false");
+        }
     }
 
     public void savePropertyDescriptor(PropertyDescriptor pd) throws AccessException, DuplicateItemException, NotFoundException {

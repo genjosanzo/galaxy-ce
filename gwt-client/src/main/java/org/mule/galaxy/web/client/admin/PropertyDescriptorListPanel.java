@@ -42,7 +42,7 @@ public class PropertyDescriptorListPanel
         table.setText(0, 0, "Property");
         table.setText(0, 1, "Description");
         
-        adminPanel.getRegistryService().getPropertyDescriptors(new AbstractCallback(adminPanel) {
+        adminPanel.getRegistryService().getPropertyDescriptors(false, new AbstractCallback(adminPanel) {
 
             public void onSuccess(Object result) {
                 Collection props = (Collection) result;

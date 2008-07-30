@@ -236,7 +236,7 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
      * Configure property select boxes
      */
     private void updatePropertyListBox() {
-        service.getPropertyDescriptors(new AbstractCallback(this) {
+        service.getPropertyDescriptors(false, new AbstractCallback(this) {
             public void onSuccess(Object result) {
                 Collection props = (Collection) result;
 

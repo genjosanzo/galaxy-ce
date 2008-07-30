@@ -1,13 +1,16 @@
 package org.mule.galaxy.index;
 
-import org.mule.galaxy.Identifiable;
-import org.mule.galaxy.mapping.OneToMany;
-
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
+
+import org.mule.galaxy.Identifiable;
+import org.mule.galaxy.mapping.OneToMany;
+import org.mule.galaxy.type.PropertyDescriptor;
 
 public class Index implements Identifiable {
 
@@ -18,7 +21,8 @@ public class Index implements Identifiable {
     private Class<?> queryType;
     private String indexer;
     private Map<String,String> configuration;
-
+    private List<PropertyDescriptor> propertyDescriptors;
+    
     public Index(String description, 
                  String mediaType,
                  Class<?> queryType,
@@ -109,6 +113,21 @@ public class Index implements Identifiable {
         this.description = description;
     }
 
+    @OneToMany(componentType=PropertyDescriptor.class)
+    public List<PropertyDescriptor> getPropertyDescriptors() {
+        return propertyDescriptors;
+    }
+
+    public void setPropertyDescriptors(List<PropertyDescriptor> propertyDescriptors) {
+        this.propertyDescriptors = propertyDescriptors;
+    }
+
+    public void addPropertyDescriptor(PropertyDescriptor pd) {
+	if (propertyDescriptors == null) {
+	    propertyDescriptors = new ArrayList<PropertyDescriptor>();
+	}
+	propertyDescriptors.add(pd);
+    }
     public String toString()
     {
         final StringBuffer sb = new StringBuffer();

@@ -64,7 +64,7 @@
         init-method="initialize" destroy-method="destroy">
     <property name="activityManager" ref="activityManager" />
     <property name="contentService" ref="contentService"/>
-    <!--<property name="localWorkspaceManager" ref="localWorkspaceManager" />-->
+    <property name="typeManager" ref="typeManager" />
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
   </bean>

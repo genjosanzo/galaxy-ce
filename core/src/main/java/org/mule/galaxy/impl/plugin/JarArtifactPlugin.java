@@ -1,8 +1,8 @@
 package org.mule.galaxy.impl.plugin;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -99,8 +99,8 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin
                 {
                     indexManager.save(jarIndex, true);
                     indexManager.save(annotationsIndex, true);
-                    registerJarPropertyDescriptors();
-                    registerJavaAnnotationsPropertyDescriptors();
+                    registerJarPropertyDescriptors(jarIndex);
+                    registerJavaAnnotationsPropertyDescriptors(annotationsIndex);
                 }
                 catch (GalaxyException e)
                 {
@@ -137,22 +137,36 @@ public class JarArtifactPlugin extends AbstractArtifactPlugin
         this.jcrTemplate = jcrTemplate;
     }
 
-    protected void registerJarPropertyDescriptors()
+    protected void registerJarPropertyDescriptors(Index jarIndex)
             throws RegistryException, AccessException, DuplicateItemException, NotFoundException
     {
-        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.entries", "JAR Contents List", true));
-        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.osgi.Export-Package", "OSGi Package Exports", true));
-        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.osgi.Import-Package", "OSGi Package Imports", true));
-        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.osgi.Ignore-Package", "OSGi Ignore Packages", true));
-        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.osgi.Private-Package", "OSGi Private Packages", true));
+        List<PropertyDescriptor> pds = new ArrayList<PropertyDescriptor>();
+        pds.add(new PropertyDescriptor("jar.entries", "JAR Contents List", true, true));
+        pds.add(new PropertyDescriptor("jar.osgi.Export-Package", "OSGi Package Exports", true, true));
+        pds.add(new PropertyDescriptor("jar.osgi.Import-Package", "OSGi Package Imports", true, true));
+        pds.add(new PropertyDescriptor("jar.osgi.Ignore-Package", "OSGi Ignore Packages", true, true));
+        pds.add(new PropertyDescriptor("jar.osgi.Private-Package", "OSGi Private Packages", true, true));
+        
+        jarIndex.setPropertyDescriptors(pds);
+        
+        for (PropertyDescriptor pd : pds) {
+            typeManager.savePropertyDescriptor(pd);
+        }
     }
 
-    protected void registerJavaAnnotationsPropertyDescriptors()
+    protected void registerJavaAnnotationsPropertyDescriptors(Index jarIndex)
             throws RegistryException, AccessException, DuplicateItemException, NotFoundException
     {
-        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.class", "Java Class-Level Annotations", true));
-        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.field", "Java Field-Level Annotations", true));
-        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.method", "Java Method-Level Annotations", true));
-        typeManager.savePropertyDescriptor(new PropertyDescriptor("jar.annotations.level.param", "Java Param-Level Annotations", true));
+        List<PropertyDescriptor> pds = new ArrayList<PropertyDescriptor>();
+        pds.add(new PropertyDescriptor("jar.annotations.level.class", "Java Class-Level Annotations", true, true));
+        pds.add(new PropertyDescriptor("jar.annotations.level.field", "Java Field-Level Annotations", true, true));
+        pds.add(new PropertyDescriptor("jar.annotations.level.method", "Java Method-Level Annotations", true, true));
+        pds.add(new PropertyDescriptor("jar.annotations.level.param", "Java Param-Level Annotations", true, true));
+
+        jarIndex.setPropertyDescriptors(pds);
+        
+        for (PropertyDescriptor pd : pds) {
+            typeManager.savePropertyDescriptor(pd);
+        }
     }
 }

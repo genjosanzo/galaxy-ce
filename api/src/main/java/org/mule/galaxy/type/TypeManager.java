@@ -19,7 +19,7 @@ public interface TypeManager {
     
     Type getDefaultType();
     
-    Collection<PropertyDescriptor> getPropertyDescriptors();
+    Collection<PropertyDescriptor> getPropertyDescriptors(boolean includeIndex);
 
     PropertyDescriptor getPropertyDescriptor(String propertyId) throws NotFoundException;
 

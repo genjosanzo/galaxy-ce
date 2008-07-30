@@ -16,12 +16,14 @@ public class PropertyDescriptor implements Identifiable {
     private Extension extension;
     private List<Class> appliesTo;
     private Map<String, String> configuration;
+    private boolean index;
     
-    public PropertyDescriptor(String property, String description, boolean multivalued) {
+    public PropertyDescriptor(String property, String description, boolean multivalued, boolean index) {
         super();
         this.property = property;
         this.description = description;
         this.multivalued = multivalued;
+	this.index = index;
     }
 
     public PropertyDescriptor() {
@@ -91,4 +93,13 @@ public class PropertyDescriptor implements Identifiable {
     public void setConfiguration(Map<String, String> configuration) {
         this.configuration = configuration;
     }
+
+    public boolean isIndex() {
+        return index;
+    }
+
+    public void setIndex(boolean index) {
+        this.index = index;
+    }
+    
 }

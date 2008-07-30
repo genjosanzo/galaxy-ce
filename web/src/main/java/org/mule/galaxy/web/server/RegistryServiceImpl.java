@@ -1144,9 +1144,9 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public List getPropertyDescriptors() throws RPCException {
+    public List getPropertyDescriptors(boolean includeIndex) throws RPCException {
         List<WPropertyDescriptor> pds = new ArrayList<WPropertyDescriptor>();
-        for (PropertyDescriptor pd : typeManager.getPropertyDescriptors()) {
+        for (PropertyDescriptor pd : typeManager.getPropertyDescriptors(includeIndex)) {
             pds.add(toWeb(pd));
         }
         return pds;

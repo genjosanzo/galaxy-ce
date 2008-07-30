@@ -123,16 +123,19 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
                                       indexType.getIndexer(),
                                       config);
 
-                indexManager.save(idx, true);
 
                 String property = config.get("property");
                 if (property != null) {
                     PropertyDescriptor pd = new PropertyDescriptor();
                     pd.setProperty(property);
                     pd.setDescription(indexType.getDescription());
+                    pd.setIndex(true);
                     
                     typeManager.savePropertyDescriptor(pd);
+                    idx.addPropertyDescriptor(pd);
                 }
+
+                indexManager.save(idx, true);
                 
                 if (logger.isDebugEnabled())
                 {

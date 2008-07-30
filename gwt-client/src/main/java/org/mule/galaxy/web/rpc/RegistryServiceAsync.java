@@ -113,7 +113,7 @@ public interface RegistryServiceAsync {
     
     void deletePropertyDescriptor(String id, AsyncCallback c);
 
-    void getPropertyDescriptors(AsyncCallback abstractCallback);
+    void getPropertyDescriptors(boolean includeIndexes, AsyncCallback abstractCallback);
     
     void transition(Collection artifactIds, String lifecycle, String phase, AsyncCallback c);
 
