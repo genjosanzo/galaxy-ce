@@ -230,6 +230,13 @@
             <id>gwt-maven</id>
             <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo</url>
         </repository>
+
+        <!-- For Abdera -->
+        <repository>
+            <id>apache-incubating</id>
+            <name>Apache Incubating Repository</name>
+            <url>http://people.apache.org/repo/m2-incubating-repository</url>
+        </repository>
         <repository>
             <id>mule-dependencies</id>
             <name>Mule Dependencies</name>
