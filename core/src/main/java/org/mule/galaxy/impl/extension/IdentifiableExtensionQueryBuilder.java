@@ -14,6 +14,12 @@ import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.OpRestriction.Operator;
 
+/**
+ * A query builder for extensions. By extending this class its easy to support queries
+ * which query based on complex values which are stored as properties - effectively
+ * allowing you to do joins. For instance, you could query on user.name instead of 
+ * simply a user id.
+ */
 public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
 
     private Dao dao;

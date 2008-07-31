@@ -353,7 +353,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     public WSearchResults getArtifacts(String workspaceId, String workspacePath, boolean includeChildWkspcs,
-                                       Set artifactTypes, Set<SearchPredicate> searchPredicates, String freeformQuery,
+                                       Set<String> artifactTypes, Set<SearchPredicate> searchPredicates, String freeformQuery,
                                        int start, int maxResults) throws RPCException {
         Query q = getQuery(searchPredicates, start, maxResults);
 
@@ -394,7 +394,7 @@ public class RegistryServiceImpl implements RegistryService {
         return q;
     }
 
-    private WSearchResults getSearchResults(Set artifactTypes, SearchResults results) {
+    private WSearchResults getSearchResults(Set<String> artifactTypes, SearchResults results) {
         Map<String, ArtifactGroup> name2group = new HashMap<String, ArtifactGroup>();
         Map<String, ArtifactRenderer> name2view = new HashMap<String, ArtifactRenderer>();
 
@@ -776,12 +776,12 @@ public class RegistryServiceImpl implements RegistryService {
         return idx;
     }
 
-    public Collection<Object> getLinks(String itemId, String property) throws RPCException {
+    public Collection<LinkInfo> getLinks(String itemId, String property) throws RPCException {
         try {
             Item item = registry.getItemById(itemId);
             Links links = (Links) item.getProperty(property);
             
-            List<Object> deps = new ArrayList<Object>();
+            List<LinkInfo> deps = new ArrayList<LinkInfo>();
             
             for (Link l : links.getLinks()) {
                 deps.add(toWeb(l, false));
@@ -799,7 +799,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     }
 
-    private Object toWeb(Link l, boolean recip) {
+    private LinkInfo toWeb(Link l, boolean recip) {
         Item i = recip ? l.getItem() : l.getLinkedTo();
         String name;
         int itemType;
@@ -1120,7 +1120,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void deleteProperty(Collection artifactIds, String propertyName) throws RPCException, ItemNotFoundException {
+    public void deleteProperty(Collection<String> artifactIds, String propertyName) throws RPCException, ItemNotFoundException {
 
     }
 
@@ -1280,7 +1280,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     // TODO:
-    public void transition(Collection artifactIds, String lifecycle, String phase) throws RPCException, ItemNotFoundException {
+    public void transition(Collection<String> artifactIds, String lifecycle, String phase) throws RPCException, ItemNotFoundException {
         
     }
 
@@ -1396,7 +1396,7 @@ public class RegistryServiceImpl implements RegistryService {
         return getArtifactPolicyIds(pols);
     }
 
-    public void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids)
+    public void setActivePolicies(String workspace, String lifecycle, String phase, Collection<String> ids)
             throws RPCException, WPolicyException, ItemNotFoundException {
         Lifecycle l = localLifecycleManager.getLifecycle(lifecycle);
         List<Policy> policies = getArtifactPolicies(ids);

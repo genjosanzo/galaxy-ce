@@ -52,7 +52,7 @@ public interface RegistryService extends RemoteService {
     void deleteArtifactType(String id) throws RPCException;
     
     WSearchResults getArtifacts(String workspaceId, String workspacePath, 
-                                boolean includeChildWkspcs, Set artifactTypes, 
+                                boolean includeChildWkspcs, Set<String> artifactTypes, 
                                 Set<SearchPredicate> searchPredicates, String freeformQuery, int start, int maxResults) throws RPCException;
     
     WSearchResults getArtifactsForView(String viewId, int resultStart, int maxResults) throws RPCException;
@@ -75,7 +75,7 @@ public interface RegistryService extends RemoteService {
     
     void deleteIndex(String id, boolean removeArtifactMetadata) throws RPCException;
 
-    Collection<Object> getLinks(String itemId, String property) throws RPCException;
+    Collection<LinkInfo> getLinks(String itemId, String property) throws RPCException;
     
     ArtifactGroup getArtifact(String artifactId) throws RPCException, ItemNotFoundException;
     
@@ -104,7 +104,7 @@ public interface RegistryService extends RemoteService {
     void deleteProperty(String artifactId, 
                         String propertyName) throws RPCException, ItemNotFoundException;
     
-    void deleteProperty(Collection artifactIds, 
+    void deleteProperty(Collection<String> artifactIds, 
                         String propertyName) throws RPCException, ItemNotFoundException;
 
     void savePropertyDescriptor(WPropertyDescriptor property) throws RPCException, ItemNotFoundException, ItemExistsException;
@@ -131,7 +131,7 @@ public interface RegistryService extends RemoteService {
 
     void setEnabled(String artifactVersionId, boolean enabled) throws RPCException, WPolicyException, ItemNotFoundException;
 
-    void transition(Collection artifactIds, String lifecycle, String phase) throws RPCException, WPolicyException, ItemNotFoundException;
+    void transition(Collection<String> artifactIds, String lifecycle, String phase) throws RPCException, WPolicyException, ItemNotFoundException;
 
     Collection<WArtifactPolicy> getPolicies() throws RPCException;
     
@@ -147,7 +147,7 @@ public interface RegistryService extends RemoteService {
 
     Collection<String> getActivePoliciesForPhase(String lifecycle, String phase, String workspaceId) throws RPCException;
 
-    void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids) throws RPCException, WPolicyException, ItemNotFoundException;
+    void setActivePolicies(String workspace, String lifecycle, String phase, Collection<String> ids) throws RPCException, WPolicyException, ItemNotFoundException;
 
     Collection<WActivity> getActivities(Date from, Date to, String user, String eventType, int start, int results, boolean ascending) throws RPCException;
     

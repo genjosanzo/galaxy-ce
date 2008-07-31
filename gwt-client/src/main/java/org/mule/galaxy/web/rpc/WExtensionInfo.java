@@ -6,11 +6,11 @@ import java.util.List;
 
 public class WExtensionInfo implements IsSerializable, Comparable {
     private String id;
-    private List configurationKeys;
+    private List<String> configurationKeys;
     private String description;
     private boolean multivalueSupported;
     
-    public WExtensionInfo(String id, String description, List configurationKeys, boolean multivalueSupported) {
+    public WExtensionInfo(String id, String description, List<String> configurationKeys, boolean multivalueSupported) {
         super();
         this.configurationKeys = configurationKeys;
         this.description = description;
@@ -26,10 +26,10 @@ public class WExtensionInfo implements IsSerializable, Comparable {
     public void setId(String id) {
         this.id = id;
     }
-    public List getConfigurationKeys() {
+    public List<String> getConfigurationKeys() {
         return configurationKeys;
     }
-    public void setConfigurationKeys(List configurationKeys) {
+    public void setConfigurationKeys(List<String> configurationKeys) {
         this.configurationKeys = configurationKeys;
     }
     public String getDescription() {
