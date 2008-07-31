@@ -98,7 +98,7 @@ public class SearchFormRow
         initWidget(dock);
     }
     
-    public void addPropertySet(String setName, List propertyDescriptors) {
+    public void addPropertySet(String setName, List<WPropertyDescriptor> propertyDescriptors) {
         Collections.sort(propertyDescriptors, new PropertyDescriptorComparator());
         
         propertyList.addItem("", "");

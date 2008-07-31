@@ -29,10 +29,7 @@ public class WProperty implements IsSerializable {
     private String name;
     private String description;
     private String value;
-    /*
-     * @gwt.typeArgs <java.lang.String>
-     */
-    private List listValue;
+    private List<String> listValue;
     private String extension;
     private boolean multiValued;
     
@@ -82,20 +79,21 @@ public class WProperty implements IsSerializable {
         return value;
     }
 
+    @SuppressWarnings("unchecked")
     public void setValue(Object value) {
         if (value instanceof String) {
             this.value = (String) value;
         } else if (value instanceof List) {
-            this.listValue = (List) value;
+            this.listValue = (List<String>) value;
             multiValued = true;
         } else if (value instanceof Collection) {
-            this.listValue = new ArrayList();
+            this.listValue = new ArrayList<String>();
             listValue.addAll((Collection) value);
             multiValued = true;
         }
     }
 
-    public List getListValue() {
+    public List<String> getListValue() {
         return listValue;
     }
 

@@ -52,8 +52,8 @@ public interface RegistryServiceAsync {
                             AsyncCallback callback);
     
     void getArtifacts(String workspace, String workspacePath, 
-                      boolean includeChildWkspcs, Set artifactTypes, 
-                      Set searchPredicates, String freeformQuery, 
+                      boolean includeChildWkspcs, Set<String> artifactTypes, 
+                      Set<SearchPredicate> searchPredicates, String freeformQuery, 
                       int start, int maxResults, 
                       AsyncCallback callback);
     
@@ -137,7 +137,7 @@ public interface RegistryServiceAsync {
     
     void getActivePoliciesForPhase(String lifecycle, String phase, String workspaceId, AsyncCallback c);
 
-    void setActivePolicies(String workspace, String lifecycle, String phase, Collection ids, AsyncCallback c);
+    void setActivePolicies(String workspace, String lifecycle, String phase, Collection<String> ids, AsyncCallback c);
     
     void getActivities(Date from, Date to, String user, String eventType, int start, int results, boolean ascending, AsyncCallback c);
     

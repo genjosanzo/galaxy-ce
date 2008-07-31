@@ -24,6 +24,7 @@ import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.NavigationUtil;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.WWorkspace;
 
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -42,7 +43,7 @@ public class BrowsePanel extends AbstractBrowsePanel {
 
     private static String lastWorkspaceId;
     private String workspaceId;
-    private Collection workspaces;
+    private Collection<WWorkspace> workspaces;
     protected ColumnView cv;
     protected TreeItem workspaceTreeItem;
     private FlowPanel browsePanel;
@@ -61,9 +62,9 @@ public class BrowsePanel extends AbstractBrowsePanel {
         }
     }
     
-    public void onShow(List params) {
+    public void onShow(List<String> params) {
         if (params.size() > 0) {
-            workspaceId = (String) params.get(0);
+            workspaceId = params.get(0);
         }
         
         super.onShow(params);
@@ -115,8 +116,9 @@ public class BrowsePanel extends AbstractBrowsePanel {
         // Load the workspaces into a tree on the left
         service.getWorkspaces(new AbstractCallback(this) {
 
+            @SuppressWarnings("unchecked")
             public void onSuccess(Object o) {
-                workspaces = (Collection) o;
+                workspaces = (Collection<WWorkspace>) o;
                 
                 initWorkspaces(treeItem, workspaces);
 
@@ -135,9 +137,9 @@ public class BrowsePanel extends AbstractBrowsePanel {
         });
     }
     
-    private void initWorkspaces(TreeItem ti, Collection workspaces) {
-        for (Iterator itr = workspaces.iterator(); itr.hasNext();) {
-            WWorkspace wi = (WWorkspace) itr.next();
+    private void initWorkspaces(TreeItem ti, Collection<WWorkspace> workspaces) {
+        for (Iterator<WWorkspace> itr = workspaces.iterator(); itr.hasNext();) {
+            WWorkspace wi = itr.next();
             
             TreeItem treeItem = ti.addItem(wi.getName());
             treeItem.setUserObject(wi.getId());
@@ -147,7 +149,7 @@ public class BrowsePanel extends AbstractBrowsePanel {
                 workspaceTreeItem = treeItem;
             }
             
-            Collection children = wi.getWorkspaces();
+            Collection<WWorkspace> children = wi.getWorkspaces();
             if (children != null) {
                 initWorkspaces(treeItem, children);
             }
@@ -158,11 +160,11 @@ public class BrowsePanel extends AbstractBrowsePanel {
         return getWorkspace(workspaceId, workspaces);
     }
 
-    private WWorkspace getWorkspace(String workspaceId2, Collection workspaces2) {
+    private WWorkspace getWorkspace(String workspaceId2, Collection<WWorkspace> workspaces2) {
         if (workspaces2 == null) return null;
         
-        for (Iterator itr = workspaces2.iterator(); itr.hasNext();) {
-            WWorkspace w = (WWorkspace)itr.next();
+        for (Iterator<WWorkspace> itr = workspaces2.iterator(); itr.hasNext();) {
+            WWorkspace w = itr.next();
             
             if (w.getId().equals(workspaceId2)) {
                 return w;
@@ -183,7 +185,7 @@ public class BrowsePanel extends AbstractBrowsePanel {
     protected void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback) {
         galaxy.getRegistryService().getArtifacts(workspaceId, null, false, 
                                                  getAppliedArtifactTypeFilters(), 
-                                                 new HashSet(), null, 
+                                                 new HashSet<SearchPredicate>(), null, 
                                                  resultStart, maxResults, callback);
     }
     
@@ -195,7 +197,7 @@ public class BrowsePanel extends AbstractBrowsePanel {
         return lastWorkspaceId;
     }
 
-    public Collection getWorkspaces() {
+    public Collection<WWorkspace> getWorkspaces() {
         return workspaces;
     }
 }

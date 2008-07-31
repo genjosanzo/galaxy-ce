@@ -80,16 +80,16 @@ public class ViewPanel extends AbstractBrowsePanel {
         return "view_" + viewId;
     }
 
-    public void onShow(List params) {
+    public void onShow(List<String> params) {
         if (params.size() > 0) {
-            viewId = (String) params.get(0);
+            viewId = params.get(0);
         }
 
         editPanel = new InlineFlowPanel();
         currentTopPanel = editPanel;
         
         if (params.size() > 1) {
-            editMode = "edit".equals((String) params.get(1));
+            editMode = "edit".equals(params.get(1));
         } else {
             editMode = false;
         }

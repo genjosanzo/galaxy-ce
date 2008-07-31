@@ -33,7 +33,7 @@ public class ArtifactPolicyResultsPanel extends AbstractErrorShowingComposite {
 
     private RegistryMenuPanel menuPanel;
 
-    public ArtifactPolicyResultsPanel(Galaxy galaxy, Collection warnings, Collection failures) {
+    public ArtifactPolicyResultsPanel(Galaxy galaxy, Collection<String> warnings, Collection<String> failures) {
         super();
         
         menuPanel = new RegistryMenuPanel(galaxy);
@@ -44,8 +44,8 @@ public class ArtifactPolicyResultsPanel extends AbstractErrorShowingComposite {
         if (warnings.size() > 0) {
             panel.add(createTitle("Warnings"));
             
-            for (Iterator itr = warnings.iterator(); itr.hasNext();) {
-                String warning = (String)itr.next();
+            for (Iterator<String> itr = warnings.iterator(); itr.hasNext();) {
+                String warning = itr.next();
                 
                 Label warningLabel = new Label(warning);
                 warningLabel.setStyleName("warning-label");
@@ -57,8 +57,8 @@ public class ArtifactPolicyResultsPanel extends AbstractErrorShowingComposite {
         if (failures.size() > 0) {
             panel.add(createTitle("Failures"));
             
-            for (Iterator itr = failures.iterator(); itr.hasNext();) {
-                String failure = (String)itr.next();
+            for (Iterator<String> itr = failures.iterator(); itr.hasNext();) {
+                String failure = itr.next();
                 
                 Label failureLabel = new Label(failure);
                 failureLabel.setStyleName("failure-label");
@@ -69,7 +69,7 @@ public class ArtifactPolicyResultsPanel extends AbstractErrorShowingComposite {
         initWidget(menuPanel);
     }
 
-    public void onShow(List params) {
+    public void onShow(List<String> params) {
         menuPanel.onShow();
         super.onShow(params);
     }

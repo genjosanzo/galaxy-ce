@@ -68,8 +68,8 @@ public class HistoryPanel extends AbstractComposite {
     }
 
     protected void initializePanel() {
-        for (Iterator iterator = info.getVersions().iterator(); iterator.hasNext();) {
-            final ArtifactVersionInfo av = (ArtifactVersionInfo)iterator.next();
+        for (Iterator<ArtifactVersionInfo> iterator = info.getVersions().iterator(); iterator.hasNext();) {
+            final ArtifactVersionInfo av = iterator.next();
             
             FlowPanel avPanel = new FlowPanel();
             avPanel.setStyleName("artifact-version-panel");

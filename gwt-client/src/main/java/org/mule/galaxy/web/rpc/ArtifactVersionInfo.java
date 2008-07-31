@@ -39,7 +39,7 @@ public class ArtifactVersionInfo implements IsSerializable {
     /*
      * @gwt typeArgs org.mule.galaxy.rpc.WProperty
      */
-    private List properties = new ArrayList();
+    private List<WProperty> properties = new ArrayList<WProperty>();
     
     public ArtifactVersionInfo(String id, String versionLabel, String link, Date created, boolean _default,
                                boolean enabled,
@@ -74,7 +74,7 @@ public class ArtifactVersionInfo implements IsSerializable {
     /**
      * @gwt typeArgs org.mule.galaxy.web.rpc.WProperty
      */
-    public List getProperties() {
+    public List<WProperty> getProperties() {
         return properties;
     }
     
@@ -143,8 +143,8 @@ public class ArtifactVersionInfo implements IsSerializable {
     }
     
     public WProperty getProperty(String name) {
-        for (Iterator itr = properties.iterator(); itr.hasNext();) {
-            WProperty p = (WProperty) itr.next();
+        for (Iterator<WProperty> itr = properties.iterator(); itr.hasNext();) {
+            WProperty p = itr.next();
             
             if (name.equals(p.getName())) {
                 return p;

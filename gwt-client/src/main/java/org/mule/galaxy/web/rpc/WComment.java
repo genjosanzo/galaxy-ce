@@ -32,7 +32,7 @@ public class WComment implements IsSerializable {
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WComment>
      */
-    private List comments;
+    private List<WComment> comments;
 
     public WComment() {
         super();
@@ -86,9 +86,9 @@ public class WComment implements IsSerializable {
         this.text = text;
     }
 
-    public List getComments() {
+    public List<WComment> getComments() {
         if (comments == null) {
-            comments = new ArrayList();
+            comments = new ArrayList<WComment>();
         }
         return comments;
     }

@@ -92,8 +92,8 @@ public abstract class AbstractUserModifiableListBox extends AbstractComposite {
 
     protected abstract boolean isValid(String text);
     
-    public Collection getItems() {
-        ArrayList items = new ArrayList();
+    public Collection<String> getItems() {
+        ArrayList<String> items = new ArrayList<String>();
         for (int i = 0; i < listBox.getItemCount(); i++) {
             items.add(listBox.getValue(i));
         }

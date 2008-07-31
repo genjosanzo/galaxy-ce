@@ -72,14 +72,14 @@ public class LifecycleListPanel extends AbstractAdministrationComposite {
     private String getPhaseList(WLifecycle l) {
         StringBuffer sb = new StringBuffer();
         boolean first = true;
-        for (Iterator itr = l.getPhases().iterator(); itr.hasNext();) {
+        for (Iterator<WPhase> itr = l.getPhases().iterator(); itr.hasNext();) {
             if (first) {
                 first = false;
             } else {
                 sb.append(", ");
             }
 
-            sb.append(((WPhase)itr.next()).getName());
+            sb.append(itr.next().getName());
         }
         return sb.toString();
     }

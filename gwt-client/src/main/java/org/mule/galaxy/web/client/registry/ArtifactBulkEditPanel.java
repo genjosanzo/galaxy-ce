@@ -123,7 +123,7 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
      *
      * @param params
      */
-    public void onShow(List params) {
+    public void onShow(List<String> params) {
         menuPanel.clearErrorMessage();
         menuPanel.onShow();
         this.onShow();
@@ -225,8 +225,8 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
      */
     private void updatePhaseListBox(WLifecycle w) {
         phaseLB.clear();
-        for (Iterator iterator = w.getPhases().iterator(); iterator.hasNext();) {
-            WPhase p = (WPhase) iterator.next();
+        for (Iterator<WPhase> iterator = w.getPhases().iterator(); iterator.hasNext();) {
+            WPhase p = iterator.next();
             phaseLB.addItem(p.getName(), p.getId());
         }
     }
@@ -240,7 +240,6 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
             public void onSuccess(Object result) {
                 Collection props = (Collection) result;
 
-                int i = 1;
                 for (Iterator itr = props.iterator(); itr.hasNext();) {
                     final WPropertyDescriptor prop = (WPropertyDescriptor) itr.next();
                     setPropertyLB.addItem(prop.getName(), prop.getId());

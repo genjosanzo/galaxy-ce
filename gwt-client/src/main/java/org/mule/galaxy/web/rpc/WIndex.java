@@ -35,14 +35,14 @@ public class WIndex implements IsSerializable {
     /**
      * @gwt.typeArgs <java.lang.String> 
      */
-    private Collection documentTypes;
+    private Collection<String> documentTypes;
     
     public WIndex(String id, String description, 
                   String mediaType,
                   String property,
                   String expression, 
                   String indexer, String resultType,
-                  Collection documentTypes) {
+                  Collection<String> documentTypes) {
         super();
         this.id = id;
         this.description = description;
@@ -58,10 +58,10 @@ public class WIndex implements IsSerializable {
         super();
     }
     
-    public Collection getDocumentTypes() {
+    public Collection<String> getDocumentTypes() {
         return documentTypes;
     }
-    public void setDocumentTypes(Collection documentTypes) {
+    public void setDocumentTypes(Collection<String> documentTypes) {
         this.documentTypes = documentTypes;
     }
     public String getId() {

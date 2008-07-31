@@ -145,7 +145,7 @@ public abstract class AbstractComposite extends Composite {
         return commentTitlePanel;
     }
 
-    public void onShow(List params) {
+    public void onShow(List<String> params) {
         onShow();
     }
 }

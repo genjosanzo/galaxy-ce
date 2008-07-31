@@ -47,7 +47,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
     protected FlexTable table;
     private Collection permissions;
     private Button applyButton;
-    private List rows;
+    private List<String> rows;
     private Map groups2Permissions;
     private Button resetButton;
     protected final Galaxy galaxy;
@@ -101,7 +101,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
             col++;
         }
 
-        rows = new ArrayList();
+        rows = new ArrayList<String>();
         for (Iterator itr = groups2Permissions.keySet().iterator(); itr.hasNext();) {
             rows.add(((WGroup) itr.next()).getName());
         }

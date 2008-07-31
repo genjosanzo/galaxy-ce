@@ -52,7 +52,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
     private boolean edit;
     private ListBox lifecyclesLB;
     private FlowPanel panel;
-    private Collection workspaces;
+    private Collection<WWorkspace> workspaces;
     private String parentWorkspaceId;
     private WWorkspace workspace;
     private String workspaceId;
@@ -77,7 +77,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
      * Set up the form for editing a workspace.
      */
     public WorkspaceForm(Galaxy galaxy, 
-                         Collection workspaces, 
+                         Collection<WWorkspace> workspaces, 
                          WWorkspace workspace, 
                          String parentWorkspaceId) {
         this.galaxy = galaxy;
@@ -92,7 +92,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
         initWidget(panel);
     }
 
-    public void onShow(List params) {
+    public void onShow(List<String> params) {
         panel.clear();
         panel.add(new Label("Loading..."));
         
@@ -100,13 +100,14 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
             menuPanel.onShow();
         }
         if (params.size() > 0 && !edit) {
-            parentWorkspaceId = (String) params.get(0);
+            parentWorkspaceId = params.get(0);
         }
         
         if (!edit || workspaces == null) {
             galaxy.getRegistryService().getWorkspaces(new AbstractCallback(this) {
+                @SuppressWarnings("unchecked")
                 public void onSuccess(Object workspaces) {
-                    loadWorkspaces((Collection) workspaces);
+                    loadWorkspaces((Collection<WWorkspace>) workspaces);
                 }
             });
         } else {
@@ -114,7 +115,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
         }
     }
     
-    public void loadWorkspaces(Collection workspaces) {
+    public void loadWorkspaces(Collection<WWorkspace> workspaces) {
         panel.clear();
         this.workspaces = workspaces;
         

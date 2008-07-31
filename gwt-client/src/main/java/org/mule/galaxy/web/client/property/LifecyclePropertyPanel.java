@@ -32,7 +32,7 @@ public class LifecyclePropertyPanel extends AbstractEditPropertyPanel {
     }
 
     protected Object getValueToSave() {
-        ArrayList values = new ArrayList();
+        ArrayList<String> values = new ArrayList<String>();
         values.add(getSelectedLifecycle().getId());
         values.add(getSelectedPhase().getId());
         return values;
@@ -48,13 +48,13 @@ public class LifecyclePropertyPanel extends AbstractEditPropertyPanel {
         
         valueLabel.setText("Loading...");
         
-        final List ids = getProperty().getListValue();
+        final List<String> ids = getProperty().getListValue();
         if (ids != null) {
-            galaxy.getRegistryService().getLifecycle((String)ids.get(0), new AbstractCallback(errorPanel) {
+            galaxy.getRegistryService().getLifecycle(ids.get(0), new AbstractCallback(errorPanel) {
     
                 public void onSuccess(Object o) {
                     lifecycle = (WLifecycle) o;
-                    phase = lifecycle.getPhaseById((String) ids.get(1));
+                    phase = lifecycle.getPhaseById(ids.get(1));
                     
                     updateLabel();
                 }
@@ -83,10 +83,10 @@ public class LifecyclePropertyPanel extends AbstractEditPropertyPanel {
         String lid = null;
         String pid = null;
         
-        List values = getProperty().getListValue();
+        List<String> values = getProperty().getListValue();
         if (values != null) {
-            lid = (String) values.get(0);
-            pid = (String) values.get(1);
+            lid = values.get(0);
+            pid = values.get(1);
         }
         
         lifecyclesLB = new ListBox();
@@ -143,8 +143,8 @@ public class LifecyclePropertyPanel extends AbstractEditPropertyPanel {
     }
 
     private void showPhasesForLifecycle(WLifecycle lifecycle) {
-        for (Iterator iterator = lifecycle.getPhases().iterator(); iterator.hasNext();) {
-            WPhase p = (WPhase)iterator.next();
+        for (Iterator<WPhase> iterator = lifecycle.getPhases().iterator(); iterator.hasNext();) {
+            WPhase p = iterator.next();
             
             if ((phase == null && lifecycle.getInitialPhase().equals(p))
                 || p.getNextPhases().contains(phase) || (phase != null && phase.getNextPhases().contains(p)) || p == phase) {
@@ -161,8 +161,8 @@ public class LifecyclePropertyPanel extends AbstractEditPropertyPanel {
         int idx = phaseLB.getSelectedIndex();
         String id = phaseLB.getValue(idx);
         
-        for (Iterator itr = lifecycle.getPhases().iterator(); itr.hasNext();) {
-            WPhase l = (WPhase) itr.next();
+        for (Iterator<WPhase> itr = lifecycle.getPhases().iterator(); itr.hasNext();) {
+            WPhase l = itr.next();
             
             if (l.getId().equals(id)) {
                 return l;

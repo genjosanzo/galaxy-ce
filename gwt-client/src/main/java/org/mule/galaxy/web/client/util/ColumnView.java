@@ -56,7 +56,7 @@ public class ColumnView
     {
         container.clear();
         
-        List selections = new ArrayList();
+        List<TreeItem> selections = new ArrayList<TreeItem>();
         TreeItem parent = selected;
         while (parent != null) {
             selections.add(0, parent);
@@ -72,7 +72,7 @@ public class ColumnView
 //        selectItemInColumn(root.getChild(0), first, column);
     }
 
-    private void addColumnWithItem(TreeItem item, List selections) {
+    private void addColumnWithItem(TreeItem item, List<TreeItem> selections) {
         // Create the column and add it to the container
         final FlowPanel column = new FlowPanel();
         column.setStyleName("column");
@@ -106,7 +106,7 @@ public class ColumnView
         }
     }
 
-    private void selectItemInColumn(TreeItem treeItem, Widget link, FlowPanel column, List selections, boolean fire) {
+    private void selectItemInColumn(TreeItem treeItem, Widget link, FlowPanel column, List<TreeItem> selections, boolean fire) {
         // 1. Remove columns to the right of the column we're looking at
         int idx = 1 + container.getWidgetIndex(column);
         while (container.getWidgetCount() != idx)

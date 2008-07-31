@@ -59,23 +59,24 @@ public class ManageWorkspacePanel extends AbstractErrorShowingComposite {
         initWidget(menuPanel);
     }
 
-    public void onShow(List params) {
+    public void onShow(List<String> params) {
         panel.clear();
         panel.add(new Label("Loading..."));
         
         if (params.size() > 0) {
-            workspaceId = (String) params.get(0);
+            workspaceId = params.get(0);
         }
         
         galaxy.getRegistryService().getWorkspaces(new AbstractCallback(this) {
+            @SuppressWarnings("unchecked")
             public void onSuccess(Object workspaces) {
-                loadWorkspaces((Collection) workspaces);
+                loadWorkspaces((Collection<WWorkspace>) workspaces);
             }
         });
         menuPanel.onShow();
     }
     
-    public void loadWorkspaces(Collection workspaces) {
+    public void loadWorkspaces(Collection<WWorkspace> workspaces) {
         panel.clear();
         
         Object[] parentAndWkspc = getWorkspace(workspaceId, null, workspaces);
@@ -115,15 +116,16 @@ public class ManageWorkspacePanel extends AbstractErrorShowingComposite {
         });
         tabs.selectTab(0);
         AbstractComposite composite = (AbstractComposite) tabs.getWidget(0);
-        composite.onShow(Collections.EMPTY_LIST);
+        List<String> args = Collections.emptyList();
+        composite.onShow(args);
     }
     
-    private Object[] getWorkspace(String id, WWorkspace parent, Collection workspaces) {
+    private Object[] getWorkspace(String id, WWorkspace parent, Collection<WWorkspace> workspaces) {
         if (workspaces == null) {
             return null;
         }
-        for (Iterator itr = workspaces.iterator(); itr.hasNext();) {
-            WWorkspace w = (WWorkspace) itr.next();
+        for (Iterator<WWorkspace> itr = workspaces.iterator(); itr.hasNext();) {
+            WWorkspace w = itr.next();
             
             if (w.getId().equals(id)) {
                 return new Object[] { parent, w };

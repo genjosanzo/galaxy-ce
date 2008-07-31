@@ -48,7 +48,7 @@ public class PolicySelectionPanel extends AbstractComposite{
     protected Collection policies;
     private SimplePanel descriptionPanel;
     private FlowPanel panel;
-    private Collection selectedPolicyIds;
+    private Collection<String> selectedPolicyIds;
     private boolean loaded;
     private Button left;
     private Button right;
@@ -181,7 +181,7 @@ public class PolicySelectionPanel extends AbstractComposite{
         });                         
     }
 
-    public void selectAndShow(Collection ids) {
+    public void selectAndShow(Collection<String> ids) {
         this.selectedPolicyIds = ids;
         this.loaded = true;
         
@@ -199,7 +199,7 @@ public class PolicySelectionPanel extends AbstractComposite{
         left.setEnabled(enabled);
     }
 
-    public Collection getSelectedPolicyIds() {
+    public Collection<String> getSelectedPolicyIds() {
         return selectedPolicyIds;
     }
 }

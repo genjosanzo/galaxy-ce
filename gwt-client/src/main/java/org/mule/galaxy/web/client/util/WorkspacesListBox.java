@@ -30,7 +30,7 @@ public class WorkspacesListBox extends Composite {
 
     private ListBox workspacesLB;
 
-    public WorkspacesListBox(Collection workspaces, 
+    public WorkspacesListBox(Collection<WWorkspace> workspaces, 
                              String childrenToHideId, 
                              String selectedWorkspaceId,
                              boolean allowNoWorkspace) {
@@ -51,12 +51,12 @@ public class WorkspacesListBox extends Composite {
         initWidget(workspacesLB);
     }
 
-    private void addWorkspaces(final Collection workspaces, 
+    private void addWorkspaces(final Collection<WWorkspace> workspaces, 
                                ListBox workspacesLB, 
                                String selectedWorkspaceId,
                                String childrenToHideId) {
-        for (Iterator itr = workspaces.iterator(); itr.hasNext();) {
-            WWorkspace w = (WWorkspace) itr.next();
+        for (Iterator<WWorkspace> itr = workspaces.iterator(); itr.hasNext();) {
+            WWorkspace w = itr.next();
             
             if (childrenToHideId == null || !childrenToHideId.equals(w.getId())) {
                 workspacesLB.addItem(w.getPath(), w.getId());
@@ -65,7 +65,7 @@ public class WorkspacesListBox extends Composite {
                     workspacesLB.setSelectedIndex(workspacesLB.getItemCount() - 1);
                 }
                 
-                Collection children = w.getWorkspaces();
+                Collection<WWorkspace> children = w.getWorkspaces();
                 if (children != null && children.size() > 0) {
                     addWorkspaces(children, workspacesLB, selectedWorkspaceId, childrenToHideId);
                 }

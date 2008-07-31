@@ -23,8 +23,9 @@ import java.util.Comparator;
 
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 
-public class PropertyDescriptorComparator implements Comparator {
-    public int compare(Object o1, Object o2) {
+public class PropertyDescriptorComparator implements Comparator<WPropertyDescriptor> {
+    
+    public int compare(WPropertyDescriptor o1, WPropertyDescriptor o2) {
         WPropertyDescriptor pd1 = (WPropertyDescriptor) o1;
         WPropertyDescriptor pd2 = (WPropertyDescriptor) o2;
         

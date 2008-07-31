@@ -100,8 +100,9 @@ public class NewPropertyPanel extends Composite {
         panel.add(propPanelContainer);
         
         svc.getPropertyDescriptors(false, new AbstractCallback(registryPanel) {
+            @SuppressWarnings("unchecked")
             public void onSuccess(Object o) {
-                initProperties((List) o);
+                initProperties((List<WPropertyDescriptor>) o);
             }
         });
 
@@ -168,7 +169,7 @@ public class NewPropertyPanel extends Composite {
         return null;
     }
 
-    protected void initProperties(List o) {
+    protected void initProperties(List<WPropertyDescriptor> o) {
         this.propertyDescriptors = o;
         Collections.sort(o, new PropertyDescriptorComparator());
         

@@ -44,7 +44,7 @@ import java.util.Set;
  */
 public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite {
 
-    protected Set appliedArtifactTypeFilters = new HashSet();
+    protected Set<String> appliedArtifactTypeFilters = new HashSet<String>();
     protected Toolbox artifactTypesBox;
     protected RegistryServiceAsync service;
     protected ArtifactListPanel artifactListPanel;
@@ -75,10 +75,10 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
         return new RegistryMenuPanel(galaxy, false, true);
     }
 
-    public void onShow(List params) {
+    public void onShow(List<String> params) {
         if (params.size() > 1) {
             try {
-                resultStart = Integer.valueOf((String) params.get(1)).intValue();
+                resultStart = Integer.valueOf(params.get(1)).intValue();
             } catch (NumberFormatException e) {
             }
 
@@ -226,7 +226,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
         artifactListPanel.clear();
     }
 
-    public Set getAppliedArtifactTypeFilters() {
+    public Set<String> getAppliedArtifactTypeFilters() {
         return appliedArtifactTypeFilters;
     }
 

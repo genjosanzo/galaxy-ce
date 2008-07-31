@@ -20,22 +20,23 @@ package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+import java.util.Collection;
 import java.util.Map;
 
 public class WPolicyException extends Exception implements IsSerializable {
     
-    private Map artifactToMessages;
+    private Map<BasicArtifactInfo, Collection<WApprovalMessage>> artifactToMessages;
 
     public WPolicyException() {
         super();
     }
 
-    public WPolicyException(Map artifactToMessages) {
+    public WPolicyException(Map<BasicArtifactInfo, Collection<WApprovalMessage>> artifactToMessages) {
         super();
         this.artifactToMessages = artifactToMessages;
     }
 
-    public Map getPolicyFailures() {
+    public Map<BasicArtifactInfo, Collection<WApprovalMessage>> getPolicyFailures() {
         return artifactToMessages;
     }
 }

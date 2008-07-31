@@ -121,8 +121,8 @@ public class EntryMetadataPanel extends AbstractComposite {
     }
 
     private void initializeProperties(final ArtifactVersionInfo info) {
-        for (Iterator itr = info.getProperties().iterator(); itr.hasNext();) {
-            WProperty p = (WProperty) itr.next();
+        for (Iterator<WProperty> itr = info.getProperties().iterator(); itr.hasNext();) {
+            WProperty p = itr.next();
             
             
             addRow(p);

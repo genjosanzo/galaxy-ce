@@ -147,7 +147,7 @@ public class RegistryMenuPanel extends MenuPanel {
         loadViews(null, null);
     }
 
-    public void loadViews(String viewId, final AsyncCallback callback) {
+    public void loadViews(String viewId, final AsyncCallback<WArtifactView> callback) {
         this.selectedViewId = viewId;
         galaxy.getRegistryService().getArtifactViews(new AbstractCallback(this) {
 
@@ -176,7 +176,7 @@ public class RegistryMenuPanel extends MenuPanel {
         }
     }
 
-    protected void initializeViews(Collection views, AsyncCallback callback) {
+    protected void initializeViews(Collection views, AsyncCallback<WArtifactView> callback) {
         viewBox.clear();
         viewBox.addItem("Select...", "");
         for (Iterator itr = views.iterator(); itr.hasNext();) {

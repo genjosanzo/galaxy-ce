@@ -18,9 +18,8 @@
 
 package org.mule.galaxy.web.client;
 
-import com.google.gwt.user.client.rpc.SerializableException;
 
-public class RPCException extends SerializableException {
+public class RPCException extends Exception {
 
     public RPCException() {
         super();

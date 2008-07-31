@@ -34,7 +34,7 @@ import java.util.Iterator;
 
 public class StringListBox extends AbstractUserModifiableListBox {
 
-    public StringListBox(Collection list) {
+    public StringListBox(Collection<String> list) {
         super(list);
     }
 

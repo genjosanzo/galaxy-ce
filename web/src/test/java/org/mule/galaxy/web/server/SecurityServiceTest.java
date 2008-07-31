@@ -27,11 +27,11 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
         
     }
     public void testUsers() throws Exception {
-        Collection users = gwtSecurityService.getUsers();
+        Collection<WUser> users = gwtSecurityService.getUsers();
         
         assertEquals(1, users.size());
         
-        WUser admin = (WUser) users.iterator().next();
+        WUser admin = users.iterator().next();
 //        Collection groupIds = admin.getGroupIds();
 //        assertEquals(2, groupIds.size());
         

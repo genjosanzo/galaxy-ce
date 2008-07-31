@@ -25,7 +25,7 @@ import java.util.Collection;
 public class WPhase implements IsSerializable {
     private String id;
     private String name;
-    private Collection nextPhases;
+    private Collection<WPhase> nextPhases;
     
     public WPhase(String id, String name) {
         super();
@@ -53,11 +53,11 @@ public class WPhase implements IsSerializable {
         this.name = name;
     }
 
-    public Collection getNextPhases() {
+    public Collection<WPhase> getNextPhases() {
         return nextPhases;
     }
 
-    public void setNextPhases(Collection nextPhases) {
+    public void setNextPhases(Collection<WPhase> nextPhases) {
         this.nextPhases = nextPhases;
     }
     

@@ -110,8 +110,8 @@ public class LifecycleForm extends AbstractAdministrationForm {
         phases = new ListBox();
         phases.setVisibleItemCount(10);
         if (lifecycle.getPhases() != null) {
-            for (Iterator itr = lifecycle.getPhases().iterator(); itr.hasNext();) {
-                WPhase p = (WPhase) itr.next();
+            for (Iterator<WPhase> itr = lifecycle.getPhases().iterator(); itr.hasNext();) {
+                WPhase p = itr.next();
 
                 phases.addItem(p.getName(), p.getId());
             }
@@ -160,7 +160,7 @@ public class LifecycleForm extends AbstractAdministrationForm {
         String title;
         if (newItem) {
             title = "Add Lifecycle";
-            lifecycle.setPhases(new ArrayList());
+            lifecycle.setPhases(new ArrayList<WPhase>());
         } else {
             title = "Edit Lifecycle " + lifecycle.getName();
         }
@@ -193,8 +193,8 @@ public class LifecycleForm extends AbstractAdministrationForm {
         int idx = findPhaseInList(phases, phase.getName());
         phases.removeItem(idx);
 
-        for (Iterator itr = lifecycle.getPhases().iterator(); itr.hasNext();) {
-            WPhase p2 = (WPhase) itr.next();
+        for (Iterator<WPhase> itr = lifecycle.getPhases().iterator(); itr.hasNext();) {
+            WPhase p2 = itr.next();
 
             if (p2.getNextPhases() != null && p2.getNextPhases().contains(phase)) {
                 p2.getNextPhases().remove(phase);
@@ -258,8 +258,8 @@ public class LifecycleForm extends AbstractAdministrationForm {
         nextPhasesPanel.setWidget(1, 1, initialPhaseCB);
 
         int i = 0;
-        for (Iterator itr = lifecycle.getPhases().iterator(); itr.hasNext();) {
-            WPhase p = (WPhase) itr.next();
+        for (Iterator<WPhase> itr = lifecycle.getPhases().iterator(); itr.hasNext();) {
+            WPhase p = itr.next();
 
             if (p.equals(phase)) continue;
 
@@ -297,7 +297,7 @@ public class LifecycleForm extends AbstractAdministrationForm {
     }
 
     protected void updateNextPhases(WPhase phase, ListBox nextPhases) {
-        phase.setNextPhases(new ArrayList());
+        phase.setNextPhases(new ArrayList<WPhase>());
         for (int i = 0; i < nextPhases.getItemCount(); i++) {
             if (nextPhases.isItemSelected(i)) {
                 String pName = nextPhases.getItemText(i);

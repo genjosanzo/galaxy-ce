@@ -27,7 +27,7 @@ public class ExtendedArtifactInfo extends BasicArtifactInfo {
     /*
      * @gwt.typeArgs org.mule.galaxy.rpc.WComment
      */
-    private List comments = new ArrayList();
+    private List<WComment> comments = new ArrayList<WComment>();
     
     private String description;
     private String commentsFeedLink;
@@ -37,13 +37,13 @@ public class ExtendedArtifactInfo extends BasicArtifactInfo {
     /*
      * @gwt.typeArgs <java.lang.String>
      */
-    private Collection versions;
+    private Collection<ArtifactVersionInfo> versions;
     
-    public Collection getVersions() {
+    public Collection<ArtifactVersionInfo> getVersions() {
         return versions;
     }
 
-    public void setVersions(Collection versions) {
+    public void setVersions(Collection<ArtifactVersionInfo> versions) {
         this.versions = versions;
     }
 
@@ -83,7 +83,7 @@ public class ExtendedArtifactInfo extends BasicArtifactInfo {
     /**
      * @gwt typeArgs org.mule.galaxy.web.rpc.WComment
      */
-    public List getComments() {
+    public List<WComment> getComments() {
         return comments;
     }
     

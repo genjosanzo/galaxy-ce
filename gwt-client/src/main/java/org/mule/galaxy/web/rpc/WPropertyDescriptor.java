@@ -28,9 +28,9 @@ public class WPropertyDescriptor implements IsSerializable {
     private String name;
     private String description;
     private String extension;
-    private Map configuration;
+    private Map<String, String> configuration;
     
-    public WPropertyDescriptor(String id, String name, String description, String extension, boolean multiValued, Map configuration) {
+    public WPropertyDescriptor(String id, String name, String description, String extension, boolean multiValued, Map<String, String> configuration) {
         super();
         this.id = id;
         this.extension = extension;
@@ -72,10 +72,10 @@ public class WPropertyDescriptor implements IsSerializable {
     public void setExtension(String extension) {
         this.extension = extension;
     }
-    public Map getConfiguration() {
+    public Map<String, String> getConfiguration() {
         return configuration;
     }
-    public void setConfiguration(Map configuration) {
+    public void setConfiguration(Map<String, String> configuration) {
         this.configuration = configuration;
     }
 }

@@ -110,7 +110,7 @@ public class SecurityServiceImpl implements SecurityService {
         return u;
     }
 
-    public Collection getUsers() {
+    public Collection<WUser> getUsers() {
         List<User> users = userManager.listAll();
         
         ArrayList<WUser> webUsers = new ArrayList<WUser>();
@@ -357,7 +357,7 @@ public class SecurityServiceImpl implements SecurityService {
         return new WGroup(g.getId(), g.getName());
     }
 
-    public Collection getPermissions(int permissionType) {
+    public Collection<WPermission> getPermissions(int permissionType) {
         List<Permission> permissions = accessControlManager.getPermissions();
         ArrayList<WPermission> wperms = new ArrayList<WPermission>();
         

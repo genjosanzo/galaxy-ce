@@ -39,14 +39,15 @@ import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SearchPredicate;
+import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 
 public class SearchForm
     extends AbstractErrorShowingComposite
 {
     protected FlowPanel panel;
     private FlowPanel fieldPanel;
-    private Set rows;
-    private List propertyDescriptors;
+    private Set<SearchFormRow> rows;
+    private List<WPropertyDescriptor> propertyDescriptors;
     private Button searchButton;
     private Button clearButton;
     private InlineFlowPanel buttonPanel;
@@ -58,7 +59,7 @@ public class SearchForm
 
     public SearchForm(Galaxy galaxy, String searchText, boolean allowFreeform) {
         this.allowFreeform = allowFreeform;
-        rows = new HashSet();
+        rows = new HashSet<SearchFormRow>();
         
         panel = new FlowPanel();
         panel.setStyleName("search-panel");
@@ -67,8 +68,9 @@ public class SearchForm
         
         galaxy.getRegistryService().getPropertyDescriptors(true, new AbstractCallback(this) {
             
+            @SuppressWarnings("unchecked")
             public void onSuccess(Object o) {
-                initArtifactProperties((List) o);
+                initArtifactProperties((List<WPropertyDescriptor>) o);
             }
         });
 
@@ -156,10 +158,10 @@ public class SearchForm
         searchButton.addClickListener(listener);
     }
     
-    public void initArtifactProperties(List pds) {
+    public void initArtifactProperties(List<WPropertyDescriptor> pds) {
         propertyDescriptors = pds;
-        for (Iterator itr = rows.iterator(); itr.hasNext();) {
-            SearchFormRow row = (SearchFormRow) itr.next();
+        for (Iterator<SearchFormRow> itr = rows.iterator(); itr.hasNext();) {
+            SearchFormRow row = itr.next();
             row.addPropertySet("----", propertyDescriptors);
         }
     }
@@ -201,18 +203,18 @@ public class SearchForm
             freeformQueryLink.setText("Use Structured Query");
             
             // Remove all the structured query rows
-            for (Iterator iter=rows.iterator(); iter.hasNext();)
-                fieldPanel.remove((Widget) iter.next());
+            for (Iterator<SearchFormRow> iter=rows.iterator(); iter.hasNext();)
+                fieldPanel.remove(iter.next());
             rows.clear();
         }
     }
 
-    public Set getPredicates()
+    public Set<SearchPredicate> getPredicates()
     {
-        Set predicates = new HashSet();
+        Set<SearchPredicate> predicates = new HashSet<SearchPredicate>();
         
-        for (Iterator itr = rows.iterator(); itr.hasNext();) {
-            SearchFormRow row = (SearchFormRow) itr.next();
+        for (Iterator<SearchFormRow> itr = rows.iterator(); itr.hasNext();) {
+            SearchFormRow row = itr.next();
             SearchPredicate pred = row.getPredicate();
             if (pred != null)
                 predicates.add(pred);
@@ -236,13 +238,13 @@ public class SearchForm
         return includeChildWkspcCB.isChecked();
     }
     
-    public void setPredicates(Set predicates)
+    public void setPredicates(Set<SearchPredicate> predicates)
     {
         rows.clear();
         fieldPanel.clear();
         
-        for (Iterator itr = predicates.iterator(); itr.hasNext();) {
-            SearchPredicate p = (SearchPredicate) itr.next();
+        for (Iterator<SearchPredicate> itr = predicates.iterator(); itr.hasNext();) {
+            SearchPredicate p = itr.next();
             
             SearchFormRow row = addPredicate();
             rows.add(row);

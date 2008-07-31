@@ -29,14 +29,14 @@ import java.util.List;
  */
 public class ChainedValidator implements Validator {
 
-    protected List validatorChain = new ArrayList();
+    protected List<Validator> validatorChain = new ArrayList<Validator>();
     protected Validator lastChecked;
 
     /**
      * TODO this method should really be a varargs one instead, upgrade
      * once GWT 1.5 is used in Galaxy.
      */
-    public ChainedValidator(final List validatorChain) {
+    public ChainedValidator(final List<Validator> validatorChain) {
         if (validatorChain == null || validatorChain.isEmpty()) {
             return;
         }
@@ -64,7 +64,7 @@ public class ChainedValidator implements Validator {
         lastChecked = null;
 
         for (int i = 0; i < validatorChain.size(); i++) {
-            lastChecked = (Validator) validatorChain.get(i);
+            lastChecked = validatorChain.get(i);
             if (!lastChecked.validate(value)) {
                 return false;
             }

@@ -8,7 +8,7 @@ import java.util.Set;
 public class WArtifactView implements IsSerializable {
     private String id;
     private String name;
-    private Set predicates = new HashSet();
+    private Set<SearchPredicate> predicates = new HashSet<SearchPredicate>();
     private boolean shared;
     private String workspace;
     private boolean workspaceSearchRecursive;
@@ -24,10 +24,10 @@ public class WArtifactView implements IsSerializable {
     public void setName(String name) {
         this.name = name;
     }
-    public Set getPredicates() {
+    public Set<SearchPredicate> getPredicates() {
         return predicates;
     }
-    public void setPredicates(Set predicates) {
+    public void setPredicates(Set<SearchPredicate> predicates) {
         this.predicates = predicates;
     }
     public boolean isShared() {

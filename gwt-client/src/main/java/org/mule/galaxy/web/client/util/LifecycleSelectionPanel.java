@@ -94,8 +94,8 @@ public class LifecycleSelectionPanel extends AbstractComposite {
         phasesLB.addItem("All Phases", "_all");
         phasesLB.addItem("--", "_none");
         
-        for (Iterator itr = l.getPhases().iterator(); itr.hasNext();) {
-            WPhase phase = (WPhase)itr.next();
+        for (Iterator<WPhase> itr = l.getPhases().iterator(); itr.hasNext();) {
+            WPhase phase = itr.next();
             
             phasesLB.addItem(phase.getName());
         }

@@ -28,19 +28,19 @@ public class ArtifactGroup implements IsSerializable {
     /**
      * @gwt.typeArgs <java.lang.String>
      */
-    private List columns = new ArrayList();
+    private List<String> columns = new ArrayList<String>();
     
-    private List rows = new ArrayList();
+    private List<BasicArtifactInfo> rows = new ArrayList<BasicArtifactInfo>();
     public String getName() {
         return name;
     }
     public void setName(String name) {
         this.name = name;
     }
-    public List getColumns() {
+    public List<String> getColumns() {
         return columns;
     }
-    public List getRows() {
+    public List<BasicArtifactInfo> getRows() {
         return rows;
     }
     

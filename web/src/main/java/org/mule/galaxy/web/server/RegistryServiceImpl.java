@@ -141,7 +141,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     private EventManager eventManager;
 
-    public List getExtensions() throws RPCException {
+    public List<WExtensionInfo> getExtensions() throws RPCException {
         ArrayList<WExtensionInfo> exts = new ArrayList<WExtensionInfo>();
         for (Extension e : registry.getExtensions()) {
             exts.add(new WExtensionInfo(e.getId(), e.getName(), e.getPropertyDescriptorConfigurationKeys(), e.isMultivalueSupported()));
@@ -149,11 +149,10 @@ public class RegistryServiceImpl implements RegistryService {
         return exts;
     }
 
-    @SuppressWarnings("unchecked")
-    public Collection getWorkspaces() throws RPCException {
+    public Collection<WWorkspace> getWorkspaces() throws RPCException {
         try {
             Collection<Workspace> workspaces = registry.getWorkspaces();
-            List wis = new ArrayList();
+            List<WWorkspace> wis = new ArrayList<WWorkspace>();
 
             for (Workspace w : workspaces) {
                 WWorkspace ww = toWeb(w);
@@ -180,7 +179,6 @@ public class RegistryServiceImpl implements RegistryService {
         return ww;
     }
 
-    @SuppressWarnings("unchecked")
     private void addWorkspaces(WWorkspace parent, Collection<Workspace> workspaces) {
         for (Workspace w : workspaces) {
             WWorkspace ww = new WWorkspace(w.getId(), w.getName(), w.getPath());
@@ -188,7 +186,7 @@ public class RegistryServiceImpl implements RegistryService {
 
             Collection<Workspace> children = w.getWorkspaces();
             if (children != null && children.size() > 0) {
-                ww.setWorkspaces(new ArrayList());
+                ww.setWorkspaces(new ArrayList<WWorkspace>());
                 addWorkspaces(ww, children);
             }
         }
@@ -255,10 +253,9 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public Collection getArtifactTypes() {
+    public Collection<WArtifactType> getArtifactTypes() {
         Collection<ArtifactType> artifactTypes = artifactTypeDao.listAll();
-        List atis = new ArrayList();
+        List<WArtifactType> atis = new ArrayList<WArtifactType>();
 
         for (ArtifactType a : artifactTypes) {
             WArtifactType at = toWeb(a);
@@ -311,7 +308,6 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private ArtifactType fromWeb(WArtifactType wat) {
         ArtifactType at = new ArtifactType();
         at.setId(wat.getId());
@@ -326,7 +322,7 @@ public class RegistryServiceImpl implements RegistryService {
         return at;
     }
 
-    private Set<QName> fromWeb(Collection documentTypes) {
+    private Set<QName> fromWeb(Collection<String> documentTypes) {
         if (documentTypes == null) return null;
 
         Set<QName> s = new HashSet<QName>();
@@ -357,7 +353,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     public WSearchResults getArtifacts(String workspaceId, String workspacePath, boolean includeChildWkspcs,
-                                       Set artifactTypes, Set searchPredicates, String freeformQuery,
+                                       Set artifactTypes, Set<SearchPredicate> searchPredicates, String freeformQuery,
                                        int start, int maxResults) throws RPCException {
         Query q = getQuery(searchPredicates, start, maxResults);
 
@@ -382,7 +378,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    private Query getQuery(Set searchPredicates, int start, int maxResults) {
+    private Query getQuery(Set<SearchPredicate> searchPredicates, int start, int maxResults) {
         Query q = new Query(Artifact.class).orderBy("artifactType");
 
         q.setMaxResults(maxResults);
@@ -398,7 +394,6 @@ public class RegistryServiceImpl implements RegistryService {
         return q;
     }
 
-    @SuppressWarnings("unchecked")
     private WSearchResults getSearchResults(Set artifactTypes, SearchResults results) {
         Map<String, ArtifactGroup> name2group = new HashMap<String, ArtifactGroup>();
         Map<String, ArtifactRenderer> name2view = new HashMap<String, ArtifactRenderer>();
@@ -446,7 +441,7 @@ public class RegistryServiceImpl implements RegistryService {
             g.getRows().add(info);
         }
 
-        List values = new ArrayList();
+        List<ArtifactGroup> values = new ArrayList<ArtifactGroup>();
         List<String> keys = new ArrayList<String>();
         keys.addAll(name2group.keySet());
         Collections.sort(keys);
@@ -557,7 +552,7 @@ public class RegistryServiceImpl implements RegistryService {
         return recent;
     }
 
-    public Collection getArtifactViews() throws RPCException {
+    public Collection<WArtifactView> getArtifactViews() throws RPCException {
         List<WArtifactView> views = new ArrayList<WArtifactView>();
         User currentUser = getCurrentUser();
         for (ArtifactView v : artifactViewManager.getArtifactViews(currentUser)) {
@@ -572,7 +567,7 @@ public class RegistryServiceImpl implements RegistryService {
         return views;
     }
 
-    public Collection getRecentArtifactViews() throws RPCException {
+    public Collection<WArtifactView> getRecentArtifactViews() throws RPCException {
         List<WArtifactView> views = new ArrayList<WArtifactView>();
         User currentUser = getCurrentUser();
         List<String> ids = getRecentArtifactViewIds(currentUser);
@@ -618,7 +613,7 @@ public class RegistryServiceImpl implements RegistryService {
      * @return
      * @throws RPCException
      */
-    public Set getPredicates(Query q) throws RPCException {
+    public Set<SearchPredicate> getPredicates(Query q) throws RPCException {
         Set<SearchPredicate> predicates = new HashSet<SearchPredicate>();
 
         for (Restriction r : q.getRestrictions()) {
@@ -679,7 +674,7 @@ public class RegistryServiceImpl implements RegistryService {
         return v;
     }
 
-    public Collection getIndexes() {
+    public Collection<WIndex> getIndexes() {
         ArrayList<WIndex> windexes = new ArrayList<WIndex>();
 
         Collection<Index> indices = indexManager.getIndexes();
@@ -781,13 +776,12 @@ public class RegistryServiceImpl implements RegistryService {
         return idx;
     }
 
-    @SuppressWarnings("unchecked")
-    public Collection getLinks(String itemId, String property) throws RPCException {
+    public Collection<Object> getLinks(String itemId, String property) throws RPCException {
         try {
             Item item = registry.getItemById(itemId);
             Links links = (Links) item.getProperty(property);
             
-            List deps = new ArrayList();
+            List<Object> deps = new ArrayList<Object>();
             
             for (Link l : links.getLinks()) {
                 deps.add(toWeb(l, false));
@@ -862,7 +856,6 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private ArtifactGroup getArtifactGroup(Artifact a) {
         ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), a
                 .getDocumentType());
@@ -885,7 +878,7 @@ public class RegistryServiceImpl implements RegistryService {
 
         info.setDescription(a.getDescription());
 
-        List wcs = info.getComments();
+        List<WComment> wcs = info.getComments();
 
         Workspace workspace = (Workspace) a.getParent();
         List<Comment> comments = workspace.getCommentManager().getComments(a.getId());
@@ -909,7 +902,7 @@ public class RegistryServiceImpl implements RegistryService {
         info.setArtifactFeedLink(getLink(context + "/api/registry", a) + ";history");
         info.setCommentsFeedLink(context + "/api/comments");
 
-        List versions = new ArrayList();
+        List<ArtifactVersionInfo> versions = new ArrayList<ArtifactVersionInfo>();
         for (EntryVersion av : a.getVersions()) {
             versions.add(toWeb((ArtifactVersion)av, false));
         }
@@ -1047,7 +1040,6 @@ public class RegistryServiceImpl implements RegistryService {
         return wrapper.getUser();
     }
 
-    @SuppressWarnings("unchecked")
     private void addComments(WComment parent, Set<Comment> comments) {
         for (Comment c : comments) {
             SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATETIME_FORMAT);
@@ -1063,7 +1055,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
 
-    public void setProperty(String artifactId, String propertyName, Collection propertyValue)
+    public void setProperty(String artifactId, String propertyName, Collection<String> propertyValue)
         throws RPCException, ItemNotFoundException, WPolicyException {
         setProperty(artifactId, propertyName, (Object)propertyValue);
     }
@@ -1096,14 +1088,14 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void setProperty(Collection artifactIds, String propertyName, Collection propertyValue)
+    public void setProperty(Collection<String> artifactIds, String propertyName, Collection<String> propertyValue)
         throws RPCException, ItemNotFoundException {
     }
 
-    public void setProperty(Collection artifactIds, String propertyName, String propertyValue)
+    public void setProperty(Collection<String> artifactIds, String propertyName, String propertyValue)
         throws RPCException, ItemNotFoundException {
     }
-    public void setProperty(Collection artifactIds, String propertyName, Object propertyValue) throws RPCException, ItemNotFoundException {
+    public void setProperty(Collection<String> artifactIds, String propertyName, Object propertyValue) throws RPCException, ItemNotFoundException {
 
     }
 
@@ -1144,7 +1136,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public List getPropertyDescriptors(boolean includeIndex) throws RPCException {
+    public List<WPropertyDescriptor> getPropertyDescriptors(boolean includeIndex) throws RPCException {
         List<WPropertyDescriptor> pds = new ArrayList<WPropertyDescriptor>();
         for (PropertyDescriptor pd : typeManager.getPropertyDescriptors(includeIndex)) {
             pds.add(toWeb(pd));
@@ -1158,7 +1150,6 @@ public class RegistryServiceImpl implements RegistryService {
         return new WPropertyDescriptor(pd.getId(), pd.getProperty(), pd.getDescription(), ext, pd.isMultivalued(), pd.getConfiguration());
     }
 
-    @SuppressWarnings("unchecked")
     public void savePropertyDescriptor(WPropertyDescriptor wpd) throws RPCException, ItemNotFoundException, ItemExistsException {
         try {
             PropertyDescriptor pd;
@@ -1293,7 +1284,7 @@ public class RegistryServiceImpl implements RegistryService {
         
     }
 
-    public Collection getLifecycles() throws RPCException {
+    public Collection<WLifecycle> getLifecycles() throws RPCException {
         Collection<Lifecycle> lifecycles = localLifecycleManager.getLifecycles();
         Lifecycle defaultLifecycle = localLifecycleManager.getDefaultLifecycle();
 
@@ -1360,7 +1351,7 @@ public class RegistryServiceImpl implements RegistryService {
         return wp;
     }
 
-    public Collection getActivePoliciesForLifecycle(String lifecycleName, String workspaceId)
+    public Collection<String> getActivePoliciesForLifecycle(String lifecycleName, String workspaceId)
             throws RPCException {
         Collection<Policy> pols = null;
         Lifecycle lifecycle = localLifecycleManager.getLifecycle(lifecycleName);
@@ -1382,7 +1373,7 @@ public class RegistryServiceImpl implements RegistryService {
         return getArtifactPolicyIds(pols);
     }
 
-    public Collection getActivePoliciesForPhase(String lifecycle, String phaseName, String workspaceId)
+    public Collection<String> getActivePoliciesForPhase(String lifecycle, String phaseName, String workspaceId)
             throws RPCException {
         Collection<Policy> pols = null;
         Phase phase = localLifecycleManager.getLifecycle(lifecycle).getPhase(phaseName);
@@ -1485,7 +1476,7 @@ public class RegistryServiceImpl implements RegistryService {
         return policies;
     }
 
-    private Collection getArtifactPolicyIds(Collection<Policy> pols) {
+    private Collection<String> getArtifactPolicyIds(Collection<Policy> pols) {
         ArrayList<String> polNames = new ArrayList<String>();
         for (Policy ap : pols) {
             polNames.add(ap.getId());
@@ -1527,7 +1518,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public Collection getPolicies() throws RPCException {
+    public Collection<WArtifactPolicy> getPolicies() throws RPCException {
         Collection<Policy> policies = policyManager.getPolicies();
         List<WArtifactPolicy> gwtPolicies = new ArrayList<WArtifactPolicy>();
         for (Policy p : policies) {
@@ -1637,7 +1628,7 @@ public class RegistryServiceImpl implements RegistryService {
         return sb.toString();
     }
 
-    public Collection getActivities(Date from, Date to, String user, String eventTypeStr, int start,
+    public Collection<WActivity> getActivities(Date from, Date to, String user, String eventTypeStr, int start,
                                     int results, boolean ascending) throws RPCException {
 
         if ("All".equals(user)) {

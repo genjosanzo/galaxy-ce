@@ -21,7 +21,7 @@ public interface SecurityService extends RemoteService {
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WUser>
      * @return
      */
-    Collection getUsers();
+    Collection<WUser> getUsers();
     
     String addUser(WUser user, String password) throws ItemExistsException;
     
@@ -33,7 +33,7 @@ public interface SecurityService extends RemoteService {
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WPermission>
      */
-    Collection getPermissions(int permissionType);
+    Collection<WPermission> getPermissions(int permissionType);
     
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WGroup, java.util.Collection<org.mule.galaxy.web.rpc.WPermissionGrant>>

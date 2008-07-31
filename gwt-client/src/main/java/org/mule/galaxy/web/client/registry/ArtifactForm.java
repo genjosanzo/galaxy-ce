@@ -24,6 +24,7 @@ import org.mule.galaxy.web.client.artifact.ArtifactPolicyResultsPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.WorkspacesListBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WWorkspace;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
@@ -75,9 +76,9 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
         form.clear();
     }
 
-    public void onShow(List params) {
+    public void onShow(List<String> params) {
         if (params.size() > 0) {
-            artifactId = (String) params.get(0);
+            artifactId = params.get(0);
         } else {
             add = true;
         }
@@ -197,8 +198,8 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
     protected void parseAndShowPolicyMessages(String msg) {
         String[] split = msg.split("\n");
 
-        List warnings = new ArrayList();
-        List failures = new ArrayList();
+        List<String> warnings = new ArrayList<String>();
+        List<String> failures = new ArrayList<String>();
         String lines = null;
         boolean warning = true;
         for (int i = 1; i < split.length; i++) {
@@ -231,7 +232,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
         History.newItem(token);
     }
 
-    private void addWarningOrFailure(List warnings, List failures, String lines, boolean warning) {
+    private void addWarningOrFailure(List<String> warnings, List<String> failures, String lines, boolean warning) {
         if (lines == null) return;
 
         if (warning) {
@@ -249,14 +250,15 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
     private void setupAddForm() {
         galaxy.getRegistryService().getWorkspaces(new AbstractCallback(this) {
 
+            @SuppressWarnings("unchecked")
             public void onSuccess(Object workspaces) {
-                setupAddForm((Collection) workspaces);
+                setupAddForm((Collection<WWorkspace>) workspaces);
             }
 
         });
     }
 
-    private void setupAddForm(Collection workspaces) {
+    private void setupAddForm(Collection<WWorkspace> workspaces) {
         table.setWidget(0, 0, new Label("Workspace"));
 
         workspacesLB = new WorkspacesListBox(workspaces,

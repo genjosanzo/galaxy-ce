@@ -31,7 +31,7 @@ public class WLifecycle implements IsSerializable {
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.WPhase>
      */
-    private Collection phases;
+    private Collection<WPhase> phases;
     private WPhase initialPhase;
     private boolean defaultLifecycle;
     
@@ -66,10 +66,10 @@ public class WLifecycle implements IsSerializable {
     public void setName(String name) {
         this.name = name;
     }
-    public Collection getPhases() {
+    public Collection<WPhase> getPhases() {
         return phases;
     }
-    public void setPhases(Collection phases) {
+    public void setPhases(Collection<WPhase> phases) {
         this.phases = phases;
     }
 
@@ -84,8 +84,8 @@ public class WLifecycle implements IsSerializable {
     public WPhase getPhase(String name) {
         if (phases == null) return null;
         
-        for (Iterator itr = phases.iterator(); itr.hasNext();) {
-            WPhase p = (WPhase)itr.next();
+        for (Iterator<WPhase> itr = phases.iterator(); itr.hasNext();) {
+            WPhase p = itr.next();
             if (p.getName().equals(name)) {
                 return p;
             }
@@ -96,8 +96,8 @@ public class WLifecycle implements IsSerializable {
     public WPhase getPhaseById(String id) {
         if (phases == null) return null;
         
-        for (Iterator itr = phases.iterator(); itr.hasNext();) {
-            WPhase p = (WPhase)itr.next();
+        for (Iterator<WPhase> itr = phases.iterator(); itr.hasNext();) {
+            WPhase p = itr.next();
             if (p.getId() != null && p.getId().equals(id)) {
                 return p;
             }

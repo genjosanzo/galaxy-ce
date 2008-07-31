@@ -46,7 +46,7 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
     private TextBox descriptionTB;
     private CheckBox multivalue;
     private ListBox typeLB;
-    private HashMap fields;
+    private HashMap<String, ValidatableTextBox> fields;
 
     public PropertyDescriptorForm(AdministrationPanel adminPanel){
         super(adminPanel, "properties", "Property was saved.", "Property was deleted.", 
@@ -126,7 +126,7 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
             table.removeRow(i);
         }
 
-        fields = new HashMap();
+        fields = new HashMap<String, ValidatableTextBox>();
         
         if ("".equals(id)) {
             initializeMultivalue(table);
@@ -142,7 +142,7 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
             initializeMultivalue(table);
         }
         
-        Map config = property.getConfiguration();
+        Map<String, String> config = property.getConfiguration();
         for (Iterator itr = ei.getConfigurationKeys().iterator(); itr.hasNext();) {
             int row = table.getRowCount();
             String key = (String) itr.next();
@@ -151,7 +151,7 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
             
             ValidatableTextBox field = new ValidatableTextBox(new StringNotEmptyValidator());
             if (config != null) {
-                field.getTextBox().setText((String)config.get(key));
+                field.getTextBox().setText(config.get(key));
             }
             fields.put(key, field);
             table.setWidget(row, 1, field);
@@ -217,12 +217,11 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
             property.setMultiValued(multivalue.isChecked());
         }
         
-        HashMap config = new HashMap();
+        HashMap<String, String> config = new HashMap<String, String>();
         property.setConfiguration(config);
-        for (Iterator itr = fields.entrySet().iterator(); itr.hasNext();) {
-            Map.Entry e = (Map.Entry) itr.next();
+        for (Map.Entry<String, ValidatableTextBox> e : fields.entrySet()) {
             
-            ValidatableTextBox tb = (ValidatableTextBox) e.getValue();
+            ValidatableTextBox tb = e.getValue();
             
             config.put(e.getKey(), tb.getTextBox().getText());
         }
@@ -246,8 +245,8 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
 
         isOk &= nameTB.validate();
         
-        for (Iterator itr = fields.values().iterator(); itr.hasNext();) {
-            ValidatableTextBox tb = (ValidatableTextBox) itr.next();
+        for (Iterator<ValidatableTextBox> itr = fields.values().iterator(); itr.hasNext();) {
+            ValidatableTextBox tb = itr.next();
             
             isOk &= tb.validate();
         }

@@ -54,7 +54,7 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
     private FlowPanel bulkEditPanel;
     private boolean editable;
 
-    private ArrayList allCBs;
+    private ArrayList<CheckBox> allCBs;
     private WSearchResults searchResults;
     private Hyperlink bulkEditLink;
     private Hyperlink editSelected;
@@ -91,8 +91,8 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
         createBulkEditPanel();
         createNavigationPanel();
 
-        for (Iterator groups = o.getResults().iterator(); groups.hasNext();) {
-            ArtifactGroup group = (ArtifactGroup) groups.next();
+        for (Iterator<ArtifactGroup> groups = o.getResults().iterator(); groups.hasNext();) {
+            ArtifactGroup group = groups.next();
 
             ArtifactGroupListPanel list = new ArtifactGroupListPanel(group, isEditable());
 
@@ -125,7 +125,7 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
     // bulk edit all or some -- this handles the controls for that.
     private void createBulkEditPanel() {
 
-        allCBs = new ArrayList();
+        allCBs = new ArrayList<CheckBox>();
         if (bulkEditPanel != null) {
             panel.remove(bulkEditPanel);
             bulkEditPanel = null;
@@ -284,16 +284,16 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
 
     // helper method to pull the artifactIds out
     // from the searchResult collection
-    private Collection extractArtifactIds() {
-        Collection artifactIds = new ArrayList();
+    private Collection<Object> extractArtifactIds() {
+        Collection<Object> artifactIds = new ArrayList<Object>();
 
         // groups will contain artifacts
-        for (Iterator itr = searchResults.getResults().iterator(); itr.hasNext();) {
-            ArtifactGroup g = (ArtifactGroup) itr.next();
+        for (Iterator<ArtifactGroup> itr = searchResults.getResults().iterator(); itr.hasNext();) {
+            ArtifactGroup g = itr.next();
 
             // each artifact
-            for (Iterator it = g.getRows().iterator(); it.hasNext();) {
-                BasicArtifactInfo artifact = (BasicArtifactInfo) it.next();
+            for (Iterator<BasicArtifactInfo> it = g.getRows().iterator(); it.hasNext();) {
+                BasicArtifactInfo artifact = it.next();
                 artifactIds.add(artifact);
             }
         }
@@ -302,10 +302,10 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
 
 
     // get the artifactIds from the selected checkboxes
-    private Collection getSelectedArtifacts() {
-        Collection artifactIds = new ArrayList();
-        for (Iterator itr = allCBs.iterator(); itr.hasNext();) {
-            CheckBox cb = (CheckBox) itr.next();
+    private Collection<Object> getSelectedArtifacts() {
+        Collection<Object> artifactIds = new ArrayList<Object>();
+        for (Iterator<CheckBox> itr = allCBs.iterator(); itr.hasNext();) {
+            CheckBox cb = itr.next();
             if (cb.isChecked()) {
                 artifactIds.add(cb);
             }

@@ -39,7 +39,7 @@ public class SelectionPanel extends Composite {
 
     public SelectionPanel(Collection items, 
                           ItemInfo itemInfo, 
-                          Collection selectedValues,
+                          Collection<String> selectedValues,
                           int visibleItemCount,
                           String leftColTitle,
                           String rightColTitle) {
@@ -127,8 +127,8 @@ public class SelectionPanel extends Composite {
         return to.getItemCount();
     }
 
-    public Collection getSelectedValues() {
-        ArrayList values = new ArrayList();
+    public Collection<String> getSelectedValues() {
+        ArrayList<String> values = new ArrayList<String>();
         
         for (int i = 0; i < right.getItemCount(); i++) {
             values.add(right.getValue(i));

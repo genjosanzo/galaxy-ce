@@ -61,11 +61,11 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
         initWidget(panel);
     }
 
-    public void onShow(List params) {
+    public void onShow(List<String> params) {
         super.onShow();
 
         if (params.size() > 0) {
-            String param = (String) params.get(0);
+            String param = params.get(0);
             if ("new".equals(param)) {
                 newItem = true;
                 initializeNewItem();

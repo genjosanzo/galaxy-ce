@@ -76,7 +76,7 @@ public class ArtifactPanel extends AbstractComposite {
     private final boolean retrieveVersion;
     private String versionId;
 
-    private List params;
+    private List<String> params;
 
     public ArtifactPanel(Galaxy galaxy) {
         this(galaxy, false);
@@ -95,16 +95,16 @@ public class ArtifactPanel extends AbstractComposite {
         initWidget(menuPanel);
     }
     
-    public void onShow(List params) {
+    public void onShow(List<String> params) {
         this.params = params;
         menuPanel.clearErrorMessage();
         menuPanel.onShow();
         panel.clear();
         panel.add(new Label("Loading..."));
         
-        String artifactId = (String) params.get(0);
+        String artifactId = params.get(0);
         if (params.size() >= 2) {
-            selectedTab = new Integer((String)params.get(1)).intValue();
+            selectedTab = new Integer(params.get(1)).intValue();
         } else {
             selectedTab = 0;
         }
@@ -145,8 +145,8 @@ public class ArtifactPanel extends AbstractComposite {
         
         ArtifactVersionInfo selectedVersion = null;
         versionLB = new ListBox();
-        for (Iterator itr = info.getVersions().iterator(); itr.hasNext();) {
-            ArtifactVersionInfo v = (ArtifactVersionInfo)itr.next();
+        for (Iterator<ArtifactVersionInfo> itr = info.getVersions().iterator(); itr.hasNext();) {
+            ArtifactVersionInfo v = itr.next();
             
             versionLB.addItem(v.getVersionLabel(), v.getId());
             if ((versionId == null && v.isDefault()) || 
@@ -156,7 +156,7 @@ public class ArtifactPanel extends AbstractComposite {
             }
         }
         if (selectedVersion == null) {
-            selectedVersion = (ArtifactVersionInfo) info.getVersions().iterator().next();
+            selectedVersion = info.getVersions().iterator().next();
         }
         versionLB.addChangeListener(new ChangeListener() {
 
@@ -180,8 +180,8 @@ public class ArtifactPanel extends AbstractComposite {
         int idx = versionLB.getSelectedIndex();
         String id = versionLB.getValue(idx);
         
-        for (Iterator itr = info.getVersions().iterator(); itr.hasNext();) {
-            ArtifactVersionInfo avi = (ArtifactVersionInfo)itr.next();               
+        for (Iterator<ArtifactVersionInfo> itr = info.getVersions().iterator(); itr.hasNext();) {
+            ArtifactVersionInfo avi = itr.next();               
             
             if (avi.getId().equals(id)) {
                 artifactTabs.clear();

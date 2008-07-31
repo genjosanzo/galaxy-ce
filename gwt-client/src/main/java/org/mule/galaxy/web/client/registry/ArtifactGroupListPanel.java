@@ -35,13 +35,13 @@ public class ArtifactGroupListPanel extends AbstractComposite {
 
     private ArtifactGroup group;
     private boolean editable;
-    private ArrayList CBCollection;
+    private ArrayList<CheckBox> CBCollection;
 
 
     public ArtifactGroupListPanel(final ArtifactGroup group, boolean editable) {
         this.group = group;
         this.editable = editable;
-        CBCollection = new ArrayList();
+        CBCollection = new ArrayList<CheckBox>();
         renderArtifacts();
     }
 
@@ -61,12 +61,12 @@ public class ArtifactGroupListPanel extends AbstractComposite {
 
         for (int i = 0; i < numCols; i++) {
             int cPos = i + 1;
-            table.setText(0, cPos, (String) group.getColumns().get(i));
+            table.setText(0, cPos, group.getColumns().get(i));
         }
 
         // draw the rows for each artifact type in the group
         for (int i = 0; i < numRows; i++) {
-            final BasicArtifactInfo info = (BasicArtifactInfo) group.getRows().get(i);
+            final BasicArtifactInfo info = group.getRows().get(i);
 
             // draw the checkbox in edit mode
             if (editable) {
@@ -103,7 +103,7 @@ public class ArtifactGroupListPanel extends AbstractComposite {
         return group.getName();
     }
 
-    public ArrayList getCBCollection() {
+    public ArrayList<CheckBox> getCBCollection() {
         return CBCollection;
     }
 

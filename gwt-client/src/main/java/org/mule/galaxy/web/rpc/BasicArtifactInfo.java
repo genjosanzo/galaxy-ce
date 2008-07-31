@@ -27,7 +27,7 @@ public class BasicArtifactInfo implements IsSerializable {
     /**
      * @gwt.typeArgs <java.lang.Integer,java.lang.String>
      */
-    private Map col2Value = new HashMap();
+    private Map<Integer, String> col2Value = new HashMap<Integer, String>();
     private String id;
     private String workspaceId;
     private String name;
@@ -71,6 +71,6 @@ public class BasicArtifactInfo implements IsSerializable {
     }
     
     public String getValue(int col) {
-        return (String)  col2Value.get(new Integer(col));
+        return col2Value.get(new Integer(col));
     }
 }

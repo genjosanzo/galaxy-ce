@@ -70,7 +70,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
                              ErrorPanel errorPanel,
                              ArtifactGroup group,
                              ExtendedArtifactInfo info,
-                             ArtifactVersionInfo version, final ArtifactPanel artifactPanel, final List callbackParams) {
+                             ArtifactVersionInfo version, final ArtifactPanel artifactPanel, final List<String> callbackParams) {
         this.galaxy = galaxy;
         this.errorPanel = errorPanel;
         this.info = info;
@@ -95,7 +95,7 @@ public class ArtifactInfoPanel extends AbstractComposite {
         table.setWidget(0, 1, nep);
         
         for (int i = 1; i < group.getColumns().size(); i++) {
-            table.setText(i, 0, (String) group.getColumns().get(i) + ":");
+            table.setText(i, 0, group.getColumns().get(i) + ":");
         }
         
         int c = 1;
@@ -175,8 +175,8 @@ public class ArtifactInfoPanel extends AbstractComposite {
         panel.add(commentTitlePanel);
         panel.add(commentsBase);
         
-        for (Iterator itr = info.getComments().iterator(); itr.hasNext();) {
-            commentsPanel.add(createCommentPanel((WComment) itr.next()));
+        for (Iterator<WComment> itr = info.getComments().iterator(); itr.hasNext();) {
+            commentsPanel.add(createCommentPanel(itr.next()));
         }
     }
 
@@ -203,8 +203,8 @@ public class ArtifactInfoPanel extends AbstractComposite {
         
         commentPanel.add(commentBody);
         
-        for (Iterator comments = c.getComments().iterator(); comments.hasNext();) {
-            WComment child = (WComment) comments.next();
+        for (Iterator<WComment> comments = c.getComments().iterator(); comments.hasNext();) {
+            WComment child = comments.next();
             
             SimplePanel nestedComment = new SimplePanel();
             nestedComment.setStyleName("nestedComment");

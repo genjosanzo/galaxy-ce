@@ -78,12 +78,12 @@ public class Galaxy implements EntryPoint, HistoryListener {
     private HeartbeatServiceAsync heartbeatService;
     private FlowPanel rightPanel;
     private PageInfo curInfo;
-    private Map history = new HashMap();
+    private Map<String, PageInfo> history = new HashMap<String, PageInfo>();
     protected TabPanel tabPanel;
     private WUser user;
     protected int oldTab;
     private boolean suppressTabHistory;
-    private Map historyListeners = new HashMap();
+    private Map<String, AbstractComposite> historyListeners = new HashMap<String, AbstractComposite>();
     private int adminTabIndex;
     private BrowsePanel browsePanel;
     protected FlowPanel base;
@@ -117,6 +117,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
         // prefetch extensions
         registryService.getExtensions(new AbstractCallback(browsePanel) {
+            @SuppressWarnings("unchecked")
             public void onSuccess(Object o) {
                 extensions = (List) o;
                 Collections.sort(extensions);
@@ -247,8 +248,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
     }
 
     protected boolean showAdminTab(WUser user) {
-        for (Iterator itr = user.getPermissions().iterator(); itr.hasNext();) {
-            String s = (String) itr.next();
+        for (Iterator<String> itr = user.getPermissions().iterator(); itr.hasNext();) {
+            String s = itr.next();
 
             if (s.startsWith("MANAGE_")) return true;
         }
@@ -262,7 +263,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
             onHistoryChanged(initToken);
         } else {
             tabPanel.selectTab(0);
-            browsePanel.onShow(Collections.EMPTY_LIST);
+            List<String> args = Collections.emptyList();
+            browsePanel.onShow(args);
         }
     }
 
@@ -290,7 +292,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         }
 
         PageInfo page = getPageInfo(token);
-        List params = new ArrayList();
+        List<String> params = new ArrayList<String>();
         if (page == null) {
             String[] split = token.split("_");
 
@@ -336,7 +338,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     }
 
     public PageInfo getPageInfo(String token) {
-        PageInfo page = (PageInfo) history.get(token);
+        PageInfo page = history.get(token);
         return page;
     }
 
@@ -375,8 +377,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
     }
 
     public boolean hasPermission(String perm) {
-        for (Iterator itr = user.getPermissions().iterator(); itr.hasNext();) {
-            String s = (String) itr.next();
+        for (Iterator<String> itr = user.getPermissions().iterator(); itr.hasNext();) {
+            String s = itr.next();
 
             if (s.startsWith(perm)) return true;
         }

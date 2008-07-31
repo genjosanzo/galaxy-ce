@@ -80,7 +80,7 @@ public class MenuPanel extends AbstractErrorShowingComposite {
         initWidget(panel);
     }
     
-    public void onShow(List params) {
+    public void onShow(List<String> params) {
         if (mainWidget instanceof AbstractComposite) {
             ((AbstractComposite) mainWidget).onShow(params);
         }

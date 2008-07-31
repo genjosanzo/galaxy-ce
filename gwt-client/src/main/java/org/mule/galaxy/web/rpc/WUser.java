@@ -34,12 +34,12 @@ public class WUser implements IsSerializable  {
     /**
      * @gwt.typeArgs <java.lang.String>
      */
-    private Collection groupIds;
+    private Collection<String> groupIds;
     
     /**
      * @gwt.typeArgs <java.lang.String>
      */
-    private Collection permissions;
+    private Collection<String> permissions;
     
     public String getName() {
         return name;
@@ -65,16 +65,16 @@ public class WUser implements IsSerializable  {
     public void setEmail(String email) {
         this.email = email;
     }
-    public Collection getPermissions() {
+    public Collection<String> getPermissions() {
         return permissions;
     }
-    public void setPermissions(Collection permissions) {
+    public void setPermissions(Collection<String> permissions) {
         this.permissions = permissions;
     }
-    public Collection getGroupIds() {
+    public Collection<String> getGroupIds() {
         return groupIds;
     }
-    public void setGroupIds(Collection groupIds) {
+    public void setGroupIds(Collection<String> groupIds) {
         this.groupIds = groupIds;
     }
     

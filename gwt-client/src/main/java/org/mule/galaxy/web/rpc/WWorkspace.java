@@ -25,7 +25,7 @@ import java.util.Collection;
 public class WWorkspace implements IsSerializable {
     private String id;
     private String name;
-    private Collection workspaces;
+    private Collection<WWorkspace> workspaces;
     private String path;
     private String defaultLifecycleId;
     
@@ -63,10 +63,10 @@ public class WWorkspace implements IsSerializable {
     public void setName(String name) {
         this.name = name;
     }
-    public Collection getWorkspaces() {
+    public Collection<WWorkspace> getWorkspaces() {
         return workspaces;
     }
-    public void setWorkspaces(Collection workspaces) {
+    public void setWorkspaces(Collection<WWorkspace> workspaces) {
         this.workspaces = workspaces;
     }
     

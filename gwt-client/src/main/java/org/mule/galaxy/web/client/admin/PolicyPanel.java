@@ -53,7 +53,7 @@ public class PolicyPanel extends AbstractComposite {
     private SimplePanel psPanelContainer;
     private final ErrorPanel menuPanel;
 
-    private Map lifecycle2Phase2Panel = new HashMap();
+    private Map<String, Map<String, PolicySelectionPanel>> lifecycle2Phase2Panel = new HashMap<String, Map<String, PolicySelectionPanel>>();
     private PolicySelectionPanel currentPsPanel;
     private Button saveButton;
     private boolean finishedSave;
@@ -162,7 +162,7 @@ public class PolicyPanel extends AbstractComposite {
                 Map.Entry phaseEntry = (Map.Entry)pitr.next();
                 
                 String phase = (String) phaseEntry.getKey();
-                Collection active = ((PolicySelectionPanel) phaseEntry.getValue()).getSelectedPolicyIds();
+                Collection<String> active = ((PolicySelectionPanel) phaseEntry.getValue()).getSelectedPolicyIds();
                 
                 if ("_all".equals(phase)) {
                     svc.setActivePolicies(workspaceId, lifecycle, null, active, callback);
@@ -197,8 +197,9 @@ public class PolicyPanel extends AbstractComposite {
         psPanelContainer.add(currentPsPanel);
         
         AbstractCallback callback = new AbstractCallback(menuPanel) {
+            @SuppressWarnings("unchecked")
             public void onSuccess(Object o) {
-               currentPsPanel.selectAndShow((Collection) o);
+               currentPsPanel.selectAndShow((Collection<String>) o);
             }
 
         };
@@ -215,13 +216,13 @@ public class PolicyPanel extends AbstractComposite {
     }
 
     private PolicySelectionPanel getPanel(final String lifecycle, final String phase) {
-        Map phase2Panel = (Map) lifecycle2Phase2Panel.get(lifecycle);
+        Map<String, PolicySelectionPanel> phase2Panel = lifecycle2Phase2Panel.get(lifecycle);
         if (phase2Panel == null) {
-            phase2Panel = new HashMap();
+            phase2Panel = new HashMap<String, PolicySelectionPanel>();
             lifecycle2Phase2Panel.put(lifecycle, phase2Panel);
         }
         
-        PolicySelectionPanel psPanel = (PolicySelectionPanel) phase2Panel.get(phase);
+        PolicySelectionPanel psPanel = phase2Panel.get(phase);
         if (psPanel == null) {
             psPanel = new PolicySelectionPanel(menuPanel, svc);
             phase2Panel.put(phase, psPanel);

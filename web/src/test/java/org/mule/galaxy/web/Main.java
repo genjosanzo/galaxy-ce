@@ -26,7 +26,7 @@ public class Main {
 //        wac.setWar("./target/galaxy-web-1.0-beta-2-SNAPSHOT");
         wac.setWar("./src/main/webapp");
         
-        Map params = new HashMap();
+        Map<String, Boolean> params = new HashMap<String, Boolean>();
         params.put("useFileMappedBuffer", Boolean.FALSE);
         wac.setInitParams(params);
         

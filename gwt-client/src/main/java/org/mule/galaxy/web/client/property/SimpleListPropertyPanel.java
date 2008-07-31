@@ -25,7 +25,7 @@ public class SimpleListPropertyPanel extends AbstractEditPropertyPanel {
     }
 
     protected String getRenderedText() {
-        Collection c = getProperty().getListValue();
+        Collection<String> c = getProperty().getListValue();
         
         String txt;
         if (c == null || c.size() == 0) {
@@ -40,7 +40,7 @@ public class SimpleListPropertyPanel extends AbstractEditPropertyPanel {
     
     protected void onSave(Object value) {
         valueLabel.setText(getRenderedText());
-        listBox = new StringListBox((Collection) getProperty().getListValue());
+        listBox = new StringListBox((Collection<String>) getProperty().getListValue());
         listBoxPanel.clear();
         listBoxPanel.add(listBox);
     }
@@ -53,7 +53,7 @@ public class SimpleListPropertyPanel extends AbstractEditPropertyPanel {
     public void initialize() {
         super.initialize();
         valueLabel.setText(getRenderedText());
-        listBox = new StringListBox((Collection) getProperty().getListValue());
+        listBox = new StringListBox((Collection<String>) getProperty().getListValue());
         listBoxPanel.add(listBox);
     }
 

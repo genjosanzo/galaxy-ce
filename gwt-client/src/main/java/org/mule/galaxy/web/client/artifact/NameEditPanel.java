@@ -25,6 +25,7 @@ import org.mule.galaxy.web.client.util.WorkspacesListBox;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WWorkspace;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -52,13 +53,13 @@ public class NameEditPanel extends Composite {
     private final ErrorPanel errorPanel;
 
     private final ArtifactPanel callbackPanel;
-    private final List callbackParams;
+    private final List<String> callbackParams;
 
     public NameEditPanel(Galaxy galaxy,
                          ErrorPanel errorPanel,
                          String artifactId,
                          String name,
-                         String workspaceId, final ArtifactPanel callbackPanel, final List callbackParams) {
+                         String workspaceId, final ArtifactPanel callbackPanel, final List<String> callbackParams) {
         super();
         this.galaxy = galaxy;
         this.errorPanel = errorPanel;
@@ -95,13 +96,14 @@ public class NameEditPanel extends Composite {
         panel.add(new Label("Loading workspaces..."));
         
         galaxy.getRegistryService().getWorkspaces(new AbstractCallback(errorPanel) {
+            @SuppressWarnings("unchecked")
             public void onSuccess(Object workspaces) {
-                showEditPanel((Collection) workspaces);
+                showEditPanel((Collection<WWorkspace>) workspaces);
             }
         });
     }
 
-    protected void showEditPanel(Collection workspaces) {
+    protected void showEditPanel(Collection<WWorkspace> workspaces) {
         panel.clear();
         
         
