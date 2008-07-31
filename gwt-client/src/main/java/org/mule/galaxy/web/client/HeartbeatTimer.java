@@ -21,8 +21,8 @@ package org.mule.galaxy.web.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import org.mule.galaxy.web.client.util.LightBox;
 
-import org.gwtwidgets.client.ui.LightBox;
 
 class HeartbeatTimer extends Timer
 {

@@ -18,21 +18,6 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.SelectionPanel;
-import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
-import org.mule.galaxy.web.client.validation.EmailValidator;
-import org.mule.galaxy.web.client.validation.MinLengthValidator;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatablePasswordTextBox;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.SecurityServiceAsync;
-import org.mule.galaxy.web.rpc.WGroup;
-import org.mule.galaxy.web.rpc.WUser;
-
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -45,7 +30,21 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.gwtwidgets.client.ui.LightBox;
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.LightBox;
+import org.mule.galaxy.web.client.util.SelectionPanel;
+import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
+import org.mule.galaxy.web.client.validation.EmailValidator;
+import org.mule.galaxy.web.client.validation.MinLengthValidator;
+import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatablePasswordTextBox;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.SecurityServiceAsync;
+import org.mule.galaxy.web.rpc.WGroup;
+import org.mule.galaxy.web.rpc.WUser;
 
 public class UserForm extends AbstractAdministrationForm {
 

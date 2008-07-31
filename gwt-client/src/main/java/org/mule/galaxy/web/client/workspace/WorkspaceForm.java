@@ -42,8 +42,8 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import org.mule.galaxy.web.client.util.LightBox;
 
-import org.gwtwidgets.client.ui.LightBox;
 
 public class WorkspaceForm extends AbstractErrorShowingComposite {
 

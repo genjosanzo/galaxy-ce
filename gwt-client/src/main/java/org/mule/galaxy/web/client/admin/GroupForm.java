@@ -18,15 +18,14 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import com.google.gwt.user.client.ui.FlexTable;
 import org.mule.galaxy.web.client.util.ConfirmDialog;
 import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
+import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.WGroup;
 
-import com.google.gwt.user.client.ui.FlexTable;
-
-import org.gwtwidgets.client.ui.LightBox;
 
 public class GroupForm extends AbstractAdministrationForm {
 

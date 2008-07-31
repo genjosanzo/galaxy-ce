@@ -30,14 +30,9 @@ public class UserListPropertyPanel extends AbstractListPropertyPanel {
         });
     }
     
-    
     protected void onFinishLoad() {
         userLB = new ListBox();
-        for (Iterator itr = users.iterator(); itr.hasNext();) {
-            WUser user = (WUser) itr.next();
-            
-            userLB.addItem(user.getName(), user.getId());
-        }
+        updateUsers();
         addPanel.add(userLB);
         
         addButton = new Button();
@@ -52,14 +47,29 @@ public class UserListPropertyPanel extends AbstractListPropertyPanel {
         super.onFinishLoad();
     }
 
+    private void updateUsers() {
+        userLB.clear();
+        for (Iterator itr = users.iterator(); itr.hasNext();) {
+            WUser user = (WUser) itr.next();
+            
+            if (!values.contains(user.getId())) {
+                userLB.addItem(user.getName(), user.getId());
+            }
+        }
+    }
 
     protected void addUserLabelForSelection() {
         int idx = userLB.getSelectedIndex();
+
+        if (idx == -1) {
+            return;
+        }
         String id = userLB.getValue(idx);
         
         values.add(id);
 
         editValuesPanel.add(createLabel(id));
+        userLB.removeItem(idx);
     }
 
 

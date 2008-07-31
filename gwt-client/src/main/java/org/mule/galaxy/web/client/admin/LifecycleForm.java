@@ -18,14 +18,6 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.ErrorPanel;
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
-import org.mule.galaxy.web.rpc.WLifecycle;
-import org.mule.galaxy.web.rpc.WPhase;
-
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -42,7 +34,15 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.gwtwidgets.client.ui.LightBox;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
+import org.mule.galaxy.web.client.util.LightBox;
+import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
+import org.mule.galaxy.web.rpc.WLifecycle;
+import org.mule.galaxy.web.rpc.WPhase;
+
 
 public class LifecycleForm extends AbstractAdministrationForm {
 

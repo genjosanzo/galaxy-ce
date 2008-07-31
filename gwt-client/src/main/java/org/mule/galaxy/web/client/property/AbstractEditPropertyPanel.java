@@ -8,10 +8,11 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Collection;
 
 import org.mule.galaxy.web.client.ErrorPanel;
-import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WProperty;
 
 /**
  * Encapsulates the rendering and editing of a property value.
@@ -100,6 +101,15 @@ public abstract class AbstractEditPropertyPanel extends PropertyPanel {
     }
     
     protected void delete() {
+        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter() {
+            public void onConfirm() {
+                doDelete();
+            }
+        }, "Are you sure you want to delete this property?");
+        
+        new LightBox(dialog).show();
+    }
+    protected void doDelete() {
         galaxy.getRegistryService().deleteProperty(itemId, property.getName(), new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object arg0) {

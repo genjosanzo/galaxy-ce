@@ -38,8 +38,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
+import org.mule.galaxy.web.client.util.LightBox;
 
-import org.gwtwidgets.client.ui.LightBox;
 
 /**
  * Shows/Edits an ArtifactView. 
