@@ -147,7 +147,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     }
 
     private String trimWorkspaceManagerId(String id) {
-        int idx = id.indexOf('$');
+        int idx = id.indexOf(Registry.WORKSPACE_MANAGER_SEPARATOR);
         if (idx == -1) {
             throw new IllegalStateException("Illegal workspace manager id.");
         }

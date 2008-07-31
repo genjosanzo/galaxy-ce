@@ -345,7 +345,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     private WorkspaceManager getWorkspaceManagerByItemId(String itemId) {
-        int idx = itemId.indexOf('$');
+        int idx = itemId.indexOf(WORKSPACE_MANAGER_SEPARATOR);
 
         if (idx == -1) {
             throw new IllegalStateException("Invalid item id: " + itemId);
@@ -481,7 +481,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     private String trimWorkspaceManagerId(String id) {
-        int idx = id.indexOf('$');
+        int idx = id.indexOf(WORKSPACE_MANAGER_SEPARATOR);
         if (idx == -1) {
             throw new IllegalStateException("Illegal workspace manager id.");
         }

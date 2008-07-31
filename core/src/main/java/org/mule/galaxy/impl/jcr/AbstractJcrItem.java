@@ -20,6 +20,7 @@ import org.apache.jackrabbit.value.StringValue;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.activity.ActivityManager.EventType;
 import org.mule.galaxy.policy.PolicyException;
@@ -53,7 +54,7 @@ public abstract class AbstractJcrItem implements Item {
 
     public String getId() {
         try {
-            return JcrWorkspaceManager.ID + "$" + node.getUUID();
+            return JcrWorkspaceManager.ID + Registry.WORKSPACE_MANAGER_SEPARATOR + node.getUUID();
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
