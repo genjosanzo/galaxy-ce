@@ -26,6 +26,7 @@ import org.mule.galaxy.web.rpc.ArtifactGroup;
 import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
 import org.mule.galaxy.web.rpc.BasicArtifactInfo;
 import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.LinkInfo;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.WApprovalMessage;
@@ -105,7 +106,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         List<BasicArtifactInfo> rows = g1.getRows();
         assertEquals(2, rows.size());
 
-        Collection<Object> deps = gwtRegistry.getLinks(info.getId(), LinkExtension.DEPENDS);
+        Collection<LinkInfo> deps = gwtRegistry.getLinks(info.getId(), LinkExtension.DEPENDS);
         assertEquals(1, deps.size());
 
         // Test reretrieving the artifact
