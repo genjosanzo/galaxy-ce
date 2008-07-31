@@ -6,7 +6,7 @@ import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 
 /**
- * An item which exists inside the repository.
+ * An item which exists inside the registry.
  */
 public interface Item {
 
@@ -18,8 +18,22 @@ public interface Item {
     
     String getPath();
     
+    /**
+     * Set the property value. May be intercepted/validated by an Extension.
+     * @param name
+     * @param value
+     * @throws PropertyException
+     * @throws PolicyException Thrown if this is not a valid value.
+     */
     void setProperty(String name, Object value) throws PropertyException, PolicyException;
 
+    /**
+     * Set the property value direct - skipping any extensions. Extension.validate() is still called.
+     * @param name
+     * @param value
+     * @throws PropertyException
+     * @throws PolicyException
+     */
     void setInternalProperty(String name, Object value) throws PropertyException, PolicyException;
     
     Object getProperty(String name);

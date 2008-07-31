@@ -13,6 +13,10 @@ import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.type.PropertyDescriptor;
 
+/**
+ * Takes care of storing retrieving Identifiable classes (e.g., User) as a property
+ * on an artifact.  
+ */
 public class IdentifiableExtension<T extends Identifiable> implements Extension {
     protected String id;
     protected Dao<T> dao;
