@@ -13,7 +13,7 @@ import java.util.Set;
 
 public interface Registry {
 
-    char WORKSPACE_MANAGER_SEPARATOR = '.';
+    char WORKSPACE_MANAGER_SEPARATOR = '$';
     
     String PRIMARY_LIFECYCLE = "primary.lifecycle";
 

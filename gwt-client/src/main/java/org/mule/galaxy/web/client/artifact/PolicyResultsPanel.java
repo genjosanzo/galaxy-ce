@@ -81,7 +81,7 @@ public class PolicyResultsPanel extends AbstractErrorShowingComposite {
         FlowPanel warningPanel = new FlowPanel();
         FlowPanel failurePanel = new FlowPanel();
 
-        Hyperlink hl = new Hyperlink(info.getValue(0), "artifact_" + info.getId());
+        Hyperlink hl = new Hyperlink(info.getValue(0), "artifact/" + info.getId());
         hl.setStyleName("policy-result-artifact-link");
         artifactPanel.add(hl); 
         

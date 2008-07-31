@@ -87,7 +87,7 @@ public class ArtifactGroupListPanel extends AbstractComposite {
                 String Id = info.getId();
                 // the first column is the artifact name (value) and that's a link
                 if (c == 0) {
-                    Hyperlink hl = new Hyperlink(value, "artifact_" + Id);
+                    Hyperlink hl = new Hyperlink(value, "artifact/" + Id);
                     table.setWidget(i + 1, cPos, hl);
                 } else {
                     // each additional value is just regular ol' text

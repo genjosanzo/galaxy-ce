@@ -174,7 +174,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
                         artifactId2 = msg.substring(3);
                     }
                     // send them to the view artifact info page on success.
-                    History.newItem("artifact_" + artifactId2);
+                    History.newItem("artifact/" + artifactId2);
                 } else
 
                     // something bad happened...

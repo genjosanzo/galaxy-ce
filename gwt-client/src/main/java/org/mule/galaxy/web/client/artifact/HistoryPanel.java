@@ -180,7 +180,7 @@ public class HistoryPanel extends AbstractComposite {
                 if (((Boolean)o).booleanValue()) {
                     History.newItem("browse");
                 } else {
-                    History.newItem("artifact_" + info.getId());
+                    History.newItem("artifact/" + info.getId());
                 }
             }
 
@@ -206,7 +206,7 @@ public class HistoryPanel extends AbstractComposite {
             }
 
             public void onSuccess(Object o) {
-                History.newItem("artifact_" + info.getId() + "_2");
+                History.newItem("artifact/" + info.getId() + "_2");
             }
 
         };

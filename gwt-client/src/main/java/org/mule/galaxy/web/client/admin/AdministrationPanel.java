@@ -91,11 +91,11 @@ public class AdministrationPanel extends MenuPanel {
                                    AbstractComposite form) {
 
         Hyperlink link = new Hyperlink(title, tokenBase);
-        Hyperlink addLink = new Hyperlink("Add", tokenBase + "_new");
+        Hyperlink addLink = new Hyperlink("Add", tokenBase + "/new");
 
         createDivWithAdd(manageBox, link, addLink);
         createPageInfo(tokenBase, list);
-        createPageInfo(tokenBase + "_" + Galaxy.WILDCARD, form);
+        createPageInfo(tokenBase + "/" + Galaxy.WILDCARD, form);
     }
 
     protected void createPageInfo(String token, final AbstractComposite composite) {

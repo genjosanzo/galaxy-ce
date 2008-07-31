@@ -46,9 +46,9 @@ public class LinksPropertyPanel extends PropertyPanel {
             } else {
                 String prefix;
                 if (info.getItemType() == LinkInfo.TYPE_ENTRY) {
-                    prefix = "artifact_";
+                    prefix = "artifact/";
                 } else {
-                    prefix = "artifact-version_";
+                    prefix = "artifact-version/";
                 }
                 final String token = prefix + info.getItemId();
                 Hyperlink hl = new Hyperlink(info.getItemName(), token);

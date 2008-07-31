@@ -195,10 +195,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
         base.add(footer);
         RootPanel.get().add(base);
 
-        createPageInfo("artifact_" + WILDCARD, new ArtifactPanel(this), 0);
-        createPageInfo("artifact-version_" + WILDCARD, new ArtifactPanel(this, true), 0);
+        createPageInfo("artifact/" + WILDCARD, new ArtifactPanel(this), 0);
+        createPageInfo("artifact-version/" + WILDCARD, new ArtifactPanel(this, true), 0);
         createPageInfo("add-artifact", new ArtifactForm(this), 0);
-        createPageInfo("new-artifact-version_" + WILDCARD, new ArtifactForm(this), 0);
+        createPageInfo("new-artifact-version/" + WILDCARD, new ArtifactForm(this), 0);
         createPageInfo("add-workspace", new WorkspaceForm(this), 0);
         createPageInfo("manage-workspace", new ManageWorkspacePanel(this), 0);
         createPageInfo("search", new SearchPanel(this), 0);
@@ -294,12 +294,12 @@ public class Galaxy implements EntryPoint, HistoryListener {
         PageInfo page = getPageInfo(token);
         List<String> params = new ArrayList<String>();
         if (page == null) {
-            String[] split = token.split("_");
+            String[] split = token.split("/");
 
             // hack to match "foo/*" style tokens
-            int slashIdx = token.indexOf('_');
+            int slashIdx = token.indexOf("/");
             if (slashIdx != -1) {
-                page = getPageInfo(token.substring(0, slashIdx) + "_" + WILDCARD);
+                page = getPageInfo(token.substring(0, slashIdx) + "/" + WILDCARD);
             }
 
             if (page == null) {

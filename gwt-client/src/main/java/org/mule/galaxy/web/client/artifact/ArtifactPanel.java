@@ -235,7 +235,7 @@ public class ArtifactPanel extends AbstractComposite {
         img.setStyleName("viewArtifactImage");
         img.addClickListener(cl);
 
-        Hyperlink hl = new Hyperlink("View Artifact", "artifact_" + info.getId());
+        Hyperlink hl = new Hyperlink("View Artifact", "artifact/" + info.getId());
         hl.addClickListener(cl);
         // Add the first one without any style so it doesn't get the splitter
         InlineFlowPanel p = asHorizontal(img, new Label(" "), hl);
@@ -246,7 +246,7 @@ public class ArtifactPanel extends AbstractComposite {
         permalink.setTitle("Direct artifact link for inclusion in email, etc.");
         linkPanel.add(asToolbarItem(new Image("images/permalink.gif"), permalink));
         
-        String token = "new-artifact-version_" + info.getId();
+        String token = "new-artifact-version/" + info.getId();
 
         img = new Image("images/new-version.gif");
         img.addClickListener(NavigationUtil.createNavigatingClickListener(token));
@@ -261,7 +261,7 @@ public class ArtifactPanel extends AbstractComposite {
         
         img = new Image("images/delete_config.gif");
         img.addClickListener(cl);
-        hl = new Hyperlink("Delete", "artifact_" + info.getId());
+        hl = new Hyperlink("Delete", "artifact/" + info.getId());
         hl.addClickListener(cl);
         linkPanel.add(asToolbarItem(img, hl));
         
@@ -277,7 +277,7 @@ public class ArtifactPanel extends AbstractComposite {
         img.setTitle("Versions Atom Feed");
         img.addClickListener(cl);
         
-        hl = new Hyperlink("Version Feed", "artifact-versions_" + info.getId());
+        hl = new Hyperlink("Version Feed", "artifact-versions/" + info.getId());
         hl.addClickListener(cl);
         linkPanel.add(asToolbarItem(img, hl));
         

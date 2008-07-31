@@ -28,6 +28,7 @@ import org.mule.galaxy.web.rpc.WPermission;
 import org.mule.galaxy.web.rpc.WPhase;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -42,14 +43,13 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.core.client.GWT;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
@@ -252,9 +252,7 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
     }
 
 
-    /**
-     * Available Lifecycles
-     */
+    // Available Lifecycles
     private void updateLifeCycleListBox() {
         lifecycleLB.clear();
         service.getLifecycles(new AbstractCallback(this) {
@@ -272,10 +270,6 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
     }
 
 
-    /**
-     *
-     *
-     */
     private SimplePanel createTitlePanel(String title) {
         SimplePanel s = new SimplePanel();
         Label l = new Label(title);
@@ -286,10 +280,14 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
     }
 
 
-    /**
-     *
-     *
-     */
+    private FlexTable createItemTable() {
+        FlexTable table = createTable();
+        table.setStyleName("bulkedit-section-table");
+        table.setCellSpacing(4);
+        return table;
+    }
+
+
     private FlowPanel createLifecyclePanel() {
         FlexTable table = createItemTable();
 
@@ -315,10 +313,6 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
     }
 
 
-    /**
-     *
-     *
-     */
     private FlowPanel createSecurityPanel() {
         FlexTable table = createItemTable();
 
@@ -334,7 +328,7 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
         int col = 1;
         for (Iterator itr = permissions.iterator(); itr.hasNext();) {
             WPermission p = (WPermission) itr.next();
-            GWT.log(p.getDescription(),null);
+            GWT.log(p.getDescription(), null);
             table.setText(0, col, p.getDescription());
             col++;
         }
@@ -344,10 +338,7 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
     }
 
 
-    /**
-     *
-     *
-     */
+    // RPC call to get list of available permissions
     private void fetchPermissions() {
         galaxy.getSecurityService().getPermissions(SecurityService.ARTIFACT_PERMISSIONS, new AbstractCallback(this) {
             public void onFailure(Throwable caught) {
@@ -356,16 +347,18 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
 
             public void onSuccess(Object arg0) {
                 // FIXME: this returns empty?
-                permissions = (Collection) arg0;
+                setPermissions((Collection)arg0);
             }
         });
     }
 
 
-    /**
-     *
-     *
-     */
+    private void setPermissions(Collection permissions) {
+        this.permissions = permissions;
+
+    }
+
+    //RPC call to get list of available groups
     private void fetchGroups() {
         galaxy.getSecurityService().getGroupPermissions(new AbstractCallback(this) {
 
@@ -374,17 +367,18 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
             }
 
             public void onSuccess(Object arg0) {
-                groups = (Map) arg0;
+                setGroups((Map) arg0);
             }
 
         });
     }
 
+    private void setGroups(Map groups) {
+        this.groups = groups;
 
-    /**
-     *
-     *
-     */
+    }
+
+
     protected Widget createGrantWidget() {
         ListBox lb = new ListBox();
         lb.addItem("Revoked");
@@ -394,11 +388,6 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
     }
 
 
-
-    /**
-     *
-     *
-     */
     private FlowPanel createPropertyPanel() {
         FlexTable table = createItemTable();
 
@@ -458,19 +447,11 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
     }
 
 
-    /**
-     *
-     *
-     */
     public void cancel() {
         History.back();
     }
 
 
-    /**
-     *
-     *
-     */
     private void saveLifecycleAndPhase(String lifecycle, String phase) {
 
         service.transition(artifactIds, lifecycle, phase, new AbstractCallback(this) {
@@ -491,10 +472,6 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
     }
 
 
-    /**
-     *
-     *
-     */
     private void saveProperty(String name, String value) {
 
         service.setProperty(artifactIds, name, value, new AbstractCallback(this) {
@@ -511,10 +488,6 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
     }
 
 
-    /**
-     *
-     *
-     */
     private void deleteProperty(String name) {
         service.deleteProperty(artifactIds, name, new AbstractCallback(this) {
 
@@ -529,16 +502,5 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
 
     }
 
-
-    /**
-     *
-     *
-     */
-    private FlexTable createItemTable() {
-        FlexTable table = createTable();
-        table.setStyleName("bulkedit-section-table");
-        table.setCellSpacing(4);
-        return table;
-    }
 
 }

@@ -111,7 +111,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
             Map.Entry e = (Map.Entry) itr.next();
 
             final WGroup group = (WGroup) e.getKey();
-            final Hyperlink hl = new Hyperlink(group.getName(), "groups_" + group.getId());
+            final Hyperlink hl = new Hyperlink(group.getName(), "groups/" + group.getId());
 
             int row = rows.indexOf(group.getName()) + 1;
 
