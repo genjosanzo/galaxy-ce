@@ -564,6 +564,30 @@ a:visited {
 .failure-panel {
     padding: 4px;
 }
+
+.listProperty {
+    margin: 2px;
+    padding: 2px;
+}
+
+.listPropertyEdit {
+    margin: 2px;
+    padding: 1px;
+    background-color: #eee;
+}
+
+.listPropertyLeft {
+    margin: 2px;
+}
+
+.listPropertyRight {
+    border-left: 1px solid black;
+}
+
+.listPropertyRightHover {
+    color: white;
+    background-color: black;
+}
 /**
  **
  ** History Panel

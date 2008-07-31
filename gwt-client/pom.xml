@@ -44,15 +44,7 @@
   </dependencies>
 
   <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.4</source>
-          <target>1.4</target>
-        </configuration>
-      </plugin>
-    </plugins>
+
     <resources>
       <resource>
         <directory>src/main/java</directory>
@@ -121,6 +113,10 @@
          <id>gwt-maven</id>
          <url>http://dist.codehaus.org/mule/dependencies/maven2/</url>
        </repository>
+        <repository>
+            <id>gwt-maven2</id>
+            <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo</url>
+        </repository>
   </repositories>
 
   <pluginRepositories>
@@ -128,6 +124,10 @@
           <id>gwt-maven</id>
           <url>http://dist.codehaus.org/mule/dependencies/maven2/</url>
       </pluginRepository>
+        <pluginRepository>
+            <id>gwt-maven2</id>
+            <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo</url>
+        </pluginRepository>
   </pluginRepositories>
 
 </project>

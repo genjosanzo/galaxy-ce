@@ -56,14 +56,18 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
     private FlowPanel resultsPanel;
     private FlexTable table;
     private int maxResults;
+    private FlowPanel mainPanel;
 
     public ActivityPanel(final Galaxy galaxy) {
         super();
         this.galaxy = galaxy;
 
-        FlowPanel mainPanel = getMainPanel();
+        mainPanel = getMainPanel();
         mainPanel.setStyleName("main-panel");
-
+        initWidget(mainPanel);
+    }
+    
+    public void initialize() {
         FlowPanel base = new FlowPanel();
         base.setStyleName("activity-base-panel");
         mainPanel.add(base);
@@ -143,7 +147,6 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
 
         // set form widgets to default values
         reset();
-        initWidget(mainPanel);
     }
 
     protected void initUsers(Collection result) {
@@ -155,6 +158,9 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
     }
 
     public void onShow() {
+        if (mainPanel.getWidgetCount() == 0) {
+            initialize();
+        }
         clearErrorMessage();
 
         resultsPanel.clear();

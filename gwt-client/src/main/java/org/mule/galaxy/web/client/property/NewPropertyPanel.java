@@ -143,6 +143,7 @@ public class NewPropertyPanel extends Composite {
 
         renderHolder.clear();
         renderHolder.add(renderer);
+        renderHolder.add(new SimplePanel());
     }
 
     protected void save() {

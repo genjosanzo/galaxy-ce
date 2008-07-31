@@ -22,7 +22,6 @@ public abstract class AbstractEditPropertyPanel extends PropertyPanel {
     private InlineFlowPanel editPanel;
     private Button save;
     private Button cancel;
-    private WProperty property;
     private Hyperlink editHL;
     private Hyperlink deleteHL;
 
@@ -168,19 +167,7 @@ public abstract class AbstractEditPropertyPanel extends PropertyPanel {
      * @return
      */
     protected abstract Object getValueToSave();
-    
-    public WProperty getProperty() {
-        return property;
-    }
-
-    public void setProperty(WProperty property) {
-        this.property = property;
-    }
-    
-    public void setGalaxy(Galaxy galaxy) {
-        this.galaxy = galaxy;
-    }
-
+ 
     public void setErrorPanel(ErrorPanel errorPanel) {
         this.errorPanel = errorPanel;
     }

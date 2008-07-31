@@ -12,6 +12,8 @@ public class PropertyPanelFactory {
             return new LifecyclePropertyPanel();
         } else if ("linkExtension".equals(ext)) {
             return new LinksPropertyPanel();
+        } else if ("userExtension".equals(ext)) {
+            return new UserListPropertyPanel();
         } else if (multivalued) {
             return new SimpleListPropertyPanel();
         } else {

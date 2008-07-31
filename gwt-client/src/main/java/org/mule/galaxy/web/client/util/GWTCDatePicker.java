@@ -701,6 +701,10 @@ public class GWTCDatePicker extends Composite implements ClickListener, SourcesC
         return (int) ((d2 - d1) / 1000 / 60 / 60 / 24);
     }
 
+    private static long add(long time, int n, int months2) {
+        return (long) add((double) time, n, months2);
+    }
+    
     /**
      * Increase/decrease a date based in a type parameter which specifies the type of operation
      * 
@@ -714,7 +718,7 @@ public class GWTCDatePicker extends Composite implements ClickListener, SourcesC
      *            type of addition (1=days, 2=months, 3=years, 4=hours
      * @return number of milliseconds from 1-1-1970
      */
-    private static native long add(long time, int value, int type)
+    private static native double add(double time, int value, int type)
     /*-{
      var d = new Date(time);
      if (type == 1) {

@@ -136,12 +136,16 @@ public interface RegistryService extends RemoteService {
     void setProperty(String artifactId, 
                      String propertyName, 
                      Collection propertyValue) throws RPCException, WPolicyException, ItemNotFoundException;
-        
+
+    /**
+     * @gwt.typeArgs artifactIds <java.lang.String>
+     */
     void setProperty(Collection artifactIds,
                      String propertyName,
                      String propertyValue) throws RPCException, WPolicyException, ItemNotFoundException;
     
     /**
+     * @gwt.typeArgs artifactIds <java.lang.String>
      * @gwt.typeArgs propertyValue <java.lang.String>
      */
     void setProperty(Collection artifactIds,

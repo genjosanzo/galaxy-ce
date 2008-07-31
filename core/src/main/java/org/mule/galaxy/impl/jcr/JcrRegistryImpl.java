@@ -668,7 +668,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     // will be dewrapped later
                     throw new RuntimeException(e);
                 }
-                System.out.println("Query: " + qstr.toString());
+                
                 if (log.isDebugEnabled())
                 {
                     log.debug("Query: " + qstr.toString());
