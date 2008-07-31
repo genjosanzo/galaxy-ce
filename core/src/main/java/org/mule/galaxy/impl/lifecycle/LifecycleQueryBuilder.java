@@ -36,16 +36,6 @@ public class LifecycleQueryBuilder extends ExtensionQueryBuilder {
         return "not_found";
     }
 
-
-    @Override
-    protected String getProperty(String property) {
-        if (property.endsWith(".id")) { 
-            property = property.substring(0, property.length() - 3);
-        }
-        
-        return property;
-    }
-
     public void setLifecycleManager(LifecycleManager lifecycleManager) {
         this.lifecycleManager = lifecycleManager;
     }

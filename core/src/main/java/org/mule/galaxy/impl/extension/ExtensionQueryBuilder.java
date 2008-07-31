@@ -39,6 +39,17 @@ public abstract class ExtensionQueryBuilder extends SimpleQueryBuilder {
         }
         return props;
     }
+    @Override
+    protected String getProperty(String property) {
+        for (String s : getSuffixes()) {
+            if (!"".equals(s) && property.endsWith(s)) {
+                property = property.substring(0, property.length() - (s.length()+1));
+                break;
+            }
+        }
+        
+        return property;
+    }
 
     public String getRoot() {
         return "";

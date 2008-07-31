@@ -187,33 +187,6 @@
     <property name="id" value="lifecycleExtension"/>
   </bean>
   
-  <bean id="contactExtension" class="org.mule.galaxy.impl.extension.IdentifiableExtension">
-    <property name="dao" ref="contactDao"/>
-    <property name="id" value="contactExtension"/>
-    <property name="name" value="Contact"/>
-  </bean>
-  
-  <bean id="contactDao" parent="txProxyTemplate">
-    <property name="target" ref="contactDaoTarget"/>
-    <property name="proxyTargetClass" value="true"/>
-  </bean>
-  
-  <bean id="contactDaoTarget" 
-        class="org.mule.galaxy.impl.jcr.onm.IdentifiableReflectionDao"
-        init-method="initialize" 
-        depends-on="persisterManager">
-    <constructor-arg value="org.mule.galaxy.contact.Contact"/>
-    <constructor-arg value="contacts"/>
-    <constructor-arg value="true"/>
-    <property name="sessionFactory" ref="sessionFactory" />
-    <property name="persisterManager" ref="persisterManager" />
-  </bean>
-  
-  <bean id="contactQueryBuilder" class="org.mule.galaxy.impl.extension.IdentifiableExtensionQueryBuilder">
-    <constructor-arg ref="contactExtension"/>
-    <property name="typeManager" ref="typeManager"/>
-  </bean>
-  
   <bean id="linkExtension" class="org.mule.galaxy.impl.link.LinkExtension" init-method="initialize">
     <property name="dao" ref="linkDao"/>
     <property name="id" value="linkExtension"/>
@@ -253,9 +226,20 @@
           <property name="typeManager" ref="typeManager"/>
         </bean>
         <bean class="org.mule.galaxy.impl.jcr.query.ArtifactPropertyQueryBuilder"/>
-        <ref bean="contactQueryBuilder"/>
+        <ref bean="userQueryBuilder"/>
       </list>
     </constructor-arg>
+  </bean>
+  
+  <bean id="userExtension" class="org.mule.galaxy.impl.extension.IdentifiableExtension">
+    <property name="dao" ref="userManager"/>
+    <property name="id" value="userExtension"/>
+    <property name="name" value="User(s)"/>
+  </bean>
+
+  <bean id="userQueryBuilder" class="org.mule.galaxy.impl.extension.IdentifiableExtensionQueryBuilder">
+    <constructor-arg ref="userExtension"/>
+    <property name="typeManager" ref="typeManager"/>
   </bean>
   
   <bean id="userManager" parent="txProxyTemplate">

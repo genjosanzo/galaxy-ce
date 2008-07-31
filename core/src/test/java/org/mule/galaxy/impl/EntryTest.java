@@ -6,13 +6,13 @@ import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.contact.Contact;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.extension.IdentifiableExtensionQueryBuilder;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.SearchResults;
+import org.mule.galaxy.security.User;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.type.PropertyDescriptor;
 
@@ -89,7 +89,7 @@ public class EntryTest extends AbstractGalaxyTest {
 	assertNotNull(r);
 	
 	PropertyDescriptor pd = new PropertyDescriptor();
-	pd.setExtension((Extension) applicationContext.getBean("contactExtension"));
+	pd.setExtension((Extension) applicationContext.getBean("userExtension"));
 	pd.setDescription("Primary Contact");
 	pd.setProperty("contact");
 	
@@ -103,14 +103,13 @@ public class EntryTest extends AbstractGalaxyTest {
 	Entry e = r.getEntry();
 	assertNotNull(e);
 	
-	Contact contact = new Contact();
-	contact.setName("Dan Diephouse");
-	e.setProperty("contact", contact);
+	User user = getAdmin();
+	e.setProperty("contact", user);
 	
-	Contact c2 = (Contact) e.getProperty("contact");
+	User c2 = (User) e.getProperty("contact");
 	assertNotNull(c2);
 	
-	IdentifiableExtensionQueryBuilder qb = (IdentifiableExtensionQueryBuilder) applicationContext.getBean("contactQueryBuilder");
+	IdentifiableExtensionQueryBuilder qb = (IdentifiableExtensionQueryBuilder) applicationContext.getBean("userQueryBuilder");
 	assertNotNull(qb);
 	
 	Collection<String> props = qb.getProperties();
@@ -118,7 +117,7 @@ public class EntryTest extends AbstractGalaxyTest {
 	assertTrue(props.contains("contact.name"));
 	assertTrue(props.contains("contact.email"));
 	
-	Query q = new Query(Entry.class).add(OpRestriction.eq("contact.name", contact.getName()));
+	Query q = new Query(Entry.class).add(OpRestriction.eq("contact.name", user.getName()));
 	
 	SearchResults result = registry.search(q);
 	

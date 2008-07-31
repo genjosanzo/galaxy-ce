@@ -55,6 +55,7 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
             query.append("not(");
         }
         
+        String searchProp = getProperty(property);
         if (matches.size() > 1) {
             Collection<?> rightCol = (Collection<?>) right;
             if (rightCol.size() > 0) {
@@ -72,7 +73,7 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
                     }
     
                     query.append("@")
-                         .append(root)
+                         .append(searchProp)
                          .append("='")
                          .append(value)
                          .append("'");
@@ -81,7 +82,7 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
             }
         } else if (matches.size() == 1) {
             query.append("@")
-                .append(root)
+                .append(searchProp)
                 .append("='")
                 .append(matches.get(0))
                 .append("'");
