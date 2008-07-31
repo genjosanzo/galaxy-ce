@@ -221,6 +221,10 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
         fetchArtifacts(resultStart, maxResults, callback);
     }
 
+    @Override
+    public void onHide() {
+        artifactListPanel.clear();
+    }
 
     public Set getAppliedArtifactTypeFilters() {
         return appliedArtifactTypeFilters;
