@@ -235,6 +235,7 @@
     <property name="dao" ref="userManager"/>
     <property name="id" value="userExtension"/>
     <property name="name" value="User(s)"/>
+    <property name="multivalueSupported" value="false"/>
   </bean>
 
   <bean id="userQueryBuilder" class="org.mule.galaxy.impl.extension.IdentifiableExtensionQueryBuilder">

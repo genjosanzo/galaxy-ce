@@ -21,6 +21,7 @@ public class IdentifiableExtension<T extends Identifiable> implements Extension 
     protected String id;
     protected Dao<T> dao;
     protected String name;
+    protected boolean isMultivalueSupported = true;
     
     @SuppressWarnings("unchecked")
     public Object getExternalValue(Item entry, PropertyDescriptor pd, Object storedValue) {
@@ -97,7 +98,11 @@ public class IdentifiableExtension<T extends Identifiable> implements Extension 
     }
 
     public boolean isMultivalueSupported() {
-        return true;
+        return isMultivalueSupported;
+    }
+
+    public void setMultivalueSupported(boolean isMultivalueSupported) {
+        this.isMultivalueSupported = isMultivalueSupported;
     }
 
     public Dao<T> getDao() {
