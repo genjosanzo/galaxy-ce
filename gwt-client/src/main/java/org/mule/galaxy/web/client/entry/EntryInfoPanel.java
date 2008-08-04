@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.mule.galaxy.web.client.artifact;
+package org.mule.galaxy.web.client.entry;
 
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
@@ -28,8 +28,8 @@ import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextArea;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.EntryVersionInfo;
+import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
 import org.mule.galaxy.web.rpc.LinkInfo;
 import org.mule.galaxy.web.rpc.WComment;
 
@@ -56,21 +56,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class ArtifactInfoPanel extends AbstractComposite {
+public class EntryInfoPanel extends AbstractComposite {
 
     private HorizontalPanel topPanel;
     private Galaxy galaxy;
     private VerticalPanel rightGroup;
     private VerticalPanel panel;
     private FlowPanel commentsPanel;
-    private ExtendedArtifactInfo info;
+    private ExtendedEntryInfo info;
     private final ErrorPanel errorPanel;
     
-    public ArtifactInfoPanel(final Galaxy galaxy,
+    public EntryInfoPanel(final Galaxy galaxy,
                              ErrorPanel errorPanel,
                              ArtifactGroup group,
-                             ExtendedArtifactInfo info,
-                             ArtifactVersionInfo version, final ArtifactPanel artifactPanel, final List<String> callbackParams) {
+                             ExtendedEntryInfo info,
+                             EntryVersionInfo version, final EntryPanel artifactPanel, final List<String> callbackParams) {
         this.galaxy = galaxy;
         this.errorPanel = errorPanel;
         this.info = info;

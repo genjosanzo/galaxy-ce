@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.mule.galaxy.web.client.artifact;
+package org.mule.galaxy.web.client.registry;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -27,13 +27,12 @@ import java.util.List;
 
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
 
-public class ArtifactPolicyResultsPanel extends AbstractErrorShowingComposite {
+public class PolicyResultsPanel extends AbstractErrorShowingComposite {
 
     private RegistryMenuPanel menuPanel;
 
-    public ArtifactPolicyResultsPanel(Galaxy galaxy, Collection<String> warnings, Collection<String> failures) {
+    public PolicyResultsPanel(Galaxy galaxy, Collection<String> warnings, Collection<String> failures) {
         super();
         
         menuPanel = new RegistryMenuPanel(galaxy);

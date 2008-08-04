@@ -30,7 +30,7 @@ public class ArtifactGroup implements IsSerializable {
      */
     private List<String> columns = new ArrayList<String>();
     
-    private List<BasicArtifactInfo> rows = new ArrayList<BasicArtifactInfo>();
+    private List<EntryInfo> rows = new ArrayList<EntryInfo>();
     public String getName() {
         return name;
     }
@@ -40,7 +40,7 @@ public class ArtifactGroup implements IsSerializable {
     public List<String> getColumns() {
         return columns;
     }
-    public List<BasicArtifactInfo> getRows() {
+    public List<EntryInfo> getRows() {
         return rows;
     }
     

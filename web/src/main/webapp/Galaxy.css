@@ -553,7 +553,7 @@ a:visited {
 }
 
 .add-property-panel {
-    background-color: #e8e8e8;
+    background-color: #EEEEEE;
     padding: 4px;
 }
 
@@ -565,26 +565,28 @@ a:visited {
     padding: 4px;
 }
 
-.listProperty {
-    margin: 2px;
-    padding: 2px;
+.listPropertyContainer {
+    margin: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background-color: #ccc;
 }
 
-.listPropertyEdit {
-    margin: 2px;
-    padding: 1px;
-    background-color: #eee;
+.listProperty {
 }
 
 .listPropertyLeft {
-    margin: 2px;
 }
 
 .listPropertyRight {
+    padding: 2px;
+    margin: 2px;
     border-left: 1px solid black;
 }
 
 .listPropertyRightHover {
+    padding: 2px;
+    margin: 2px;
     color: white;
     background-color: black;
 }

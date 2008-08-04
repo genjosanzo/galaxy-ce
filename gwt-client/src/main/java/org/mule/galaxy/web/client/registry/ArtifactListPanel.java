@@ -22,7 +22,7 @@ import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
-import org.mule.galaxy.web.rpc.BasicArtifactInfo;
+import org.mule.galaxy.web.rpc.EntryInfo;
 import org.mule.galaxy.web.rpc.WSearchResults;
 
 import com.google.gwt.user.client.History;
@@ -196,12 +196,12 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
 
         // edit only what the user selectes via the checkboxes
         } else if (sender == editSelected) {
-            galaxy.createPageInfo("bulk-edit", new ArtifactBulkEditPanel(getSelectedArtifacts(), galaxy), 0);
+            galaxy.createPageInfo("bulk-edit", new BulkEditPanel(getSelectedArtifacts(), galaxy), 0);
             History.newItem("bulk-edit");
 
         // edit the entire result set
         } else if (sender == editAll) {
-            galaxy.createPageInfo("bulk-edit", new ArtifactBulkEditPanel(extractArtifactIds(), galaxy), 0);
+            galaxy.createPageInfo("bulk-edit", new BulkEditPanel(extractArtifactIds(), galaxy), 0);
             History.newItem("bulk-edit");
 
         // toggle edit mode
@@ -292,8 +292,8 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
             ArtifactGroup g = itr.next();
 
             // each artifact
-            for (Iterator<BasicArtifactInfo> it = g.getRows().iterator(); it.hasNext();) {
-                BasicArtifactInfo artifact = it.next();
+            for (Iterator<EntryInfo> it = g.getRows().iterator(); it.hasNext();) {
+                EntryInfo artifact = it.next();
                 artifactIds.add(artifact);
             }
         }

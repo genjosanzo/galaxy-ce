@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.PropertyDescriptorComparator;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
@@ -46,7 +47,7 @@ import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 public class NewPropertyPanel extends Composite {
 
     private ListBox propertiesBox;
-    private FlowPanel propertyPanel;
+    private InlineFlowPanel propertySelectPanel;
     private ErrorPanel errorPanel;
     private String itemId;
     private EntryMetadataPanel metadataPanel;
@@ -58,6 +59,7 @@ public class NewPropertyPanel extends Composite {
     private final Galaxy galaxy;
     private WProperty property;
     private PropertyPanel renderer;
+    private Button cancelButton;
 
     public NewPropertyPanel(final Galaxy galaxy,
                             final ErrorPanel registryPanel, 
@@ -73,11 +75,11 @@ public class NewPropertyPanel extends Composite {
         this.metadataPanel = metadataPanel;
         this.svc = registryService;
         
-        HorizontalPanel panel = new HorizontalPanel();
+        InlineFlowPanel panel = new InlineFlowPanel();
         panel.setStyleName("add-property-panel");
         panel.add(new Label("Add Property: "));
         
-        propertyPanel = new FlowPanel();
+        propertySelectPanel = new InlineFlowPanel();
         propertiesBox = new ListBox();
         propertiesBox.setMultipleSelect(false);
         propertiesBox.addItem("", "");
@@ -89,15 +91,12 @@ public class NewPropertyPanel extends Composite {
             }
             
         });
-        propertyPanel.add(propertiesBox);
+        propertySelectPanel.add(propertiesBox);
         
+        panel.add(propertySelectPanel);
+
         renderHolder = new SimplePanel();
-        propertyPanel.add(renderHolder);
-        
-        // Create a wrapper so the propertyPanel gets formatted correctly
-        SimplePanel propPanelContainer = new SimplePanel();
-        propPanelContainer.add(propertyPanel);
-        panel.add(propPanelContainer);
+        panel.add(renderHolder);
         
         svc.getPropertyDescriptors(false, new AbstractCallback(registryPanel) {
             @SuppressWarnings("unchecked")
@@ -111,9 +110,9 @@ public class NewPropertyPanel extends Composite {
                 remove();
             }
         };
-        Button cancelButton = new Button("Cancel");
+        cancelButton = new Button("Cancel");
         cancelButton.addClickListener(cancelListener);
-        renderHolder.add(cancelButton);
+        propertySelectPanel.add(cancelButton);
         
         initWidget(panel);
     }
@@ -121,6 +120,11 @@ public class NewPropertyPanel extends Composite {
 
     protected void onPropertySelect(ListBox w) {
         int i = w.getSelectedIndex();
+        if (i == -1) {
+            return;
+        }
+        propertySelectPanel.remove(cancelButton);
+        
         String txt = w.getValue(i);
         
         WPropertyDescriptor pd = getPropertyDescriptor(txt);
@@ -144,7 +148,7 @@ public class NewPropertyPanel extends Composite {
 
         renderHolder.clear();
         renderHolder.add(renderer);
-        renderHolder.add(new SimplePanel());
+//        renderHolder.add(new SimplePanel());
     }
 
     protected void save() {
@@ -175,7 +179,10 @@ public class NewPropertyPanel extends Composite {
         
         for (Iterator itr = o.iterator(); itr.hasNext();) {
             WPropertyDescriptor pd = (WPropertyDescriptor) itr.next();
-            propertiesBox.addItem(pd.getDescription(), pd.getName());
+            
+            if (!metadataPanel.hasProperty(pd.getName())) {
+                propertiesBox.addItem(pd.getDescription(), pd.getName());
+            }
         }
     }
 

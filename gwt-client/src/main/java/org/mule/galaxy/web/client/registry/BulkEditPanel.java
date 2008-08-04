@@ -52,7 +52,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
+public class BulkEditPanel extends AbstractErrorShowingComposite
         implements ClickListener, ChangeListener {
 
     private Collection artifactIds;
@@ -84,7 +84,7 @@ public class ArtifactBulkEditPanel extends AbstractErrorShowingComposite
     private Collection permissions;
     private Map groups;
 
-    public ArtifactBulkEditPanel(Collection artifactIds, Galaxy galaxy) {
+    public BulkEditPanel(Collection artifactIds, Galaxy galaxy) {
         super();
         this.galaxy = galaxy;
         this.service = galaxy.getRegistryService();

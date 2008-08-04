@@ -90,9 +90,9 @@ import org.mule.galaxy.view.ArtifactView;
 import org.mule.galaxy.view.ArtifactViewManager;
 import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.BasicArtifactInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.EntryVersionInfo;
+import org.mule.galaxy.web.rpc.EntryInfo;
+import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
 import org.mule.galaxy.web.rpc.LinkInfo;
@@ -100,7 +100,7 @@ import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.WActivity;
 import org.mule.galaxy.web.rpc.WApprovalMessage;
-import org.mule.galaxy.web.rpc.WArtifactPolicy;
+import org.mule.galaxy.web.rpc.WPolicy;
 import org.mule.galaxy.web.rpc.WArtifactType;
 import org.mule.galaxy.web.rpc.WArtifactView;
 import org.mule.galaxy.web.rpc.WComment;
@@ -436,7 +436,7 @@ public class RegistryServiceImpl implements RegistryService {
                 }
             }
 
-            BasicArtifactInfo info = createBasicArtifactInfo(a, view);
+            EntryInfo info = createBasicArtifactInfo(a, view);
 
             g.getRows().add(info);
         }
@@ -456,13 +456,13 @@ public class RegistryServiceImpl implements RegistryService {
         return wsr;
     }
 
-    private BasicArtifactInfo createBasicArtifactInfo(Artifact a, ArtifactRenderer view) {
-        BasicArtifactInfo info = new BasicArtifactInfo();
+    private EntryInfo createBasicArtifactInfo(Artifact a, ArtifactRenderer view) {
+        EntryInfo info = new EntryInfo();
         return createBasicArtifactInfo(a, view, info, false);
     }
 
-    private BasicArtifactInfo createBasicArtifactInfo(Artifact a, ArtifactRenderer view,
-                                                      BasicArtifactInfo info, boolean extended) {
+    private EntryInfo createBasicArtifactInfo(Artifact a, ArtifactRenderer view,
+                                                      EntryInfo info, boolean extended) {
         info.setId(a.getId());
         info.setWorkspaceId(a.getParent().getId());
         info.setName(a.getName());
@@ -873,7 +873,7 @@ public class RegistryServiceImpl implements RegistryService {
             }
         }
 
-        ExtendedArtifactInfo info = new ExtendedArtifactInfo();
+        ExtendedEntryInfo info = new ExtendedEntryInfo();
         createBasicArtifactInfo(a, view, info, true);
 
         info.setDescription(a.getDescription());
@@ -902,7 +902,7 @@ public class RegistryServiceImpl implements RegistryService {
         info.setArtifactFeedLink(getLink(context + "/api/registry", a) + ";history");
         info.setCommentsFeedLink(context + "/api/comments");
 
-        List<ArtifactVersionInfo> versions = new ArrayList<ArtifactVersionInfo>();
+        List<EntryVersionInfo> versions = new ArrayList<EntryVersionInfo>();
         for (EntryVersion av : a.getVersions()) {
             versions.add(toWeb((ArtifactVersion)av, false));
         }
@@ -911,7 +911,7 @@ public class RegistryServiceImpl implements RegistryService {
         return g;
     }
 
-    public ArtifactVersionInfo getArtifactVersionInfo(String artifactVersionId, boolean showHidden) throws RPCException,
+    public EntryVersionInfo getArtifactVersionInfo(String artifactVersionId, boolean showHidden) throws RPCException,
                                                                                                            ItemNotFoundException {
         try {
             ArtifactVersion av = registry.getArtifactVersion(artifactVersionId);
@@ -928,8 +928,8 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     @SuppressWarnings("unchecked")
-    private ArtifactVersionInfo toWeb(ArtifactVersion av, boolean showHidden) {
-        ArtifactVersionInfo vi = new ArtifactVersionInfo(av.getId(),
+    private EntryVersionInfo toWeb(ArtifactVersion av, boolean showHidden) {
+        EntryVersionInfo vi = new EntryVersionInfo(av.getId(),
                                                          av.getVersionLabel(),
                                                          getVersionLink(av),
                                                          av.getCreated().getTime(),
@@ -1441,7 +1441,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     private WPolicyException toWeb(PolicyException e) {
-        Map<BasicArtifactInfo, Collection<WApprovalMessage>> failures = new HashMap<BasicArtifactInfo, Collection<WApprovalMessage>>();
+        Map<EntryInfo, Collection<WApprovalMessage>> failures = new HashMap<EntryInfo, Collection<WApprovalMessage>>();
         for (Map.Entry<Item, List<ApprovalMessage>> entry : e.getPolicyFailures().entrySet()) {
             Item i = entry.getKey();
             List<ApprovalMessage> approvals = entry.getValue();
@@ -1452,7 +1452,7 @@ public class RegistryServiceImpl implements RegistryService {
                 view = rendererManager.getArtifactRenderer(a.getContentType().toString());
             }
 
-            BasicArtifactInfo info = createBasicArtifactInfo(a, view);
+            EntryInfo info = createBasicArtifactInfo(a, view);
 
             ArrayList<WApprovalMessage> wapprovals = new ArrayList<WApprovalMessage>();
             for (ApprovalMessage app : approvals) {
@@ -1518,15 +1518,15 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public Collection<WArtifactPolicy> getPolicies() throws RPCException {
+    public Collection<WPolicy> getPolicies() throws RPCException {
         Collection<Policy> policies = policyManager.getPolicies();
-        List<WArtifactPolicy> gwtPolicies = new ArrayList<WArtifactPolicy>();
+        List<WPolicy> gwtPolicies = new ArrayList<WPolicy>();
         for (Policy p : policies) {
             gwtPolicies.add(toWeb(p));
         }
-        Collections.sort(gwtPolicies, new Comparator<WArtifactPolicy>() {
+        Collections.sort(gwtPolicies, new Comparator<WPolicy>() {
 
-            public int compare(WArtifactPolicy o1, WArtifactPolicy o2) {
+            public int compare(WPolicy o1, WPolicy o2) {
                 return o1.getName().compareTo(o2.getName());
             }
 
@@ -1608,8 +1608,8 @@ public class RegistryServiceImpl implements RegistryService {
         return l;
     }
 
-    private WArtifactPolicy toWeb(Policy p) {
-        WArtifactPolicy wap = new WArtifactPolicy();
+    private WPolicy toWeb(Policy p) {
+        WPolicy wap = new WPolicy();
         wap.setId(p.getId());
         wap.setDescription(p.getDescription());
         wap.setName(p.getName());

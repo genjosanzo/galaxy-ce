@@ -20,7 +20,7 @@ package org.mule.galaxy.web.client.registry;
 
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
-import org.mule.galaxy.web.rpc.BasicArtifactInfo;
+import org.mule.galaxy.web.rpc.EntryInfo;
 
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -66,7 +66,7 @@ public class ArtifactGroupListPanel extends AbstractComposite {
 
         // draw the rows for each artifact type in the group
         for (int i = 0; i < numRows; i++) {
-            final BasicArtifactInfo info = group.getRows().get(i);
+            final EntryInfo info = group.getRows().get(i);
 
             // draw the checkbox in edit mode
             if (editable) {

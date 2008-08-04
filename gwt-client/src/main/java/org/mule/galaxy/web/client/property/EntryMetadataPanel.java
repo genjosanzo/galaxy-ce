@@ -33,8 +33,8 @@ import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.EntryVersionInfo;
+import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WProperty;
 
@@ -42,16 +42,16 @@ public class EntryMetadataPanel extends AbstractComposite {
 
     private FlowPanel metadata;
     private ErrorPanel errorPanel;
-    private ArtifactVersionInfo info;
+    private EntryVersionInfo info;
     private FlexTable table;
     private boolean showHidden = false;
     private Hyperlink showAll;
     private final Galaxy galaxy;
     
     public EntryMetadataPanel(final Galaxy galaxy,
-                                 final ErrorPanel registryPanel,
-                                 final ExtendedArtifactInfo artifactInfo,
-                                 final ArtifactVersionInfo info) {
+                              final ErrorPanel registryPanel,
+                              final ExtendedEntryInfo artifactInfo,
+                              final EntryVersionInfo info) {
         super();
         this.galaxy = galaxy;
         this.info = info;
@@ -62,7 +62,7 @@ public class EntryMetadataPanel extends AbstractComposite {
         
         table = createColumnTable();
         
-        Hyperlink addMetadata = new Hyperlink("Add", "no-history");
+        Hyperlink addMetadata = new Hyperlink("Add", galaxy.getCurrentToken());
         final EntryMetadataPanel amPanel = this;
         addMetadata.addClickListener(new ClickListener() {
 
@@ -74,12 +74,12 @@ public class EntryMetadataPanel extends AbstractComposite {
                                                              metadata,
                                                              amPanel,
                                                              table);
-                metadata.add(edit);   
+                metadata.insert(edit, 1);   
             }
             
         });
 
-        showAll = new Hyperlink("Show All", "no-history");
+        showAll = new Hyperlink("Show All", galaxy.getCurrentToken());
         showAll.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
@@ -113,14 +113,14 @@ public class EntryMetadataPanel extends AbstractComposite {
         svc.getArtifactVersionInfo(info.getId(), showHidden, new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object o) {
-                info = (ArtifactVersionInfo) o;
+                info = (EntryVersionInfo) o;
                 
                 initializeProperties(info);
             }
         });
     }
 
-    private void initializeProperties(final ArtifactVersionInfo info) {
+    private void initializeProperties(final EntryVersionInfo info) {
         for (Iterator<WProperty> itr = info.getProperties().iterator(); itr.hasNext();) {
             WProperty p = itr.next();
             
@@ -175,6 +175,10 @@ public class EntryMetadataPanel extends AbstractComposite {
         table.getCellFormatter().setStyleName(row, 0, "artifactTableHeader");
         table.getCellFormatter().setStyleName(row, 1, "artifactTableLock");
         table.getCellFormatter().setStyleName(row, 2, "artifactTableEntry");
+    }
+
+    public boolean hasProperty(String name) {
+        return info.getProperty(name) != null;
     }
     
 }

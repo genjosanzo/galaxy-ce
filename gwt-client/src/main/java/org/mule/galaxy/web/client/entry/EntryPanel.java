@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.mule.galaxy.web.client.artifact;
+package org.mule.galaxy.web.client.entry;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -48,8 +48,8 @@ import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.client.util.NavigationUtil;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ArtifactGroup;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.EntryVersionInfo;
+import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
 import org.mule.galaxy.web.rpc.SecurityService;
 
 
@@ -63,11 +63,11 @@ import org.mule.galaxy.web.rpc.SecurityService;
  *   (with history)
  * - View Artiact
  */
-public class ArtifactPanel extends AbstractComposite {
+public class EntryPanel extends AbstractComposite {
 
     private Galaxy galaxy;
     private TabPanel artifactTabs;
-    private ExtendedArtifactInfo info;
+    private ExtendedEntryInfo info;
     private ArtifactGroup group;
     private VerticalPanel panel;
     private int selectedTab = -1;
@@ -78,11 +78,11 @@ public class ArtifactPanel extends AbstractComposite {
 
     private List<String> params;
 
-    public ArtifactPanel(Galaxy galaxy) {
+    public EntryPanel(Galaxy galaxy) {
         this(galaxy, false);
     }
     
-    public ArtifactPanel(Galaxy galaxy, boolean retrieveVersion) {
+    public EntryPanel(Galaxy galaxy, boolean retrieveVersion) {
         this.galaxy = galaxy;
         this.retrieveVersion = retrieveVersion;
         
@@ -112,7 +112,7 @@ public class ArtifactPanel extends AbstractComposite {
         AbstractCallback callback = new AbstractCallback(menuPanel) { 
             public void onSuccess(Object o) {
                 group = (ArtifactGroup) o;
-                info = (ExtendedArtifactInfo) group.getRows().get(0);
+                info = (ExtendedEntryInfo) group.getRows().get(0);
                 
                 init();
             }
@@ -143,10 +143,10 @@ public class ArtifactPanel extends AbstractComposite {
         titleTable.setStyleName("artifact-title");
         titleTable.setWidget(0, 0, newLabel(info.getName(), "artifact-name"));
         
-        ArtifactVersionInfo selectedVersion = null;
+        EntryVersionInfo selectedVersion = null;
         versionLB = new ListBox();
-        for (Iterator<ArtifactVersionInfo> itr = info.getVersions().iterator(); itr.hasNext();) {
-            ArtifactVersionInfo v = itr.next();
+        for (Iterator<EntryVersionInfo> itr = info.getVersions().iterator(); itr.hasNext();) {
+            EntryVersionInfo v = itr.next();
             
             versionLB.addItem(v.getVersionLabel(), v.getId());
             if ((versionId == null && v.isDefault()) || 
@@ -180,8 +180,8 @@ public class ArtifactPanel extends AbstractComposite {
         int idx = versionLB.getSelectedIndex();
         String id = versionLB.getValue(idx);
         
-        for (Iterator<ArtifactVersionInfo> itr = info.getVersions().iterator(); itr.hasNext();) {
-            ArtifactVersionInfo avi = itr.next();               
+        for (Iterator<EntryVersionInfo> itr = info.getVersions().iterator(); itr.hasNext();) {
+            EntryVersionInfo avi = itr.next();               
             
             if (avi.getId().equals(id)) {
                 artifactTabs.clear();
@@ -191,8 +191,8 @@ public class ArtifactPanel extends AbstractComposite {
         }
     }
 
-    private void initTabs(ArtifactVersionInfo version) {
-        artifactTabs.add(new ArtifactInfoPanel(galaxy, menuPanel, group, info, version, this, params), "Info");
+    private void initTabs(EntryVersionInfo version) {
+        artifactTabs.add(new EntryInfoPanel(galaxy, menuPanel, group, info, version, this, params), "Info");
         artifactTabs.add(new HistoryPanel(galaxy, menuPanel, info), "History");
         if (galaxy.hasPermission("MANAGE_GROUPS")) {
             artifactTabs.add(new ItemGroupPermissionPanel(galaxy, menuPanel, info.getId(), SecurityService.ARTIFACT_PERMISSIONS), "Security");

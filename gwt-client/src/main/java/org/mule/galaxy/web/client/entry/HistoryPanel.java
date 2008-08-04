@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.mule.galaxy.web.client.artifact;
+package org.mule.galaxy.web.client.entry;
 
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
@@ -38,8 +38,8 @@ import org.mule.galaxy.web.client.util.ExternalHyperlink;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ArtifactVersionInfo;
-import org.mule.galaxy.web.rpc.ExtendedArtifactInfo;
+import org.mule.galaxy.web.rpc.EntryVersionInfo;
+import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WPolicyException;
 
@@ -47,13 +47,13 @@ public class HistoryPanel extends AbstractComposite {
 
     private RegistryServiceAsync registryService;
     private FlowPanel panel;
-    private ExtendedArtifactInfo info;
+    private ExtendedEntryInfo info;
     private final ErrorPanel errorPanel;
     private final Galaxy galaxy;
 
     public HistoryPanel(Galaxy galaxy,
                         ErrorPanel errorPanel,
-                        ExtendedArtifactInfo info) {
+                        ExtendedEntryInfo info) {
         super();
         this.galaxy = galaxy;
         this.errorPanel = errorPanel;
@@ -68,8 +68,8 @@ public class HistoryPanel extends AbstractComposite {
     }
 
     protected void initializePanel() {
-        for (Iterator<ArtifactVersionInfo> iterator = info.getVersions().iterator(); iterator.hasNext();) {
-            final ArtifactVersionInfo av = iterator.next();
+        for (Iterator<EntryVersionInfo> iterator = info.getVersions().iterator(); iterator.hasNext();) {
+            final EntryVersionInfo av = iterator.next();
             
             FlowPanel avPanel = new FlowPanel();
             avPanel.setStyleName("artifact-version-panel");

@@ -22,7 +22,7 @@ import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.PageInfo;
-import org.mule.galaxy.web.client.artifact.PolicyResultsPanel;
+import org.mule.galaxy.web.client.entry.PolicyResultsPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LifecycleSelectionPanel;
 import org.mule.galaxy.web.client.util.PolicySelectionPanel;

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class ExtendedArtifactInfo extends BasicArtifactInfo {
+public class ExtendedEntryInfo extends EntryInfo {
     
     /*
      * @gwt.typeArgs org.mule.galaxy.rpc.WComment
@@ -37,13 +37,13 @@ public class ExtendedArtifactInfo extends BasicArtifactInfo {
     /*
      * @gwt.typeArgs <java.lang.String>
      */
-    private Collection<ArtifactVersionInfo> versions;
+    private Collection<EntryVersionInfo> versions;
     
-    public Collection<ArtifactVersionInfo> getVersions() {
+    public Collection<EntryVersionInfo> getVersions() {
         return versions;
     }
 
-    public void setVersions(Collection<ArtifactVersionInfo> versions) {
+    public void setVersions(Collection<EntryVersionInfo> versions) {
         this.versions = versions;
     }
 

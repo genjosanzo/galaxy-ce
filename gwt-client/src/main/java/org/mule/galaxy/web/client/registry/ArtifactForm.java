@@ -20,7 +20,6 @@ package org.mule.galaxy.web.client.registry;
 
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.artifact.ArtifactPolicyResultsPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.WorkspacesListBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -226,7 +225,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
         if (artifactId != null) {
             token += "-" + artifactId;
         }
-        ArtifactPolicyResultsPanel failurePanel = new ArtifactPolicyResultsPanel(galaxy, warnings, failures);
+        PolicyResultsPanel failurePanel = new PolicyResultsPanel(galaxy, warnings, failures);
         failurePanel.setMessage("The artifact did not meet all the necessary policies!");
         galaxy.createPageInfo(token, failurePanel, 0);
         History.newItem(token);

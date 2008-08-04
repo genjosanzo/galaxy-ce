@@ -3,6 +3,7 @@ package org.mule.galaxy.web.client.property;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -14,8 +15,8 @@ import org.mule.galaxy.web.rpc.WUser;
 
 public class UserListPropertyPanel extends AbstractListPropertyPanel {
 
-    protected Collection users;
-    FlowPanel addPanel = new FlowPanel();
+    private Collection users;
+    private FlowPanel addPanel = new FlowPanel();
     private Button addButton;
     private ListBox userLB;
     
@@ -45,6 +46,10 @@ public class UserListPropertyPanel extends AbstractListPropertyPanel {
         addPanel.add(addButton);
         
         super.onFinishLoad();
+    }
+    
+    protected void removeLabel(String id) {
+        updateUsers();
     }
 
     private void updateUsers() {
@@ -95,6 +100,11 @@ public class UserListPropertyPanel extends AbstractListPropertyPanel {
     
     protected Widget getAddWidget() {
         return addPanel;
+    }
+
+    @Override
+    public boolean saveAsCollection() {
+        return true;
     }
 
 }

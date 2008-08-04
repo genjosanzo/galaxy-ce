@@ -20,57 +20,27 @@ package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class BasicArtifactInfo implements IsSerializable {
-    /**
-     * @gwt.typeArgs <java.lang.Integer,java.lang.String>
-     */
-    private Map<Integer, String> col2Value = new HashMap<Integer, String>();
+public class WPolicy implements IsSerializable {
     private String id;
-    private String workspaceId;
     private String name;
-    private String path;
+    private String description;
     
-    
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getWorkspaceId() {
-        return workspaceId;
-    }
-
-    public void setWorkspaceId(String workspaceId) {
-        this.workspaceId = workspaceId;
-    }
-
     public String getId() {
         return id;
     }
-
     public void setId(String id) {
         this.id = id;
     }
-
-    public void setColumn(int col, String value) {
-        col2Value.put(new Integer(col), value);
+    public String getName() {
+        return name;
     }
-    
-    public String getValue(int col) {
-        return col2Value.get(new Integer(col));
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

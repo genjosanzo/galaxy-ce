@@ -31,7 +31,7 @@ public abstract class AbstractEditPropertyPanel extends PropertyPanel {
     }
 
     public void initialize() {
-        editHL = new Hyperlink("Edit", "edit-property");
+        editHL = new Hyperlink("Edit", galaxy.getCurrentToken());
         editHL.setStyleName("propertyLink");
         editHL.addClickListener(new ClickListener() {
 
@@ -41,7 +41,7 @@ public abstract class AbstractEditPropertyPanel extends PropertyPanel {
             
         });
         
-        deleteHL = new Hyperlink("Delete", "delete-property");
+        deleteHL = new Hyperlink("Delete", galaxy.getCurrentToken());
         deleteHL.setStyleName("propertyLink");
         deleteHL.addClickListener(new ClickListener() {
 

@@ -22,7 +22,7 @@ import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.rpc.WArtifactPolicy;
+import org.mule.galaxy.web.rpc.WPolicy;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -75,7 +75,7 @@ public class PolicySelectionPanel extends AbstractComposite{
         
         ChangeListener selectionListener = new ChangeListener() {
             public void onChange(Widget w) {
-                WArtifactPolicy p = findArtifactPolicy((ListBox) w);
+                WPolicy p = findArtifactPolicy((ListBox) w);
                 if (p != null) {
                     descriptionPanel.clear();
                     descriptionPanel.add(new Label("Description: " + p.getDescription()));
@@ -143,9 +143,9 @@ public class PolicySelectionPanel extends AbstractComposite{
         }
     }
 
-    protected WArtifactPolicy findArtifactPolicy(ListBox w) {
+    protected WPolicy findArtifactPolicy(ListBox w) {
         for (Iterator itr = policies.iterator(); itr.hasNext();) {
-            WArtifactPolicy p = (WArtifactPolicy)itr.next();
+            WPolicy p = (WPolicy)itr.next();
             
             int idx = w.getSelectedIndex();
             if (idx == -1) {
@@ -169,7 +169,7 @@ public class PolicySelectionPanel extends AbstractComposite{
                 policies = (Collection) o;
                 
                 for (Iterator itr = policies.iterator(); itr.hasNext();) {
-                    WArtifactPolicy p = (WArtifactPolicy)itr.next();
+                    WPolicy p = (WPolicy)itr.next();
                     
                     if (selectedPolicyIds.contains(p.getId())) {
                         selectedPolicies.addItem(p.getName(), p.getId());

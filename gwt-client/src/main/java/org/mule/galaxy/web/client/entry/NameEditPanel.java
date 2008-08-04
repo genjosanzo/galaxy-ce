@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.mule.galaxy.web.client.artifact;
+package org.mule.galaxy.web.client.entry;
 
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
@@ -52,14 +52,14 @@ public class NameEditPanel extends Composite {
     private final Galaxy galaxy;
     private final ErrorPanel errorPanel;
 
-    private final ArtifactPanel callbackPanel;
+    private final EntryPanel callbackPanel;
     private final List<String> callbackParams;
 
     public NameEditPanel(Galaxy galaxy,
                          ErrorPanel errorPanel,
                          String artifactId,
                          String name,
-                         String workspaceId, final ArtifactPanel callbackPanel, final List<String> callbackParams) {
+                         String workspaceId, final EntryPanel callbackPanel, final List<String> callbackParams) {
         super();
         this.galaxy = galaxy;
         this.errorPanel = errorPanel;

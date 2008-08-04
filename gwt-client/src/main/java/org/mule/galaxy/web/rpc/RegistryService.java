@@ -50,7 +50,9 @@ public interface RegistryService extends RemoteService {
     void saveArtifactType(WArtifactType artifactType) throws RPCException, ItemExistsException;
     
     void deleteArtifactType(String id) throws RPCException;
-    
+//    
+//    void newEntry(String name, String version) throws RPCException, ItemExistsException;
+//    
     WSearchResults getArtifacts(String workspaceId, String workspacePath, 
                                 boolean includeChildWkspcs, Set<String> artifactTypes, 
                                 Set<SearchPredicate> searchPredicates, String freeformQuery, int start, int maxResults) throws RPCException;
@@ -81,7 +83,7 @@ public interface RegistryService extends RemoteService {
     
     ArtifactGroup getArtifactByVersionId(String artifactVersionId) throws RPCException, ItemNotFoundException;
     
-    ArtifactVersionInfo getArtifactVersionInfo(String artifactVersionId,
+    EntryVersionInfo getArtifactVersionInfo(String artifactVersionId,
                                                boolean showHidden) throws RPCException, ItemNotFoundException;
 
     void setProperty(String artifactId, 
@@ -133,7 +135,7 @@ public interface RegistryService extends RemoteService {
 
     void transition(Collection<String> artifactIds, String lifecycle, String phase) throws RPCException, WPolicyException, ItemNotFoundException;
 
-    Collection<WArtifactPolicy> getPolicies() throws RPCException;
+    Collection<WPolicy> getPolicies() throws RPCException;
     
     WLifecycle getLifecycle(String id) throws RPCException;
 

@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MouseListenerAdapter;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
@@ -64,6 +65,9 @@ public abstract class AbstractListPropertyPanel extends AbstractEditPropertyPane
     }
 
     protected Widget createLabel(final String id) {
+        final SimplePanel container = new SimplePanel();
+        container.setStyleName("listPropertyContainer");
+        
         final InlineFlowPanel valuePanel = new InlineFlowPanel();
         valuePanel.setStyleName("listProperty");
         valuePanel.add(newLabel(getRenderedText(id), "listPropertyLeft"));
@@ -81,14 +85,21 @@ public abstract class AbstractListPropertyPanel extends AbstractEditPropertyPane
 
             public void onClick(Widget arg0) {
                 values.remove(id);
-                editValuesPanel.remove(valuePanel);
+                editValuesPanel.remove(container);
+                
+                removeLabel(id);
             }
             
         });
         valuePanel.add(right);
-        return valuePanel;
+        
+        container.add(valuePanel);
+        
+        return container;
     }
 
+    protected void removeLabel(String id) {
+    }
 
     protected String getRenderedText(String id) {
         return id;

@@ -19,7 +19,7 @@ package org.mule.galaxy.web.client;
 
 import org.mule.galaxy.web.client.activity.ActivityPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.client.artifact.ArtifactPanel;
+import org.mule.galaxy.web.client.entry.EntryPanel;
 import org.mule.galaxy.web.client.property.PropertyPanelFactory;
 import org.mule.galaxy.web.client.registry.ArtifactForm;
 import org.mule.galaxy.web.client.registry.BrowsePanel;
@@ -89,6 +89,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     protected FlowPanel base;
     protected PropertyPanelFactory propertyPanelFactory = new PropertyPanelFactory();
     protected List extensions;
+    private String currentToken;
     
     /**
      * This is the entry point method.
@@ -195,8 +196,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
         base.add(footer);
         RootPanel.get().add(base);
 
-        createPageInfo("artifact/" + WILDCARD, new ArtifactPanel(this), 0);
-        createPageInfo("artifact-version/" + WILDCARD, new ArtifactPanel(this, true), 0);
+        createPageInfo("artifact/" + WILDCARD, new EntryPanel(this), 0);
+        createPageInfo("artifact-version/" + WILDCARD, new EntryPanel(this, true), 0);
         createPageInfo("add-artifact", new ArtifactForm(this), 0);
         createPageInfo("new-artifact-version/" + WILDCARD, new ArtifactForm(this), 0);
         createPageInfo("add-workspace", new WorkspaceForm(this), 0);
@@ -282,6 +283,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
     public void onHistoryChanged(String token) {
         suppressTabHistory = true;
+        currentToken = token;
         if ("".equals(token)) {
             token = DEFAULT_PAGE;
         }
@@ -335,6 +337,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
         }
 
         suppressTabHistory = false;
+    }
+
+    public String getCurrentToken() {
+        return currentToken;
     }
 
     public PageInfo getPageInfo(String token) {

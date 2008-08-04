@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-public class ArtifactVersionInfo implements IsSerializable {
+public class EntryVersionInfo implements IsSerializable {
     private String id;
     private String versionLabel;
     private String link;
@@ -41,7 +41,7 @@ public class ArtifactVersionInfo implements IsSerializable {
      */
     private List<WProperty> properties = new ArrayList<WProperty>();
     
-    public ArtifactVersionInfo(String id, String versionLabel, String link, Date created, boolean _default,
+    public EntryVersionInfo(String id, String versionLabel, String link, Date created, boolean _default,
                                boolean enabled,
                                String authorName, 
                                String authorUsername,
@@ -58,7 +58,7 @@ public class ArtifactVersionInfo implements IsSerializable {
         this.indexInformationStale = indexInformationStale;
     }
 
-    public ArtifactVersionInfo() {
+    public EntryVersionInfo() {
         super();
         // TODO Auto-generated constructor stub
     }
