@@ -15,9 +15,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<!DOCTYPE Repository PUBLIC "-//The Apache Software Foundation//DTD Jackrabbit 1.2//EN"
-                            "http://jackrabbit.apache.org/dtd/repository-1.2.dtd">
-<!-- Example Repository Configuration File -->
+<!DOCTYPE Repository PUBLIC "-//The Apache Software Foundation//DTD Jackrabbit 1.4//EN"
+                            "http://jackrabbit.apache.org/dtd/repository-1.4.dtd">
+
 <Repository>
     <!--
         virtual file system where the repository stores global state
@@ -74,7 +74,6 @@
             class: FQN of class implementing the PersistenceManager interface
         -->
         <PersistenceManager class="org.apache.jackrabbit.core.persistence.db.DerbyPersistenceManager">
-        <!--<PersistenceManager class="org.apache.jackrabbit.core.persistence.mem.InMemPersistenceManager">-->
           <param name="schemaObjectPrefix" value="Jackrabbit Core_"/>
           <param name="url" value="jdbc:derby:${rep.home}/db;create=true"/>
           <param name="shutdownOnClose" value="false"/>
