@@ -1,5 +1,5 @@
 body {
-    background-color: #656565;
+    background-color: #E5EDF5;
 }
 
 .loginBox {
@@ -7,10 +7,10 @@ body {
 } 
 
 .loginTop {
-    background-image: url("images/img_banner.jpg");
+    background-image: url("images/header_bg.jpg");
     width: 100%;
-    height: 68px;
-    border-bottom: 1px solid #656565;
+    height: 50px;
+    border-bottom: 1px solid #E5EDF5;
 }
 
 .loginLeft {
@@ -49,8 +49,8 @@ body {
     padding-top: 10px;
 }
 .loginBottom {
-    border-top: 1px solid #656565;
-    background-color: #330000;
+    border-top: 1px solid #E5EDF5;
+    background-color: #004A80;
     text-align: right;
     color: white;
     font-family: verdana;
@@ -58,4 +58,8 @@ body {
     padding: 1em;
     position: relative;
     top: -215px;
+}
+
+.loginBottom a {
+    color: white;
 }
