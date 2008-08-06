@@ -30,13 +30,11 @@ import com.google.gwt.user.client.ui.Widget;
 public class InlineFlowPanel extends FlowPanel {
 
     public void add(Widget w) {
-        DOM.setStyleAttribute(w.getElement(), "float", "left");
         DOM.setStyleAttribute(w.getElement(), "display", "inline");
         super.add(w);
     }
 
     public void insert(Widget w, int beforeIndex) {
-        DOM.setStyleAttribute(w.getElement(), "float", "left");
         DOM.setStyleAttribute(w.getElement(), "display", "inline");
         super.insert(w, beforeIndex);
     }
