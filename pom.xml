@@ -414,29 +414,28 @@
                 and pre-set JDK name in IDEA to 1.5
              -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-eclipse-plugin</artifactId>
                 <configuration>
                     <downloadSources>true</downloadSources>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-idea-plugin</artifactId>
                 <!--
-                    Need to build it from source locally: http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-idea-plugin
-                    Due to http://jira.codehaus.org/browse/MIDEA-102
+                    There is a tag already available in SVN, but haven't yet been pushed to the m2 repos:
+                    https://svn.apache.org/repos/asf/maven/plugins/tags/maven-idea-plugin-2.2
 
-                    Uncomment it locally.
+                    Build it locally and uncomment.
+
+                    Due to http://jira.codehaus.org/browse/MIDEA-102
                 -->
-                <!--<version>2.2-SNAPSHOT</version>-->
+                <!--<version>2.2</version>-->
                 <configuration>
                     <downloadSources>true</downloadSources>
                     <jdkName>1.5</jdkName>
                     <jdkLevel>1.5</jdkLevel>
                 </configuration>
             </plugin>
-
             <!--
                  Needed for checkstyle to find the license header file from the classpath.
                  CAVEAT: you cannot build the site without mule-buildtools present in
