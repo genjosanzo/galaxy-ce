@@ -26,7 +26,7 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
     private String root;
     
     public IdentifiableExtensionQueryBuilder(IdentifiableExtension e) throws IntrospectionException {
-	super(true);
+	super(false);
 	
 	this.extension = e;
 	
@@ -34,7 +34,6 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
 	Class<?> typeClass = dao.getTypeClass();
 	
 	initProperties(typeClass);
-	
     }
 
     private void initProperties(Class<?> type) throws IntrospectionException {
