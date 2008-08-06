@@ -41,7 +41,8 @@ public class EntryVersionInfo implements IsSerializable {
      */
     private List<WProperty> properties = new ArrayList<WProperty>();
     
-    public EntryVersionInfo(String id, String versionLabel, String link, Date created, boolean _default,
+    public EntryVersionInfo(String id, String versionLabel, 
+                            Date created, boolean _default,
                                boolean enabled,
                                String authorName, 
                                String authorUsername,
@@ -49,7 +50,6 @@ public class EntryVersionInfo implements IsSerializable {
         super();
         this.id = id;
         this.versionLabel = versionLabel;
-        this.link = link;
         this._default = _default;
         this.enabled = enabled;
         this.created = created;

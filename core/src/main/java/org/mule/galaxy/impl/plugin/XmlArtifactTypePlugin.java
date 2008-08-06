@@ -22,7 +22,7 @@ import javax.xml.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.impl.render.CustomArtifactRenderer;
+import org.mule.galaxy.impl.render.CustomEntryRenderer;
 import org.mule.galaxy.impl.render.MvelColumn;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.plugins.config.jaxb.ColumnType;
@@ -202,7 +202,7 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
 
         for (ViewType viewType : views)
         {
-            CustomArtifactRenderer view = new CustomArtifactRenderer();
+            CustomEntryRenderer view = new CustomEntryRenderer();
 
             List<ColumnType> columns = viewType.getColumn();
             for (final ColumnType column : columns)

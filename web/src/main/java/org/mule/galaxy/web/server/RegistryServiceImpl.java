@@ -44,6 +44,7 @@ import org.mule.galaxy.ArtifactTypeDao;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Entry;
+import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Link;
@@ -77,7 +78,7 @@ import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.query.OpRestriction.Operator;
-import org.mule.galaxy.render.ArtifactRenderer;
+import org.mule.galaxy.render.ItemRenderer;
 import org.mule.galaxy.render.RendererManager;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.AccessException;
@@ -89,7 +90,7 @@ import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.view.ArtifactView;
 import org.mule.galaxy.view.ArtifactViewManager;
 import org.mule.galaxy.web.client.RPCException;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.EntryGroup;
 import org.mule.galaxy.web.rpc.EntryVersionInfo;
 import org.mule.galaxy.web.rpc.EntryInfo;
 import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
@@ -198,7 +199,7 @@ public class RegistryServiceImpl implements RegistryService {
             if (parentWorkspaceId == null || "[No parent]".equals(parentWorkspaceId)) {
                 w = registry.createWorkspace(workspaceName);
             } else {
-                Workspace parent = registry.getWorkspace(parentWorkspaceId);
+                Workspace parent = (Workspace) registry.getItemById(parentWorkspaceId);
                 w = registry.createWorkspace(parent, workspaceName);
             }
             if (lifecycleId != null) {
@@ -224,7 +225,7 @@ public class RegistryServiceImpl implements RegistryService {
             if (parentWorkspaceId == null || "[No parent]".equals(parentWorkspaceId)) {
                 parentWorkspaceId = null;
             }
-            Workspace w = registry.getWorkspace(workspaceId);
+            Workspace w = (Workspace) registry.getItemById(workspaceId);
             if (lifecycleId != null) {
                 w.setDefaultLifecycle(w.getLifecycleManager().getLifecycleById(lifecycleId));
             }
@@ -242,7 +243,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void deleteWorkspace(String workspaceId) throws RPCException, ItemNotFoundException {
         try {
-            registry.getWorkspace(workspaceId).delete();
+            registry.getItemById(workspaceId).delete();
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -253,6 +254,50 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
+    public String newEntry(String workspaceId, String name, String version) 
+        throws RPCException, ItemExistsException, WPolicyException, ItemNotFoundException {
+        try {
+            Workspace w = (Workspace) registry.getItemById(workspaceId);
+            
+            EntryResult result = w.newEntry(name, version);
+            
+            return result.getEntry().getId();
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        } catch (DuplicateItemException e) {
+            throw new ItemExistsException();
+        } catch (PolicyException e) {
+            throw toWeb(e);
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
+        }
+    }
+
+    public String newEntryVersion(String entryId, String version) 
+        throws RPCException, ItemExistsException, WPolicyException, ItemNotFoundException {
+        try {
+            Entry e = (Entry) registry.getItemById(entryId);
+            
+            EntryResult result = e.newVersion(version);
+            
+            return result.getEntryVersion().getId();
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        } catch (DuplicateItemException e) {
+            throw new ItemExistsException();
+        } catch (PolicyException e) {
+            throw toWeb(e);
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
+        }
+    }
+    
     public Collection<WArtifactType> getArtifactTypes() {
         Collection<ArtifactType> artifactTypes = artifactTypeDao.listAll();
         List<WArtifactType> atis = new ArrayList<WArtifactType>();
@@ -395,8 +440,8 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     private WSearchResults getSearchResults(Set<String> artifactTypes, SearchResults results) {
-        Map<String, ArtifactGroup> name2group = new HashMap<String, ArtifactGroup>();
-        Map<String, ArtifactRenderer> name2view = new HashMap<String, ArtifactRenderer>();
+        Map<String, EntryGroup> name2group = new HashMap<String, EntryGroup>();
+        Map<String, ItemRenderer> name2view = new HashMap<String, ItemRenderer>();
 
         int total = 0;
 
@@ -413,11 +458,11 @@ public class RegistryServiceImpl implements RegistryService {
 
             total++;
 
-            ArtifactGroup g = name2group.get(type.getDescription());
-            ArtifactRenderer view = name2view.get(type.getDescription());
+            EntryGroup g = name2group.get(type.getDescription());
+            ItemRenderer view = name2view.get(type.getDescription());
 
             if (g == null) {
-                g = new ArtifactGroup();
+                g = new EntryGroup();
                 g.setName(type.getDescription());
                 name2group.put(type.getDescription(), g);
 
@@ -436,12 +481,12 @@ public class RegistryServiceImpl implements RegistryService {
                 }
             }
 
-            EntryInfo info = createBasicArtifactInfo(a, view);
+            EntryInfo info = createBasicEntryInfo(a, view);
 
             g.getRows().add(info);
         }
 
-        List<ArtifactGroup> values = new ArrayList<ArtifactGroup>();
+        List<EntryGroup> values = new ArrayList<EntryGroup>();
         List<String> keys = new ArrayList<String>();
         keys.addAll(name2group.keySet());
         Collections.sort(keys);
@@ -456,13 +501,15 @@ public class RegistryServiceImpl implements RegistryService {
         return wsr;
     }
 
-    private EntryInfo createBasicArtifactInfo(Artifact a, ArtifactRenderer view) {
+    private EntryInfo createBasicEntryInfo(Entry a, ItemRenderer view) {
         EntryInfo info = new EntryInfo();
-        return createBasicArtifactInfo(a, view, info, false);
+        return createBasicEntryInfo(a, view, info, false);
     }
 
-    private EntryInfo createBasicArtifactInfo(Artifact a, ArtifactRenderer view,
-                                                      EntryInfo info, boolean extended) {
+    private EntryInfo createBasicEntryInfo(Entry a, 
+                                              ItemRenderer view,
+                                              EntryInfo info, 
+                                              boolean extended) {
         info.setId(a.getId());
         info.setWorkspaceId(a.getParent().getId());
         info.setName(a.getName());
@@ -828,10 +875,11 @@ public class RegistryServiceImpl implements RegistryService {
                             recip);
     }
 
-    public ArtifactGroup getArtifact(String artifactId) throws RPCException, ItemNotFoundException {
+    public EntryGroup getEntry(String entryId) throws RPCException, ItemNotFoundException {
         try {
-            Artifact a = registry.getArtifact(artifactId);
-            return getArtifactGroup(a);
+            Entry a = (Entry) registry.getItemById(entryId);
+            
+            return getEntryGroup(a);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -842,10 +890,10 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public ArtifactGroup getArtifactByVersionId(String artifactVersionId) throws RPCException, ItemNotFoundException {
+    public EntryGroup getArtifactByVersionId(String artifactVersionId) throws RPCException, ItemNotFoundException {
         try {
             ArtifactVersion av = registry.getArtifactVersion(artifactVersionId);
-            return getArtifactGroup((Artifact)av.getParent());
+            return getEntryGroup((Artifact)av.getParent());
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -856,32 +904,45 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    private ArtifactGroup getArtifactGroup(Artifact a) {
-        ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), a
-                .getDocumentType());
+    private EntryGroup getEntryGroup(Entry e) {
+        EntryGroup g = new EntryGroup();
+        ExtendedEntryInfo info = new ExtendedEntryInfo();
+        
+        ItemRenderer view;
+        if (e instanceof Artifact) {
+            Artifact a = (Artifact) e;
+            ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), 
+                                                                a.getDocumentType());
+    
+            g.setName(type.getDescription());
+            view = rendererManager.getArtifactRenderer(a.getDocumentType());
+            if (view == null) {
+                view = rendererManager.getArtifactRenderer(a.getContentType().toString());
+            }
 
-        ArtifactGroup g = new ArtifactGroup();
-        g.setName(type.getDescription());
-        ArtifactRenderer view = rendererManager.getArtifactRenderer(a.getDocumentType());
-        if (view == null) {
-            view = rendererManager.getArtifactRenderer(a.getContentType().toString());
+            final String context = contextPathResolver.getContextPath();
+
+            info.setArtifactLink(getLink(context + "/api/registry", a));
+            info.setArtifactFeedLink(getLink(context + "/api/registry", a) + ";history");
+            info.setCommentsFeedLink(context + "/api/comments");
+        } else {
+            view = rendererManager.getArtifactRenderer("application/octet-stream");
         }
-
+        
         for (int i = 0; i < view.getColumnNames().length; i++) {
             if (view.isDetail(i)) {
                 g.getColumns().add(view.getColumnNames()[i]);
             }
         }
 
-        ExtendedEntryInfo info = new ExtendedEntryInfo();
-        createBasicArtifactInfo(a, view, info, true);
+        createBasicEntryInfo(e, view, info, true);
 
-        info.setDescription(a.getDescription());
+        info.setDescription(e.getDescription());
 
         List<WComment> wcs = info.getComments();
 
-        Workspace workspace = (Workspace) a.getParent();
-        List<Comment> comments = workspace.getCommentManager().getComments(a.getId());
+        Workspace workspace = (Workspace) e.getParent();
+        List<Comment> comments = workspace.getCommentManager().getComments(e.getId());
         for (Comment c : comments) {
             final SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATETIME_FORMAT);
             WComment wc = new WComment(c.getId(), c.getUser().getUsername(), dateFormat.format(c
@@ -896,27 +957,21 @@ public class RegistryServiceImpl implements RegistryService {
 
         g.getRows().add(info);
 
-        final String context = contextPathResolver.getContextPath();
-
-        info.setArtifactLink(getLink(context + "/api/registry", a));
-        info.setArtifactFeedLink(getLink(context + "/api/registry", a) + ";history");
-        info.setCommentsFeedLink(context + "/api/comments");
-
         List<EntryVersionInfo> versions = new ArrayList<EntryVersionInfo>();
-        for (EntryVersion av : a.getVersions()) {
-            versions.add(toWeb((ArtifactVersion)av, false));
+        for (EntryVersion av : e.getVersions()) {
+            versions.add(toWeb((EntryVersion)av, false));
         }
         info.setVersions(versions);
 
         return g;
     }
 
-    public EntryVersionInfo getArtifactVersionInfo(String artifactVersionId, boolean showHidden) throws RPCException,
+    public EntryVersionInfo getEntryVersionInfo(String entryVersionId, boolean showHidden) throws RPCException,
                                                                                                            ItemNotFoundException {
         try {
-            ArtifactVersion av = registry.getArtifactVersion(artifactVersionId);
+            EntryVersion ev = (EntryVersion) registry.getItemById(entryVersionId);
 
-            return toWeb(av, showHidden);
+            return toWeb(ev, showHidden);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -928,16 +983,20 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     @SuppressWarnings("unchecked")
-    private EntryVersionInfo toWeb(ArtifactVersion av, boolean showHidden) {
+    private EntryVersionInfo toWeb(EntryVersion av, boolean showHidden) {
         EntryVersionInfo vi = new EntryVersionInfo(av.getId(),
-                                                         av.getVersionLabel(),
-                                                         getVersionLink(av),
-                                                         av.getCreated().getTime(),
-                                                         av.isDefault(),
-                                                         av.isEnabled(),
-                                                         av.getAuthor().getName(),
-                                                         av.getAuthor().getUsername(),
-                                                         av.isIndexedPropertiesStale());
+                                                   av.getVersionLabel(),
+                                                   av.getCreated().getTime(),
+                                                   av.isDefault(),
+                                                   av.isEnabled(),
+                                                   av.getAuthor().getName(),
+                                                   av.getAuthor().getUsername(),
+                                                   av.isIndexedPropertiesStale());
+        
+        if (av instanceof ArtifactVersion) {
+            vi.setLink(getVersionLink((ArtifactVersion)av));
+        }
+        
         for (Iterator<PropertyInfo> props = av.getProperties(); props.hasNext();) {
             PropertyInfo p = props.next();
 
@@ -992,9 +1051,9 @@ public class RegistryServiceImpl implements RegistryService {
         return sb.toString();
     }
 
-    public WComment addComment(String artifactId, String parentComment, String text) throws RPCException, ItemNotFoundException {
+    public WComment addComment(String entryId, String parentComment, String text) throws RPCException, ItemNotFoundException {
         try {
-            Artifact artifact = registry.getArtifact(artifactId);
+            Artifact artifact = registry.getArtifact(entryId);
 
             Comment comment = new Comment();
             comment.setText(text);
@@ -1055,14 +1114,14 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
 
-    public void setProperty(String artifactId, String propertyName, Collection<String> propertyValue)
+    public void setProperty(String entryId, String propertyName, Collection<String> propertyValue)
         throws RPCException, ItemNotFoundException, WPolicyException {
-        setProperty(artifactId, propertyName, (Object)propertyValue);
+        setProperty(entryId, propertyName, (Object)propertyValue);
     }
 
-    public void setProperty(String artifactId, String propertyName, String propertyValue)
+    public void setProperty(String entryId, String propertyName, String propertyValue)
         throws RPCException, ItemNotFoundException, WPolicyException {
-        setProperty(artifactId, propertyName, (Object)propertyValue);
+        setProperty(entryId, propertyName, (Object)propertyValue);
     }
 
     protected void setProperty(String itemId, String propertyName, Object propertyValue) throws RPCException, ItemNotFoundException, WPolicyException {
@@ -1088,14 +1147,14 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void setProperty(Collection<String> artifactIds, String propertyName, Collection<String> propertyValue)
+    public void setProperty(Collection<String> entryIds, String propertyName, Collection<String> propertyValue)
         throws RPCException, ItemNotFoundException {
     }
 
-    public void setProperty(Collection<String> artifactIds, String propertyName, String propertyValue)
+    public void setProperty(Collection<String> entryIds, String propertyName, String propertyValue)
         throws RPCException, ItemNotFoundException {
     }
-    public void setProperty(Collection<String> artifactIds, String propertyName, Object propertyValue) throws RPCException, ItemNotFoundException {
+    public void setProperty(Collection<String> entryIds, String propertyName, Object propertyValue) throws RPCException, ItemNotFoundException {
 
     }
 
@@ -1120,7 +1179,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void deleteProperty(Collection<String> artifactIds, String propertyName) throws RPCException, ItemNotFoundException {
+    public void deleteProperty(Collection<String> entryIds, String propertyName) throws RPCException, ItemNotFoundException {
 
     }
 
@@ -1178,9 +1237,9 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void setDescription(String artifactId, String description) throws RPCException, ItemNotFoundException {
+    public void setDescription(String entryId, String description) throws RPCException, ItemNotFoundException {
         try {
-            Artifact artifact = registry.getArtifact(artifactId);
+            Artifact artifact = registry.getArtifact(entryId);
 
             artifact.setDescription(description);
 
@@ -1195,9 +1254,9 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void move(String artifactId, String workspaceId, String name) throws RPCException, ItemNotFoundException {
+    public void move(String entryId, String workspaceId, String name) throws RPCException, ItemNotFoundException {
         try {
-            Artifact artifact = registry.getArtifact(artifactId);
+            Artifact artifact = registry.getArtifact(entryId);
 
             registry.move(artifact, workspaceId, name);
         } catch (RegistryException e) {
@@ -1210,9 +1269,9 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void delete(String artifactId) throws RPCException, ItemNotFoundException {
+    public void delete(String entryId) throws RPCException, ItemNotFoundException {
         try {
-            Artifact artifact = registry.getArtifact(artifactId);
+            Artifact artifact = registry.getArtifact(entryId);
 
             artifact.delete();
         } catch (RegistryException e) {
@@ -1280,7 +1339,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     // TODO:
-    public void transition(Collection<String> artifactIds, String lifecycle, String phase) throws RPCException, ItemNotFoundException {
+    public void transition(Collection<String> entryIds, String lifecycle, String phase) throws RPCException, ItemNotFoundException {
         
     }
 
@@ -1357,7 +1416,7 @@ public class RegistryServiceImpl implements RegistryService {
         Lifecycle lifecycle = localLifecycleManager.getLifecycle(lifecycleName);
         try {
             if (workspaceId != null) {
-                Workspace w = registry.getWorkspace(workspaceId);
+                Workspace w = (Workspace) registry.getItemById(workspaceId);
                 pols = policyManager.getActivePolicies(w, lifecycle);
             } else {
                 pols = policyManager.getActivePolicies(lifecycle);
@@ -1379,7 +1438,7 @@ public class RegistryServiceImpl implements RegistryService {
         Phase phase = localLifecycleManager.getLifecycle(lifecycle).getPhase(phaseName);
         try {
             if (workspaceId != null) {
-                Workspace w = registry.getWorkspace(workspaceId);
+                Workspace w = (Workspace) registry.getItemById(workspaceId);
                 pols = policyManager.getActivePolicies(w, phase);
             } else {
                 pols = policyManager.getActivePolicies(phase);
@@ -1415,7 +1474,7 @@ public class RegistryServiceImpl implements RegistryService {
                     policyManager.setActivePolicies(phases, policies.toArray(new Policy[policies
                             .size()]));
                 } else {
-                    Workspace w = registry.getWorkspace(workspace);
+                    Workspace w = (Workspace) registry.getItemById(workspace);
                     policyManager.setActivePolicies(w, phases, policies.toArray(new Policy[policies
                             .size()]));
                 }
@@ -1423,7 +1482,7 @@ public class RegistryServiceImpl implements RegistryService {
                 if (workspace == null || "".equals(workspace)) {
                     policyManager.setActivePolicies(l, policies.toArray(new Policy[policies.size()]));
                 } else {
-                    Workspace w = registry.getWorkspace(workspace);
+                    Workspace w = (Workspace) registry.getItemById(workspace);
                     policyManager.setActivePolicies(w, l, policies
                             .toArray(new Policy[policies.size()]));
                 }
@@ -1447,12 +1506,12 @@ public class RegistryServiceImpl implements RegistryService {
             List<ApprovalMessage> approvals = entry.getValue();
 
             Artifact a = (Artifact) i.getParent();
-            ArtifactRenderer view = rendererManager.getArtifactRenderer(a.getDocumentType());
+            ItemRenderer view = rendererManager.getArtifactRenderer(a.getDocumentType());
             if (view == null) {
                 view = rendererManager.getArtifactRenderer(a.getContentType().toString());
             }
 
-            EntryInfo info = createBasicArtifactInfo(a, view);
+            EntryInfo info = createBasicEntryInfo(a, view);
 
             ArrayList<WApprovalMessage> wapprovals = new ArrayList<WApprovalMessage>();
             for (ApprovalMessage app : approvals) {

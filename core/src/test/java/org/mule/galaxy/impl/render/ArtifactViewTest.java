@@ -1,7 +1,7 @@
 package org.mule.galaxy.impl.render;
 
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.impl.render.CustomArtifactRenderer;
+import org.mule.galaxy.impl.render.CustomEntryRenderer;
 import org.mule.galaxy.render.RendererManager;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
@@ -12,7 +12,7 @@ public class ArtifactViewTest extends AbstractGalaxyTest {
     public void testView() throws Exception {
         assertNotNull(rendererManager);
         
-        CustomArtifactRenderer view = (CustomArtifactRenderer) rendererManager.getArtifactRenderer(Constants.WSDL_DEFINITION_QNAME);
+        CustomEntryRenderer view = (CustomEntryRenderer) rendererManager.getArtifactRenderer(Constants.WSDL_DEFINITION_QNAME);
         
         assertEquals(8, view.getColumns().size());
         

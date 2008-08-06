@@ -1,6 +1,6 @@
 package org.mule.galaxy.impl.render;
 
-import org.mule.galaxy.render.ArtifactRenderer;
+import org.mule.galaxy.render.ItemRenderer;
 import org.mule.galaxy.render.RendererManager;
 
 import java.util.Collection;
@@ -10,15 +10,15 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 public class RendererManagerImpl implements RendererManager {
-    private Map<QName, ArtifactRenderer> artifactViews = new HashMap<QName, ArtifactRenderer>();
-    private ArtifactRenderer defaultView = new DefaultArtifactRenderer();
+    private Map<QName, ItemRenderer> artifactViews = new HashMap<QName, ItemRenderer>();
+    private ItemRenderer defaultView = new DefaultEntryRenderer();
 
-    public ArtifactRenderer getArtifactRenderer(String contentType) {
+    public ItemRenderer getArtifactRenderer(String contentType) {
         return defaultView;
     }
 
-    public ArtifactRenderer getArtifactRenderer(QName documentType) {
-        ArtifactRenderer view = artifactViews.get(documentType);
+    public ItemRenderer getArtifactRenderer(QName documentType) {
+        ItemRenderer view = artifactViews.get(documentType);
         if (view != null) {
             return view;
         }
@@ -26,13 +26,13 @@ public class RendererManagerImpl implements RendererManager {
         return defaultView;
     }
 
-    public void addRenderer(ArtifactRenderer view, QName... documentTypes) {
+    public void addRenderer(ItemRenderer view, QName... documentTypes) {
         for (QName q : documentTypes) {
             artifactViews.put(q, view);
         }
     }
 
-    public void addRenderer(ArtifactRenderer view, Collection<QName> documentTypes) {
+    public void addRenderer(ItemRenderer view, Collection<QName> documentTypes) {
         for (QName q : documentTypes) {
             artifactViews.put(q, view);
         }

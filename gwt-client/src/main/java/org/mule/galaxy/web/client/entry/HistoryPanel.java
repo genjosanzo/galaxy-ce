@@ -88,22 +88,24 @@ public class HistoryPanel extends AbstractComposite {
             InlineFlowPanel links = new InlineFlowPanel();
             bottom.add(links);
             
-            Hyperlink viewLink = new Hyperlink("View", "view-version");
-            viewLink.addClickListener(new ClickListener() {
-
-                public void onClick(Widget arg0) {
-                    Window.open(av.getLink(), null, "scrollbars=yes");
-                }
-                
-            });
-            viewLink.addStyleName("hyperlink-NewWindow");
-            links.add(viewLink);
-
-            links.add(new Label(" | "));
-
-            ExternalHyperlink permalink = new ExternalHyperlink("Permalink", av.getLink());
-            permalink.setTitle("Direct artifact link for inclusion in email, etc.");
-            links.add(permalink);
+            if (info.isArtifact()) {
+                Hyperlink viewLink = new Hyperlink("View", "view-version");
+                viewLink.addClickListener(new ClickListener() {
+    
+                    public void onClick(Widget arg0) {
+                        Window.open(av.getLink(), null, "scrollbars=yes");
+                    }
+                    
+                });
+                viewLink.addStyleName("hyperlink-NewWindow");
+                links.add(viewLink);
+    
+                links.add(new Label(" | "));
+    
+                ExternalHyperlink permalink = new ExternalHyperlink("Permalink", av.getLink());
+                permalink.setTitle("Direct artifact link for inclusion in email, etc.");
+                links.add(permalink);
+            }
             
             if (!av.isDefault()) {
                 links.add(new Label(" | "));

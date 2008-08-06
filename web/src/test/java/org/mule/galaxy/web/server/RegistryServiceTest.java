@@ -22,7 +22,7 @@ import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.type.PropertyDescriptor;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.EntryGroup;
 import org.mule.galaxy.web.rpc.EntryVersionInfo;
 import org.mule.galaxy.web.rpc.EntryInfo;
 import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
@@ -77,14 +77,14 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertTrue(artifactTypes.size() > 0);
         
         // Grab a group of artifacts
-        Collection<ArtifactGroup> artifacts = gwtRegistry.getArtifacts(null, null, true, null, new HashSet<SearchPredicate>(), null, 0, 20).getResults();
+        Collection<EntryGroup> artifacts = gwtRegistry.getArtifacts(null, null, true, null, new HashSet<SearchPredicate>(), null, 0, 20).getResults();
 
         assertTrue(artifacts.size() > 0);
 
-        ArtifactGroup g1 = null;
+        EntryGroup g1 = null;
         EntryInfo info = null;
-        for (Iterator<ArtifactGroup> itr = artifacts.iterator(); itr.hasNext();) {
-            ArtifactGroup group = itr.next();
+        for (Iterator<EntryGroup> itr = artifacts.iterator(); itr.hasNext();) {
+            EntryGroup group = itr.next();
 
             if ("WSDL Documents".equals(group.getName())) {
                 for (Iterator<EntryInfo> itr2 = group.getRows().iterator(); itr2.hasNext();)
@@ -110,11 +110,11 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals(1, deps.size());
 
         // Test reretrieving the artifact
-        g1 = gwtRegistry.getArtifact(info.getId());
+        g1 = gwtRegistry.getEntry(info.getId());
         g1 = artifacts.iterator().next();
 
-        for (Iterator<ArtifactGroup> itr = artifacts.iterator(); itr.hasNext();) {
-            ArtifactGroup group = itr.next();
+        for (Iterator<EntryGroup> itr = artifacts.iterator(); itr.hasNext();) {
+            EntryGroup group = itr.next();
 
             if ("WSDL Documents".equals(group.getName())) {
                 for (Iterator<EntryInfo> itr2 = group.getRows().iterator(); itr2.hasNext();)
@@ -145,7 +145,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         registry.save(artifact);
         
         // see if the hidden property shows up
-        EntryVersionInfo av = gwtRegistry.getArtifactVersionInfo(artifact.getDefaultOrLastVersion().getId(), true);
+        EntryVersionInfo av = gwtRegistry.getEntryVersionInfo(artifact.getDefaultOrLastVersion().getId(), true);
         
         WProperty hiddenProp = null;
         for (Object o : av.getProperties()) {
@@ -172,7 +172,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertNotNull(wc2);
 
         // get the extended artifact info again
-        g1 = gwtRegistry.getArtifact(info.getId());
+        g1 = gwtRegistry.getEntry(info.getId());
 
         rows = g1.getRows();
         ExtendedEntryInfo ext = (ExtendedEntryInfo) rows.get(0);
@@ -207,6 +207,31 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         assertNotNull(w.getPath());
     }
+    public void testEntries() throws Exception
+    {
+        //importHelloTestWSDL();
+        Collection<WWorkspace> workspaces = gwtRegistry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        
+        WWorkspace w = workspaces.iterator().next();
+        
+        String entryId = gwtRegistry.newEntry(w.getId(), "Foo", "1");
+        
+        EntryGroup g = gwtRegistry.getEntry(entryId);
+        
+        assertEquals(1, g.getRows().size());
+        ExtendedEntryInfo entry = (ExtendedEntryInfo) g.getRows().get(0);
+        assertEquals("Foo", entry.getName());
+        
+        assertFalse(entry.isArtifact());
+        
+        String vId = gwtRegistry.newEntryVersion(entryId, "2");
+        
+        EntryVersionInfo info = gwtRegistry.getEntryVersionInfo(vId, false);
+        assertNotNull(info);
+        
+        
+    }
     
     public void testUserInfo() throws Exception {
         WUser user = gwtRegistry.getUserInfo();
@@ -220,11 +245,11 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     }
     
     public void testGovernanceOperations() throws Exception {
-        Collection<ArtifactGroup> artifacts = gwtRegistry.getArtifacts(null, null, true, null, new HashSet<SearchPredicate>(), null, 0, 20).getResults();
-        ArtifactGroup g1 = artifacts.iterator().next();
+        Collection<EntryGroup> artifacts = gwtRegistry.getArtifacts(null, null, true, null, new HashSet<SearchPredicate>(), null, 0, 20).getResults();
+        EntryGroup g1 = artifacts.iterator().next();
         
         EntryInfo a = g1.getRows().get(0);
-        ExtendedEntryInfo ext = (ExtendedEntryInfo) gwtRegistry.getArtifact(a.getId()).getRows().get(0);
+        ExtendedEntryInfo ext = (ExtendedEntryInfo) gwtRegistry.getEntry(a.getId()).getRows().get(0);
         
         Collection<EntryVersionInfo> versions = ext.getVersions();
         EntryVersionInfo v = versions.iterator().next();
@@ -267,7 +292,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         a.newVersion(getResourceAsStream("/wsdl/imports/hello.wsdl"), "0.2", getAdmin());
         
-        ExtendedEntryInfo ext = (ExtendedEntryInfo) gwtRegistry.getArtifact(a.getId()).getRows().get(0);
+        ExtendedEntryInfo ext = (ExtendedEntryInfo) gwtRegistry.getEntry(a.getId()).getRows().get(0);
         
         Collection<EntryVersionInfo> versions = ext.getVersions();
         assertEquals(2, versions.size());

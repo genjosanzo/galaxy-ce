@@ -19,7 +19,7 @@
 package org.mule.galaxy.web.client.registry;
 
 import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.EntryGroup;
 import org.mule.galaxy.web.rpc.EntryInfo;
 
 import com.google.gwt.user.client.ui.CheckBox;
@@ -33,12 +33,12 @@ import java.util.ArrayList;
  */
 public class ArtifactGroupListPanel extends AbstractComposite {
 
-    private ArtifactGroup group;
+    private EntryGroup group;
     private boolean editable;
     private ArrayList<CheckBox> CBCollection;
 
 
-    public ArtifactGroupListPanel(final ArtifactGroup group, boolean editable) {
+    public ArtifactGroupListPanel(final EntryGroup group, boolean editable) {
         this.group = group;
         this.editable = editable;
         CBCollection = new ArrayList<CheckBox>();

@@ -77,11 +77,17 @@ public class RegistryMenuPanel extends MenuPanel {
 
         addTopLinks(menuLinks);
 
+        // Add artifact
         Image addImg = new Image("images/add_obj.gif");
         addImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-artifact"));
-
         menuLinks.add(asHorizontal(addImg, new Label(" "), new Hyperlink("Add Artifact", "add-artifact")));
 
+        // add entry
+        addImg = new Image("images/add_obj.gif");
+        addImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-entry"));
+        menuLinks.add(asHorizontal(addImg, new Label(" "), new Hyperlink("Add Entry", "add-entry")));
+
+        // add a workspace
         Image addWkspcImg = new Image("images/add-workspace.gif");
         addWkspcImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-workspace"));
 

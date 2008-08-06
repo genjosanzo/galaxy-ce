@@ -47,7 +47,7 @@ import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.client.util.NavigationUtil;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.EntryGroup;
 import org.mule.galaxy.web.rpc.EntryVersionInfo;
 import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
 import org.mule.galaxy.web.rpc.SecurityService;
@@ -68,7 +68,7 @@ public class EntryPanel extends AbstractComposite {
     private Galaxy galaxy;
     private TabPanel artifactTabs;
     private ExtendedEntryInfo info;
-    private ArtifactGroup group;
+    private EntryGroup group;
     private VerticalPanel panel;
     private int selectedTab = -1;
     private ListBox versionLB;
@@ -111,7 +111,7 @@ public class EntryPanel extends AbstractComposite {
         
         AbstractCallback callback = new AbstractCallback(menuPanel) { 
             public void onSuccess(Object o) {
-                group = (ArtifactGroup) o;
+                group = (EntryGroup) o;
                 info = (ExtendedEntryInfo) group.getRows().get(0);
                 
                 init();
@@ -123,7 +123,7 @@ public class EntryPanel extends AbstractComposite {
             galaxy.getRegistryService().getArtifactByVersionId(versionId, callback);
         } else {
             versionId = null;
-            galaxy.getRegistryService().getArtifact(artifactId, callback);
+            galaxy.getRegistryService().getEntry(artifactId, callback);
         }
     }
 
@@ -224,36 +224,48 @@ public class EntryPanel extends AbstractComposite {
         InlineFlowPanel linkPanel = new InlineFlowPanel();
         linkPanel.setStyleName("artifactLinkPanel");
         
-        ClickListener cl = new ClickListener() {
-
-            public void onClick(Widget arg0) {
-                Window.open(info.getArtifactLink(), null, "scrollbars=yes");
-            }
+        String token;
+        if (info.isArtifact()) {
+            ClickListener cl = new ClickListener() {
+    
+                public void onClick(Widget arg0) {
+                    Window.open(info.getArtifactLink(), null, "scrollbars=yes");
+                }
+                
+            };
+            Image img = new Image("images/external.png");
+            img.setStyleName("viewArtifactImage");
+            img.addClickListener(cl);
+    
+            Hyperlink hl = new Hyperlink("View Artifact", "artifact/" + info.getId());
+            hl.addClickListener(cl);
+            // Add the first one without any style so it doesn't get the splitter
+            InlineFlowPanel p = asHorizontal(img, new Label(" "), hl);
+            p.setStyleName("artifactToolbarItemFirst");
+            linkPanel.add(p);
+    
+            ExternalHyperlink permalink = new ExternalHyperlink("Permalink", info.getArtifactLink());
+            permalink.setTitle("Direct artifact link for inclusion in email, etc.");
+            linkPanel.add(asToolbarItem(new Image("images/permalink.gif"), permalink));
             
-        };
-        Image img = new Image("images/external.png");
-        img.setStyleName("viewArtifactImage");
-        img.addClickListener(cl);
-
-        Hyperlink hl = new Hyperlink("View Artifact", "artifact/" + info.getId());
-        hl.addClickListener(cl);
-        // Add the first one without any style so it doesn't get the splitter
-        InlineFlowPanel p = asHorizontal(img, new Label(" "), hl);
-        p.setStyleName("artifactToolbarItemFirst");
-        linkPanel.add(p);
-
-        ExternalHyperlink permalink = new ExternalHyperlink("Permalink", info.getArtifactLink());
-        permalink.setTitle("Direct artifact link for inclusion in email, etc.");
-        linkPanel.add(asToolbarItem(new Image("images/permalink.gif"), permalink));
+            token = "new-artifact-version/" + info.getId();
+        } else {
+            token = "new-entry-version/" + info.getId();
+        }
         
-        String token = "new-artifact-version/" + info.getId();
-
-        img = new Image("images/new-version.gif");
+        Image img = new Image("images/new-version.gif");
         img.addClickListener(NavigationUtil.createNavigatingClickListener(token));
-        hl = new Hyperlink("New Version", token);
-        linkPanel.add(asToolbarItem(img, hl));
+        Hyperlink hl = new Hyperlink("New Version", token);
         
-        cl = new ClickListener() {
+        if (info.isArtifact()) {
+            linkPanel.add(asToolbarItem(img, hl));
+        } else {
+            InlineFlowPanel p = asHorizontal(img, new Label(" "), hl);
+            p.setStyleName("artifactToolbarItemFirst");
+            linkPanel.add(p);
+        }
+        
+        ClickListener cl = new ClickListener() {
             public void onClick(Widget arg0) {
                 warnDelete();
             }

@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
+import org.mule.galaxy.web.client.RPCException;
+
 public interface RegistryServiceAsync {
     void getWorkspaces(AsyncCallback callback);
     
@@ -51,6 +53,10 @@ public interface RegistryServiceAsync {
     void deleteArtifactType(String id, 
                             AsyncCallback callback);
     
+    void newEntry(String workspaceId, String name, String version, AsyncCallback callback);
+
+    void newEntryVersion(String entryId, String version, AsyncCallback callback);
+    
     void getArtifacts(String workspace, String workspacePath, 
                       boolean includeChildWkspcs, Set<String> artifactTypes, 
                       Set<SearchPredicate> searchPredicates, String freeformQuery, 
@@ -69,13 +75,11 @@ public interface RegistryServiceAsync {
     
     void getLinks(String artifactId, String property, AsyncCallback callback);
 
-    void getArtifact(String artifactId, AsyncCallback callback);
+    void getEntry(String artifactId, AsyncCallback callback);
     
     void getArtifactByVersionId(String artifactVersionId, AsyncCallback callback);
     
-    void getArtifactVersionInfo(String artifactVersionId,
-                                boolean showHidden, 
-                                AsyncCallback callback);
+    void getEntryVersionInfo(String entryVersionId, boolean showHidden, AsyncCallback callback);
     
     void setProperty(String artifactId, 
                      String propertyName, 

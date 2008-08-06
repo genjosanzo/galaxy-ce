@@ -6,11 +6,11 @@ import javax.xml.namespace.QName;
 
 public interface RendererManager {
     
-    ArtifactRenderer getArtifactRenderer(String contentType);
+    ItemRenderer getArtifactRenderer(String contentType);
     
-    ArtifactRenderer getArtifactRenderer(QName documentType);
+    ItemRenderer getArtifactRenderer(QName documentType);
     
-    void addRenderer(ArtifactRenderer view, QName... documentTypes);
+    void addRenderer(ItemRenderer view, QName... documentTypes);
     
-    void addRenderer(ArtifactRenderer view, Collection<QName> documentTypes);
+    void addRenderer(ItemRenderer view, Collection<QName> documentTypes);
 }

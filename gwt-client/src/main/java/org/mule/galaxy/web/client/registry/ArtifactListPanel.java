@@ -21,7 +21,7 @@ package org.mule.galaxy.web.client.registry;
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
+import org.mule.galaxy.web.rpc.EntryGroup;
 import org.mule.galaxy.web.rpc.EntryInfo;
 import org.mule.galaxy.web.rpc.WSearchResults;
 
@@ -91,8 +91,8 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
         createBulkEditPanel();
         createNavigationPanel();
 
-        for (Iterator<ArtifactGroup> groups = o.getResults().iterator(); groups.hasNext();) {
-            ArtifactGroup group = groups.next();
+        for (Iterator<EntryGroup> groups = o.getResults().iterator(); groups.hasNext();) {
+            EntryGroup group = groups.next();
 
             ArtifactGroupListPanel list = new ArtifactGroupListPanel(group, isEditable());
 
@@ -288,8 +288,8 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
         Collection<Object> artifactIds = new ArrayList<Object>();
 
         // groups will contain artifacts
-        for (Iterator<ArtifactGroup> itr = searchResults.getResults().iterator(); itr.hasNext();) {
-            ArtifactGroup g = itr.next();
+        for (Iterator<EntryGroup> itr = searchResults.getResults().iterator(); itr.hasNext();) {
+            EntryGroup g = itr.next();
 
             // each artifact
             for (Iterator<EntryInfo> it = g.getRows().iterator(); it.hasNext();) {

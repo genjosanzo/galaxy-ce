@@ -28,7 +28,7 @@ public class WSearchResults implements IsSerializable {
     /**
      * @gwt.typeArgs <org.mule.galaxy.web.rpc.ArtifactGroup>
      */
-    private Collection<ArtifactGroup> results;
+    private Collection<EntryGroup> results;
     
     public long getTotal() {
         return total;
@@ -36,10 +36,10 @@ public class WSearchResults implements IsSerializable {
     public void setTotal(long total) {
         this.total = total;
     }
-    public Collection<ArtifactGroup> getResults() {
+    public Collection<EntryGroup> getResults() {
         return results;
     }
-    public void setResults(Collection<ArtifactGroup> results) {
+    public void setResults(Collection<EntryGroup> results) {
         this.results = results;
     }
 }

@@ -23,7 +23,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArtifactGroup implements IsSerializable {
+public class EntryGroup implements IsSerializable {
     private String name;
     /**
      * @gwt.typeArgs <java.lang.String>

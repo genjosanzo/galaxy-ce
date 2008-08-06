@@ -79,6 +79,9 @@ public class ExtendedEntryInfo extends EntryInfo {
         this.description = description;
     }
 
+    public boolean isArtifact() {
+        return artifactLink != null;
+    }
 
     /**
      * @gwt typeArgs org.mule.galaxy.web.rpc.WComment

@@ -23,6 +23,7 @@ import org.mule.galaxy.web.client.entry.EntryPanel;
 import org.mule.galaxy.web.client.property.PropertyPanelFactory;
 import org.mule.galaxy.web.client.registry.ArtifactForm;
 import org.mule.galaxy.web.client.registry.BrowsePanel;
+import org.mule.galaxy.web.client.registry.EntryForm;
 import org.mule.galaxy.web.client.registry.SearchPanel;
 import org.mule.galaxy.web.client.registry.ViewPanel;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
@@ -197,9 +198,12 @@ public class Galaxy implements EntryPoint, HistoryListener {
         RootPanel.get().add(base);
 
         createPageInfo("artifact/" + WILDCARD, new EntryPanel(this), 0);
+        createPageInfo("entry/" + WILDCARD, new EntryPanel(this), 0);
         createPageInfo("artifact-version/" + WILDCARD, new EntryPanel(this, true), 0);
         createPageInfo("add-artifact", new ArtifactForm(this), 0);
         createPageInfo("new-artifact-version/" + WILDCARD, new ArtifactForm(this), 0);
+        createPageInfo("add-entry", new EntryForm(this), 0);
+        createPageInfo("new-entry-version/" + WILDCARD, new EntryForm(this), 0);
         createPageInfo("add-workspace", new WorkspaceForm(this), 0);
         createPageInfo("manage-workspace", new ManageWorkspacePanel(this), 0);
         createPageInfo("search", new SearchPanel(this), 0);

@@ -208,6 +208,54 @@ public class JcrEntry extends AbstractJcrItem implements Entry {
 	    AccessException {
 	return manager.newVersion(this, versionLabel);
     }
+    
+    @Override
+    public Object getProperty(String name) {
+        return getDefaultOrLastVersion().getProperty(name);
+    }
+
+    @Override
+    public void setProperty(String name, Object value) throws PropertyException, PolicyException {
+        getDefaultOrLastVersion().setProperty(name, value);
+    }
+    
+    @Override
+    public Iterator<PropertyInfo> getProperties() {
+        return getDefaultOrLastVersion().getProperties();
+    }
+
+    @Override
+    public PropertyInfo getPropertyInfo(String name) {
+        return getDefaultOrLastVersion().getPropertyInfo(name);
+    }
+
+    @Override
+    public void setLocked(String name, boolean locked) {
+        update();
+        getDefaultOrLastVersion().setLocked(name, locked);
+    }
+
+    @Override
+    public boolean hasProperty(String name) {
+        update();
+        return getDefaultOrLastVersion().hasProperty(name);
+    }
+
+    @Override
+    public Object getInternalProperty(String name) {
+        return getDefaultOrLastVersion().getInternalProperty(name);
+    }
+
+    @Override
+    public void setInternalProperty(String name, Object value) throws PropertyException, PolicyException {
+        getDefaultOrLastVersion().setInternalProperty(name, value);
+    }
+
+    @Override
+    public void setVisible(String name, boolean visible) {
+        update();
+        getDefaultOrLastVersion().setVisible(name, visible);
+    }
 
     public void setVersions(List<EntryVersion> versions2) {
         this.versions = versions2;

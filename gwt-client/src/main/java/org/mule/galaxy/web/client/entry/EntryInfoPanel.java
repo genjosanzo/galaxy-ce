@@ -18,19 +18,6 @@
 
 package org.mule.galaxy.web.client.entry;
 
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.ErrorPanel;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.property.EntryMetadataPanel;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextArea;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ArtifactGroup;
-import org.mule.galaxy.web.rpc.EntryVersionInfo;
-import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
-import org.mule.galaxy.web.rpc.WComment;
-
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -47,11 +34,21 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.property.EntryMetadataPanel;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextArea;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.EntryGroup;
+import org.mule.galaxy.web.rpc.EntryVersionInfo;
+import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
+import org.mule.galaxy.web.rpc.WComment;
 
 public class EntryInfoPanel extends AbstractComposite {
 
@@ -65,7 +62,7 @@ public class EntryInfoPanel extends AbstractComposite {
     
     public EntryInfoPanel(final Galaxy galaxy,
                              ErrorPanel errorPanel,
-                             ArtifactGroup group,
+                             EntryGroup group,
                              ExtendedEntryInfo info,
                              EntryVersionInfo version, final EntryPanel artifactPanel, final List<String> callbackParams) {
         this.galaxy = galaxy;

@@ -5,16 +5,17 @@ import java.util.List;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.render.ArtifactRenderer;
+import org.mule.galaxy.render.ItemRenderer;
 import org.mule.galaxy.render.Column;
 import org.mule.galaxy.render.ColumnEvaluator;
 
-public class CustomArtifactRenderer implements ArtifactRenderer {
+public class CustomEntryRenderer implements ItemRenderer {
     private List<Column> columns = new ArrayList<Column>();
 
-    public CustomArtifactRenderer() {
+    public CustomEntryRenderer() {
         super();
         columns.add(new Column("Name", new ColumnEvaluator() {
             public Object getValue(Object artifact) {
@@ -56,7 +57,7 @@ public class CustomArtifactRenderer implements ArtifactRenderer {
         return names.toArray(new String[names.size()]);
     }
 
-    public String getColumnValue(Artifact row, int column) {
+    public String getColumnValue(Item row, int column) {
         Column col = columns.get(column);
         if (col == null) {
             throw new RuntimeException("Invalid Column!");

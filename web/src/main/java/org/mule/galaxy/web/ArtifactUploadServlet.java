@@ -124,7 +124,7 @@ public class ArtifactUploadServlet implements Controller {
                     return null;
                 }
 
-                Workspace wkspc = registry.getWorkspace(wkspcId);
+                Workspace wkspc = (Workspace) registry.getItemById(wkspcId);
 
                 // pull out the original file name
                 if (name == null || "".equals(name)) {

@@ -132,10 +132,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return getWorkspaceManagerByItemId(id).getArtifact(id);
     }
 
-    public Workspace getWorkspace(String id) throws RegistryException, NotFoundException, AccessException {
-        return getWorkspaceManagerByItemId(id).getWorkspace(id);
-    }
-
     public Collection<Workspace> getWorkspaces() throws RegistryException, AccessException {
         return localWorkspaceManager.getWorkspaces();
     }
@@ -381,7 +377,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         
                         return a;
                     } else if (type.equals("galaxy:entryVersion")) {
-                        Entry a = buildEntry(node);
+                        Entry a = buildEntry(node.getParent());
     
                         accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
                         
@@ -595,7 +591,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
 
             // handle workspace move
-            final Workspace workspace = getWorkspace(newWorkspaceId);
+            final Workspace workspace = (Workspace) getItemById(newWorkspaceId);
             accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE, workspace);
 
             // only if workspace changed

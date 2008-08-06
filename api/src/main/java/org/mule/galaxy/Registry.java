@@ -26,9 +26,7 @@ public interface Registry {
     Workspace createWorkspace(String name) throws DuplicateItemException, RegistryException, AccessException;
 
     Workspace createWorkspace(Workspace parent, String name) throws DuplicateItemException, RegistryException, AccessException;
-    
-    Workspace getWorkspace(String id) throws RegistryException, NotFoundException, AccessException;
-    
+
     void save(Workspace w, String parentId)
         throws RegistryException, NotFoundException, AccessException;
 

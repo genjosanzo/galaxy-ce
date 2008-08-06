@@ -46,4 +46,8 @@ public class ValidatableTextBox extends AbstractValidatableInputField {
     public TextBox getTextBox() {
         return textBox;
     }
+    
+    public String getText() {
+        return textBox.getText();
+    }
 }

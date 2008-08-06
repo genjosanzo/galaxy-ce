@@ -50,9 +50,11 @@ public interface RegistryService extends RemoteService {
     void saveArtifactType(WArtifactType artifactType) throws RPCException, ItemExistsException;
     
     void deleteArtifactType(String id) throws RPCException;
-//    
-//    void newEntry(String name, String version) throws RPCException, ItemExistsException;
-//    
+    
+    String newEntry(String workspaceId, String name, String version) throws RPCException, ItemExistsException, ItemNotFoundException, WPolicyException;
+    
+    String newEntryVersion(String entryId, String version) throws RPCException, ItemExistsException, ItemNotFoundException, WPolicyException;
+    
     WSearchResults getArtifacts(String workspaceId, String workspacePath, 
                                 boolean includeChildWkspcs, Set<String> artifactTypes, 
                                 Set<SearchPredicate> searchPredicates, String freeformQuery, int start, int maxResults) throws RPCException;
@@ -79,34 +81,34 @@ public interface RegistryService extends RemoteService {
 
     Collection<LinkInfo> getLinks(String itemId, String property) throws RPCException;
     
-    ArtifactGroup getArtifact(String artifactId) throws RPCException, ItemNotFoundException;
+    EntryGroup getEntry(String entryId) throws RPCException, ItemNotFoundException;
     
-    ArtifactGroup getArtifactByVersionId(String artifactVersionId) throws RPCException, ItemNotFoundException;
+    EntryGroup getArtifactByVersionId(String artifactVersionId) throws RPCException, ItemNotFoundException;
     
-    EntryVersionInfo getArtifactVersionInfo(String artifactVersionId,
+    EntryVersionInfo getEntryVersionInfo(String artifactVersionId,
                                                boolean showHidden) throws RPCException, ItemNotFoundException;
 
-    void setProperty(String artifactId, 
+    void setProperty(String entryId, 
                      String propertyName, 
                      String propertyValue) throws RPCException, ItemNotFoundException, WPolicyException;
     
-    void setProperty(String artifactId, 
+    void setProperty(String entryId, 
                      String propertyName, 
                      Collection<String> propertyValue) throws RPCException, WPolicyException, ItemNotFoundException;
 
-    void setProperty(Collection<String> artifactIds,
+    void setProperty(Collection<String> entryIds,
                      String propertyName,
                      String propertyValue) throws RPCException, WPolicyException, ItemNotFoundException;
     
 
-    void setProperty(Collection<String> artifactIds,
+    void setProperty(Collection<String> entryIds,
                      String propertyName,
                      Collection<String> propertyValue) throws RPCException, WPolicyException, ItemNotFoundException;
 
-    void deleteProperty(String artifactId, 
+    void deleteProperty(String entryId, 
                         String propertyName) throws RPCException, ItemNotFoundException;
     
-    void deleteProperty(Collection<String> artifactIds, 
+    void deleteProperty(Collection<String> entryIds, 
                         String propertyName) throws RPCException, ItemNotFoundException;
 
     void savePropertyDescriptor(WPropertyDescriptor property) throws RPCException, ItemNotFoundException, ItemExistsException;
@@ -119,21 +121,21 @@ public interface RegistryService extends RemoteService {
     
     List<WExtensionInfo> getExtensions() throws RPCException;
     
-    void move(String artifactId, String workspaceId, String name) throws RPCException, ItemNotFoundException;
+    void move(String entryId, String workspaceId, String name) throws RPCException, ItemNotFoundException;
     
-    void delete(String artifactId) throws RPCException, ItemNotFoundException;
+    void delete(String entryId) throws RPCException, ItemNotFoundException;
 
     boolean deleteArtifactVersion(String artifactVersionId) throws RPCException, ItemNotFoundException;
 
-    WComment addComment(String artifactId, String parentCommentId, String text) throws RPCException, ItemNotFoundException;
+    WComment addComment(String entryId, String parentCommentId, String text) throws RPCException, ItemNotFoundException;
     
-    void setDescription(String artifactId, String description) throws RPCException, ItemNotFoundException;
+    void setDescription(String entryId, String description) throws RPCException, ItemNotFoundException;
 
     void setDefault(String artifactVersionId) throws RPCException, WPolicyException, ItemNotFoundException;
 
     void setEnabled(String artifactVersionId, boolean enabled) throws RPCException, WPolicyException, ItemNotFoundException;
 
-    void transition(Collection<String> artifactIds, String lifecycle, String phase) throws RPCException, WPolicyException, ItemNotFoundException;
+    void transition(Collection<String> entryIds, String lifecycle, String phase) throws RPCException, WPolicyException, ItemNotFoundException;
 
     Collection<WPolicy> getPolicies() throws RPCException;
     

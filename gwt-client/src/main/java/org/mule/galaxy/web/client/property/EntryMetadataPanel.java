@@ -110,7 +110,7 @@ public class EntryMetadataPanel extends AbstractComposite {
             showAll.setText("Show All");
         }
         RegistryServiceAsync svc = galaxy.getRegistryService();
-        svc.getArtifactVersionInfo(info.getId(), showHidden, new AbstractCallback(errorPanel) {
+        svc.getEntryVersionInfo(info.getId(), showHidden, new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object o) {
                 info = (EntryVersionInfo) o;
