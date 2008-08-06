@@ -23,20 +23,14 @@ import java.util.Collection;
 import java.util.List;
 
 public class ExtendedEntryInfo extends EntryInfo {
-    
-    /*
-     * @gwt.typeArgs org.mule.galaxy.rpc.WComment
-     */
+
     private List<WComment> comments = new ArrayList<WComment>();
-    
     private String description;
     private String commentsFeedLink;
     private String artifactLink;
     private String artifactFeedLink;
-    
-    /*
-     * @gwt.typeArgs <java.lang.String>
-     */
+    private String type;
+    private String mediaType;
     private Collection<EntryVersionInfo> versions;
     
     public Collection<EntryVersionInfo> getVersions() {
@@ -88,6 +82,22 @@ public class ExtendedEntryInfo extends EntryInfo {
      */
     public List<WComment> getComments() {
         return comments;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
     
 }

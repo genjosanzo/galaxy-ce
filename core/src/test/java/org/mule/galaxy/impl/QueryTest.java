@@ -135,4 +135,11 @@ public class QueryTest extends AbstractGalaxyTest {
         assertEquals(1, results.size());
     }
 
+    public void testQueryPropertyListing() throws Exception {
+        /*
+         * Need: property name (contact.name), Description (Contact Name)
+         */
+        
+        
+    }
 }

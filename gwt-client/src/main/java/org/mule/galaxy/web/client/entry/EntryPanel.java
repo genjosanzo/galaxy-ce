@@ -68,7 +68,6 @@ public class EntryPanel extends AbstractComposite {
     private Galaxy galaxy;
     private TabPanel artifactTabs;
     private ExtendedEntryInfo info;
-    private EntryGroup group;
     private VerticalPanel panel;
     private int selectedTab = -1;
     private ListBox versionLB;
@@ -111,8 +110,7 @@ public class EntryPanel extends AbstractComposite {
         
         AbstractCallback callback = new AbstractCallback(menuPanel) { 
             public void onSuccess(Object o) {
-                group = (EntryGroup) o;
-                info = (ExtendedEntryInfo) group.getRows().get(0);
+                info = (ExtendedEntryInfo) o;
                 
                 init();
             }
@@ -192,7 +190,7 @@ public class EntryPanel extends AbstractComposite {
     }
 
     private void initTabs(EntryVersionInfo version) {
-        artifactTabs.add(new EntryInfoPanel(galaxy, menuPanel, group, info, version, this, params), "Info");
+        artifactTabs.add(new EntryInfoPanel(galaxy, menuPanel, info, version, this, params), "Info");
         artifactTabs.add(new HistoryPanel(galaxy, menuPanel, info), "History");
         if (galaxy.hasPermission("MANAGE_GROUPS")) {
             artifactTabs.add(new ItemGroupPermissionPanel(galaxy, menuPanel, info.getId(), SecurityService.ARTIFACT_PERMISSIONS), "Security");

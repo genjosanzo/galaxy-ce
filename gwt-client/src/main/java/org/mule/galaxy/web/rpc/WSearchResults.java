@@ -24,10 +24,7 @@ import java.util.Collection;
 
 public class WSearchResults implements IsSerializable {
     private long total;
-    
-    /**
-     * @gwt.typeArgs <org.mule.galaxy.web.rpc.ArtifactGroup>
-     */
+
     private Collection<EntryGroup> results;
     
     public long getTotal() {

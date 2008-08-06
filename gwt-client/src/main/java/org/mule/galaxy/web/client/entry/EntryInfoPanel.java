@@ -61,10 +61,11 @@ public class EntryInfoPanel extends AbstractComposite {
     private final ErrorPanel errorPanel;
     
     public EntryInfoPanel(final Galaxy galaxy,
-                             ErrorPanel errorPanel,
-                             EntryGroup group,
-                             ExtendedEntryInfo info,
-                             EntryVersionInfo version, final EntryPanel artifactPanel, final List<String> callbackParams) {
+                          ErrorPanel errorPanel,
+                          ExtendedEntryInfo info,
+                          EntryVersionInfo version, 
+                          final EntryPanel artifactPanel, 
+                          final List<String> callbackParams) {
         this.galaxy = galaxy;
         this.errorPanel = errorPanel;
         this.info = info;
@@ -88,18 +89,16 @@ public class EntryInfoPanel extends AbstractComposite {
         table.setWidget(0, 0, new Label("Name:"));
         table.setWidget(0, 1, nep);
         
-        for (int i = 1; i < group.getColumns().size(); i++) {
-            table.setText(i, 0, group.getColumns().get(i) + ":");
+        table.setText(1, 0, "Type:");
+        if (info.isArtifact()) {
+            table.setText(1, 1, info.getType() + " (" + info.getMediaType() + ")");
+        } else {
+            table.setText(1, 1, info.getType());
         }
         
-        int c = 1;
-        for (; c < group.getColumns().size(); c++) {
-            table.setText(c, 1, info.getValue(c));
-        }
-        
-        table.setWidget(c, 0, new Label("Description:"));
+        table.setWidget(2, 0, new Label("Description:"));
         FlowPanel descPanel = new FlowPanel();
-        table.setWidget(c, 1, descPanel);
+        table.setWidget(2, 1, descPanel);
         initDescription(descPanel);
         
         styleHeaderColumn(table);

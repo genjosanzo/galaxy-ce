@@ -875,7 +875,7 @@ public class RegistryServiceImpl implements RegistryService {
                             recip);
     }
 
-    public EntryGroup getEntry(String entryId) throws RPCException, ItemNotFoundException {
+    public ExtendedEntryInfo getEntry(String entryId) throws RPCException, ItemNotFoundException {
         try {
             Entry a = (Entry) registry.getItemById(entryId);
             
@@ -890,10 +890,10 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public EntryGroup getArtifactByVersionId(String artifactVersionId) throws RPCException, ItemNotFoundException {
+    public ExtendedEntryInfo getArtifactByVersionId(String artifactVersionId) throws RPCException, ItemNotFoundException {
         try {
             ArtifactVersion av = registry.getArtifactVersion(artifactVersionId);
-            return getEntryGroup((Artifact)av.getParent());
+            return getEntryGroup(av.getParent());
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -904,8 +904,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    private EntryGroup getEntryGroup(Entry e) {
-        EntryGroup g = new EntryGroup();
+    private ExtendedEntryInfo getEntryGroup(Entry e) {
         ExtendedEntryInfo info = new ExtendedEntryInfo();
         
         ItemRenderer view;
@@ -914,7 +913,9 @@ public class RegistryServiceImpl implements RegistryService {
             ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), 
                                                                 a.getDocumentType());
     
-            g.setName(type.getDescription());
+            info.setType(type.getDescription());
+            info.setMediaType(type.getContentType().toString());
+            
             view = rendererManager.getArtifactRenderer(a.getDocumentType());
             if (view == null) {
                 view = rendererManager.getArtifactRenderer(a.getContentType().toString());
@@ -927,12 +928,7 @@ public class RegistryServiceImpl implements RegistryService {
             info.setCommentsFeedLink(context + "/api/comments");
         } else {
             view = rendererManager.getArtifactRenderer("application/octet-stream");
-        }
-        
-        for (int i = 0; i < view.getColumnNames().length; i++) {
-            if (view.isDetail(i)) {
-                g.getColumns().add(view.getColumnNames()[i]);
-            }
+            info.setType("Entry");
         }
 
         createBasicEntryInfo(e, view, info, true);
@@ -955,15 +951,13 @@ public class RegistryServiceImpl implements RegistryService {
             }
         }
 
-        g.getRows().add(info);
-
         List<EntryVersionInfo> versions = new ArrayList<EntryVersionInfo>();
         for (EntryVersion av : e.getVersions()) {
             versions.add(toWeb((EntryVersion)av, false));
         }
         info.setVersions(versions);
 
-        return g;
+        return info;
     }
 
     public EntryVersionInfo getEntryVersionInfo(String entryVersionId, boolean showHidden) throws RPCException,
