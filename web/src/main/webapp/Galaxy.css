@@ -68,6 +68,10 @@ a:visited {
 }
 
 
+.hr {
+    border-top: 1px #aaa solid;
+    margin-top: 5px;
+}
 
 /**
  **
@@ -426,6 +430,7 @@ a:visited {
 .spacer {
     margin: 5px;
 }
+
 
 .dependencyPanelHeader {
   font-weight: bold;

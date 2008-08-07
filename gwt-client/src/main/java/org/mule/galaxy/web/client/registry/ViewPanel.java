@@ -67,7 +67,7 @@ public class ViewPanel extends AbstractBrowsePanel {
     }
     
     protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(galaxy, true, true) {
+        return new RegistryMenuPanel(galaxy) {
 
             public void loadViews() {
                 loadViews(viewId, null);

@@ -71,7 +71,7 @@ public class BrowsePanel extends AbstractBrowsePanel {
     }
 
     protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(galaxy, false, true) {
+        return new RegistryMenuPanel(galaxy) {
 
             protected void addBottomLinks(Toolbox topMenuLinks) {
                 manageWkspcImg = new Image("images/editor_area.gif");
@@ -79,7 +79,6 @@ public class BrowsePanel extends AbstractBrowsePanel {
                 InlineFlowPanel manageLinks = asHorizontal(manageWkspcImg, new Label(" "), manageWkspcLink);
                 topMenuLinks.add(manageLinks);
             }
-
         };
     }
 

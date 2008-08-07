@@ -22,6 +22,7 @@ import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.MenuPanel;
 import org.mule.galaxy.web.client.util.NavigationUtil;
 import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WArtifactView;
 
@@ -34,6 +35,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -46,22 +48,12 @@ public class RegistryMenuPanel extends MenuPanel {
     private final Galaxy galaxy;
     private ListBox viewBox;
     private String selectedViewId;
-    private final boolean showBrowse;
-    private final boolean showSearch;
     private boolean first = true;
     private FlowPanel recentViewsPanel;
 
     public RegistryMenuPanel(Galaxy galaxy) {
-        this(galaxy, true, true);
-    }
-
-    public RegistryMenuPanel(Galaxy galaxy,
-                             boolean showBrowse,
-                             boolean showSearch) {
         super();
         this.galaxy = galaxy;
-        this.showBrowse = showBrowse;
-        this.showSearch = showSearch;
     }
 
     public void onShow() {
@@ -77,6 +69,21 @@ public class RegistryMenuPanel extends MenuPanel {
 
         addTopLinks(menuLinks);
 
+        addBottomLinks(menuLinks);
+
+        // add a workspace
+        Image addWkspcImg = new Image("images/add-workspace.gif");
+        addWkspcImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-workspace"));
+
+        Hyperlink hl = new Hyperlink("Add Workspace", "add-workspace");
+        menuLinks.add(asHorizontal(addWkspcImg, new Label(" "), hl));
+
+
+        // spacer to divide the actions
+        SimplePanel spacer = new SimplePanel();
+        spacer.addStyleName("hr");
+        menuLinks.add(spacer);
+
         // Add artifact
         Image addImg = new Image("images/add_obj.gif");
         addImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-artifact"));
@@ -86,31 +93,6 @@ public class RegistryMenuPanel extends MenuPanel {
         addImg = new Image("images/add_obj.gif");
         addImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-entry"));
         menuLinks.add(asHorizontal(addImg, new Label(" "), new Hyperlink("Add Entry", "add-entry")));
-
-        // add a workspace
-        Image addWkspcImg = new Image("images/add-workspace.gif");
-        addWkspcImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-workspace"));
-
-        Hyperlink hl = new Hyperlink("Add Workspace", "add-workspace");
-        menuLinks.add(asHorizontal(addWkspcImg, new Label(" "), hl));
-
-        addBottomLinks(menuLinks);
-
-        if (showBrowse) {
-            Image img = new Image("images/browse-workspaces.gif");
-            img.addClickListener(NavigationUtil.createNavigatingClickListener("browse"));
-
-            hl = new Hyperlink("Browse Workspaces", "browse");
-            menuLinks.add(asHorizontal(img, new Label(" "), hl));
-        }
-
-        if (showSearch) {
-            Image img = new Image("images/search-workspaces.gif");
-            img.addClickListener(NavigationUtil.createNavigatingClickListener("search"));
-
-            hl = new Hyperlink("Search Workspaces", "search");
-            menuLinks.add(asHorizontal(img, new Label(" "), hl));
-        }
 
         addMenuItem(menuLinks, 0);
 

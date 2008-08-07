@@ -72,7 +72,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
 
 
     protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(galaxy, false, true);
+        return new RegistryMenuPanel(galaxy);
     }
 
     public void onShow(List<String> params) {

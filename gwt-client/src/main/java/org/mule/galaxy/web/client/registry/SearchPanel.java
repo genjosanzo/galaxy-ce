@@ -35,7 +35,7 @@ public class SearchPanel extends AbstractBrowsePanel {
     }
 
     protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(galaxy, true, false);
+        return new RegistryMenuPanel(galaxy);
     }
     
     protected String getHistoryToken() {

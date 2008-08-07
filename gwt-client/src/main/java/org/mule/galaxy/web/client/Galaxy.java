@@ -27,7 +27,7 @@ import org.mule.galaxy.web.client.registry.EntryForm;
 import org.mule.galaxy.web.client.registry.SearchPanel;
 import org.mule.galaxy.web.client.registry.ViewPanel;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.NavigationUtil;
 import org.mule.galaxy.web.client.workspace.ManageWorkspacePanel;
 import org.mule.galaxy.web.client.workspace.WorkspaceForm;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -55,6 +55,7 @@ import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.Hyperlink;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,6 +75,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     private SimplePanel registryPanel;
     private SimplePanel activityPanel;
     private SimplePanel adminPanel;
+    private SimplePanel searchPanel;
     private RegistryServiceAsync registryService;
     private SecurityServiceAsync securityService;
     private HeartbeatServiceAsync heartbeatService;
@@ -91,7 +93,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     protected PropertyPanelFactory propertyPanelFactory = new PropertyPanelFactory();
     protected List extensions;
     private String currentToken;
-    
+
     /**
      * This is the entry point method.
      */
@@ -100,7 +102,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         // prefetch the image, so that e.g. SessionKilled dialog can be properly displayed for the first time
         // when the server is already down and cannot serve it.
         Image.prefetch("images/lightbox.png");
-        
+
         History.addHistoryListener(this);
 
         this.registryService = (RegistryServiceAsync) GWT.create(RegistryService.class);
@@ -133,6 +135,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         registryPanel = new SimplePanel();
         activityPanel = new SimplePanel();
         adminPanel = new SimplePanel();
+        searchPanel = new SimplePanel();
 
         tabPanel = new TabPanel();
 
@@ -190,8 +193,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
                 loadTabs(galaxy);
             }
         });
-        
-        
+
+
         Label footer = new Label(getProductName() + ", Copyright 2008 MuleSource, Inc.");
         footer.setStyleName("footer");
         base.add(footer);
@@ -235,8 +238,12 @@ public class Galaxy implements EntryPoint, HistoryListener {
     protected void loadTabs(final Galaxy galaxy) {
         tabPanel.insert(registryPanel, "Registry", 0);
 
+        // search all workspaces tab
+        createPageInfo("tab-1", new SearchPanel(this), 1);
+        tabPanel.insert(searchPanel, "Search", tabPanel.getWidgetCount());
+
         if (hasPermission("VIEW_ACTIVITY")) {
-            createPageInfo("tab-1", new ActivityPanel(this), 1);
+            createPageInfo("tab-2", new ActivityPanel(this), 2);
             tabPanel.insert(activityPanel, "Activity", tabPanel.getWidgetCount());
         }
 
@@ -245,6 +252,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
             createPageInfo("tab-" + adminTabIndex, createAdministrationPanel(), adminTabIndex);
             tabPanel.add(adminPanel, "Administration");
         }
+
         showFirstPage();
     }
 
@@ -406,7 +414,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     public WExtensionInfo getExtension(String id) {
         for (Iterator itr = extensions.iterator(); itr.hasNext();) {
             WExtensionInfo ei = (WExtensionInfo) itr.next();
-            
+
             if (id.equals(ei.getId())) {
                 return ei;
             }
