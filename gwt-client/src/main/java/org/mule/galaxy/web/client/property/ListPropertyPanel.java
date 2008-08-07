@@ -16,7 +16,7 @@ import org.mule.galaxy.web.client.util.InlineFlowPanel;
 /**
  * Encapsulate a list of properties that is always editable. 
  */
-public abstract class AbstractListPropertyPanel extends AbstractEditPropertyPanel {
+public abstract class ListPropertyPanel extends AbstractEditPropertyPanel {
     protected List<String> values;
     protected FlowPanel editPanel;
     protected InlineFlowPanel editValuesPanel;
@@ -24,7 +24,8 @@ public abstract class AbstractListPropertyPanel extends AbstractEditPropertyPane
     
     public void initialize() {
         editValuesPanel = new InlineFlowPanel();
-
+        editValuesPanel.setStyleName("add-property-inline");
+        
         editPanel = new FlowPanel();
         editPanel.add(editValuesPanel);
         editPanel.add(getAddWidget());

@@ -2,21 +2,20 @@ package org.mule.galaxy.web.client.property;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WUser;
 
-public class UserListPropertyPanel extends AbstractListPropertyPanel {
+public class UserListPropertyPanel extends ListPropertyPanel {
 
     private Collection users;
-    private FlowPanel addPanel = new FlowPanel();
+    private InlineFlowPanel addPanel = new InlineFlowPanel();
     private Button addButton;
     private ListBox userLB;
     

@@ -555,6 +555,24 @@ a:visited {
 .add-property-panel {
     background-color: #EEEEEE;
     padding: 4px;
+    width: auto;
+}
+
+.add-property-inline {
+    vertical-align: top;
+    display: inline;
+}
+
+.add-property-block {
+    vertical-align: top;
+    display:-moz-inline-stack;
+    display:inline-block;
+    zoom:1;
+    *display:inline;
+}
+
+.add-property-inline .gwt-Label {
+    vertical-align: middle;
 }
 
 .metadata-panel table {
@@ -566,29 +584,40 @@ a:visited {
 }
 
 .listPropertyContainer {
-    margin: 20px;
-    padding: 10px;
+    margin: 3px;
+    padding-top: 3px;
+    padding-bottom: 3px;
     border: 1px solid #ddd;
     background-color: #ccc;
+    
+    display:-moz-inline-stack;
+    display:inline-block;
+    zoom:1;
+    *display:inline;
 }
 
 .listProperty {
 }
 
 .listPropertyLeft {
+    margin-right: 3px;
+    margin-left: 3px;
 }
 
 .listPropertyRight {
-    padding: 2px;
-    margin: 2px;
+    padding-left: 3px;
+    padding-right: 3px;
     border-left: 1px solid black;
+    vertical-align: middle;
 }
 
 .listPropertyRightHover {
-    padding: 2px;
-    margin: 2px;
+    padding-left: 3px;
+    padding-right: 3px;
+    border-left: 1px solid black;
     color: white;
     background-color: black;
+    vertical-align: middle;
 }
 /**
  **

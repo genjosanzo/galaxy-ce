@@ -2,6 +2,7 @@ package org.mule.galaxy.web.client.property;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -20,7 +21,7 @@ import org.mule.galaxy.web.rpc.AbstractCallback;
 public abstract class AbstractEditPropertyPanel extends PropertyPanel {
 
     private InlineFlowPanel viewPanel;
-    private InlineFlowPanel editPanel;
+    private FlowPanel editPanel;
     private Button save;
     private Button cancel;
     private Hyperlink editHL;
@@ -59,9 +60,13 @@ public abstract class AbstractEditPropertyPanel extends PropertyPanel {
             viewPanel.add(deleteHL);
         }
         
-        editPanel = new InlineFlowPanel();
-        editPanel.add(createEditForm());
+        editPanel = new FlowPanel();
+        editPanel.setStyleName("add-property-inline");
+        Widget editForm = createEditForm();
+        editForm.setStyleName("add-property-inline");
+        editPanel.add(editForm);
         
+        FlowPanel buttonPanel = new FlowPanel();
         cancel = new Button("Cancel");
         cancel.addClickListener(new ClickListener() {
 
@@ -87,8 +92,10 @@ public abstract class AbstractEditPropertyPanel extends PropertyPanel {
             
         });
         
-        editPanel.add(cancel);
-        editPanel.add(save);
+        buttonPanel.add(cancel);
+        buttonPanel.add(save);
+        
+        editPanel.add(buttonPanel);
     }
     
     protected abstract Widget createViewWidget();

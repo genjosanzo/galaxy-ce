@@ -199,6 +199,7 @@
                     <scanIntervalSeconds>5</scanIntervalSeconds>
                     <contextPath>/</contextPath>
                     <webDefaultXml>${basedir}/webdefault.xml</webDefaultXml>
+                    <webAppSourceDirectory>${project.build.directory}/${project.build.finalName}</webAppSourceDirectory>
                 </configuration>
             </plugin>
             <plugin>

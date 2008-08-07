@@ -47,19 +47,19 @@ import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 public class NewPropertyPanel extends Composite {
 
     private ListBox propertiesBox;
-    private InlineFlowPanel propertySelectPanel;
     private ErrorPanel errorPanel;
     private String itemId;
     private EntryMetadataPanel metadataPanel;
     private RegistryServiceAsync svc;
     private Panel propertiesPanel;
     private ClickListener cancelListener;
-    private SimplePanel renderHolder;
     private List propertyDescriptors;
     private final Galaxy galaxy;
     private WProperty property;
     private PropertyPanel renderer;
     private Button cancelButton;
+    private FlexTable panel;
+    private InlineFlowPanel selectorPanel;
 
     public NewPropertyPanel(final Galaxy galaxy,
                             final ErrorPanel registryPanel, 
@@ -75,11 +75,16 @@ public class NewPropertyPanel extends Composite {
         this.metadataPanel = metadataPanel;
         this.svc = registryService;
         
-        InlineFlowPanel panel = new InlineFlowPanel();
-        panel.setStyleName("add-property-panel");
-        panel.add(new Label("Add Property: "));
+        FlowPanel main = new FlowPanel();
         
-        propertySelectPanel = new InlineFlowPanel();
+        panel = new FlexTable();
+        main.add(panel);
+        panel.setStyleName("add-property-panel");
+        panel.getCellFormatter().setWidth(0, 0, "200");
+        selectorPanel = new InlineFlowPanel();
+        
+        selectorPanel.add(new Label("Add Property: "));
+        
         propertiesBox = new ListBox();
         propertiesBox.setMultipleSelect(false);
         propertiesBox.addItem("", "");
@@ -91,12 +96,9 @@ public class NewPropertyPanel extends Composite {
             }
             
         });
-        propertySelectPanel.add(propertiesBox);
+        selectorPanel.add(propertiesBox);
         
-        panel.add(propertySelectPanel);
-
-        renderHolder = new SimplePanel();
-        panel.add(renderHolder);
+        panel.setWidget(0, 0, selectorPanel);
         
         svc.getPropertyDescriptors(false, new AbstractCallback(registryPanel) {
             @SuppressWarnings("unchecked")
@@ -112,9 +114,10 @@ public class NewPropertyPanel extends Composite {
         };
         cancelButton = new Button("Cancel");
         cancelButton.addClickListener(cancelListener);
-        propertySelectPanel.add(cancelButton);
+        selectorPanel.add(cancelButton);
         
-        initWidget(panel);
+        main.add(new SimplePanel());
+        initWidget(main);
     }
     
 
@@ -123,12 +126,12 @@ public class NewPropertyPanel extends Composite {
         if (i == -1) {
             return;
         }
-        propertySelectPanel.remove(cancelButton);
+        selectorPanel.remove(cancelButton);
         
         String txt = w.getValue(i);
         
         WPropertyDescriptor pd = getPropertyDescriptor(txt);
-        
+
         renderer = galaxy.getPropertyPanelFactory().createRenderer(pd.getExtension(), pd.isMultiValued());
         
         property = new WProperty(pd.getName(), pd.getDescription(), null, pd.getExtension(), false);
@@ -145,10 +148,8 @@ public class NewPropertyPanel extends Composite {
         renderer.setCancelListener(cancelListener);
         renderer.initialize();
         renderer.showEdit();
-
-        renderHolder.clear();
-        renderHolder.add(renderer);
-//        renderHolder.add(new SimplePanel());
+        
+        panel.setWidget(0, 1, renderer);
     }
 
     protected void save() {

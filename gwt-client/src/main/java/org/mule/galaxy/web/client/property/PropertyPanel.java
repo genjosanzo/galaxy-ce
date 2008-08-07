@@ -20,7 +20,7 @@ import org.mule.galaxy.web.rpc.WPropertyDescriptor;
  */
 public abstract class PropertyPanel extends AbstractComposite {
 
-    protected SimplePanel panel;
+    protected InlineFlowPanel panel;
     protected ErrorPanel errorPanel;
     protected String itemId;
     protected WProperty property;
@@ -32,7 +32,7 @@ public abstract class PropertyPanel extends AbstractComposite {
     public PropertyPanel() {
         super();
         
-        this.panel = new SimplePanel();
+        this.panel = new InlineFlowPanel();
 
         initWidget(panel);
     }
