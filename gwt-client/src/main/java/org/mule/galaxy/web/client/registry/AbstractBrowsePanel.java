@@ -145,7 +145,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
 
                 // Create a show all or "reset" link
                 // Make this an icon?
-                final Hyperlink h = new Hyperlink("All Artifacts", getHistoryToken());
+                final Hyperlink h = new Hyperlink("All", getHistoryToken());
                 h.setStyleName("unselected-link");
                 h.addClickListener(new ClickListener() {
                     public void onClick(final Widget widget) {
