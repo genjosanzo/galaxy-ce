@@ -71,15 +71,15 @@ public class BrowsePanel extends AbstractBrowsePanel {
     }
 
     protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(galaxy) {
-
-            protected void addBottomLinks(Toolbox topMenuLinks) {
+        return new RegistryMenuPanel(galaxy);
+        /*    protected void addBottomLinks(Toolbox topMenuLinks) {
                 manageWkspcImg = new Image("images/editor_area.gif");
                 manageWkspcLink = new Hyperlink("Manage Workspace", "");
                 InlineFlowPanel manageLinks = asHorizontal(manageWkspcImg, new Label(" "), manageWkspcLink);
                 topMenuLinks.add(manageLinks);
             }
         };
+        */
     }
 
     protected void initializeMenuAndTop() {

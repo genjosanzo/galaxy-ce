@@ -84,7 +84,7 @@ public class ManageWorkspacePanel extends AbstractErrorShowingComposite {
         String parentId = parent != null ? parent.getId() : null;
         workspace = (WWorkspace) parentAndWkspc[1];
         
-        panel.add(createPrimaryTitle("Manage Workspace " + workspace.getName()));
+        panel.add(createPrimaryTitle("Manage Workspace - " + workspace.getName()));
         
         final TabPanel tabs = new TabPanel();
         panel.add(tabs);

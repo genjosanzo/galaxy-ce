@@ -29,7 +29,7 @@ public class SearchPanel extends AbstractBrowsePanel {
 
     private FlowPanel searchPanel;
     private SearchForm searchForm;
-    
+
     public SearchPanel(Galaxy galaxy) {
         super(galaxy);
     }
@@ -37,7 +37,7 @@ public class SearchPanel extends AbstractBrowsePanel {
     protected RegistryMenuPanel createRegistryMenuPanel() {
         return new RegistryMenuPanel(galaxy);
     }
-    
+
     protected String getHistoryToken() {
         return "search";
     }

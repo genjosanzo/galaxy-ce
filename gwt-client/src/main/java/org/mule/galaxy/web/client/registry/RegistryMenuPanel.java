@@ -71,12 +71,19 @@ public class RegistryMenuPanel extends MenuPanel {
 
         addBottomLinks(menuLinks);
 
+        // manage a workspace
+        Image manageWkspcImg = new Image("images/editor_area.gif");
+        manageWkspcImg.addClickListener(NavigationUtil.createNavigatingClickListener("manage-workspace"));
+
+        Hyperlink hl = new Hyperlink("Manage Workspace", "manage-workspace");
+        menuLinks.add(asHorizontal(manageWkspcImg, new Label(" "), hl));
+
         // add a workspace
         Image addWkspcImg = new Image("images/add-workspace.gif");
         addWkspcImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-workspace"));
 
-        Hyperlink hl = new Hyperlink("Add Workspace", "add-workspace");
-        menuLinks.add(asHorizontal(addWkspcImg, new Label(" "), hl));
+        Hyperlink hl2 = new Hyperlink("Add Workspace", "add-workspace");
+        menuLinks.add(asHorizontal(addWkspcImg, new Label(" "), hl2));
 
 
         // spacer to divide the actions
