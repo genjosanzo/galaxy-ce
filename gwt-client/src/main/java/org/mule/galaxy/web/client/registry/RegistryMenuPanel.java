@@ -39,6 +39,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Forms the basis of any pages which do not list artifacts.
@@ -61,6 +62,7 @@ public class RegistryMenuPanel extends MenuPanel {
         loadViews();
     }
 
+
     private void createLinks() {
         if (!first) {
             return;
@@ -70,13 +72,6 @@ public class RegistryMenuPanel extends MenuPanel {
         addTopLinks(menuLinks);
 
         addBottomLinks(menuLinks);
-
-        // manage a workspace
-        Image manageWkspcImg = new Image("images/editor_area.gif");
-        manageWkspcImg.addClickListener(NavigationUtil.createNavigatingClickListener("manage-workspace"));
-
-        Hyperlink hl = new Hyperlink("Manage Workspace", "manage-workspace");
-        menuLinks.add(asHorizontal(manageWkspcImg, new Label(" "), hl));
 
         // add a workspace
         Image addWkspcImg = new Image("images/add-workspace.gif");
