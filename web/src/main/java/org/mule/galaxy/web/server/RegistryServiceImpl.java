@@ -460,8 +460,8 @@ public class RegistryServiceImpl implements RegistryService {
             }
             // If we want to filter based on the artifact type, filter!
             if (artifactTypes != null && artifactTypes.size() != 0
-                    && type != null
-                    && !artifactTypes.contains(type.getId())) {
+                    && (type == null
+                    || !artifactTypes.contains(type.getId()))) {
                 continue;
             }
 
