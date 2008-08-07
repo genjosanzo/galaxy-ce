@@ -8,11 +8,11 @@ import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.view.ArtifactView;
+import org.mule.galaxy.view.View;
 
 public class ArtifactViewTest extends AbstractGalaxyTest {
     public void testView() throws Exception {
-        ArtifactView view = new ArtifactView();
+        View view = new View();
         view.setQuery("select artifact from '/Default Workspace'");
         view.setName("Default Workspace Selection");
         
@@ -21,7 +21,7 @@ public class ArtifactViewTest extends AbstractGalaxyTest {
         assertNotNull(view.getId());
         
         User admin = getAdmin();
-        List<ArtifactView> views = artifactViewManager.getArtifactViews(admin);
+        List<View> views = artifactViewManager.getArtifactViews(admin);
         assertEquals(1, views.size());
         
         view.setUser(admin);

@@ -3,7 +3,7 @@ package org.mule.galaxy.view;
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.security.User;
 
-public class ArtifactView implements Identifiable {
+public class View implements Identifiable {
     private String id;
     private User user;
     private String name;

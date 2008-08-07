@@ -7,11 +7,11 @@ import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.security.User;
 
 public interface ArtifactViewManager {
-    List<ArtifactView> getArtifactViews(User user);
+    List<View> getArtifactViews(User user);
     
-    void save(ArtifactView view) throws DuplicateItemException, NotFoundException;
+    void save(View view) throws DuplicateItemException, NotFoundException;
     
     void delete(String id);
 
-    ArtifactView getArtifactView(String id);
+    View getArtifactView(String id);
 }

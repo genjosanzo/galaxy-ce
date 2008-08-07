@@ -8,21 +8,21 @@ import javax.jcr.Session;
 
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.security.User;
-import org.mule.galaxy.view.ArtifactView;
+import org.mule.galaxy.view.View;
 import org.mule.galaxy.view.ArtifactViewManager;
 import org.springmodules.jcr.JcrCallback;
 
 public class ArtifactViewManagerImpl 
-    extends AbstractReflectionDao<ArtifactView>
+    extends AbstractReflectionDao<View>
     implements ArtifactViewManager {
 
     public ArtifactViewManagerImpl() throws Exception {
-        super(ArtifactView.class, "artifactViews", true);
+        super(View.class, "artifactViews", true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<ArtifactView> getArtifactViews(final User user) {
-        return (List<ArtifactView>) execute(new JcrCallback() {
+    public List<View> getArtifactViews(final User user) {
+        return (List<View>) execute(new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 return query("//element(*, galaxy:artifactView)[not(@user) or user = '" + user.getId() + "']", session);
@@ -31,7 +31,7 @@ public class ArtifactViewManagerImpl
         });
     }
 
-    public ArtifactView getArtifactView(String id) {
+    public View getArtifactView(String id) {
         return get(id);
     }
 

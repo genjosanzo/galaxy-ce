@@ -87,7 +87,7 @@ import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.TypeManager;
-import org.mule.galaxy.view.ArtifactView;
+import org.mule.galaxy.view.View;
 import org.mule.galaxy.view.ArtifactViewManager;
 import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.rpc.EntryGroup;
@@ -424,7 +424,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     private Query getQuery(Set<SearchPredicate> searchPredicates, int start, int maxResults) {
-        Query q = new Query(Artifact.class).orderBy("artifactType");
+        Query q = new Query().orderBy("artifactType");
 
         q.setMaxResults(maxResults);
         q.setStart(start);
@@ -445,32 +445,47 @@ public class RegistryServiceImpl implements RegistryService {
 
         int total = 0;
 
-        for (Object o : results.getResults()) {
-            Artifact a = (Artifact) o;
-            ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), a
-                    .getDocumentType());
+        for (Object obj : results.getResults()) {
+            Entry e = (Entry) obj;
+            String groupName;
+            ArtifactType type = null;
+            if (e instanceof Artifact) {
+                type = artifactTypeDao.getArtifactType(
+                    ((Artifact) e).getContentType().toString(), 
+                    ((Artifact) e).getDocumentType());
 
+                groupName = type.getDescription();
+            } else {
+                groupName = "Entries";
+            }
             // If we want to filter based on the artifact type, filter!
             if (artifactTypes != null && artifactTypes.size() != 0
+                    && type != null
                     && !artifactTypes.contains(type.getId())) {
                 continue;
             }
 
             total++;
 
-            EntryGroup g = name2group.get(type.getDescription());
-            ItemRenderer view = name2view.get(type.getDescription());
+            EntryGroup g = name2group.get(groupName);
+            ItemRenderer view = name2view.get(groupName);
 
             if (g == null) {
                 g = new EntryGroup();
-                g.setName(type.getDescription());
-                name2group.put(type.getDescription(), g);
+                g.setName(groupName);
+                name2group.put(groupName, g);
 
-                view = rendererManager.getArtifactRenderer(a.getDocumentType());
-                if (view == null) {
-                    view = rendererManager.getArtifactRenderer(a.getContentType().toString());
+                if (e instanceof Artifact) {
+                    Artifact a = (Artifact) e;
+                    view = rendererManager.getArtifactRenderer(a.getDocumentType());
+                    if (view == null) {
+                        view = rendererManager.getArtifactRenderer(a.getContentType().toString());
+                    }
+                } else {
+                    // Hack
+                    view = rendererManager.getArtifactRenderer("application/octet-stream");
                 }
-                name2view.put(type.getDescription(), view);
+                name2view.put(groupName, view);
 
                 int i = 0;
                 for (String col : view.getColumnNames()) {
@@ -481,7 +496,7 @@ public class RegistryServiceImpl implements RegistryService {
                 }
             }
 
-            EntryInfo info = createBasicEntryInfo(a, view);
+            EntryInfo info = createBasicEntryInfo(e, view);
 
             g.getRows().add(info);
         }
@@ -531,7 +546,7 @@ public class RegistryServiceImpl implements RegistryService {
                                               int resultStart,
                                               int maxResults)
             throws RPCException {
-        ArtifactView view = artifactViewManager.getArtifactView(viewId);
+        View view = artifactViewManager.getArtifactView(viewId);
 
         try {
             return getSearchResults(null, registry.search(view.getQuery(), resultStart, maxResults));
@@ -602,7 +617,7 @@ public class RegistryServiceImpl implements RegistryService {
     public Collection<WArtifactView> getArtifactViews() throws RPCException {
         List<WArtifactView> views = new ArrayList<WArtifactView>();
         User currentUser = getCurrentUser();
-        for (ArtifactView v : artifactViewManager.getArtifactViews(currentUser)) {
+        for (View v : artifactViewManager.getArtifactViews(currentUser)) {
             views.add(toWeb(v));
         }
 
@@ -626,7 +641,7 @@ public class RegistryServiceImpl implements RegistryService {
         return views;
     }
 
-    private WArtifactView toWeb(ArtifactView v) throws RPCException {
+    private WArtifactView toWeb(View v) throws RPCException {
         WArtifactView wv = new WArtifactView();
         if (v == null) {
             return wv;
@@ -692,7 +707,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     public String saveArtifactView(WArtifactView wv) throws RPCException {
-        ArtifactView v = fromWeb(wv);
+        View v = fromWeb(wv);
 
         try {
             artifactViewManager.save(v);
@@ -706,8 +721,8 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    private ArtifactView fromWeb(WArtifactView wv) throws RPCException {
-        ArtifactView v = new ArtifactView();
+    private View fromWeb(WArtifactView wv) throws RPCException {
+        View v = new View();
         v.setId(wv.getId());
         v.setName(wv.getName());
         if (!wv.isShared()) {
