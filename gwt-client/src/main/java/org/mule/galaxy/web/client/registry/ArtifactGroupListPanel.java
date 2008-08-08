@@ -56,12 +56,16 @@ public class ArtifactGroupListPanel extends AbstractComposite {
         // create the colum headers
         // the first column is blank on purpose as it's reserved for the checkbox
         table.setText(0, 0, "");
+
         // hardcode the width for the checkbox -- do this in css later
-        table.getCellFormatter().setWidth(0, 0, "20");
+        table.getFlexCellFormatter().setWidth(0, 0, "20");
+        table.getFlexCellFormatter().setWidth(0, 1, "200");
 
         for (int i = 0; i < numCols; i++) {
             int cPos = i + 1;
             table.setText(0, cPos, group.getColumns().get(i));
+            // set each subsequent column to 100
+            if(i > 1) table.getFlexCellFormatter().setWidth(0, i, "100");
         }
 
         // draw the rows for each artifact type in the group
