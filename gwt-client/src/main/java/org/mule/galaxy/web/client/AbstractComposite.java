@@ -130,7 +130,14 @@ public abstract class AbstractComposite extends Composite {
         return titlePanel;
     }
 
-    
+
+    protected Label createTitleText(String title) {
+        Label label = new Label(title);
+        label.setStyleName("right-title");
+        return label;
+    }
+
+
     protected InlineFlowPanel createTitleWithLink(String name, Widget rightWidget) {
         InlineFlowPanel commentTitlePanel = new InlineFlowPanel();
         commentTitlePanel.setStyleName("rightlinked-title-panel");

@@ -132,11 +132,11 @@ public class ViewPanel extends AbstractBrowsePanel {
 
             protected void initializeFields(FlexTable table) {
                 if (NEW_VIEW_ID.equals(viewId)) {
-                    panel.add(createPrimaryTitle("New View"));
+                    panel.add(createTitleText("New View"));
                 } else {
-                    panel.add(createPrimaryTitle("Edit View"));
+                    panel.add(createTitleText("Edit View"));
                 }
-                
+
                 nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
                 nameTB.getTextBox().setVisibleLength(25);
                 table.setText(0, 0, "View Name: ");
