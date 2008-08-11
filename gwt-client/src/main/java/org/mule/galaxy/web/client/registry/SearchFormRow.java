@@ -30,12 +30,11 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.TreeMap;
 
-import org.mule.galaxy.web.client.util.PropertyDescriptorComparator;
 import org.mule.galaxy.web.rpc.SearchPredicate;
-import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 
 public class SearchFormRow
     extends Composite
@@ -98,15 +97,23 @@ public class SearchFormRow
         initWidget(dock);
     }
     
-    public void addPropertySet(String setName, Map<String, String> queryProps) {
-        ArrayList<String> keys = new ArrayList<String>();
-        keys.addAll(queryProps.keySet());
-        Collections.sort(keys);
+    public void addPropertySet(String setName, final Map<String, String> queryProps) {
+        Comparator<String> comparator = new Comparator<String>() {
+            public int compare(String k1, String k2) {
+                String v1 = queryProps.get(k1);
+                String v2 = queryProps.get(k2);
+                
+                return v1.compareTo(v2);
+            }
+        };
+        
+        TreeMap<String, String> sortedQP = new TreeMap<String, String>(comparator);
+        sortedQP.putAll(queryProps);
         
         propertyList.addItem("", "");
         propertyList.addItem(setName, "");
-        for (String key : keys) {
-            propertyList.addItem(queryProps.get(key), key);
+        for (Map.Entry<String, String> e : sortedQP.entrySet()) {
+            propertyList.addItem(e.getValue(), e.getKey());
         }
     }
     
