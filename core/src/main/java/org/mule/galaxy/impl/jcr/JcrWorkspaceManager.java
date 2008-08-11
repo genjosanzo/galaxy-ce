@@ -347,8 +347,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
 
                     // fire the event
                     final EntryVersion entryVersion = result.getEntryVersion();
-                    EntryVersionCreatedEvent event = new EntryVersionCreatedEvent(
-                            entryVersion.getId(), result.getEntry().getPath(), entryVersion.getVersionLabel());
+                    EntryVersionCreatedEvent event = new EntryVersionCreatedEvent(entryVersion);
                     event.setUser(SecurityUtils.getCurrentUser());
                     eventManager.fireEvent(event);
 
@@ -431,8 +430,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
 
                 // fire the event
                 final EntryVersion entryVersion = result.getEntryVersion();
-                EntryVersionCreatedEvent event = new EntryVersionCreatedEvent(
-                        entryVersion.getId(), result.getEntry().getPath(), entryVersion.getVersionLabel());
+                EntryVersionCreatedEvent event = new EntryVersionCreatedEvent(entryVersion);
                 event.setUser(SecurityUtils.getCurrentUser());
                 eventManager.fireEvent(event);
 
@@ -575,8 +573,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                     EntryResult result = approve(session, artifact, null, jcrVersion, user);
 
                     // fire the event
-                    final EntryVersion entryVersion = result.getEntryVersion();
-                    EntryCreatedEvent event = new EntryCreatedEvent(result.getEntry().getId(), entryVersion.getPath());
+                    EntryCreatedEvent event = new EntryCreatedEvent(result.getEntry());
                     event.setUser(SecurityUtils.getCurrentUser());
                     eventManager.fireEvent(event);
 
@@ -744,8 +741,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
 
                 // fire the event
                 EntryResult result = new EntryResult(entry, version, approvals);
-                EntryCreatedEvent event = new EntryCreatedEvent(result.getEntry().getId(),
-                	result.getEntryVersion().getPath());
+                EntryCreatedEvent event = new EntryCreatedEvent(result.getEntry());
                 event.setUser(SecurityUtils.getCurrentUser());
                 eventManager.fireEvent(event);
 
@@ -818,15 +814,12 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                         newLatest.setLatest(true);
                     }
                     
-                    String label = version.getVersionLabel();
-    
+                    EntryVersionDeletedEvent event = new EntryVersionDeletedEvent(version);
+                    
                     ((JcrVersion) version).getNode().remove();
-
-                    final String path = entry.getPath();
     
                     session.save();
 
-                    EntryVersionDeletedEvent event = new EntryVersionDeletedEvent(path, label);
                     event.setUser(SecurityUtils.getCurrentUser());
                     eventManager.fireEvent(event);
 
@@ -846,12 +839,12 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
 
         executeWithRegistryException(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                String path = entry.getPath();
+                EntryDeletedEvent event = new EntryDeletedEvent(entry);
+
                 ((JcrEntry) entry).getNode().remove();
 
                 session.save();
 
-                EntryDeletedEvent event = new EntryDeletedEvent(path);
                 event.setUser(SecurityUtils.getCurrentUser());
                 eventManager.fireEvent(event);
 
@@ -899,13 +892,12 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
 
         executeWithRegistryException(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                String path = wkspc.getPath();
+                WorkspaceDeletedEvent evt = new WorkspaceDeletedEvent(wkspc);
 
                 ((JcrWorkspace) wkspc).getNode().remove();
 
                 session.save();
 
-                WorkspaceDeletedEvent evt = new WorkspaceDeletedEvent(path);
                 evt.setUser(SecurityUtils.getCurrentUser());
                 eventManager.fireEvent(evt);
 

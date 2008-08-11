@@ -1,13 +1,13 @@
 package org.mule.galaxy.event;
 
-public class WorkspaceDeletedEvent extends GalaxyEvent {
+import org.mule.galaxy.Item;
+
+public class WorkspaceDeletedEvent extends ItemEvent {
 
     private String comment;
 
-    private String workspacePath;
-
-    public WorkspaceDeletedEvent(final String workspacePath) {
-        this.workspacePath = workspacePath;
+    public WorkspaceDeletedEvent(Item item) {
+	super(item);
     }
 
     public String getComment() {
@@ -16,9 +16,5 @@ public class WorkspaceDeletedEvent extends GalaxyEvent {
 
     public void setComment(final String comment) {
         this.comment = comment;
-    }
-
-    public String getWorkspacePath() {
-        return workspacePath;
     }
 }

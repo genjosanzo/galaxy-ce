@@ -119,6 +119,7 @@
               <!-- misc -->
               <bean class="org.mule.galaxy.event.listener.activity.LifecycleTransitionEventListener" parent="abstractActivityLogger"/>
 
+              <ref bean="linkDaoTarget"/>
           </list>
       </constructor-arg>
       <constructor-arg>

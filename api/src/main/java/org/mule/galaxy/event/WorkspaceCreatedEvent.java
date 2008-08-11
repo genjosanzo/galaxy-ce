@@ -1,20 +1,11 @@
 package org.mule.galaxy.event;
 
-public class WorkspaceCreatedEvent extends GalaxyEvent {
+import org.mule.galaxy.Item;
 
-    private String workspacePath;
-    private String itemId;
+public class WorkspaceCreatedEvent extends ItemEvent {
 
-    public WorkspaceCreatedEvent(final String itemId, final String workspacePath) {
-        this.itemId = itemId;
-        this.workspacePath = workspacePath;
+    public WorkspaceCreatedEvent(Item item) {
+	super(item);
     }
 
-    public String getWorkspacePath() {
-        return workspacePath;
-    }
-
-    public String getItemId() {
-        return itemId;
-    }
 }

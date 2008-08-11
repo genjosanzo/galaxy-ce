@@ -1,20 +1,11 @@
 package org.mule.galaxy.event;
 
-public class EntryCreatedEvent extends GalaxyEvent {
+import org.mule.galaxy.Item;
 
-    private String artifactPath;
-    private String itemId;
+public class EntryCreatedEvent extends ItemEvent {
 
-    public EntryCreatedEvent(final String itemId, final String path) {
-        this.itemId = itemId;
-        this.artifactPath = path;
+    public EntryCreatedEvent(Item item) {
+	super(item);
     }
 
-    public String getArtifactPath() {
-        return artifactPath;
-    }
-
-    public String getItemId() {
-        return itemId;
-    }
 }

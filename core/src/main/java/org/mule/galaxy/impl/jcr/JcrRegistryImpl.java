@@ -168,7 +168,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 session.save();
 
-                final WorkspaceCreatedEvent event = new WorkspaceCreatedEvent(workspace.getId(), workspace.getPath());
+                final WorkspaceCreatedEvent event = new WorkspaceCreatedEvent(workspace);
                 event.setUser(SecurityUtils.getCurrentUser());
                 eventManager.fireEvent(event);
 
@@ -277,10 +277,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 workspace.setDefaultLifecycle(lifecycleManager.getDefaultLifecycle());
                 workspaces.add(workspace);
 
+                WorkspaceCreatedEvent event = new WorkspaceCreatedEvent(workspace);
                 session.save();
 
-                final String path = workspace.getPath();
-                WorkspaceCreatedEvent event = new WorkspaceCreatedEvent(workspace.getId(), path);
                 event.setUser(SecurityUtils.getCurrentUser());
                 eventManager.fireEvent(event);
 
@@ -568,19 +567,19 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
     
-    public void move(final Entry artifact, final String newWorkspaceId, final String newName) throws RegistryException, AccessException, NotFoundException {
+    public void move(final Entry entry, final String newWorkspaceId, final String newName) throws RegistryException, AccessException, NotFoundException {
         boolean wasRenamed = false;
         boolean wasMoved = false;
-        final String oldPath = artifact.getPath();
+        final String oldPath = entry.getPath();
 
         try {
             // handle artifact renaming
-            accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, artifact);
+            accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, entry);
 
-            if (!artifact.getName().equals(newName)) {
+            if (!entry.getName().equals(newName)) {
                 // save only if name changed
-                artifact.setName(newName);
-                save(artifact);
+                entry.setName(newName);
+                save(entry);
                 wasRenamed = true;
             }
 
@@ -589,19 +588,19 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE, workspace);
 
             // only if workspace changed
-            if (!artifact.getParent().getId().equals(newWorkspaceId)) {
+            if (!entry.getParent().getId().equals(newWorkspaceId)) {
 
                 execute(new JcrCallback() {
                     public Object doInJcr(Session session) throws IOException, RepositoryException {
 
-                        Node aNode = ((JcrArtifact) artifact).getNode();
+                        Node aNode = ((JcrArtifact) entry).getNode();
                         Node wNode = ((JcrWorkspace) workspace).getNode();
 
                         final String newPath = wNode.getPath() + "/" + aNode.getName();
                         session.move(aNode.getPath(), newPath);
 
                         session.save();
-                        ((JcrArtifact) artifact).setWorkspace(workspace);
+                        ((JcrArtifact) entry).setWorkspace(workspace);
                         return null;
                     }
                 });
@@ -611,7 +610,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         } finally {
             // fire an event only if there was an actual action taken, and guarantee it will be fired
             if (wasRenamed || wasMoved) {
-                EntryMovedEvent event = new EntryMovedEvent(oldPath, artifact.getPath());
+                EntryMovedEvent event = new EntryMovedEvent(entry, oldPath);
                 event.setUser(SecurityUtils.getCurrentUser());
                 eventManager.fireEvent(event);
             }

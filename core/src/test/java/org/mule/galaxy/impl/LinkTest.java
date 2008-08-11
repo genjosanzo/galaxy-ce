@@ -222,6 +222,38 @@ public class LinkTest extends AbstractGalaxyTest {
         deps = ptLinks.getReciprocalLinks();
         assertEquals(0, deps.size());
     }
+    
+    public void testDelete() throws Exception{
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+        
+        EntryResult r1 = workspace.createArtifact("application/xml", 
+                                                  "a1.xml", 
+                                                  "0.1", 
+                                                  getResourceAsStream("/mule/hello-config.xml"), 
+                                                  getAdmin());
+        Entry a1 = r1.getEntry();
 
+        EntryResult r2 = workspace.createArtifact("application/xml", 
+                                                  "a2.xml", 
+                                                  "0.1", 
+                                                  getResourceAsStream("/mule/hello-config.xml"), 
+                                                  getAdmin());
+        EntryVersion v2 = r2.getEntryVersion();
+        
+        v2.setProperty(LinkExtension.CONFLICTS, Arrays.asList(new Link(v2, a1, null, false)));
+        
+        a1.delete();
+        
+        Links ptLinks = (Links) v2.getProperty(LinkExtension.CONFLICTS);
+        assertNotNull(ptLinks);
+        
+        Collection<Link> deps = ptLinks.getLinks();
+        assertEquals(0, deps.size());
+        
+        deps = ptLinks.getReciprocalLinks();
+        assertEquals(0, deps.size());
+    }
 
 }

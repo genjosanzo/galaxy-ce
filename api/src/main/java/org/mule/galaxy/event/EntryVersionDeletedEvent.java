@@ -1,19 +1,17 @@
 package org.mule.galaxy.event;
 
-public class EntryVersionDeletedEvent extends GalaxyEvent {
+import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Item;
 
-    private String artifactPath;
+public class EntryVersionDeletedEvent extends ItemEvent {
+
     private String versionLabel;
 
-    public EntryVersionDeletedEvent(final String path, final String versionLabel) {
-        this.artifactPath = path;
-        this.versionLabel = versionLabel;
+    public EntryVersionDeletedEvent(Item item) {
+        super(item);
+        this.versionLabel = ((EntryVersion) item).getVersionLabel();
     }
-
-    public String getArtifactPath() {
-        return artifactPath;
-    }
-
+    
     public String getVersionLabel() {
         return versionLabel;
     }

@@ -1,26 +1,18 @@
 package org.mule.galaxy.event;
 
-public class EntryVersionCreatedEvent extends GalaxyEvent {
+import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Item;
 
-    private String artifactPath;
+public class EntryVersionCreatedEvent extends ItemEvent {
+
     private String versionLabel;
-    private String itemId;
 
-    public EntryVersionCreatedEvent(final String itemId, final String path, final String versionLabel) {
-        this.itemId = itemId;
-        this.artifactPath = path;
-        this.versionLabel = versionLabel;
+    public EntryVersionCreatedEvent(Item item) {
+        super(item);
+        this.versionLabel = ((EntryVersion) item).getVersionLabel();
     }
-
-    public String getArtifactPath() {
-        return artifactPath;
-    }
-
+    
     public String getVersionLabel() {
         return versionLabel;
-    }
-
-    public String getItemId() {
-        return itemId;
     }
 }

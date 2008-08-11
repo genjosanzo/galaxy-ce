@@ -2,13 +2,22 @@ package org.mule.galaxy.event;
 
 import static org.mule.galaxy.event.DefaultEvents.PROPERTY_CHANGED;
 import static org.mule.galaxy.event.DefaultEvents.WORKSPACE_DELETED;
+import org.apache.jackrabbit.commons.AbstractWorkspace;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.annotation.BindToEvent;
 import org.mule.galaxy.event.annotation.BindToEvents;
 import org.mule.galaxy.event.annotation.OnEvent;
 import org.mule.galaxy.impl.event.DefaultEventManager;
+import org.mule.galaxy.impl.workspace.ItemMetadataHandler;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.security.User;
+import org.mule.galaxy.workspace.WorkspaceManager;
 
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.List;
 
 import junit.framework.TestCase;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -109,7 +118,7 @@ public class DefaultEventManagerTest extends TestCase {
         final PropertyChangedEvent event1 = new PropertyChangedEvent(new User(), "/some/artifact", "testProperty", "newValue");
         em.fireEvent(event1);
 
-        final WorkspaceDeletedEvent event2 = new WorkspaceDeletedEvent("test workspace");
+        final WorkspaceDeletedEvent event2 = new WorkspaceDeletedEvent(new DummyWorkspace());
         em.fireEvent(event2);
 
         assertSame(event1, listener.puEvent);
@@ -182,6 +191,53 @@ public class DefaultEventManagerTest extends TestCase {
         @OnEvent
         public void onEvent(PropertyChangedEvent event) {}
 
+    }
+    
+    public static class DummyWorkspace extends org.mule.galaxy.impl.workspace.AbstractWorkspace {
+
+        public DummyWorkspace() {
+            super(null, null);
+        }
+
+        public CommentManager getCommentManager() {
+            return null;
+        }
+
+        public Calendar getCreated() {
+            return null;
+        }
+
+        public Lifecycle getDefaultLifecycle() {
+            return null;
+        }
+
+        public List<Item> getItems() {
+            return null;
+        }
+
+        public LifecycleManager getLifecycleManager() {
+            return null;
+        }
+
+        public String getName() {
+            return null;
+        }
+
+        public Item getParent() {
+            return null;
+        }
+
+        public Calendar getUpdated() {
+            return null;
+        }
+
+        public void setDefaultLifecycle(Lifecycle l) {
+            
+        }
+
+        public void setName(String name) {
+        }
+        
     }
 
 }

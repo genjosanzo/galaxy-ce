@@ -1,14 +1,11 @@
 package org.mule.galaxy.event;
 
-public class EntryDeletedEvent extends GalaxyEvent {
+import org.mule.galaxy.Item;
 
-    private String artifactPath;
+public class EntryDeletedEvent extends ItemEvent {
 
-    public EntryDeletedEvent(final String path) {
-        this.artifactPath = path;
+    public EntryDeletedEvent(Item item) {
+	super(item);
     }
 
-    public String getArtifactPath() {
-        return artifactPath;
-    }
 }

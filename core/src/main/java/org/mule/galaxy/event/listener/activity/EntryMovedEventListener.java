@@ -16,7 +16,7 @@ public class EntryMovedEventListener extends AbstractActivityLoggingListener {
     @Async
     public void onEvent(EntryMovedEvent event) {
         final String message = MessageFormat.format("Entry {0} was moved to {1}",
-                                                    event.getArtifactOldPath(), event.getArtifactNewPath());
+                                                    event.getOldPath(), event.getItemPath());
         getActivityManager().logActivity(event.getUser(), message, ActivityManager.EventType.INFO);
     }
 }

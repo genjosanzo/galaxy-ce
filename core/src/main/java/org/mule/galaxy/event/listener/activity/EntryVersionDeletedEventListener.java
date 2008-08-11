@@ -17,7 +17,7 @@ public class EntryVersionDeletedEventListener extends AbstractActivityLoggingLis
     public void onEvent(EntryVersionDeletedEvent event) {
         final String message = MessageFormat.format(
                 "Version {0} of entry {1} was deleted",
-                event.getVersionLabel(), event.getArtifactPath());
+                event.getVersionLabel(), event.getItemPath());
 
         getActivityManager().logActivity(event.getUser(), message, ActivityManager.EventType.INFO);
     }

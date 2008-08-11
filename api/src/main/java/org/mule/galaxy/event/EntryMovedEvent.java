@@ -1,20 +1,18 @@
 package org.mule.galaxy.event;
 
-public class EntryMovedEvent extends GalaxyEvent {
+import org.mule.galaxy.Item;
 
-    private String artifactOldPath;
-    private String artifactNewPath;
+public class EntryMovedEvent extends ItemEvent {
 
-    public EntryMovedEvent(final String oldPath, final String newPath) {
-        this.artifactOldPath = oldPath;
-        this.artifactNewPath = newPath;
+    private String oldPath;
+
+    public EntryMovedEvent(Item item, final String oldPath) {
+	super(item);
+        this.oldPath = oldPath;
     }
 
-    public String getArtifactOldPath() {
-        return artifactOldPath;
+    public String getOldPath() {
+        return oldPath;
     }
 
-    public String getArtifactNewPath() {
-        return artifactNewPath;
-    }
 }

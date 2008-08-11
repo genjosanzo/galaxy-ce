@@ -15,7 +15,7 @@ public class WorkspaceCreatedEventListener extends AbstractActivityLoggingListen
     @OnEvent
     @Async
     public void onEvent(WorkspaceCreatedEvent event) {
-        final String message = MessageFormat.format("Workspace {0} was created", event.getWorkspacePath());
+        final String message = MessageFormat.format("Workspace {0} was created", event.getItemPath());
         getActivityManager().logActivity(event.getUser(), message, ActivityManager.EventType.INFO);
     }
 }
