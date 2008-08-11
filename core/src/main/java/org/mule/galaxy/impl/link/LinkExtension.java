@@ -141,7 +141,7 @@ public class LinkExtension extends IdentifiableExtension<Link> {
                     dao.delete(l.getId());
                 }
                 reciprocal = null;
-                links = null;
+                this.links = null;
             }
         };
         
