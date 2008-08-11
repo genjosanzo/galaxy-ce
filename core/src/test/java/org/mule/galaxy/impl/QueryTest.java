@@ -5,11 +5,13 @@ import static org.mule.galaxy.query.OpRestriction.like;
 import static org.mule.galaxy.query.OpRestriction.not;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.extension.Extension;
+import org.mule.galaxy.impl.link.LinkExtension;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.OpRestriction.Operator;
@@ -140,17 +142,48 @@ public class QueryTest extends AbstractGalaxyTest {
     }
 
     public void testQueryPropertyListing() throws Exception {
-        /*
-         * Need: property name (contact.name), Description (Contact Name)
-         */
-        for (PropertyDescriptor pd : typeManager.getPropertyDescriptors(true)) {
-            Extension ext = pd.getExtension();
-            
-            if (ext != null) {
-//                Map<String, String> properties = ext.getSearchableProperties(pd);
-//                
-            }
-        }
+        PropertyDescriptor pd = new PropertyDescriptor();
+        pd.setDescription("Contacts");
+        pd.setProperty("contacts");
         
+        Extension ext = registry.getExtension("userExtension");
+        pd.setExtension(ext);
+        
+        typeManager.savePropertyDescriptor(pd);
+        
+        Map<String, String> properties = ext.getQueryProperties(pd);
+        assertTrue(properties.size() > 1);
+        String contacts = properties.get("contacts.name");
+        assertEquals("Contacts - Name", contacts);
+        
+        // Link extension
+        pd = new PropertyDescriptor();
+        pd.setDescription("Link");
+        pd.setProperty("link");
+        
+        Map<String,String> config = new HashMap<String, String>();
+        config.put(LinkExtension.RECIPROCAL_CONFIG_KEY, "Reciprocal");
+        pd.setConfiguration(config);
+        
+        ext = (LinkExtension) applicationContext.getBean("linkExtension");
+        assertNotNull(ext);
+        pd.setExtension(ext);
+        
+        typeManager.savePropertyDescriptor(pd);
+        
+        properties = ext.getQueryProperties(pd);
+        assertEquals(2, properties.size());
+        String property = properties.get("link");
+        assertEquals("Link", property);
+        
+        property = properties.get("link.reciprocal");
+        assertEquals("Reciprocal", property);
+       
+        // Test registry aggregation
+        properties = registry.getQueryProperties();
+        property = properties.get("link.reciprocal");
+        assertEquals("Reciprocal", property);
+        property = properties.get("contacts.name");
+        assertEquals("Contacts - Name", property);
     }
 }

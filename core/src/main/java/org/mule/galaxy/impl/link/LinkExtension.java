@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
@@ -11,6 +12,7 @@ import org.mule.galaxy.Link;
 import org.mule.galaxy.Links;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.extension.IdentifiableExtension;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
@@ -18,7 +20,9 @@ import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.util.SecurityUtils;
 
-public class LinkExtension extends IdentifiableExtension<Link> {
+public class LinkExtension extends IdentifiableExtension<Link> implements Extension {
+    public static final String RECIPROCAL_CONFIG_KEY = "Reciprocal Name";
+
     public static final String CONFLICTS = "conflicts";
 
     public static final String INCLUDES = "includes";
@@ -36,7 +40,7 @@ public class LinkExtension extends IdentifiableExtension<Link> {
     public void initialize() throws Exception {
         setName("Link");
         
-	configuration.add("Reciprocal Name");
+	configuration.add(RECIPROCAL_CONFIG_KEY);
 	
 	add(DEPENDS, "Depends On", "Depended On By");
         add(DOCUMENTS, "Documents", "Documented By");
@@ -156,6 +160,16 @@ public class LinkExtension extends IdentifiableExtension<Link> {
             l.setRegistry(registry);
         }
         return links;
+    }
+
+    @Override
+    public Map<String, String> getQueryProperties(PropertyDescriptor pd) {
+        HashMap<String, String> props = new HashMap<String, String>();
+        props.put(pd.getProperty(), pd.getDescription());
+        props.put(pd.getProperty() + ".reciprocal",
+                  pd.getConfiguration().get(RECIPROCAL_CONFIG_KEY));
+        
+        return props;
     }
 
     @Override

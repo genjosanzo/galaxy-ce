@@ -118,6 +118,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     private List<Extension> extensions;
 
+    private TypeManager typeManager;
+    
     private ApplicationContext context;
     
     public JcrRegistryImpl() {
@@ -1013,6 +1015,26 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return extensions;
     }
 
+    public Map<String, String> getQueryProperties() {
+        HashMap<String, String> props = new HashMap<String, String>();
+        
+        for (PropertyDescriptor pd : typeManager.getPropertyDescriptors(true)) {
+            Extension ext = pd.getExtension();
+            
+            if (ext != null) {
+                Map<String, String> p2 = ext.getQueryProperties(pd);
+                
+                if (p2 != null) {
+                    props.putAll(p2);
+                }
+            } else {
+                props.put(pd.getProperty(), pd.getDescription());
+            }
+        }
+        
+        return props;
+    }
+
     public void setExtensions(List<Extension> extensions) {
         this.extensions = extensions;
     }
@@ -1080,4 +1102,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
     }
+
+    public void setTypeManager(TypeManager typeManager) {
+        this.typeManager = typeManager;
+    }
+    
 }

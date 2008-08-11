@@ -148,15 +148,16 @@
     <property name="accessControlManager" ref="accessControlManager" />
     <property name="activityManager" ref="activityManager" />
     <property name="contentService" ref="contentService" />
+    <property name="eventManager" ref="eventManager"/>
     <property name="functionRegistry" ref="functionRegistry" />
-    <property name="settings" ref="settings" />
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="lifecycleManager" ref="lifecycleManager" />
-    <property name="policyManager" ref="policyManager" />
-    <property name="userManager" ref="userManager" />
-    <property name="queryBuilders" ref="queryBuilders"/>
-    <property name="eventManager" ref="eventManager"/>
     <property name="localWorkspaceManager" ref="localWorkspaceManager"/>
+    <property name="policyManager" ref="policyManager" />
+    <property name="queryBuilders" ref="queryBuilders"/>
+    <property name="settings" ref="settings" />
+    <property name="typeManager" ref="typeManager" />
+    <property name="userManager" ref="userManager" />
   </bean>
   
   <bean id="localWorkspaceManager" parent="txProxyTemplate">
@@ -236,6 +237,13 @@
     <property name="id" value="userExtension"/>
     <property name="name" value="User(s)"/>
     <property name="multivalueSupported" value="false"/>
+    <property name="queryProperties">
+      <map>
+        <entry key="name" value="Name"/>
+        <entry key="email" value="Email"/>
+        <entry key="username" value="Username"/>
+      </map>
+    </property>
   </bean>
 
   <bean id="userQueryBuilder" class="org.mule.galaxy.impl.extension.IdentifiableExtensionQueryBuilder">

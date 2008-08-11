@@ -1,12 +1,16 @@
 package org.mule.galaxy.impl.lifecycle;
 
-import static org.mule.galaxy.util.AbderaUtils.*;
+import static org.mule.galaxy.util.AbderaUtils.assertNotEmpty;
+import static org.mule.galaxy.util.AbderaUtils.createArtifactPolicyExceptionResponse;
+import static org.mule.galaxy.util.AbderaUtils.newErrorMessage;
+import static org.mule.galaxy.util.AbderaUtils.throwMalformed;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -21,18 +25,16 @@ import org.mule.galaxy.Workspace;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.event.LifecycleTransitionEvent;
 import org.mule.galaxy.extension.AtomExtension;
-import org.mule.galaxy.extension.Extension;
+import org.mule.galaxy.impl.extension.AbstractExtension;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.lifecycle.TransitionException;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.util.Constants;
-import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.SecurityUtils;
 
-public class LifecycleExtension implements Extension, AtomExtension {
+public class LifecycleExtension extends AbstractExtension implements AtomExtension {
     private static final QName LIFECYCLE_QNAME = new QName(Constants.ATOM_NAMESPACE, "lifecycle");
     private static final Collection<QName> UNDERSTOOD = new ArrayList<QName>();
     
@@ -40,12 +42,14 @@ public class LifecycleExtension implements Extension, AtomExtension {
         UNDERSTOOD.add(LIFECYCLE_QNAME);
     }
     
-    private String id;
     private LifecycleManager lifecycleManager;
     private EventManager eventManager;
     
-    public String getName() {
-        return "Lifecycle";
+    public LifecycleExtension() {
+        name = "Lifecycle";
+        
+        queryProperties = new HashMap<String, String>();
+        queryProperties.put("phase", "");
     }
 
     public Object get(Item item, PropertyDescriptor pd, boolean getWithNoData) {
@@ -171,11 +175,7 @@ public class LifecycleExtension implements Extension, AtomExtension {
         availPhases.setText(sb.toString());
         return availPhases;
     }
-
-    public List<String> getPropertyDescriptorConfigurationKeys() {
-        return new ArrayList<String>();
-    }
-
+    
     public boolean isMultivalueSupported() {
         return false;
     }
@@ -190,14 +190,6 @@ public class LifecycleExtension implements Extension, AtomExtension {
 
     public void setLifecycleManager(LifecycleManager lifecycleManager) {
         this.lifecycleManager = lifecycleManager;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
     
 }
