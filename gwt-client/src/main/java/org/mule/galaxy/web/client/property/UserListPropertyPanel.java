@@ -76,9 +76,9 @@ public class UserListPropertyPanel extends ListPropertyPanel {
         userLB.removeItem(idx);
     }
 
-
-    protected String getRenderedText(String id) {
-        WUser user = getUser(id);
+    @Override
+    protected String getRenderedText(Object id) {
+        WUser user = getUser((String) id);
         
         if (user != null) {
             return user.getName();

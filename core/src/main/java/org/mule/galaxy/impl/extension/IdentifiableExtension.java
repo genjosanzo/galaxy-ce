@@ -25,6 +25,9 @@ public class IdentifiableExtension<T extends Identifiable> extends AbstractExten
     @SuppressWarnings("unchecked")
     public Object get(Item entry, PropertyDescriptor pd, boolean getWithNoData) {
         Object storedValue = entry.getInternalProperty(pd.getProperty());
+        if (storedValue == null) {
+            return null;
+        }
         if (pd.isMultivalued()) {
             List<Identifiable> values = new ArrayList<Identifiable>();
             List<String> ids = (List<String>)storedValue;
