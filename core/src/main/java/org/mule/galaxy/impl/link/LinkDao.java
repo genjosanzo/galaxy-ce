@@ -11,4 +11,6 @@ public interface LinkDao extends Dao<Link> {
     List<Link> getReciprocalLinks(final Item item, final String property);
 
     List<Link> getLinks(Item item, String property);
+
+    void deleteLinks(Item item, String property);
 }

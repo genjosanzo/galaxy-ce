@@ -1,20 +1,22 @@
 package org.mule.galaxy.impl.link;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.InvalidQueryException;
-
-import org.springmodules.jcr.JcrCallback;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
 
 import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Link;
-import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+import org.springmodules.jcr.JcrCallback;
 
 public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao {
 
@@ -77,4 +79,35 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao 
         
         return query(q.toString(), session);
     }
+    
+    public void deleteLinks(final Item item, final String property) {
+        execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                deleteLinks(item, property, session);
+                return null;
+            }
+        });
+    }
+
+
+    protected void deleteLinks(Item item, String property, Session session) throws IOException, RepositoryException {
+        StringBuilder stmt = new StringBuilder();
+        stmt.append("//").append(rootNode)
+         .append("/*[@item = '")
+         .append(item.getId())
+         .append("' and property = '")
+         .append(property)
+         .append("']");
+        
+        QueryManager qm = getQueryManager(session);
+        Query q = qm.createQuery(stmt.toString(), Query.XPATH);
+        
+        QueryResult qr = q.execute();
+        
+        for (NodeIterator nodes = qr.getNodes(); nodes.hasNext();) {
+            Node node = nodes.nextNode();
+            node.remove();
+        }
+    }
+
 }

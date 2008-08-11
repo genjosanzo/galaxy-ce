@@ -358,42 +358,48 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 try {
                     String type = node.getPrimaryNodeType().getName();
                     
-                    if (type.equals("galaxy:artifact")) {
-                        Artifact a = buildArtifact(node);
-    
-                        accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
-                        
-                        return a;
-                    } else if (type.equals("galaxy:artifactVersion")) {
-                        Artifact a = buildArtifact(node.getParent());
-    
-                        accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
-                        
-                        return a.getVersion(node.getName());
-                    } else if (type.equals("galaxy:entry")) {
-                        Entry a = buildEntry(node);
-    
-                        accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
-                        
-                        return a;
-                    } else if (type.equals("galaxy:entryVersion")) {
-                        Entry a = buildEntry(node.getParent());
-    
-                        accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
-                        
-                        return a.getVersion(node.getName());
-                    } else {
-                         Workspace wkspc = buildWorkspace(node);
-                         
-                         accessControlManager.assertAccess(Permission.READ_WORKSPACE, wkspc);
-                         
-                         return wkspc;
-                    }
+                    return build(node, type);
                 } catch (AccessException e){
                     throw new RuntimeException(e);
                 }
             }
+
         });
+    }
+    
+    protected Item build(Node node, String type) throws RepositoryException, ItemNotFoundException,
+        AccessDeniedException, AccessException {
+        if (type.equals("galaxy:artifact")) {
+            Artifact a = buildArtifact(node);
+    
+            accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
+            
+            return a;
+        } else if (type.equals("galaxy:artifactVersion")) {
+            Artifact a = buildArtifact(node.getParent());
+    
+            accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
+            
+            return a.getVersion(node.getName());
+        } else if (type.equals("galaxy:entry")) {
+            Entry a = buildEntry(node);
+    
+            accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
+            
+            return a;
+        } else if (type.equals("galaxy:entryVersion")) {
+            Entry a = buildEntry(node.getParent());
+    
+            accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
+            
+            return a.getVersion(node.getName());
+        } else {
+             Workspace wkspc = buildWorkspace(node);
+             
+             accessControlManager.assertAccess(Permission.READ_WORKSPACE, wkspc);
+             
+             return wkspc;
+        }
     }
     public Item getItemByPath(String path) throws RegistryException, NotFoundException, AccessException {
         try {
@@ -416,21 +422,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             Node node = wNode.getNode(path);
             String type = node.getPrimaryNodeType().getName();
             
-            if (type.equals("galaxy:workspace")) {
-                Workspace w = buildWorkspace(node);
-                accessControlManager.assertAccess(Permission.READ_WORKSPACE, w);
-                return w;
-            } else if (type.equals("galaxy:artifact")) {
-            Artifact a = buildArtifact(node);
-                accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
-                return a;
-            } else if (type.equals("galaxy:artifactVersion")) {
-            Artifact a = buildArtifact(node.getParent());
-                accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
-                return a.getVersion(node.getName());
-            }
-            
-            throw new NotFoundException(path);
+            return build(node, type);
         } catch (PathNotFoundException e) {
             throw new NotFoundException(e);
         } catch (RepositoryException e) {

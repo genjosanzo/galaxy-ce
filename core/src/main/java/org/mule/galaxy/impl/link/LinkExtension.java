@@ -88,6 +88,8 @@ public class LinkExtension extends IdentifiableExtension<Link> {
                     throw new RuntimeException(e);
                 }
             }
+        } else if (value == null) {
+            ((LinkDao) dao).deleteLinks(item, pd.getProperty());
         } else {
             throw new UnsupportedOperationException();
         }

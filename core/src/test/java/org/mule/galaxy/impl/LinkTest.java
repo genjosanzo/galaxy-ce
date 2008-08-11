@@ -210,5 +210,16 @@ public class LinkTest extends AbstractGalaxyTest {
         
         assertTrue(conflicts);
         assertFalse(supercedes);
+        
+        version.setProperty(LinkExtension.CONFLICTS, null);
+        
+        ptLinks = (Links) version.getProperty(LinkExtension.CONFLICTS);
+        assertNotNull(ptLinks);
+        
+        deps = ptLinks.getLinks();
+        assertEquals(0, deps.size());
+        
+        deps = ptLinks.getReciprocalLinks();
+        assertEquals(0, deps.size());
     }
 }

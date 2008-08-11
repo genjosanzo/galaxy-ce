@@ -43,6 +43,8 @@ public class EntryTest extends AbstractGalaxyTest {
         assertNotNull(ev);
         
         assertEquals("2.0", ev.getVersionLabel());
+        
+        e = (Entry)registry.getItemByPath(e.getPath());
     }
     
     public void testQueries() throws Exception {
