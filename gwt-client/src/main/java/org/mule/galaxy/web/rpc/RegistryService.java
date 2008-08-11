@@ -23,6 +23,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.mule.galaxy.web.client.RPCException;
@@ -127,7 +128,10 @@ public interface RegistryService extends RemoteService {
     
     List<WPropertyDescriptor> getPropertyDescriptors(boolean includeIndex) throws RPCException;
     
+    Map<String, String> getQueryProperties() throws RPCException;
+    
     List<WExtensionInfo> getExtensions() throws RPCException;
+    
     
     void move(String entryId, String workspaceId, String name) throws RPCException, ItemNotFoundException;
     

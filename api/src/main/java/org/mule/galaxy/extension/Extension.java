@@ -1,6 +1,7 @@
 package org.mule.galaxy.extension;
 
 import java.util.List;
+import java.util.Map;
 
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.Item;
@@ -70,10 +71,10 @@ public interface Extension extends Identifiable {
      */
     List<String> getPropertyDescriptorConfigurationKeys();
 
-//    /**
-//     * Properties which this extension supports searching for.
-//     * @param pd
-//     * @return
-//     */
-//    Map<String, String> getSearchableProperties(PropertyDescriptor pd);
+    /**
+     * Properties which this extension supports searching for.
+     * @param pd
+     * @return
+     */
+    Map<String, String> getQueryProperties(PropertyDescriptor pd);
 }

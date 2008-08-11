@@ -32,6 +32,7 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
@@ -47,7 +48,7 @@ public class SearchForm
     protected FlowPanel panel;
     private FlowPanel fieldPanel;
     private Set<SearchFormRow> rows;
-    private List<WPropertyDescriptor> propertyDescriptors;
+    private Map<String, String> propertyDescriptors;
     private Button searchButton;
     private Button clearButton;
     private InlineFlowPanel buttonPanel;
@@ -66,11 +67,9 @@ public class SearchForm
         
         fieldPanel = new FlowPanel();
         
-        galaxy.getRegistryService().getPropertyDescriptors(true, new AbstractCallback(this) {
-            
-            @SuppressWarnings("unchecked")
-            public void onSuccess(Object o) {
-                initArtifactProperties((List<WPropertyDescriptor>) o);
+        galaxy.getRegistryService().getQueryProperties(new AbstractCallback<Map<String, String>>(this) {
+            public void onSuccess(Map<String, String> o) {
+                initQueryProperties(o);
             }
         });
 
@@ -158,8 +157,8 @@ public class SearchForm
         searchButton.addClickListener(listener);
     }
     
-    public void initArtifactProperties(List<WPropertyDescriptor> pds) {
-        propertyDescriptors = pds;
+    public void initQueryProperties(Map<String, String> props) {
+        propertyDescriptors = props;
         for (Iterator<SearchFormRow> itr = rows.iterator(); itr.hasNext();) {
             SearchFormRow row = itr.next();
             row.addPropertySet("----", propertyDescriptors);

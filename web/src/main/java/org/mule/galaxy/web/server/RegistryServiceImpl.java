@@ -1337,6 +1337,11 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
+    
+    public Map<String, String> getQueryProperties() throws RPCException {
+        return registry.getQueryProperties();
+    }
+
     public void setDescription(String entryId, String description) throws RPCException, ItemNotFoundException {
         try {
             Artifact artifact = registry.getArtifact(entryId);

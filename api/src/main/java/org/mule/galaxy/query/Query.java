@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Entry;
+import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.Message;
 
@@ -213,6 +215,12 @@ public class Query {
             selectTypeCls = Artifact.class;
         } else if (selectType.equals("artifactVersion")) {
             selectTypeCls = ArtifactVersion.class;
+        } else if (selectType.equals("entry")) {
+            selectTypeCls = Entry.class;
+        } else if (selectType.equals("entryVersion")) {
+            selectTypeCls = EntryVersion.class;
+        } else if (selectType.equals("*")) {
+            selectTypeCls = null;
         } else {
             throw new QueryException(new Message("UNKNOWN_SELECT_TYPE", BundleUtils.getBundle(Query.class), selectType));
         }

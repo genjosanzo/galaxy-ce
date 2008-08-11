@@ -28,9 +28,10 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 
 import org.mule.galaxy.web.client.util.PropertyDescriptorComparator;
 import org.mule.galaxy.web.rpc.SearchPredicate;
@@ -60,7 +61,6 @@ public class SearchFormRow
         propertyList.addItem("Description", "description");
         propertyList.addItem("Document Type", "documentType");
         propertyList.addItem("Name", "name");
-        propertyList.addItem("Phase", "phase");
         propertyList.addItem("Version", "version");
         
         propertyList.setSelectedIndex(3);
@@ -98,15 +98,15 @@ public class SearchFormRow
         initWidget(dock);
     }
     
-    public void addPropertySet(String setName, List<WPropertyDescriptor> propertyDescriptors) {
-        Collections.sort(propertyDescriptors, new PropertyDescriptorComparator());
+    public void addPropertySet(String setName, Map<String, String> queryProps) {
+        ArrayList<String> keys = new ArrayList<String>();
+        keys.addAll(queryProps.keySet());
+        Collections.sort(keys);
         
         propertyList.addItem("", "");
         propertyList.addItem(setName, "");
-        for (Iterator itr = propertyDescriptors.iterator(); itr.hasNext();) {
-            WPropertyDescriptor pd = (WPropertyDescriptor) itr.next();
-
-            propertyList.addItem(pd.getDescription(), pd.getName());
+        for (String key : keys) {
+            propertyList.addItem(queryProps.get(key), key);
         }
     }
     

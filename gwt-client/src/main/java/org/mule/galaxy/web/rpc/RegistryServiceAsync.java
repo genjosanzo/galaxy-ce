@@ -22,6 +22,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 import org.mule.galaxy.web.client.RPCException;
@@ -128,6 +129,8 @@ public interface RegistryServiceAsync {
     void deletePropertyDescriptor(String id, AsyncCallback c);
 
     void getPropertyDescriptors(boolean includeIndexes, AsyncCallback abstractCallback);
+    
+    void getQueryProperties(AsyncCallback<Map<String, String>> callback);
     
     void transition(Collection artifactIds, String lifecycle, String phase, AsyncCallback c);
 
