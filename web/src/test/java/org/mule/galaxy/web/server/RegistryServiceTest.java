@@ -23,8 +23,8 @@ import org.mule.galaxy.query.Query;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.web.rpc.EntryGroup;
-import org.mule.galaxy.web.rpc.EntryVersionInfo;
 import org.mule.galaxy.web.rpc.EntryInfo;
+import org.mule.galaxy.web.rpc.EntryVersionInfo;
 import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
 import org.mule.galaxy.web.rpc.LinkInfo;
 import org.mule.galaxy.web.rpc.RegistryService;
@@ -34,6 +34,7 @@ import org.mule.galaxy.web.rpc.WArtifactType;
 import org.mule.galaxy.web.rpc.WComment;
 import org.mule.galaxy.web.rpc.WIndex;
 import org.mule.galaxy.web.rpc.WLifecycle;
+import org.mule.galaxy.web.rpc.WLinks;
 import org.mule.galaxy.web.rpc.WPolicyException;
 import org.mule.galaxy.web.rpc.WProperty;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
@@ -106,7 +107,8 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         List<EntryInfo> rows = g1.getRows();
         assertEquals(2, rows.size());
 
-        Collection<LinkInfo> deps = gwtRegistry.getLinks(info.getId(), LinkExtension.DEPENDS);
+        WLinks links = gwtRegistry.getLinks(info.getId(), LinkExtension.DEPENDS);
+        List<LinkInfo> deps = links.getLinks();
         assertEquals(1, deps.size());
 
         // Test reretrieving the artifact

@@ -127,8 +127,7 @@ public abstract class AbstractEntryCollection
         
         boolean showHidden = BooleanUtils.toBoolean(request.getParameter("showHiddenProperties"));
        
-        for (Iterator<PropertyInfo> props = entryObj.getProperties(); props.hasNext();) {
-            PropertyInfo p = props.next();
+        for (PropertyInfo p : entryObj.getProperties()) {
             PropertyDescriptor pd = p.getPropertyDescriptor();
             
             if (p.isVisible() || showHidden) {

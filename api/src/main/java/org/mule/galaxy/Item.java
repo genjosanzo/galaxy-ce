@@ -1,5 +1,6 @@
 package org.mule.galaxy;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.mule.galaxy.policy.PolicyException;
@@ -42,7 +43,7 @@ public interface Item {
     
     boolean hasProperty(String name);
 
-    Iterator<PropertyInfo> getProperties();
+    Collection<PropertyInfo> getProperties();
     
     PropertyInfo getPropertyInfo(String name);
 

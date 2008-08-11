@@ -48,7 +48,9 @@ public class LifecycleExtension implements Extension, AtomExtension {
         return "Lifecycle";
     }
 
-    public Object getExternalValue(Item entry, PropertyDescriptor pd, Object storedValue) {
+    public Object get(Item item, PropertyDescriptor pd, boolean getWithNoData) {
+        Object storedValue = item.getInternalProperty(pd.getProperty());
+        
         if (storedValue == null) {
             return null;
         }
@@ -57,27 +59,29 @@ public class LifecycleExtension implements Extension, AtomExtension {
         return lifecycleManager.getPhaseById((String) ids.get(1));
     }
 
-    public Object getInternalValue(Item item, PropertyDescriptor pd, Object value)
-            throws PolicyException {
+    public void store(Item item, PropertyDescriptor pd, Object value)
+            throws PolicyException, PropertyException {
         Phase phase = (Phase) value;
 
+        Object valueToStore;
         if (value == null) {
-            return null;
+            valueToStore = null;
+        } else {
+            if (!lifecycleManager.isTransitionAllowed(item, pd.getProperty(), phase)) {
+                throw new PolicyException(item, "Transition to phase " + phase + " is not allowed.");
+            }
+            
+            LifecycleTransitionEvent event = new LifecycleTransitionEvent(
+                    item.getParent().getPath(),
+                    "", 
+                    phase.getName(), 
+                    phase.getLifecycle().getName());
+            event.setUser(SecurityUtils.getCurrentUser());
+            eventManager.fireEvent(event);
+            valueToStore = Arrays.asList(phase.getLifecycle().getId(), phase.getId());
         }
         
-        if (!lifecycleManager.isTransitionAllowed(item, pd.getProperty(), phase)) {
-            throw new PolicyException(item, "Transition to phase " + phase + " is not allowed.");
-        }
-        
-        LifecycleTransitionEvent event = new LifecycleTransitionEvent(
-                item.getParent().getPath(),
-                "", 
-                phase.getName(), 
-                phase.getLifecycle().getName());
-        event.setUser(SecurityUtils.getCurrentUser());
-        eventManager.fireEvent(event);
-        
-        return Arrays.asList(phase.getLifecycle().getId(), phase.getId());
+        item.setInternalProperty(pd.getProperty(), valueToStore);
     }
     
     public void validate(Item item, PropertyDescriptor pd, Object valueToStore) throws PolicyException {

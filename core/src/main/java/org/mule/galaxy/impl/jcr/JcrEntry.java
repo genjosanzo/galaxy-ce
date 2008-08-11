@@ -1,41 +1,31 @@
 package org.mule.galaxy.impl.jcr;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.xml.namespace.QName;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.EntryResult;
-import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Entry;
+import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
-import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.User;
 import org.mule.galaxy.type.Type;
-import org.mule.galaxy.util.QNameUtil;
 import org.springmodules.jcr.JcrCallback;
 
 public class JcrEntry extends AbstractJcrItem implements Entry {
@@ -220,7 +210,7 @@ public class JcrEntry extends AbstractJcrItem implements Entry {
     }
     
     @Override
-    public Iterator<PropertyInfo> getProperties() {
+    public Collection<PropertyInfo> getProperties() {
         return getDefaultOrLastVersion().getProperties();
     }
 

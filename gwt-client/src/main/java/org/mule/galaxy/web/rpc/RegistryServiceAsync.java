@@ -63,6 +63,8 @@ public interface RegistryServiceAsync {
                       int start, int maxResults, 
                       AsyncCallback callback);
     
+    void suggestEntries(String query, AsyncCallback<Collection<EntryInfo>> callback);
+    
     void getIndexes(AsyncCallback callback);
 
     void getIndex(String id, AsyncCallback c);
@@ -73,7 +75,15 @@ public interface RegistryServiceAsync {
     
     void getExtensions(AsyncCallback callback);
     
-    void getLinks(String artifactId, String property, AsyncCallback callback);
+    
+    void itemExists(String path, AsyncCallback<Boolean> callback);
+
+    void addLink(String itemId, String property, String path, AsyncCallback<LinkInfo> callback);
+    
+    void removeLink(String itemId, String property, String linkId, AsyncCallback callback);
+    
+    void getLinks(String artifactId, String property, AsyncCallback<WLinks> callback);
+
 
     void getEntry(String artifactId, AsyncCallback callback);
     

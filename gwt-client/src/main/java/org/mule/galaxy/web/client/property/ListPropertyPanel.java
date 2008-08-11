@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,7 +18,10 @@ import org.mule.galaxy.web.client.util.InlineFlowPanel;
  * Encapsulate a list of properties that is always editable. 
  */
 public abstract class ListPropertyPanel extends AbstractEditPropertyPanel {
-    protected List<String> values;
+    protected List<Object> values;
+    protected Collection<String> valuesToSave = new ArrayList<String>();
+    protected Collection<String> valuesToDelete = new ArrayList<String>();
+    
     protected FlowPanel editPanel;
     protected InlineFlowPanel editValuesPanel;
     protected InlineFlowPanel viewValuesPanel;
@@ -32,9 +36,9 @@ public abstract class ListPropertyPanel extends AbstractEditPropertyPanel {
         
         viewValuesPanel = new InlineFlowPanel();
         
-        values = property.getListValue();
-        if (values == null) {
-            values = new ArrayList<String>();
+        values = new ArrayList<Object>();
+        if (property.getListValue() != null) {
+            values.addAll(property.getListValue());
         }
         
         super.initialize();
@@ -49,29 +53,42 @@ public abstract class ListPropertyPanel extends AbstractEditPropertyPanel {
     }
     
     protected void redraw() {
-        editValuesPanel.clear();
-        viewValuesPanel.clear();
+        redrawEditPanel();
         
+        redrawViewPanel();
+    }
+
+    protected void redrawViewPanel() {
+        viewValuesPanel.clear();
         StringBuffer sb = new StringBuffer();
-        for (Iterator<String> itr = values.iterator(); itr.hasNext();) {
-            String id = itr.next();
-            editValuesPanel.add(createLabel(id));
+        for (Iterator<? extends Object> itr = values.iterator(); itr.hasNext();) {
+            Object value = itr.next();
             
             if (sb.length() > 0) {
                 sb.append(", ");
             }
-            sb.append(getRenderedText(id));
+            sb.append(getRenderedText(value));
         }
+        
         viewValuesPanel.add(new Label(sb.toString()));
     }
 
-    protected Widget createLabel(final String id) {
+    protected void redrawEditPanel() {
+        editValuesPanel.clear();
+
+        for (Iterator<? extends Object> itr = values.iterator(); itr.hasNext();) {
+            Object value = itr.next();
+            editValuesPanel.add(createLabel(value));
+        }
+    }
+
+    protected Widget createLabel(final Object value) {
         final SimplePanel container = new SimplePanel();
         container.setStyleName("listPropertyContainer");
         
         final InlineFlowPanel valuePanel = new InlineFlowPanel();
         valuePanel.setStyleName("listProperty");
-        valuePanel.add(newLabel(getRenderedText(id), "listPropertyLeft"));
+        valuePanel.add(newLabel(getRenderedText(value), "listPropertyLeft"));
         final Label right = newLabel("x", "listPropertyRight");
         right.addMouseListener(new MouseListenerAdapter() {
             public void onMouseEnter(Widget sender) {
@@ -85,10 +102,10 @@ public abstract class ListPropertyPanel extends AbstractEditPropertyPanel {
         right.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
-                values.remove(id);
+                values.remove(value);
                 editValuesPanel.remove(container);
                 
-                removeLabel(id);
+                removeLabel(value);
             }
             
         });
@@ -99,18 +116,18 @@ public abstract class ListPropertyPanel extends AbstractEditPropertyPanel {
         return container;
     }
 
-    protected void removeLabel(String id) {
+    protected void removeLabel(Object value) {
     }
 
-    protected String getRenderedText(String id) {
-        return id;
+    protected String getRenderedText(Object value) {
+        return value.toString();
     }
 
     protected Object getValueToSave() {
         return values;
     }
 
-    protected void onSave(Object value) {
+    protected void onSave(Object value, Object response) {
         
     }
 

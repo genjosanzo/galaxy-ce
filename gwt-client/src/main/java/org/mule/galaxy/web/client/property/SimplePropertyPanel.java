@@ -41,7 +41,7 @@ public class SimplePropertyPanel extends AbstractEditPropertyPanel {
         valueTB.setText((String) getProperty().getValue());
     }
 
-    protected void onSave(Object value) {
+    protected void onSave(Object value, Object response) {
         valueLabel.setText(getRenderedText());
         valueTB.setText((String) value);
     }

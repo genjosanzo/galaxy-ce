@@ -175,7 +175,7 @@ public class LifecyclePropertyPanel extends AbstractEditPropertyPanel {
         valueLabel.setText(lifecycle.getName() + " - " + phase.getName());
     }
     
-    protected void onSave(Object value) {
+    protected void onSave(Object value, Object response) {
         phase = getSelectedPhase();
         lifecycle = getSelectedLifecycle();
         updateLabel();

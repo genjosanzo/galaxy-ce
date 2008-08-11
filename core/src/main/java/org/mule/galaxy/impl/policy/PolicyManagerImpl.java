@@ -166,8 +166,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                          Lifecycle lifecycle,
                          Collection<Phase> phases,
                          Policy... policies) {
-        for (Iterator<PropertyInfo> itr = itemWithLifecycle.getProperties(); itr.hasNext();) {
-            PropertyInfo pi = (PropertyInfo) itr.next();
+        for (PropertyInfo pi : itemWithLifecycle.getProperties()) {
             PropertyDescriptor pd = pi.getPropertyDescriptor();
             if (pd != null && pd.getExtension() instanceof LifecycleExtension) {
                 Phase p = (Phase) pi.getValue();
@@ -206,8 +205,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                          Item itemWithLifecycle,
                          Map<Item, List<ApprovalMessage>> failures, 
                          Collection<PolicyInfo> pis) {
-        for (Iterator<PropertyInfo> itr = itemWithLifecycle.getProperties(); itr.hasNext();) {
-            PropertyInfo pi = (PropertyInfo) itr.next();
+        for (PropertyInfo pi : itemWithLifecycle.getProperties()) {
             PropertyDescriptor pd = pi.getPropertyDescriptor();
             if (pd != null && pd.getExtension() instanceof LifecycleExtension) {
                 Phase p = (Phase) pi.getValue();
@@ -456,8 +454,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         final Set<PolicyInfo> activePolicies = new HashSet<PolicyInfo>();
         jcrTemplate.execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                for (Iterator<PropertyInfo> itr = item.getProperties(); itr.hasNext();) {
-                    PropertyInfo pi = itr.next();
+                for (PropertyInfo pi : item.getProperties()) {
                     PropertyDescriptor pd = pi.getPropertyDescriptor();
                     if (pd != null && pd.getExtension() instanceof LifecycleExtension) {
                         Phase phase = (Phase) pi.getValue();

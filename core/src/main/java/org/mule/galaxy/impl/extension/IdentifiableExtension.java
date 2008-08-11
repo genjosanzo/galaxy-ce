@@ -9,6 +9,7 @@ import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.type.PropertyDescriptor;
@@ -24,7 +25,8 @@ public class IdentifiableExtension<T extends Identifiable> implements Extension 
     protected boolean isMultivalueSupported = true;
     
     @SuppressWarnings("unchecked")
-    public Object getExternalValue(Item entry, PropertyDescriptor pd, Object storedValue) {
+    public Object get(Item entry, PropertyDescriptor pd, boolean getWithNoData) {
+        Object storedValue = entry.getInternalProperty(pd.getProperty());
 	if (pd.isMultivalued()) {
 	    List<Identifiable> values = new ArrayList<Identifiable>();
 	    List<String> ids = (List<String>) storedValue;
@@ -58,8 +60,9 @@ public class IdentifiableExtension<T extends Identifiable> implements Extension 
         return name;
     }
 
-    public Object getInternalValue(Item entry, PropertyDescriptor pd, Object value)
-	    throws PolicyException {
+    public void store(Item entry, PropertyDescriptor pd, Object value)
+	    throws PolicyException, PropertyException {
+	Object storeValue;
 	if (value instanceof Collection) {
 	    ArrayList<String> ids = new ArrayList<String>();
 	    for (Object o : (Collection)value) {
@@ -67,14 +70,16 @@ public class IdentifiableExtension<T extends Identifiable> implements Extension 
 		ensureSaved(i);
 		ids.add(i.getId());
 	    }
-	    return ids;
+	    storeValue = ids;
 	} else if (value instanceof Identifiable) {
 	    Identifiable i = (Identifiable) value;
 	    ensureSaved(i);
-	    return i.getId();
+	    storeValue = i.getId();
 	} else {
-	    return null;
+	    storeValue = null;
 	}
+
+        entry.setInternalProperty(pd.getProperty(), storeValue);
     }
 
     @SuppressWarnings("unchecked")

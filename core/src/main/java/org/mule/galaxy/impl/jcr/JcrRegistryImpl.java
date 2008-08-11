@@ -645,7 +645,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         
                 QueryManager qm = getQueryManager(session);
                 
-                Set<Object> artifacts = new HashSet<Object>();
+                Set<Item> artifacts = new HashSet<Item>();
                 
                 boolean selectVersions = false;
                 Class selectType = query.getSelectType();

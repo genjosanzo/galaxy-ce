@@ -87,12 +87,12 @@ import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.TypeManager;
-import org.mule.galaxy.view.View;
 import org.mule.galaxy.view.ArtifactViewManager;
+import org.mule.galaxy.view.View;
 import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.rpc.EntryGroup;
-import org.mule.galaxy.web.rpc.EntryVersionInfo;
 import org.mule.galaxy.web.rpc.EntryInfo;
+import org.mule.galaxy.web.rpc.EntryVersionInfo;
 import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
@@ -101,7 +101,6 @@ import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.WActivity;
 import org.mule.galaxy.web.rpc.WApprovalMessage;
-import org.mule.galaxy.web.rpc.WPolicy;
 import org.mule.galaxy.web.rpc.WArtifactType;
 import org.mule.galaxy.web.rpc.WArtifactView;
 import org.mule.galaxy.web.rpc.WComment;
@@ -109,7 +108,9 @@ import org.mule.galaxy.web.rpc.WExtensionInfo;
 import org.mule.galaxy.web.rpc.WGovernanceInfo;
 import org.mule.galaxy.web.rpc.WIndex;
 import org.mule.galaxy.web.rpc.WLifecycle;
+import org.mule.galaxy.web.rpc.WLinks;
 import org.mule.galaxy.web.rpc.WPhase;
+import org.mule.galaxy.web.rpc.WPolicy;
 import org.mule.galaxy.web.rpc.WPolicyException;
 import org.mule.galaxy.web.rpc.WProperty;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
@@ -423,6 +424,35 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
+    public Collection<EntryInfo> suggestEntries(String query) throws RPCException {
+        try {
+            Query q = new Query().add(OpRestriction.like("name", query));
+            
+            q.setMaxResults(10);
+            
+            SearchResults results = registry.search(q);
+            
+            ArrayList<EntryInfo> entries = new ArrayList<EntryInfo>();
+            for (Item i : results.getResults()) {
+                EntryInfo info = new EntryInfo();
+                Entry entry = (Entry) i;
+                
+                info.setId(entry.getId());
+                info.setWorkspaceId(entry.getParent().getId());
+                info.setName(entry.getName());
+                info.setPath(entry.getParent().getPath());
+                
+                entries.add(info);
+            }
+            return entries;
+        } catch (QueryException e) {
+            throw new RPCException(e.getMessage());
+        } catch (RegistryException e) {
+            log.error("Could not query the registry.", e);
+            throw new RPCException(e.getMessage());
+        }
+    }
+
     private Query getQuery(Set<SearchPredicate> searchPredicates, int start, int maxResults) {
         Query q = new Query().orderBy("artifactType");
 
@@ -530,6 +560,7 @@ public class RegistryServiceImpl implements RegistryService {
         info.setName(a.getName());
         info.setPath(a.getParent().getPath());
         int column = 0;
+        
         for (int i = 0; i < view.getColumnNames().length; i++) {
             if (!extended && view.isSummary(i)) {
                 info.setColumn(column, view.getColumnValue(a, i));
@@ -838,8 +869,28 @@ public class RegistryServiceImpl implements RegistryService {
         return idx;
     }
 
-    public Collection<LinkInfo> getLinks(String itemId, String property) throws RPCException {
+    public boolean itemExists(String path) throws RPCException {
         try {
+            registry.getItemByPath(path);
+            return true;
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            return false;
+        } catch (AccessException e) {
+            // Not sure if this is the right thing to do, but
+            // I think we should err on the side of not showing what
+            // is in the registry
+            return false;
+        }
+            
+    }
+
+    public WLinks getLinks(String itemId, String property) throws RPCException {
+        try {
+            WLinks wlinks = new WLinks();
+            
             Item item = registry.getItemById(itemId);
             Links links = (Links) item.getProperty(property);
             
@@ -848,17 +899,59 @@ public class RegistryServiceImpl implements RegistryService {
             for (Link l : links.getLinks()) {
                 deps.add(toWeb(l, false));
             }
-
+            wlinks.setLinks(deps);
+            
+            deps = new ArrayList<LinkInfo>();
             for (Link l : links.getReciprocalLinks()) {
                 deps.add(toWeb(l, true));
             }
+            wlinks.setReciprocal(deps);
+            
+            PropertyDescriptor pd = typeManager.getPropertyDescriptor(property);
+            
+            wlinks.setReciprocalName(pd.getConfiguration().values().iterator().next());
+            
+            return wlinks;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        }
 
-            return deps;
+    }
+    
+    public LinkInfo addLink(String itemId, String property, String path) throws RPCException {
+        try {
+            Item item = registry.getItemById(itemId);
+            Item linkTo = registry.getItemByPath(path);
+            
+            Links links = (Links) item.getProperty(property);
+            
+            Link link = new Link(item, linkTo, null, false);
+            links.addLinks(link);
+            
+            return toWeb(link, false);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new RPCException("Could not find artifact " + itemId);
         }
+    }
 
+    public void removeLink(String itemId, String property, String linkId) throws RPCException {
+        try {
+            Item item = registry.getItemById(itemId);
+            
+            Links links = (Links) item.getProperty(property);
+            
+            for (Link l : links.getLinks()) {
+                if (l.getId().equals(linkId)) {
+                    links.removeLinks(l);
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException("Could not find artifact " + itemId);
+        }
     }
 
     private LinkInfo toWeb(Link l, boolean recip) {
@@ -869,12 +962,12 @@ public class RegistryServiceImpl implements RegistryService {
 
         if (i instanceof Entry) {
             itemType = LinkInfo.TYPE_ENTRY;
-            name = ((Entry) i).getName();
+            name = i.getPath();
             id = i.getId();
         } else if (i instanceof EntryVersion) {
             itemType = LinkInfo.TYPE_ENTRY_VERSION;
-            EntryVersion av = ((EntryVersion) i);
-            name = av.getParent().getName() + " (" + av.getVersionLabel() + ")";
+            EntryVersion ev = ((EntryVersion) i);
+            name = ev.getParent().getPath() + " [" + ev.getVersionLabel() + "]";
             id = i.getId();
         } else if (i == null) {
             itemType = LinkInfo.TYPE_NOT_FOUND;
@@ -1006,9 +1099,7 @@ public class RegistryServiceImpl implements RegistryService {
             vi.setLink(getVersionLink((ArtifactVersion)av));
         }
         
-        for (Iterator<PropertyInfo> props = av.getProperties(); props.hasNext();) {
-            PropertyInfo p = props.next();
-
+        for (PropertyInfo p :av.getProperties()) {
             if (!showHidden && !p.isVisible()) {
                 continue;
             }

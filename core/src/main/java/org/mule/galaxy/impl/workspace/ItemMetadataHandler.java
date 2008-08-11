@@ -1,5 +1,6 @@
 package org.mule.galaxy.impl.workspace;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.mule.galaxy.PropertyException;
@@ -13,7 +14,7 @@ public abstract class ItemMetadataHandler {
 
     public abstract boolean hasProperty(AbstractItem o, String name);
 
-    public abstract Iterator<PropertyInfo> getProperties(AbstractItem o);
+    public abstract Collection<PropertyInfo> getProperties(AbstractItem o);
     
     public abstract PropertyInfo getPropertyInfo(AbstractItem o, String name);
 

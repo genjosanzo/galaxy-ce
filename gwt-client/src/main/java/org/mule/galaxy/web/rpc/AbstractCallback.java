@@ -22,7 +22,7 @@ import org.mule.galaxy.web.client.ErrorPanel;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public abstract class AbstractCallback implements AsyncCallback{
+public abstract class AbstractCallback<T> implements AsyncCallback<T> {
     public ErrorPanel menuPanel;
 
     public AbstractCallback(ErrorPanel panel) {

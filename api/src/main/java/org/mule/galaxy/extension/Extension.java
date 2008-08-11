@@ -1,11 +1,10 @@
 package org.mule.galaxy.extension;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.Item;
+import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.type.PropertyDescriptor;
 
@@ -14,31 +13,32 @@ import org.mule.galaxy.type.PropertyDescriptor;
  * Strings, on {@link Item}s. It intercepts property storage/retrieval allow other
  * values to be replaced. 
  * <p>
- * For example, you may want to store a User as a property. getInternalValue would return
- * a user ID which would be stored inside the actual artifact. getExternalValue would
- * be called when item.getProperty() was called. It would give you the user ID back as
- * the "storedValue" and allow you to retrieve the actual user. 
+ * There are two types of extensions - those that store properties directly on
+ * the {@link Item} through use of the setInternalProperty and those that store
+ * things in their own separate location.
  * @author Dan
  *
  */
 public interface Extension extends Identifiable {
 
     /**
-     * Get the value to store inside the property.
+     * Store a property value.
      * 
      * @param entry
      * @param properties
+     * @throws PropertyException 
      */
-    Object getInternalValue(Item entry, PropertyDescriptor pd, Object externalValue) throws PolicyException;
+    void store(Item entry, PropertyDescriptor pd, Object value) throws PolicyException, PropertyException;
     
     /**
-     * Get the user facing value of a property (e.g. a User instead of a user id).
+     * Get the value of a property.
      * @param entry
      * @param pd
-     * @param storedValue
+     * @param getWithNoData TODO
      * @return
      */
-    Object getExternalValue(Item entry, PropertyDescriptor pd, Object storedValue);
+    Object get(Item entry, PropertyDescriptor pd, boolean getWithNoData);
+
     
     /**
      * Called when Item.setInternalValue is called. This allows Extensions to ensure
@@ -69,4 +69,11 @@ public interface Extension extends Identifiable {
      * @return
      */
     List<String> getPropertyDescriptorConfigurationKeys();
+
+//    /**
+//     * Properties which this extension supports searching for.
+//     * @param pd
+//     * @return
+//     */
+//    Map<String, String> getSearchableProperties(PropertyDescriptor pd);
 }

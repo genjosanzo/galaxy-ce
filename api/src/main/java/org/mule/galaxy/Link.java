@@ -10,6 +10,7 @@ public class Link implements Identifiable {
     private String linkedToPath;
     private boolean isAutoDetected;
     private Registry registry;
+    private String property;
     
     public Link(Item item, Item linkedTo, String linkedToPath,
 	    boolean isAutoDetected) {
@@ -58,6 +59,12 @@ public class Link implements Identifiable {
     }
     public void setRegistry(Registry registry) {
         this.registry = registry;
+    }
+    public String getProperty() {
+        return property;
+    }
+    public void setProperty(String property) {
+        this.property = property;
     }
     
 }

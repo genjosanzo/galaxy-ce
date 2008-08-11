@@ -18,13 +18,11 @@
 
 package org.mule.galaxy.web.rpc;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.mule.galaxy.web.client.RPCException;
@@ -79,7 +77,15 @@ public interface RegistryService extends RemoteService {
     
     void deleteIndex(String id, boolean removeArtifactMetadata) throws RPCException;
 
-    Collection<LinkInfo> getLinks(String itemId, String property) throws RPCException;
+    
+    boolean itemExists(String path) throws RPCException;
+    
+    LinkInfo addLink(String itemId, String property, String path) throws RPCException;
+    
+    void removeLink(String itemId, String property, String linkId) throws RPCException;
+    
+    WLinks getLinks(String itemId, String property) throws RPCException;
+    
     
     ExtendedEntryInfo getEntry(String entryId) throws RPCException, ItemNotFoundException;
     
@@ -88,6 +94,8 @@ public interface RegistryService extends RemoteService {
     EntryVersionInfo getEntryVersionInfo(String artifactVersionId,
                                                boolean showHidden) throws RPCException, ItemNotFoundException;
 
+    Collection<EntryInfo> suggestEntries(String query) throws RPCException;
+    
     void setProperty(String entryId, 
                      String propertyName, 
                      String propertyValue) throws RPCException, ItemNotFoundException, WPolicyException;

@@ -1,6 +1,6 @@
 package org.mule.galaxy.impl.workspace;
 
-import java.util.Iterator;
+import java.util.Collection;
 
 import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyException;
@@ -40,7 +40,7 @@ public abstract class AbstractItem implements Item {
         return metadata.getInternalProperty(name);
     }
 
-    public Iterator<PropertyInfo> getProperties() {
+    public Collection<PropertyInfo> getProperties() {
         return metadata.getProperties(this);
     }
 

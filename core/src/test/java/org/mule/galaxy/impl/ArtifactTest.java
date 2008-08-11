@@ -178,10 +178,8 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         // test properties
         JcrVersion version = (JcrVersion) versions.iterator().next();
-        Iterator<PropertyInfo> properties = version.getProperties(); 
         boolean testedTNS = false;
-        while(properties.hasNext()) {
-            PropertyInfo next = properties.next();
+        for (PropertyInfo next : version.getProperties()) {
             if (next.getName().equals("wsdl.targetNamespace")) {
                 assertEquals("wsdl.targetNamespace", next.getName());
                 assertNotNull(next.getValue());

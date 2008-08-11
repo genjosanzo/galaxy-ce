@@ -4,6 +4,9 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.MouseListenerAdapter;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
@@ -23,7 +26,7 @@ public abstract class AbstractEditPropertyPanel extends PropertyPanel {
     private InlineFlowPanel viewPanel;
     private FlowPanel editPanel;
     private Button save;
-    private Button cancel;
+    protected Button cancel;
     private Hyperlink editHL;
     private Hyperlink deleteHL;
 
@@ -60,7 +63,11 @@ public abstract class AbstractEditPropertyPanel extends PropertyPanel {
             viewPanel.add(deleteHL);
         }
         
-        editPanel = new FlowPanel();
+        editPanel = createEditPanel();
+    }
+
+    protected FlowPanel createEditPanel() {
+        FlowPanel editPanel = new FlowPanel();
         editPanel.setStyleName("add-property-inline");
         Widget editForm = createEditForm();
         editForm.setStyleName("add-property-inline");
@@ -71,7 +78,7 @@ public abstract class AbstractEditPropertyPanel extends PropertyPanel {
         cancel.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
-                showView();
+                cancel();
             }
             
         });
@@ -96,6 +103,12 @@ public abstract class AbstractEditPropertyPanel extends PropertyPanel {
         buttonPanel.add(save);
         
         editPanel.add(buttonPanel);
+        
+        return editPanel;
+    }
+
+    protected void cancel() {
+        showView();
     }
     
     protected abstract Widget createViewWidget();
@@ -116,6 +129,7 @@ public abstract class AbstractEditPropertyPanel extends PropertyPanel {
         
         new LightBox(dialog).show();
     }
+    
     protected void doDelete() {
         galaxy.getRegistryService().deleteProperty(itemId, property.getName(), new AbstractCallback(errorPanel) {
 
@@ -138,25 +152,7 @@ public abstract class AbstractEditPropertyPanel extends PropertyPanel {
     protected void save() {
         final Object value = getValueToSave();
         
-        AbstractCallback saveCallback = new AbstractCallback(errorPanel) {
-
-            public void onFailure(Throwable caught) {
-                onSaveFailure(caught, this);
-            }
-
-            public void onSuccess(Object arg0) {
-                setEnabled(true);
-                property.setValue(value);
-                onSave(value);
-                
-                showView();
-                
-                if (saveListener != null) {
-                    saveListener.onClick(save);
-                }
-            }
-            
-        };
+        AbstractCallback saveCallback = getSaveCallback(value);
         
         setEnabled(false);
         if (saveAsCollection()) {
@@ -173,7 +169,30 @@ public abstract class AbstractEditPropertyPanel extends PropertyPanel {
         }
     }
 
-    protected abstract void onSave(final Object value);
+    protected AbstractCallback getSaveCallback(final Object value) {
+        AbstractCallback saveCallback = new AbstractCallback(errorPanel) {
+
+            public void onFailure(Throwable caught) {
+                onSaveFailure(caught, this);
+            }
+
+            public void onSuccess(Object response) {
+                setEnabled(true);
+                property.setValue(value);
+                onSave(value, response);
+                
+                showView();
+                
+                if (saveListener != null) {
+                    saveListener.onClick(save);
+                }
+            }
+            
+        };
+        return saveCallback;
+    }
+
+    protected abstract void onSave(final Object value, Object response);
     
     protected void onSaveFailure(Throwable caught, AbstractCallback saveCallback) {
         saveCallback.onFailureDirect(caught);
@@ -194,9 +213,11 @@ public abstract class AbstractEditPropertyPanel extends PropertyPanel {
     }
 
     public void setEnabled(boolean b) {
-        cancel.setEnabled(b);
-        save.setEnabled(b);
+        if (cancel != null) {
+            cancel.setEnabled(b);
+        }
+        if (save != null) {
+            save.setEnabled(b);
+        }
     }
-
-
 }

@@ -19,20 +19,29 @@ public class PropertyInfoImpl implements PropertyInfo {
     private boolean loadedDescriptor;
     private final TypeManager tm;
     private final Item item;
+    private final Object value;
     
     public PropertyInfoImpl(Item item, String name, Node node, TypeManager tm) {
+        this(item, name, node, tm, null);
+    }
+
+    public PropertyInfoImpl(Item item, String name, Node node, TypeManager tm, Object value) {
         this.item = item;
         this.node = node;
         this.name= name;
         this.tm = tm;
+        this.value = value;
     }
-
     public String getName() {
         return name;
     }
 
     public Object getValue() {
-        return item.getProperty(getName());
+        if (value != null) {
+            return value;
+        } else {
+            return item.getProperty(getName());
+        }
     }
 
     public Object getInternalValue() {

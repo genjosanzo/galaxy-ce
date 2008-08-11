@@ -56,10 +56,10 @@ public abstract class PropertyPanel extends AbstractComposite {
                 onSaveFailure(caught, this);
             }
 
-            public void onSuccess(Object arg0) {
+            public void onSuccess(Object response) {
                 setEnabled(true);
                 property.setValue(value);
-                onSave(value);
+                onSave(value, response);
                 
                 showView();
 
@@ -85,7 +85,7 @@ public abstract class PropertyPanel extends AbstractComposite {
         }
     }
 
-    protected abstract void onSave(final Object value);
+    protected abstract void onSave(final Object value, Object response);
     
     protected void onSaveFailure(Throwable caught, AbstractCallback saveCallback) {
         saveCallback.onFailureDirect(caught);

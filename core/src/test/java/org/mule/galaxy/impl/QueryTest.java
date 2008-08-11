@@ -1,16 +1,20 @@
 package org.mule.galaxy.impl;
 
+import static org.mule.galaxy.query.OpRestriction.eq;
+import static org.mule.galaxy.query.OpRestriction.like;
+import static org.mule.galaxy.query.OpRestriction.not;
+
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.query.Query;
+import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.OpRestriction.Operator;
 import org.mule.galaxy.test.AbstractGalaxyTest;
-import static org.mule.galaxy.query.OpRestriction.not;
-import static org.mule.galaxy.query.OpRestriction.eq;
-import static org.mule.galaxy.query.OpRestriction.like;
+import org.mule.galaxy.type.PropertyDescriptor;
 
 public class QueryTest extends AbstractGalaxyTest {
     
@@ -139,7 +143,14 @@ public class QueryTest extends AbstractGalaxyTest {
         /*
          * Need: property name (contact.name), Description (Contact Name)
          */
-        
+        for (PropertyDescriptor pd : typeManager.getPropertyDescriptors(true)) {
+            Extension ext = pd.getExtension();
+            
+            if (ext != null) {
+//                Map<String, String> properties = ext.getSearchableProperties(pd);
+//                
+            }
+        }
         
     }
 }

@@ -38,6 +38,9 @@ import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WProperty;
 
+/**
+ * Shows all the artifact metadata.
+ */
 public class EntryMetadataPanel extends AbstractComposite {
 
     private FlowPanel metadata;
@@ -157,6 +160,7 @@ public class EntryMetadataPanel extends AbstractComposite {
                         return;
                     }
                 }
+                info.getProperties().remove(render.getProperty());
             }
             
         });

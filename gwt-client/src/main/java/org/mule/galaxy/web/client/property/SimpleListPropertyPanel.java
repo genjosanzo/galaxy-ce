@@ -38,7 +38,7 @@ public class SimpleListPropertyPanel extends AbstractEditPropertyPanel {
         return txt;
     }
     
-    protected void onSave(Object value) {
+    protected void onSave(Object value, Object response) {
         valueLabel.setText(getRenderedText());
         listBox = new StringListBox((Collection<String>) getProperty().getListValue());
         listBoxPanel.clear();

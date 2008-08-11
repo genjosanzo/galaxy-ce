@@ -3,9 +3,9 @@ package org.mule.galaxy.impl.jcr;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -23,6 +23,7 @@ import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.activity.ActivityManager.EventType;
+import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.type.PropertyDescriptor;
@@ -41,7 +42,6 @@ public abstract class AbstractJcrItem implements Item {
     
     protected Node node;
     private JcrWorkspaceManager manager;
-    private Map<String, Object> propertyCache = new HashMap<String, Object>();
     
     public AbstractJcrItem(Node node, JcrWorkspaceManager manager) throws RepositoryException {
         this.node = node;
@@ -100,33 +100,16 @@ public abstract class AbstractJcrItem implements Item {
     }
     
     public void setProperty(String name, Object value) throws PropertyException, PolicyException {
-        try {
-            if (name.contains(" ")) {
+        if (name.contains(" ")) {
                 throw new PropertyException(new Message("SPACE_NOT_ALLOWED", getBundle()));
-            }
-            
-            Object origValue = value;
-            PropertyDescriptor pd = getManager().getTypeManager().getPropertyDescriptorByName(name);
-            if (pd != null && pd.getExtension() != null) {
-        	value = pd.getExtension().getInternalValue(this, pd, value);
-    	    }
-            JcrUtil.setProperty(name, value, node);
-            
-            if (value == null) {
-                deleteProperty(name);
-                propertyCache.remove(name);
-            } else {
-                ensureProperty(name);
-//                propertyCache.put(name, origValue);
-            }
-
-            final String message = MessageFormat.format("Property {0} of {1} was set to: {2}", name, getPath(), value);
-            manager.getActivityManager().logActivity(SecurityUtils.getCurrentUser(),
-                                                     message, EventType.INFO);
-            update();
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e);
         }
+        
+        PropertyDescriptor pd = getManager().getTypeManager().getPropertyDescriptorByName(name);
+        if (pd != null && pd.getExtension() != null) {
+            pd.getExtension().store(this, pd, value);
+	} else {
+	    setInternalProperty(name, value);
+	}    
     }
 
     public void setInternalProperty(String name, Object value) throws PropertyException, PolicyException {
@@ -134,8 +117,6 @@ public abstract class AbstractJcrItem implements Item {
             if (name.contains(" ")) {
                 throw new PropertyException(new Message("SPACE_NOT_ALLOWED", getBundle()));
             }
-            
-            propertyCache.remove(name);
             
             JcrUtil.setProperty(name, value, node);
             
@@ -216,69 +197,43 @@ public abstract class AbstractJcrItem implements Item {
     public Object getProperty(String name) {
 	PropertyDescriptor pd = manager.getTypeManager().getPropertyDescriptorByName(name);
 	
-	Object value = propertyCache.get(name);
-	if (value == null) {
-	    value = JcrUtil.getProperty(name, node);
-	} else {
-	    return value;
-	}
-	
 	if (pd != null && pd.getExtension() != null) {
-	    value = pd.getExtension().getExternalValue(this, pd, value);
+            return pd.getExtension().get(this, pd, true);
+        } else {
+	    return JcrUtil.getProperty(name, node);
 	}
-        return value;
     }
 
     public Object getInternalProperty(String name) {
         return JcrUtil.getProperty(name, node);
     }
 
-    public Iterator<PropertyInfo> getProperties() {
+    public Collection<PropertyInfo> getProperties() {
         try {
             Property p = null;
+            final Map<String, PropertyInfo> properties = new HashMap<String, PropertyInfo>();
             try {
-                p = node.getProperty(PROPERTIES);
+                p = node.getProperty(PROPERTIES);final Value[] values = p.getValues();
+                for (Value v : values) {
+                    String name = v.getString();
+                    properties.put(name, new PropertyInfoImpl(this, name, node, manager.getTypeManager()));
+                }
             } catch (PathNotFoundException e) {
-                return new Iterator<PropertyInfo>() {
-
-                    public boolean hasNext() {
-                        return false;
-                    }
-
-                    public PropertyInfo next() {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                    
-                };
             }
             
-            final Value[] values = p.getValues();
-            final Item item = this;
-            return new Iterator<PropertyInfo>() {
-                private int i = 0;
-                
-                public boolean hasNext() {
-                    return i < values.length;
-                }
-    
-                public PropertyInfo next() {
-                    i++;
-                    try {
-                        return new PropertyInfoImpl(item, values[i-1].getString(), node, manager.getTypeManager());
-                    } catch (RepositoryException e) {
-                        throw new RuntimeException(e);
+            Collection<PropertyDescriptor> pds = manager.getTypeManager().getPropertyDescriptors(false);
+            
+            for (PropertyDescriptor pd : pds) {
+                Extension ext = pd.getExtension();
+                if (ext != null) {
+                    Object value = ext.get(this, pd, false);
+                    
+                    if (value != null) {
+                        properties.put(pd.getProperty(), new PropertyInfoImpl(this, pd.getProperty(), node, manager.getTypeManager(), value));
                     }
                 }
-    
-                public void remove() {
-                    throw new UnsupportedOperationException();
-                }
-                
-            };
+            }
+            return properties.values();
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }

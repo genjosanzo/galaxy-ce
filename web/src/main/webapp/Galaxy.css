@@ -1172,6 +1172,7 @@ a:visited {
 
 .gwt-SuggestBoxPopup {
   border: 2px solid #C3D9FF;
+  background-color: white;
 }
 
 .gwt-SuggestBoxPopup .item {

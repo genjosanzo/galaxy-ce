@@ -1,7 +1,9 @@
 package org.mule.galaxy.impl;
 
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.mule.galaxy.Artifact;
@@ -10,6 +12,7 @@ import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Link;
 import org.mule.galaxy.Links;
+import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.link.LinkExtension;
 import org.mule.galaxy.test.AbstractGalaxyTest;
@@ -21,7 +24,6 @@ public class LinkTest extends AbstractGalaxyTest {
     }
     
     public void testWsdlDependencies() throws Exception {
-
         Collection<Workspace> workspaces = registry.getWorkspaces();
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
@@ -149,5 +151,64 @@ public class LinkTest extends AbstractGalaxyTest {
         assertNotNull(link.getLinkedToPath());
         
     }
-
+    
+    public void testConflicts() throws Exception {
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+        
+        EntryResult schema = workspace.createArtifact("application/xml", 
+                                                         "hello.xsd", 
+                                                         "0.1", 
+                                                         getResourceAsStream("/wsdl/imports/hello.xsd"), 
+                                                         getAdmin());
+         
+        Links links = (Links) schema.getEntryVersion().getProperty(LinkExtension.CONFLICTS);
+        Collection<Link> deps = links.getLinks();
+        assertEquals(0, deps.size());
+        
+        deps = links.getReciprocalLinks();
+        assertEquals(0, deps.size());
+        
+        EntryResult portType = workspace.createArtifact("application/wsdl+xml", 
+                                                        "hello-portType.wsdl", 
+                                                        "0.1", 
+                                                        getResourceAsStream("/wsdl/imports/hello-portType.wsdl"), 
+                                                        getAdmin());
+        
+        EntryVersion version = portType.getEntryVersion();
+        
+        version.setProperty(LinkExtension.CONFLICTS, Arrays.asList(new Link(version, schema.getEntry(), null, false)));
+        
+        Links ptLinks = (Links) version.getProperty(LinkExtension.CONFLICTS);
+        assertNotNull(ptLinks);
+        
+        deps = ptLinks.getLinks();
+        assertEquals(1, deps.size());
+        
+        deps = ptLinks.getReciprocalLinks();
+        assertEquals(0, deps.size());
+        
+        links = (Links) schema.getEntryVersion().getProperty(LinkExtension.CONFLICTS);
+        
+        deps = links.getLinks();
+        assertEquals(0, deps.size());
+        
+        deps = links.getReciprocalLinks();
+        assertEquals(1, deps.size());
+        
+        boolean conflicts = false;
+        boolean supercedes = false;
+        Collection<PropertyInfo> properties = schema.getEntry().getProperties();
+        for (PropertyInfo pi : properties) {
+            if (pi.getName().equals(LinkExtension.CONFLICTS)) {
+                conflicts = true;
+            } else if (pi.getName().equals(LinkExtension.SUPERCEDES)) {
+                supercedes = true;
+            }
+        }
+        
+        assertTrue(conflicts);
+        assertFalse(supercedes);
+    }
 }
