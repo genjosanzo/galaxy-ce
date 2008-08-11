@@ -39,6 +39,7 @@ import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.ArtifactTypeDao;
 import org.mule.galaxy.ArtifactVersion;
@@ -1000,7 +1001,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     public ExtendedEntryInfo getArtifactByVersionId(String artifactVersionId) throws RPCException, ItemNotFoundException {
         try {
-            ArtifactVersion av = registry.getArtifactVersion(artifactVersionId);
+            EntryVersion av = (EntryVersion) registry.getItemById(artifactVersionId);
             return getEntryGroup(av.getParent());
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
@@ -1143,7 +1144,7 @@ public class RegistryServiceImpl implements RegistryService {
         return val;
     }
 
-    private String getLink(String base, Artifact a) {
+    private String getLink(String base, Item a) {
         StringBuilder sb = new StringBuilder();
         Workspace w = (Workspace) a.getParent();
 
@@ -1153,7 +1154,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     public WComment addComment(String entryId, String parentComment, String text) throws RPCException, ItemNotFoundException {
         try {
-            Artifact artifact = registry.getArtifact(entryId);
+            Item item = registry.getItemById(entryId);
 
             Comment comment = new Comment();
             comment.setText(text);
@@ -1164,7 +1165,7 @@ public class RegistryServiceImpl implements RegistryService {
 
             comment.setUser(getCurrentUser());
 
-            Workspace w = (Workspace)artifact.getParent();
+            Workspace w = (Workspace)item.getParent();
             CommentManager commentManager = w.getCommentManager();
             if (parentComment != null) {
                 Comment c = commentManager.getComment(parentComment);
@@ -1173,7 +1174,7 @@ public class RegistryServiceImpl implements RegistryService {
                 }
                 comment.setParent(c);
             } else {
-                comment.setItem(artifact);
+                comment.setItem(item);
             }
             commentManager.addComment(comment);
 
@@ -1344,11 +1345,11 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void setDescription(String entryId, String description) throws RPCException, ItemNotFoundException {
         try {
-            Artifact artifact = registry.getArtifact(entryId);
+            Entry entry = (Entry) registry.getItemById(entryId);
 
-            artifact.setDescription(description);
+            entry.setDescription(description);
 
-            registry.save(artifact);
+            registry.save(entry);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -1361,9 +1362,9 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void move(String entryId, String workspaceId, String name) throws RPCException, ItemNotFoundException {
         try {
-            Artifact artifact = registry.getArtifact(entryId);
+            Entry entry = (Entry) registry.getItemById(entryId);
 
-            registry.move(artifact, workspaceId, name);
+            registry.move(entry, workspaceId, name);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -1376,9 +1377,9 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void delete(String entryId) throws RPCException, ItemNotFoundException {
         try {
-            Artifact artifact = registry.getArtifact(entryId);
+            Item item = registry.getItemById(entryId);
 
-            artifact.delete();
+            item.delete();
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -1391,9 +1392,9 @@ public class RegistryServiceImpl implements RegistryService {
 
     public boolean deleteArtifactVersion(String artifactVersionId) throws RPCException, ItemNotFoundException {
         try {
-            ArtifactVersion av = registry.getArtifactVersion(artifactVersionId);
-            Artifact a = (Artifact) av.getParent();
-            boolean last = a.getVersions().size() == 1;
+            EntryVersion av = (EntryVersion) registry.getItemById(artifactVersionId);
+            Entry e = av.getParent();
+            boolean last = e.getVersions().size() == 1;
 
             av.delete();
 
@@ -1406,41 +1407,6 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
         }
-    }
-
-    public WGovernanceInfo getGovernanceInfo(String artifactVersionId) throws RPCException, ItemNotFoundException {
-        try {
-            ArtifactVersion artifact = registry.getArtifactVersion(artifactVersionId);
-
-            WGovernanceInfo gov = new WGovernanceInfo();
-            
-            Phase phase = (Phase) artifact.getProperty(Registry.PRIMARY_LIFECYCLE);
-            gov.setCurrentPhase(phase.getName());
-            gov.setLifecycle(phase.getLifecycle().getName());
-
-            gov.setNextPhases(toWeb(phase.getNextPhases()));
-            gov.setPreviousPhases(toWeb(phase.getPreviousPhases()));
-
-            // Collection<PolicyInfo> policies =
-            // policyManager.getActivePolicies(artifact, false);
-
-            return gov;
-        } catch (RegistryException e) {
-            log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
-        } catch (NotFoundException e) {
-            throw new ItemNotFoundException();
-        } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
-        }
-    }
-
-    private List<WPhase> toWeb(Set<Phase> nextPhases) {
-        List<WPhase> wNextPhases = new ArrayList<WPhase>();
-        for (Phase p : nextPhases) {
-            wNextPhases.add(toWeb(p));
-        }
-        return wNextPhases;
     }
 
     // TODO:
@@ -1650,9 +1616,9 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void setDefault(String artifactVersionId) throws RPCException, ItemNotFoundException, WPolicyException {
         try {
-            ArtifactVersion artifact = registry.getArtifactVersion(artifactVersionId);
+            EntryVersion v = (EntryVersion) registry.getItemById(artifactVersionId);
 
-            artifact.setAsDefaultVersion();
+            v.setAsDefaultVersion();
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -1667,9 +1633,9 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void setEnabled(String artifactVersionId, boolean enabled) throws RPCException, ItemNotFoundException, WPolicyException {
         try {
-            ArtifactVersion artifact = registry.getArtifactVersion(artifactVersionId);
+            EntryVersion v = (EntryVersion) registry.getItemById(artifactVersionId);
 
-            artifact.setEnabled(enabled);
+            v.setEnabled(enabled);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -1782,7 +1748,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     private String getVersionLink(ArtifactVersion av) {
-        Artifact a = (Artifact) av.getParent();
+        Item a = (Item) av.getParent();
         StringBuilder sb = new StringBuilder();
         Workspace w = (Workspace) a.getParent();
 

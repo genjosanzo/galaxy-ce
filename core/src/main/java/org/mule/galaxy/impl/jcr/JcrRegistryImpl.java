@@ -568,7 +568,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
     
-    public void move(final Artifact artifact, final String newWorkspaceId, final String newName) throws RegistryException, AccessException, NotFoundException {
+    public void move(final Entry artifact, final String newWorkspaceId, final String newName) throws RegistryException, AccessException, NotFoundException {
         boolean wasRenamed = false;
         boolean wasMoved = false;
         final String oldPath = artifact.getPath();

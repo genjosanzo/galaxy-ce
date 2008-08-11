@@ -154,13 +154,13 @@ public final class TemplateParser
      * @param templates A List of templates
      * @return the parsed String
      */
-    public List parse(Map props, List templates)
+    public List<String> parse(Map props, List templates)
     {
         if (templates == null)
         {
-            return new ArrayList();
+            return new ArrayList<String>();
         }
-        List list = new ArrayList(templates.size());
+        List<String> list = new ArrayList<String>(templates.size());
         for (Iterator iterator = templates.iterator(); iterator.hasNext();)
         {
             list.add(parse(props, iterator.next().toString()));
@@ -188,6 +188,7 @@ public final class TemplateParser
         }, templates);
     }
 
+    @SuppressWarnings("unchecked")
     public Map parse(TemplateCallback callback, Map templates)
     {
         if (templates == null)

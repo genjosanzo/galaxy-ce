@@ -63,7 +63,7 @@ public class IndexTest extends AbstractGalaxyTest {
         
         Thread.sleep(2000);
         
-        artifact = registry.getArtifact(artifact.getId());
+        artifact = (Artifact) registry.getItemById(artifact.getId());
         Object value = artifact.getProperty("wsdl.targetNamespace");
         assertEquals("foobar", value);
     }
@@ -98,20 +98,20 @@ public class IndexTest extends AbstractGalaxyTest {
         
         indexManager.delete(tnsIdx.getId(), true);
         
-        artifact = registry.getArtifact(artifact.getId());
+        artifact = (Artifact) registry.getItemById(artifact.getId());
         Object value = artifact.getProperty("wsdl.targetNamespace");
         assertNull(value);
         assertNull(artifact.getPropertyInfo("wsdl.targetNamespace"));
 
         indexManager.delete(ptIdx.getId(), false);
         
-        artifact = registry.getArtifact(artifact.getId());
+        artifact = (Artifact) registry.getItemById(artifact.getId());
         value = artifact.getProperty("wsdl.endpoint");
         assertNotNull(value);
         
         indexManager.delete(svcIdx.getId(), true);
         
-        artifact = registry.getArtifact(artifact.getId());
+        artifact = (Artifact) registry.getItemById(artifact.getId());
         value = artifact.getProperty("wsdl.service");
         assertNull(value);
         assertNull(artifact.getPropertyInfo("wsdl.service"));

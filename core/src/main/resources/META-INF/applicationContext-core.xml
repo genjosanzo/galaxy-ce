@@ -344,9 +344,6 @@
         <entry key="org.mule.galaxy.Item">
           <bean class="org.mule.galaxy.impl.jcr.ItemPersister"/>
         </entry>
-        <entry key="org.mule.galaxy.ArtifactVersion">
-          <bean class="org.mule.galaxy.impl.jcr.ArtifactVersionPersister"/>
-        </entry>
         <entry key="org.mule.galaxy.extension.Extension">
           <bean class="org.mule.galaxy.impl.extension.ExtensionPersister"/>
         </entry>

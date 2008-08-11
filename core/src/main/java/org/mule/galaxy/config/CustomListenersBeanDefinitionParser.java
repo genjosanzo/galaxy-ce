@@ -19,6 +19,7 @@ import org.w3c.dom.Element;
  */
 public class CustomListenersBeanDefinitionParser extends AbstractBeanDefinitionParser {
 
+    @SuppressWarnings("unchecked")
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         // this is the bean peforming the registration of custom listeners
         BeanDefinitionBuilder listenerRegBean = BeanDefinitionBuilder.rootBeanDefinition(CustomListenersBean.class);
@@ -30,7 +31,7 @@ public class CustomListenersBeanDefinitionParser extends AbstractBeanDefinitionP
             listenerRegBean.addPropertyReference("eventManager", beanName);
         }
 
-        List<Element> listenerElements =  DomUtils.getChildElementsByTagName(element, "listener");
+        List<Element> listenerElements = DomUtils.getChildElementsByTagName(element, "listener");
         ManagedList listeners = new ManagedList(listenerElements.size());
         for (Element listenerElement : listenerElements) {
             final BeanDefinitionParserDelegate beanParserDelegate = new BeanDefinitionParserDelegate(parserContext.getReaderContext());

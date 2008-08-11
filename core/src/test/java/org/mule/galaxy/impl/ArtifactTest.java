@@ -6,6 +6,7 @@ import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrVersion;
@@ -18,6 +19,7 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.jcr.Node;
@@ -40,10 +42,10 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         a.setName("test.wsdl");
         
-        Collection<Artifact> artifacts = registry.getArtifacts(w);
+        List<Item> artifacts = w.getItems();
         assertEquals(1, artifacts.size());
         
-        Artifact a2 = artifacts.iterator().next();
+        Artifact a2 = (Artifact) artifacts.iterator().next();
         assertEquals("test.wsdl", a2.getName());
         
         assertEquals("test.wsdl", a2.getName());
@@ -107,7 +109,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
             // great! expected
         }
         
-        Collection<Artifact> artifacts = registry.getArtifacts(workspace);
+        Collection<Item> artifacts = workspace.getItems();
         assertEquals(1, artifacts.size());
     }
     
@@ -256,7 +258,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals("bar", artifact.getProperty("foo2"));
         assertNull(version.getProperty("foo2"));
         
-        Artifact a2 = registry.getArtifact(workspace, artifact.getName());
+        Artifact a2 = (Artifact) registry.resolve(workspace, artifact.getName());
         assertNotNull(a2);
         
         version.setAsDefaultVersion();
@@ -274,9 +276,9 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         assertTrue(((JcrVersion)activeVersion).isLatest());
         
-        Collection<Artifact> artifacts = registry.getArtifacts((Workspace)a2.getParent());
+        Collection<Item> artifacts = a2.getParent().getItems();
         boolean found = false;
-        for (Artifact a : artifacts) {
+        for (Item a : artifacts) {
             if (a.getId().equals(a2.getId())) {
                 found = true;
                 break;
@@ -321,7 +323,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         artifact.getVersion("1").setAsDefaultVersion();
 
-        Artifact a = registry.getArtifact(workspace, "test.txt");
+        Artifact a = (Artifact) registry.resolve(workspace, "test.txt");
         assertNotNull(a);
         assertEquals("1", a.getDefaultOrLastVersion().getVersionLabel());
         assertEquals(version1, IOUtils.readStringFromStream(((ArtifactVersion)a.getDefaultOrLastVersion()).getStream()));

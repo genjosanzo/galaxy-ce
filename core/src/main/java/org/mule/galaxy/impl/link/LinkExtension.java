@@ -46,7 +46,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
         add(DOCUMENTS, "Documents", "Documented By");
         add(SUPERCEDES, "Supercedes", "Superceded By");
         add(INCLUDES, "Includes", "Included By");
-        add(CONFLICTS, "Conflicts With", "Is Conflicted By");
+        add(CONFLICTS, "Conflicts With", "Conflicted By");
     }
     
     @Override

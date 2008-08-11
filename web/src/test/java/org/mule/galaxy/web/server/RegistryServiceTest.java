@@ -117,7 +117,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         gwtRegistry.setProperty(info.getId(), "location", "Grand Rapids");
         
-        Artifact artifact = registry.getArtifact(info.getId());
+        Artifact artifact = (Artifact) registry.getItemById(info.getId());
         assertEquals("Grand Rapids", artifact.getProperty("location"));
         artifact.setProperty("hidden", "value");
         artifact.setVisible("hidden", false);

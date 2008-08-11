@@ -136,7 +136,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         l.setName("test2");
         lifecycleManager.save(l);
         
-        a = registry.getArtifact(a.getId());
+        a = (Artifact) registry.getItemById(a.getId());
         assertEquals(l, getPhase(a.getDefaultOrLastVersion()).getLifecycle());
         
         try {
@@ -211,7 +211,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         
         lifecycleManager.save(l);
         
-        artifact = registry.getArtifact(artifact.getId());
+        artifact = (Artifact) registry.getItemById(artifact.getId());
         assertEquals(p1, getPhase(artifact.getDefaultOrLastVersion()));
         
         Phase p2 = p1.getNextPhases().iterator().next();

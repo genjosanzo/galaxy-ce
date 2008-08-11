@@ -143,7 +143,7 @@ public class ArtifactUploadServlet implements Controller {
 
                 result = wkspc.createArtifact(contentType, name, versionLabel, uploadItem.getInputStream(), user);
             } else {
-                Artifact a = registry.getArtifact(artifactId);
+                Artifact a = (Artifact) registry.getItemById(artifactId);
 
                 result = a.newVersion(uploadItem.getInputStream(), versionLabel, user);
 

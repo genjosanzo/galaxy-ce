@@ -293,7 +293,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                         public void run() {
                             try {
                                 // lookup a version associated with this session
-                                final ArtifactVersion version = getRegistry().getArtifactVersion(artifactVersionId);
+                                final ArtifactVersion version = (ArtifactVersion) getRegistry().getItemById(artifactVersionId);
                                 
                                 doIndex(version);
 

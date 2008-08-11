@@ -57,9 +57,9 @@ public class OsgiManifestUtil
      *
      * @throws IllegalArgumentException If syntax error in input string.
      */
-    public static List parseEnumeration(String d, String s)
+    public static List<String> parseEnumeration(String d, String s)
     {
-        ArrayList result = new ArrayList();
+        ArrayList<String> result = new ArrayList<String>();
         if (s != null)
         {
             AttributeTokenizer at = new AttributeTokenizer(s);
@@ -84,7 +84,7 @@ public class OsgiManifestUtil
         }
         else
         {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 
@@ -103,16 +103,17 @@ public class OsgiManifestUtil
      *
      * @throws IllegalArgumentException If syntax error in input string.
      */
-    public static List parseEntries(String a, String s, boolean single, boolean unique, boolean single_entry)
+    @SuppressWarnings("unchecked")
+    public static List<Map<String, Object>> parseEntries(String a, String s, boolean single, boolean unique, boolean single_entry)
     {
-        List result = new ArrayList();
+        List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
         if (s != null)
         {
             AttributeTokenizer at = new AttributeTokenizer(s);
             do
             {
-                List keys = new ArrayList();
-                Map params = new HashMap();
+                List<String> keys = new ArrayList<String>();
+                Map<String, Object> params = new HashMap<String, Object>();
                 String key = at.getKey();
                 if (key == null)
                 {
@@ -129,7 +130,7 @@ public class OsgiManifestUtil
                 String param;
                 while ((param = at.getParam()) != null)
                 {
-                    List old = (List) params.get(param);
+                    List<String> old = (List<String>) params.get(param);
                     boolean is_directive = at.isDirective();
                     if (old != null && unique)
                     {
@@ -155,7 +156,7 @@ public class OsgiManifestUtil
                     {
                         if (old == null)
                         {
-                            old = new ArrayList();
+                            old = new ArrayList<String>();
                             params.put(param, old);
                         }
                         old.add(value);
@@ -203,7 +204,7 @@ public class OsgiManifestUtil
      * @return index of the found entry. If no entry is found, return <tt>(-(<i>insertion point</i>) - 1)</tt>.  The
      *         insertion point</i> is defined as the point at which the key would be inserted into the list.
      */
-    public static int binarySearch(List pl, Comparator c, Object p)
+    public static int binarySearch(List<String> pl, Comparator c, Object p)
     {
         int l = 0;
         int u = pl.size() - 1;

@@ -42,16 +42,7 @@ public interface Registry {
 
     Item resolve(Item w, String location);
     
-    
-    void move(Artifact artifact, String newWorkspaceId, final String newName) throws RegistryException, AccessException, NotFoundException;
-    
-    Collection<Artifact> getArtifacts(Workspace workspace) throws RegistryException;
-    
-    Artifact getArtifact(String id) throws NotFoundException, RegistryException, AccessException;
-
-    ArtifactVersion getArtifactVersion(String id) throws NotFoundException, RegistryException, AccessException;
-
-    Artifact getArtifact(Workspace w, String name) throws NotFoundException;
+    void move(Entry item, String newWorkspaceId, final String newName) throws RegistryException, AccessException, NotFoundException;
 
     
     /* Search functions */

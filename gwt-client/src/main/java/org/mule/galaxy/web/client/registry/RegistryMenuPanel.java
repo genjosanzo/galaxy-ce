@@ -62,7 +62,6 @@ public class RegistryMenuPanel extends MenuPanel {
         loadViews();
     }
 
-
     private void createLinks() {
         if (!first) {
             return;

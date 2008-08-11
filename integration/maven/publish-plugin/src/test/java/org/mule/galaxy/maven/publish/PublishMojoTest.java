@@ -283,7 +283,8 @@ public class PublishMojoTest extends AbstractAtomTest {
                 try {
                     Workspace workspace = registry.getWorkspaces().iterator().next();
                     
-                    org.mule.galaxy.Artifact artifact = registry.getArtifact(workspace, "test-mule-config.xml");
+                    org.mule.galaxy.Artifact artifact = 
+                        (org.mule.galaxy.Artifact) registry.resolve(workspace, "test-mule-config.xml");
                     assertEquals("application/xml", artifact.getContentType().toString());
                 } catch (Exception e) {
                     throw new RuntimeException(e);
