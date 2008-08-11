@@ -112,17 +112,30 @@ public class LinksPropertyPanel extends ListPropertyPanel {
         galaxy.getRegistryService().itemExists(path, new AbstractCallback<Boolean>(errorPanel) {
 
             public void onSuccess(Boolean exists) {
-                if (exists) {
-                    verified(path);
-                } else {
+                if (isDuplicate(path)) {
+                    verifyLabel.setText("A link to that item already exists.");
+                    setEnabled(true);
+                } else if (!exists) {
                     verifyLabel.setText("Item does not exist in the registry!");
                     setEnabled(true);
+                } else {
+                    verified(path);
                 }
             }
             
         });
     }
     
+    protected boolean isDuplicate(String path) {
+        for (LinkInfo l : links) {
+            if (l.getItemName().equals(path)) {
+                return true;
+            }
+        }
+        
+        return valuesToSave.contains(path);
+    }
+
     protected void verified(String path) {
         valuesToSave.add(path);
         editValuesPanel.add(createLabel(path));
@@ -281,6 +294,7 @@ public class LinksPropertyPanel extends ListPropertyPanel {
         redraw();
         
         suggest.setText("");
+        verifyLabel.setText("");
         
         if (saveListener != null) {
             saveListener.onClick(null);
