@@ -47,7 +47,7 @@ public class Query {
         restrictions.add(restriction);
     }
     
-    public Query(Class selectType, OpRestriction restriction) {
+    public Query(OpRestriction restriction, Class selectType) {
         this.selectType = selectType;
         restrictions.add(restriction);
     }

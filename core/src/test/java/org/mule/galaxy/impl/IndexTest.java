@@ -49,9 +49,8 @@ public class IndexTest extends AbstractGalaxyTest {
         assertNotNull(property);
         assertTrue(property instanceof Collection);
         assertTrue(((Collection) property).contains("testAttributeGroup"));
-        
-        
     }
+    
     public void xtestReindex() throws Exception {
         Artifact artifact = importHelloWsdl();
         
@@ -191,18 +190,18 @@ public class IndexTest extends AbstractGalaxyTest {
         Artifact next = (Artifact) results.iterator().next();
         assertEquals(1, next.getVersions().size());
         
-        results = registry.search(new Query(Artifact.class, 
-                                                OpRestriction.eq("wsdl.service", 
-                                                               new QName("HelloWorldService")))).getResults();
+        results = registry.search(new Query(OpRestriction.eq("wsdl.service", 
+                       new QName("HelloWorldService")), 
+                                                Artifact.class)).getResults();
         
         assertEquals(1, results.size());
         
         next = (Artifact) results.iterator().next();
         assertEquals(1, next.getVersions().size());
         
-        results = registry.search(new Query(ArtifactVersion.class, 
-                                            OpRestriction.eq("wsdl.service", 
-                                                           new QName("HelloWorldService")))).getResults();
+        results = registry.search(new Query(OpRestriction.eq("wsdl.service", 
+                       new QName("HelloWorldService")), 
+                                            ArtifactVersion.class)).getResults();
     
         assertEquals(1, results.size());
         
@@ -211,19 +210,19 @@ public class IndexTest extends AbstractGalaxyTest {
         // assertNotNull(nextAV.getData());
         // TODO test data
         
-        results = registry.search(new Query(ArtifactVersion.class, 
-                                            OpRestriction.eq("documentType", Constants.WSDL_DEFINITION_QNAME.toString()))).getResults();
+        results = registry.search(new Query(OpRestriction.eq("documentType", Constants.WSDL_DEFINITION_QNAME.toString()), 
+                                            ArtifactVersion.class)).getResults();
     
         assertEquals(1, results.size());
         
-        results = registry.search(new Query(ArtifactVersion.class, 
-                                            OpRestriction.eq("contentType", "application/xml"))).getResults();
+        results = registry.search(new Query(OpRestriction.eq("contentType", "application/xml"), 
+                                            ArtifactVersion.class)).getResults();
     
         assertEquals(1, results.size());
         
 
-        results = registry.search(new Query(ArtifactVersion.class, 
-                                            OpRestriction.in("contentType", Arrays.asList("application/xml")))).getResults();
+        results = registry.search(new Query(OpRestriction.in("contentType", Arrays.asList("application/xml")), 
+                                            ArtifactVersion.class)).getResults();
     
         assertEquals(1, results.size());
     }

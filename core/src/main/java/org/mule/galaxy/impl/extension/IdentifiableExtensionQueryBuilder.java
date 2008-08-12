@@ -117,7 +117,7 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
 	return Collections.emptyList();
     }
 
-    private List<String> asIds(List<Identifiable> results) {
+    protected List<String> asIds(Collection<? extends Identifiable> results) {
 	ArrayList<String> ids = new ArrayList<String>();
 	for (Identifiable result : results) {
 	    ids.add(result.getId());
@@ -126,4 +126,7 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
 	return ids;
     }
 
+    public Dao getDao() {
+        return dao;
+    }
 }

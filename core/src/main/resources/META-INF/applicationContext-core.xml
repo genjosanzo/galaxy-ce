@@ -155,7 +155,6 @@
     <property name="lifecycleManager" ref="lifecycleManager" />
     <property name="localWorkspaceManager" ref="localWorkspaceManager"/>
     <property name="policyManager" ref="policyManager" />
-    <property name="queryBuilders" ref="queryBuilders"/>
     <property name="settings" ref="settings" />
     <property name="typeManager" ref="typeManager" />
     <property name="userManager" ref="userManager" />
@@ -207,30 +206,12 @@
         depends-on="persisterManager">
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
+    <property name="registry" ref="registry"/>
   </bean>
   
-  <bean id="linkQueryBuilder" class="org.mule.galaxy.impl.extension.IdentifiableExtensionQueryBuilder">
+  <bean id="linkQueryBuilder" class="org.mule.galaxy.impl.link.LinkExtensionQueryBuilder">
     <constructor-arg ref="linkExtension"/>
     <property name="typeManager" ref="typeManager"/>
-  </bean>
-  
-  <bean id="queryBuilders" class="java.util.ArrayList">
-    <constructor-arg>
-      <list>
-        <bean class="org.mule.galaxy.impl.lifecycle.PhaseQueryBuilder">
-          <property name="lifecycleManager" ref="lifecycleManager"/>
-          <property name="extension" ref="lifecycleExtension"/>
-          <property name="typeManager" ref="typeManager"/>
-        </bean>
-        <bean class="org.mule.galaxy.impl.lifecycle.LifecycleQueryBuilder">
-          <property name="lifecycleManager" ref="lifecycleManager"/>
-          <property name="extension" ref="lifecycleExtension"/>
-          <property name="typeManager" ref="typeManager"/>
-        </bean>
-        <bean class="org.mule.galaxy.impl.jcr.query.ArtifactPropertyQueryBuilder"/>
-        <ref bean="userQueryBuilder"/>
-      </list>
-    </constructor-arg>
   </bean>
   
   <bean id="userExtension" class="org.mule.galaxy.impl.extension.IdentifiableExtension">
@@ -262,7 +243,21 @@
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
   </bean>
-      
+
+  <bean class="org.mule.galaxy.impl.lifecycle.PhaseQueryBuilder">
+    <property name="lifecycleManager" ref="lifecycleManager"/>
+    <property name="extension" ref="lifecycleExtension"/>
+    <property name="typeManager" ref="typeManager"/>
+  </bean>
+  
+  <bean class="org.mule.galaxy.impl.lifecycle.LifecycleQueryBuilder">
+    <property name="lifecycleManager" ref="lifecycleManager"/>
+    <property name="extension" ref="lifecycleExtension"/>
+    <property name="typeManager" ref="typeManager"/>
+  </bean>
+  
+  <bean class="org.mule.galaxy.impl.jcr.query.ArtifactPropertyQueryBuilder"/>
+        
   <bean id="commentManager" parent="txProxyTemplate">
     <property name="target" ref="commentManagerTarget"/>
     <property name="proxyTargetClass" value="true"/>

@@ -6,6 +6,7 @@ import java.util.List;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Link;
+import org.mule.galaxy.query.OpRestriction.Operator;
 
 public interface LinkDao extends Dao<Link> {
     List<Link> getReciprocalLinks(final Item item, final String property);
@@ -13,4 +14,8 @@ public interface LinkDao extends Dao<Link> {
     List<Link> getLinks(Item item, String property);
 
     void deleteLinks(Item item, String property);
+
+    Collection<Link> getLinks(String property, boolean like, Object path);
+
+    Collection<Item> getReciprocalItems(String property, boolean like, Object path);
 }

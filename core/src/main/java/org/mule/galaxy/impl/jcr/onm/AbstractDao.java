@@ -118,11 +118,22 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
         });
     }
     
-    @SuppressWarnings("unchecked")
     public List<T> find(final String property, final String value) {
+        String stmt = "/*/" + rootNode + "/*[";
+        if (value.startsWith("%") || value.endsWith("%")) {
+            stmt += "jcr:like(@" + property + ", '" + value + "')]";
+        } else {
+            stmt += "@" + property + "='" + value + "']";
+        }
+       
+        return doQuery(stmt);
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected List<T> doQuery(final String stmt) {
         return (List<T>) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                return doFind(property, value, session);
+                return query(stmt, session);
             }
         });
     }
@@ -320,17 +331,6 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
 
     protected boolean isIdNodeName() {
         return true;
-    }
-
-    protected List<T> doFind(String property, String value, Session session) throws RepositoryException {
-        String stmt = "/*/" + rootNode + "/*[";
-        if (value.startsWith("%") || value.endsWith("%")) {
-            stmt += "jcr:like(@" + property + ", '" + value + "')]";
-        } else {
-            stmt += "@" + property + "='" + value + "']";
-        }
-        
-        return query(stmt, session);
     }
     
     protected List<T> query(String stmt, Session session) throws RepositoryException, InvalidQueryException {

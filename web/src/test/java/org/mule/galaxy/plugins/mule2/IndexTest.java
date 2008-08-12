@@ -67,16 +67,16 @@ public class IndexTest extends AbstractGalaxyTest {
         assertTrue(services.contains("GreeterUMO"));
 
         // Try out search!
-        Set results = registry.search(new Query(Artifact.class,
-                                                OpRestriction.eq("mule2.service", "GreeterUMO"))).getResults();
+        Set results = registry.search(new Query(OpRestriction.eq("mule2.service", "GreeterUMO"),
+                                                Artifact.class)).getResults();
 
         assertEquals(1, results.size());
 
         Artifact next = (Artifact) results.iterator().next();
         assertEquals(1, next.getVersions().size());
 
-        results = registry.search(new Query(ArtifactVersion.class,
-                                            OpRestriction.eq("mule2.service", "GreeterUMO"))).getResults();
+        results = registry.search(new Query(OpRestriction.eq("mule2.service", "GreeterUMO"),
+                                            ArtifactVersion.class)).getResults();
 
         assertEquals(1, results.size());
 

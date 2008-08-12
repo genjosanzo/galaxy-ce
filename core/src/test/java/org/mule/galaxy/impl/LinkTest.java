@@ -1,10 +1,9 @@
 package org.mule.galaxy.impl;
 
 
+import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Entry;
@@ -15,6 +14,9 @@ import org.mule.galaxy.Links;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.link.LinkExtension;
+import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.Query;
+import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class LinkTest extends AbstractGalaxyTest {
@@ -255,5 +257,40 @@ public class LinkTest extends AbstractGalaxyTest {
         deps = ptLinks.getReciprocalLinks();
         assertEquals(0, deps.size());
     }
+    
+    public void testQuery() throws Exception{
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+        
+        EntryResult r1 = workspace.newEntry("a1", "0.1");
+        Entry a1 = r1.getEntry();
 
+        EntryResult r2 = workspace.newEntry("a2", "0.1");
+        EntryVersion v2 = r2.getEntryVersion();
+        
+        v2.setProperty(LinkExtension.CONFLICTS, Arrays.asList(new Link(v2, a1, null, false)));
+        
+        // test forward link
+        Query query = new Query().add(OpRestriction.eq(LinkExtension.CONFLICTS, "a2"));
+        
+        SearchResults results = registry.search(query);
+        assertEquals(1, results.getTotal());
+        
+        // test reciprocal
+//        query = new Query().add(OpRestriction.eq(LinkExtension.CONFLICTS + ".reciprocal", "a1"));
+//        
+//        results = registry.search(query);
+//        assertEquals(1, results.getTotal());
+        
+        // test IN
+        query = new Query().add(OpRestriction.in(LinkExtension.CONFLICTS, Arrays.asList("a2", "a1", "foo.xml")));
+        results = registry.search(query);
+        assertEquals(1, results.getTotal());
+
+        // test reciprocal IN
+//        query = new Query().add(OpRestriction.in(LinkExtension.CONFLICTS + ".reciprocal", Arrays.asList("a2", "a1", "foo.xml")));
+//        results = registry.search(query);
+//        assertEquals(1, results.getTotal());
+    }
 }

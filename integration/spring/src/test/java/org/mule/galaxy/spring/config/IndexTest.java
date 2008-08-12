@@ -64,16 +64,16 @@ public class IndexTest extends AbstractGalaxyTest
         assertTrue(services.contains("TestObject1"));
 
         // Try out search!
-        Set results = registry.search(new Query(Artifact.class,
-                                                OpRestriction.eq("spring.bean", "TestObject1"))).getResults();
+        Set results = registry.search(new Query(OpRestriction.eq("spring.bean", "TestObject1"),
+                                                Artifact.class)).getResults();
 
         assertEquals(1, results.size());
 
         Artifact next = (Artifact) results.iterator().next();
         assertEquals(1, next.getVersions().size());
 
-        results = registry.search(new Query(ArtifactVersion.class,
-                                            OpRestriction.eq("spring.bean", "TestObject1"))).getResults();
+        results = registry.search(new Query(OpRestriction.eq("spring.bean", "TestObject1"),
+                                            ArtifactVersion.class)).getResults();
 
         assertEquals(1, results.size());
 

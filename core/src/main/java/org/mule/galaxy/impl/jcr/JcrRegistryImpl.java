@@ -108,8 +108,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     private String id;
     
-    private List<QueryBuilder> queryBuilders;
-    
     private SimpleQueryBuilder simpleQueryBuilder = new SimpleQueryBuilder(new String[0], false);
 
     private JcrWorkspaceManager localWorkspaceManager;
@@ -118,6 +116,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     private List<Extension> extensions;
 
+    private List<QueryBuilder> queryBuilders;
+    
     private TypeManager typeManager;
     
     private ApplicationContext context;
@@ -894,7 +894,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private boolean handleOperator(OpRestriction or, StringBuilder artifactQuery, StringBuilder avQuery)
         throws QueryException {
         
-        // TODO: NOT, LIKE, OR, etc
         String property = (String) or.getLeft();
         boolean not = false;
         Operator operator = or.getOperator();
@@ -925,7 +924,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     private QueryBuilder getQueryBuilder(String property) throws QueryException {
-        for (QueryBuilder qb : queryBuilders) {
+        for (QueryBuilder qb : getQueryBuilders()) {
              if (qb.getProperties().contains(property)) {
                  return qb;
              }
@@ -1008,12 +1007,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return null;
     }
 
-    public void setQueryBuilders(List<QueryBuilder> qbs) {
-        queryBuilders = qbs;
-    }
-
     @SuppressWarnings("unchecked")
-    public List<Extension> getExtensions() {
+    public synchronized List<Extension> getExtensions() {
         if (extensions == null) {
              Map beansOfType = context.getBeansOfType(Extension.class);
              
@@ -1021,6 +1016,17 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
              extensions.addAll(beansOfType.values());
         }
         return extensions;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected synchronized List<QueryBuilder> getQueryBuilders() {
+        if (queryBuilders == null) {
+             Map beansOfType = context.getBeansOfType(QueryBuilder.class);
+             
+             queryBuilders = new ArrayList<QueryBuilder>();
+             queryBuilders.addAll(beansOfType.values());
+        }
+        return queryBuilders;
     }
 
     public Map<String, String> getQueryProperties() {

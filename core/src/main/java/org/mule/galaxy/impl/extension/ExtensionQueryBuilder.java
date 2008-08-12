@@ -19,11 +19,7 @@ public abstract class ExtensionQueryBuilder extends SimpleQueryBuilder {
     public ExtensionQueryBuilder(boolean artifactProperty) {
         super(artifactProperty);
     }
-
-    public ExtensionQueryBuilder(String[] properties, boolean artifactProperty) {
-        super(properties, artifactProperty);
-    }
-
+    
     @Override
     public Collection<String> getProperties() {
         List<String> props = new ArrayList<String>();
