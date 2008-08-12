@@ -83,46 +83,4 @@ public class EntryTest extends AbstractGalaxyTest {
         
         assertNotNull(entry);
     }
-    
-    public void testExtension() throws Exception {
-	Workspace root = registry.getWorkspaces().iterator().next();
-	
-	EntryResult r = root.newEntry("MyService", "1.0");
-	assertNotNull(r);
-	
-	PropertyDescriptor pd = new PropertyDescriptor();
-	pd.setExtension((Extension) applicationContext.getBean("userExtension"));
-	pd.setDescription("Primary Contact");
-	pd.setProperty("contact");
-	
-	typeManager.savePropertyDescriptor(pd);
-	assertNotNull(pd.getId());
-	
-	pd = typeManager.getPropertyDescriptor(pd.getId());
-	assertNotNull(pd);
-	assertNotNull(pd.getExtension());
-	
-	Entry e = r.getEntry();
-	assertNotNull(e);
-	
-	User user = getAdmin();
-	e.setProperty("contact", user);
-	
-	User c2 = (User) e.getProperty("contact");
-	assertNotNull(c2);
-	
-	IdentifiableExtensionQueryBuilder qb = (IdentifiableExtensionQueryBuilder) applicationContext.getBean("userQueryBuilder");
-	assertNotNull(qb);
-	
-	Collection<String> props = qb.getProperties();
-	
-	assertTrue(props.contains("contact.name"));
-	assertTrue(props.contains("contact.email"));
-	
-	Query q = new Query(Entry.class).add(OpRestriction.eq("contact.name", user.getName()));
-	
-	SearchResults result = registry.search(q);
-	
-	assertEquals(1, result.getTotal());
-    }
 }

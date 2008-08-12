@@ -5,16 +5,24 @@ import static org.mule.galaxy.query.OpRestriction.like;
 import static org.mule.galaxy.query.OpRestriction.not;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.Entry;
+import org.mule.galaxy.EntryResult;
+import org.mule.galaxy.Workspace;
 import org.mule.galaxy.extension.Extension;
+import org.mule.galaxy.impl.extension.IdentifiableExtensionQueryBuilder;
 import org.mule.galaxy.impl.link.LinkExtension;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.Query;
+import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.query.OpRestriction.Operator;
+import org.mule.galaxy.security.User;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.type.PropertyDescriptor;
 
@@ -134,6 +142,12 @@ public class QueryTest extends AbstractGalaxyTest {
         assertEquals(0, results.size());
         
         q = new Query(Artifact.class)
+            .add(OpRestriction.in("primary.lifecycle.phase", Collections.emptyList()));
+        results = registry.search(q).getResults();
+    
+        assertEquals(0, results.size());
+        
+        q = new Query(Artifact.class)
             .add(OpRestriction.in("primary.lifecycle", 
                                 Arrays.asList(new String[] { "Default", "notinthisone" })));
         results = registry.search(q).getResults();
@@ -185,5 +199,47 @@ public class QueryTest extends AbstractGalaxyTest {
         assertEquals("Reciprocal", property);
         property = properties.get("contacts.name");
         assertEquals("Contacts - Name", property);
+    }
+    
+    public void testExtensionQueries() throws Exception {
+        Workspace root = registry.getWorkspaces().iterator().next();
+        
+        EntryResult r = root.newEntry("MyService", "1.0");
+        assertNotNull(r);
+        
+        PropertyDescriptor pd = new PropertyDescriptor();
+        pd.setExtension((Extension) applicationContext.getBean("userExtension"));
+        pd.setDescription("Primary Contact");
+        pd.setProperty("contact");
+        
+        typeManager.savePropertyDescriptor(pd);
+        assertNotNull(pd.getId());
+        
+        pd = typeManager.getPropertyDescriptor(pd.getId());
+        assertNotNull(pd);
+        assertNotNull(pd.getExtension());
+        
+        Entry e = r.getEntry();
+        assertNotNull(e);
+        
+        User user = getAdmin();
+        e.setProperty("contact", user);
+        
+        User c2 = (User) e.getProperty("contact");
+        assertNotNull(c2);
+        
+        IdentifiableExtensionQueryBuilder qb = (IdentifiableExtensionQueryBuilder) applicationContext.getBean("userQueryBuilder");
+        assertNotNull(qb);
+        
+        Collection<String> props = qb.getProperties();
+        
+        assertTrue(props.contains("contact.name"));
+        assertTrue(props.contains("contact.email"));
+        
+        Query q = new Query(Entry.class).add(OpRestriction.eq("contact.name", user.getName()));
+        
+        SearchResults result = registry.search(q);
+        
+        assertEquals(1, result.getTotal());
     }
 }
