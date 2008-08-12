@@ -82,6 +82,10 @@ public class AdministrationPanel extends MenuPanel {
                               new UserListPanel(this),
                               new UserForm(this));
         }
+
+        Hyperlink link = new Hyperlink("Admin Shell", "adminShell");
+        createPageInfo(link.getTargetHistoryToken(), new AdminShellPanel(this));
+        manageBox.add(link);
     }
 
     protected void createLinkWithAdd(Toolbox manageBox, 

@@ -39,6 +39,8 @@ import org.mule.galaxy.web.rpc.SecurityService;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WExtensionInfo;
 import org.mule.galaxy.web.rpc.WUser;
+import org.mule.galaxy.web.rpc.AdminServiceAsync;
+import org.mule.galaxy.web.rpc.AdminService;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -79,6 +81,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     private RegistryServiceAsync registryService;
     private SecurityServiceAsync securityService;
     private HeartbeatServiceAsync heartbeatService;
+    private AdminServiceAsync adminService;
     private FlowPanel rightPanel;
     private PageInfo curInfo;
     private Map<String, PageInfo> history = new HashMap<String, PageInfo>();
@@ -118,6 +121,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
         this.heartbeatService = (HeartbeatServiceAsync) GWT.create(HeartbeatService.class);
         target = (ServiceDefTarget) heartbeatService;
         target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/heartbeat.rpc");
+
+        this.adminService = (AdminServiceAsync) GWT.create(AdminService.class);
+        target = (ServiceDefTarget) adminService;
+        target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/admin.rpc");
 
         // prefetch extensions
         registryService.getExtensions(new AbstractCallback(browsePanel) {
@@ -388,6 +395,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
     public HeartbeatServiceAsync getHeartbeatService() {
         return this.heartbeatService;
+    }
+
+    public AdminServiceAsync getAdminService() {
+        return adminService;
     }
 
     public TabPanel getTabPanel() {

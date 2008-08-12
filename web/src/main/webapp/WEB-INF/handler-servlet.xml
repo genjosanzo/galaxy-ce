@@ -15,6 +15,7 @@
                 <entry key="/registry.rpc" value-ref="gwtRegistry" />
                 <entry key="/securityService.rpc" value-ref="gwtSecurityService" />
                 <entry key="/heartbeat.rpc" value-ref="heartbeatService"/>
+                <entry key="/admin.rpc" value-ref="adminService"/>
             </map>
         </property>
     </bean>
