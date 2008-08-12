@@ -271,7 +271,9 @@ public class Galaxy implements EntryPoint, HistoryListener {
         for (Iterator<String> itr = user.getPermissions().iterator(); itr.hasNext();) {
             String s = itr.next();
 
-            if (s.startsWith("MANAGE_")) return true;
+            if (s.startsWith("MANAGE_") || "EXECUTE_ADMIN_SCRIPTS".equals(s)) {
+                return true;
+            }
         }
         return false;
     }
