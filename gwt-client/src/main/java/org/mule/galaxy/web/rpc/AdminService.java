@@ -20,7 +20,6 @@ package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import org.mule.galaxy.web.client.RPCException;
-import org.mule.galaxy.security.AccessException;
 
 public interface AdminService extends RemoteService {
 
