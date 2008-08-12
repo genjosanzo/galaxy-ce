@@ -47,7 +47,6 @@ import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.EntryVersion;
-import org.mule.galaxy.Item;
 import org.mule.galaxy.Link;
 import org.mule.galaxy.Links;
 import org.mule.galaxy.NotFoundException;
@@ -106,7 +105,6 @@ import org.mule.galaxy.web.rpc.WArtifactType;
 import org.mule.galaxy.web.rpc.WArtifactView;
 import org.mule.galaxy.web.rpc.WComment;
 import org.mule.galaxy.web.rpc.WExtensionInfo;
-import org.mule.galaxy.web.rpc.WGovernanceInfo;
 import org.mule.galaxy.web.rpc.WIndex;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WLinks;
@@ -363,7 +361,7 @@ public class RegistryServiceImpl implements RegistryService {
         at.setDocumentTypes(fromWeb(wat.getDocumentTypes()));
 
         HashSet<String> exts = new HashSet<String>();
-        exts.addAll((Collection<String>) wat.getFileExtensions());
+        exts.addAll(wat.getFileExtensions());
         at.setFileExtensions(exts);
 
         return at;
@@ -1023,7 +1021,7 @@ public class RegistryServiceImpl implements RegistryService {
                                                                 a.getDocumentType());
     
             info.setType(type.getDescription());
-            info.setMediaType(type.getContentType().toString());
+            info.setMediaType(type.getContentType());
             
             view = rendererManager.getArtifactRenderer(a.getDocumentType());
             if (view == null) {
@@ -1046,7 +1044,7 @@ public class RegistryServiceImpl implements RegistryService {
 
         List<WComment> wcs = info.getComments();
 
-        Workspace workspace = (Workspace) e.getParent();
+        Workspace workspace = e.getParent();
         List<Comment> comments = workspace.getCommentManager().getComments(e.getId());
         for (Comment c : comments) {
             final SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATETIME_FORMAT);
@@ -1062,7 +1060,7 @@ public class RegistryServiceImpl implements RegistryService {
 
         List<EntryVersionInfo> versions = new ArrayList<EntryVersionInfo>();
         for (EntryVersion av : e.getVersions()) {
-            versions.add(toWeb((EntryVersion)av, false));
+            versions.add(toWeb(av, false));
         }
         info.setVersions(versions);
 
@@ -1483,7 +1481,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     public Collection<String> getActivePoliciesForLifecycle(String lifecycleName, String workspaceId)
             throws RPCException {
-        Collection<Policy> pols = null;
+        Collection<Policy> pols;
         Lifecycle lifecycle = localLifecycleManager.getLifecycle(lifecycleName);
         try {
             if (workspaceId != null) {
@@ -1505,7 +1503,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     public Collection<String> getActivePoliciesForPhase(String lifecycle, String phaseName, String workspaceId)
             throws RPCException {
-        Collection<Policy> pols = null;
+        Collection<Policy> pols;
         Phase phase = localLifecycleManager.getLifecycle(lifecycle).getPhase(phaseName);
         try {
             if (workspaceId != null) {
@@ -1748,7 +1746,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     private String getVersionLink(ArtifactVersion av) {
-        Item a = (Item) av.getParent();
+        Item a = av.getParent();
         StringBuilder sb = new StringBuilder();
         Workspace w = (Workspace) a.getParent();
 
