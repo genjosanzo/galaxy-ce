@@ -36,9 +36,19 @@ public abstract class QueryBuilder {
         return artifactProperty;
     }
 
-    public abstract void build(StringBuilder query, 
-                               String property, 
-                               Object right, 
-                               boolean not,
-                               Operator operator) throws QueryException ;
+    /**
+     * Build a JCR query.  
+     * @param query
+     * @param property
+     * @param right
+     * @param not
+     * @param operator
+     * @return False if there is no way that this query will match any entries/artifacts.
+     * @throws QueryException
+     */
+    public abstract boolean build(StringBuilder query, 
+                                  String property, 
+                                  Object right, 
+                                  boolean not,
+                                  Operator operator) throws QueryException ;
 }

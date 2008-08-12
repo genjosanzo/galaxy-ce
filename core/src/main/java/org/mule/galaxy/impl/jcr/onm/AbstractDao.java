@@ -323,7 +323,12 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     }
 
     protected List<T> doFind(String property, String value, Session session) throws RepositoryException {
-        String stmt = "/*/" + rootNode + "/*[@" + property + "='" + value + "']";
+        String stmt = "/*/" + rootNode + "/*[";
+        if (value.startsWith("%") || value.endsWith("%")) {
+            stmt += "jcr:like(@" + property + ", '" + value + "')]";
+        } else {
+            stmt += "@" + property + "='" + value + "']";
+        }
         
         return query(stmt, session);
     }

@@ -658,11 +658,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     throw new RuntimeException(e);
                 }
                 
+                if (qstr == null) {
+                    return new SearchResults(0, artifacts);
+                }
+                
                 if (log.isDebugEnabled())
                 {
                     log.debug("Query: " + qstr.toString());
                 }
-                
+                System.out.println("Query: " + qstr.toString());
                 Query jcrQuery = qm.createQuery(qstr, Query.XPATH);
                 
                 QueryResult result = jcrQuery.execute();
@@ -844,9 +848,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
         for (Restriction r : query.getRestrictions()) {
             if (r instanceof OpRestriction) {
-                handleOperator((OpRestriction) r, artifactQuery, avQuery);
+                if (!handleOperator((OpRestriction) r, artifactQuery, avQuery)) {
+                    return null;
+                }
             } else if (r instanceof FunctionCall) {
-                handleFunction((FunctionCall) r, functions, artifactQuery, avQuery);
+                if (!handleFunction((FunctionCall) r, functions, artifactQuery, avQuery)) {
+                    return null;
+                }
             }
         }
         
@@ -867,7 +875,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return base.toString();
     }
 
-    private void handleFunction(FunctionCall r, Map<FunctionCall, AbstractFunction> functions, StringBuilder qstr, StringBuilder propStr) throws QueryException {
+    private boolean handleFunction(FunctionCall r, Map<FunctionCall, AbstractFunction> functions, StringBuilder qstr, StringBuilder propStr) throws QueryException {
         AbstractFunction fn = functionRegistry.getFunction(r.getModule(), r.getName());
         
         functions.put(r, fn);
@@ -877,12 +885,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         
         if (restrictions != null && restrictions.size() > 0) {
             for (OpRestriction opR : restrictions) {
-                handleOperator(opR, qstr, propStr);
+                if (!handleOperator(opR, qstr, propStr)) return false;
             }
         }
+        return true;
     }
 
-    private void handleOperator(OpRestriction or, StringBuilder artifactQuery, StringBuilder avQuery)
+    private boolean handleOperator(OpRestriction or, StringBuilder artifactQuery, StringBuilder avQuery)
         throws QueryException {
         
         // TODO: NOT, LIKE, OR, etc
@@ -912,7 +921,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             query.append(" and ");
         }
         
-        builder.build(query, property, or.getRight(), not, operator);
+        return builder.build(query, property, or.getRight(), not, operator);
     }
 
     private QueryBuilder getQueryBuilder(String property) throws QueryException {

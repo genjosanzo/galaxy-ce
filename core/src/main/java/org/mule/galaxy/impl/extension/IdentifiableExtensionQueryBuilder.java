@@ -47,13 +47,13 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
         }
     }
 
-    public void build(StringBuilder query, String property, Object right, boolean not, Operator operator)
+    public boolean build(StringBuilder query, String property, Object right, boolean not, Operator operator)
         throws QueryException {
         
         List<String> matches = getMatches(right, property, operator);
         
         if (matches.size() == 0) {
-            return;
+            return false;
         }
         
         if (not) {
@@ -84,6 +84,8 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
                          .append("'");
                 }
                 query.append(")");
+            } else {
+                return false;
             }
         } else if (matches.size() == 1) {
             query.append("@")
@@ -96,16 +98,22 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
         if (not) {
             query.append(")");
         }
+        
+        return true;
     }
     
     @SuppressWarnings("unchecked")
     protected List<String> getMatches(Object o, String property, Operator operator) throws QueryException {
 	property = property.substring(property.lastIndexOf('.') + 1);
-	if (Operator.EQUALS == operator) {
-	    List results = dao.find(property, o.toString());
+	if (Operator.LIKE == operator) {
+	    List results = dao.find(property, "%" + o.toString() + "%");
 	   
 	    return asIds((List<Identifiable>) results);
-	}
+	} else if (Operator.EQUALS == operator || Operator.IN == operator) {
+            List results = dao.find(property, o.toString());
+           
+            return asIds((List<Identifiable>) results);
+        } 
 	return Collections.emptyList();
     }
 

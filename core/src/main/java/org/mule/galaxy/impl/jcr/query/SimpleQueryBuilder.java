@@ -16,7 +16,7 @@ public class SimpleQueryBuilder extends QueryBuilder {
         super(properties, artifactProperty);
     }
 
-    public void build(StringBuilder query, String property, Object right, boolean not, Operator operator)
+    public boolean build(StringBuilder query, String property, Object right, boolean not, Operator operator)
         throws QueryException {
         if (not) {
             query.append("not(");
@@ -53,6 +53,8 @@ public class SimpleQueryBuilder extends QueryBuilder {
                          .append("'");
                 }
                 query.append(")");
+            } else {
+                return false;
             }
         } else {
             query.append("@")
@@ -65,6 +67,8 @@ public class SimpleQueryBuilder extends QueryBuilder {
         if (not) {
             query.append(")");
         }
+        
+        return true;
     }
 
     protected String getProperty(String property) {
