@@ -19,7 +19,8 @@ public enum Permission {
     MANAGE_POLICIES("Manage Policies"),
     MANAGE_PROPERTIES("Manage Properties"),
     MANAGE_LIFECYCLES("Manage Lifecycles"),
-    MANAGE_ARTIFACT_TYPES("Manage Artifact Types");
+    MANAGE_ARTIFACT_TYPES("Manage Artifact Types"),
+    EXECUTE_ADMIN_SCRIPTS("Execute Admin Scripts");
     
     private String description;
     private Class<? extends Item>[] appliesTo;

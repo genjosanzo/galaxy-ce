@@ -20,6 +20,9 @@ package org.mule.galaxy.web.server;
 
 import org.mule.galaxy.web.rpc.AdminService;
 import org.mule.galaxy.web.client.RPCException;
+import org.mule.galaxy.security.AccessControlManager;
+import org.mule.galaxy.security.Permission;
+import org.mule.galaxy.security.AccessException;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationContext;
 import org.springframework.beans.BeansException;
@@ -28,10 +31,17 @@ import groovy.lang.GroovyShell;
 
 public class AdminServiceImpl implements AdminService, ApplicationContextAware
 {
-
     private ApplicationContext applicationContext;
 
+    private AccessControlManager accessControlManager;
+
     public String executeScript(String scriptText) throws RPCException {
+        try {
+            accessControlManager.assertAccess(Permission.EXECUTE_ADMIN_SCRIPTS);
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        }
+
         Binding binding = new Binding();
         binding.setProperty("applicationContext", applicationContext);
         GroovyShell shell = new GroovyShell(binding);
@@ -41,5 +51,9 @@ public class AdminServiceImpl implements AdminService, ApplicationContextAware
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    public void setAccessControlManager(AccessControlManager accessControlManager) {
+        this.accessControlManager = accessControlManager;
     }
 }

@@ -36,7 +36,9 @@
     <bean id="heartbeatService" class="org.mule.galaxy.web.server.HeartbeatServiceImpl">
     </bean>
 
-    <bean id="adminService" class="org.mule.galaxy.web.server.AdminServiceImpl"/>
+    <bean id="adminService" class="org.mule.galaxy.web.server.AdminServiceImpl">
+        <property name="accessControlManager" ref="accessControlManager"/>
+    </bean>
 
     <bean id="demoArtifactPlugin" class="org.mule.galaxy.web.DemoArtifactPlugin" parent="abstractArtifactPlugin">
       <property name="userManager" ref="userManager"/>
