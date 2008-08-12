@@ -141,11 +141,11 @@ public class QueryTest extends AbstractGalaxyTest {
     
         assertEquals(0, results.size());
         
-        q = new Query(Artifact.class)
-            .add(OpRestriction.in("primary.lifecycle.phase", Collections.emptyList()));
-        results = registry.search(q).getResults();
-    
-        assertEquals(0, results.size());
+//        q = new Query(Artifact.class)
+//            .add(OpRestriction.in("primary.lifecycle.phase", Collections.emptyList()));
+//        results = registry.search(q).getResults();
+//    
+//        assertEquals(0, results.size());
         
         q = new Query(Artifact.class)
             .add(OpRestriction.in("primary.lifecycle", 
@@ -240,6 +240,10 @@ public class QueryTest extends AbstractGalaxyTest {
         
         SearchResults result = registry.search(q);
         
+        assertEquals(1, result.getTotal());
+        
+        q = new Query(Entry.class).add(OpRestriction.like("contact.name", user.getName()));
+        result = registry.search(q);
         assertEquals(1, result.getTotal());
     }
 }
