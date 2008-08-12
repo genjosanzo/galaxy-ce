@@ -958,6 +958,7 @@ a:visited {
 .gwt-TabBar .gwt-TabBarRest {
 }
 
+/*
 .gwt-TabBar .gwt-TabBarItem {
   padding: 5px 10px 5px 10px;
   cursor: pointer;
@@ -978,6 +979,7 @@ a:visited {
   background-image: url("images/nw_maj_rond.gif");
   background-repeat: no-repeat;
 }
+*/
 
 .gwt-TextArea {
     border: 1px solid lightsteelblue;
@@ -1194,7 +1196,7 @@ a:visited {
 .headerTabPanel .gwt-TabBar {
   background-color: black;
   padding-top: 3px;
-  border-bottom: 4px solid #004A80;
+  border-bottom: 2px solid #004A80;
 }
 
 .headerTabPanel .gwt-TabBar .gwt-TabBarItem {
@@ -1202,7 +1204,7 @@ a:visited {
   cursor: pointer;
   cursor: hand;
 
-  color: #C0C0C0;
+  color: #E5EDF5;
   font-weight: bold;
   background-color: black;
   border-bottom: 2px solid black;
@@ -1221,27 +1223,28 @@ a:visited {
   background-repeat: no-repeat;
 }
 
+/* left side menu? */
 .headerTabDeckPanel {
     background-color: white;
 }
 
 
 /**
- * ARtifact tabs
+ * Artifact tabs
  */
 .artifactTabPanelBottom {
   background-color: white;
-  width: 100%;
+  width: 98%;
 }
 
 .artifactTabPanel {
-    width: 100%;
+    width: 98%;
 }
 
 .artifactTabPanel .gwt-TabBar {
   background-color: white;
   padding-top: 3px;
-  border-bottom: 4px solid #333;
+  border-bottom: 2px solid black;
 }
 
 .artifactTabPanel .gwt-TabBar .gwt-TabBarItem {
