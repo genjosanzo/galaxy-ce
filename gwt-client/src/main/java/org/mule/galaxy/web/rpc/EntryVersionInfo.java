@@ -25,8 +25,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-public class EntryVersionInfo implements IsSerializable {
-    private String id;
+public class EntryVersionInfo extends ItemInfo implements IsSerializable {
     private String versionLabel;
     private String link;
     private Date created;
@@ -36,10 +35,6 @@ public class EntryVersionInfo implements IsSerializable {
     private boolean enabled;
     private boolean indexInformationStale;
     
-    /*
-     * @gwt typeArgs org.mule.galaxy.rpc.WProperty
-     */
-    private List<WProperty> properties = new ArrayList<WProperty>();
     
     public EntryVersionInfo(String id, String versionLabel, 
                             Date created, boolean _default,
@@ -69,21 +64,6 @@ public class EntryVersionInfo implements IsSerializable {
 
     public void setIndexInformationStale(boolean indexInformationStale) {
         this.indexInformationStale = indexInformationStale;
-    }
-
-    /**
-     * @gwt typeArgs org.mule.galaxy.web.rpc.WProperty
-     */
-    public List<WProperty> getProperties() {
-        return properties;
-    }
-    
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public boolean isEnabled() {
@@ -140,18 +120,6 @@ public class EntryVersionInfo implements IsSerializable {
     
     public void setCreated(Date created) {
         this.created = created;
-    }
-    
-    public WProperty getProperty(String name) {
-        for (Iterator<WProperty> itr = properties.iterator(); itr.hasNext();) {
-            WProperty p = itr.next();
-            
-            if (name.equals(p.getName())) {
-                return p;
-            }
-        }
-        
-        return null;
     }
     
 }

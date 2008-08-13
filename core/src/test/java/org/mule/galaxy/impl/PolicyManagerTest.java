@@ -37,9 +37,8 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
             Map<Item, List<ApprovalMessage>> policyFailures = e.getPolicyFailures();
             
             // fails once for the artifact and once for the artifact version
-            assertEquals(2, policyFailures.size());
+            assertEquals(1, policyFailures.size());
             
-            assertTrue(policyFailures.keySet().contains(artifact));
             assertTrue(policyFailures.keySet().contains(artifact.getDefaultOrLastVersion()));
             
             // deactivate
@@ -52,9 +51,8 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         } catch (PolicyException e) {
             Map<Item, List<ApprovalMessage>> policyFailures = e.getPolicyFailures();
             
-            assertEquals(2, policyFailures.size());
+            assertEquals(1, policyFailures.size());
             
-            assertTrue(policyFailures.keySet().contains(artifact));
             assertTrue(policyFailures.keySet().contains(artifact.getDefaultOrLastVersion()));
             
             // deactivate
@@ -63,16 +61,15 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         
 
         try {
-            assertEquals(lifecycle.getInitialPhase(), artifact.getProperty(Registry.PRIMARY_LIFECYCLE));
+            assertEquals(lifecycle.getInitialPhase(), artifact.getDefaultOrLastVersion().getProperty(Registry.PRIMARY_LIFECYCLE));
             
             policyManager.setActivePolicies(Arrays.asList(lifecycle.getInitialPhase()), failPolicy);
             fail("Expected policy failure.");
         } catch (PolicyException e) {
             Map<Item, List<ApprovalMessage>> policyFailures = e.getPolicyFailures();
             
-            assertEquals(2, policyFailures.size());
+            assertEquals(1, policyFailures.size());
             
-            assertTrue(policyFailures.keySet().contains(artifact));
             assertTrue(policyFailures.keySet().contains(artifact.getDefaultOrLastVersion()));
             
             // deactivate

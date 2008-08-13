@@ -92,8 +92,7 @@ public interface RegistryService extends RemoteService {
     
     ExtendedEntryInfo getArtifactByVersionId(String artifactVersionId) throws RPCException, ItemNotFoundException;
     
-    EntryVersionInfo getEntryVersionInfo(String artifactVersionId,
-                                               boolean showHidden) throws RPCException, ItemNotFoundException;
+    ItemInfo getItemInfo(String artifactVersionId, boolean showHidden) throws RPCException, ItemNotFoundException;
 
     Collection<EntryInfo> suggestEntries(String query) throws RPCException;
     

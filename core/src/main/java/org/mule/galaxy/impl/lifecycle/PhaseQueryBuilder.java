@@ -16,7 +16,6 @@ public class PhaseQueryBuilder extends ExtensionQueryBuilder {
     private LifecycleManager lifecycleManager;
     
     public PhaseQueryBuilder() {
-        super(false);
         suffixes.add("phase");
     }
     

@@ -24,18 +24,18 @@ public class QueryTest extends AbstractGalaxyTest {
         Workspace workspace = (Workspace) muleArtifact.getParent();
 
         // Try out search!
-        Set results = registry.search(new Query(Artifact.class).workspaceId(workspace.getId())).getResults();
+        Set results = registry.search(new Query(Artifact.class).fromId(workspace.getId())).getResults();
 
         assertEquals(2, results.size());
 
         results = registry.search(new Query(Artifact.class)
-            .workspaceId(workspace.getId())
+            .fromId(workspace.getId())
                  .add(OpRestriction.eq("mule2.service", "GreeterUMO"))
                  .add(OpRestriction.eq("documentType", Constants.MULE2_QNAME))).getResults();
         assertEquals(1, results.size());
 
         results = registry.search(new Query(Artifact.class)
-            .workspacePath(workspace.getPath())
+            .fromPath(workspace.getPath())
                  .add(OpRestriction.like("mule2.service", "Greeter"))).getResults();
         assertEquals(1, results.size());
 
@@ -56,12 +56,12 @@ public class QueryTest extends AbstractGalaxyTest {
 
 
         results = registry.search(new Query(Artifact.class)
-            .workspaceId(workspace.getId())
+            .fromId(workspace.getId())
                  .add(OpRestriction.not(OpRestriction.eq("documentType", Constants.MULE2_QNAME)))).getResults();
         assertEquals(1, results.size());
 
         results = registry.search(new Query(Artifact.class)
-            .workspaceId(workspace.getId())
+            .fromId(workspace.getId())
                  .add(OpRestriction.like("mule2.service", "Greeter"))).getResults();
         assertEquals(1, results.size());
 

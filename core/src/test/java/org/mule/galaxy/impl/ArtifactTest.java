@@ -36,7 +36,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         assertEquals(w.getId(), a.getParent().getId());
         
-        Set results = registry.search(new Query(Artifact.class).workspaceId(w.getId())).getResults();
+        Set results = registry.search(new Query(Artifact.class).fromId(w.getId())).getResults();
         
         assertEquals(1, results.size());
         
@@ -164,7 +164,8 @@ public class ArtifactTest extends AbstractGalaxyTest {
         Workspace workspace = workspaces.iterator().next();
         
         EntryResult ar = workspace.createArtifact("application/wsdl+xml", 
-                                                    "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
+                                                  "hello_world.wsdl", "0.1", 
+                                                  helloWsdl, getAdmin());
         
         Artifact artifact = (Artifact) ar.getEntry();
 
@@ -226,6 +227,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         Calendar created = version.getCreated();
         assertTrue(created.getTime().getTime() > 0);
         
+        version.setProperty("foo", "bar");
         assertEquals("bar", version.getProperty("foo"));
          
         // Create another version
@@ -255,7 +257,6 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         newVersion.setProperty("foo2", "bar");
         assertEquals("bar", newVersion.getProperty("foo2"));
-        assertEquals("bar", artifact.getProperty("foo2"));
         assertNull(version.getProperty("foo2"));
         
         Artifact a2 = (Artifact) registry.resolve(workspace, artifact.getName());

@@ -1,6 +1,8 @@
  package org.mule.galaxy.query;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,17 +11,19 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.Workspace;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.Message;
 
 public class Query {
     List<Restriction> restrictions = new LinkedList<Restriction>();
     boolean searchLatestVersionOnly = true;
-    Class<?> selectType;
+    List<Class> selectTypes;
     private String groupBy;
-    private String workspaceId;
-    private boolean workspaceRecursive;
-    private String workspacePath;
+    private String fromId;
+    private boolean fomRecursive;
+    private String fromPath;
     private int start = -1;
     private int maxResults = Integer.MAX_VALUE;
     
@@ -41,19 +45,22 @@ public class Query {
 
     public Query() {
 	super();
+        this.selectTypes = Collections.emptyList();
     }
     
     public Query(OpRestriction restriction) {
         restrictions.add(restriction);
+        this.selectTypes = Collections.emptyList();
     }
     
-    public Query(OpRestriction restriction, Class selectType) {
-        this.selectType = selectType;
+    public Query(OpRestriction restriction, 
+	         Class... selectType) {
+	this.selectTypes = Arrays.asList(selectType);
         restrictions.add(restriction);
     }
     
-    public Query(Class selectType) {
-        this.selectType = selectType;
+    public Query(Class... selectType) {
+        this.selectTypes = Arrays.asList(selectType);
     }
 
     public Query add(Restriction restriction) {
@@ -65,12 +72,16 @@ public class Query {
         return restrictions;
     }
 
-    public Class<?> getSelectType() {
-        return selectType;
+    public List<Class> getSelectTypes() {
+        return selectTypes;
     }
 
-    public void setSelectType(Class<?> selectType) {
-        this.selectType = selectType;
+    public void setSelectTypes(Class... selectType) {
+	this.selectTypes = Arrays.asList(selectType);
+    }
+    
+    public void setSelectTypes(List<Class> selectTypes) {
+	this.selectTypes = selectTypes;
     }
 
     public Query orderBy(String field) {
@@ -78,25 +89,25 @@ public class Query {
         return this;
     }
     
-    public Query workspaceId(String workspace, boolean workspaceSearchRecursive) {
-        this.workspaceId = workspace;
-        this.workspaceRecursive = workspaceSearchRecursive;
+    public Query fromId(String workspace, boolean workspaceSearchRecursive) {
+        this.fromId = workspace;
+        this.fomRecursive = workspaceSearchRecursive;
         return this;
     }
     
-    public Query workspaceId(String workspace) {
-        this.workspaceId = workspace;
+    public Query fromId(String workspace) {
+        this.fromId = workspace;
         return this;
     }
     
-    public Query workspacePath(String workspace, boolean workspaceSearchRecursive) {
-        this.workspacePath = workspace;
-        this.workspaceRecursive = workspaceSearchRecursive;
+    public Query fromPath(String workspace, boolean workspaceSearchRecursive) {
+        this.fromPath = workspace;
+        this.fomRecursive = workspaceSearchRecursive;
         return this;
     }
     
-    public Query workspacePath(String workspace) {
-        this.workspacePath = workspace;
+    public Query fromPath(String workspace) {
+        this.fromPath = workspace;
         return this;
     }
 
@@ -104,16 +115,16 @@ public class Query {
         return groupBy;
     }
 
-    public String getWorkspaceId() {
-        return workspaceId;
+    public String getFromId() {
+        return fromId;
     }
 
-    public String getWorkspacePath() {
-        return workspacePath;
+    public String getFromPath() {
+        return fromPath;
     }
 
-    public boolean isWorkspaceSearchRecursive() {
-        return workspaceRecursive;
+    public boolean isFromRecursive() {
+        return fomRecursive;
     }
     
     public String toString() {
@@ -121,25 +132,45 @@ public class Query {
         
         sb.append("select ");
         
-        if (selectType.equals(ArtifactVersion.class)) {
-            sb.append("artifactVersion ");
+        if (selectTypes != null && selectTypes.size() > 0) {
+            boolean first = true;
+            for (Class t : selectTypes) {
+                if (!first) {
+            		sb.append(", ");
+                }
+                
+                if (t.equals(Artifact.class)) {
+                    sb.append("artifact");
+                } else if (t.equals(ArtifactVersion.class)) {
+                    sb.append("artifactVersion");
+                } else if (t.equals(Entry.class)) {
+                    sb.append("entry");
+                } else if (t.equals(EntryVersion.class)) {
+                    sb.append("entryVersion");
+                } else {
+                    sb.append("item");
+                }
+                
+                first = false;
+            }
+            sb.append(" ");
         } else {
-            sb.append("artifact ");
+            sb.append("item ");
         }
         
-        if (workspaceId != null) {
+        if (fromId != null) {
             sb.append("from '@")
-                .append(workspaceId)
+                .append(fromId)
                 .append("' ");
         }
         
-        if (workspacePath != null) {
+        if (fromPath != null) {
             sb.append("from '")
-              .append(workspacePath)
+              .append(fromPath)
               .append("' ");
         }
         
-        if (workspaceRecursive) {
+        if (fomRecursive) {
             sb.append("recursive ");
         }
         
@@ -164,6 +195,12 @@ public class Query {
             char c = queryString.charAt(i);
             switch (c) {
             case ' ':
+                if (start != i) {
+                    tokens.add(queryString.substring(start, i));
+                }
+                start = i + 1;
+                break;
+            case ',':
                 if (start != i) {
                     tokens.add(queryString.substring(start, i));
                 }
@@ -209,29 +246,40 @@ public class Query {
             throw new QueryException(new Message("EXPECTED_SELECT_TYPE", BundleUtils.getBundle(Query.class)));
         }
         
-        Class<?> selectTypeCls = null;
-        String selectType = itr.next();
-        if (selectType.equals("artifact")) {
-            selectTypeCls = Artifact.class;
-        } else if (selectType.equals("artifactVersion")) {
-            selectTypeCls = ArtifactVersion.class;
-        } else if (selectType.equals("entry")) {
-            selectTypeCls = Entry.class;
-        } else if (selectType.equals("entryVersion")) {
-            selectTypeCls = EntryVersion.class;
-        } else if (selectType.equals("*")) {
-            selectTypeCls = null;
-        } else {
-            throw new QueryException(new Message("UNKNOWN_SELECT_TYPE", BundleUtils.getBundle(Query.class), selectType));
-        }
+        List<Class> selectTypes = new ArrayList<Class>();
+        String selectType;
+        do {
+            selectType = itr.next();
+            
+            if (selectType.equals("from") || selectType.equals("where")) {
+        	break;
+            }
+            
+            if (selectType.equals("artifact")) {
+        	selectTypes.add(Artifact.class);
+            } else if (selectType.equals("artifactVersion")) {
+        	selectTypes.add(ArtifactVersion.class);
+            } else if (selectType.equals("entry")) {
+        	selectTypes.add(Entry.class);
+            } else if (selectType.equals("entryVersion")) {
+        	selectTypes.add(EntryVersion.class);
+            } else if (selectType.equals("workspace")) {
+        	selectTypes.add(Workspace.class);
+            } else if (selectType.equals("*")) {
+        	selectTypes.add(Item.class);
+            } else {
+                throw new QueryException(new Message("UNKNOWN_SELECT_TYPE", BundleUtils.getBundle(Query.class), selectType));
+            }
+        } while (itr.hasNext());
         
-        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(selectTypeCls);
-
+        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query();
+        q.setSelectTypes(selectTypes);
+        
         if (!itr.hasNext()){
             return q;
         }
         
-        String next = itr.next();
+        String next = selectType;
         if ("from".equals(next.toLowerCase())) {
             if (!itr.hasNext()) throw new QueryException(new Message("EXPECTED_FROM", BundleUtils.getBundle(Query.class)));
             
@@ -252,9 +300,9 @@ public class Query {
                 }
                 
                 if (workspace.startsWith("@")) {
-                    q.workspaceId(workspace.substring(1), recursive);
+                    q.fromId(workspace.substring(1), recursive);
                 } else {
-                    q.workspacePath(workspace, recursive);
+                    q.fromPath(workspace, recursive);
                 }
             }
         }

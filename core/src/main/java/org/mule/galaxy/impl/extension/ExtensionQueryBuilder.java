@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.mule.galaxy.Item;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.jcr.query.SimpleQueryBuilder;
-import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.TypeManager;
 
@@ -16,8 +16,10 @@ public abstract class ExtensionQueryBuilder extends SimpleQueryBuilder {
 
     protected List<String> suffixes = new ArrayList<String>();
     
-    public ExtensionQueryBuilder(boolean artifactProperty) {
-        super(artifactProperty);
+    public ExtensionQueryBuilder() {
+        super();
+        
+        appliesTo.add(Item.class);
     }
     
     @Override
@@ -35,6 +37,7 @@ public abstract class ExtensionQueryBuilder extends SimpleQueryBuilder {
         }
         return props;
     }
+    
     @Override
     protected String getProperty(String property) {
         for (String s : getSuffixes()) {

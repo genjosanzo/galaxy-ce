@@ -23,14 +23,12 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EntryInfo implements IsSerializable {
+public class EntryInfo extends ItemInfo implements IsSerializable {
 
     private Map<Integer, String> col2Value = new HashMap<Integer, String>();
-    private String id;
     private String workspaceId;
     private String name;
     private String path;
-    
     
     public String getPath() {
         return path;
@@ -54,14 +52,6 @@ public class EntryInfo implements IsSerializable {
 
     public void setWorkspaceId(String workspaceId) {
         this.workspaceId = workspaceId;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public void setColumn(int col, String value) {

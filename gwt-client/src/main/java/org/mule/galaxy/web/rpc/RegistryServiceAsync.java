@@ -90,7 +90,7 @@ public interface RegistryServiceAsync {
     
     void getArtifactByVersionId(String artifactVersionId, AsyncCallback callback);
     
-    void getEntryVersionInfo(String entryVersionId, boolean showHidden, AsyncCallback callback);
+    void getItemInfo(String entryVersionId, boolean showHidden, AsyncCallback<ItemInfo> callback);
     
     void setProperty(String artifactId, 
                      String propertyName, 

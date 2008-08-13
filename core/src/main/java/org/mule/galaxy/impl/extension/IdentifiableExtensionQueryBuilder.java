@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Identifiable;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.OpRestriction.Operator;
 
@@ -26,7 +27,8 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
     private String root;
     
     public IdentifiableExtensionQueryBuilder(IdentifiableExtension e) throws IntrospectionException {
-	super(false);
+	super();
+	appliesTo.add(Item.class);
 	
 	this.extension = e;
 	
@@ -47,7 +49,9 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
         }
     }
 
-    public boolean build(StringBuilder query, String property, Object right, boolean not, Operator operator)
+    @Override
+    public boolean build(StringBuilder query, String property, 
+                         String propPrefix, Object right, boolean not, Operator operator)
         throws QueryException {
         
         List<String> matches = getMatches(right, property, operator);
@@ -77,7 +81,8 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
                         query.append(" or ");
                     }
     
-                    query.append("@")
+                    query.append(propPrefix)
+                         .append("@")
                          .append(searchProp)
                          .append("='")
                          .append(value)
@@ -88,7 +93,8 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
                 return false;
             }
         } else if (matches.size() == 1) {
-            query.append("@")
+            query.append(propPrefix)
+                .append("@")
                 .append(searchProp)
                 .append("='")
                 .append(matches.get(0))

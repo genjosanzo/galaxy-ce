@@ -3,8 +3,7 @@ package org.mule.galaxy.query;
 import java.util.List;
 import java.util.Set;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Item;
 
 public abstract class AbstractFunction {
     
@@ -12,9 +11,7 @@ public abstract class AbstractFunction {
     
     public abstract String getName();
     
-    public abstract void modifyArtifacts(Object[] args, Set<Artifact> artifacts);
-
-    public abstract void modifyArtifactVersions(Object[] args, Set<ArtifactVersion> artifacts);
+    public abstract void modifyItems(Object[] args, Set<Item> items);
 
     /**
      * Add any possible filters to narrow down the list of artifacts

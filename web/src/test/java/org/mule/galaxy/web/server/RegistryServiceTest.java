@@ -26,6 +26,7 @@ import org.mule.galaxy.web.rpc.EntryGroup;
 import org.mule.galaxy.web.rpc.EntryInfo;
 import org.mule.galaxy.web.rpc.EntryVersionInfo;
 import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
+import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.LinkInfo;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
@@ -107,10 +108,6 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         List<EntryInfo> rows = g1.getRows();
         assertEquals(2, rows.size());
 
-        WLinks links = gwtRegistry.getLinks(info.getId(), LinkExtension.DEPENDS);
-        List<LinkInfo> deps = links.getLinks();
-        assertEquals(1, deps.size());
-
         // Test reretrieving the artifact
         ExtendedEntryInfo entry = gwtRegistry.getEntry(info.getId());
         assertEquals("WSDL Documents", entry.getType());
@@ -124,10 +121,10 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         registry.save(artifact);
         
         // see if the hidden property shows up
-        EntryVersionInfo av = gwtRegistry.getEntryVersionInfo(artifact.getDefaultOrLastVersion().getId(), true);
+        ItemInfo itemInfo = gwtRegistry.getItemInfo(artifact.getId(), true);
         
         WProperty hiddenProp = null;
-        for (Object o : av.getProperties()) {
+        for (Object o : itemInfo.getProperties()) {
             WProperty prop = (WProperty) o;
             
             if (prop.getName().equals("hidden")) {
@@ -137,6 +134,11 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         }
             
         assertNotNull(hiddenProp);
+        
+        // test links
+        WLinks links = gwtRegistry.getLinks(artifact.getDefaultOrLastVersion().getId(), LinkExtension.DEPENDS);
+        List<LinkInfo> deps = links.getLinks();
+        assertEquals(1, deps.size());
         
         // try adding a comment
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -201,7 +203,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         String vId = gwtRegistry.newEntryVersion(entryId, "2");
         
-        EntryVersionInfo info = gwtRegistry.getEntryVersionInfo(vId, false);
+        ItemInfo info = gwtRegistry.getItemInfo(vId, false);
         assertNotNull(info);
         
     }

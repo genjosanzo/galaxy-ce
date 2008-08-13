@@ -116,19 +116,19 @@ declare variable $document external;
             <view>
                 <column>
                     <name>Descriptors</name>
-                    <expression>artifact.hasProperty("mule.descriptor") ? artifact.getProperty("mule.descriptor").size() : "0" ;</expression>
+                    <expression>version.hasProperty("mule.descriptor") ? version.getProperty("mule.descriptor").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Transformers</name>
-                    <expression>artifact.hasProperty("mule.transformer") ? artifact.getProperty("mule.transformer").size() : "0" ;</expression>
+                    <expression>version.hasProperty("mule.transformer") ? version.getProperty("mule.transformer").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Endpoints</name>
-                    <expression>artifact.hasProperty("mule.endpoint") ? artifact.getProperty("mule.endpoint").size() : "0" ;</expression>
+                    <expression>version.hasProperty("mule.endpoint") ? version.getProperty("mule.endpoint").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Models</name>
-                    <expression>artifact.hasProperty("mule.model") ? artifact.getProperty("mule.model").size() : "0" ;</expression>
+                    <expression>version.hasProperty("mule.model") ? version.getProperty("mule.model").size() : "0" ;</expression>
                 </column>
             </view>
         </views>

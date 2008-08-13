@@ -2,28 +2,32 @@ package org.mule.galaxy.impl.jcr.query;
 
 import java.util.Collection;
 
+import org.mule.galaxy.Item;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.OpRestriction.Operator;
 
 public class SimpleQueryBuilder extends QueryBuilder {
     
     
-    public SimpleQueryBuilder(boolean artifactProperty) {
-	super(artifactProperty);
+    public SimpleQueryBuilder() {
+	super();
     }
 
-    public SimpleQueryBuilder(String[] properties, boolean artifactProperty) {
-        super(properties, artifactProperty);
+    public SimpleQueryBuilder(String[] properties) {
+        super(properties);
     }
 
-    public boolean build(StringBuilder query, String property, Object right, boolean not, Operator operator)
+    public boolean build(StringBuilder query, String property, String propPrefix,
+                         Object right, boolean not, Operator operator)
         throws QueryException {
         if (not) {
             query.append("not(");
         }
         
         if (operator.equals(Operator.LIKE)) {
-            query.append("jcr:like(@")
+            query.append("jcr:like(")
+            .append(propPrefix)
+            .append("@")
             .append(getProperty(property))
             .append(", '%")
             .append(right)
@@ -46,7 +50,8 @@ public class SimpleQueryBuilder extends QueryBuilder {
                         query.append(" or ");
                     }
     
-                    query.append("@")
+                    query.append(propPrefix)
+                    .append("@")
                          .append(getProperty(property))
                          .append("='")
                          .append(value)
@@ -57,7 +62,8 @@ public class SimpleQueryBuilder extends QueryBuilder {
                 return false;
             }
         } else {
-            query.append("@")
+            query.append(propPrefix)
+                .append("@")
                 .append(getProperty(property))
                 .append("='")
                 .append(getValueAsString(right, property, operator))
@@ -77,6 +83,10 @@ public class SimpleQueryBuilder extends QueryBuilder {
 
     protected String getValueAsString(Object o, String property, Operator operator) throws QueryException {
         return o.toString();
+    }
+
+    public void addAppliesTo(Class<? extends Item> t) {
+        appliesTo.add(t);
     }
 
 }

@@ -112,15 +112,15 @@ declare variable $document external;
             <view>
                 <column>
                     <name>Services</name>
-                    <expression>artifact.hasProperty("mule2.service") ? artifact.getProperty("mule2.service").size() : "0" ;</expression>
+                    <expression>version.hasProperty("mule2.service") ? version.getProperty("mule2.service").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Endpoints</name>
-                    <expression>artifact.hasProperty("mule2.endpoint") ? artifact.getProperty("mule2.endpoint").size() : "0" ;</expression>
+                    <expression>version.hasProperty("mule2.endpoint") ? version.getProperty("mule2.endpoint").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Models</name>
-                    <expression>artifact.hasProperty("mule.model2") ? artifact.getProperty("mule2.model").size() : "0" ;</expression>
+                    <expression>version.hasProperty("mule.model2") ? version.getProperty("mule2.model").size() : "0" ;</expression>
                 </column>
             </view>
         </views>

@@ -26,7 +26,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.Iterator;
+import java.util.Collection;
 
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
@@ -34,7 +34,7 @@ import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.EntryVersionInfo;
-import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
+import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WProperty;
 
@@ -45,20 +45,21 @@ public class EntryMetadataPanel extends AbstractComposite {
 
     private FlowPanel metadata;
     private ErrorPanel errorPanel;
-    private EntryVersionInfo info;
     private FlexTable table;
     private boolean showHidden = false;
     private Hyperlink showAll;
     private final Galaxy galaxy;
+    private ItemInfo item;
     
     public EntryMetadataPanel(final Galaxy galaxy,
                               final ErrorPanel registryPanel,
-                              final ExtendedEntryInfo artifactInfo,
-                              final EntryVersionInfo info) {
+                              final String title,
+                              final ItemInfo item,
+                              final boolean stale) {
         super();
         this.galaxy = galaxy;
-        this.info = info;
         this.errorPanel = registryPanel;
+        this.item = item;
         
         metadata = new FlowPanel();
         metadata.setStyleName("metadata-panel");
@@ -73,7 +74,7 @@ public class EntryMetadataPanel extends AbstractComposite {
                 NewPropertyPanel edit = new NewPropertyPanel(galaxy,
                                                              errorPanel,
                                                              galaxy.getRegistryService(),
-                                                             info.getId(),
+                                                             item.getId(),
                                                              metadata,
                                                              amPanel,
                                                              table);
@@ -92,12 +93,12 @@ public class EntryMetadataPanel extends AbstractComposite {
             }
         });
         
-        InlineFlowPanel metadataTitle = createTitleWithLink("Metadata", asHorizontal(showAll, new Label(" "), addMetadata));
+        InlineFlowPanel metadataTitle = createTitleWithLink(title, asHorizontal(showAll, new Label(" "), addMetadata));
         metadata.add(metadataTitle);
 
-        initializeProperties(info);
+        initializeProperties(item.getProperties());
         
-        if (info.isIndexInformationStale()) {
+        if (stale) {
             metadata.add(new Label("NOTE: Indexed metadata for this artifact is currently in the process of being updated."));
         }
         metadata.add(table);
@@ -112,22 +113,19 @@ public class EntryMetadataPanel extends AbstractComposite {
         } else {
             showAll.setText("Show All");
         }
+        
         RegistryServiceAsync svc = galaxy.getRegistryService();
-        svc.getEntryVersionInfo(info.getId(), showHidden, new AbstractCallback(errorPanel) {
+        svc.getItemInfo(item.getId(), showHidden, new AbstractCallback<ItemInfo>(errorPanel) {
 
-            public void onSuccess(Object o) {
-                info = (EntryVersionInfo) o;
-                
-                initializeProperties(info);
+            public void onSuccess(ItemInfo o) {
+                item = o;
+                initializeProperties(item.getProperties());
             }
         });
     }
 
-    private void initializeProperties(final EntryVersionInfo info) {
-        for (Iterator<WProperty> itr = info.getProperties().iterator(); itr.hasNext();) {
-            WProperty p = itr.next();
-            
-            
+    private void initializeProperties(Collection<WProperty> properties) {
+        for (WProperty p : properties) {
             addRow(p);
         }
     }
@@ -139,7 +137,7 @@ public class EntryMetadataPanel extends AbstractComposite {
 
         render.setProperty(property);
         render.setGalaxy(galaxy);
-        render.setItemId(info.getId());
+        render.setItemId(item.getId());
         render.initialize();
         render.showView();
         
@@ -160,7 +158,7 @@ public class EntryMetadataPanel extends AbstractComposite {
                         return;
                     }
                 }
-                info.getProperties().remove(render.getProperty());
+                item.getProperties().remove(render.getProperty());
             }
             
         });
@@ -182,7 +180,7 @@ public class EntryMetadataPanel extends AbstractComposite {
     }
 
     public boolean hasProperty(String name) {
-        return info.getProperty(name) != null;
+        return item.getProperty(name) != null;
     }
     
 }

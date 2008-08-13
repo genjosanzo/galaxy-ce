@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mule.galaxy.Entry;
 import org.mule.galaxy.render.ColumnEvaluator;
 import org.mvel.MVEL;
 
@@ -18,9 +19,10 @@ public class MvelColumn implements ColumnEvaluator {
         compiled = MVEL.compileExpression(expression);
     }
 
-    public Object getValue(Object artifact) {
+    public Object getValue(Object entry) {
         Map<String, Object> vars = new HashMap<String, Object>();
-        vars.put("artifact", artifact);
+        vars.put("entry", entry);
+        vars.put("version", ((Entry)entry).getDefaultOrLastVersion());
         return MVEL.executeExpression(compiled, vars);
     }
 

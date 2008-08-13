@@ -14,6 +14,7 @@ import java.util.Set;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryResult;
+import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.extension.IdentifiableExtensionQueryBuilder;
@@ -55,21 +56,21 @@ public class QueryTest extends AbstractGalaxyTest {
                  q.toString());
         
         q = new Query(Artifact.class)
-            .workspacePath("/foo", false)
+            .fromPath("/foo", false)
             .add(eq("phase", "bar"));
 
         assertEquals("select artifact from '/foo' where phase = 'bar'",
              q.toString());
         
         q = new Query(Artifact.class)
-            .workspacePath("/foo", true)
+            .fromPath("/foo", true)
             .add(eq("phase", "bar"));
 
         assertEquals("select artifact from '/foo' recursive where phase = 'bar'",
              q.toString());
         
         q = new Query(Artifact.class)
-            .workspaceId("123", true)
+            .fromId("123", true)
             .add(eq("phase", "bar"));
 
         assertEquals("select artifact from '@123' recursive where phase = 'bar'",
@@ -87,13 +88,23 @@ public class QueryTest extends AbstractGalaxyTest {
         
         q = Query.fromString("select artifact from '/foo' recursive");
         
-        assertTrue(q.isWorkspaceSearchRecursive());
-        assertEquals("/foo", q.getWorkspacePath());
+        assertTrue(q.isFromRecursive());
+        assertEquals("/foo", q.getFromPath());
         
         q = Query.fromString("select artifact from '@123' recursive");
         
-        assertTrue(q.isWorkspaceSearchRecursive());
-        assertEquals("123", q.getWorkspaceId());
+        assertTrue(q.isFromRecursive());
+        assertEquals("123", q.getFromId());
+        
+        q = Query.fromString("select entry where name = 'foo'");
+        assertTrue(q.getSelectTypes().contains(Entry.class));
+        
+        q = Query.fromString("select entryVersion where name = 'foo'");
+        assertTrue(q.getSelectTypes().contains(EntryVersion.class));
+
+        q = Query.fromString("select entry, entryVersion where name = 'foo'");
+        assertTrue(q.getSelectTypes().contains(Entry.class));
+        assertTrue(q.getSelectTypes().contains(EntryVersion.class));
     }
     
     public void testQueries() throws Exception {

@@ -5,6 +5,7 @@ import static org.mule.galaxy.event.DefaultEvents.ENTRY_VERSION_DELETED;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -86,25 +87,26 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
     }
     
     public List<Link> getReciprocalLinks(Item item, final String property) {
-        EntryVersion ev = null;
-        if (item instanceof EntryVersion) {
-            ev = (EntryVersion) item;
-            item = item.getParent();
-        }
-        
         StringBuilder q = new StringBuilder();
-        q.append("//").append(rootNode).append("/*[(@")
-         .append("linkedToPath = '").append(item.getName()).append("' or @linkedToPath = '")
-         .append(item.getPath()).append("' or @linkedTo = '").append(item.getId());
+        String path;
+        String name;
         
         if (item instanceof EntryVersion) {
-            q.append("' or @linkedToPath = ").append(item.getPath()).append("?version=").append(ev.getVersionLabel());
-            q.append("' or @linkedToPath = ").append(item.getName()).append("?version=").append(ev.getVersionLabel());
+            EntryVersion ev = (EntryVersion) item;
+            path = item.getParent().getPath() + "?version=" + ev.getVersionLabel();
+            name = item.getParent().getName() + "?version=" + ev.getVersionLabel();
+        } else {
+            path = item.getPath();
+            name = item.getName();
         }
+        
+        q.append("//").append(rootNode).append("/*[(@")
+         .append("linkedToPath = '").append(name).append("' or @linkedToPath = '")
+         .append(path).append("' or @linkedTo = '").append(item.getId());
         
         q.append("') and property = '").append(property);
         q.append("']");
-        
+        System.out.println(q.toString());
         return (List<Link>) doQuery(q.toString());
     }
 
@@ -214,10 +216,13 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
             throw new UnsupportedOperationException();
         }
         
+        if (c == 0) {
+            return Collections.emptyList();
+        }
+        
         stmt.append("') and property = '").append(property);
         stmt.append("']");
 
-        System.out.println(stmt);
         return doQuery(stmt.toString());
     }
 

@@ -39,7 +39,6 @@ import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.Item;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.ArtifactTypeDao;
 import org.mule.galaxy.ArtifactVersion;
@@ -47,6 +46,7 @@ import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.Link;
 import org.mule.galaxy.Links;
 import org.mule.galaxy.NotFoundException;
@@ -95,6 +95,7 @@ import org.mule.galaxy.web.rpc.EntryInfo;
 import org.mule.galaxy.web.rpc.EntryVersionInfo;
 import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
 import org.mule.galaxy.web.rpc.ItemExistsException;
+import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
 import org.mule.galaxy.web.rpc.LinkInfo;
 import org.mule.galaxy.web.rpc.RegistryService;
@@ -403,9 +404,9 @@ public class RegistryServiceImpl implements RegistryService {
         Query q = getQuery(searchPredicates, start, maxResults);
 
         if (workspaceId != null) {
-            q.workspaceId(workspaceId, includeChildWkspcs);
+            q.fromId(workspaceId, includeChildWkspcs);
         } else if (workspacePath != null && !"".equals(workspacePath) && !"/".equals(workspacePath)) {
-            q.workspacePath(workspacePath, includeChildWkspcs);
+            q.fromPath(workspacePath, includeChildWkspcs);
         }
         try {
             SearchResults results;
@@ -425,7 +426,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     public Collection<EntryInfo> suggestEntries(String query) throws RPCException {
         try {
-            Query q = new Query().add(OpRestriction.like("name", query));
+            Query q = new Query(Entry.class, Artifact.class).add(OpRestriction.like("name", query));
             
             q.setMaxResults(10);
             
@@ -453,7 +454,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     private Query getQuery(Set<SearchPredicate> searchPredicates, int start, int maxResults) {
-        Query q = new Query().orderBy("artifactType");
+        Query q = new Query(Entry.class, Artifact.class).orderBy("artifactType");
 
         q.setMaxResults(maxResults);
         q.setStart(start);
@@ -685,8 +686,8 @@ public class RegistryServiceImpl implements RegistryService {
 
             wv.setPredicates(getPredicates(q));
             wv.setShared(v.getUser() == null);
-            wv.setWorkspace(q.getWorkspacePath());
-            wv.setWorkspaceSearchRecursive(q.isWorkspaceSearchRecursive());
+            wv.setWorkspace(q.getFromPath());
+            wv.setWorkspaceSearchRecursive(q.isFromRecursive());
         } catch (QueryException e) {
             log.error("Could not parse query. " + e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -759,7 +760,7 @@ public class RegistryServiceImpl implements RegistryService {
             v.setUser(getCurrentUser());
         }
         Query query = getQuery(wv.getPredicates(), 0, 0);
-        query.workspacePath(wv.getWorkspace(), wv.isWorkspaceSearchRecursive());
+        query.fromPath(wv.getWorkspace(), wv.isWorkspaceSearchRecursive());
 
         v.setQuery(query.toString());
 
@@ -1064,15 +1065,21 @@ public class RegistryServiceImpl implements RegistryService {
         }
         info.setVersions(versions);
 
+        populateProperties(e, info, false);
+        
         return info;
     }
 
-    public EntryVersionInfo getEntryVersionInfo(String entryVersionId, boolean showHidden) throws RPCException,
+    public ItemInfo getItemInfo(String entryVersionId, boolean showHidden) throws RPCException,
                                                                                                            ItemNotFoundException {
         try {
-            EntryVersion ev = (EntryVersion) registry.getItemById(entryVersionId);
+            Item item = registry.getItemById(entryVersionId);
 
-            return toWeb(ev, showHidden);
+            ItemInfo itemInfo = new ItemInfo();
+            itemInfo.setId(item.getId());
+            populateProperties(item, itemInfo, showHidden);
+            
+            return itemInfo;
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -1083,7 +1090,6 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private EntryVersionInfo toWeb(EntryVersion av, boolean showHidden) {
         EntryVersionInfo vi = new EntryVersionInfo(av.getId(),
                                                    av.getVersionLabel(),
@@ -1098,7 +1104,14 @@ public class RegistryServiceImpl implements RegistryService {
             vi.setLink(getVersionLink((ArtifactVersion)av));
         }
         
-        for (PropertyInfo p :av.getProperties()) {
+        populateProperties(av, vi, showHidden);
+
+        return vi;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void populateProperties(Item av, ItemInfo vi, boolean showHidden) {
+        for (PropertyInfo p : av.getProperties()) {
             if (!showHidden && !p.isVisible()) {
                 continue;
             }
@@ -1123,8 +1136,6 @@ public class RegistryServiceImpl implements RegistryService {
             }
 
         });
-
-        return vi;
     }
 
     /**

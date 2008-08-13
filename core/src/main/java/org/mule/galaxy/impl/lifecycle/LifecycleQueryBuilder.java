@@ -9,8 +9,6 @@ public class LifecycleQueryBuilder extends ExtensionQueryBuilder {
     private LifecycleManager lifecycleManager;
 
     public LifecycleQueryBuilder() {
-        super(false);
-        
         suffixes.add("");
         suffixes.add("id");
     }

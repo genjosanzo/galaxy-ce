@@ -108,7 +108,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     private String id;
     
-    private SimpleQueryBuilder simpleQueryBuilder = new SimpleQueryBuilder(new String[0], false);
+    private SimpleQueryBuilder simpleQueryBuilder = new SimpleQueryBuilder(new String[0]);
 
     private JcrWorkspaceManager localWorkspaceManager;
     
@@ -124,6 +124,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     public JcrRegistryImpl() {
         super();
+        
+        simpleQueryBuilder.addAppliesTo(Artifact.class);
+        simpleQueryBuilder.addAppliesTo(Entry.class);
     }
 
     public String getUUID() {
@@ -633,26 +636,18 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     public SearchResults search(final org.mule.galaxy.query.Query query) 
         throws RegistryException, QueryException {
         return (SearchResults) executeWithQueryException(new JcrCallback() {
-            /** {@inheritDoc}*/
+            
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                         
                 QueryManager qm = getQueryManager(session);
                 
                 Set<Item> artifacts = new HashSet<Item>();
                 
-                boolean selectVersions = false;
-                Class selectType = query.getSelectType();
-                if (selectType != null && (selectType.equals(ArtifactVersion.class) || selectType.equals(EntryVersion.class))) {
-                    selectVersions = true;
-                } else if (selectType != null && !selectType.equals(Artifact.class) && !selectType.equals(Entry.class)) {
-                    throw new RuntimeException(new QueryException(new Message("INVALID_SELECT_TYPE", BundleUtils.getBundle(getClass()), selectType.getName())));
-                }
-                
                 Map<FunctionCall, AbstractFunction> functions = new HashMap<FunctionCall, AbstractFunction>();
                 
                 String qstr = null;
                 try {
-                    qstr = createQueryString(query, selectVersions, functions);
+                    qstr = createQueryString(query, functions);
                 } catch (QueryException e) {
                     // will be dewrapped later
                     throw new RuntimeException(e);
@@ -666,7 +661,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 {
                     log.debug("Query: " + qstr.toString());
                 }
-                System.out.println("Query: " + qstr.toString());
+//                System.out.println("Query: " + qstr.toString());
                 Query jcrQuery = qm.createQuery(qstr, Query.XPATH);
                 
                 QueryResult result = jcrQuery.execute();
@@ -685,58 +680,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 while (nodes.hasNext()) {
                     Node node = nodes.nextNode();
                     
-                    // UGH: jackrabbit does not support parent::* xpath expressions
-                    // so we need to traverse the hierarchy to find the right node
-                    if (selectVersions) {
-                        Node entryNode = node;
-                        while (!entryNode.getPrimaryNodeType().getName().equals(JcrWorkspaceManager.ARTIFACT_NODE_TYPE)
-                            && !entryNode.getPrimaryNodeType().getName().equals(JcrWorkspaceManager.ENTRY_NODE_TYPE)) {
-                            entryNode = node.getParent();
-                        }
-                        
-                        boolean artifact = entryNode.getPrimaryNodeType().getName().equals(JcrWorkspaceManager.ARTIFACT_NODE_TYPE);
-                        Entry entry;
-                        
-                        if (artifact) {
-                            entry = buildArtifact(entryNode);
-                        } else {
-                            entry = buildEntry(entryNode);
-                        }
-                        
-                        try {
-                            accessControlManager.assertAccess(Permission.READ_ARTIFACT, entry);
-
-                            if (artifact) {
-                                artifacts.add(new JcrVersion((JcrArtifact) entry, node));
-                            } else {
-                                artifacts.add(new JcrEntryVersion((JcrEntry) entry, node));
-                            }
-                        } catch (AccessException e) {
-                            // don't include artifacts the user can't read in the search
-                        }
-                    } else  {
-                	while (!node.getPrimaryNodeType().getName().equals(JcrWorkspaceManager.ENTRY_NODE_TYPE)
-                	    && !node.getPrimaryNodeType().getName().equals(JcrWorkspaceManager.ARTIFACT_NODE_TYPE)) {
-                            node = node.getParent();
-                        }
-                	
-                        try {
-                            boolean artifact = node.getPrimaryNodeType().getName().equals(JcrWorkspaceManager.ARTIFACT_NODE_TYPE);
-                            Entry entry;
-                            
-                            if (artifact) {
-                                entry = buildArtifact(node);
-                            } else {
-                                entry = buildEntry(node);
-                            }
-                            
-                            accessControlManager.assertAccess(Permission.READ_ARTIFACT, entry);
-
-                            artifacts.add(entry);
-                        } catch (AccessException e) {
-                            // don't include artifacts the user can't read in the search
-                        }
-                    } 
+                    try {
+                        artifacts.add(build(node, node.getPrimaryNodeType().getName()));
+                    } catch (AccessException e1) {
+                    }
                     
                     count++;
                     
@@ -745,25 +692,18 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     }
                 }                                                   
 
-                // TODO Dan, this for doesn't loop
+                long total = nodes.getSize();
                 for (Map.Entry<FunctionCall, AbstractFunction> e : functions.entrySet()) {
-                    if (selectVersions) {
-                        Set<ArtifactVersion> artifacts2 = new HashSet<ArtifactVersion>();
-                        for (Object o : artifacts) {
-                            artifacts2.add((ArtifactVersion) o);
-                        }
-                        e.getValue().modifyArtifactVersions(e.getKey().getArguments(), artifacts2);
-                        return new SearchResults(artifacts2.size(), artifacts2);
-                    } else {
-                        Set<Artifact> artifacts2 = new HashSet<Artifact>();
-                        for (Object o : artifacts) {
-                            artifacts2.add((Artifact) o);
-                        }
-                        e.getValue().modifyArtifacts(e.getKey().getArguments(), artifacts2);
-                        return new SearchResults(artifacts2.size(), artifacts2);
+                    HashSet<Item> artifacts2 = new HashSet<Item>();
+                    for (Object o : artifacts) {
+                        artifacts2.add((Item) o);
                     }
+                    e.getValue().modifyItems(e.getKey().getArguments(), artifacts2);
+                    total -= (artifacts.size() - artifacts2.size());
+                    artifacts.clear();
+                    artifacts.addAll(artifacts2);
                 }
-                return new SearchResults(nodes.getSize(), artifacts);
+                return new SearchResults(total, artifacts);
             }
 
         });
@@ -787,38 +727,58 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
     
     protected String createQueryString(final org.mule.galaxy.query.Query query, 
-                                       boolean av, 
                                        Map<FunctionCall, AbstractFunction> functions) throws QueryException {
         StringBuilder base = new StringBuilder();
         
-        String typeQuery;
-        
-        Class<?> selectType = query.getSelectType();
-        if (selectType == null) {
-            typeQuery = "[@jcr:primaryType=\"galaxy:artifact\" or @jcr:primaryType=\"galaxy:entry\"]";
-        } else if (selectType.equals(Entry.class) || selectType.equals(EntryVersion.class)) {
-            typeQuery = "[@jcr:primaryType=\"galaxy:entry\"]";
-        } else if (selectType.equals(Artifact.class) || selectType.equals(ArtifactVersion.class)) {
-            typeQuery = "[@jcr:primaryType=\"galaxy:artifact\"]";
-        } else {
-            throw new QueryException(new Message("INVALID_SELECT_TYPE", BundleUtils.getBundle(getClass())));
+        // Set up the type selection - artifact, entry, artifactVersion, etc
+        StringBuilder typeQuery = new StringBuilder("[");
+        String all = "@jcr:primaryType=\"galaxy:entry\" or @jcr:primaryType=\"galaxy:entryVersion\"" +
+            " or @jcr:primaryType=\"galaxy:artifact\" or @jcr:primaryType=\"galaxy:artifactVersion\"" +
+            " or @jcr:primaryType=\"galaxy:workspace\"";
+        for (Class<?> selectType : query.getSelectTypes()) {
+            if (typeQuery.length() > 1) {
+                typeQuery.append(" or ");
+            }
+            
+            if (selectType == Item.class) {
+                typeQuery.append(all);
+                break;
+            } else if (selectType.equals(Entry.class)) {
+                typeQuery.append("@jcr:primaryType=\"galaxy:entry\"");
+            } else if (selectType.equals(Artifact.class)) {
+                typeQuery.append("@jcr:primaryType=\"galaxy:artifact\"");
+            } else if (selectType.equals(EntryVersion.class)) {
+                typeQuery.append("@jcr:primaryType=\"galaxy:entryVersion\"");
+            } else if (selectType.equals(ArtifactVersion.class)) {
+                typeQuery.append("@jcr:primaryType=\"galaxy:artifactVersion\"");
+            } else if (selectType.equals(Workspace.class)) {
+                typeQuery.append("@jcr:primaryType=\"galaxy:workspace\"");
+            } else {
+                throw new QueryException(new Message("INVALID_SELECT_TYPE", BundleUtils.getBundle(getClass())));
+            }
+        }
+
+        if (typeQuery.length() == 1) {
+            typeQuery.append(all);
         }
         
+        typeQuery.append(']');
+        
         // Search by workspace id, workspace path, or any workspace
-        if (query.getWorkspaceId() != null) {
+        if (query.getFromId() != null) {
             base.append("//*[@jcr:uuid='")
-                .append(trimWorkspaceManagerId(query.getWorkspaceId()))
-                .append("'][@jcr:primaryType=\"galaxy:workspace\"]");
+                .append(trimWorkspaceManagerId(query.getFromId()))
+                .append("']");
 
-            if (query.isWorkspaceSearchRecursive()) {
+            if (query.isFromRecursive()) {
                 base.append("//*");
             } else {
                 base.append("/*");
             }
             
             base.append(typeQuery);
-        } else if (query.getWorkspacePath() != null && !"".equals(query.getWorkspacePath())) {
-            String path = query.getWorkspacePath();
+        } else if (query.getFromPath() != null && !"".equals(query.getFromPath())) {
+            String path = query.getFromPath();
 
             if (path.startsWith("/")) {
                 path = path.substring(1);
@@ -830,9 +790,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             
             base.append("//")
             .append(ISO9075.encode(path))
-            .append("[@jcr:primaryType=\"galaxy:workspace\"]");
+            .append("");
             
-            if (query.isWorkspaceSearchRecursive()) {
+            if (query.isFromRecursive()) {
                 base.append("//*");
             } else {
                 base.append("/*");
@@ -843,39 +803,36 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             base.append("//*").append(typeQuery);
         }
         
-        StringBuilder avQuery = new StringBuilder();
         StringBuilder artifactQuery = new StringBuilder();
 
         for (Restriction r : query.getRestrictions()) {
             if (r instanceof OpRestriction) {
-                if (!handleOperator((OpRestriction) r, artifactQuery, avQuery)) {
+                if (!handleOperator((OpRestriction) r, artifactQuery)) {
                     return null;
                 }
             } else if (r instanceof FunctionCall) {
-                if (!handleFunction((FunctionCall) r, functions, artifactQuery, avQuery)) {
+                if (!handleFunction((FunctionCall) r, functions, artifactQuery)) {
                     return null;
                 }
             }
         }
         
-        if (avQuery.length() > 0) avQuery.append("]");
         if (artifactQuery.length() > 0) artifactQuery.append("]");
 
-        // Search the latest if we're searching for artifacts, otherwise
-        // search all versions
-        if (!av) {
-            avQuery.insert(0, "/*[@latest='true']");
-        } else {
-            avQuery.insert(0, "/*");
-        }
+//        // Search the latest if we're searching for artifacts, otherwise
+//        // search all versions
+//        if (version) {
+//            avQuery.insert(0, "[@enabled='true']");
+//        }
         
         base.append(artifactQuery);
-        base.append(avQuery);
         
         return base.toString();
     }
 
-    private boolean handleFunction(FunctionCall r, Map<FunctionCall, AbstractFunction> functions, StringBuilder qstr, StringBuilder propStr) throws QueryException {
+    private boolean handleFunction(FunctionCall r, 
+                                   Map<FunctionCall, AbstractFunction> functions, 
+                                   StringBuilder qstr) throws QueryException {
         AbstractFunction fn = functionRegistry.getFunction(r.getModule(), r.getName());
         
         functions.put(r, fn);
@@ -885,13 +842,14 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         
         if (restrictions != null && restrictions.size() > 0) {
             for (OpRestriction opR : restrictions) {
-                if (!handleOperator(opR, qstr, propStr)) return false;
+                if (!handleOperator(opR, qstr)) return false;
             }
         }
         return true;
     }
 
-    private boolean handleOperator(OpRestriction or, StringBuilder artifactQuery, StringBuilder avQuery)
+    private boolean handleOperator(OpRestriction or, 
+                                   StringBuilder artifactQuery)
         throws QueryException {
         
         String property = (String) or.getLeft();
@@ -906,13 +864,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
 
         QueryBuilder builder = getQueryBuilder(property);
-        StringBuilder query;
-        // are we searching a property on the artifact itself or the artifact version?
-        if (builder.isArtifactProperty()) {
-            query = artifactQuery;
-        } else {
-            query = avQuery;
-        }
+        StringBuilder query = artifactQuery;
         
         if (query.length() == 0) {
             query.append("[");
@@ -920,7 +872,30 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             query.append(" and ");
         }
         
-        return builder.build(query, property, or.getRight(), not, operator);
+        boolean searchChild = false;
+        // are we searching a property on the artifact itself or the artifact version?
+        if (builder.appliesTo(Entry.class) || builder.appliesTo(Artifact.class)
+            && !builder.appliesTo(EntryVersion.class) && builder.appliesTo(ArtifactVersion.class)) {
+            searchChild = true;
+            query.append("(");
+        } 
+        
+        if (builder.build(query, property, "", or.getRight(), not, operator)) {
+            if (searchChild) {
+                if (not) {
+                    query.append(" and ");
+                } else {
+                    query.append(" or ");
+                }
+                if (builder.build(query, property, "*/", or.getRight(), not, operator)) {
+                    query.append(")");
+                    return true;
+                }
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 
     private QueryBuilder getQueryBuilder(String property) throws QueryException {

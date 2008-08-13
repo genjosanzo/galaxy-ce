@@ -27,25 +27,26 @@ public class IndexTest extends AbstractGalaxyTest {
     public void testXmlSchema() throws Exception {
         Artifact a = importXmlSchema();
         
+        EntryVersion v = a.getDefaultOrLastVersion();
         assertEquals("http://www.example.org/test/", 
-                     a.getProperty("xmlschema.targetNamespace"));
+                     v.getProperty("xmlschema.targetNamespace"));
         
-        Object property = a.getProperty("xmlschema.element");
+        Object property = v.getProperty("xmlschema.element");
         assertNotNull(property);
         assertTrue(property instanceof Collection);
         assertTrue(((Collection) property).contains("testElement"));
 
-        property = a.getProperty("xmlschema.complexType");
+        property = v.getProperty("xmlschema.complexType");
         assertNotNull(property);
         assertTrue(property instanceof Collection);
         assertTrue(((Collection) property).contains("testComplexType"));
 
-        property = a.getProperty("xmlschema.group");
+        property = v.getProperty("xmlschema.group");
         assertNotNull(property);
         assertTrue(property instanceof Collection);
         assertTrue(((Collection) property).contains("testGroup"));
 
-        property = a.getProperty("xmlschema.attributeGroup");
+        property = v.getProperty("xmlschema.attributeGroup");
         assertNotNull(property);
         assertTrue(property instanceof Collection);
         assertTrue(((Collection) property).contains("testAttributeGroup"));
@@ -98,22 +99,25 @@ public class IndexTest extends AbstractGalaxyTest {
         indexManager.delete(tnsIdx.getId(), true);
         
         artifact = (Artifact) registry.getItemById(artifact.getId());
-        Object value = artifact.getProperty("wsdl.targetNamespace");
+        EntryVersion v = artifact.getDefaultOrLastVersion();
+        Object value = v.getProperty("wsdl.targetNamespace");
         assertNull(value);
-        assertNull(artifact.getPropertyInfo("wsdl.targetNamespace"));
+        assertNull(v.getPropertyInfo("wsdl.targetNamespace"));
 
         indexManager.delete(ptIdx.getId(), false);
         
         artifact = (Artifact) registry.getItemById(artifact.getId());
-        value = artifact.getProperty("wsdl.endpoint");
+        v = artifact.getDefaultOrLastVersion();
+        value = v.getProperty("wsdl.endpoint");
         assertNotNull(value);
         
         indexManager.delete(svcIdx.getId(), true);
         
         artifact = (Artifact) registry.getItemById(artifact.getId());
-        value = artifact.getProperty("wsdl.service");
+        v = artifact.getDefaultOrLastVersion();
+        value = v.getProperty("wsdl.service");
         assertNull(value);
-        assertNull(artifact.getPropertyInfo("wsdl.service"));
+        assertNull(v.getPropertyInfo("wsdl.service"));
     }
     
     
@@ -211,18 +215,18 @@ public class IndexTest extends AbstractGalaxyTest {
         // TODO test data
         
         results = registry.search(new Query(OpRestriction.eq("documentType", Constants.WSDL_DEFINITION_QNAME.toString()), 
-                                            ArtifactVersion.class)).getResults();
+                                            Artifact.class)).getResults();
     
         assertEquals(1, results.size());
         
         results = registry.search(new Query(OpRestriction.eq("contentType", "application/xml"), 
-                                            ArtifactVersion.class)).getResults();
+                                            Artifact.class)).getResults();
     
         assertEquals(1, results.size());
         
 
         results = registry.search(new Query(OpRestriction.in("contentType", Arrays.asList("application/xml")), 
-                                            ArtifactVersion.class)).getResults();
+                                            Artifact.class)).getResults();
     
         assertEquals(1, results.size());
     }

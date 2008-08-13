@@ -1,20 +1,15 @@
 package org.mule.galaxy.impl;
 
-import java.util.Collection;
-
+import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.extension.Extension;
-import org.mule.galaxy.impl.extension.IdentifiableExtensionQueryBuilder;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.SearchResults;
-import org.mule.galaxy.security.User;
 import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.type.PropertyDescriptor;
 
 public class EntryTest extends AbstractGalaxyTest {
     public void testEntries() throws Exception {
@@ -61,13 +56,13 @@ public class EntryTest extends AbstractGalaxyTest {
         String address = "http://localhost:9000/foo";
         ev.setProperty("endpoint", address);
     
-        Query q = new Query().add(OpRestriction.eq("endpoint", address));
+        Query q = new Query(Entry.class).add(OpRestriction.eq("endpoint", address));
         
         SearchResults results = registry.search(q);
         
         assertEquals(1, results.getTotal());
         
-        q = new Query();
+        q = new Query(Entry.class, Artifact.class);
         
         importHelloWsdl();
         
