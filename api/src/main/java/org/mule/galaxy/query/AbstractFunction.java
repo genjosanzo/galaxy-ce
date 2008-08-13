@@ -11,7 +11,7 @@ public abstract class AbstractFunction {
     
     public abstract String getName();
     
-    public abstract void modifyItems(Object[] args, Set<Item> items);
+    public abstract boolean filter(Object[] args, Item item);
 
     /**
      * Add any possible filters to narrow down the list of artifacts

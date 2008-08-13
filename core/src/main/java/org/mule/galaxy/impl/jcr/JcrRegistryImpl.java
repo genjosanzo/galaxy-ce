@@ -641,7 +641,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         
                 QueryManager qm = getQueryManager(session);
                 
-                Set<Item> artifacts = new HashSet<Item>();
+                Set<Item> items = new HashSet<Item>();
                 
                 Map<FunctionCall, AbstractFunction> functions = new HashMap<FunctionCall, AbstractFunction>();
                 
@@ -654,7 +654,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 }
                 
                 if (qstr == null) {
-                    return new SearchResults(0, artifacts);
+                    return new SearchResults(0, items);
                 }
                 
                 if (log.isDebugEnabled())
@@ -669,7 +669,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                
                 if (query.getStart() != -1) {
                     if (nodes.getSize() <= query.getStart()) {
-                        return new SearchResults(0, artifacts);
+                        return new SearchResults(0, items);
                     } else {
                         nodes.skip(query.getStart());
                     }
@@ -677,33 +677,37 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 int max = query.getMaxResults();
                 int count = 0;
+                int filteredCount = 0;
                 while (nodes.hasNext()) {
                     Node node = nodes.nextNode();
                     
+                    boolean filtered = false;
                     try {
-                        artifacts.add(build(node, node.getPrimaryNodeType().getName()));
+                        Item item = build(node, node.getPrimaryNodeType().getName());
+                        
+                        for (Map.Entry<FunctionCall, AbstractFunction> e : functions.entrySet()) {
+                            if (e.getValue().filter(e.getKey().getArguments(), item)) {
+                                filtered = true;
+                                filteredCount++;
+                                break;
+                            }
+                        }
+                        
+                        if (!filtered) {
+                            count++;
+                            items.add(item);
+                        }
+                        
+                        if (count == max) {
+                            break;
+                        }
                     } catch (AccessException e1) {
-                    }
-                    
-                    count++;
-                    
-                    if (count == max) {
-                        break;
                     }
                 }                                                   
 
-                long total = nodes.getSize();
-                for (Map.Entry<FunctionCall, AbstractFunction> e : functions.entrySet()) {
-                    HashSet<Item> artifacts2 = new HashSet<Item>();
-                    for (Object o : artifacts) {
-                        artifacts2.add((Item) o);
-                    }
-                    e.getValue().modifyItems(e.getKey().getArguments(), artifacts2);
-                    total -= (artifacts.size() - artifacts2.size());
-                    artifacts.clear();
-                    artifacts.addAll(artifacts2);
-                }
-                return new SearchResults(total, artifacts);
+                long total = nodes.getSize() - filteredCount;
+                
+                return new SearchResults(total, items);
             }
 
         });
