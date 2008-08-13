@@ -28,7 +28,7 @@ public class IdentifiableExtension<T extends Identifiable> extends AbstractExten
         if (storedValue == null) {
             return null;
         }
-        if (pd.isMultivalued()) {
+        if (storedValue instanceof List) {
             List<Identifiable> values = new ArrayList<Identifiable>();
             List<String> ids = (List<String>)storedValue;
 
