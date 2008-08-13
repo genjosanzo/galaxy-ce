@@ -106,7 +106,7 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
         
         q.append("') and property = '").append(property);
         q.append("']");
-        System.out.println(q.toString());
+        
         return (List<Link>) doQuery(q.toString());
     }
 
