@@ -44,7 +44,7 @@ public class AdminServiceImpl implements AdminService, ApplicationContextAware
 
         Binding binding = new Binding();
         binding.setProperty("applicationContext", applicationContext);
-        GroovyShell shell = new GroovyShell(binding);
+        GroovyShell shell = new GroovyShell(Thread.currentThread().getContextClassLoader(), binding);
         Object result = shell.evaluate(scriptText);
         return result == null ? null : result.toString();
     }
