@@ -40,18 +40,25 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         assertEquals(1, results.size());
         
+        // test moving it into the workspace its already in.
+        registry.move(a, w.getId(), a.getName());
+    }
+    
+    public void testRename() throws Exception {
+        Artifact a = importHelloWsdl();
+        
         a.setName("test.wsdl");
         
-        List<Item> artifacts = w.getItems();
+        List<Item> artifacts = a.getParent().getItems();
         assertEquals(1, artifacts.size());
         
         Artifact a2 = (Artifact) artifacts.iterator().next();
         assertEquals("test.wsdl", a2.getName());
         
-        assertEquals("test.wsdl", a2.getName());
+        a2.getDefaultOrLastVersion().setVersionLabel("2.0");
         
-        // test moving it into the workspace its already in.
-        registry.move(a, w.getId(), a.getName());
+        ArtifactVersion v = (ArtifactVersion) registry.getItemById(a2.getDefaultOrLastVersion().getId());
+        assertEquals("2.0", v.getVersionLabel());
     }
 
     public void testWorkspaces() throws Exception {

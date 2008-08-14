@@ -659,7 +659,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 {
                     log.debug("Query: " + qstr.toString());
                 }
-                System.out.println(qstr.toString());
+                
                 Query jcrQuery = qm.createQuery(qstr, Query.XPATH);
                 
                 QueryResult result = jcrQuery.execute();

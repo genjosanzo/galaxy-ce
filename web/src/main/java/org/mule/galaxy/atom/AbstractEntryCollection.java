@@ -411,7 +411,7 @@ public abstract class AbstractEntryCollection
         String label = e.getAttributeValue("label");
         
         if (label != null && !av.getVersionLabel().equals(label)) {
-            // TODO: provide way to rename versions
+            av.setVersionLabel(label);
         }
         
         String def = e.getAttributeValue("default");
@@ -437,6 +437,7 @@ public abstract class AbstractEntryCollection
             }
         }
     }
+    
     private void updateMetadata(EntryVersion av, Element e) throws ResponseContextException, PolicyException {
         for (Element propEl : e.getElements()) {
             String name = propEl.getAttributeValue("name");

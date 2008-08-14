@@ -1369,11 +1369,19 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void move(String entryId, String workspaceId, String name) throws RPCException, ItemNotFoundException {
+    public void move(String versionId, String workspaceId, String name, String version) throws RPCException, ItemNotFoundException {
         try {
-            Entry entry = (Entry) registry.getItemById(entryId);
-
-            registry.move(entry, workspaceId, name);
+            EntryVersion v = (EntryVersion) registry.getItemById(versionId);
+            Entry entry = v.getParent();
+            
+            if (!entry.getParent().getId().equals(workspaceId)) {
+                registry.move(entry, workspaceId, name);
+            }
+            
+            if (!version.equals(v.getVersionLabel())) {
+                v.setVersionLabel(version);
+                registry.save(v);
+            }
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());

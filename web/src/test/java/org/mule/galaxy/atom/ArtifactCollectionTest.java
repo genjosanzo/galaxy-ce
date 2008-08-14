@@ -264,8 +264,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         prop.setAttributeValue("value", "test3");
         prop.setAttributeValue("visible", "false");
         
-        // GALAXY-162 no way to change version labels now
-//        versionEl.setAttributeValue("label", "3.0");
+        versionEl.setAttributeValue("label", "3.0");
         versionEl.setAttributeValue("enabled", "false");
         
         res = client.put(v2Uri, e, defaultOpts);
@@ -273,7 +272,9 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res.release();
         
         // Try to show the hidden metadata
-        res = client.get(v2Uri + "&showHiddenMetadata=true", defaultOpts);
+        String v3Uri = colUri.toString() + "/Default%20Workspace/hello_world.wsdl;atom?version=3.0";
+        res = client.get(v3Uri + "&showHiddenMetadata=true", defaultOpts);
+        assertEquals(200, res.getStatus());
         
         entryDoc = res.getDocument();
         prettyPrint(entryDoc);
@@ -286,8 +287,8 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res.release();
         
         // check the metadata
-        System.out.println("Getting entry again " + v2Uri);
-        res = client.get(v2Uri, defaultOpts);
+        System.out.println("Getting entry again " + v3Uri);
+        res = client.get(v3Uri, defaultOpts);
 
         entryDoc = res.getDocument();
         prettyPrint(entryDoc);
@@ -300,7 +301,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         versionEl = e.getExtension(new QName(AbstractEntryCollection.NAMESPACE, "version"));
         assertNotNull(lifecycleEl);
-//        assertEquals("3.0", versionEl.getAttributeValue("label"));
+        assertEquals("3.0", versionEl.getAttributeValue("label"));
         
         assertEquals("false", versionEl.getAttributeValue("enabled"));
         

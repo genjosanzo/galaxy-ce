@@ -26,6 +26,8 @@ public interface EntryVersion extends Item {
      */
     String getVersionLabel();
     
+    void setVersionLabel(String label);
+    
     EntryVersion getPrevious();
 
     /**

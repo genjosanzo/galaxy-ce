@@ -82,8 +82,9 @@ public class EntryInfoPanel extends AbstractComposite {
         
         final NameEditPanel nep = new NameEditPanel(galaxy, 
                                                     errorPanel,
-                                                    info.getId(), 
+                                                    version.getId(), 
                                                     (String) info.getValue(0),
+                                                    version.getVersionLabel(),
                                                     info.getWorkspaceId(), artifactPanel, callbackParams);
         
         table.setWidget(0, 0, new Label("Name:"));

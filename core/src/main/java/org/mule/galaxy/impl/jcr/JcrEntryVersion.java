@@ -1,10 +1,14 @@
 package org.mule.galaxy.impl.jcr;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
+import org.springmodules.jcr.JcrCallback;
 
 import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryVersion;
@@ -120,6 +124,26 @@ public class JcrEntryVersion extends AbstractJcrItem implements EntryVersion {
         try {
             return node.getName();
         } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setVersionLabel(final String label) {
+        try {
+            if (!node.getName().equals(label)) {
+                manager.execute(new JcrCallback() {
+    
+                    public Object doInJcr(Session session) throws IOException, RepositoryException {
+                        String dest = node.getParent().getPath() + "/" + label;
+                        session.move(node.getPath(), dest);
+                        return null;
+                    }
+                    
+                });
+            }
+            node.setProperty(VERSION, label);
+            update();
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

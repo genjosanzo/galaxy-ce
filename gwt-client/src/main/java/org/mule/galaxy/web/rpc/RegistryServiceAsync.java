@@ -136,7 +136,7 @@ public interface RegistryServiceAsync {
 
     void setDefault(String artifactVersionId, AsyncCallback c);
     
-    void move(String artifactId, String workspaceId, String name, AsyncCallback c);
+    void move(String artifactId, String workspaceId, String name, String newVersion, AsyncCallback c);
     
     void delete(String artifactId, AsyncCallback c);
 

@@ -41,7 +41,7 @@ public abstract class AbstractJcrItem implements Item {
     public static final String UPDATED = "updated";
     
     protected Node node;
-    private JcrWorkspaceManager manager;
+    protected JcrWorkspaceManager manager;
     
     public AbstractJcrItem(Node node, JcrWorkspaceManager manager) throws RepositoryException {
         this.node = node;

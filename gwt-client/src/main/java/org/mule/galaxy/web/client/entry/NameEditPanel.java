@@ -46,7 +46,7 @@ import java.util.List;
 public class NameEditPanel extends Composite {
 
     private InlineFlowPanel panel;
-    private final String artifactId;
+    private final String versionId;
     private String name;
     private final String workspaceId;
     private final Galaxy galaxy;
@@ -54,17 +54,22 @@ public class NameEditPanel extends Composite {
 
     private final EntryPanel callbackPanel;
     private final List<String> callbackParams;
+    private final String version;
 
     public NameEditPanel(Galaxy galaxy,
                          ErrorPanel errorPanel,
-                         String artifactId,
+                         String versionId,
                          String name,
-                         String workspaceId, final EntryPanel callbackPanel, final List<String> callbackParams) {
+                         String version,
+                         String workspaceId, 
+                         final EntryPanel callbackPanel, 
+                         final List<String> callbackParams) {
         super();
         this.galaxy = galaxy;
         this.errorPanel = errorPanel;
-        this.artifactId = artifactId;
+        this.versionId = versionId;
         this.name = name;
+        this.version = version;
         this.workspaceId = workspaceId;
 
         panel = new InlineFlowPanel();
@@ -80,7 +85,7 @@ public class NameEditPanel extends Composite {
     private void initName() {
         panel.add(new Label(name + " "));
 
-        Hyperlink editHL = new Hyperlink("Edit", "edit-property");
+        Hyperlink editHL = new Hyperlink("Edit", galaxy.getCurrentToken());
         editHL.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
@@ -119,6 +124,12 @@ public class NameEditPanel extends Composite {
         nameTB.getTextBox().setText(name);
 
         row.add(nameTB);
+        
+        final ValidatableTextBox versionTB = new ValidatableTextBox(new StringNotEmptyValidator());
+        versionTB.getTextBox().setText(version);
+        versionTB.getTextBox().setVisibleLength(5);
+        
+        row.add(versionTB);
 
         Button saveButton = new Button("Save");
         saveButton.addClickListener(new ClickListener() {
@@ -127,7 +138,9 @@ public class NameEditPanel extends Composite {
                 if (!validateName(nameTB)) {
                     return;
                 }
-                save(workspacesLB.getSelectedValue(), nameTB.getTextBox().getText());
+                save(workspacesLB.getSelectedValue(), 
+                     nameTB.getText(),
+                     versionTB.getText());
             }
             
         });
@@ -148,10 +161,12 @@ public class NameEditPanel extends Composite {
         panel.add(row);
     }
 
-    protected void save(final String newWorkspaceId, final String newName) {
-        if (!newWorkspaceId.equals(this.workspaceId) || !newName.equals(this.name)) {
+    protected void save(final String newWorkspaceId, final String newName, String newVersion) {
+        if (!newWorkspaceId.equals(this.workspaceId) 
+            || !newName.equals(this.name)
+            || !newVersion.equals(this.version)) {
             // save only if name or workspace changed
-            galaxy.getRegistryService().move(artifactId, newWorkspaceId, newName, new AbstractCallback(errorPanel) {
+            galaxy.getRegistryService().move(versionId, newWorkspaceId, newName, newVersion, new AbstractCallback(errorPanel) {
 
                 public void onSuccess(Object arg0) {
                     // need to refresh the whole panel to fetch new workspace location and entry name
