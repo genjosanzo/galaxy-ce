@@ -7,7 +7,9 @@ public class OpRestriction extends Restriction {
         EQUALS,
         NOT,
         IN,
-        LIKE
+        LIKE, 
+        OR,
+        AND
     }
 
     private Object value;
@@ -87,6 +89,26 @@ public class OpRestriction extends Restriction {
             sb.append(")");
             
             break;
+        case OR:
+            Restriction or1 = (Restriction) left;
+            Restriction or2 = (Restriction) value;
+            sb.append("(");
+            or1.toString(sb);
+            sb.append(" or ");
+            or2.toString(sb);
+            sb.append(")");
+            
+            break;
+        case AND:
+            Restriction and1 = (Restriction) left;
+            Restriction and2 = (Restriction) value;
+            sb.append("(");
+            and1.toString(sb);
+            sb.append(" and ");
+            and2.toString(sb);
+            sb.append(")");
+            
+            break;
         case NOT:
             ((OpRestriction) value).toString(sb, true);
             break;
@@ -108,6 +130,14 @@ public class OpRestriction extends Restriction {
 
     public static OpRestriction in(String property, Collection<?> values) {
         return new OpRestriction(Operator.IN, property, values);
+    }
+
+    public static OpRestriction or(Restriction left, Restriction right) {
+        return new OpRestriction(Operator.OR, left, right);
+    }
+
+    public static OpRestriction and(Restriction left, Restriction right) {
+        return new OpRestriction(Operator.AND, left, right);
     }
 }
 

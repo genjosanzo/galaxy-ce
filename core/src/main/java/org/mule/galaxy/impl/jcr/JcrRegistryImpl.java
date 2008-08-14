@@ -661,7 +661,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 {
                     log.debug("Query: " + qstr.toString());
                 }
-//                System.out.println("Query: " + qstr.toString());
+                
                 Query jcrQuery = qm.createQuery(qstr, Query.XPATH);
                 
                 QueryResult result = jcrQuery.execute();
@@ -811,7 +811,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
         for (Restriction r : query.getRestrictions()) {
             if (r instanceof OpRestriction) {
-                if (!handleOperator((OpRestriction) r, artifactQuery)) {
+                if (!handleOperator((OpRestriction) r, artifactQuery, true)) {
                     return null;
                 }
             } else if (r instanceof FunctionCall) {
@@ -846,36 +846,46 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         
         if (restrictions != null && restrictions.size() > 0) {
             for (OpRestriction opR : restrictions) {
-                if (!handleOperator(opR, qstr)) return false;
+                if (!handleOperator(opR, qstr, true)) return false;
             }
         }
         return true;
     }
 
-    private boolean handleOperator(OpRestriction or, 
-                                   StringBuilder artifactQuery)
+    private boolean handleOperator(OpRestriction r, 
+                                   StringBuilder query,
+                                   boolean prepend)
         throws QueryException {
         
-        String property = (String) or.getLeft();
         boolean not = false;
-        Operator operator = or.getOperator();
+        Operator operator = r.getOperator();
+
+        if (prepend) {
+            if (query.length() == 0) {
+                query.append("[");
+            } else {
+                query.append(" and ");
+            }
+        }
         
+        // Do special stuff if this is an OR/AND operator
+        if (operator.equals(Operator.OR)) {
+            return join(r, query, "or");
+        } else if (operator.equals(Operator.AND)) {
+            return join(r, query, "and");
+        }
+        
+        String property = (String) r.getLeft();
+        QueryBuilder builder = getQueryBuilder(property);
+        
+        // Do special stuff if this is a NOT operator
         if (operator.equals(Operator.NOT)) {
             not = true;
-            or = (OpRestriction) or.getRight();
-            operator = or.getOperator();
-            property = or.getLeft().toString();
+            r = (OpRestriction) r.getRight();
+            operator = r.getOperator();
+            property = r.getLeft().toString();
         }
 
-        QueryBuilder builder = getQueryBuilder(property);
-        StringBuilder query = artifactQuery;
-        
-        if (query.length() == 0) {
-            query.append("[");
-        } else {
-            query.append(" and ");
-        }
-        
         boolean searchChild = false;
         // are we searching a property on the artifact itself or the artifact version?
         if (builder.appliesTo(Entry.class) || builder.appliesTo(Artifact.class)
@@ -884,14 +894,14 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             query.append("(");
         } 
         
-        if (builder.build(query, property, "", or.getRight(), not, operator)) {
+        if (builder.build(query, property, "", r.getRight(), not, operator)) {
             if (searchChild) {
                 if (not) {
                     query.append(" and ");
                 } else {
                     query.append(" or ");
                 }
-                if (builder.build(query, property, "*/", or.getRight(), not, operator)) {
+                if (builder.build(query, property, "*/", r.getRight(), not, operator)) {
                     query.append(")");
                     return true;
                 }
@@ -900,6 +910,25 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
         }
         return false;
+    }
+
+    private boolean join(OpRestriction r, StringBuilder query, String opName) throws QueryException {
+        Restriction r1 = (Restriction) r.getLeft();
+        Restriction r2 = (Restriction) r.getRight();
+        query.append("(");
+        if (!handleOperator((OpRestriction) r1, query, false)) {
+            return false;
+        }
+        query.append(" ")
+             .append(opName)
+             .append(" ");
+        
+        if (!handleOperator((OpRestriction) r2, query, false)) {
+            return false;
+        }
+        query.append(")");
+        
+        return true;
     }
 
     private QueryBuilder getQueryBuilder(String property) throws QueryException {
