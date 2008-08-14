@@ -62,6 +62,7 @@ import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.event.WorkspaceDeletedEvent;
 import org.mule.galaxy.impl.lifecycle.LifecycleExtension;
 import org.mule.galaxy.impl.link.LinkExtension;
+import org.mule.galaxy.impl.workspace.AbstractWorkspaceManager;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
@@ -82,7 +83,7 @@ import org.mule.galaxy.workspace.WorkspaceManager;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
-public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager {
+public class JcrWorkspaceManager extends AbstractWorkspaceManager implements WorkspaceManager {
 
     public static final String ID = "local";
     
@@ -99,8 +100,6 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     private final Log log = LogFactory.getLog(getClass());
     
     private CommentManager commentManager;
-    
-    private ContentService contentService;
 
     private LifecycleManager lifecycleManager;
     
@@ -122,6 +121,8 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
 
     private TypeManager typeManager;
     
+    private JcrTemplate template;
+    
     public String getId() {
         return "local";
     }
@@ -134,7 +135,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
             
             id = trimWorkspaceManagerId(id);
             
-            Node node = getNodeByUUID(id);
+            Node node = template.getNodeByUUID(id);
 
             Workspace w = buildWorkspace(node);
             
@@ -157,26 +158,6 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
 
     private Workspace buildWorkspace(Node node) throws RepositoryException {
         return new JcrWorkspace(this, node);
-    }
-
-    public Artifact getArtifact(final String id) throws NotFoundException, RegistryException, AccessException {
-        if (id == null) {
-            throw new NotFoundException("No id specified.");
-        }
-        return (Artifact) executeWithNotFound(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node node = session.getNodeByUUID(trimWorkspaceManagerId(id));
-                Artifact a = buildArtifact(node);
-                
-                try {
-                    accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
-                } catch (AccessException e) {
-                    throw new RuntimeException(e);
-                }
-
-                return a;
-            }
-        });
     }
 
     protected Artifact buildArtifact(Node node)
@@ -208,32 +189,92 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
         }
     }
     
-    public Collection<Artifact> getArtifacts(Workspace w) throws RegistryException {
-        JcrWorkspace jw = (JcrWorkspace)w;
-
-        Node node = jw.getNode();
-
-        ArrayList<Artifact> artifacts = new ArrayList<Artifact>();
-        try {
-            for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
-                JcrArtifact artifact = new JcrArtifact(jw, itr.nextNode(), this);
+    public Item getItemById(final String id) throws NotFoundException, RegistryException, AccessException {
+        return (Item) executeWithNotFound(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node node = session.getNodeByUUID(trimWorkspaceManagerId(id));
                 
                 try {
-                    accessControlManager.assertAccess(Permission.READ_ARTIFACT, artifact);
+                    String type = node.getPrimaryNodeType().getName();
                     
-                    artifact.setContentHandler(contentService.getContentHandler(artifact.getContentType()));
-                    artifacts.add(artifact);
-                } catch (AccessException e) {
-                    // don't list artifacts which the user doesn't have perms for
+                    return build(node, type);
+                } catch (AccessException e){
+                    throw new RuntimeException(e);
                 }
             }
+
+        });
+    }
+
+    public Item getItemByPath(String path) throws NotFoundException, RegistryException, AccessException {
+        try {
+            if (path.startsWith("/")) {
+                path = path.substring(1);
+            }
+            if (path.endsWith("/")) {
+                path = path.substring(0, path.length()-1);
+            }
+            
+            Node wNode = getWorkspacesNode();
+            
+            try {
+                // have to have the catch because jackrabbit is lame...
+                if (!wNode.hasNode(path)) throw new NotFoundException(path);
+            } catch (RepositoryException e) {
+                throw new NotFoundException(path);
+            }
+            
+            Node node = wNode.getNode(path);
+            String type = node.getPrimaryNodeType().getName();
+            
+            return build(node, type);
+        } catch (PathNotFoundException e) {
+            throw new NotFoundException(e);
         } catch (RepositoryException e) {
             throw new RegistryException(e);
         }
-
-        return artifacts;
     }
 
+    protected Item build(Node node, String type) throws RepositoryException, ItemNotFoundException,
+        AccessDeniedException, AccessException {
+        if (type.equals("galaxy:artifact")) {
+            Artifact a = buildArtifact(node);
+    
+            accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
+            
+            return a;
+        } else if (type.equals("galaxy:artifactVersion")) {
+            Artifact a = buildArtifact(node.getParent());
+    
+            accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
+            
+            return a.getVersion(node.getName());
+        } else if (type.equals("galaxy:entry")) {
+            Entry a = buildEntry(node);
+    
+            accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
+            
+            return a;
+        } else if (type.equals("galaxy:entryVersion")) {
+            Entry a = buildEntry(node.getParent());
+    
+            accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
+            
+            return a.getVersion(node.getName());
+        } else {
+             Workspace wkspc = buildWorkspace(node);
+             
+             accessControlManager.assertAccess(Permission.READ_WORKSPACE, wkspc);
+             
+             return wkspc;
+        }
+    }
+    
+    protected JcrEntry buildEntry(Node node) throws RepositoryException, ItemNotFoundException,
+        AccessDeniedException {
+        return new JcrEntry(new JcrWorkspace(this, node.getParent()), node, this);
+    }
+    
     private Node getWorkspacesNode() {
         return ((JcrRegistryImpl) registry).getWorkspacesNode();
     }
@@ -296,7 +337,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                 previousLatest.setDefault(false);
                 previousLatest.setLatest(false);
 
-                ContentHandler ch = contentService.getContentHandler(jcrArtifact.getContentType());
+                ContentHandler ch = getContentService().getContentHandler(jcrArtifact.getContentType());
                 
                 // create a new version node
                 Node versionNode = artifactNode.addNode(versionLabel, ARTIFACT_VERSION_NODE_TYPE);
@@ -457,7 +498,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
         throws RegistryException, PolicyException, MimeTypeParseException, DuplicateItemException, AccessException {
         accessControlManager.assertAccess(Permission.READ_ARTIFACT);
 
-        ContentHandler ch = contentService.getContentHandler(data.getClass());
+        ContentHandler ch = getContentService().getContentHandler(data.getClass());
         
         if (ch == null) {
             throw new RegistryException(new Message("UNKNOWN_TYPE", BundleUtils.getBundle(getClass()), data.getClass()));
@@ -538,7 +579,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                 if (ch instanceof XmlContentHandler) {
                     XmlContentHandler xch = (XmlContentHandler) ch;
                     artifact.setDocumentType(xch.getDocumentType(loadedData));
-                    ch = contentService.getContentHandler(artifact.getDocumentType());
+                    ch = getContentService().getContentHandler(artifact.getDocumentType());
                 }
     
                 jcrVersion.setAuthor(user);
@@ -625,7 +666,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
                     
                     if (type.getDocumentTypes() != null && type.getDocumentTypes().size() > 0) {
                         for (QName q : type.getDocumentTypes()) {
-                            ch = contentService.getContentHandler(q);
+                            ch = getContentService().getContentHandler(q);
                             if (ch != null) {
                                 break;
                             }
@@ -638,7 +679,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
         } 
         
         if (ch == null) {
-            ch = contentService.getContentHandler(contentType);
+            ch = getContentService().getContentHandler(contentType);
         }
         
         artifact.setContentType(contentType);
@@ -658,7 +699,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
 
     private Object getData(Workspace workspace, MimeType contentType, InputStream inputStream) 
         throws RegistryException, IOException {
-        ContentHandler ch = contentService.getContentHandler(contentType);
+        ContentHandler ch = getContentService().getContentHandler(contentType);
 
         if (ch == null) {
             throw new RegistryException(new Message("UNSUPPORTED_CONTENT_TYPE", BundleUtils.getBundle(getClass()), contentType));
@@ -874,7 +915,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
 
     public void setDefaultVersion(final EntryVersion version) throws RegistryException,
         PolicyException {
-        execute(new JcrCallback() {
+        template.execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 EntryVersion oldDefault = ((Entry)version.getParent()).getDefaultOrLastVersion();
                 
@@ -913,7 +954,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     private Object executeWithPolicy(JcrCallback jcrCallback) 
         throws RegistryException, PolicyException {
         try {
-            return execute(jcrCallback);
+            return template.execute(jcrCallback);
         } catch (RuntimeException e) {
             Throwable cause = e.getCause();
             if (cause instanceof RegistryException) {
@@ -928,7 +969,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     private Object executeWithRegistryException(JcrCallback jcrCallback) 
         throws RegistryException, AccessException {
         try {
-            return execute(jcrCallback);
+            return template.execute(jcrCallback);
         } catch (RuntimeException e) {
             Throwable cause = e.getCause();
             if (cause instanceof RegistryException) {
@@ -942,7 +983,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     private Object executeWithNotFound(JcrCallback jcrCallback) 
         throws RegistryException, NotFoundException, AccessException {
         try {
-            return execute(jcrCallback);
+            return template.execute(jcrCallback);
         } catch (RuntimeException e) {
             Throwable cause = e.getCause();
             if (cause instanceof RegistryException) {
@@ -960,7 +1001,7 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
     private Object executeAndDewrap(JcrCallback jcrCallback)
         throws RegistryException, PolicyException, DuplicateItemException {
         try {
-            return execute(jcrCallback);
+            return template.execute(jcrCallback);
         } catch (RuntimeException e) {
             Throwable cause = e.getCause();
             if (cause instanceof RegistryException) {
@@ -975,16 +1016,16 @@ public class JcrWorkspaceManager extends JcrTemplate implements WorkspaceManager
         }
     }
         
+    public JcrTemplate getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(JcrTemplate template) {
+        this.template = template;
+    }
+
     public LifecycleManager getLifecycleManager(Workspace w) {
         return lifecycleManager;
-    }
-
-    public ContentService getContentService() {
-        return contentService;
-    }
-
-    public void setContentService(ContentService contentService) {
-        this.contentService = contentService;
     }
 
     public LifecycleManager getLifecycleManager() {

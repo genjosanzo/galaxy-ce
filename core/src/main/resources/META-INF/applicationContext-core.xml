@@ -172,10 +172,10 @@
     <property name="artifactTypeDao" ref="artifactTypeDao" />
     <property name="commentManager" ref="commentManager" />
     <property name="contentService" ref="contentService" />
-    <property name="sessionFactory" ref="sessionFactory" />
     <property name="lifecycleManager" ref="lifecycleManager" />
     <property name="indexManager" ref="indexManager" />
     <property name="policyManager" ref="policyManager" />
+    <property name="template" ref="jcrTemplate" />
     <property name="typeManager" ref="typeManager" />
     <property name="userManager" ref="userManager" />
     <property name="eventManager" ref="eventManager"/>

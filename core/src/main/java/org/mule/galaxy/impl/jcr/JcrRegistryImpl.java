@@ -131,9 +131,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return id;
     }
 
-    public Artifact getArtifact(String id) throws NotFoundException, RegistryException, AccessException {
-        return getWorkspaceManagerByItemId(id).getArtifact(id);
-    }
 
     public Collection<Workspace> getWorkspaces() throws RegistryException, AccessException {
         return localWorkspaceManager.getWorkspaces();
@@ -328,16 +325,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return getNodeByUUID(artifactTypesId);
     }
     
-    public Collection<Artifact> getArtifacts(Workspace w) throws RegistryException {
-        WorkspaceManager wm = getWorkspaceManager(w);
-    
-        return wm.getArtifacts(w);
-    }
-
-    private WorkspaceManager getWorkspaceManager(Item i) {
-        return getWorkspaceManagerByItemId(i.getId());
-    }
-
     private WorkspaceManager getWorkspaceManager(String wmId) {
         return idToWorkspaceManager.get(wmId);
     }
@@ -353,20 +340,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     public Item getItemById(final String id) throws NotFoundException, RegistryException, AccessException {
-        return (Item) executeWithNotFound(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node node = session.getNodeByUUID(trimWorkspaceManagerId(id));
-                
-                try {
-                    String type = node.getPrimaryNodeType().getName();
-                    
-                    return build(node, type);
-                } catch (AccessException e){
-                    throw new RuntimeException(e);
-                }
-            }
-
-        });
+        return getWorkspaceManagerByItemId(id).getItemById(id);
     }
     
     protected Item build(Node node, String type) throws RepositoryException, ItemNotFoundException,
@@ -403,61 +377,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
              return wkspc;
         }
     }
+    
     public Item getItemByPath(String path) throws RegistryException, NotFoundException, AccessException {
-        try {
-            if (path.startsWith("/")) {
-                path = path.substring(1);
-            }
-            if (path.endsWith("/")) {
-                path = path.substring(0, path.length()-1);
-            }
-            
-            Node wNode = getWorkspacesNode();
-            
-            try {
-                // have to have the catch because jackrabbit is lame...
-                if (!wNode.hasNode(path)) throw new NotFoundException(path);
-            } catch (RepositoryException e) {
-                throw new NotFoundException(path);
-            }
-            
-            Node node = wNode.getNode(path);
-            String type = node.getPrimaryNodeType().getName();
-            
-            return build(node, type);
-        } catch (PathNotFoundException e) {
-            throw new NotFoundException(e);
-        } catch (RepositoryException e) {
-            throw new RegistryException(e);
-        }
-    }
-    
-    
-    public ArtifactVersion getArtifactVersion(final String id) throws NotFoundException, RegistryException, AccessException {
-        return (ArtifactVersion) executeWithNotFound(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node node = session.getNodeByUUID(trimWorkspaceManagerId(id));
-                Node aNode = node.getParent();
-                Node wNode = aNode.getParent();
-                
-                JcrArtifact artifact = new JcrArtifact(new JcrWorkspace(localWorkspaceManager, wNode), 
-                                                       aNode, localWorkspaceManager);
-
-                try {
-                    accessControlManager.assertAccess(Permission.READ_ARTIFACT, artifact);
-                } catch (AccessException e) {
-                    throw new RuntimeException(e);
-                }
-                
-                setupContentHandler(artifact);
-
-                EntryVersion av = artifact.getVersion(node.getName());
-                if (av == null) {
-                    throw new RuntimeException(new NotFoundException(id));
-                }
-                return av;
-            }
-        });
+        return localWorkspaceManager.getItemByPath(path);
     }
     
     protected void setupContentHandler(JcrArtifact artifact) {

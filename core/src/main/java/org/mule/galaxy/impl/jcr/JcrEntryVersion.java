@@ -131,7 +131,7 @@ public class JcrEntryVersion extends AbstractJcrItem implements EntryVersion {
     public void setVersionLabel(final String label) {
         try {
             if (!node.getName().equals(label)) {
-                manager.execute(new JcrCallback() {
+                manager.getTemplate().execute(new JcrCallback() {
     
                     public Object doInJcr(Session session) throws IOException, RepositoryException {
                         String dest = node.getParent().getPath() + "/" + label;

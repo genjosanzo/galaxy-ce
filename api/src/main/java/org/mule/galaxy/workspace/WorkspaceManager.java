@@ -7,6 +7,7 @@ import java.util.Collection;
 import javax.activation.MimeTypeParseException;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ContentService;
 import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Entry;
@@ -19,6 +20,12 @@ import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
+/**
+ * WorkspaceManagers perform the underlying operations on Items in the registry. This makes it 
+ * easy for different backends to be replaced. For instance, there could be Atom backends
+ * or SVN or UDDI. Not all methods may be supported and may therefore throw UnsupportedOperationExceptions.
+ * @author Dan
+ */
 public interface WorkspaceManager {
     /**
      * A UUID for this workspace manager.
@@ -27,10 +34,6 @@ public interface WorkspaceManager {
 
     Workspace getWorkspace(String id) throws RegistryException, NotFoundException, AccessException;
 
-    Artifact getArtifact(String id) throws NotFoundException, RegistryException, AccessException;
-    
-    Collection<Artifact> getArtifacts(Workspace workspace) throws RegistryException;
-    
     Collection<Workspace> getWorkspaces() throws RegistryException, AccessException;
 
     void delete(Item item) throws RegistryException, AccessException;
@@ -72,4 +75,10 @@ public interface WorkspaceManager {
      * @param workspace
      */
     void attachTo(Workspace workspace);
+
+    ContentService getContentService();
+
+    Item getItemById(final String id) throws NotFoundException, RegistryException, AccessException;
+    
+    Item getItemByPath(final String id) throws NotFoundException, RegistryException, AccessException;
 }

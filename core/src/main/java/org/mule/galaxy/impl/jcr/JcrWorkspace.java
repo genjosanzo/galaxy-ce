@@ -117,7 +117,7 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
         
         try {
             if (!node.getName().equals(name)) {
-                manager.execute(new JcrCallback() {
+                manager.getTemplate().execute(new JcrCallback() {
     
                     public Object doInJcr(Session session) throws IOException, RepositoryException {
                         String dest = node.getParent().getPath() + "/" + name;
