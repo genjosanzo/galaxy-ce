@@ -130,10 +130,9 @@ a:visited {
  **/
 
 .top-panel {
-     /* background-color: #D5E1EE; */
     background-color: #E5EDF5;
-     padding: 5px;
-     color: white;
+    padding: 5px;
+    color: white;
 }
 
 .top-panel .gwt-Hyperlink a {
@@ -464,13 +463,18 @@ a:visited {
 }
 
 .addComment {
-    background-color: #ddd;
-    border: 1px solid #333;
+    background-color: #FFFFE0;
+    border: 1px solid #C0C0C0;
 }
 
 .commentTitle {
     padding: 4px 8px;
-    background-color: #e8e8e8;
+}
+
+.commentText {
+    padding: 4px;
+    margin-left: 25px;
+    border-bottom: 1px solid #C0C0C0;
 }
 
 .commentTitle .user {
@@ -484,11 +488,6 @@ a:visited {
 
 .commentTitle a, .commentTitle a:visited {
     color: black;
-}
-
-.commentText {
-    background-color: white;
-    padding: 6px;
 }
 
 .nestedComment {
@@ -745,6 +744,7 @@ a:visited {
     padding: 4px 3px;
     color: black;
     background-color: #EEEEEE;
+    border: 1px solid #C0C0C0;
 }
 
 .bulkedit-section-table {

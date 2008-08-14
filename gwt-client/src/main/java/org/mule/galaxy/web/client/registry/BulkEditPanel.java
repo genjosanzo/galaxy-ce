@@ -145,7 +145,7 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
         setPropertyLB.setEnabled(false);
         setPropertyTB.setEnabled(false);
 
-        Label label = new Label("Bulk Edit (" + artifactIds.size() + ")");
+        Label label = new Label("Bulk Editing - " + artifactIds.size() + " Items");
         label.setStyleName("title");
         wrapperPanel.add(label);
         wrapperPanel.setStyleName("bulkedit-panel");
