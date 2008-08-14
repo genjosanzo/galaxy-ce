@@ -147,7 +147,6 @@
         init-method="initialize"
         depends-on="jcrInitializer">
     <property name="accessControlManager" ref="accessControlManager" />
-    <property name="activityManager" ref="activityManager" />
     <property name="contentService" ref="contentService" />
     <property name="eventManager" ref="eventManager"/>
     <property name="functionRegistry" ref="functionRegistry" />

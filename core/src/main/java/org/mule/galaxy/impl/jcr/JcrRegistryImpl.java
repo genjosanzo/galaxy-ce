@@ -100,8 +100,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     private String artifactTypesId;
     
-    private ActivityManager activityManager;
-    
     private AccessControlManager accessControlManager;
 
     private EventManager eventManager;
@@ -661,7 +659,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 {
                     log.debug("Query: " + qstr.toString());
                 }
-                
+                System.out.println(qstr.toString());
                 Query jcrQuery = qm.createQuery(qstr, Query.XPATH);
                 
                 QueryResult result = jcrQuery.execute();
@@ -1060,17 +1058,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     public void setExtensions(List<Extension> extensions) {
         this.extensions = extensions;
     }
-
-    public ActivityManager getActivityManager() {
-        return activityManager;
-    }
-
     public void setAccessControlManager(AccessControlManager accessControlManager) {
         this.accessControlManager = accessControlManager;
-    }
-
-    public void setActivityManager(ActivityManager activityManager) {
-        this.activityManager = activityManager;
     }
 
     public void setFunctionRegistry(FunctionRegistry functionRegistry) {

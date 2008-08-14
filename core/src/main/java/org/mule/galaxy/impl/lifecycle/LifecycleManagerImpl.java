@@ -58,7 +58,6 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
     private List<Policy> phaseApprovalListeners = new ArrayList<Policy>();
     private PolicyManager policyManager;
     private ApplicationContext context;
-    private ActivityManager activityManager;
     private EventManager eventManager;
     
     public LifecycleManagerImpl() throws Exception {
@@ -271,14 +270,6 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
 
     public void setPhaseApprovalListeners(List<Policy> phaseApprovalListeners) {
         this.phaseApprovalListeners = phaseApprovalListeners;
-    }
-
-    public ActivityManager getActivityManager() {
-        if (activityManager == null) {
-            // workaround because spring sucks at circular dependencies
-            activityManager = (ActivityManager) context.getBean("activityManager");
-        }
-        return activityManager;
     }
 
     public Lifecycle getLifecycle(final String lifecycleName) {
