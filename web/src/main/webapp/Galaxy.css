@@ -340,17 +340,10 @@ a:visited {
 }
 
 .error-panel .gwt-Label {
-    background: #F5B800;
+    background: #FFEC8B;
     padding: 5px;
-
-    border-right: #FFD820;
-    border-bottom: #FFD820;
-    border-top: #D59800;
-    border-right: #D59800;
-
+    border: 1px solid #FFC125;
     text-align: center;
-    background-image: url("images/nw_maj_rond.gif");
-    background-repeat: no-repeat;
 }
 
 .footer {
@@ -463,8 +456,9 @@ a:visited {
 }
 
 .addComment {
-    background-color: #FFFFE0;
+    background-color: #F0FFF0;
     border: 1px solid #C0C0C0;
+    padding: 4px;
 }
 
 .commentTitle {
