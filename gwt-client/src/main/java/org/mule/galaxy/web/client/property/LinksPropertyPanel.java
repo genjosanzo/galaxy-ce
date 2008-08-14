@@ -146,8 +146,10 @@ public class LinksPropertyPanel extends ListPropertyPanel {
         InlineFlowPanel linkPanel = new InlineFlowPanel();
         InlineFlowPanel recipPanel = new InlineFlowPanel();
         
-        recipPanel.add(new Label("(" + reciprocalName + ": "));
-        
+        recipPanel.setStyleName("linksPropertyPanel");
+        recipPanel.add(new Label("[" + reciprocalName + ": "));
+
+
         for (Iterator<LinkInfo> itr = links.iterator(); itr.hasNext();) {
             final LinkInfo info = itr.next();
 
@@ -186,7 +188,7 @@ public class LinksPropertyPanel extends ListPropertyPanel {
             }
         }
         
-        recipPanel.add(new Label(")"));
+        recipPanel.add(new Label("] "));
 
         if (recipPanel.getWidgetCount() > 1 && linkPanel.getWidgetCount() > 0) {
             linkPanel.add(new Label(" "));

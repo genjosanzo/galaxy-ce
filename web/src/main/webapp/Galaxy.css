@@ -358,6 +358,7 @@ a:visited {
     font-family: verdana;
     font-size: .7em;
     padding: 1em;
+    padding-top: 20px;
 }
 
 /**
@@ -626,6 +627,12 @@ a:visited {
     background-color: black;
     vertical-align: top;
 }
+
+.linksPropertyPanel {
+    color: #808080;
+    background-color: white;
+}
+
 /**
  **
  ** History Panel
