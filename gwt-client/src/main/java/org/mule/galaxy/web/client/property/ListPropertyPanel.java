@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MouseListenerAdapter;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.Image;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -89,17 +90,22 @@ public abstract class ListPropertyPanel extends AbstractEditPropertyPanel {
         final InlineFlowPanel valuePanel = new InlineFlowPanel();
         valuePanel.setStyleName("listProperty");
         valuePanel.add(newLabel(getRenderedText(value), "listPropertyLeft"));
-        final Label right = newLabel("x", "listPropertyRight");
-        right.addMouseListener(new MouseListenerAdapter() {
+        Image del = new Image("images/page_text_delete.gif");
+        del.setStyleName("icon-baseline");
+        /*
+        final Label right = newLabel(" ", "listPropertyRight");
+
+        del.addMouseListener(new MouseListenerAdapter() {
             public void onMouseEnter(Widget sender) {
-                right.setStyleName("listPropertyRightHover");
+                del.setStyleName("listPropertyRightHover");
             }
 
             public void onMouseLeave(Widget sender) {
-                right.setStyleName("listPropertyRight");
+                del.setStyleName("listPropertyRight");
             }
         });
-        right.addClickListener(new ClickListener() {
+        */
+        del.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
                 values.remove(value);
@@ -109,7 +115,8 @@ public abstract class ListPropertyPanel extends AbstractEditPropertyPanel {
             }
             
         });
-        valuePanel.add(right);
+        //valuePanel.add(right);
+        valuePanel.add(del);
         
         container.add(valuePanel);
         

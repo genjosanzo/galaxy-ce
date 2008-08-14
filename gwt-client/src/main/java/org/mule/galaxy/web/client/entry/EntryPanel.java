@@ -231,8 +231,8 @@ public class EntryPanel extends AbstractComposite {
                 }
                 
             };
-            Image img = new Image("images/external.png");
-            img.setStyleName("viewArtifactImage");
+            Image img = new Image("images/icon_component.gif");
+            img.setStyleName("icon-baseline");
             img.addClickListener(cl);
     
             Hyperlink hl = new Hyperlink("View Artifact", "artifact/" + info.getId());
@@ -244,14 +244,17 @@ public class EntryPanel extends AbstractComposite {
     
             ExternalHyperlink permalink = new ExternalHyperlink("Permalink", info.getArtifactLink());
             permalink.setTitle("Direct artifact link for inclusion in email, etc.");
-            linkPanel.add(asToolbarItem(new Image("images/permalink.gif"), permalink));
-            
+            Image imgx = new Image("images/permalink.gif");
+            imgx.setStyleName("icon-baseline");
+            linkPanel.add(asToolbarItem(imgx, permalink));
+
             token = "new-artifact-version/" + info.getId();
         } else {
             token = "new-entry-version/" + info.getId();
         }
         
-        Image img = new Image("images/new-version.gif");
+        Image img = new Image("images/icon_copy.gif");
+        img.setStyleName("icon-baseline");
         img.addClickListener(NavigationUtil.createNavigatingClickListener(token));
         Hyperlink hl = new Hyperlink("New Version", token);
         
@@ -270,6 +273,7 @@ public class EntryPanel extends AbstractComposite {
         };
         
         img = new Image("images/delete_config.gif");
+        img.setStyleName("icon-baseline");
         img.addClickListener(cl);
         hl = new Hyperlink("Delete", "artifact/" + info.getId());
         hl.addClickListener(cl);
@@ -282,10 +286,11 @@ public class EntryPanel extends AbstractComposite {
                 Window.open(info.getArtifactFeedLink(), null, "scrollbars=yes");
             }
         };
-        img = new Image("images/feed-icon-14x14.png");
+        img = new Image("images/feed-icon.png");
 //        img.setStyleName("feed-icon");
         img.setTitle("Versions Atom Feed");
         img.addClickListener(cl);
+        img.setStyleName("icon-baseline");
         
         hl = new Hyperlink("Version Feed", "artifact-versions/" + info.getId());
         hl.addClickListener(cl);

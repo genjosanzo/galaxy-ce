@@ -181,19 +181,22 @@ public class EntryInfoPanel extends AbstractComposite {
     private Widget createCommentPanel(WComment c) {
         final FlowPanel commentPanel = new FlowPanel();
         commentPanel.setStyleName("comment");
+
+        Image img = new Image("images/comment_blue.gif");
         
         InlineFlowPanel title = new InlineFlowPanel();
         title.setStyleName("commentTitle");
-        Label userLabel = new Label(c.getUser());
+        Label userLabel = new Label(" " + c.getUser());
         Label dateLabel = new Label(" at " + c.getDate());
         userLabel.setStyleName("user");
         
         Hyperlink replyLink = new Hyperlink("Reply", "reply-" + c.getId());
         replyLink.addClickListener(new AddCommentClickListener(commentPanel, c.getId()));
+        title.add(img);
         title.add(replyLink);
         title.add(userLabel);
         title.add(dateLabel);
-        
+
         commentPanel.add(title);
         
         Label commentBody = new Label(c.getText(), true);
@@ -221,7 +224,7 @@ public class EntryInfoPanel extends AbstractComposite {
         if (replyClickListener.isShowingComment()) {
             return;
         }
-        
+
         replyClickListener.setShowingComment(true);
         final VerticalPanel addCommentPanel = new VerticalPanel();
         addCommentPanel.setStyleName("addComment");
