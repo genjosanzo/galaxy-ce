@@ -344,9 +344,9 @@ a:visited {
 }
 
 .error-panel .gwt-Label {
-    background: #FFEC8B;
+    background: #ffc;
     padding: 5px;
-    border: 1px solid #FFC125;
+    border: 1px solid #fc0;
     text-align: center;
 }
 
