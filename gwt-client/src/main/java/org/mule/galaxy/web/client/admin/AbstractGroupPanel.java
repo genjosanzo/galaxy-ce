@@ -91,12 +91,14 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
     protected void receiveGroups(Map groups2Permissions) {
         this.groups2Permissions = groups2Permissions;
         mainPanel.clear();
+        table = createRowTable();
+        mainPanel.add(table);
 
-        table = createTitledRowTable(mainPanel, "Manage Group Permissions");
         int col = 1;
+        table.setText(0, 0, " ");
         for (Iterator itr = permissions.iterator(); itr.hasNext();) {
             WPermission p = (WPermission) itr.next();
-            table.setText(0, col, p.getDescription());
+            table.setWidget(0, col, createTitleText(p.getDescription()));
 
             col++;
         }
@@ -111,14 +113,15 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
             Map.Entry e = (Map.Entry) itr.next();
 
             final WGroup group = (WGroup) e.getKey();
-            final Hyperlink hl = new Hyperlink(group.getName(), "groups/" + group.getId());
+            final String groupName = group.getName();
+            final Hyperlink hl = new Hyperlink(groupName, "groups/" + group.getId());
 
-            int row = rows.indexOf(group.getName()) + 1;
+            int row = rows.indexOf(groupName) + 1;
 
             // certain groups should not be removed or edited via the GUI
-            boolean isUberGroup = group.getName().equals("Administrators");
+            boolean isUberGroup = groupName.equals("Administrators");
             if (isUberGroup) {
-                table.setWidget(row, 0, new Label(group.getName()));
+                table.setWidget(row, 0, new Label(groupName));
             } else {
                 table.setWidget(row, 0, hl);
             }
