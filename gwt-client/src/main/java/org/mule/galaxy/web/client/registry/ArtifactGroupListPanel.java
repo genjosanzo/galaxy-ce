@@ -19,12 +19,14 @@
 package org.mule.galaxy.web.client.registry;
 
 import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.util.TooltipListener;
 import org.mule.galaxy.web.rpc.EntryGroup;
 import org.mule.galaxy.web.rpc.EntryInfo;
 
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Label;
 
 import java.util.ArrayList;
 
@@ -55,7 +57,7 @@ public class ArtifactGroupListPanel extends AbstractComposite {
 
         // create the colum headers
         // the first column is blank on purpose as it's reserved for the checkbox
-        table.setText(0, 0, "");
+        table.setText(0, 0, " ");
 
         // hardcode the width for the checkbox -- do this in css later
         table.getFlexCellFormatter().setWidth(0, 0, "20");
@@ -65,7 +67,7 @@ public class ArtifactGroupListPanel extends AbstractComposite {
             int cPos = i + 1;
             table.setText(0, cPos, group.getColumns().get(i));
             // set each subsequent column to 100
-            if(i > 1) table.getFlexCellFormatter().setWidth(0, i, "100");
+            if (i > 1) table.getFlexCellFormatter().setWidth(0, i, "140");
         }
 
         // draw the rows for each artifact type in the group
@@ -87,15 +89,26 @@ public class ArtifactGroupListPanel extends AbstractComposite {
             for (int c = 0; c < numCols; c++) {
                 int cPos = c + 1;
 
+
+                // truncate to N characters and offer a tooltip of the full value
                 String value = info.getValue(c);
                 String Id = info.getId();
+                int truncateTo = 20;
+                
+                // use a label so we truncate and then attach a tooltip
+                Label lvalue = new Label(abbreviate(value, truncateTo));
+                // only attache if needed
+                if(value.length() > truncateTo ) {
+                    lvalue.addMouseListener(new TooltipListener(value, 5000, "tooltip"));
+                }
+
                 // the first column is the artifact name (value) and that's a link
                 if (c == 0) {
                     Hyperlink hl = new Hyperlink(value, "artifact/" + Id);
                     table.setWidget(i + 1, cPos, hl);
                 } else {
                     // each additional value is just regular ol' text
-                    table.setText(i + 1, cPos, value);
+                    table.setWidget(i + 1, cPos, lvalue);
                 }
                 table.getRowFormatter().setStyleName(i + 1, "artifactTableEntry");
             }
@@ -111,5 +124,12 @@ public class ArtifactGroupListPanel extends AbstractComposite {
         return CBCollection;
     }
 
+
+    private String abbreviate(String s, int width) {
+        if (s.length() > width) {
+            s = s.substring(0, width) + "...";
+        }
+        return s;
+    }
 
 }

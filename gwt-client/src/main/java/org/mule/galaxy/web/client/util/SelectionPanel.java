@@ -45,7 +45,7 @@ public class SelectionPanel extends Composite {
                           String rightColTitle) {
         super();
         
-        FlowPanel panel = new FlowPanel();
+        InlineFlowPanel panel = new InlineFlowPanel();
         
         initWidget(panel);
         

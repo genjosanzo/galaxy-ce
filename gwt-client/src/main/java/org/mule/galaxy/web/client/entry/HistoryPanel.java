@@ -18,16 +18,6 @@
 
 package org.mule.galaxy.web.client.entry;
 
-import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
-
-import java.util.Iterator;
-
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
@@ -42,6 +32,16 @@ import org.mule.galaxy.web.rpc.EntryVersionInfo;
 import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WPolicyException;
+
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
+
+import java.util.Iterator;
 
 public class HistoryPanel extends AbstractComposite {
 
@@ -59,10 +59,10 @@ public class HistoryPanel extends AbstractComposite {
         this.errorPanel = errorPanel;
         this.registryService = galaxy.getRegistryService();
         this.info = info;
-        
+
         panel = new FlowPanel();
         initWidget(panel);
-        
+
         setTitle("Artifact History");
         initializePanel();
     }
@@ -70,59 +70,58 @@ public class HistoryPanel extends AbstractComposite {
     protected void initializePanel() {
         for (Iterator<EntryVersionInfo> iterator = info.getVersions().iterator(); iterator.hasNext();) {
             final EntryVersionInfo av = iterator.next();
-            
+
             FlowPanel avPanel = new FlowPanel();
             avPanel.setStyleName("artifact-version-panel");
 
             Label title = new Label("Version " + av.getVersionLabel());
             title.setStyleName("artifact-version-title");
             avPanel.add(title);
-            
+
             FlowPanel bottom = new FlowPanel();
             avPanel.add(bottom);
             bottom.setStyleName("artifact-version-bottom-panel");
-            
-            bottom.add(new Label("By " + av.getAuthorName() 
-                + " (" + av.getAuthorUsername() + ") on " + av.getCreated()));
-            
+
+            bottom.add(new Label("By " + av.getAuthorName()
+                    + " (" + av.getAuthorUsername() + ") on " + av.getCreated()));
+
             InlineFlowPanel links = new InlineFlowPanel();
             bottom.add(links);
-            
+
             if (info.isArtifact()) {
                 Hyperlink viewLink = new Hyperlink("View", "view-version");
                 viewLink.addClickListener(new ClickListener() {
-    
+
                     public void onClick(Widget arg0) {
                         Window.open(av.getLink(), null, "scrollbars=yes");
                     }
-                    
+
                 });
-                viewLink.addStyleName("hyperlink-NewWindow");
                 links.add(viewLink);
-    
+
                 links.add(new Label(" | "));
-    
+
                 ExternalHyperlink permalink = new ExternalHyperlink("Permalink", av.getLink());
                 permalink.setTitle("Direct artifact link for inclusion in email, etc.");
                 links.add(permalink);
             }
-            
+
             if (!av.isDefault()) {
                 links.add(new Label(" | "));
-                
+
                 Hyperlink rollbackLink = new Hyperlink("Set Default", "rollback-version");
                 rollbackLink.addClickListener(new ClickListener() {
 
                     public void onClick(Widget w) {
                         setDefault(av.getId());
                     }
-                    
+
                 });
                 links.add(rollbackLink);
             }
-            
+
             links.add(new Label(" | "));
-            
+
             if (!av.isEnabled()) {
                 Hyperlink enableLink = new Hyperlink("Reenable", "reenable-version");
                 enableLink.addClickListener(new ClickListener() {
@@ -130,7 +129,7 @@ public class HistoryPanel extends AbstractComposite {
                     public void onClick(Widget w) {
                         setEnabled(av.getId(), true);
                     }
-                    
+
                 });
                 links.add(enableLink);
             } else {
@@ -140,11 +139,11 @@ public class HistoryPanel extends AbstractComposite {
                     public void onClick(Widget w) {
                         setEnabled(av.getId(), false);
                     }
-                    
+
                 });
                 links.add(disableLink);
             }
-            
+
             links.add(new Label(" | "));
             Hyperlink deleteLink = new Hyperlink("Delete", "delete-version");
             deleteLink.addClickListener(new ClickListener() {
@@ -152,34 +151,32 @@ public class HistoryPanel extends AbstractComposite {
                 public void onClick(Widget w) {
                     warnDelete(av.getId());
                 }
-                
+
             });
             links.add(deleteLink);
-            
+
             panel.add(avPanel);
         }
-        
+
     }
-    protected void warnDelete(final String id)
-    {
-        new LightBox(new ConfirmDialog(new ConfirmDialogAdapter()
-        {
-            public void onConfirm()
-            {
+
+    protected void warnDelete(final String id) {
+        new LightBox(new ConfirmDialog(new ConfirmDialogAdapter() {
+            public void onConfirm() {
                 delete(id);
             }
         }, "Are you sure you want to delete this artifact version?")).show();
     }
-    
+
     protected void delete(String versionId) {
-        
+
         registryService.deleteArtifactVersion(versionId, new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object o) {
                 galaxy.setMessageAndGoto("browse", "Artifact version was deleted.");
-                
+
                 // is it the last version?
-                if (((Boolean)o).booleanValue()) {
+                if (((Boolean) o).booleanValue()) {
                     History.newItem("browse");
                 } else {
                     History.newItem("artifact/" + info.getId());
@@ -188,6 +185,7 @@ public class HistoryPanel extends AbstractComposite {
 
         });
     }
+
     protected void setDefault(String versionId) {
         registryService.setDefault(versionId, getPolicyCallback());
     }
@@ -195,7 +193,7 @@ public class HistoryPanel extends AbstractComposite {
     protected void setEnabled(String versionId, boolean enabled) {
         registryService.setEnabled(versionId, enabled, getPolicyCallback());
     }
-    
+
     private AbstractCallback getPolicyCallback() {
         return new AbstractCallback(errorPanel) {
 

@@ -80,7 +80,7 @@ public class NewPropertyPanel extends Composite {
         panel = new FlexTable();
         main.add(panel);
         panel.setStyleName("add-property-panel");
-        panel.getCellFormatter().setWidth(0, 0, "200");
+        panel.getCellFormatter().setWidth(0, 0, "225");
         selectorPanel = new InlineFlowPanel();
         
         selectorPanel.add(new Label("Add Property: "));

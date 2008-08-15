@@ -77,6 +77,14 @@ a:visited {
     vertical-align: bottom;
 }
 
+/* Display's tooltips like in Eclipse */ 
+.tooltip .gwt-HTML {
+        border: 1px solid #C0C0C0;
+        padding: 2px 3px 3px 3px;
+        font-size: smaller;
+        background-color: #ffc;
+}
+
 /**
  **
  ** The Left Menu
@@ -563,6 +571,7 @@ a:visited {
     background-color: white;
     padding: 4px;
     width: auto;
+    vertical-align: top;
 }
 
 .add-property-inline {
@@ -579,7 +588,7 @@ a:visited {
 }
 
 .add-property-inline .gwt-Label {
-    vertical-align: middle;
+    vertical-align: top;
 }
 
 .metadata-panel table {
@@ -905,7 +914,6 @@ a:visited {
     cursor: pointer;
 }
 .hyperlink-NewWindow {
-    background: transparent url(images/external.png) no-repeat scroll right center;
     padding-right: 14px;
 }
 
