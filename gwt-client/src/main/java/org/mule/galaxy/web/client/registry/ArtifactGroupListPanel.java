@@ -67,7 +67,7 @@ public class ArtifactGroupListPanel extends AbstractComposite {
             int cPos = i + 1;
             table.setText(0, cPos, group.getColumns().get(i));
             // set each subsequent column to 100
-            if (i > 1) table.getFlexCellFormatter().setWidth(0, i, "140");
+            if (i > 1) table.getFlexCellFormatter().setWidth(0, i, "125");
         }
 
         // draw the rows for each artifact type in the group
@@ -89,11 +89,10 @@ public class ArtifactGroupListPanel extends AbstractComposite {
             for (int c = 0; c < numCols; c++) {
                 int cPos = c + 1;
 
-
                 // truncate to N characters and offer a tooltip of the full value
                 String value = info.getValue(c);
                 String Id = info.getId();
-                int truncateTo = 20;
+                int truncateTo = 25;
                 
                 // use a label so we truncate and then attach a tooltip
                 Label lvalue = new Label(abbreviate(value, truncateTo));
