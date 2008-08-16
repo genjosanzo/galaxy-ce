@@ -36,6 +36,14 @@
 
     <dependency>
       <groupId>org.mule.galaxy</groupId>
+      <artifactId>galaxy-web</artifactId>
+      <version>${version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-testutils</artifactId>
       <version>${version}</version>
       <scope>test</scope>

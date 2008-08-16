@@ -20,7 +20,16 @@
     <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
     <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
   </nodeType>
-
+  
+  <nodeType name="galaxy:attachedWorkspace" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+  </nodeType>
+  
   <nodeType name="galaxy:entry" 
     isMixin="false" 
     hasOrderableChildNodes="false"

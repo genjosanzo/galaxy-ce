@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +41,6 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.activity.ActivityManager;
 import org.mule.galaxy.event.EntryMovedEvent;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.event.WorkspaceCreatedEvent;
@@ -70,6 +70,7 @@ import org.mule.galaxy.util.DateUtil;
 import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.SecurityUtils;
 import org.mule.galaxy.workspace.WorkspaceManager;
+import org.mule.galaxy.workspace.WorkspaceManagerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -132,7 +133,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
 
-    public Collection<Workspace> getWorkspaces() throws RegistryException, AccessException {
+    public Collection<Workspace> getWorkspaces() throws AccessException {
         return localWorkspaceManager.getWorkspaces();
     }
 
@@ -173,6 +174,55 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 return workspace;
             }
         });
+    }
+    
+    public Collection<WorkspaceManager> getWorkspaceManagers() {
+        return idToWorkspaceManager.values();
+    }
+
+    public Workspace attachWorkspace(final Workspace parent, 
+                                     final String name,
+                                     final WorkspaceManagerFactory factory,
+                                     final Map<String, String> configuration) throws RegistryException {
+        
+        if (!(parent instanceof JcrWorkspace)) {
+            throw new RegistryException(new Message("LOCAL_ATTACH_ONLY", BundleUtils.getBundle(this.getClass())));
+        }
+        
+        return (Workspace) execute(new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                JcrWorkspace w = (JcrWorkspace) parent;
+                
+                Node attachedNode = w.getNode().addNode(name, JcrWorkspaceManager.ATTACHED_WORKSPACE_NODE_TYPE);
+                attachedNode.addMixin("mix:referenceable");
+                Calendar now = Calendar.getInstance();
+                now.setTime(new Date());
+                attachedNode.setProperty(AbstractJcrItem.CREATED, now);
+                attachedNode.setProperty(AbstractJcrItem.UPDATED, now);
+                attachedNode.setProperty(AbstractJcrItem.NAME, name);
+
+                WorkspaceManager wm = createWorkspaceManager(factory, configuration);
+                AttachedWorkspace attached = new AttachedWorkspace(attachedNode, localWorkspaceManager, wm);
+                attached.setConfiguration(configuration);
+                
+                wm.attachTo(attached);
+                
+                session.save();
+                
+                return attached;
+            }
+            
+        });
+    }
+
+    private synchronized WorkspaceManager createWorkspaceManager(final WorkspaceManagerFactory factory,
+                                                    final Map<String, String> configuration) {
+        WorkspaceManager wm = factory.createWorkspaceManager(configuration);
+        
+        idToWorkspaceManager.put(wm.getId(), wm);
+        
+        return wm;
     }
 
     public void save(Item i) throws AccessException {
@@ -307,7 +357,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
 
         try {
-            return getArtifact(w, paths[paths.length-1]);
+            return getItem(w, paths[paths.length-1]);
         } catch (NotFoundException e) {
             return null;
         }
@@ -401,35 +451,21 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return id.substring(idx + 1);
     }
     
-    public Artifact getArtifact(final Workspace w, final String name) throws NotFoundException {
-        Artifact a = (Artifact) execute(new JcrCallback() {
+    public Item getItem(final Workspace w, final String name) throws NotFoundException {
+        Item a = (Item) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                QueryManager qm = getQueryManager(session);
-                StringBuilder sb = new StringBuilder();
-                sb.append("//element(*, galaxy:artifact)[@name='")
-                  .append(name)
-                  .append("']");
+                Node node = ((JcrWorkspace) w).getNode();
                 
-                Query query = qm.createQuery(sb.toString(), Query.XPATH);
-                
-                QueryResult result = query.execute();
-                NodeIterator nodes = result.getNodes();
-                
-                if (nodes.hasNext()) {
-                    Node node = nodes.nextNode();
-                    JcrArtifact artifact = new JcrArtifact(w, node, localWorkspaceManager);
+                try {
+                    Node resolved = node.getNode(name);
                     
-                    try {
-                        accessControlManager.assertAccess(Permission.READ_ARTIFACT, artifact);
-                    } catch (AccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                    
-                    artifact.setContentHandler(contentService.getContentHandler(artifact.getContentType()));
-
-                    return artifact;
+                    return build(resolved, resolved.getPrimaryNodeType().getName());
+                } catch (PathNotFoundException e) {
+                    return null;
+                } catch (AccessException e) {
+                    return null;
                 }
-                return null;
+                
             }
         });
         

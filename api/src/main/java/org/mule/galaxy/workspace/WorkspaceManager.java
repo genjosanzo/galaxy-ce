@@ -3,6 +3,7 @@ package org.mule.galaxy.workspace;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 
 import javax.activation.MimeTypeParseException;
 
@@ -16,6 +17,7 @@ import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
@@ -34,8 +36,10 @@ public interface WorkspaceManager {
 
     Workspace getWorkspace(String id) throws RegistryException, NotFoundException, AccessException;
 
-    Collection<Workspace> getWorkspaces() throws RegistryException, AccessException;
+    Collection<Workspace> getWorkspaces() throws AccessException;
 
+    Collection<Workspace> getWorkspaces(Workspace workspace);
+    
     void delete(Item item) throws RegistryException, AccessException;
     
     void setEnabled(final EntryVersion version, 
@@ -69,7 +73,12 @@ public interface WorkspaceManager {
     
     EntryResult newVersion(Entry jcrEntry, String versionLabel)
     	throws DuplicateItemException, RegistryException, PolicyException, AccessException;
+
+    List<Item> getItems(Workspace w);
     
+    Item getItemById(final String id) throws NotFoundException, RegistryException, AccessException;
+    
+    Item getItemByPath(final String id) throws NotFoundException, RegistryException, AccessException;
     /**
      * Attach this manager to the specified workspace.
      * @param workspace
@@ -78,7 +87,5 @@ public interface WorkspaceManager {
 
     ContentService getContentService();
 
-    Item getItemById(final String id) throws NotFoundException, RegistryException, AccessException;
-    
-    Item getItemByPath(final String id) throws NotFoundException, RegistryException, AccessException;
+    CommentManager getCommentManager();
 }

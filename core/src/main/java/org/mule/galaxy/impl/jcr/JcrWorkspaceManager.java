@@ -39,7 +39,6 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.ArtifactTypeDao;
 import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.ContentService;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryResult;
@@ -53,7 +52,6 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.activity.ActivityManager;
-import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.EntryCreatedEvent;
 import org.mule.galaxy.event.EntryDeletedEvent;
 import org.mule.galaxy.event.EntryVersionCreatedEvent;
@@ -94,12 +92,14 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
     public static final String ENTRY_NODE_TYPE = "galaxy:entry";
     
     public static final String ENTRY_VERSION_NODE_TYPE = "galaxy:entryVersion";
+
+    public static final String WORKSPACE_NODE_TYPE = "galaxy:workspace";
     
+    public static final String ATTACHED_WORKSPACE_NODE_TYPE = "galaxy:attachedWorkspace";
+
     public static final String LATEST = "latest";
     
     private final Log log = LogFactory.getLog(getClass());
-    
-    private CommentManager commentManager;
 
     private LifecycleManager lifecycleManager;
     
@@ -167,28 +167,41 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
         return new JcrArtifact(new JcrWorkspace(this, wNode), node, this);
     }
     
-    public Collection<Workspace> getWorkspaces() throws RegistryException, AccessException {
+    public Collection<Workspace> getWorkspaces() {
+        return getWorkspaces(null);
+    }
+
+    public Collection<Workspace> getWorkspaces(Workspace workspace) {
         try {
-            List<Workspace> workspaceCol = new ArrayList<Workspace>();
-            for (NodeIterator itr = getWorkspacesNode().getNodes(); itr.hasNext();) {
+            Node workspacesNode;
+            if (workspace == null) {
+                workspacesNode = getWorkspacesNode();
+            } else {
+                workspacesNode = ((JcrWorkspace) workspace).getNode();
+            }
+            ArrayList<Workspace> workspaceCol = new ArrayList<Workspace>();
+            for (NodeIterator itr = workspacesNode.getNodes(); itr.hasNext();) {
                 Node n = itr.nextNode();
 
-                if (!n.getName().equals("jcr:system")) {
-
-                    JcrWorkspace wkspc = new JcrWorkspace(this, n);
-                    accessControlManager.assertAccess(Permission.READ_WORKSPACE, wkspc);
-                    
-                    workspaceCol.add(wkspc);
+                String type = n.getPrimaryNodeType().getName();
+                if (type.equals(WORKSPACE_NODE_TYPE)) {
+                    workspaceCol.add(buildWorkspace(n));
+                } else if (type.equals(ATTACHED_WORKSPACE_NODE_TYPE)) {
+                    workspaceCol.add(buildAttachedWorkspace(n));
                 }
                 
                 Collections.sort(workspaceCol, new ItemComparator());
             }
             return workspaceCol;
         } catch (RepositoryException e) {
-            throw new RegistryException(e);
+            throw new RuntimeException(e);
         }
     }
     
+    private Workspace buildAttachedWorkspace(Node n) throws RepositoryException {
+        return new AttachedWorkspace(n, this, null);
+    }
+
     public Item getItemById(final String id) throws NotFoundException, RegistryException, AccessException {
         return (Item) executeWithNotFound(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
@@ -235,8 +248,12 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
         }
     }
 
+    protected Item build(Node node) throws RepositoryException, ItemNotFoundException, AccessException {
+        return build(node, node.getPrimaryNodeType().getName());
+    }
+    
     protected Item build(Node node, String type) throws RepositoryException, ItemNotFoundException,
-        AccessDeniedException, AccessException {
+        AccessException {
         if (type.equals("galaxy:artifact")) {
             Artifact a = buildArtifact(node);
     
@@ -590,10 +607,6 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                     Set<String> dependencies = ch.detectDependencies(loadedData, workspace);
                     Set<Link> links = new HashSet<Link>();
                     for (String p : dependencies) {
-                        Item resolved = registry.resolve(jcrVersion, p);
-                        if (resolved != null) {
-                            
-                        }
                         links.add(new Link(jcrVersion, null, p, true));
                     }
                     
@@ -1091,14 +1104,6 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
     public void setRegistry(Registry registry) {
         this.registry = registry;
     }
-
-    public CommentManager getCommentManager() {
-        return commentManager;
-    }
-
-    public void setCommentManager(CommentManager commentManager) {
-        this.commentManager = commentManager;
-    }
     
     public EventManager getEventManager() {
         return eventManager;
@@ -1135,6 +1140,26 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
         } catch (PathNotFoundException e) {
             // ignore?
         }
+    }
+
+    public List<Item> getItems(Workspace w) {
+        List<Item> items = new ArrayList<Item>();
+        try {
+            NodeIterator nodes = ((JcrWorkspace) w).getNode().getNodes();
+            while (nodes.hasNext()) {
+                Node n = nodes.nextNode();
+                
+                try {
+                    items.add(build(n));
+                } catch (AccessException e) {
+                    // skip nodes which the user doesn't have access to
+                }
+            }
+            Collections.sort(items, new ItemComparator());
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        } 
+        return items;
     }
 
 }

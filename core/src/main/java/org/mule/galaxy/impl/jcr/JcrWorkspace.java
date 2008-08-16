@@ -34,7 +34,7 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
     public static final String NAME = "name";
     public static final String CREATED = "updated";
     public static final String LIFECYCLE = "lifecycle";
-    private List<Workspace> workspaces;
+    private Collection<Workspace> workspaces;
     private Lifecycle lifecycle;
     private final JcrWorkspaceManager manager;
     private List<Item> items;
@@ -64,20 +64,7 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
 
     public Collection<Workspace> getWorkspaces() {
         if (workspaces == null) {
-            workspaces = new ArrayList<Workspace>();
-            try {
-                NodeIterator nodes = node.getNodes();
-                while (nodes.hasNext()) {
-                    Node n = nodes.nextNode();
-                    
-                    if (n.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
-                        workspaces.add(new JcrWorkspace(manager, n));
-                    }
-                }
-                Collections.sort(workspaces, new ItemComparator());
-            } catch (RepositoryException e) {
-                throw new RuntimeException(e);
-            } 
+            workspaces = manager.getWorkspaces(this);
         }
         
         return workspaces;
@@ -85,24 +72,7 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
 
     public List<Item> getItems() {
         if (items == null) {
-            items = new ArrayList<Item>();
-            try {
-                NodeIterator nodes = node.getNodes();
-                while (nodes.hasNext()) {
-                    Node n = nodes.nextNode();
-                    
-                    if (n.getPrimaryNodeType().getName().equals("galaxy:workspace")) {
-                        items.add(new JcrWorkspace(manager, n));
-                    } else if (n.getPrimaryNodeType().getName().equals("galaxy:entry")) {
-                        items.add(new JcrEntry(this, n, manager));
-                    } else if (n.getPrimaryNodeType().getName().equals("galaxy:artifact")) {
-                        items.add(new JcrArtifact(this, n, manager));
-                    }
-                }
-                Collections.sort(items, new ItemComparator());
-            } catch (RepositoryException e) {
-                throw new RuntimeException(e);
-            } 
+            items = manager.getItems(this);
         }
         
         return items;

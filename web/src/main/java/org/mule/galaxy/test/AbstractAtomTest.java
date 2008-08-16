@@ -100,7 +100,7 @@ public class AbstractAtomTest extends TestCase {
             Session session = repository.login(new SimpleCredentials("username", "password".toCharArray()));
 
             Node node = session.getRootNode();
-//            JcrUtil.dump(node.getNode("workspaces"));o
+//            JcrUtil.dump(node.getNode("workspaces"));
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
                 Node child = itr.nextNode();
                 if (!child.getName().equals("jcr:system")) {
@@ -141,14 +141,15 @@ public class AbstractAtomTest extends TestCase {
     }
 
     protected String getWebXml() {
-        return new File(getWebappDirectory(), "../../test/resources/web.xml").getAbsolutePath();
+        return getClass().getResource("/web.xml").getFile();
     }
 
     /**
      * The webapp relative directory varies depending on run from Maven, Eclipse and IDEA
      * this will check each possiblilty to return an existing location
+     * @throws IOException 
      */
-    protected File getWebappDirectory() 
+    protected File getWebappDirectory() throws IOException 
     {
         File f = new File("./src/main/webapp");
         if(!f.exists())

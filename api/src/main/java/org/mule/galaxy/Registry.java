@@ -10,6 +10,8 @@ import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.workspace.WorkspaceManager;
+import org.mule.galaxy.workspace.WorkspaceManagerFactory;
 
 public interface Registry {
 
@@ -29,12 +31,34 @@ public interface Registry {
 
     Workspace createWorkspace(Workspace parent, String name) throws DuplicateItemException, RegistryException, AccessException;
 
-    
     void save(Workspace w, String parentId)
         throws RegistryException, NotFoundException, AccessException;
 
     void save(Item item) throws AccessException;
     
+    /**
+     * The WorkspaceManagers that have been configured and attached inside this Registry.
+     * 
+     */
+    Collection<WorkspaceManager> getWorkspaceManagers();
+    
+    /**
+     * Create a "virtual" workspace which is attached to a parent workspace. The name
+     * of the WorkspaceManagerFactory and the configuration will be stored and used to 
+     * reattach the virtual workspace when the Registry starts again.
+     * 
+     * @param parent The workspace the virtual workspace is attached to.
+     * @param name The name of the virtual workspace.
+     * @param factory 
+     * @param configuration
+     * @return
+     * @throws RegistryException
+     */
+    Workspace attachWorkspace(
+	    Workspace parent, 
+	    String name, 
+	    WorkspaceManagerFactory factory, 
+	    Map<String, String> configuration) throws RegistryException;
     
     Item getItemById(String id) throws NotFoundException, RegistryException, AccessException;
     

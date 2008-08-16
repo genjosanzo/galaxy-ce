@@ -148,14 +148,6 @@ public class JcrEntryVersion extends AbstractJcrItem implements EntryVersion {
         }
     }
 
-    public Calendar getCreated() {
-        return getCalendarOrNull(CREATED);
-    }
-    
-    public Calendar getUpdated() {
-        return getCalendarOrNull(UPDATED);
-    }
-
     public EntryVersion getPrevious() {
         List<EntryVersion> versions = parent.getVersions();
         

@@ -1,5 +1,6 @@
 package org.mule.galaxy.impl.jcr;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -14,7 +15,10 @@ import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.Value;
+
+import org.springmodules.jcr.JcrCallback;
 
 import org.apache.jackrabbit.value.StringValue;
 import org.mule.galaxy.Item;
@@ -22,6 +26,7 @@ import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Workspace;
 import org.mule.galaxy.activity.ActivityManager.EventType;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.policy.PolicyException;
@@ -39,6 +44,8 @@ public abstract class AbstractJcrItem implements Item {
     public static final String LOCKED = ".locked";
     public static final String VISIBLE = ".visible";
     public static final String UPDATED = "updated";
+    public static final String NAME = "name";
+    public static final String CREATED = "created";
     
     protected Node node;
     protected JcrWorkspaceManager manager;
@@ -60,6 +67,35 @@ public abstract class AbstractJcrItem implements Item {
         }
     }
 
+    public Calendar getCreated() {
+        return getCalendarOrNull(CREATED);
+    }
+
+    public String getName() {
+        return getStringOrNull(NAME);
+    }
+    
+    public void setName(final String name) {
+        try {
+            
+            if (!node.getName().equals(name)) {
+                manager.getTemplate().execute(new JcrCallback() {
+    
+                    public Object doInJcr(Session session) throws IOException, RepositoryException {
+                        String dest = node.getParent().getPath() + "/" + name;
+                        session.move(node.getPath(), dest);
+                        return null;
+                    }
+                    
+                });
+            }
+            node.setProperty(NAME, name);
+            update();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
     public void delete() throws RegistryException, AccessException {
         manager.delete(this);
     }

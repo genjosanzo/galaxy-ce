@@ -29,9 +29,7 @@ import org.mule.galaxy.type.Type;
 import org.springmodules.jcr.JcrCallback;
 
 public class JcrEntry extends AbstractJcrItem implements Entry {
-    public static final String CREATED = "created";
     public static final String DESCRIPTION = "description";
-    public static final String NAME = "name";
     public static final String TYPE = "type";
     
     private List<EntryVersion> versions;
@@ -46,6 +44,10 @@ public class JcrEntry extends AbstractJcrItem implements Entry {
         this.manager = registry;
     }
     
+    public Workspace getParent() {
+        return workspace;
+    }
+
     public String getPath() {
         StringBuilder sb = getBasePath();
         
@@ -56,7 +58,7 @@ public class JcrEntry extends AbstractJcrItem implements Entry {
     private StringBuilder getBasePath() {
         StringBuilder sb = new StringBuilder();
         
-        Item w = workspace;
+        Item w = getParent();
         while (w != null) {
             sb.insert(0, '/');
             sb.insert(0, ((Workspace)w).getName());
@@ -66,23 +68,10 @@ public class JcrEntry extends AbstractJcrItem implements Entry {
         return sb;
     }
     
-    public Workspace getParent() {
-        return workspace;
-    }
-
-    public Calendar getCreated() {
-        return getCalendarOrNull(CREATED);
-    }
-
-    public String getName() {
-        return getStringOrNull(NAME);
-    }
-    
     public String getDescription() {
         return getStringOrNull(DESCRIPTION);
     }
 
-    
     public void setDescription(String desc) {
         try {
             node.setProperty(DESCRIPTION, desc);
@@ -105,28 +94,6 @@ public class JcrEntry extends AbstractJcrItem implements Entry {
     public void setType(Type t) {
         try {
             node.setProperty(TYPE, t.getId());
-            update();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    
-    public void setName(final String name) {
-        try {
-            
-            if (!node.getName().equals(name)) {
-                manager.getTemplate().execute(new JcrCallback() {
-    
-                    public Object doInJcr(Session session) throws IOException, RepositoryException {
-                        String dest = node.getParent().getPath() + "/" + name;
-                        session.move(node.getPath(), dest);
-                        return null;
-                    }
-                    
-                });
-            }
-            node.setProperty(NAME, name);
             update();
         } catch (Exception e) {
             throw new RuntimeException(e);
