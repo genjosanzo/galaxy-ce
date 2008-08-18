@@ -23,7 +23,9 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.impl.index.IndexManagerImpl;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -44,6 +46,7 @@ import org.apache.abdera.model.Base;
 import org.apache.abdera.protocol.server.Provider;
 import org.apache.abdera.writer.Writer;
 import org.apache.abdera.writer.WriterFactory;
+import org.apache.commons.io.IOUtils;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.springframework.web.context.WebApplicationContext;
@@ -132,16 +135,11 @@ public class AbstractAtomTest extends TestCase {
         
         context = new WebAppContext();
         context.setContextPath("/");
-        context.setDescriptor(getWebXml());
         context.setWar(getWebappDirectory().getAbsolutePath());
         server.setHandler(context);
         server.setStopAtShutdown(true);
         
         server.start();
-    }
-
-    protected String getWebXml() {
-        return getClass().getResource("/web.xml").getFile();
     }
 
     /**
@@ -151,19 +149,20 @@ public class AbstractAtomTest extends TestCase {
      */
     protected File getWebappDirectory() throws IOException 
     {
-        File f = new File("./src/main/webapp");
-        if(!f.exists())
-        {
-            f = new File("./web/src/main/webapp");
-            if(!f.exists())
-            {
-                f = new File("../../web/src/main/webapp");
-                if(!f.exists())
-                {
-                    f = new File("../../../web/src/main/webapp");
-                }
-            }
-        }
+        File f = new File("./target/webapp/");
+        File webInf = new File(f, "WEB-INF/");
+        // always update web.xml
+        File webxml = new File(webInf, "web.xml");
+        webxml.mkdirs();
+        webxml.delete();
+        
+        URL url = getClass().getResource("/web.xml");
+        assertNotNull("Could not find web.xml on classpath", url);
+        
+        FileOutputStream out = new FileOutputStream(webxml);
+        IOUtils.copy(url.openStream(), out);
+        out.close();
+        
         return f;
     }
     
