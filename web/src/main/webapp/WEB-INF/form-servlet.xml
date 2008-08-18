@@ -8,6 +8,7 @@
     <bean name="/artifactUpload.form"
         class="org.mule.galaxy.web.ArtifactUploadServlet">
         <property name="registry" ref="registry" />
+        <property name="artifactTypeDao" ref="artifactTypeDao" />
     </bean>
     
 </beans>

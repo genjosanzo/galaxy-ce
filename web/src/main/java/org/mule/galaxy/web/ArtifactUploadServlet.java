@@ -38,6 +38,8 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.BooleanUtils;
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.ArtifactTypeDao;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.EntryResult;
@@ -57,7 +59,8 @@ import org.springframework.web.servlet.mvc.Controller;
 public class ArtifactUploadServlet implements Controller {
 
     private Registry registry;
-
+    private ArtifactTypeDao artifactTypeDao;
+    
     public ModelAndView handleRequest(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
         String artifactId = null;
@@ -137,7 +140,8 @@ public class ArtifactUploadServlet implements Controller {
                     name = name.substring(idx + 1);
                 }
 
-                if (contentType == null) {
+                // browsers send along weird content types sometimes...
+                if (contentType == null || isUnrecognized(contentType)) {
                     contentType = "application/octet-stream";
                 }
 
@@ -199,8 +203,20 @@ public class ArtifactUploadServlet implements Controller {
         return null;
     }
 
+    private boolean isUnrecognized(String contentType) {
+        ArtifactType artifactType = artifactTypeDao.getArtifactType(contentType, null);
+        
+        ArtifactType defaultType = artifactTypeDao.getArtifactType("application/octet-stream", null);
+        
+        return artifactType.equals(defaultType);
+    }
+
     public void setRegistry(Registry registry) {
         this.registry = registry;
+    }
+
+    public void setArtifactTypeDao(ArtifactTypeDao artifactTypeDao) {
+        this.artifactTypeDao = artifactTypeDao;
     }
 
 }
