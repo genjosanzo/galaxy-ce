@@ -50,6 +50,11 @@ public class AttachedWorkspace extends AbstractJcrItem implements Workspace {
         return remote.createArtifact(this, contentType, name, versionLabel, inputStream, user);
     }
 
+    public Workspace newWorkspace(String name) throws DuplicateItemException, RegistryException,
+        AccessException {
+        return remote.newWorkspace(this, name);
+    }
+
     public Workspace getWorkspace(String name) {
         throw new UnsupportedOperationException();
     }    

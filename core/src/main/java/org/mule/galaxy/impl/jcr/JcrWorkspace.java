@@ -187,6 +187,11 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
         return manager.newEntry(this, name, versionLabel);
     }
 
+    public Workspace newWorkspace(String name) throws DuplicateItemException, RegistryException,
+        AccessException {
+        return manager.newWorkspace(this, name);
+    }
+
     public void delete() throws RegistryException, AccessException {
         manager.delete(this);
     }

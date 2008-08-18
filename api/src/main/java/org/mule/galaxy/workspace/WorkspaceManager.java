@@ -39,7 +39,13 @@ public interface WorkspaceManager {
     Collection<Workspace> getWorkspaces() throws AccessException;
 
     Collection<Workspace> getWorkspaces(Workspace workspace);
+
+    Workspace newWorkspace(final String name) 
+    	throws DuplicateItemException, RegistryException, AccessException;
     
+    Workspace newWorkspace(Workspace parent, String name) 
+    	throws DuplicateItemException, RegistryException, AccessException;
+                                     
     void delete(Item item) throws RegistryException, AccessException;
     
     void setEnabled(final EntryVersion version, 

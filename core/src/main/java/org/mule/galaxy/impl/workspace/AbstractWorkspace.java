@@ -44,6 +44,11 @@ public abstract class AbstractWorkspace extends AbstractItem implements Workspac
         return manager.newEntry(this, name, versionLabel);
     }
     
+    public Workspace newWorkspace(String name) throws DuplicateItemException, RegistryException,
+        AccessException {
+        return manager.newWorkspace(this, name);
+    }
+    
     public Workspace getWorkspace(String name) {
         // TODO Auto-generated method stub
         return null;

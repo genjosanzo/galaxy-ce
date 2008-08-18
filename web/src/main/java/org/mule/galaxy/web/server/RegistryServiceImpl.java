@@ -198,10 +198,10 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             Workspace w;
             if (parentWorkspaceId == null || "[No parent]".equals(parentWorkspaceId)) {
-                w = registry.createWorkspace(workspaceName);
+                w = registry.newWorkspace(workspaceName);
             } else {
                 Workspace parent = (Workspace) registry.getItemById(parentWorkspaceId);
-                w = registry.createWorkspace(parent, workspaceName);
+                w = parent.newWorkspace(workspaceName);
             }
             if (lifecycleId != null) {
                 w.setDefaultLifecycle(w.getLifecycleManager().getLifecycleById(lifecycleId));

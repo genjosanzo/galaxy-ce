@@ -81,5 +81,7 @@ public interface Workspace extends Item {
 
     EntryResult newEntry(String name, String versionLabel)
         throws DuplicateItemException, RegistryException, PolicyException, AccessException;
-    
+
+    Workspace newWorkspace(String name) throws DuplicateItemException, RegistryException, AccessException;
+
 }

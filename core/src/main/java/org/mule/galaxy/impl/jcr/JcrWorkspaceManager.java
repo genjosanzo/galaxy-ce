@@ -57,6 +57,7 @@ import org.mule.galaxy.event.EntryDeletedEvent;
 import org.mule.galaxy.event.EntryVersionCreatedEvent;
 import org.mule.galaxy.event.EntryVersionDeletedEvent;
 import org.mule.galaxy.event.EventManager;
+import org.mule.galaxy.event.WorkspaceCreatedEvent;
 import org.mule.galaxy.event.WorkspaceDeletedEvent;
 import org.mule.galaxy.impl.lifecycle.LifecycleExtension;
 import org.mule.galaxy.impl.link.LinkExtension;
@@ -75,6 +76,7 @@ import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.util.BundleUtils;
+import org.mule.galaxy.util.DateUtil;
 import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.SecurityUtils;
 import org.mule.galaxy.workspace.WorkspaceManager;
@@ -835,8 +837,94 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
         }
         return contentType;
     }
-    
 
+    public Workspace newWorkspace(final Workspace parent, 
+                                  final String name) throws DuplicateItemException, RegistryException, AccessException {
+        accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE, parent);
+
+        // we should throw an error, but lets be defensive for now
+        final String escapedName = JcrUtil.escape(name);
+
+        return (Workspace) executeAndDewrapWithDuplicate(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Collection<Workspace> workspaces = parent.getWorkspaces();
+                
+                Node parentNode = ((JcrWorkspace) parent).getNode();
+                Node node = null;
+                try {
+                    node = parentNode.addNode(escapedName, "galaxy:workspace");
+                } catch (ItemExistsException e) {
+                    throw new RuntimeException(new DuplicateItemException(name));
+                }
+                
+                node.addMixin("mix:referenceable");
+    
+                Calendar now = DateUtil.getCalendarForNow();
+                node.setProperty(JcrWorkspace.CREATED, now);
+                node.setProperty(JcrWorkspace.UPDATED, now);
+                
+                JcrWorkspace workspace = new JcrWorkspace(JcrWorkspaceManager.this, node);
+                workspace.setName(escapedName);
+                workspace.setDefaultLifecycle(lifecycleManager.getDefaultLifecycle());
+                workspaces.add(workspace);
+
+                WorkspaceCreatedEvent event = new WorkspaceCreatedEvent(workspace);
+                session.save();
+
+                event.setUser(SecurityUtils.getCurrentUser());
+                eventManager.fireEvent(event);
+
+                return workspace;
+            }
+        });
+    }
+    public Workspace newWorkspace(final String name) throws DuplicateItemException, RegistryException, AccessException {
+        accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE);
+        
+        return (Workspace) executeAndDewrapWithDuplicate(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node node;
+                try {
+                    node = getWorkspacesNode().addNode(name, "galaxy:workspace");
+                } catch (javax.jcr.ItemExistsException e) {
+                    throw new RuntimeException(new DuplicateItemException(name));
+                }
+                node.addMixin("mix:referenceable");
+    
+                JcrWorkspace workspace = new JcrWorkspace(JcrWorkspaceManager.this, node);
+                workspace.setName(name);
+                workspace.setDefaultLifecycle(lifecycleManager.getDefaultLifecycle());
+                
+                Calendar now = DateUtil.getCalendarForNow();
+                node.setProperty(JcrWorkspace.CREATED, now);
+                node.setProperty(JcrWorkspace.UPDATED, now);
+                
+                session.save();
+
+                final WorkspaceCreatedEvent event = new WorkspaceCreatedEvent(workspace);
+                event.setUser(SecurityUtils.getCurrentUser());
+                eventManager.fireEvent(event);
+
+                return workspace;
+            }
+        });
+    }
+
+    private Object executeAndDewrapWithDuplicate(JcrCallback jcrCallback) 
+        throws RegistryException, DuplicateItemException {
+        try {
+            return template.execute(jcrCallback);
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RegistryException) {
+                throw (RegistryException) cause;
+            } else if (cause instanceof DuplicateItemException) {
+                throw (DuplicateItemException) cause;
+            } else {
+                throw e;
+            }
+        }
+    }
     public void delete(Item item) throws RegistryException, AccessException {
         if (item instanceof EntryVersion) {
             delete((EntryVersion)item);

@@ -30,7 +30,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
     public void testMove() throws Exception {
         Artifact a = importHelloWsdl();
         
-        Workspace w = registry.createWorkspace("test");
+        Workspace w = registry.newWorkspace("test");
         
         registry.move(a, w.getId(), a.getName());
         
@@ -65,17 +65,17 @@ public class ArtifactTest extends AbstractGalaxyTest {
         Collection<Workspace> workspaces = registry.getWorkspaces();
         assertEquals(1, workspaces.size());
         
-        Workspace newWork = registry.createWorkspace("New Workspace");
+        Workspace newWork = registry.newWorkspace("New Workspace");
         assertEquals("New Workspace", newWork.getName());
         assertNotNull(newWork.getId());
         
         try {
-            registry.createWorkspace("New Workspace");
+            registry.newWorkspace("New Workspace");
             fail("Two workspaces with the same name");
         } catch (DuplicateItemException e) {
         }
         
-        Workspace child = registry.createWorkspace(newWork, "Child");
+        Workspace child = newWork.newWorkspace("Child");
         assertEquals("Child", child.getName());
         assertNotNull(child.getId());
         assertNotNull(child.getUpdated());
@@ -87,9 +87,9 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, registry.getWorkspaces().size());
         
         Workspace root = workspaces.iterator().next();
-        child = registry.createWorkspace(root, "child");
+        child = root.newWorkspace("child");
         
-        Workspace newRoot = registry.createWorkspace("newroot");
+        Workspace newRoot = registry.newWorkspace("newroot");
         registry.save(child, newRoot.getId());
         
         Collection<Workspace> children = newRoot.getWorkspaces();

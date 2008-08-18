@@ -95,6 +95,16 @@ public class AttachedWorkspaceTest extends AbstractGalaxyTest {
             return null;
         }
 
+        public Workspace newWorkspace(Workspace parent, String name) throws DuplicateItemException,
+            RegistryException, AccessException {
+            return null;
+        }
+
+        public Workspace newWorkspace(String name) throws DuplicateItemException, RegistryException,
+            AccessException {
+            return null;
+        }
+
         public void delete(Item item) throws RegistryException, AccessException {
         }
 
@@ -115,42 +125,35 @@ public class AttachedWorkspaceTest extends AbstractGalaxyTest {
         }
 
         public Workspace getWorkspace(String id) throws RegistryException, NotFoundException, AccessException {
-            // TODO Auto-generated method stub
             return null;
         }
 
         public Collection<Workspace> getWorkspaces() throws AccessException {
-            // TODO Auto-generated method stub
             return null;
         }
 
         public Collection<Workspace> getWorkspaces(Workspace workspace) {
-            // TODO Auto-generated method stub
             return null;
         }
 
         public EntryResult newEntry(Workspace workspace, String name, String versionLabel)
             throws DuplicateItemException, RegistryException, PolicyException, AccessException {
-            // TODO Auto-generated method stub
             return null;
         }
 
         public EntryResult newVersion(Artifact artifact, InputStream inputStream, String versionLabel,
                                       User user) throws RegistryException, PolicyException, IOException,
             DuplicateItemException, AccessException {
-            // TODO Auto-generated method stub
             return null;
         }
 
         public EntryResult newVersion(Artifact artifact, Object data, String versionLabel, User user)
             throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException {
-            // TODO Auto-generated method stub
             return null;
         }
 
         public EntryResult newVersion(Entry jcrEntry, String versionLabel) throws DuplicateItemException,
             RegistryException, PolicyException, AccessException {
-            // TODO Auto-generated method stub
             return null;
         }
 

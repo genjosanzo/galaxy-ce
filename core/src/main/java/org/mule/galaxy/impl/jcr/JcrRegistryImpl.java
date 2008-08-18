@@ -141,39 +141,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return new JcrWorkspace(localWorkspaceManager, node);
     }
 
-    public Workspace createWorkspace(final String name) throws RegistryException, AccessException, DuplicateItemException {
+    public Workspace newWorkspace(final String name) throws RegistryException, AccessException, DuplicateItemException {
         // we should throw an error, but lets be defensive for now
         final String escapedName = JcrUtil.escape(name);
-        
-        accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE);
 
-        return (Workspace) executeAndDewrapWithDuplicate(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node node;
-                try {
-                    node = getWorkspacesNode().addNode(escapedName, "galaxy:workspace");
-                } catch (javax.jcr.ItemExistsException e) {
-                    throw new RuntimeException(new DuplicateItemException(name));
-                }
-                node.addMixin("mix:referenceable");
-    
-                JcrWorkspace workspace = new JcrWorkspace(localWorkspaceManager, node);
-                workspace.setName(escapedName);
-                workspace.setDefaultLifecycle(lifecycleManager.getDefaultLifecycle());
-                
-                Calendar now = DateUtil.getCalendarForNow();
-                node.setProperty(JcrWorkspace.CREATED, now);
-                node.setProperty(JcrWorkspace.UPDATED, now);
-                
-                session.save();
-
-                final WorkspaceCreatedEvent event = new WorkspaceCreatedEvent(workspace);
-                event.setUser(SecurityUtils.getCurrentUser());
-                eventManager.fireEvent(event);
-
-                return workspace;
-            }
-        });
+        return localWorkspaceManager.newWorkspace(escapedName);
     }
     
     public Collection<WorkspaceManager> getWorkspaceManagers() {
@@ -294,47 +266,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         });
     }
 
-
-    public Workspace createWorkspace(final Workspace parent, 
-                                     final String name) throws DuplicateItemException, RegistryException, AccessException {
-        accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE, parent);
-
-        // we should throw an error, but lets be defensive for now
-        final String escapedName = JcrUtil.escape(name);
-
-        return (Workspace) executeAndDewrapWithDuplicate(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Collection<Workspace> workspaces = parent.getWorkspaces();
-                
-                Node parentNode = ((JcrWorkspace) parent).getNode();
-                Node node = null;
-                try {
-                    node = parentNode.addNode(escapedName, "galaxy:workspace");
-                } catch (ItemExistsException e) {
-                    throw new RuntimeException(new DuplicateItemException(name));
-                }
-                
-                node.addMixin("mix:referenceable");
-    
-                Calendar now = DateUtil.getCalendarForNow();
-                node.setProperty(JcrWorkspace.CREATED, now);
-                node.setProperty(JcrWorkspace.UPDATED, now);
-                
-                JcrWorkspace workspace = new JcrWorkspace(localWorkspaceManager, node);
-                workspace.setName(escapedName);
-                workspace.setDefaultLifecycle(lifecycleManager.getDefaultLifecycle());
-                workspaces.add(workspace);
-
-                WorkspaceCreatedEvent event = new WorkspaceCreatedEvent(workspace);
-                session.save();
-
-                event.setUser(SecurityUtils.getCurrentUser());
-                eventManager.fireEvent(event);
-
-                return workspace;
-            }
-        });
-    }
 
     public Item resolve(Item item, String location) {
         String[] paths = location.split("/");
@@ -474,22 +405,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
         
         return a;
-    }
-
-    private Object executeAndDewrapWithDuplicate(JcrCallback jcrCallback) 
-        throws RegistryException, DuplicateItemException {
-        try {
-            return execute(jcrCallback);
-        } catch (RuntimeException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof RegistryException) {
-                throw (RegistryException) cause;
-            } else if (cause instanceof DuplicateItemException) {
-                throw (DuplicateItemException) cause;
-            } else {
-                throw e;
-            }
-        }
     }
 
     private Object executeWithNotFound(JcrCallback jcrCallback) 

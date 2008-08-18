@@ -141,9 +141,9 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
         
         try {
             if (parent == null) {
-                return registry.createWorkspace(title);
+                return registry.newWorkspace(title);
             } else {
-                return registry.createWorkspace(parent, title);
+                return parent.newWorkspace(title);
             }
         } catch (RegistryException e) {
             throw new ResponseContextException(500, e);
