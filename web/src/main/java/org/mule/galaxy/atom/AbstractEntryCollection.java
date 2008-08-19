@@ -154,25 +154,25 @@ public abstract class AbstractEntryCollection
         throws ResponseContextException {
         String link = super.addEntryDetails(request, atomEntry, feedIri, item);
         
-        Element itemInfo = factory.newElement(new QName(NAMESPACE, "item-info"));
-        Calendar created = item.getCreated();
-
-        itemInfo.setAttributeValue("created", AtomDate.format(created.getTime()));
-        atomEntry.addExtension(itemInfo);
-        
+        Element itemInfo;
         Item eOrW = getEntryOrWorkspace(item);
-        itemInfo.setAttributeValue("name", eOrW.getName());
-        
         if (eOrW instanceof Artifact) {
             Artifact artifact = (Artifact) eOrW;
-            Element info = factory.newElement(new QName(NAMESPACE, "artifact-info"));
-            info.setAttributeValue("mediaType", artifact.getContentType().toString());
-            atomEntry.addExtension(info);
+            itemInfo = factory.newElement(new QName(NAMESPACE, "artifact-info"));
+            itemInfo.setAttributeValue("mediaType", artifact.getContentType().toString());
             
             if (artifact.getDocumentType() != null) {
-                info.setAttributeValue("documentType", artifact.getDocumentType().toString());
+                itemInfo.setAttributeValue("documentType", artifact.getDocumentType().toString());
             }
+        } else if (eOrW instanceof Entry) {
+            itemInfo = factory.newElement(new QName(NAMESPACE, "entry-info"));
+        } else {
+            itemInfo = factory.newElement(new QName(NAMESPACE, "workspace-info"));
         }
+
+        atomEntry.addExtension(itemInfo);
+        itemInfo.setAttributeValue("created", AtomDate.format(item.getCreated().getTime()));
+        itemInfo.setAttributeValue("name", eOrW.getName());
         
         EntryVersion ev = getEntryVersion(item);
         if (ev != null) {
@@ -180,6 +180,7 @@ public abstract class AbstractEntryCollection
             version.setAttributeValue("label", ev.getVersionLabel());
             version.setAttributeValue("enabled", (String) new Boolean(ev.isEnabled()).toString());
             version.setAttributeValue("default",(String) new Boolean(ev.isDefault()).toString());
+            version.setAttributeValue("created", AtomDate.format(ev.getCreated().getTime()));
             
             atomEntry.addExtension(version);
         }
@@ -319,12 +320,8 @@ public abstract class AbstractEntryCollection
     }
 
     protected String getVersion(RequestContext request) throws ResponseContextException {
-        String version = request.getHeader("X-Entry-Version");
+        String version = request.getHeader("X-Artifact-Version");
         
-        if (version == null || version.equals("")) {
-            version = request.getHeader("X-Artifact-Version");
-        }
-
         if (version == null || version.equals("")) {
             EmptyResponseContext ctx = new EmptyResponseContext(500);
             ctx.setStatusText("You must supply an X-Entry-Version header!");

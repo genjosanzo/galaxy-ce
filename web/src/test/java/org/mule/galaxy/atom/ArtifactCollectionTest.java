@@ -90,7 +90,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         System.out.println("Grabbing the Feed Again");
         res = client.get(UrlEncoding.encode(defaultWkspcCol, Profile.PATH.filter()), defaultOpts);
         assertEquals(200, res.getStatus());
-        prettyPrint(res.getDocument());
+//        prettyPrint(res.getDocument());
         
         org.apache.abdera.model.Document<Feed> feedDoc = res.getDocument();
         Feed feed = feedDoc.getRoot();
@@ -133,7 +133,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         System.out.println("Getting entry " + e.getEditLinkResolvedHref().toString());
         res = client.get(e.getEditLinkResolvedHref().toString(), defaultOpts);
         org.apache.abdera.model.Document<Entry> entryDoc = res.getDocument();
-        prettyPrint(entryDoc);
+//        prettyPrint(entryDoc);
         Entry entry = entryDoc.getRoot();
         
         Collection versionCollection = null;
@@ -204,7 +204,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res = client.get(v2Uri, defaultOpts);
         
         entryDoc = res.getDocument();
-        prettyPrint(entryDoc);
+//        prettyPrint(entryDoc);
         e = entryDoc.getRoot();
         
         assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl;atom?version=0.2", e.getEditLink().getHref().toString());
@@ -214,8 +214,10 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
        
         Element info = e.getExtension(new QName(AbstractEntryCollection.NAMESPACE, "artifact-info"));
         assertNotNull(info);
+        assertEquals("hello_world.wsdl", info.getAttributeValue("name"));
         assertEquals("application/xml", info.getAttributeValue("mediaType"));
         assertEquals("{http://schemas.xmlsoap.org/wsdl/}definitions", info.getAttributeValue("documentType"));
+        assertNotNull(info.getAttributeValue("created"));
         
         Element lifecycleEl = e.getExtension(new QName(AbstractEntryCollection.NAMESPACE, "lifecycle"));
         assertNotNull(lifecycleEl);
@@ -234,6 +236,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals("0.2", versionEl.getAttributeValue("label"));
         assertEquals("true", versionEl.getAttributeValue("default"));
         assertEquals("true", versionEl.getAttributeValue("enabled"));
+        assertNotNull(versionEl.getAttributeValue("created"));
         
         ExtensibleElement metadata = e.getExtension(new QName(AbstractEntryCollection.NAMESPACE, "metadata"));
         List<Element> properties = metadata.getExtensions(new QName(AbstractEntryCollection.NAMESPACE, "property"));
@@ -278,7 +281,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals(200, res.getStatus());
         
         entryDoc = res.getDocument();
-        prettyPrint(entryDoc);
+//        prettyPrint(entryDoc);
         e = entryDoc.getRoot();
         
         metadata = e.getExtension(new QName(AbstractEntryCollection.NAMESPACE, "metadata"));
@@ -292,7 +295,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res = client.get(v3Uri, defaultOpts);
 
         entryDoc = res.getDocument();
-        prettyPrint(entryDoc);
+//        prettyPrint(entryDoc);
         e = entryDoc.getRoot();
         
         lifecycleEl = e.getExtension(new QName(AbstractEntryCollection.NAMESPACE, "lifecycle"));

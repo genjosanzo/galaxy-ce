@@ -129,15 +129,6 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
         return "local";
     }
 
-    private String trimWorkspaceManagerId(String id) {
-        int idx = id.indexOf(Registry.WORKSPACE_MANAGER_SEPARATOR);
-        if (idx == -1) {
-            throw new IllegalStateException("Illegal workspace manager id.");
-        }
-
-        return id.substring(idx + 1);
-    }
-
     private Workspace buildWorkspace(Node node) throws RepositoryException {
         return new JcrWorkspace(this, node);
     }

@@ -31,7 +31,9 @@ import java.util.List;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
+import javax.xml.namespace.QName;
 
+import org.apache.abdera.Abdera;
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.model.Collection;
@@ -40,6 +42,8 @@ import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Person;
+import org.apache.abdera.parser.ParseException;
+import org.apache.abdera.parser.Parser;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.RequestContext.Scope;
 import org.apache.abdera.protocol.server.context.EmptyResponseContext;
@@ -197,20 +201,22 @@ public class SearchableEntryCollection extends AbstractEntryCollection {
         try {
             Document<Entry> e = request.getDocument();
             Entry atomEntry = e.getRoot();
-            Collection itemsCollection = null;
+            Element workspaceInfo = atomEntry.getExtension(new QName(NAMESPACE, "workspace-info"));
             Item item;
-            for (Element el : atomEntry.getExtensions()) {
-                if (el instanceof Collection) {
-                    itemsCollection = (Collection) el;
-                }
-            }
             
-            if (itemsCollection != null) {
-                if (workspace == null) {
-                    item = registry.newWorkspace(title);
-                } else { 
-                    item = workspace.newWorkspace(title);
+            if (workspaceInfo != null) {
+                String name = workspaceInfo.getAttributeValue("name");
+                if (name == null) {
+                    name = title;
                 }
+                
+                if (workspace == null) {
+                    item = registry.newWorkspace(name);
+                } else { 
+                    item = workspace.newWorkspace(name);
+                }
+                
+                workspaceInfo.discard();
             } else {
                 if (workspace == null) {
                     EmptyResponseContext ctx = new EmptyResponseContext(500);
@@ -219,13 +225,32 @@ public class SearchableEntryCollection extends AbstractEntryCollection {
                     throw new ResponseContextException(ctx);
                 }
                 
+                // The name can be specified in either the entry-info or we can fall back on the title
+                Element entryInfo = atomEntry.getExtension(new QName(NAMESPACE, "entry-info"));
+                String name = null;
+                if (entryInfo != null) { 
+                    name = entryInfo.getAttributeValue("name");
+                }
+                if (name == null) {
+                    name = title;
+                }
+                
                 String label = getVersionLabel(atomEntry);
                 
-                item = workspace.newEntry(title, label).getEntryVersion();
+                item = workspace.newEntry(name, label).getEntryVersion();
+                
+                if (entryInfo != null) {
+                    entryInfo.discard();
+                }
             }
             
+            // Update property information
             mapEntryExtensions(item, atomEntry);
             
+            // TODO: remove metadata from request?
+            
+            // fill in the response information
+            addEntryDetails(request, atomEntry, getFeedIRI(item, request), item);
             return item;
         } catch (DuplicateItemException e) {
             throw newErrorMessage("Duplicate artifact.", "An artifact with that name already exists in this workspace.", 409);
@@ -241,6 +266,33 @@ public class SearchableEntryCollection extends AbstractEntryCollection {
         }
     }
 
+    private IRI getFeedIRI(Item entryObj, RequestContext request) {
+      String feedIri = getFeedIriForEntry(entryObj, request);
+      return new IRI(feedIri).trailingSlash();
+    }
+    
+    /**
+     * Override this method so we don't clone the document and we can actually modify the POST response....
+     * 
+     */
+    protected Entry getEntryFromRequest(RequestContext request) throws ResponseContextException {
+        Abdera abdera = request.getAbdera();
+        Parser parser = abdera.getParser();
+
+        Document<Element> entry_doc;
+        try {
+            entry_doc = request.getDocument(parser);
+        } catch (ParseException e) {
+            throw new ResponseContextException(500, e);
+        } catch (IOException e) {
+            throw new ResponseContextException(500, e);
+        }
+        if (entry_doc == null) {
+            return null;
+        }
+        return (Entry) entry_doc.getRoot();
+    }
+    
     @Override
     public void putMedia(Item item,
                          MimeType contentType, 

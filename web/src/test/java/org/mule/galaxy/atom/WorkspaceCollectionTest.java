@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
+import javax.xml.namespace.QName;
+
 import org.apache.abdera.model.Collection;
 import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Element;
@@ -50,14 +52,14 @@ public class WorkspaceCollectionTest extends AbstractAtomTest {
         // Once we support workspace descriptions, the description will go here
         entry.setContent("");
         
-        Collection items = factory.newCollection();
-        items.setAttributeValue("id", "items");
-        entry.addExtension(items);
+        Element wInfo = factory.newElement(new QName(AbstractEntryCollection.NAMESPACE, "workspace-info"));
+        wInfo.setAttributeValue("name", "MyWorkspace");
+        entry.addExtension(wInfo);
         
         res = client.post(dwBase, entry, defaultOpts);
         assertEquals(201, res.getStatus());
         Document<Entry> entryDoc = res.getDocument();
-//        prettyPrint(entryDoc);
+        prettyPrint(entryDoc);
         entry = entryDoc.getRoot();
         assertEquals("MyWorkspace", entry.getTitle());
         
@@ -69,6 +71,8 @@ public class WorkspaceCollectionTest extends AbstractAtomTest {
         }
         assertNotNull(itemsResponse);
         
+        wInfo = entry.getExtension(new QName(AbstractEntryCollection.NAMESPACE, "workspace-info"));
+        assertNotNull(wInfo);
         res.release();
         
         // Add an entry to the new workspace

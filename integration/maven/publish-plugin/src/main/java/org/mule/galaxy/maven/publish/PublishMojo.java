@@ -12,12 +12,14 @@ import java.util.List;
 import java.util.Set;
 
 import javax.activation.MimeType;
+import javax.xml.namespace.QName;
 
 import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.i18n.text.CharUtils.Profile;
 import org.apache.abdera.model.Document;
+import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.protocol.client.AbderaClient;
@@ -25,7 +27,6 @@ import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
 import org.apache.axiom.om.util.Base64;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -40,6 +41,7 @@ import org.codehaus.plexus.util.DirectoryScanner;
  * @goal execute
  */
 public class PublishMojo extends AbstractMojo {
+    public static final String NAMESPACE = "http://galaxy.mule.org/1.0";
     /**
     * The maven project.
     *
@@ -337,7 +339,11 @@ public class PublishMojo extends AbstractMojo {
             // Once we support workspace descriptions, the description will go here
             entry.setContent("");
             
-            ClientResponse res = client.post(wkspcUrl + ";workspaces", entry, defaultOpts);
+            Element workspaceInfo = factory.newElement(new QName(NAMESPACE, "workspace-info"));
+            workspaceInfo.setAttributeValue("name", "wkspc");
+            entry.addExtension(workspaceInfo);
+            
+            ClientResponse res = client.post(wkspcUrl, entry, defaultOpts);
             if (res.getStatus() != 409 && res.getStatus() >= 300) {
                 throw new MojoFailureException("Could not create a workspace. Got status: " 
                                                + res.getStatus()
@@ -425,7 +431,7 @@ public class PublishMojo extends AbstractMojo {
             artifactUrl += UrlEncoding.encode(name, Profile.PATH.filter());
             
             // Check to see if this artifact exists already.
-            ClientResponse  res = client.head(artifactUrl, opts);
+            ClientResponse res = client.head(artifactUrl, opts);
             int artifactExists = res.getStatus();
             res.release();
             

@@ -182,7 +182,9 @@ public class EntryResolver implements Resolver<Target> {
             if (!"POST".equals(method)
                 && (item instanceof Artifact || item instanceof ArtifactVersion)) {
                 return new SimpleTarget(TargetType.TYPE_MEDIA, context);
-            } else  {
+            } else if ("HEAD".equals(method) || "OPTIONS".equals(method)) {
+                return new SimpleTarget(TargetType.TYPE_ENTRY, context);
+            }  else  {
                 return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
             }
         }

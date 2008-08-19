@@ -72,11 +72,8 @@ public class EntryCollectionTest extends AbstractAtomTest {
         }
         
         assertNotNull(e);
-//        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl;atom", e.getEditLink().getHref().toString());
-//        assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl", e.getContentSrc().toString());
-//        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl", 
-//                     e.getLink("edit-media").getHref().toString());
-//        res.release();
+        assertEquals("/api/registry/Default%20Workspace/MyService;atom", e.getEditLink().getHref().toString());
+        res.release();
 //        
 //        // Grab the feed with a "/" at the end
 //        res = client.get(UrlEncoding.encode(colUri.toString() + "/", Profile.PATH.filter()), defaultOpts);
@@ -334,9 +331,5 @@ public class EntryCollectionTest extends AbstractAtomTest {
 //        res = client.get(collection + "/Default%20Workspace/hello_world.wsdl;atom?version=0.1", defaultOpts);
 //        assertEquals(200, res.getStatus());
 //        res.release();
-    }
-    
-    private InputStream getWsdl() {
-        return getClass().getResourceAsStream("/wsdl/hello.wsdl");
     }
 }
