@@ -70,7 +70,7 @@ public interface WorkspaceManager {
     EntryResult newEntry(Workspace workspace, String name, String versionLabel)
        throws DuplicateItemException, RegistryException, PolicyException, AccessException;
     
-    EntryResult newVersion(Entry jcrEntry, String versionLabel)
+    EntryResult newVersion(Entry entry, String versionLabel)
     	throws DuplicateItemException, RegistryException, PolicyException, AccessException;
 
     List<Item> getItems(Workspace w);

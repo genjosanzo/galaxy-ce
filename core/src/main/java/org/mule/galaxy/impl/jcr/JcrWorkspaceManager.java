@@ -328,7 +328,12 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                 ContentHandler ch = getContentService().getContentHandler(jcrArtifact.getContentType());
                 
                 // create a new version node
-                Node versionNode = artifactNode.addNode(versionLabel, ARTIFACT_VERSION_NODE_TYPE);
+                Node versionNode;
+                try {
+                    versionNode = artifactNode.addNode(versionLabel, ARTIFACT_VERSION_NODE_TYPE);
+                } catch (javax.jcr.ItemExistsException e) {
+                    throw new RuntimeException(new DuplicateItemException(versionLabel));
+                }
                 versionNode.addMixin("mix:referenceable");
 
                 // set the version as a property so we can search via it as local-name() isn't supported.
@@ -426,7 +431,12 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                 previousLatest.setLatest(false);
 
                 // create a new version node
-                Node versionNode = artifactNode.addNode(versionLabel, ENTRY_VERSION_NODE_TYPE);
+                Node versionNode;
+                try {
+                    versionNode = artifactNode.addNode(versionLabel, ENTRY_VERSION_NODE_TYPE);
+                } catch (javax.jcr.ItemExistsException e) {
+                    throw new RuntimeException(new DuplicateItemException(versionLabel));
+                }
                 versionNode.addMixin("mix:referenceable");
 
                 // set the version as a property so we can search via it as local-name() isn't supported.
@@ -519,7 +529,7 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                 Node workspaceNode = ((JcrWorkspace)workspace).getNode();
                 Node artifactNode;
                 try {
-                    artifactNode = workspaceNode.addNode(ISO9075.encode(name), ARTIFACT_NODE_TYPE);
+                    artifactNode = workspaceNode.addNode(name, ARTIFACT_NODE_TYPE);
                 } catch (javax.jcr.ItemExistsException e) {
                     throw new RuntimeException(new DuplicateItemException(name));
                 }
@@ -719,7 +729,7 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                 Node workspaceNode = ((JcrWorkspace)workspace).getNode();
                 Node entryNode;
                 try {
-                    entryNode = workspaceNode.addNode(ISO9075.encode(name), ENTRY_NODE_TYPE);
+                    entryNode = workspaceNode.addNode(name, ENTRY_NODE_TYPE);
                 } catch (javax.jcr.ItemExistsException e) {
                     throw new RuntimeException(new DuplicateItemException(name));
                 }

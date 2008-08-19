@@ -164,7 +164,7 @@ public abstract class AbstractEntryCollection
             if (artifact.getDocumentType() != null) {
                 itemInfo.setAttributeValue("documentType", artifact.getDocumentType().toString());
             }
-        } else if (eOrW instanceof Entry) {
+        } else if (eOrW instanceof org.mule.galaxy.Entry) {
             itemInfo = factory.newElement(new QName(NAMESPACE, "entry-info"));
         } else {
             itemInfo = factory.newElement(new QName(NAMESPACE, "workspace-info"));
