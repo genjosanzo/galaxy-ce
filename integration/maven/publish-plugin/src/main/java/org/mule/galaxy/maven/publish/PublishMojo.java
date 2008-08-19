@@ -340,7 +340,7 @@ public class PublishMojo extends AbstractMojo {
             entry.setContent("");
             
             Element workspaceInfo = factory.newElement(new QName(NAMESPACE, "workspace-info"));
-            workspaceInfo.setAttributeValue("name", "wkspc");
+            workspaceInfo.setAttributeValue("name", wkspc);
             entry.addExtension(workspaceInfo);
             
             ClientResponse res = client.post(wkspcUrl, entry, defaultOpts);
