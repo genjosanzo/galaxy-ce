@@ -11,7 +11,6 @@ import javax.xml.namespace.QName;
 
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.User;
 
 /**
  * An artifact which can be versioned inside a repository. Can be anything
@@ -25,10 +24,10 @@ public interface Artifact extends Entry {
     
     QName getDocumentType();
     
-    EntryResult newVersion(InputStream inputStream, String versionLabel, User user) 
+    EntryResult newVersion(InputStream inputStream, String versionLabel) 
         throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException;
 
-    EntryResult newVersion(Object data, String versionLabel, User user) 
+    EntryResult newVersion(Object data, String versionLabel) 
         throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException;
 
 }

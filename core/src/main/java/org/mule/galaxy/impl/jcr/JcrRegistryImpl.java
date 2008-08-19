@@ -197,21 +197,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return wm;
     }
 
-    public void save(Item i) throws AccessException {
-        if (i instanceof Workspace) {
-            accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE, i);
-        } else {
-            accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, i);
-        }
-        
-        execute(new JcrCallback() {
-
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                session.save();
-                return null;
-            }
-            
-        });
+    public void save(Item i) throws AccessException, RegistryException {
+        getWorkspaceManagerByItemId(i.getId()).save(i);
     }
 
     public void save(final Workspace w, final String parentId) 
@@ -830,7 +817,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             Node node = workspaces.addNode(settings.getDefaultWorkspaceName(),
                                            "galaxy:workspace");
             node.addMixin("mix:referenceable");
-
+            Calendar now = Calendar.getInstance();
+            now.setTime(new Date());
+            node.setProperty(AbstractJcrItem.CREATED, now);
+            
             JcrWorkspace w = new JcrWorkspace(localWorkspaceManager, node);
             w.setName(settings.getDefaultWorkspaceName());
 

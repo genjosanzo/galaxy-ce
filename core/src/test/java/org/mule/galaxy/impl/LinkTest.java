@@ -33,8 +33,7 @@ public class LinkTest extends AbstractGalaxyTest {
         EntryResult schema = workspace.createArtifact("application/xml", 
                                                          "hello.xsd", 
                                                          "0.1", 
-                                                         getResourceAsStream("/wsdl/imports/hello.xsd"), 
-                                                         getAdmin());
+                                                         getResourceAsStream("/wsdl/imports/hello.xsd"));
          
         Links links = (Links) schema.getEntryVersion().getProperty(LinkExtension.DEPENDS);
         Collection<Link> deps = links.getLinks();
@@ -43,8 +42,7 @@ public class LinkTest extends AbstractGalaxyTest {
         EntryResult portType = workspace.createArtifact("application/wsdl+xml", 
                                                         "hello-portType.wsdl", 
                                                         "0.1", 
-                                                        getResourceAsStream("/wsdl/imports/hello-portType.wsdl"), 
-                                                        getAdmin());
+                                                        getResourceAsStream("/wsdl/imports/hello-portType.wsdl"));
         links = (Links) portType.getEntryVersion().getProperty(LinkExtension.DEPENDS);
         deps = links.getLinks();
         assertEquals(1, deps.size());
@@ -69,8 +67,7 @@ public class LinkTest extends AbstractGalaxyTest {
         EntryResult svcWsdl = workspace.createArtifact("application/wsdl+xml", 
                                                           "hello.wsdl", 
                                                           "0.1", 
-                                                          getResourceAsStream("/wsdl/imports/hello.wsdl"), 
-                                                          getAdmin());
+                                                          getResourceAsStream("/wsdl/imports/hello.wsdl"));
         links = (Links) svcWsdl.getEntryVersion().getProperty(LinkExtension.DEPENDS);
         deps = links.getLinks();
         assertEquals(1, deps.size());
@@ -106,8 +103,7 @@ public class LinkTest extends AbstractGalaxyTest {
                                                         "application/xml", 
                                                         "hello.xsd", 
                                                         "0.1", 
-                                                        getResourceAsStream("/schema/hello.xsd"), 
-                                                        getAdmin());
+                                                        getResourceAsStream("/schema/hello.xsd"));
         
         Links links = (Links) schema.getEntryVersion().getProperty(LinkExtension.DEPENDS);
         Collection<Link> deps = links.getLinks();
@@ -117,8 +113,7 @@ public class LinkTest extends AbstractGalaxyTest {
         EntryResult schema2 = workspace.createArtifact("application/xml", 
                                                           "hello-import.xsd", 
                                                           "0.1", 
-                                                          getResourceAsStream("/schema/hello-import.xsd"), 
-                                                          getAdmin());
+                                                          getResourceAsStream("/schema/hello-import.xsd"));
         
         EntryVersion s2version = schema2.getEntryVersion();
         
@@ -142,8 +137,7 @@ public class LinkTest extends AbstractGalaxyTest {
         EntryResult svcWsdl = workspace.createArtifact("application/wsdl+xml", 
                                                        "hello.wsdl", 
                                                        "0.1", 
-                                                       getResourceAsStream("/wsdl/imports/hello-missing.wsdl"), 
-                                                       getAdmin());
+                                                       getResourceAsStream("/wsdl/imports/hello-missing.wsdl"));
         Links links = (Links) svcWsdl.getEntryVersion().getProperty(LinkExtension.DEPENDS);
         Collection<Link> deps = links.getLinks();
         assertEquals(1, deps.size());
@@ -162,8 +156,7 @@ public class LinkTest extends AbstractGalaxyTest {
         EntryResult schema = workspace.createArtifact("application/xml", 
                                                       "hello.xsd", 
                                                       "0.1", 
-                                                      getResourceAsStream("/wsdl/imports/hello.xsd"), 
-                                                      getAdmin());
+                                                      getResourceAsStream("/wsdl/imports/hello.xsd"));
          
         Links links = (Links) schema.getEntryVersion().getProperty(LinkExtension.CONFLICTS);
         Collection<Link> deps = links.getLinks();
@@ -175,8 +168,7 @@ public class LinkTest extends AbstractGalaxyTest {
         EntryResult portType = workspace.createArtifact("application/wsdl+xml", 
                                                         "hello-portType.wsdl", 
                                                         "0.1", 
-                                                        getResourceAsStream("/wsdl/imports/hello-portType.wsdl"), 
-                                                        getAdmin());
+                                                        getResourceAsStream("/wsdl/imports/hello-portType.wsdl"));
         
         EntryVersion version = portType.getEntryVersion();
         
@@ -233,15 +225,13 @@ public class LinkTest extends AbstractGalaxyTest {
         EntryResult r1 = workspace.createArtifact("application/xml", 
                                                   "a1.xml", 
                                                   "0.1", 
-                                                  getResourceAsStream("/mule/hello-config.xml"), 
-                                                  getAdmin());
+                                                  getResourceAsStream("/mule/hello-config.xml"));
         Entry a1 = r1.getEntry();
 
         EntryResult r2 = workspace.createArtifact("application/xml", 
                                                   "a2.xml", 
                                                   "0.1", 
-                                                  getResourceAsStream("/mule/hello-config.xml"), 
-                                                  getAdmin());
+                                                  getResourceAsStream("/mule/hello-config.xml"));
         EntryVersion v2 = r2.getEntryVersion();
         
         v2.setProperty(LinkExtension.CONFLICTS, Arrays.asList(new Link(v2, a1, null, false)));

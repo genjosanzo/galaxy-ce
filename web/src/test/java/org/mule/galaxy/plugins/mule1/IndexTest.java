@@ -23,7 +23,7 @@ public class IndexTest extends AbstractGalaxyTest {
 
         EntryResult ar = workspace.createArtifact("application/xml",
                                                     "hello-config.xml",
-                                                    "0.1", helloConfig, getAdmin());
+                                                    "0.1", helloConfig);
         Artifact artifact = (Artifact) ar.getEntry();
 
         JcrVersion version = (JcrVersion) artifact.getDefaultOrLastVersion();

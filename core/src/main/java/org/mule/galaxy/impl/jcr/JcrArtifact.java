@@ -29,7 +29,6 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.User;
 import org.mule.galaxy.util.QNameUtil;
 import org.springmodules.jcr.JcrCallback;
 
@@ -94,14 +93,14 @@ public class JcrArtifact extends JcrEntry implements Artifact {
         }
     }
 
-    public EntryResult newVersion(Object data, String versionLabel, User user)
+    public EntryResult newVersion(Object data, String versionLabel)
             throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException {
-        return manager.newVersion(this, data, versionLabel, user);
+        return manager.newVersion(this, data, versionLabel);
     }
 
-    public EntryResult newVersion(InputStream inputStream, String versionLabel, User user)
+    public EntryResult newVersion(InputStream inputStream, String versionLabel)
             throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException {
-        return manager.newVersion(this, inputStream, versionLabel, user);
+        return manager.newVersion(this, inputStream, versionLabel);
     }
 
     public void delete() throws RegistryException, AccessException {

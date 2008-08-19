@@ -26,13 +26,11 @@ import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.User;
 import org.springmodules.jcr.JcrCallback;
 
 public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Workspace {
 
     public static final String NAME = "name";
-    public static final String CREATED = "updated";
     public static final String LIFECYCLE = "lifecycle";
     private Collection<Workspace> workspaces;
     private Lifecycle lifecycle;
@@ -102,10 +100,6 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
             throw new RuntimeException(e);
         } 
     }
-
-    public Calendar getCreated() {
-        return getCalendarOrNull(CREATED);
-    }
     
     public Workspace getWorkspace(String name) {
         try {
@@ -172,14 +166,14 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
         }
     }
 
-    public EntryResult createArtifact(Object data, String versionLabel, User user)
+    public EntryResult createArtifact(Object data, String versionLabel)
             throws DuplicateItemException, RegistryException, PolicyException, MimeTypeParseException, AccessException {
-        return manager.createArtifact(this, data, versionLabel, user);
+        return manager.createArtifact(this, data, versionLabel);
     }
 
-    public EntryResult createArtifact(String contentType, String name, String versionLabel, InputStream inputStream, User user)
+    public EntryResult createArtifact(String contentType, String name, String versionLabel, InputStream inputStream)
         throws DuplicateItemException, RegistryException, PolicyException, IOException, MimeTypeParseException, AccessException {
-        return manager.createArtifact(this, contentType, name, versionLabel, inputStream, user);
+        return manager.createArtifact(this, contentType, name, versionLabel, inputStream);
     }
 
     public EntryResult newEntry(String name, String versionLabel)

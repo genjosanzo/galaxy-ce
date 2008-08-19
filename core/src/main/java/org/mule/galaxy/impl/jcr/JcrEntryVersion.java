@@ -18,7 +18,6 @@ import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.User;
 
 public class JcrEntryVersion extends AbstractJcrItem implements EntryVersion {
-    public static final String CREATED = "created";
     public static final String JCR_DATA = "jcr:data";
     public static final String LATEST = "latest";
     public static final String DEFAULT = "default";

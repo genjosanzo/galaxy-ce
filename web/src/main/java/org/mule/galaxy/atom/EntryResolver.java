@@ -25,11 +25,15 @@ import org.apache.abdera.protocol.server.CollectionAdapter;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.Target;
 import org.apache.abdera.protocol.server.TargetType;
+import org.apache.abdera.protocol.server.context.EmptyResponseContext;
+import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.protocol.server.impl.DefaultWorkspaceManager;
 import org.apache.abdera.protocol.server.impl.SimpleTarget;
 import org.apache.commons.lang.StringUtils;
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Entry;
+import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
@@ -41,7 +45,7 @@ public class EntryResolver implements Resolver<Target> {
 
     private static final String WORKSPACES_CLASSIFIER = "workspaces";
     public static final String WORKSPACE = "workspace";
-    public static final String ENTRY = "entry";
+    public static final String ITEM = "entry";
     public static final String COLLECTION_HREF = "collectionHref";
     
     private Registry registry;
@@ -132,10 +136,10 @@ public class EntryResolver implements Resolver<Target> {
         
         try {
             Item item = registry.getItemByPath(path);
-            if (item instanceof Workspace) {
+            if ("workspaces".equals(classifier) || ("DELETE".equals(context.getMethod()) && item instanceof Workspace)) {
                 return resolveWorkspace((Workspace) item, classifier, context);
-            } else if (item instanceof Entry) {
-                return resolveEntry((Entry) item, classifier, context);
+            } else if (item != null) {
+                return resolveItem(item, classifier, context);
             } else {
                 return returnUnknownLocation(context);
             }
@@ -153,10 +157,12 @@ public class EntryResolver implements Resolver<Target> {
         return new SimpleTarget(TargetType.TYPE_NOT_FOUND, context);
     }
 
-    private Target resolveEntry(Entry entry, String classifier, RequestContext context)
+    private Target resolveItem(Item item, String classifier, RequestContext context)
         throws RegistryException {
-        context.setAttribute(WORKSPACE, entry.getParent());
-        context.setAttribute(ENTRY, entry);
+        context.setAttribute(WORKSPACE, item.getParent());
+        
+        item = selectVersion(item, context);
+        context.setAttribute(ITEM, item);
         
         context.setAttribute(COLLECTION_HREF, getPathWithoutArtifact(context));
         
@@ -172,11 +178,27 @@ public class EntryResolver implements Resolver<Target> {
             return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
         } else if (classifier == null) {
             context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, collection);
-            return new SimpleTarget(TargetType.TYPE_MEDIA, context);
+            String method = context.getMethod();
+            if (!"POST".equals(method)
+                && (item instanceof Artifact || item instanceof ArtifactVersion)) {
+                return new SimpleTarget(TargetType.TYPE_MEDIA, context);
+            } else  {
+                return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
+            }
         }
         return returnUnknownLocation(context);
     }
 
+    protected Item selectVersion(Item i, RequestContext context) {
+        String version = context.getParameter("version");
+        if (version != null && !"".equals(version)) {
+            if (!(i instanceof Entry)) {
+                return null;
+            }
+            return ((Entry) i).getVersion(version);
+        }
+        return i;
+    }
     private String getPathWithoutArtifact(RequestContext context) {
         String s = context.getTargetPath();
         
@@ -192,7 +214,7 @@ public class EntryResolver implements Resolver<Target> {
         context.setAttribute(WORKSPACE, workspace);
         
         context.setAttribute(COLLECTION_HREF, context.getTargetPath());
-        if (WORKSPACES_CLASSIFIER.equals(classifier) || "atom".equals(classifier)) {
+        if (WORKSPACES_CLASSIFIER.equals(classifier)) {
             context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, workspaceCollection);
         } else {
             context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, entryWorkspaceCollection);

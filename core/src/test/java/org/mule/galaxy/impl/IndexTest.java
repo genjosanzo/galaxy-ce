@@ -245,8 +245,7 @@ public class IndexTest extends AbstractGalaxyTest {
         EntryResult ar = workspace.createArtifact("application/java-archive",
                                                      "test.jar",
                                                      "1",
-                                                     stream,
-                                                     getAdmin());
+                                                     stream);
 
         Artifact artifact = (Artifact) ar.getEntry();
 
@@ -305,8 +304,7 @@ public class IndexTest extends AbstractGalaxyTest {
         EntryResult ar = workspace.createArtifact("application/java-archive",
                                                      "test.jar",
                                                      "1",
-                                                     stream,
-                                                     getAdmin());
+                                                     stream);
 
         Artifact artifact = (Artifact) ar.getEntry();
 

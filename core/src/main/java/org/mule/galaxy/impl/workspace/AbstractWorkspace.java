@@ -14,7 +14,6 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.User;
 import org.mule.galaxy.workspace.WorkspaceManager;
 
 public abstract class AbstractWorkspace extends AbstractItem implements Workspace {
@@ -27,16 +26,16 @@ public abstract class AbstractWorkspace extends AbstractItem implements Workspac
         return getParent() + getName() + "/";
     }
 
-    public EntryResult createArtifact(Object data, String versionLabel, User user)
+    public EntryResult createArtifact(Object data, String versionLabel)
         throws DuplicateItemException, RegistryException, PolicyException, MimeTypeParseException,
         AccessException {
-        return manager.createArtifact(this, data, versionLabel, user);
+        return manager.createArtifact(this, data, versionLabel);
     }
 
     public EntryResult createArtifact(String contentType, String name, String versionLabel,
-                                         InputStream inputStream, User user) throws DuplicateItemException,
+                                         InputStream inputStream) throws DuplicateItemException,
         RegistryException, PolicyException, IOException, MimeTypeParseException, AccessException {
-        return manager.createArtifact(this, contentType, name, versionLabel, inputStream, user);
+        return manager.createArtifact(this, contentType, name, versionLabel, inputStream);
     }
 
     public EntryResult newEntry(String name, String versionLabel) throws DuplicateItemException,

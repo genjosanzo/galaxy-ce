@@ -26,6 +26,7 @@ import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserExistsException;
 import org.mule.galaxy.security.UserManager;
+import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -49,6 +50,14 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     
     public UserManagerImpl() throws Exception {
         super(User.class, "users", true);
+    }
+
+    @Override
+    public User get(String id) {
+        if (SecurityUtils.SYSTEM_USER.getId().equals(id)) {
+            return SecurityUtils.SYSTEM_USER;
+        }
+        return super.get(id);
     }
 
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException, DataAccessException {

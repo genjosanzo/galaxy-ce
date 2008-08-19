@@ -48,7 +48,7 @@ public class IndexTest extends AbstractGalaxyTest
 
         EntryResult ar = workspace.createArtifact("application/xml",
                                                     "test-applicationContext.xml",
-                                                    "0.1", stream, getAdmin());
+                                                    "0.1", stream);
         Artifact artifact = (Artifact) ar.getEntry();
 
         JcrVersion version = (JcrVersion) artifact.getDefaultOrLastVersion();

@@ -78,7 +78,8 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         opts.setHeader("X-Artifact-Version", "0.1");
         opts.setAuthorization(defaultOpts.getAuthorization());
         
-        res = client.post(colUri.toString() + "/Default%20Workspace", getWsdl(), opts);
+        String defaultWkspcCol = colUri.toString() + "/Default%20Workspace";
+        res = client.post(defaultWkspcCol, getWsdl(), opts);
         assertEquals(201, res.getStatus());
         
         assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl", 
@@ -87,9 +88,9 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         // Check the new feed for our entry
         System.out.println("Grabbing the Feed Again");
-        res = client.get(UrlEncoding.encode(colUri.toString(), Profile.PATH.filter()), defaultOpts);
+        res = client.get(UrlEncoding.encode(defaultWkspcCol, Profile.PATH.filter()), defaultOpts);
         assertEquals(200, res.getStatus());
-//        prettyPrint(res.getDocument());
+        prettyPrint(res.getDocument());
         
         org.apache.abdera.model.Document<Feed> feedDoc = res.getDocument();
         Feed feed = feedDoc.getRoot();
@@ -111,7 +112,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res.release();
         
         // Grab the feed with a "/" at the end
-        res = client.get(UrlEncoding.encode(colUri.toString() + "/", Profile.PATH.filter()), defaultOpts);
+        res = client.get(UrlEncoding.encode(defaultWkspcCol, Profile.PATH.filter()), defaultOpts);
         assertEquals(200, res.getStatus());
         feedDoc = res.getDocument();
         feed = feedDoc.getRoot();
@@ -120,7 +121,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals(7, entries.size());
         
         // Grab the feed for the workspace
-        res = client.get(UrlEncoding.encode(colUri.toString() + "/Default%20Workspace", Profile.PATH.filter()), defaultOpts);
+        res = client.get(UrlEncoding.encode(defaultWkspcCol, Profile.PATH.filter()), defaultOpts);
         assertEquals(200, res.getStatus());
         feedDoc = res.getDocument();
         feed = feedDoc.getRoot();
@@ -185,7 +186,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res.release();
         
         // Add a new version
-        System.out.println("Adding Entry from a WSDL " + colUri.toString());
+        System.out.println("Adding new version from a WSDL " + colUri.toString());
         
         opts = new RequestOptions();
         opts.setContentType("application/xml; charset=utf-8");
@@ -282,7 +283,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         metadata = e.getExtension(new QName(AbstractEntryCollection.NAMESPACE, "metadata"));
         properties = metadata.getExtensions(new QName(AbstractEntryCollection.NAMESPACE, "property"));
-        assertEquals(size + 2, properties.size());
+        assertEquals(size + 3, properties.size());
         
         res.release();
         

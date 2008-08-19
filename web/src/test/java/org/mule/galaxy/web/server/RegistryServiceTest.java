@@ -64,8 +64,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         EntryResult ar = workspace.createArtifact("application/xml",
                                                      "hello-noOperation.wsdl",
                                                      "0.1", 
-                                                     helloWsdl, 
-                                                     getAdmin());
+                                                     helloWsdl);
         return (Artifact) ar.getEntry();
     }
 
@@ -265,7 +264,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         Artifact a = (Artifact) result.iterator().next();
         
-        a.newVersion(getResourceAsStream("/wsdl/imports/hello.wsdl"), "0.2", getAdmin());
+        a.newVersion(getResourceAsStream("/wsdl/imports/hello.wsdl"), "0.2");
         
         ExtendedEntryInfo ext = gwtRegistry.getEntry(a.getId());
         

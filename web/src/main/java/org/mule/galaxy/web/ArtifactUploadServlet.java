@@ -145,11 +145,11 @@ public class ArtifactUploadServlet implements Controller {
                     contentType = "application/octet-stream";
                 }
 
-                result = wkspc.createArtifact(contentType, name, versionLabel, uploadItem.getInputStream(), user);
+                result = wkspc.createArtifact(contentType, name, versionLabel, uploadItem.getInputStream());
             } else {
                 Artifact a = (Artifact) registry.getItemById(artifactId);
 
-                result = a.newVersion(uploadItem.getInputStream(), versionLabel, user);
+                result = a.newVersion(uploadItem.getInputStream(), versionLabel);
 
                 if (disablePrevious) {
                     ArtifactVersion previous = (ArtifactVersion) result.getEntryVersion().getPrevious();

@@ -22,7 +22,6 @@ import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.workspace.AbstractWorkspaceManager;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.User;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.workspace.WorkspaceManager;
 import org.mule.galaxy.workspace.WorkspaceManagerFactory;
@@ -82,14 +81,17 @@ public class AttachedWorkspaceTest extends AbstractGalaxyTest {
             return attachedWorkspace;
         }
 
-        public EntryResult createArtifact(Workspace workspace, Object data, String versionLabel, User user)
+        public void save(Item item) throws RegistryException, AccessException {
+        }
+
+        public EntryResult createArtifact(Workspace workspace, Object data, String versionLabel)
             throws RegistryException, PolicyException, MimeTypeParseException, DuplicateItemException,
             AccessException {
             return null;
         }
 
         public EntryResult createArtifact(Workspace workspace, String contentType, String name,
-                                          String versionLabel, InputStream inputStream, User user)
+                                          String versionLabel, InputStream inputStream)
             throws RegistryException, PolicyException, IOException, MimeTypeParseException,
             DuplicateItemException, AccessException {
             return null;
@@ -141,13 +143,12 @@ public class AttachedWorkspaceTest extends AbstractGalaxyTest {
             return null;
         }
 
-        public EntryResult newVersion(Artifact artifact, InputStream inputStream, String versionLabel,
-                                      User user) throws RegistryException, PolicyException, IOException,
+        public EntryResult newVersion(Artifact artifact, InputStream inputStream, String versionLabel) throws RegistryException, PolicyException, IOException,
             DuplicateItemException, AccessException {
             return null;
         }
 
-        public EntryResult newVersion(Artifact artifact, Object data, String versionLabel, User user)
+        public EntryResult newVersion(Artifact artifact, Object data, String versionLabel)
             throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException {
             return null;
         }

@@ -16,10 +16,6 @@ public abstract class AbstractEntryVersion extends AbstractItem implements Entry
     public AbstractEntryVersion(WorkspaceManager manager, ItemMetadataHandler metadata) {
         super(manager, metadata);
     }
-    
-    public void setEnabled(boolean enabled) throws RegistryException, PolicyException {
-        manager.setEnabled(this, enabled);
-    }
 
     public EntryVersion getPrevious() {
         List<? extends EntryVersion> versions = getParent().getVersions();

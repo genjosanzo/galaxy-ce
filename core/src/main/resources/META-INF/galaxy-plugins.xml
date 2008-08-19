@@ -242,24 +242,6 @@ declare variable $document external;
 } </values>]]></expression>
                 </configuration>
             </index>
-            <index>
-                <description>WSDL Target Namespace</description>
-                <indexer>xpath</indexer>
-                <search-input-type>java.lang.String</search-input-type>
-                <configuration>
-                  <property>wsdl.targetNamespace</property>
-                  <expression><![CDATA[/*/@targetNamespace]]></expression>
-                </configuration>
-            </index>
-            <index>
-                <description>WSDL Target Namespace</description>
-                <indexer>xpath</indexer>
-                <search-input-type>java.lang.String</search-input-type>
-                <configuration>
-                  <property>wsdl.targetNamespace</property>
-                  <expression><![CDATA[/*/@targetNamespace]]></expression>
-                </configuration>
-            </index>
         </indexes>
         <views>
             <view>

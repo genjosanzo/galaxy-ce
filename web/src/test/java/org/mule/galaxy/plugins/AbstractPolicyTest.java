@@ -37,8 +37,7 @@ public abstract class AbstractPolicyTest extends AbstractGalaxyTest
         try
         {
             workspace.createArtifact("application/xml",
-                    "http-policy-test.xml", "0.1", stream,
-                    getAdmin());
+                    "http-policy-test.xml", "0.1", stream);
             if (fail)
             {
                 fail("Expected ArtifactPolicyException");

@@ -78,8 +78,7 @@ public class QueryTest extends AbstractGalaxyTest {
         EntryResult ar = workspace.createArtifact("application/xml",
                                                      "hello-config.xml",
                                                      "0.1", 
-                                                     helloWsdl, 
-                                                     getAdmin());
+                                                     helloWsdl);
         return (Artifact) ar.getEntry();
     }
 

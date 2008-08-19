@@ -26,6 +26,7 @@ import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
@@ -43,21 +44,10 @@ public class EntryWorkspaceCollection extends SearchableEntryCollection {
     }
 
     @Override
-    public Iterable<EntryVersion> getEntries(RequestContext request) throws ResponseContextException {
+    public Iterable<Item> getEntries(RequestContext request) throws ResponseContextException {
         Workspace w = (Workspace) request.getAttribute(Scope.REQUEST, EntryResolver.WORKSPACE);
         
-        Query query = new Query(Entry.class, Artifact.class).fromId(w.getId());
-        
-        Iterator<?> results;
-        try {
-            results = registry.search(query).getResults().iterator();
-        } catch (QueryException e) {
-            throw new ResponseContextException(500, e);
-        } catch (RegistryException e) {
-            throw new ResponseContextException(500, e);
-        }
-        
-        return createEntryVersionIterable(results, request);
+        return w.getItems();
     }
 
 }

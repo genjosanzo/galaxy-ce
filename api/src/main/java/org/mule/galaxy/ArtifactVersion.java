@@ -21,5 +21,6 @@ public interface ArtifactVersion extends EntryVersion {
     Object getData();
     
     InputStream getStream();
-
+    
+    Artifact getParent();
 }

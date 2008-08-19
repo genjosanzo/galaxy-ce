@@ -32,7 +32,7 @@ public interface Registry {
     void save(Workspace w, String parentId)
         throws RegistryException, NotFoundException, AccessException;
 
-    void save(Item item) throws AccessException;
+    void save(Item item) throws AccessException, RegistryException;
     
     /**
      * The WorkspaceManagers that have been configured and attached inside this Registry.

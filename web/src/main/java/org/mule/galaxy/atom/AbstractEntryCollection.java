@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -41,6 +42,7 @@ import org.apache.abdera.factory.Factory;
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.i18n.text.CharUtils.Profile;
+import org.apache.abdera.model.AtomDate;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Element;
@@ -63,6 +65,7 @@ import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
@@ -80,40 +83,88 @@ import org.mule.galaxy.util.AbderaUtils;
 import org.mule.galaxy.util.SecurityUtils;
 
 public abstract class AbstractEntryCollection 
-    extends AbstractEntityCollectionAdapter<EntryVersion> {
+    extends AbstractEntityCollectionAdapter<Item> {
     public static final String NAMESPACE = "http://galaxy.mule.org/1.0";
     public static final String ID_PREFIX = "urn:galaxy:artifact:";    
     public static final QName VERSION_QNAME = new QName(NAMESPACE, "version");
 
     protected final Log log = LogFactory.getLog(getClass());
 
-    protected Factory factory = Abdera.getInstance().getFactory();
+    protected Factory factory;
     protected Registry registry;
     
     public AbstractEntryCollection(Registry registry) {
         super();
         this.registry = registry;
+        factory = Abdera.getInstance().getFactory();
     }
 
-    public Content getContent(EntryVersion doc, RequestContext request) {
+    public Content getContent(Item doc, RequestContext request) {
         Content content = request.getAbdera().getFactory().newContent();
 //        content.setContentType(org.apache.abdera.model.Content.Type.XHTML);
-        content.setText(((org.mule.galaxy.Entry)doc.getParent()).getDescription());
+        org.mule.galaxy.Entry entry = getEntry(doc);
+        if (entry != null) {
+            content.setText(entry.getDescription());
+        } else {
+            content.setText("");
+        }
         return content;
     }
     
+    protected Artifact getArtifact(Item i) {
+        if (i instanceof Artifact) {
+            return (Artifact) i;
+        }
+        
+        if (i instanceof ArtifactVersion) {
+            return ((ArtifactVersion) i).getParent();
+        }
+        
+        return null;
+    }
+    
+    protected org.mule.galaxy.Entry getEntry(Item i) {
+        if (i instanceof org.mule.galaxy.Entry) {
+            return (org.mule.galaxy.Entry) i;
+        }
+        
+        if (i instanceof EntryVersion) {
+            return ((EntryVersion) i).getParent();
+        }
+        
+        return null;
+    }
+    
+    protected EntryVersion getEntryVersion(Item i) {
+        if (i instanceof org.mule.galaxy.Entry) {
+            return ((org.mule.galaxy.Entry) i).getDefaultOrLastVersion();
+        }
+        
+        if (i instanceof EntryVersion) {
+            return (EntryVersion) i;
+        }
+        
+        return null;
+    }
     @Override
     protected String addEntryDetails(RequestContext request, 
                                      Entry atomEntry, 
                                      IRI feedIri, 
-                                     EntryVersion entryObj)
+                                     Item item)
         throws ResponseContextException {
-        String link = super.addEntryDetails(request, atomEntry, feedIri, entryObj);
+        String link = super.addEntryDetails(request, atomEntry, feedIri, item);
+        
+        Element itemInfo = factory.newElement(new QName(NAMESPACE, "item-info"));
+        Calendar created = item.getCreated();
 
-        org.mule.galaxy.Entry regEntry = (org.mule.galaxy.Entry)entryObj.getParent();
-
-        if (regEntry instanceof Artifact) {
-            Artifact artifact = (Artifact) regEntry;
+        itemInfo.setAttributeValue("created", AtomDate.format(created.getTime()));
+        atomEntry.addExtension(itemInfo);
+        
+        Item eOrW = getEntryOrWorkspace(item);
+        itemInfo.setAttributeValue("name", eOrW.getName());
+        
+        if (eOrW instanceof Artifact) {
+            Artifact artifact = (Artifact) eOrW;
             Element info = factory.newElement(new QName(NAMESPACE, "artifact-info"));
             info.setAttributeValue("mediaType", artifact.getContentType().toString());
             atomEntry.addExtension(info);
@@ -123,8 +174,33 @@ public abstract class AbstractEntryCollection
             }
         }
         
+        EntryVersion ev = getEntryVersion(item);
+        if (ev != null) {
+            Element version = factory.newElement(new QName(NAMESPACE, "version"));
+            version.setAttributeValue("label", ev.getVersionLabel());
+            version.setAttributeValue("enabled", (String) new Boolean(ev.isEnabled()).toString());
+            version.setAttributeValue("default",(String) new Boolean(ev.isDefault()).toString());
+            
+            atomEntry.addExtension(version);
+        }
+
+        if (ev != null) {
+//            addMetadata(entry, atomEntry, request, null);
+            addMetadata(ev, atomEntry, request, null);
+        } else {
+            // workspaces can have metadata too
+            addMetadata(item, atomEntry, request, null);
+        }
+        
+        return link;
+    }
+
+    protected void addMetadata(Item entryObj, Entry atomEntry, RequestContext request, String id) {
         Element metadata = factory.newElement(new QName(NAMESPACE, "metadata"));
         
+        if (id != null) {
+            
+        }
         boolean showHidden = BooleanUtils.toBoolean(request.getParameter("showHiddenProperties"));
        
         for (PropertyInfo p : entryObj.getProperties()) {
@@ -161,23 +237,15 @@ public abstract class AbstractEntryCollection
         }
         
         atomEntry.addExtension(metadata);
-        
-        Element version = factory.newElement(new QName(NAMESPACE, "version"));
-        version.setAttributeValue("label", entryObj.getVersionLabel());
-        version.setAttributeValue("enabled", (String) new Boolean(entryObj.isEnabled()).toString());
-        version.setAttributeValue("default",(String) new Boolean(entryObj.isDefault()).toString());
-        
-        atomEntry.addExtension(version);
-        
-        return link;
     }
 
     @Override
-    public Text getSummary(EntryVersion entry, RequestContext request) {
-        if (entry instanceof ArtifactVersion) {
+    public Text getSummary(Item item, RequestContext request) {
+        Artifact a = getArtifact(item);
+        if (a != null) {
             Text summary = factory.newSummary();
             
-            String d = ((Artifact)entry.getParent()).getDescription();
+            String d = a.getDescription();
             if (d == null) d = "";
             
             summary.setText(d);
@@ -188,42 +256,40 @@ public abstract class AbstractEntryCollection
         return null;
     }
 
-    public InputStream getMediaStream(EntryVersion entry) throws ResponseContextException {
-        if (entry instanceof ArtifactVersion) {
-            return ((ArtifactVersion)entry).getStream();
+    public String getTitle(Item doc) {
+        return getEntryOrWorkspace(doc).getName();
+    }
+    
+    public InputStream getMediaStream(Item entry) throws ResponseContextException {
+        EntryVersion ev = getEntryVersion(entry);
+        if (ev instanceof ArtifactVersion) {
+            return ((ArtifactVersion)ev).getStream();
         }
         throw new UnsupportedOperationException();
     }
     
     @Override
-    public String getContentType(EntryVersion entry) {
-        return ((Artifact)entry.getParent()).getContentType().toString();
+    public String getContentType(Item entry) {
+        Artifact artifact = getArtifact(entry);
+        if (artifact != null) {
+            return artifact.getContentType().toString();
+        }
+        throw new UnsupportedOperationException();
     }
 
     public String getAuthor(RequestContext request) {
         return "Mule Galaxy";
     }
 
-    protected StringBuilder getBasePath(Artifact a) {
-        StringBuilder sb = new StringBuilder();
-        
-        Workspace w = (Workspace) a.getParent();
-        while (w != null) {
-            sb.insert(0, '/');
-            sb.insert(0, UrlEncoding.encode(w.getName(), Profile.PATH.filter()));
-            w = (Workspace) w.getParent();
-        }
-        return sb;
-    }
-    public Date getUpdated(EntryVersion doc) {
+    public Date getUpdated(Item doc) {
         return doc.getUpdated().getTime();
     }
 
     @Override
     public EntryVersion postMedia(MimeType mimeType, 
-                                     String slug, 
-                                     InputStream inputStream,
-                                     RequestContext request) throws ResponseContextException {
+                                  String slug, 
+                                  InputStream inputStream,
+                                  RequestContext request) throws ResponseContextException {
         try {
             String version = getVersion(request);
             
@@ -253,11 +319,15 @@ public abstract class AbstractEntryCollection
     }
 
     protected String getVersion(RequestContext request) throws ResponseContextException {
-        String version = request.getHeader("X-Artifact-Version");
+        String version = request.getHeader("X-Entry-Version");
         
         if (version == null || version.equals("")) {
+            version = request.getHeader("X-Artifact-Version");
+        }
+
+        if (version == null || version.equals("")) {
             EmptyResponseContext ctx = new EmptyResponseContext(500);
-            ctx.setStatusText("You must supply an X-Artifact-Version header!");
+            ctx.setStatusText("You must supply an X-Entry-Version header!");
             
             throw new ResponseContextException(ctx);
         }
@@ -269,20 +339,20 @@ public abstract class AbstractEntryCollection
         throws RegistryException, PolicyException, IOException, MimeTypeParseException, ResponseContextException, DuplicateItemException, AccessException;
     
     @Override
-    public boolean isMediaEntry(EntryVersion entry) {
-        return entry instanceof ArtifactVersion;
+    public boolean isMediaEntry(Item entry) {
+        return entry instanceof Artifact || entry instanceof ArtifactVersion;
     }
 
     @Override
-    public List<Person> getAuthors(EntryVersion entry, RequestContext request) throws ResponseContextException {
+    public List<Person> getAuthors(Item entry, RequestContext request) throws ResponseContextException {
         Person author = request.getAbdera().getFactory().newAuthor();
         author.setName("Galaxy");
         return Arrays.asList(author);
     }
     
     @Override
-    public String getMediaName(EntryVersion version) {
-        return UrlEncoding.encode(version.getParent().getName());
+    public String getMediaName(Item item) {
+        return UrlEncoding.encode(getEntry(item).getName());
     }
 
     @Override
@@ -295,51 +365,48 @@ public abstract class AbstractEntryCollection
         return href;
     }
 
-    public String getId(EntryVersion doc) {
-        return ID_PREFIX + doc.getParent().getId();
+    public String getId(Item item) {
+        return ID_PREFIX + item.getId();
     }
 
     @Override
-    protected String getFeedIriForEntry(EntryVersion entryObj, RequestContext request) {
-        org.mule.galaxy.Entry a = (org.mule.galaxy.Entry)entryObj.getParent();
+    protected String getFeedIriForEntry(Item entryObj, RequestContext request) {
+        Item e = getEntryOrWorkspace(entryObj);
         
-        return request.getTargetBasePath() 
-               + "/registry" 
-               + UrlEncoding.encode(a.getParent().getPath(), Profile.PATH.filter());
+        Workspace w = (Workspace) e.getParent();
+        String path;
+        if (w == null) {
+            path = "";
+        } else {
+            path = UrlEncoding.encode(w.getPath(), Profile.PATH.filter());
+        }
+        return request.getTargetBasePath() + "/registry" + path;
     }
 
     @Override
-    public String getName(EntryVersion doc) {
+    public String getName(Item doc) {
         return getNameOfArtifact(doc) + ";atom";
     }
-    public String getNameOfArtifact(EntryVersion doc) {
-        return UrlEncoding.encode(doc.getParent().getName(), Profile.PATH.filter());
+    public String getNameOfArtifact(Item i) {
+        return UrlEncoding.encode(getEntryOrWorkspace(i).getName(), Profile.PATH.filter());
     }
     
-    public EntryVersion getEntry(String name, RequestContext request) throws ResponseContextException {
-        org.mule.galaxy.Entry a = getRegistryEntry(request);
-        return selectVersion(a, request.getParameter("version"));
-    }
-
-    protected EntryVersion selectVersion(org.mule.galaxy.Entry next, String version) throws ResponseContextException {
-        if (version != null) {
-            EntryVersion v = next.getVersion(version);
-            
-            if (v == null || "".equals(version)) {
-                EmptyResponseContext res = new EmptyResponseContext(404);
-                res.setStatusText("Version " + version + " was not found.");
-                throw new ResponseContextException(res);
-            }
-            
-            return (EntryVersion) v;
+    protected Item getEntryOrWorkspace(Item i) {
+        if (i instanceof Workspace) {
+            return (Workspace) i;
         }
-        return (EntryVersion) next.getDefaultOrLastVersion();
-    }
-
-    protected org.mule.galaxy.Entry getRegistryEntry(RequestContext request) {
-        return (org.mule.galaxy.Entry) request.getAttribute(Scope.REQUEST, EntryResolver.ENTRY);
+        
+        return getEntry(i);
     }
     
+    public Item getEntry(String name, RequestContext request) throws ResponseContextException {
+        return getRegistryItem(request);
+    }
+
+    protected Item getRegistryItem(RequestContext request) {
+        return (Item) request.getAttribute(Scope.REQUEST, EntryResolver.ITEM);
+    }
+
     protected String getVersionLabel(Entry atomEntry) throws ResponseContextException {
         Element version = atomEntry.getExtension(VERSION_QNAME);
         
@@ -352,22 +419,31 @@ public abstract class AbstractEntryCollection
 
 
     @Override
-    public void putEntry(EntryVersion av, 
+    public void putEntry(Item item, 
                          String title, 
                          Date updated, 
                          List<Person> authors, 
                          String summary,
                          Content content, 
                          RequestContext request) throws ResponseContextException {
-        org.mule.galaxy.Entry artifact = (org.mule.galaxy.Entry) av.getParent();
-        artifact.setDescription(summary);
+        org.mule.galaxy.Entry entry = getEntry(item);
+        EntryVersion ev = getEntryVersion(item);
 //        artifact.setName(title);
         
         try {
             Document<Entry> entryDoc = request.getDocument();
             Entry atomEntry = entryDoc.getRoot();
             
-            mapEntryExtensions(av, atomEntry);
+            
+            if (entry instanceof Artifact) {
+                entry.setDescription(summary);
+                mapEntryExtensions(ev, atomEntry);
+            } else if (entry != null && content != null) {
+                entry.setDescription(content.getText());
+                mapEntryExtensions(ev, atomEntry);
+            } else {
+                mapEntryExtensions(item, atomEntry);
+            }
         } catch (ParseException e) {
             throw new ResponseContextException(500, e);
         } catch (IOException e) {
@@ -379,7 +455,7 @@ public abstract class AbstractEntryCollection
         }
     }
 
-    protected void mapEntryExtensions(EntryVersion av, Entry entry) throws ResponseContextException,
+    protected void mapEntryExtensions(Item av, Entry entry) throws ResponseContextException,
         PolicyException, RegistryException {
         for (Element e : entry.getElements()) {
             QName q = e.getQName();
@@ -391,9 +467,19 @@ public abstract class AbstractEntryCollection
                 if ("metadata".equals(q.getLocalPart())) {
                     updateMetadata(av, e);
                 } else if ("version".equals(q.getLocalPart())) {
-                    updateVersion(av, e);
+                    updateVersion(getEntryVersion(av), e);
+                } else if ("item-info".equals(q.getLocalPart())) {
+                    updateItemInfo(getEntryOrWorkspace(av), e);
                 }
             }
+        }
+    }
+
+    private void updateItemInfo(Item entryOrWorkspace, Element e) {
+        String name = e.getAttributeValue("name");
+        
+        if (name != null) {
+            entryOrWorkspace.setName(name);
         }
     }
 
@@ -438,7 +524,7 @@ public abstract class AbstractEntryCollection
         }
     }
     
-    private void updateMetadata(EntryVersion av, Element e) throws ResponseContextException, PolicyException {
+    private void updateMetadata(Item av, Element e) throws ResponseContextException, PolicyException {
         for (Element propEl : e.getElements()) {
             String name = propEl.getAttributeValue("name");
             if (name == null)
@@ -473,5 +559,27 @@ public abstract class AbstractEntryCollection
         }
     }
 
+    public void deleteEntry(String name, RequestContext request) throws ResponseContextException {
+        Item entry = getRegistryItem(request);
 
+        try {
+            entry.delete();
+        } catch (RegistryException e) {
+            throw new RuntimeException(e);
+        } catch (AccessException e) {
+            throw new ResponseContextException(405, e);
+        }
+    }
+
+    public void deleteMedia(String name, RequestContext request) throws ResponseContextException {
+        Item entry = getRegistryItem(request);
+
+        try {
+            entry.delete();
+        } catch (RegistryException e) {
+            throw new RuntimeException(e);
+        } catch (AccessException e) {
+            throw new ResponseContextException(405, e);
+        }
+    }
 }

@@ -40,7 +40,10 @@ public class JcrVersion extends JcrEntryVersion implements ArtifactVersion {
        this(parent, versionNode, versionNode != null ? versionNode.getNode("jcr:content") : null);
     }
     
-
+    public Artifact getParent() {
+        return parent;
+    }
+    
     public Object getData() {
         if (data == null) {
             try {

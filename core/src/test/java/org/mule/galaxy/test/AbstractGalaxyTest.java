@@ -141,8 +141,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         EntryResult ar = workspace.createArtifact("application/xml", 
                                                      "hello_world.wsdl", 
                                                      "0.1", 
-                                                     helloWsdl, 
-                                                     getAdmin());
+                                                     helloWsdl);
         return (Artifact) ar.getEntry();
     }
 
@@ -160,8 +159,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         EntryResult ar = workspace.createArtifact("application/xml", 
                                                      "test.xsd", 
                                                      "0.1", 
-                                                     xsd, 
-                                                     getAdmin());
+                                                     xsd);
         
         return (Artifact) ar.getEntry();
     }
@@ -173,7 +171,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         
         EntryResult ar = workspace.createArtifact("application/xml", 
                                                   "hello-config.xml", 
-                                                  "0.1", helloWsdl, getAdmin());
+                                                  "0.1", helloWsdl);
         return (Artifact) ar.getEntry();
     }
 

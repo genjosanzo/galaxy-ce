@@ -39,6 +39,7 @@ import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.policy.PolicyException;
@@ -52,15 +53,10 @@ public class EntryHistoryCollection extends AbstractEntryCollection {
     public EntryHistoryCollection(Registry registry) {
         super(registry);
     }
-
-    @Override
-    public String getMediaName(EntryVersion version) {
-        return super.getMediaName(version);
-    }
     
     @Override
-    public String getQueryParameters(EntryVersion version, RequestContext request) {
-        return "version=" + version.getVersionLabel();
+    public String getQueryParameters(Item version, RequestContext request) {
+        return "version=" + ((EntryVersion)version).getVersionLabel();
     }
 
     @Override
@@ -75,9 +71,9 @@ public class EntryHistoryCollection extends AbstractEntryCollection {
     }
     
     @Override
-    public EntryVersion postEntry(String title, IRI id, String summary, Date updated, List<Person> authors,
-                                  Content content, RequestContext request) throws ResponseContextException {
-        Entry entry = getRegistryEntry(request);
+    public Item postEntry(String title, IRI id, String summary, Date updated, List<Person> authors,
+                          Content content, RequestContext request) throws ResponseContextException {
+        Entry entry = (Entry) getRegistryItem(request);
         
         try {
             Document<org.apache.abdera.model.Entry> document = request.getDocument();
@@ -86,6 +82,7 @@ public class EntryHistoryCollection extends AbstractEntryCollection {
             EntryResult result = entry.newVersion(getVersionLabel(atomEntry));
             EntryVersion version = result.getEntryVersion();
             
+            mapEntryExtensions(version, atomEntry);
             
             return version;
         } catch (DuplicateItemException e) {
@@ -102,43 +99,27 @@ public class EntryHistoryCollection extends AbstractEntryCollection {
         }
     }
 
-    @Override
-    public void deleteEntry(String entry, RequestContext request) throws ResponseContextException {
-        EntryVersion version = getEntry(entry, request);
-        
-        try {
-            version.delete();
-        } catch (RegistryException e) {
-            log.error(e);
-            throw new ResponseContextException(500, e);
-        } catch (AccessException e) {
-            throw new ResponseContextException(401, e);
-        }
-    }
-
     @SuppressWarnings("unchecked")
     @Override
-    public Iterable<EntryVersion> getEntries(RequestContext request) throws ResponseContextException {
-        return (Iterable<EntryVersion>) getRegistryEntry(request).getVersions();
+    public Iterable<Item> getEntries(RequestContext request) throws ResponseContextException {
+        return (Iterable<Item>) ((List)getEntry(getRegistryItem(request)).getVersions());
     }
 
     @Override
     public String getId(RequestContext request) {
-        return "tag:galaxy.mulesource.com,2008:registry:" + registry.getUUID() + ":history:feed";
+        return "tag:galaxy.mulesource.com,2008:registry:" + getRegistryItem(request).getId() + ":history:feed";
     }
 
     @Override
-    public String getName(EntryVersion version) {
+    public String getName(Item version) {
         return super.getName(version);
     }
 
     public String getTitle(RequestContext request) {
-        return getRegistryEntry(request).getName() + " Revisions";
+        return getRegistryItem(request).getName() + " Revisions";
     }
 
-    public String getTitle(EntryVersion entry) {
-        return entry.getParent().getName() + " Version " + entry.getVersionLabel();
+    public String getTitle(Item ev) {
+        return ev.getParent().getName() + " Version " + ((EntryVersion)ev).getVersionLabel();
     }
-
-
 }

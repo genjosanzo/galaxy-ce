@@ -260,10 +260,6 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
         this.context = applicationContext;
     }
 
-    public void setRegistry(Registry registry) {
-        this.registry = registry;
-    }
-
     public Registry getRegistry() {
         if (registry == null) {
             registry = (Registry) context.getBean("registry");

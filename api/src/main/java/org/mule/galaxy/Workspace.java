@@ -13,7 +13,6 @@ import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.User;
 
 public interface Workspace extends Item {
     
@@ -57,26 +56,23 @@ public interface Workspace extends Item {
      * to a byte[] level representation). The artifact must be apporved
      * by the appropriate policies, or an ArtifactPolicyException will be
      * throw.
-     * 
-     * @param workspace
      * @param data
      * @param versionLabel
-     * @param user
+     * @param workspace
+     * 
      * @return
      * @throws RegistryException
      * @throws PolicyException
      * @throws MimeTypeParseException
      */
     EntryResult createArtifact(Object data, 
-                               String versionLabel, 
-                               User user) 
+                               String versionLabel) 
         throws DuplicateItemException, RegistryException, PolicyException, MimeTypeParseException, AccessException;
     
     EntryResult createArtifact(String contentType, 
                                String name,
                                String versionLabel, 
-                               InputStream inputStream, 
-                               User user) 
+                               InputStream inputStream) 
         throws DuplicateItemException, RegistryException, PolicyException, IOException, MimeTypeParseException, AccessException;
 
     EntryResult newEntry(String name, String versionLabel)

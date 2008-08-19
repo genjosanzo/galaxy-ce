@@ -106,11 +106,11 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         Workspace workspace = workspaces.iterator().next();
         
-        workspace.createArtifact("application/wsdl+xml", "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
+        workspace.createArtifact("application/wsdl+xml", "hello_world.wsdl", "0.1", helloWsdl);
         
         helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
         try {
-            workspace.createArtifact("application/wsdl+xml", "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
+            workspace.createArtifact("application/wsdl+xml", "hello_world.wsdl", "0.1", helloWsdl);
             fail("Expected a duplicate item exception");
         } catch (DuplicateItemException e) {
             // great! expected
@@ -128,7 +128,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         Workspace workspace = workspaces.iterator().next();
         
         EntryResult ar = workspace.createArtifact("application/octet-stream", 
-                                                    "hello_world.wsdl", "0.1", helloWsdl, getAdmin());
+                                                    "hello_world.wsdl", "0.1", helloWsdl);
         
         Artifact artifact = (Artifact) ar.getEntry();
         
@@ -144,7 +144,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         // Try application/xml
         EntryResult ar = workspace.createArtifact("application/xml", 
-                                                    "hello_world.xml", "0.1", helloMule, getAdmin());
+                                                    "hello_world.xml", "0.1", helloMule);
         
         Artifact artifact = (Artifact) ar.getEntry();
         
@@ -155,7 +155,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         // Try application/octent-stream
         helloMule = getResourceAsStream("/mule/hello-config.xml");
         ar = workspace.createArtifact("application/octet-stream", "hello_world2.xml", "0.1",
-                                     helloMule, getAdmin());
+                                     helloMule);
         
         artifact = (Artifact) ar.getEntry();
         
@@ -172,7 +172,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         EntryResult ar = workspace.createArtifact("application/wsdl+xml", 
                                                   "hello_world.wsdl", "0.1", 
-                                                  helloWsdl, getAdmin());
+                                                  helloWsdl);
         
         Artifact artifact = (Artifact) ar.getEntry();
 
@@ -243,7 +243,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         InputStream helloWsdl2 = getResourceAsStream("/wsdl/hello.wsdl");
         
-        ar = artifact.newVersion(helloWsdl2, "0.2", getAdmin());
+        ar = artifact.newVersion(helloWsdl2, "0.2");
         assertTrue(waitForIndexing((ArtifactVersion)ar.getEntryVersion()));
         JcrVersion newVersion = (JcrVersion) ar.getEntryVersion();
         assertTrue(newVersion.isLatest());
@@ -314,8 +314,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         EntryResult ar = workspace.createArtifact("text/plain",
                                                      "test.txt",
                                                      "1",
-                                                     bais,
-                                                     getAdmin());
+                                                     bais);
         assertNotNull(ar);
         assertTrue(ar.isApproved());
 
@@ -323,7 +322,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
 
         final Artifact artifact = (Artifact) ar.getEntry();
 
-        ar = artifact.newVersion(bais, "2", getAdmin());
+        ar = artifact.newVersion(bais, "2");
         assertNotNull(ar);
         assertTrue(ar.isApproved());
 
@@ -351,8 +350,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         EntryResult ar = workspace.createArtifact("text/plain", 
                                                      "log4j.properties", 
                                                      "0.1", 
-                                                     logProps, 
-                                                     getAdmin());
+                                                     logProps);
         
         assertNotNull(ar);
     }

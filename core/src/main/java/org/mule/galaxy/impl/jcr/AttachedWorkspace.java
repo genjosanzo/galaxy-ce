@@ -25,7 +25,6 @@ import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.User;
 import org.mule.galaxy.workspace.WorkspaceManager;
 
 public class AttachedWorkspace extends AbstractJcrItem implements Workspace {
@@ -38,16 +37,16 @@ public class AttachedWorkspace extends AbstractJcrItem implements Workspace {
         this.remote = remote;
     }
 
-    public EntryResult createArtifact(Object data, String versionLabel, User user)
+    public EntryResult createArtifact(Object data, String versionLabel)
         throws DuplicateItemException, RegistryException, PolicyException, MimeTypeParseException,
         AccessException {
-        return remote.createArtifact(this, data, versionLabel, user);
+        return remote.createArtifact(this, data, versionLabel);
     }
 
     public EntryResult createArtifact(String contentType, String name, String versionLabel,
-                                      InputStream inputStream, User user) throws DuplicateItemException,
+                                      InputStream inputStream) throws DuplicateItemException,
         RegistryException, PolicyException, IOException, MimeTypeParseException, AccessException {
-        return remote.createArtifact(this, contentType, name, versionLabel, inputStream, user);
+        return remote.createArtifact(this, contentType, name, versionLabel, inputStream);
     }
 
     public Workspace newWorkspace(String name) throws DuplicateItemException, RegistryException,

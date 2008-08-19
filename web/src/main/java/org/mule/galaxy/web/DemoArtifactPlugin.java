@@ -50,8 +50,7 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
         w.createArtifact("application/xml", 
                          name, 
                          "0.1", 
-                         getClass().getResourceAsStream(resource), 
-                         user);
+                         getClass().getResourceAsStream(resource));
     }
 
     public void setUserManager(UserManager userManager) {

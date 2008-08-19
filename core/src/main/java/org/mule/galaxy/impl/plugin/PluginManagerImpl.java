@@ -17,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.Dao;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
@@ -31,6 +32,8 @@ import org.mule.galaxy.plugins.config.jaxb.GalaxyType;
 import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.render.RendererManager;
+import org.mule.galaxy.security.User;
+import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.beans.BeansException;
@@ -57,6 +60,7 @@ public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo>
     private JcrTemplate jcrTemplate;
     private List<Plugin> plugins = new ArrayList<Plugin>();
     private TypeManager typeManager;
+    private UserManager userManager;
     
     public PluginManagerImpl() throws Exception {
         super(PluginInfo.class, "plugins", true);
@@ -71,12 +75,20 @@ public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo>
 
     @Override
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
-
-        SecurityUtils.doPriveleged(new Runnable() {
+        Runnable runnable = new Runnable() {
             public void run() {
                 initializePlugins();
             }
-        });
+        };
+        
+        try {
+            User admin = userManager.getByUsername("admin");
+            
+            SecurityUtils.doAs(admin, runnable);
+        } catch (NotFoundException e) {
+            SecurityUtils.doPriveleged(runnable);
+        }
+        
     }
     
     public List<PluginInfo> getInstalledPlugins() {
@@ -171,7 +183,7 @@ public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo>
                 }
                 catch (Exception e1)
                 {
-                    throw new RuntimeException(e1);
+                    e1.printStackTrace();
                 }
                 return null;
             }
@@ -179,32 +191,32 @@ public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo>
 
     }
 
-    public void setRegistry(Registry registry)
-    {
+    public void setRegistry(Registry registry) {
         this.registry = registry;
     }
 
-    public void setArtifactTypeDao(Dao<ArtifactType> artifactTypeDao)
-    {
+    public void setArtifactTypeDao(Dao<ArtifactType> artifactTypeDao) {
         this.artifactTypeDao = artifactTypeDao;
     }
 
-    public void setRendererManager(RendererManager viewManager)
-    {
+    public void setRendererManager(RendererManager viewManager) {
         this.rendererManager = viewManager;
     }
 
-    public void setIndexManager(IndexManager indexManager)
-    {
+    public void setIndexManager(IndexManager indexManager) {
         this.indexManager = indexManager;
     }
 
-    public void setPolicyManager(PolicyManager policyManager)
-    {
+    public void setPolicyManager(PolicyManager policyManager) {
         this.policyManager = policyManager;
     }
+    
     public void setTypeManager(TypeManager typeManager) {
         this.typeManager = typeManager;
+    }
+    
+    public void setUserManager(UserManager userManager) {
+        this.userManager = userManager;
     }
     
 }

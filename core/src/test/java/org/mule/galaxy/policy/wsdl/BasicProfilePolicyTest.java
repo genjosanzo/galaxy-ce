@@ -31,8 +31,7 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
         policyManager.setActivePolicies(lifecycleManager.getDefaultLifecycle(), p);
 
         try {
-            workspace.createArtifact("application/xml", "hello-invalid.wsdl", "0.1", helloWsdl,
-                                    getAdmin());
+            workspace.createArtifact("application/xml", "hello-invalid.wsdl", "0.1", helloWsdl);
             fail("Expected ArtifactPolicyException");
         } catch (PolicyException e) {
             Map<Item, List<ApprovalMessage>> approvals = e.getPolicyFailures();
@@ -53,8 +52,7 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
         
         try {
             workspace.createArtifact("application/xml", "hello.wsdl", "0.1", 
-                                    getResourceAsStream("/wsdl/wsi/soapbinding/r2710.wsdl"),
-                                    getAdmin());
+                                    getResourceAsStream("/wsdl/wsi/soapbinding/r2710.wsdl"));
             fail("Expected ArtifactPolicyException");
         } catch (PolicyException e) {
             Map<Item, List<ApprovalMessage>> approvals = e.getPolicyFailures();

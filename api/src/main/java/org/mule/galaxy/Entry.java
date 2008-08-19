@@ -11,10 +11,6 @@ public interface Entry extends Item {
     
     String getPath();
     
-    Calendar getCreated();
-    
-    Calendar getUpdated();
-    
     Workspace getParent();
     
     String getName();

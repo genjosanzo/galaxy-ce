@@ -205,7 +205,6 @@
         depends-on="persisterManager">
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
-    <property name="registry" ref="registry"/>
   </bean>
   
   <bean id="linkQueryBuilder" class="org.mule.galaxy.impl.link.LinkExtensionQueryBuilder">
@@ -401,6 +400,7 @@
     <property name="policyManager" ref="policyManager"/>
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
+    <property name="userManager" ref="userManager"/>
   </bean>
 
   <bean class="org.mule.galaxy.impl.plugin.OtherArtifactPlugin" parent="abstractArtifactPlugin"/>

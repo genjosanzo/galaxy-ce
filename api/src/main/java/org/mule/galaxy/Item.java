@@ -1,5 +1,6 @@
 package org.mule.galaxy;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -17,7 +18,13 @@ public interface Item {
     
     String getName();
     
+    void setName(String name);
+    
     String getPath();
+    
+    Calendar getCreated();
+    
+    Calendar getUpdated();
     
     /**
      * Set the property value. May be intercepted/validated by an Extension.

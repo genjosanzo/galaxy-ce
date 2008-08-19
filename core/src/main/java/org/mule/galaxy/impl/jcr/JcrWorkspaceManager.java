@@ -129,26 +129,6 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
         return "local";
     }
 
-    public Workspace getWorkspace(String id) throws RegistryException, AccessException {
-        try {
-            if (id == null) {
-                throw new NullPointerException("Workspace ID cannot be null.");
-            }
-            
-            id = trimWorkspaceManagerId(id);
-            
-            Node node = template.getNodeByUUID(id);
-
-            Workspace w = buildWorkspace(node);
-            
-            accessControlManager.assertAccess(Permission.READ_WORKSPACE, w);
-            
-            return w;
-        } catch (RepositoryException e) {
-            throw new RegistryException(e);
-        }
-    }
-
     private String trimWorkspaceManagerId(String id) {
         int idx = id.indexOf(Registry.WORKSPACE_MANAGER_SEPARATOR);
         if (idx == -1) {
@@ -300,18 +280,16 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
 
     public EntryResult newVersion(Artifact artifact, 
                                      Object data, 
-                                     String versionLabel, 
-                                     User user)
+                                     String versionLabel)
         throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException {
-        return newVersion(artifact, null, data, versionLabel, user);
+        return newVersion(artifact, null, data, versionLabel);
     }
 
     public EntryResult newVersion(final Artifact artifact, 
                                      final InputStream inputStream, 
-                                     final String versionLabel, 
-                                     final User user) 
+                                     final String versionLabel) 
         throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException {
-        return newVersion(artifact, inputStream, null, versionLabel, user);
+        return newVersion(artifact, inputStream, null, versionLabel);
     }
     
     protected void copy(Node original, Node parent) throws RepositoryException {
@@ -336,11 +314,11 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
     protected EntryResult newVersion(final Artifact artifact, 
                                         final InputStream inputStream, 
                                         final Object data,
-                                        final String versionLabel, 
-                                        final User user) 
+                                        final String versionLabel) 
         throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException {
         accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, artifact);
         
+        final User user = SecurityUtils.getCurrentUser();
         if (user == null) {
             throw new NullPointerException("User cannot be null!");
         }
@@ -503,17 +481,16 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                                          String contentType, 
                                          String name,
                                          String versionLabel, 
-                                         InputStream inputStream, 
-                                         User user) 
+                                         InputStream inputStream) 
         throws RegistryException, PolicyException, IOException, MimeTypeParseException, DuplicateItemException, AccessException {
         accessControlManager.assertAccess(Permission.READ_ARTIFACT);
         contentType = trimContentType(contentType);
         MimeType ct = new MimeType(contentType);
 
-        return createArtifact(workspace, inputStream, null, name, versionLabel, ct, user);
+        return createArtifact(workspace, inputStream, null, name, versionLabel, ct);
     }
 
-    public EntryResult createArtifact(Workspace workspace, Object data, String versionLabel, User user) 
+    public EntryResult createArtifact(Workspace workspace, Object data, String versionLabel) 
         throws RegistryException, PolicyException, MimeTypeParseException, DuplicateItemException, AccessException {
         accessControlManager.assertAccess(Permission.READ_ARTIFACT);
 
@@ -526,7 +503,7 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
         MimeType ct = ch.getContentType(data);
         String name = ch.getName(data);
         
-        return createArtifact(workspace, null, data, name, versionLabel, ct, user);
+        return createArtifact(workspace, null, data, name, versionLabel, ct);
     }
 
     public EntryResult createArtifact(final Workspace workspace, 
@@ -534,10 +511,10 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                                       final Object data,
                                       final String name, 
                                       final String versionLabel,
-                                      final MimeType contentType,
-                                      final User user)
+                                      final MimeType contentType)
         throws RegistryException, PolicyException, DuplicateItemException {
         
+        final User user = SecurityUtils.getCurrentUser();
         if (user == null) {
             throw new NullPointerException("User cannot be null.");
         }
@@ -557,6 +534,7 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                 }
                 
                 artifactNode.addMixin("mix:referenceable");
+
                 Node versionNode = artifactNode.addNode(versionLabel, ARTIFACT_VERSION_NODE_TYPE);
                 versionNode.addMixin("mix:referenceable");
 
@@ -574,6 +552,7 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                 
                 Calendar now = Calendar.getInstance();
                 now.setTime(new Date());
+                artifactNode.setProperty(JcrVersion.CREATED, now);
                 versionNode.setProperty(JcrVersion.CREATED, now);
                 versionNode.setProperty(JcrVersion.LATEST, true);
                 versionNode.setProperty(JcrVersion.ENABLED, true);
@@ -747,28 +726,29 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
         return (EntryResult) executeAndDewrap(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node workspaceNode = ((JcrWorkspace)workspace).getNode();
-                Node artifactNode;
+                Node entryNode;
                 try {
-                    artifactNode = workspaceNode.addNode(ISO9075.encode(name), ENTRY_NODE_TYPE);
+                    entryNode = workspaceNode.addNode(ISO9075.encode(name), ENTRY_NODE_TYPE);
                 } catch (javax.jcr.ItemExistsException e) {
                     throw new RuntimeException(new DuplicateItemException(name));
                 }
                 
-                artifactNode.addMixin("mix:referenceable");
-                Node versionNode = artifactNode.addNode(versionLabel, ENTRY_VERSION_NODE_TYPE);
+                entryNode.addMixin("mix:referenceable");
+                Node versionNode = entryNode.addNode(versionLabel, ENTRY_VERSION_NODE_TYPE);
                 versionNode.addMixin("mix:referenceable");
 
                 // set the version as a property so we can search via it as local-name() isn't supported.
                 // See JCR-696
                 versionNode.setProperty(JcrVersion.VERSION, versionLabel);
                 
-                JcrEntry entry = new JcrEntry(workspace, artifactNode, registry);
+                JcrEntry entry = new JcrEntry(workspace, entryNode, registry);
                 entry.setName(name);
                 entry.setType(typeManager.getDefaultType());
                 
                 // set up the initial version
                 Calendar now = Calendar.getInstance();
                 now.setTime(new Date());
+                entryNode.setProperty(JcrVersion.CREATED, now);
                 versionNode.setProperty(JcrVersion.CREATED, now);
                 versionNode.setProperty(JcrVersion.LATEST, true);
                 versionNode.setProperty(JcrVersion.ENABLED, true);
@@ -995,6 +975,23 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
         });
     }
     
+    public void save(Item i) throws AccessException {
+        if (i instanceof Workspace) {
+            accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE, i);
+        } else {
+            accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, i);
+        }
+        
+        template.execute(new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                session.save();
+                return null;
+            }
+            
+        });
+    }
+
     public void setEnabled(final EntryVersion version, 
                            final boolean enabled) throws RegistryException,
         PolicyException {

@@ -16,6 +16,10 @@ import org.acegisecurity.runas.RunAsUserToken;
 
 public final class SecurityUtils {
     public static final User SYSTEM_USER = new User("system");
+    static {
+        SYSTEM_USER.setId("system");
+        SYSTEM_USER.setName("System");
+    }
     
     public static User getCurrentUser() {
         SecurityContext ctx = SecurityContextHolder.getContext();

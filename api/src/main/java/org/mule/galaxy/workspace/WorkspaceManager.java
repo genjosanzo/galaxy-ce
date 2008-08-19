@@ -20,7 +20,6 @@ import org.mule.galaxy.Workspace;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.User;
 
 /**
  * WorkspaceManagers perform the underlying operations on Items in the registry. This makes it 
@@ -33,9 +32,7 @@ public interface WorkspaceManager {
      * A UUID for this workspace manager.
      */
     String getId();
-
-    Workspace getWorkspace(String id) throws RegistryException, NotFoundException, AccessException;
-
+    
     Collection<Workspace> getWorkspaces() throws AccessException;
 
     Collection<Workspace> getWorkspaces(Workspace workspace);
@@ -47,31 +44,27 @@ public interface WorkspaceManager {
     	throws DuplicateItemException, RegistryException, AccessException;
                                      
     void delete(Item item) throws RegistryException, AccessException;
-    
-    void setEnabled(final EntryVersion version, 
-            final boolean enabled) throws RegistryException, PolicyException;
 
+    void save(Item item) throws RegistryException, AccessException;
+    
     EntryResult newVersion(Artifact artifact, 
             Object data, 
-            String versionLabel, 
-            User user)
+            String versionLabel)
         throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException;
     
     EntryResult newVersion(final Artifact artifact, 
             final InputStream inputStream, 
-            final String versionLabel, 
-            final User user) 
+            final String versionLabel) 
         throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException;
     
-    EntryResult createArtifact(Workspace workspace, Object data, String versionLabel, User user) 
+    EntryResult createArtifact(Workspace workspace, Object data, String versionLabel) 
         throws RegistryException, PolicyException, MimeTypeParseException, DuplicateItemException, AccessException;
     
     EntryResult createArtifact(Workspace workspace, 
             String contentType, 
             String name,
             String versionLabel, 
-            InputStream inputStream, 
-            User user) 
+            InputStream inputStream) 
         throws RegistryException, PolicyException, IOException, MimeTypeParseException, DuplicateItemException, AccessException;
     
     EntryResult newEntry(Workspace workspace, String name, String versionLabel)
@@ -84,7 +77,7 @@ public interface WorkspaceManager {
     
     Item getItemById(final String id) throws NotFoundException, RegistryException, AccessException;
     
-    Item getItemByPath(final String id) throws NotFoundException, RegistryException, AccessException;
+    Item getItemByPath(final String path) throws NotFoundException, RegistryException, AccessException;
     /**
      * Attach this manager to the specified workspace.
      * @param workspace
