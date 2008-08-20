@@ -88,7 +88,7 @@ public class LinksPropertyPanel extends ListPropertyPanel {
         editLinksPanel = new FlowPanel();
         addPanel.add(editLinksPanel);
         
-        suggest = new SuggestBox(new EntrySuggestOracle(galaxy, errorPanel));
+        suggest = new SuggestBox(new EntrySuggestOracle(galaxy, errorPanel, "xxx"));
         addPanel.add(suggest);
 
         addButton = new Button();

@@ -16,16 +16,18 @@ public class EntrySuggestOracle extends SuggestOracle {
 
     private Galaxy galaxy;
     private ErrorPanel errorPanel;
+    private final String exclude;
     
-    public EntrySuggestOracle(Galaxy galaxy, ErrorPanel errorPanel) {
+    public EntrySuggestOracle(Galaxy galaxy, ErrorPanel errorPanel, String exclude) {
         super();
         this.errorPanel = errorPanel;
         this.galaxy = galaxy;
+        this.exclude = exclude;
     }
 
     @Override
     public void requestSuggestions(final Request request, final Callback callback) {
-        galaxy.getRegistryService().suggestEntries(request.getQuery(), 
+        galaxy.getRegistryService().suggestEntries(request.getQuery(), exclude, 
             new AbstractCallback<Collection<EntryInfo>>(errorPanel) {
 
             public void onSuccess(Collection<EntryInfo> entries) {

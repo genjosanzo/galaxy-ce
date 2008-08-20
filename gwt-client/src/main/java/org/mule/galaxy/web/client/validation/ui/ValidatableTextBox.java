@@ -50,4 +50,8 @@ public class ValidatableTextBox extends AbstractValidatableInputField {
     public String getText() {
         return textBox.getText();
     }
+
+    public void setText(String text) {
+        textBox.setText(text);
+    }
 }

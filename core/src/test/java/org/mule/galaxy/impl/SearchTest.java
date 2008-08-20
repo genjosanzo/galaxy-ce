@@ -115,7 +115,63 @@ public class SearchTest extends AbstractGalaxyTest {
     
         assertEquals(1, results.size());
     }
+    
+    public void testWorkspaceQueries() throws Exception {
+        // Try out search!
+        Query q = new Query(Workspace.class)
+            .add(OpRestriction.like("name", "Default"));
+        Set results = registry.search(q).getResults();
 
+        assertEquals(1, results.size());
+
+        Workspace w = (Workspace) results.iterator().next();
+        assertEquals("Default Workspace", w.getName());
+        
+        q = new Query(Workspace.class)
+            .add(OpRestriction.eq("name", "Default Workspace"));
+        results = registry.search(q).getResults();
+    
+        assertEquals(1, results.size());
+        
+        q = new Query(Workspace.class).add(OpRestriction.in("name", Arrays.asList("Default Workspace", "Foo")));
+        results = registry.search(q).getResults();
+    
+        assertEquals(1, results.size());
+        
+        w.newWorkspace("Test");
+        
+        q = new Query(Workspace.class)
+            .add(OpRestriction.like("name", "Default"));
+        results = registry.search(q).getResults();
+        assertEquals(1, results.size());
+        
+        q = new Query(Workspace.class)
+            .add(OpRestriction.like("name", "Test"));
+        results = registry.search(q).getResults();
+        assertEquals(1, results.size());
+    }
+    
+    public void testWorkspaceSuggest() throws Exception {
+        Workspace w = registry.newWorkspace("Test1");
+        Workspace t2 = w.newWorkspace("Test2");
+        t2.newWorkspace("Test3");
+        
+        SearchResults results = registry.suggest("Work", 10, "/bar", Workspace.class);
+        assertEquals(1, results.getTotal());
+        
+        results = registry.suggest("Test2", 10, "/bar", Workspace.class);
+        assertEquals(2, results.getTotal());
+        
+        results = registry.suggest("Test3", 10, "/bar", Workspace.class);
+        assertEquals(1, results.getTotal());
+        
+        results = registry.suggest("1/Test2/T", 10, "/bar", Workspace.class);
+        assertEquals(1, results.getTotal());
+
+        results = registry.suggest("/Test1/Test2/T", 10, "/bar", Workspace.class);
+        assertEquals(1, results.getTotal());
+    }
+    
     public void testQueryPropertyListing() throws Exception {
         PropertyDescriptor pd = new PropertyDescriptor();
         pd.setDescription("Contacts");

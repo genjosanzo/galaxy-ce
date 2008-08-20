@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,7 +44,6 @@ import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.event.EntryMovedEvent;
 import org.mule.galaxy.event.EventManager;
-import org.mule.galaxy.event.WorkspaceCreatedEvent;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.jcr.query.QueryBuilder;
 import org.mule.galaxy.impl.jcr.query.SimpleQueryBuilder;
@@ -66,7 +66,6 @@ import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.util.BundleUtils;
-import org.mule.galaxy.util.DateUtil;
 import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.SecurityUtils;
 import org.mule.galaxy.workspace.WorkspaceManager;
@@ -201,28 +200,28 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         getWorkspaceManagerByItemId(i.getId()).save(i);
     }
 
-    public void save(final Workspace w, final String parentId) 
-        throws RegistryException, NotFoundException, AccessException {
+    public void save(final Workspace w, final String _parentId) 
+        throws RegistryException, NotFoundException, AccessException, DuplicateItemException {
         accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, w);
 
-        final String trimmedParentId = trimWorkspaceManagerId(parentId);
-        
-        executeWithNotFound(new JcrCallback() {
+        executeWithNotFoundDuplicate(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                
                 JcrWorkspace jw = (JcrWorkspace) w;
                 Node node = jw.getNode();
                 
-                if (trimmedParentId != null && !trimmedParentId.equals(node.getParent().getUUID())) {
+                String parentId = _parentId;
+                if ("root".equals(parentId)) {
+                    parentId = workspacesId;
+                } else if (parentId != null) {
+                    parentId = trimWorkspaceManagerId(parentId);
+                }
+                
+                if (parentId != null && !parentId.equals(node.getParent().getUUID())) {
                     Node parentNode = null;
-                    if (parentId != null) {
-                        try {
-                            parentNode = getNodeByUUID(trimmedParentId);
-                        } catch (DataAccessException e) {
-                            throw new RuntimeException(new NotFoundException(trimmedParentId));
-                        }
-                    } else {
-                        parentNode = node.getParent();
+                    try {
+                        parentNode = getNodeByUUID(parentId);
+                    } catch (DataAccessException e) {
+                        throw new RuntimeException(new NotFoundException(parentId));
                     }
                     
                     // ensure the user isn't trying to move this to a child node of the workspace
@@ -243,7 +242,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     }
                     
                     String dest = parentNode.getPath() + "/" + w.getName();
-                    session.move(node.getPath(), dest);
+                    try {
+                        session.move(node.getPath(), dest);
+                    } catch (ItemExistsException e) {
+                        throw new RuntimeException(new DuplicateItemException(dest));
+                    }
                 }
                 
                 session.save();
@@ -394,8 +397,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return a;
     }
 
-    private Object executeWithNotFound(JcrCallback jcrCallback) 
-        throws RegistryException, NotFoundException, AccessException {
+    private Object executeWithNotFoundDuplicate(JcrCallback jcrCallback) 
+        throws RegistryException, NotFoundException, AccessException, DuplicateItemException {
         try {
             return execute(jcrCallback);
         } catch (RuntimeException e) {
@@ -404,6 +407,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 throw (RegistryException) cause;
             } else if (cause instanceof NotFoundException) {
                 throw (NotFoundException) cause;
+            } else if (cause instanceof DuplicateItemException) {
+                throw (DuplicateItemException) cause;
             } else if (cause instanceof AccessException) {
                 throw (AccessException) cause;
             } else {
@@ -411,7 +416,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
         }
     }
-    
     private Object executeWithQueryException(JcrCallback jcrCallback) 
         throws RegistryException, QueryException {
         try {
@@ -479,6 +483,126 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     
+    public SearchResults suggest(final String p, final int maxResults, final String excludePath, final Class... types)
+        throws RegistryException, QueryException {
+        return (SearchResults) executeWithQueryException(new JcrCallback() {
+            
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                QueryManager qm = getQueryManager(session);
+                
+                String path = p;
+                
+                StringBuilder qstr = new StringBuilder();
+                qstr.append("/");
+                
+                boolean startsWithExact = path.startsWith("/");
+                if (startsWithExact) path = path.substring(1);
+                
+                boolean endsWithExact = path.startsWith("/");
+                if (endsWithExact) path = path.substring(0, path.length());
+                
+                String[] paths = path.split("/");
+                
+                if (paths.length == 0) {
+                    Set<Item> empty = Collections.emptySet();
+                    return new SearchResults(0, empty);
+                }
+                
+                for (int i = 0; i < paths.length; i++) {
+                    if (paths[i].equals("")) {
+                        startsWithExact = true;
+                        continue;
+                    }
+                        
+                    if (i == 0 ) {
+                        if (startsWithExact) {
+                            qstr.append("/*[jcr:like(@name, '").append(paths[i]).append("%')]");
+                        } else {
+                            qstr.append("/*[jcr:like(@name, '%").append(paths[i]).append("%')]");
+                        }
+                    } else if (i == (paths.length-1)) {
+                        if (endsWithExact) {
+                            qstr.append("/*[jcr:like(@name, '%").append(paths[i]).append("')]");
+                        } else {
+                            qstr.append("/*[jcr:like(@name, '%").append(paths[i]).append("%')]");
+                        }
+                    } else {
+                        qstr.append("/").append(paths[i]);
+                    }
+                }
+                
+                qstr.append("[");
+                List<String> allowedTypes = new ArrayList<String>();
+                for (Class selectType : types) {
+                    if (selectType.equals(Entry.class)) {
+                        allowedTypes.add("galaxy:entry");
+                    } else if (selectType.equals(Artifact.class)) {
+                        allowedTypes.add("galaxy:artifact");
+                    } else if (selectType.equals(EntryVersion.class)) {
+                        allowedTypes.add("galaxy:entryVersion");
+                    } else if (selectType.equals(ArtifactVersion.class)) {
+                        allowedTypes.add("galaxy:artifactVersion");
+                    } else if (selectType.equals(Workspace.class)) {
+                        allowedTypes.add("galaxy:workspace");
+                    } else {
+                        throw new RuntimeException(new QueryException(new Message("INVALID_SELECT_TYPE", BundleUtils.getBundle(getClass()))));
+                    }
+                }
+                
+                for (int i = 0; i < allowedTypes.size(); i++) {
+                    if (i > 0) {
+                        qstr.append(" or ");
+                    }
+                    String type = allowedTypes.get(i);
+                    qstr.append("@jcr:primaryType='").append(type)
+                        .append("' or *//@jcr:primaryType='").append(type).append("'");
+                }
+                qstr.append("]");
+                
+                QueryResult result = qm.createQuery(qstr.toString(), Query.XPATH).execute();
+                
+                Set<Item> results = new HashSet<Item>();
+                for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
+                    Node node = nodes.nextNode();
+
+                    addNodes(node, allowedTypes, results);
+                    
+                    if (results.size() == maxResults) {
+                        break;
+                    }
+                }
+                
+                return new SearchResults(results.size(), results);
+            }
+
+            private void addNodes(Node node, List<String> allowedTypes,
+                                  Set<Item> results) throws RepositoryException, ItemNotFoundException,
+                AccessDeniedException {
+                String type = node.getPrimaryNodeType().getName();
+                if (allowedTypes.contains(type)) {
+                    try {
+                        Item item = build(node, type);
+                        if (excludePath != null && item.getPath().startsWith(excludePath)) {
+                            return;
+                        }
+                        results.add(item);
+                    } catch (AccessException e) {
+                    }
+                    
+                    
+                }
+                
+                if (results.size() == maxResults) {
+                    return;
+                }
+                
+                for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
+                    addNodes(nodes.nextNode(), allowedTypes, results);
+                }
+            }
+        });
+    }
+
     private QueryManager getQueryManager(Session session) throws RepositoryException {
         return session.getWorkspace().getQueryManager();
     }
@@ -669,11 +793,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
         for (Restriction r : query.getRestrictions()) {
             if (r instanceof OpRestriction) {
-                if (!handleOperator((OpRestriction) r, artifactQuery, true)) {
+                if (!handleOperator((OpRestriction) r, query, artifactQuery, true)) {
                     return null;
                 }
             } else if (r instanceof FunctionCall) {
-                if (!handleFunction((FunctionCall) r, functions, artifactQuery)) {
+                if (!handleFunction((FunctionCall) r, query, functions, artifactQuery)) {
                     return null;
                 }
             }
@@ -693,6 +817,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
     private boolean handleFunction(FunctionCall r, 
+                                   org.mule.galaxy.query.Query query, 
                                    Map<FunctionCall, AbstractFunction> functions, 
                                    StringBuilder qstr) throws QueryException {
         AbstractFunction fn = functionRegistry.getFunction(r.getModule(), r.getName());
@@ -704,14 +829,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         
         if (restrictions != null && restrictions.size() > 0) {
             for (OpRestriction opR : restrictions) {
-                if (!handleOperator(opR, qstr, true)) return false;
+                if (!handleOperator(opR, query, qstr, true)) return false;
             }
         }
         return true;
     }
 
     private boolean handleOperator(OpRestriction r, 
-                                   StringBuilder query,
+                                   org.mule.galaxy.query.Query query, 
+                                   StringBuilder queryStr,
                                    boolean prepend)
         throws QueryException {
         
@@ -719,18 +845,18 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         Operator operator = r.getOperator();
 
         if (prepend) {
-            if (query.length() == 0) {
-                query.append("[");
+            if (queryStr.length() == 0) {
+                queryStr.append("[");
             } else {
-                query.append(" and ");
+                queryStr.append(" and ");
             }
         }
         
         // Do special stuff if this is an OR/AND operator
         if (operator.equals(Operator.OR)) {
-            return join(r, query, "or");
+            return join(r, query, queryStr, "or");
         } else if (operator.equals(Operator.AND)) {
-            return join(r, query, "and");
+            return join(r, query, queryStr, "and");
         }
         
         String property = (String) r.getLeft();
@@ -746,21 +872,22 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
         boolean searchChild = false;
         // are we searching a property on the artifact itself or the artifact version?
-        if (builder.appliesTo(Entry.class) || builder.appliesTo(Artifact.class)
-            && !builder.appliesTo(EntryVersion.class) && builder.appliesTo(ArtifactVersion.class)) {
+        if ((builder.appliesTo(Entry.class) || builder.appliesTo(Artifact.class))
+            && (builder.appliesTo(EntryVersion.class) || builder.appliesTo(ArtifactVersion.class))
+            && !query.getSelectTypes().contains(Workspace.class)) {
             searchChild = true;
-            query.append("(");
+            queryStr.append("(");
         } 
         
-        if (builder.build(query, property, "", r.getRight(), not, operator)) {
+        if (builder.build(queryStr, property, "", r.getRight(), not, operator)) {
             if (searchChild) {
                 if (not) {
-                    query.append(" and ");
+                    queryStr.append(" and ");
                 } else {
-                    query.append(" or ");
+                    queryStr.append(" or ");
                 }
-                if (builder.build(query, property, "*/", r.getRight(), not, operator)) {
-                    query.append(")");
+                if (builder.build(queryStr, property, "*/", r.getRight(), not, operator)) {
+                    queryStr.append(")");
                     return true;
                 }
             } else {
@@ -770,21 +897,22 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return false;
     }
 
-    private boolean join(OpRestriction r, StringBuilder query, String opName) throws QueryException {
+    private boolean join(OpRestriction r, org.mule.galaxy.query.Query query, 
+                         StringBuilder queryStr, String opName) throws QueryException {
         Restriction r1 = (Restriction) r.getLeft();
         Restriction r2 = (Restriction) r.getRight();
-        query.append("(");
-        if (!handleOperator((OpRestriction) r1, query, false)) {
+        queryStr.append("(");
+        if (!handleOperator((OpRestriction) r1, query, queryStr, false)) {
             return false;
         }
-        query.append(" ")
+        queryStr.append(" ")
              .append(opName)
              .append(" ");
         
-        if (!handleOperator((OpRestriction) r2, query, false)) {
+        if (!handleOperator((OpRestriction) r2, query, queryStr, false)) {
             return false;
         }
-        query.append(")");
+        queryStr.append(")");
         
         return true;
     }

@@ -194,13 +194,17 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void addWorkspace(String parentWorkspaceId, String workspaceName, String lifecycleId) throws RPCException, ItemNotFoundException, ItemExistsException {
+    public void addWorkspace(String parentPath, String workspaceName, String lifecycleId) throws RPCException, ItemNotFoundException, ItemExistsException {
         try {
             Workspace w;
-            if (parentWorkspaceId == null || "[No parent]".equals(parentWorkspaceId)) {
+            if (parentPath == null || "".equals(parentPath)) {
                 w = registry.newWorkspace(workspaceName);
             } else {
-                Workspace parent = (Workspace) registry.getItemById(parentWorkspaceId);
+                Workspace parent = (Workspace) registry.getItemByPath(parentPath);
+                
+                if (parent == null) {
+                    throw new RPCException("Could not find parent workspace: " + parentPath);
+                }
                 w = parent.newWorkspace(workspaceName);
             }
             if (lifecycleId != null) {
@@ -220,13 +224,35 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void updateWorkspace(String workspaceId, String parentWorkspaceId, String workspaceName, String lifecycleId)
+    public void updateWorkspace(String workspaceId, String parentWorkspacePath, String workspaceName, String lifecycleId)
             throws RPCException, ItemNotFoundException {
         try {
-            if (parentWorkspaceId == null || "[No parent]".equals(parentWorkspaceId)) {
-                parentWorkspaceId = null;
-            }
             Workspace w = (Workspace) registry.getItemById(workspaceId);
+            
+            String parentWorkspaceId = null;
+            if (parentWorkspacePath != null) {
+                if ("".equals(parentWorkspacePath) || "/".equals(parentWorkspacePath)) {
+                    parentWorkspaceId = "root";
+                } else {
+                    try {
+                        Item parent = registry.getItemByPath(parentWorkspacePath);
+                        
+                        if (!(parent instanceof Workspace)) {
+                            throw new RPCException("Parent is not a workspace!");
+                        }
+                        
+                        parentWorkspaceId = parent.getId();
+                    } catch (NotFoundException e) {
+                        throw new RPCException("Parent workspace does not exist: '" + parentWorkspacePath + "'");
+                    }
+                }
+            } else {
+                Workspace parent = w.getParent();
+                if (parent != null) {
+                    parentWorkspaceId = parent.getId();  
+                }
+            }
+            
             if (lifecycleId != null) {
                 w.setDefaultLifecycle(w.getLifecycleManager().getLifecycleById(lifecycleId));
             }
@@ -239,6 +265,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
+        } catch (DuplicateItemException e) {
+            throw new RPCException("A workspace with that name alread exists in that parent workspace.");
         }
     }
 
@@ -424,13 +452,9 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public Collection<EntryInfo> suggestEntries(String query) throws RPCException {
+    public Collection<EntryInfo> suggestEntries(String query, String excludePath) throws RPCException {
         try {
-            Query q = new Query(Entry.class, Artifact.class).add(OpRestriction.like("name", query));
-            
-            q.setMaxResults(10);
-            
-            SearchResults results = registry.search(q);
+            SearchResults results = registry.suggest(query, 10, excludePath, Entry.class, Artifact.class);
             
             ArrayList<EntryInfo> entries = new ArrayList<EntryInfo>();
             for (Item i : results.getResults()) {
@@ -453,6 +477,23 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
+    public Collection<String> suggestWorkspaces(String query, String excludePath) throws RPCException {
+        try {
+            SearchResults results = registry.suggest(query, 10, excludePath, Workspace.class);
+            
+            ArrayList<String> workspace = new ArrayList<String>();
+            for (Item i : results.getResults()) {
+                workspace.add(i.getPath());
+            }
+            return workspace;
+        } catch (QueryException e) {
+            throw new RPCException(e.getMessage());
+        } catch (RegistryException e) {
+            log.error("Could not query the registry.", e);
+            throw new RPCException(e.getMessage());
+        }
+    }
+    
     private Query getQuery(Set<SearchPredicate> searchPredicates, int start, int maxResults) {
         Query q = new Query(Entry.class, Artifact.class).orderBy("artifactType");
 

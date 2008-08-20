@@ -81,7 +81,7 @@ public class ManageWorkspacePanel extends AbstractErrorShowingComposite {
         
         Object[] parentAndWkspc = getWorkspace(workspaceId, null, workspaces);
         WWorkspace parent = (WWorkspace) parentAndWkspc[0];
-        String parentId = parent != null ? parent.getId() : null;
+        String parentId = parent != null ? parent.getPath() : null;
         workspace = (WWorkspace) parentAndWkspc[1];
         
         panel.add(createPrimaryTitle("Manage Workspace - " + workspace.getName()));
@@ -92,7 +92,7 @@ public class ManageWorkspacePanel extends AbstractErrorShowingComposite {
         tabs.setStyleName("artifactTabPanel");
         tabs.getDeckPanel().setStyleName("artifactTabDeckPanel");
         
-        tabs.add(new WorkspaceForm(galaxy, workspaces, workspace, parentId), "Info");
+        tabs.add(new WorkspaceForm(galaxy, workspace, parentId), "Info");
         tabs.add(new PolicyPanel(this, galaxy, workspaceId), "Governance");
         if (galaxy.hasPermission("MANAGE_GROUPS")) {
             tabs.add(new ItemGroupPermissionPanel(galaxy, 

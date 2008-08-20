@@ -20,7 +20,7 @@ public interface Workspace extends Item {
     
     void setName(String name);
     
-    Item getParent();
+    Workspace getParent();
     
     Collection<Workspace> getWorkspaces();
 

@@ -97,6 +97,14 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         child = children.iterator().next();
         assertNotNull(child.getParent());
+        
+        registry.save(newRoot, "root");
+        
+        Workspace newWorkspace = newRoot.newWorkspace("child2");
+        
+        registry.save(newWorkspace, "root");
+        
+        assertNull(newWorkspace.getParent());
     }
     
     public void testAddDuplicate() throws Exception {

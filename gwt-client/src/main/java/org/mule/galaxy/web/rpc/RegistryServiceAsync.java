@@ -64,7 +64,9 @@ public interface RegistryServiceAsync {
                       int start, int maxResults, 
                       AsyncCallback callback);
     
-    void suggestEntries(String query, AsyncCallback<Collection<EntryInfo>> callback);
+    void suggestEntries(String query, String exclude, AsyncCallback<Collection<EntryInfo>> callback);
+
+    void suggestWorkspaces(String query, String exclude, AsyncCallback<Collection<String>> callback);
     
     void getIndexes(AsyncCallback callback);
 

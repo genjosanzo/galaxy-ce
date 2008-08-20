@@ -18,31 +18,32 @@
 
 package org.mule.galaxy.web.client.workspace;
 
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.WorkspacesListBox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WLifecycle;
-import org.mule.galaxy.web.rpc.WWorkspace;
-
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LightBox;
+import org.mule.galaxy.web.client.util.WorkspaceOracle;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemExistsException;
+import org.mule.galaxy.web.rpc.WLifecycle;
+import org.mule.galaxy.web.rpc.WWorkspace;
 
 
 public class WorkspaceForm extends AbstractErrorShowingComposite {
@@ -52,11 +53,11 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
     private boolean edit;
     private ListBox lifecyclesLB;
     private FlowPanel panel;
-    private Collection<WWorkspace> workspaces;
-    private String parentWorkspaceId;
+    private String parentWorkspace;
     private WWorkspace workspace;
     private String workspaceId;
     private RegistryMenuPanel menuPanel;
+    private SuggestBox workspacesSuggest;
 
     /**
      * Set up the form for adding a workspace.
@@ -77,15 +78,13 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
      * Set up the form for editing a workspace.
      */
     public WorkspaceForm(Galaxy galaxy, 
-                         Collection<WWorkspace> workspaces, 
                          WWorkspace workspace, 
-                         String parentWorkspaceId) {
+                         String parentWorkspacePath) {
         this.galaxy = galaxy;
         this.edit = true;
-        this.workspaces = workspaces;
         this.workspace = workspace;
         this.workspaceId = workspace.getId();
-        this.parentWorkspaceId = parentWorkspaceId;
+        this.parentWorkspace = parentWorkspacePath;
         
         panel = new FlowPanel();
         
@@ -94,42 +93,24 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
 
     public void onShow(List<String> params) {
         panel.clear();
-        panel.add(new Label("Loading..."));
-        
         if (menuPanel != null) {
             menuPanel.onShow();
         }
         if (params.size() > 0 && !edit) {
-            parentWorkspaceId = params.get(0);
+            parentWorkspace = params.get(0);
         }
-        
-        if (!edit || workspaces == null) {
-            galaxy.getRegistryService().getWorkspaces(new AbstractCallback(this) {
-                @SuppressWarnings("unchecked")
-                public void onSuccess(Object workspaces) {
-                    loadWorkspaces((Collection<WWorkspace>) workspaces);
-                }
-            });
-        } else {
-            loadWorkspaces(workspaces);
-        }
-    }
-    
-    public void loadWorkspaces(Collection<WWorkspace> workspaces) {
-        panel.clear();
-        this.workspaces = workspaces;
         
         if (!edit) {
             panel.add(createPrimaryTitle("Add Workspace"));
         }
         
         final FlexTable table = createColumnTable();
-        
-        final WorkspacesListBox workspacesLB = 
-            new WorkspacesListBox(workspaces, workspaceId, parentWorkspaceId, true);
+        String exclude = workspace != null ? workspace.getPath() : "xxx";
+        workspacesSuggest = new SuggestBox(new WorkspaceOracle(galaxy, this, exclude));
+        workspacesSuggest.setText(parentWorkspace);
         
         table.setText(0, 0, "Parent Workspace:");
-        table.setWidget(0, 1, workspacesLB);
+        table.setWidget(0, 1, workspacesSuggest);
         
         table.setText(1, 0, "Workspace Name:");
         
@@ -153,7 +134,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
         Button saveButton = new Button(saveTitle);
         saveButton.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
-                save(workspacesLB.getSelectedValue(), 
+                save(workspacesSuggest.getText(), 
                      workspaceTextBox.getText());
             }
         });
@@ -220,8 +201,17 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
 
     }
 
-    protected void save(String parentWorkspaceId, final String text) {
+    protected void save(final String parentWorkspace, final String text) {
         AbstractCallback callback = new AbstractCallback(this) {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                if (caught instanceof ItemExistsException) {
+                    setMessage("Could not find parent workspace: " + parentWorkspace);
+                } else {
+                    super.onFailure(caught);
+                }
+            }
 
             public void onSuccess(Object arg0) {
                 History.newItem("browse");
@@ -237,12 +227,12 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
         
         if (edit) {
             galaxy.getRegistryService().updateWorkspace(workspace.getId(), 
-                                                        parentWorkspaceId,
+                                                        parentWorkspace,
                                                         text, 
                                                         lifecycleId,
                                                         callback);
         } else {
-            galaxy.getRegistryService().addWorkspace(parentWorkspaceId, text, lifecycleId, callback);
+            galaxy.getRegistryService().addWorkspace(parentWorkspace, text, lifecycleId, callback);
         }
     }
     

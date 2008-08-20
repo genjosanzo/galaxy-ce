@@ -96,7 +96,7 @@ public class AttachedWorkspace extends AbstractJcrItem implements Workspace {
         return null;
     }
 
-    public Item getParent() {
+    public Workspace getParent() {
         try {
             return new JcrWorkspace(getManager(), node.getParent());
         } catch (RepositoryException e) {

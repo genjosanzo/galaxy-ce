@@ -30,7 +30,7 @@ public interface Registry {
     Workspace newWorkspace(String name) throws DuplicateItemException, RegistryException, AccessException;
 
     void save(Workspace w, String parentId)
-        throws RegistryException, NotFoundException, AccessException;
+        throws RegistryException, NotFoundException, AccessException, DuplicateItemException;
 
     void save(Item item) throws AccessException, RegistryException;
     
@@ -72,6 +72,9 @@ public interface Registry {
     SearchResults search(String queryString, int start, int maxResults) throws RegistryException, QueryException;
 
     SearchResults search(Query query) throws RegistryException, QueryException;
+    
+    SearchResults suggest(final String path, final int maxResults, final String excludePath, Class... types)
+    	throws RegistryException, QueryException;
     
     /**
      * Get a Map of properties which can be used inside queries. The key will be the property

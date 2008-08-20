@@ -2,25 +2,24 @@ package org.mule.galaxy.event;
 
 import static org.mule.galaxy.event.DefaultEvents.PROPERTY_CHANGED;
 import static org.mule.galaxy.event.DefaultEvents.WORKSPACE_DELETED;
-import org.apache.jackrabbit.commons.AbstractWorkspace;
-import org.mule.galaxy.Item;
-import org.mule.galaxy.collab.CommentManager;
-import org.mule.galaxy.event.annotation.BindToEvent;
-import org.mule.galaxy.event.annotation.BindToEvents;
-import org.mule.galaxy.event.annotation.OnEvent;
-import org.mule.galaxy.impl.event.DefaultEventManager;
-import org.mule.galaxy.impl.workspace.ItemMetadataHandler;
-import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.workspace.WorkspaceManager;
 
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.Workspace;
+import org.mule.galaxy.collab.CommentManager;
+import org.mule.galaxy.event.annotation.BindToEvent;
+import org.mule.galaxy.event.annotation.BindToEvents;
+import org.mule.galaxy.event.annotation.OnEvent;
+import org.mule.galaxy.impl.event.DefaultEventManager;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.security.User;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import junit.framework.TestCase;
 
 public class DefaultEventManagerTest extends TestCase {
 
@@ -223,7 +222,7 @@ public class DefaultEventManagerTest extends TestCase {
             return null;
         }
 
-        public Item getParent() {
+        public Workspace getParent() {
             return null;
         }
 
