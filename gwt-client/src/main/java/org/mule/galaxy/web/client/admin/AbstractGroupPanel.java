@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.Image;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -95,7 +96,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
         mainPanel.add(table);
 
         int col = 1;
-        table.setText(0, 0, " ");
+        table.setWidget(0, 0, new Image("images/clearpixel.gif"));
         for (Iterator itr = permissions.iterator(); itr.hasNext();) {
             WPermission p = (WPermission) itr.next();
             table.setWidget(0, col, createTitleText(p.getDescription()));

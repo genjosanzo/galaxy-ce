@@ -27,6 +27,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Image;
 
 import java.util.ArrayList;
 
@@ -57,7 +58,7 @@ public class ArtifactGroupListPanel extends AbstractComposite {
 
         // create the colum headers
         // the first column is blank on purpose as it's reserved for the checkbox
-        table.setText(0, 0, " ");
+        table.setWidget(0, 0, new Image("images/clearpixel.gif"));
 
         // hardcode the width for the checkbox -- do this in css later
         table.getFlexCellFormatter().setWidth(0, 0, "20");
