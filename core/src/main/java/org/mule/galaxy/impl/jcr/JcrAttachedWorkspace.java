@@ -2,56 +2,53 @@ package org.mule.galaxy.impl.jcr;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import javax.activation.MimeTypeParseException;
-import javax.jcr.AccessDeniedException;
-import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+import org.mule.galaxy.AttachedWorkspace;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.collab.CommentManager;
-import org.mule.galaxy.impl.workspace.AbstractWorkspace;
-import org.mule.galaxy.impl.workspace.ItemMetadataHandler;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.workspace.WorkspaceManager;
 
-public class AttachedWorkspace extends AbstractJcrItem implements Workspace {
+public class JcrAttachedWorkspace extends AbstractJcrItem implements AttachedWorkspace {
 
+    public static final String WORKSPACE_MANAGER_FACTORY = "workspaceManagerFactory";
     private static final String CONFIGURATION = "configuration";
-    private final WorkspaceManager remote;
+    private WorkspaceManager workspaceManager;
+    private Map<String, String> configuration;
 
-    public AttachedWorkspace(Node node, JcrWorkspaceManager manager, WorkspaceManager remote) throws RepositoryException {
+    public JcrAttachedWorkspace(Node node, JcrWorkspaceManager manager) throws RepositoryException {
         super(node, manager);
-        this.remote = remote;
     }
 
     public EntryResult createArtifact(Object data, String versionLabel)
         throws DuplicateItemException, RegistryException, PolicyException, MimeTypeParseException,
         AccessException {
-        return remote.createArtifact(this, data, versionLabel);
+        return getWorkspaceManager().createArtifact(this, data, versionLabel);
     }
 
     public EntryResult createArtifact(String contentType, String name, String versionLabel,
                                       InputStream inputStream) throws DuplicateItemException,
         RegistryException, PolicyException, IOException, MimeTypeParseException, AccessException {
-        return remote.createArtifact(this, contentType, name, versionLabel, inputStream);
+        return getWorkspaceManager().createArtifact(this, contentType, name, versionLabel, inputStream);
     }
 
     public Workspace newWorkspace(String name) throws DuplicateItemException, RegistryException,
         AccessException {
-        return remote.newWorkspace(this, name);
+        return getWorkspaceManager().newWorkspace(this, name);
     }
 
     public Workspace getWorkspace(String name) {
@@ -72,12 +69,12 @@ public class AttachedWorkspace extends AbstractJcrItem implements Workspace {
     }
 
     public Collection<Workspace> getWorkspaces() {
-        return remote.getWorkspaces(this);
+        return getWorkspaceManager().getWorkspaces(this);
     }
 
     public EntryResult newEntry(String name, String versionLabel) throws DuplicateItemException,
         RegistryException, PolicyException, AccessException {
-        return remote.newEntry(this, name, versionLabel);
+        return getWorkspaceManager().newEntry(this, name, versionLabel);
     }
 
     public CommentManager getCommentManager() {
@@ -89,7 +86,7 @@ public class AttachedWorkspace extends AbstractJcrItem implements Workspace {
     }
 
     public List<Item> getItems() {
-        return remote.getItems(this);
+        return getWorkspaceManager().getItems(this);
     }
 
     public LifecycleManager getLifecycleManager() {
@@ -110,6 +107,7 @@ public class AttachedWorkspace extends AbstractJcrItem implements Workspace {
 
     public void setConfiguration(Map<String, String> configuration) {
         try {
+            this.configuration = configuration;
             JcrUtil.setProperty(CONFIGURATION, configuration, node);
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
@@ -118,6 +116,25 @@ public class AttachedWorkspace extends AbstractJcrItem implements Workspace {
 
     @SuppressWarnings("unchecked")
     public Map<String, String> getConfiguration() {
-        return (Map<String, String>) JcrUtil.getProperty(CONFIGURATION, node);
+        if (configuration == null) {
+            configuration = (Map<String, String>) JcrUtil.getProperty(CONFIGURATION, node);
+        }
+        return configuration;
     }
+
+    public WorkspaceManager getWorkspaceManager() {
+        if (workspaceManager == null) {
+            try {
+                workspaceManager = ((JcrRegistryImpl)manager.getRegistry()).getWorkspaceManager(this);
+            } catch (RegistryException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return workspaceManager;
+    }
+
+    public String getWorkspaceManagerFactory() {
+        return getStringOrNull(WORKSPACE_MANAGER_FACTORY);
+    }
+    
 }

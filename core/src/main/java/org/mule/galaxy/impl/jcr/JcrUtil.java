@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -23,11 +23,9 @@ import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
 import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
 
-import net.sf.saxon.value.IntegerValue;
 import org.apache.jackrabbit.value.BooleanValue;
 import org.apache.jackrabbit.value.DateValue;
 import org.apache.jackrabbit.value.DoubleValue;
@@ -230,10 +228,35 @@ public class JcrUtil {
         return p.getValue();
     }
 
+    @SuppressWarnings("unchecked")
     public static void setProperty(String name, Object value, Node n) throws RepositoryException {
         name = escape(name);
         
-        if (value instanceof Collection) {
+        if (value instanceof Map) {
+            Map<String, String> c = (Map<String, String>) value;
+            String keyName = name + ".keys";
+            String valuesName = name + ".values";
+            if (c.size() == 0) {
+                // clear the property
+                n.setProperty(keyName, (Value[]) null);
+                n.setProperty(valuesName, (Value[]) null);
+                return;
+            }
+            
+            Value[] keys = new Value[c.size()];
+            Value[] values = new Value[c.size()];
+            int i = 0;
+            
+            for (Map.Entry<String, String> o : c.entrySet()) {
+                keys[i] = new StringValue(o.getKey());
+                values[i] = new StringValue(o.getValue());
+                i++;
+            }
+
+            n.setProperty(keyName, keys);
+            n.setProperty(valuesName, values);
+            n.setProperty(name + TYPE_SUFFIX, Map.class.getName());
+        } else  if (value instanceof Collection) {
             Collection<?> c = (Collection<?>) value;
             if (c.size() == 0) {
                 // clear the property
@@ -244,8 +267,6 @@ public class JcrUtil {
             String typeProp = name + TYPE_SUFFIX;
             if (c instanceof Set) {
                 n.setProperty(typeProp, Set.class.getName());
-            } else if (c instanceof Map) {
-                throw new UnsupportedOperationException();
             } else {
                 n.setProperty(typeProp, Collection.class.getName());
             }
@@ -336,7 +357,21 @@ public class JcrUtil {
                 default:
                     return null;
                 }
-            } 
+            } else if (type.equals(Map.class.getName())) {
+                Property keys = node.getProperty(name + ".keys");
+                Property values = node.getProperty(name + ".values");
+                
+                Map<String,String> map = new HashMap<String, String>();
+                
+                Value[] keyV = keys.getValues();
+                Value[] valuesV = values.getValues();
+                
+                for (int i = 0; i < keyV.length; i++) {
+                    map.put(keyV[i].getString(), valuesV[i].getString());
+                }
+                
+                return map;
+            }
             
             Collection<Object> values = null;
             if (type.equals(Set.class.getName())) {

@@ -28,6 +28,7 @@ public class WWorkspace implements IsSerializable {
     private Collection<WWorkspace> workspaces;
     private String path;
     private String defaultLifecycleId;
+    private boolean remote;
     
     public WWorkspace() {
         super();

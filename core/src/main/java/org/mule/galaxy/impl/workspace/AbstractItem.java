@@ -33,7 +33,7 @@ public abstract class AbstractItem implements Item {
     }
 
     public void setInternalProperty(String name, Object value) throws PropertyException, PolicyException {
-
+        
     }
 
     public Object getInternalProperty(String name) {
@@ -53,7 +53,7 @@ public abstract class AbstractItem implements Item {
     }
 
     public boolean hasProperty(String name) {
-    return metadata.hasProperty(this, name);
+        return metadata.hasProperty(this, name);
     }
 
     public void setLocked(String name, boolean locked) {

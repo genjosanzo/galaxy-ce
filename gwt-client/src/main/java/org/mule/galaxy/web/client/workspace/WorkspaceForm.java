@@ -237,7 +237,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
     }
     
     protected void delete(String workspaceId2) {
-        galaxy.getRegistryService().deleteWorkspace(workspaceId2, new AbstractCallback(this) {
+        galaxy.getRegistryService().delete(workspaceId2, new AbstractCallback(this) {
 
             public void onSuccess(Object arg0) {
                 galaxy.setMessageAndGoto("browse", "Workspace was deleted.");

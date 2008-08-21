@@ -19,9 +19,6 @@
 package org.mule.galaxy.test;
 
 
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.impl.index.IndexManagerImpl;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,8 +30,6 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.Repository;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
-
-import junit.framework.TestCase;
 
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
@@ -49,9 +44,13 @@ import org.apache.abdera.writer.WriterFactory;
 import org.apache.commons.io.IOUtils;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.impl.index.IndexManagerImpl;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springmodules.jcr.SessionFactory;
+
+import junit.framework.TestCase;
 
 public class AbstractAtomTest extends TestCase {
     

@@ -41,9 +41,6 @@ public interface RegistryServiceAsync {
                          String lifecycleId,
                          AsyncCallback callback);
 
-    void deleteWorkspace(String workspaceId,
-                         AsyncCallback callback);
-    
     void getArtifactType(String id, AsyncCallback c);
     
     void getArtifactTypes(AsyncCallback callback);

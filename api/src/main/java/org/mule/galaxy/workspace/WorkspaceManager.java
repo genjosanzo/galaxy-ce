@@ -87,4 +87,6 @@ public interface WorkspaceManager {
     ContentService getContentService();
 
     CommentManager getCommentManager();
+    
+    void validate() throws RegistryException;
 }

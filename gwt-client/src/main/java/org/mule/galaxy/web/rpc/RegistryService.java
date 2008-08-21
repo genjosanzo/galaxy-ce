@@ -38,9 +38,7 @@ public interface RegistryService extends RemoteService {
                          String parentWorkspaceId, 
                          String workspaceName,
                          String lifecycleId) throws RPCException, ItemNotFoundException;
-    
-    void deleteWorkspace(String workspaceId) throws RPCException, ItemNotFoundException;
-    
+
     WArtifactType getArtifactType(String id) throws RPCException;
     
 

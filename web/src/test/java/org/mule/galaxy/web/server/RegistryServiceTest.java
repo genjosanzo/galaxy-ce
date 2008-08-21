@@ -173,7 +173,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         WWorkspace w = workspaces.iterator().next();
         
-        gwtRegistry.addWorkspace(w.getId(), "Foo", null);
+        gwtRegistry.addWorkspace(w.getPath(), "Foo", null);
         
         workspaces = gwtRegistry.getWorkspaces();
         assertEquals(1, workspaces.size());

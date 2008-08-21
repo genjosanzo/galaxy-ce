@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.AttachedWorkspace;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.ContentService;
 import org.mule.galaxy.DuplicateItemException;
@@ -151,47 +152,94 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return idToWorkspaceManager.values();
     }
 
-    public Workspace attachWorkspace(final Workspace parent, 
-                                     final String name,
-                                     final WorkspaceManagerFactory factory,
-                                     final Map<String, String> configuration) throws RegistryException {
+    @SuppressWarnings("unchecked")
+    public Collection<AttachedWorkspace> getAttachedWorkspaces() {
+        return (Collection<AttachedWorkspace>) execute(new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                QueryManager qm = getQueryManager(session);
+                
+                QueryResult result = qm.createQuery("//element(*, galaxy:attachedWorkspace)", Query.XPATH).execute();
+                
+                List<AttachedWorkspace> workspaces = new ArrayList<AttachedWorkspace>();
+                for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
+                    Node node = nodes.nextNode();
+                    
+                    workspaces.add(new JcrAttachedWorkspace(node, localWorkspaceManager));
+                }
+                
+                return workspaces;
+            }
+            
+        });
+    }
+
+    public AttachedWorkspace attachWorkspace(final Workspace parent, 
+                                             final String name,
+                                             final String factory,
+                                             final Map<String, String> configuration) throws RegistryException {
         
         if (!(parent instanceof JcrWorkspace)) {
             throw new RegistryException(new Message("LOCAL_ATTACH_ONLY", BundleUtils.getBundle(this.getClass())));
         }
         
-        return (Workspace) execute(new JcrCallback() {
+        return (AttachedWorkspace) execute(new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                JcrWorkspace w = (JcrWorkspace) parent;
+                Node parentNode;
+                if (parent != null) {
+                    JcrWorkspace w = (JcrWorkspace) parent;
+                    parentNode = w.getNode();
+                } else {
+                    parentNode = getNodeByUUID(workspacesId);
+                }
                 
-                Node attachedNode = w.getNode().addNode(name, JcrWorkspaceManager.ATTACHED_WORKSPACE_NODE_TYPE);
+                Node attachedNode = parentNode.addNode(name, JcrWorkspaceManager.ATTACHED_WORKSPACE_NODE_TYPE);
                 attachedNode.addMixin("mix:referenceable");
                 Calendar now = Calendar.getInstance();
                 now.setTime(new Date());
                 attachedNode.setProperty(AbstractJcrItem.CREATED, now);
                 attachedNode.setProperty(AbstractJcrItem.UPDATED, now);
                 attachedNode.setProperty(AbstractJcrItem.NAME, name);
+                attachedNode.setProperty(JcrAttachedWorkspace.WORKSPACE_MANAGER_FACTORY, factory);
 
-                WorkspaceManager wm = createWorkspaceManager(factory, configuration);
-                AttachedWorkspace attached = new AttachedWorkspace(attachedNode, localWorkspaceManager, wm);
-                attached.setConfiguration(configuration);
-                
-                wm.attachTo(attached);
-                
-                session.save();
-                
-                return attached;
+                try {
+                    
+                    JcrAttachedWorkspace attached = new JcrAttachedWorkspace(attachedNode, localWorkspaceManager);
+                    attached.setConfiguration(configuration);
+                    createWorkspaceManager(attached);
+                    
+                    session.save();
+                    
+                    return attached;
+                } catch (RegistryException e) {
+                    throw new RuntimeException(e);
+                }
             }
             
         });
     }
 
-    private synchronized WorkspaceManager createWorkspaceManager(final WorkspaceManagerFactory factory,
-                                                    final Map<String, String> configuration) {
-        WorkspaceManager wm = factory.createWorkspaceManager(configuration);
+    public WorkspaceManager getWorkspaceManager(AttachedWorkspace w) throws RegistryException {
+        WorkspaceManager wm = idToWorkspaceManager.get(trimWorkspaceManagerId(w.getId()));
         
-        idToWorkspaceManager.put(wm.getId(), wm);
+        if (wm == null) {
+            wm = createWorkspaceManager(w);
+        }
+        
+        return wm;
+    }
+
+    private synchronized WorkspaceManager createWorkspaceManager(AttachedWorkspace w) throws RegistryException {
+        WorkspaceManagerFactory wmf = (WorkspaceManagerFactory) context.getBean(w.getWorkspaceManagerFactory());
+        if (wmf == null) {
+            throw new RegistryException(new Message("INVALID_WORKSPACE_MANAGER", BundleUtils.getBundle(getClass())));
+        }
+
+        WorkspaceManager wm = wmf.createWorkspaceManager(w.getConfiguration());
+        wm.attachTo(w);
+        wm.validate();
+        idToWorkspaceManager.put(trimWorkspaceManagerId(w.getId()), wm);
         
         return wm;
     }
@@ -297,7 +345,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
     
     private WorkspaceManager getWorkspaceManager(String wmId) {
-        return idToWorkspaceManager.get(wmId);
+        WorkspaceManager wm = idToWorkspaceManager.get(wmId);
+        if (wm == null) {
+            throw new IllegalStateException();
+        }
+        return wm;
     }
 
     private WorkspaceManager getWorkspaceManagerByItemId(String itemId) {
@@ -340,6 +392,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
             
             return a.getVersion(node.getName());
+        } else if (type.equals("galaxy:attachedWorkspace")) {
+            AttachedWorkspace w = new JcrAttachedWorkspace(node, localWorkspaceManager); 
+    
+            accessControlManager.assertAccess(Permission.READ_ARTIFACT, w);
+            
+            return w;
         } else {
              Workspace wkspc = buildWorkspace(node);
              

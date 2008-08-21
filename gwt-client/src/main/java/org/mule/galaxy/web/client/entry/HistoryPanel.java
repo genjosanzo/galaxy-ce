@@ -82,9 +82,11 @@ public class HistoryPanel extends AbstractComposite {
             avPanel.add(bottom);
             bottom.setStyleName("artifact-version-bottom-panel");
 
-            bottom.add(new Label("By " + av.getAuthorName()
-                    + " (" + av.getAuthorUsername() + ") on " + av.getCreated()));
-
+            if (av.getAuthorName() != null) {
+                bottom.add(new Label("By " + av.getAuthorName()
+                        + " (" + av.getAuthorUsername() + ") on " + av.getCreated()));
+            }
+            
             InlineFlowPanel links = new InlineFlowPanel();
             bottom.add(links);
 

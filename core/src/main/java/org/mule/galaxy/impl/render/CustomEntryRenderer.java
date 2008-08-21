@@ -63,12 +63,17 @@ public class CustomEntryRenderer implements ItemRenderer {
             throw new RuntimeException("Invalid Column!");
         }
         
-        Object value = col.getEvaluator().getValue(row);
-        if (value == null) {
+        try {
+            Object value = col.getEvaluator().getValue(row);
+            if (value == null) {
+                return "";
+            }
+            return value.toString();
+        } catch (RuntimeException e) {
+            System.out.println("Could not evaluate for " + row.getPath());
+            e.printStackTrace();
             return "";
         }
-        
-        return value.toString();
     }
 
     public boolean isSummary(int column) {

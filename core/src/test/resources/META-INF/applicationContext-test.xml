@@ -22,4 +22,5 @@
   
   <bean id="removeOddCharsFn" class="org.mule.galaxy.impl.query.RemoveArtifactsWithOddNumberOfCharsFunction"/>
   
+  <bean id="dummyWorkspaceManagerFactory" class="org.mule.galaxy.impl.DummyWorkspaceManagerFactory"/>
 </beans>

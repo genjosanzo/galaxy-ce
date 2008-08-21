@@ -38,6 +38,7 @@ import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.ArtifactTypeDao;
+import org.mule.galaxy.AttachedWorkspace;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Entry;
@@ -172,7 +173,7 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
     }
     
     private Workspace buildAttachedWorkspace(Node n) throws RepositoryException {
-        return new AttachedWorkspace(n, this, null);
+        return new JcrAttachedWorkspace(n, this);
     }
 
     public Item getItemById(final String id) throws NotFoundException, RegistryException, AccessException {
@@ -251,7 +252,13 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
             accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
             
             return a.getVersion(node.getName());
-        } else {
+        } else if (type.equals("galaxy:attachedWorkspace")) {
+            AttachedWorkspace w = new JcrAttachedWorkspace(node, this); 
+    
+            accessControlManager.assertAccess(Permission.READ_ARTIFACT, w);
+            
+            return w;
+        }  else {
              Workspace wkspc = buildWorkspace(node);
              
              accessControlManager.assertAccess(Permission.READ_WORKSPACE, wkspc);
@@ -1034,7 +1041,7 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 WorkspaceDeletedEvent evt = new WorkspaceDeletedEvent(wkspc);
 
-                ((JcrWorkspace) wkspc).getNode().remove();
+                ((AbstractJcrItem) wkspc).getNode().remove();
 
                 session.save();
 
@@ -1115,6 +1122,9 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
         }
     }
         
+    public void validate() throws RegistryException {
+    }
+
     public JcrTemplate getTemplate() {
         return template;
     }

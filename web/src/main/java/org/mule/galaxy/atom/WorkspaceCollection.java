@@ -30,6 +30,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.abdera.i18n.iri.IRI;
+import org.apache.abdera.i18n.text.UrlEncoding;
+import org.apache.abdera.i18n.text.CharUtils.Profile;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Person;
@@ -51,7 +53,19 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
         super();
         this.registry = registry;
     }
-
+    protected String getLink(String name, 
+                             Workspace entryObj, 
+                             IRI feedIri, 
+                             RequestContext request) {
+        String iri2 = feedIri.toString();
+        
+        int idx = iri2.indexOf(";workspaces");
+        if (idx != -1) {
+            feedIri = new IRI(UrlEncoding.encode(iri2.substring(0, idx), Profile.PATH.filter()));
+        }
+        
+        return super.getLink(name, entryObj, feedIri, request);
+    }
     @Override
     protected String addEntryDetails(RequestContext request, Entry e, IRI feedIri, Workspace entryObj)
         throws ResponseContextException {
