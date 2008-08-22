@@ -77,6 +77,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
     public void onShow(List<String> params) {
         if (params.size() > 0) {
             artifactId = params.get(0);
+            add = false;
         } else {
             add = true;
         }
@@ -93,7 +94,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
         table = createColumnTable();
         panel.add(table);
 
-        if (!add) {
+        if (add) {
             setupAddForm();
         } else {
             setupAddVersionForm(panel);
