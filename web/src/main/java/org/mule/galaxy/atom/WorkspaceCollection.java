@@ -18,6 +18,7 @@
 
 package org.mule.galaxy.atom;
 
+import static org.mule.galaxy.util.AbderaUtils.newErrorMessage;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
@@ -39,6 +40,8 @@ import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.RequestContext.Scope;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Manage artifact workspaces through an AtomPub collection.
@@ -46,6 +49,8 @@ import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
 public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspace> {
 
     public static final String ID_PREFIX = "urn:galaxy:workspaces:";
+
+    protected final Log log = LogFactory.getLog(getClass());
     
     private Registry registry;
     
@@ -103,17 +108,21 @@ public class WorkspaceCollection extends AbstractEntityCollectionAdapter<Workspa
     public Iterable<Workspace> getEntries(RequestContext request) throws ResponseContextException {
         Workspace parent = getResolvedWorkspace(request);
 
-        if (parent == null) {
-            try {
-                return registry.getWorkspaces();
-            } catch (RegistryException e) {
-                throw new ResponseContextException(500, e);
-            } catch (AccessException e) {
-                throw new ResponseContextException(405, e);
+        try {
+            if (parent == null) {
+                try {
+                    return registry.getWorkspaces();
+                } catch (AccessException e) {
+                    throw new ResponseContextException(405, e);
+                }
             }
+            
+            
+            return parent.getWorkspaces();
+        } catch (RegistryException e) {
+            log.error(e);
+            throw newErrorMessage("Error retrieving entries!", e.getMessage(), 500);
         }
-        
-        return parent.getWorkspaces();
     }
 
     @Override

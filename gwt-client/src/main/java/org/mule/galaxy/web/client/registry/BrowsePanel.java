@@ -65,6 +65,8 @@ public class BrowsePanel extends AbstractBrowsePanel {
     public void onShow(List<String> params) {
         if (params.size() > 0) {
             workspaceId = params.get(0);
+        } else {
+            workspaceId = null;
         }
         
         super.onShow(params);
@@ -113,7 +115,7 @@ public class BrowsePanel extends AbstractBrowsePanel {
         final TreeItem treeItem = new TreeItem();
         
         // Load the workspaces into a tree on the left
-        service.getWorkspaces(new AbstractCallback(this) {
+        service.getWorkspaces(workspaceId, new AbstractCallback(this) {
 
             @SuppressWarnings("unchecked")
             public void onSuccess(Object o) {
@@ -127,6 +129,7 @@ public class BrowsePanel extends AbstractBrowsePanel {
                     
                     setActiveWorkspace((String) child.getUserObject());
                 }
+                
                 cv.setRootItem(treeItem, workspaceTreeItem);
                 
                 String token = "manage-workspace/" + workspaceId;

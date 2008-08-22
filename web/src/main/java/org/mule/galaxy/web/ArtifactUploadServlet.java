@@ -30,7 +30,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -48,11 +47,9 @@ import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.security.User;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -64,7 +61,7 @@ public class ArtifactUploadServlet implements Controller {
     public ModelAndView handleRequest(HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
         String artifactId = null;
-        String wkspcId = null;
+        String wkspcPath = null;
         String name = null;
         String versionLabel = null;
         String contentType = null;
@@ -90,8 +87,8 @@ public class ArtifactUploadServlet implements Controller {
                     if ("artifactFile".equals(f)) {
                         uploadItem = item;
                         contentType = item.getContentType();
-                    } else if ("workspaceId".equals(f)) {
-                        wkspcId = item.getString();
+                    } else if ("workspacePath".equals(f)) {
+                        wkspcPath = item.getString();
                     } else if ("name".equals(f)) {
                         name = item.getString();
                     } else if ("versionLabel".equals(f)) {
@@ -116,19 +113,19 @@ public class ArtifactUploadServlet implements Controller {
                 return null;
             }
 
-            UserDetailsWrapper wrapper = (UserDetailsWrapper) SecurityContextHolder.getContext()
-                    .getAuthentication().getPrincipal();
-            User user = wrapper.getUser();
-
             EntryResult result = null;
             if (artifactId == null) {
-                if (wkspcId == null) {
+                if (wkspcPath == null) {
                     writer.write("No workspace was specified.");
                     return null;
                 }
 
-                Workspace wkspc = (Workspace) registry.getItemById(wkspcId);
-
+                Workspace wkspc = (Workspace) registry.getItemByPath(wkspcPath);
+                if (wkspc == null) {
+                    writer.write("The workspace that was specified is invalid.");
+                    return null;
+                }
+                
                 // pull out the original file name
                 if (name == null || "".equals(name)) {
                     name = uploadItem.getName();

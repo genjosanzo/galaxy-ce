@@ -12,18 +12,19 @@ import org.mvel.MVEL;
  * Takes an MVEL expression which will return a value from the artifact.
  */
 public class MvelColumn implements ColumnEvaluator {
+     
+    private final String expression;
 
-    private Serializable compiled;        
     public MvelColumn(String expression) {
         super();
-        compiled = MVEL.compileExpression(expression);
+        this.expression = expression;
     }
 
     public Object getValue(Object entry) {
         Map<String, Object> vars = new HashMap<String, Object>();
         vars.put("entry", entry);
         vars.put("version", ((Entry)entry).getDefaultOrLastVersion());
-        return MVEL.executeExpression(compiled, vars);
+        return MVEL.eval(expression, vars);
     }
 
 }

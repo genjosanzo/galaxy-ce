@@ -28,7 +28,7 @@ public interface EntryVersion extends Item {
     
     void setVersionLabel(String label);
     
-    EntryVersion getPrevious();
+    EntryVersion getPrevious() throws RegistryException;
 
     /**
      * The author of this version. They may or may not be the actual author, but they

@@ -53,9 +53,10 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
     private boolean edit;
     private ListBox lifecyclesLB;
     private FlowPanel panel;
-    private String parentWorkspace;
-    private WWorkspace workspace;
+    private String parentWorkspacePath;
+    private String workspaceName;
     private String workspaceId;
+    private String lifecycleId;
     private RegistryMenuPanel menuPanel;
     private SuggestBox workspacesSuggest;
 
@@ -78,13 +79,13 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
      * Set up the form for editing a workspace.
      */
     public WorkspaceForm(Galaxy galaxy, 
-                         WWorkspace workspace, 
-                         String parentWorkspacePath) {
+                         WWorkspace workspace) {
         this.galaxy = galaxy;
         this.edit = true;
-        this.workspace = workspace;
         this.workspaceId = workspace.getId();
-        this.parentWorkspace = parentWorkspacePath;
+        this.parentWorkspacePath = workspace.getParentPath();
+        this.workspaceName = workspace.getName();
+        this.lifecycleId = workspace.getDefaultLifecycleId();
         
         panel = new FlowPanel();
         
@@ -97,7 +98,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
             menuPanel.onShow();
         }
         if (params.size() > 0 && !edit) {
-            parentWorkspace = params.get(0);
+            parentWorkspacePath = params.get(0);
         }
         
         if (!edit) {
@@ -105,9 +106,9 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
         }
         
         final FlexTable table = createColumnTable();
-        String exclude = workspace != null ? workspace.getPath() : "xxx";
-        workspacesSuggest = new SuggestBox(new WorkspaceOracle(galaxy, this, exclude));
-        workspacesSuggest.setText(parentWorkspace);
+        workspacesSuggest = new SuggestBox(new WorkspaceOracle(galaxy, this, parentWorkspacePath));
+        workspacesSuggest.setText(parentWorkspacePath);
+        workspacesSuggest.setText(parentWorkspacePath);
         
         table.setText(0, 0, "Parent Workspace:");
         table.setWidget(0, 1, workspacesSuggest);
@@ -118,7 +119,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
         table.setWidget(1, 1, workspaceTextBox);
         
         if (edit) {
-            workspaceTextBox.setText(workspace.getName());
+            workspaceTextBox.setText(workspaceName);
         }
 
         table.setText(2, 0, "Default Lifecycle:");
@@ -163,7 +164,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
         table.setWidget(3, 1, buttonPanel);
 
         if (edit) {
-            setTitle("Edit Workspace " + workspace.getName());
+            setTitle("Edit Workspace " + workspaceName);
         } else {
             setTitle("Add Workspace");
         }
@@ -180,7 +181,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
             
             lifecyclesLB.addItem(l.getName(), l.getId());
             
-            if (workspace != null && l.getId().equals(workspace.getDefaultLifecycleId())) {
+            if (l.getId().equals(lifecycleId)) {
                 lifecyclesLB.setSelectedIndex(lifecyclesLB.getItemCount()-1);
             }
         }
@@ -226,7 +227,7 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
         }
         
         if (edit) {
-            galaxy.getRegistryService().updateWorkspace(workspace.getId(), 
+            galaxy.getRegistryService().updateWorkspace(workspaceId, 
                                                         parentWorkspace,
                                                         text, 
                                                         lifecycleId,

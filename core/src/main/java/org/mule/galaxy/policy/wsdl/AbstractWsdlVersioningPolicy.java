@@ -12,6 +12,7 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.RegistryLocator;
 import org.mule.galaxy.policy.ApprovalMessage;
@@ -38,16 +39,16 @@ public abstract class AbstractWsdlVersioningPolicy implements Policy
 
     @SuppressWarnings("unchecked")
     public Collection<ApprovalMessage> isApproved(final Item item) {
-        ArtifactVersion next = (ArtifactVersion) item;
-        ArtifactVersion previous = (ArtifactVersion) next.getPrevious();
-        if (previous == null) {
-            return Collections.EMPTY_SET;
-        }
-        
         final Collection<ApprovalMessage> messages = new ArrayList<ApprovalMessage>();
         
-        Workspace w = (Workspace) item.getParent().getParent();
         try {
+            ArtifactVersion next = (ArtifactVersion) item;
+            ArtifactVersion previous = (ArtifactVersion) next.getPrevious();
+            if (previous == null) {
+                return messages;
+            }
+            
+            Workspace w = (Workspace) item.getParent().getParent();
             WsdlDiff diff = new WsdlDiff();
             // TODO: make data a Definition object
             diff.setOriginalWSDL((Document) previous.getData(), new RegistryLocator(registry, w));
@@ -61,6 +62,8 @@ public abstract class AbstractWsdlVersioningPolicy implements Policy
             messages.add(new ApprovalMessage("There was an error processing the WSDL: " + e.getMessage()));
             
             log.error("There was an error processing the Artifact " + item.getPath(), e);
+        } catch (RegistryException e) {
+            throw new RuntimeException(e);
         }
         
         return messages;

@@ -713,7 +713,8 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
     protected Map<Item, List<ApprovalMessage>> approve(Item item) {
         try {
             return policyManager.approve(item);
-        } catch (PolicyException e) {
+        } catch (Exception e) {
+            // this will be dewrapped
             throw new RuntimeException(e);
         }
     }
@@ -835,7 +836,13 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
 
         return (Workspace) executeAndDewrapWithDuplicate(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Collection<Workspace> workspaces = parent.getWorkspaces();
+                Collection<Workspace> workspaces;
+                try {
+                    workspaces = parent.getWorkspaces();
+                } catch (RegistryException e1) {
+                    // will be unwrapped
+                    throw new RuntimeException(e1);
+                }
                 
                 Node parentNode = ((JcrWorkspace) parent).getNode();
                 Node node = null;

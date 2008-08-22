@@ -30,7 +30,9 @@ import org.mule.galaxy.web.client.RPCException;
 
 public interface RegistryService extends RemoteService {
 
-    Collection<WWorkspace> getWorkspaces() throws RPCException;
+    Collection<WWorkspace> getWorkspaces(String parentId) throws RPCException;
+    
+    WWorkspace getWorkspace(String id) throws RPCException;
     
     void addWorkspace(String parentWorkspaceId, String workspaceName, String lifecycleId) throws RPCException, ItemNotFoundException, ItemExistsException;
 

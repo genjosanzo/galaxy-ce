@@ -27,27 +27,24 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.admin.PolicyPanel;
-import org.mule.galaxy.web.client.entry.PolicyResultsPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.WorkspacesListBox;
+import org.mule.galaxy.web.client.util.WorkspaceOracle;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableSuggestBox;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.WPolicyException;
-import org.mule.galaxy.web.rpc.WWorkspace;
 
 public class EntryForm extends AbstractErrorShowingComposite {
     private ValidatableTextBox nameBox;
     private FlexTable table;
     private ValidatableTextBox versionBox;
-    private WorkspacesListBox workspacesLB;
     private final Galaxy galaxy;
     private String entryId;
     private CheckBox disablePrevious;
@@ -55,6 +52,7 @@ public class EntryForm extends AbstractErrorShowingComposite {
     private Button addButton;
     private RegistryMenuPanel menuPanel;
     private FlowPanel panel;
+    private ValidatableSuggestBox workspaceSB;
 
     public EntryForm(final Galaxy galaxy) {
         this.galaxy = galaxy;
@@ -162,14 +160,7 @@ public class EntryForm extends AbstractErrorShowingComposite {
     }
 
     private void doAdd(AbstractCallback callback) {
-        String workspaceId = workspacesLB.getSelectedValue();
-        
-        if (workspaceId == null) {
-            setMessage("A workspace must be selected.");
-            return;
-        }
-        
-        galaxy.getRegistryService().newEntry(workspaceId, nameBox.getText(), versionBox.getText(), callback);
+        galaxy.getRegistryService().newEntry(workspaceSB.getText(), nameBox.getText(), versionBox.getText(), callback);
     }
     
     private void doAddVersion(AbstractCallback callback) {
@@ -182,6 +173,7 @@ public class EntryForm extends AbstractErrorShowingComposite {
         
         if (add) {
             v &= nameBox.validate();
+            v &= workspaceSB.validate();
         }
         
         v &= versionBox.validate();
@@ -189,25 +181,11 @@ public class EntryForm extends AbstractErrorShowingComposite {
     }
 
     private void setupAddForm() {
-        galaxy.getRegistryService().getWorkspaces(new AbstractCallback(this) {
-
-            @SuppressWarnings("unchecked")
-            public void onSuccess(Object workspaces) {
-                setupAddForm((Collection<WWorkspace>) workspaces);
-            }
-
-        });
-    }
-
-    private void setupAddForm(Collection<WWorkspace> workspaces) {
         table.setWidget(0, 0, new Label("Workspace"));
 
-        workspacesLB = new WorkspacesListBox(workspaces,
-                                             null,
-                                             BrowsePanel.getLastWorkspaceId(),
-                                             false);
-        workspacesLB.setName("workspaceId");
-        table.setWidget(0, 1, workspacesLB);
+        workspaceSB = new ValidatableSuggestBox(new StringNotEmptyValidator(),
+                                                new WorkspaceOracle(galaxy, menuPanel));
+        table.setWidget(0, 1, workspaceSB);
 
         Label nameLabel = new Label("Entry Name");
         table.setWidget(1, 0, nameLabel);

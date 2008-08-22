@@ -96,6 +96,10 @@ public abstract class AbstractJcrItem implements Item {
         }
     }
     
+    public boolean isLocal() {
+        return true;
+    }
+
     public void delete() throws RegistryException, AccessException {
         manager.delete(this);
     }

@@ -93,7 +93,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         policies.put(p.getId(), p);
     }
 
-    public Map<Item, List<ApprovalMessage>> approve(Item item) throws PolicyException {
+    public Map<Item, List<ApprovalMessage>> approve(Item item) throws PolicyException, RegistryException {
         Map<Item, List<ApprovalMessage>> failures = new HashMap<Item, List<ApprovalMessage>>();
         
         approveItem(item, failures, getActivePolicies(item));
@@ -125,7 +125,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     }
     
     public void setActivePolicies(Item item, Collection<Phase> phases, Policy... policies) 
-        throws PolicyException {
+        throws PolicyException, RegistryException {
         
         Map<Item, List<ApprovalMessage>> failures = new HashMap<Item, List<ApprovalMessage>>();
         
@@ -143,7 +143,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                              Lifecycle lifecycle,
                              Collection<Phase> phases, 
                              Policy... policies) 
-        throws PolicyException {
+        throws PolicyException, RegistryException {
 
         approve(item, item, failures, lifecycle, phases, policies);
         
@@ -184,7 +184,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
 
     private void approveItem(Item item, 
                              Map<Item, List<ApprovalMessage>> failures,
-                             Collection<PolicyInfo> activePolicies) {
+                             Collection<PolicyInfo> activePolicies) throws RegistryException {
         approve(item, item, failures, activePolicies);
         
         if (item instanceof Workspace) {

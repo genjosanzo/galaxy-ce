@@ -28,7 +28,7 @@ import java.util.Set;
 import org.mule.galaxy.web.client.RPCException;
 
 public interface RegistryServiceAsync {
-    void getWorkspaces(AsyncCallback callback);
+    void getWorkspaces(String parentId, AsyncCallback callback);
     
     void addWorkspace(String parentWorkspaceId, 
                       String workspaceName,
@@ -36,7 +36,7 @@ public interface RegistryServiceAsync {
                       AsyncCallback callback);
     
     void updateWorkspace(String workspaceId, 
-                         String parentWorkspaceId, 
+                         String parentWorkspacePath, 
                          String workspaceName,
                          String lifecycleId,
                          AsyncCallback callback);
@@ -51,7 +51,7 @@ public interface RegistryServiceAsync {
     void deleteArtifactType(String id, 
                             AsyncCallback callback);
     
-    void newEntry(String workspaceId, String name, String version, AsyncCallback callback);
+    void newEntry(String workspacePath, String name, String version, AsyncCallback callback);
 
     void newEntryVersion(String entryId, String version, AsyncCallback callback);
     
@@ -135,7 +135,7 @@ public interface RegistryServiceAsync {
 
     void setDefault(String artifactVersionId, AsyncCallback c);
     
-    void move(String artifactId, String workspaceId, String name, String newVersion, AsyncCallback c);
+    void move(String artifactId, String parentPath, String name, String newVersion, AsyncCallback c);
     
     void delete(String artifactId, AsyncCallback c);
 
@@ -176,4 +176,6 @@ public interface RegistryServiceAsync {
     void deleteArtifactView(String id, AsyncCallback callback);
     
     void getRecentArtifactViews(AsyncCallback callback);
+
+    void getWorkspace(String workspaceId, AsyncCallback<WWorkspace> callback);
 }

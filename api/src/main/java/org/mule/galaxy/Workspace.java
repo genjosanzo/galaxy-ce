@@ -22,7 +22,7 @@ public interface Workspace extends Item {
     
     Workspace getParent();
     
-    Collection<Workspace> getWorkspaces();
+    Collection<Workspace> getWorkspaces() throws RegistryException;
 
     Workspace getWorkspace(String name);
 
@@ -49,7 +49,7 @@ public interface Workspace extends Item {
     
     CommentManager getCommentManager();    
 
-    List<Item> getItems();
+    List<Item> getItems() throws RegistryException;
     
     /**
      * Creates an artifact from a Java representation of it (as opposed

@@ -17,7 +17,7 @@ public abstract class AbstractEntryVersion extends AbstractItem implements Entry
         super(manager, metadata);
     }
 
-    public EntryVersion getPrevious() {
+    public EntryVersion getPrevious() throws RegistryException {
         List<? extends EntryVersion> versions = getParent().getVersions();
         
         int i = versions.indexOf(this);

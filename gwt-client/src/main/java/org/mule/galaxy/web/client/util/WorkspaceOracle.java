@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.registry.ArtifactForm;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.EntryInfo;
 
@@ -23,6 +24,10 @@ public class WorkspaceOracle extends SuggestOracle {
         this.errorPanel = errorPanel;
         this.galaxy = galaxy;
         this.exclude = exclude;
+    }
+
+    public WorkspaceOracle(Galaxy galaxy, ErrorPanel errorPanel) {
+        this(galaxy, errorPanel, "xxx");
     }
 
     @Override

@@ -20,6 +20,8 @@ public interface Item {
     
     void setName(String name);
     
+    boolean isLocal();
+    
     String getPath();
     
     Calendar getCreated();

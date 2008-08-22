@@ -21,6 +21,7 @@ package org.mule.galaxy.web.client.entry;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.WorkspaceOracle;
 import org.mule.galaxy.web.client.util.WorkspacesListBox;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
@@ -35,6 +36,7 @@ import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
@@ -98,27 +100,11 @@ public class NameEditPanel extends Composite {
 
     protected void showEditPanel() {
         panel.clear();
-        panel.add(new Label("Loading workspaces..."));
-        
-        galaxy.getRegistryService().getWorkspaces(new AbstractCallback(errorPanel) {
-            @SuppressWarnings("unchecked")
-            public void onSuccess(Object workspaces) {
-                showEditPanel((Collection<WWorkspace>) workspaces);
-            }
-        });
-    }
 
-    protected void showEditPanel(Collection<WWorkspace> workspaces) {
-        panel.clear();
-        
-        
-        final WorkspacesListBox workspacesLB = new WorkspacesListBox(workspaces, 
-                                                                     null,
-                                                                     workspaceId,
-                                                                     false);
         final HorizontalPanel row = new HorizontalPanel();
 
-        row.add(workspacesLB);
+        final SuggestBox workspaceSB = new SuggestBox(new WorkspaceOracle(galaxy, errorPanel));
+        row.add(workspaceSB);
         row.add(new HTML("&nbsp;"));
         final ValidatableTextBox nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
         nameTB.getTextBox().setText(name);
@@ -138,7 +124,7 @@ public class NameEditPanel extends Composite {
                 if (!validateName(nameTB)) {
                     return;
                 }
-                save(workspacesLB.getSelectedValue(), 
+                save(workspaceSB.getText(), 
                      nameTB.getText(),
                      versionTB.getText());
             }
@@ -161,12 +147,12 @@ public class NameEditPanel extends Composite {
         panel.add(row);
     }
 
-    protected void save(final String newWorkspaceId, final String newName, String newVersion) {
-        if (!newWorkspaceId.equals(this.workspaceId) 
+    protected void save(final String newWorkspacePath, final String newName, String newVersion) {
+        if (!newWorkspacePath.equals(this.workspaceId) 
             || !newName.equals(this.name)
             || !newVersion.equals(this.version)) {
             // save only if name or workspace changed
-            galaxy.getRegistryService().move(versionId, newWorkspaceId, newName, newVersion, new AbstractCallback(errorPanel) {
+            galaxy.getRegistryService().move(versionId, newWorkspacePath, newName, newVersion, new AbstractCallback(errorPanel) {
 
                 public void onSuccess(Object arg0) {
                     // need to refresh the whole panel to fetch new workspace location and entry name

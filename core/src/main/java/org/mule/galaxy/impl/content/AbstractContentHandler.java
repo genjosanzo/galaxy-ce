@@ -43,16 +43,6 @@ public abstract class AbstractContentHandler implements ContentHandler {
 
     }
 
-    public String describe(ArtifactVersion v) {
-        ArtifactVersion prev = (ArtifactVersion) v.getPrevious();
-        
-        if (prev == null)
-            return "Initial version.";
-        
-        
-        return describeDifferences(prev, v);
-    }
-
     public String describeDifferences(ArtifactVersion prev, ArtifactVersion v) {
         return "Version " + v.getVersionLabel();
     }

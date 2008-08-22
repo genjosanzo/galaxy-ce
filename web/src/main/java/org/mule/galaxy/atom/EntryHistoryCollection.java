@@ -102,7 +102,12 @@ public class EntryHistoryCollection extends AbstractEntryCollection {
     @SuppressWarnings("unchecked")
     @Override
     public Iterable<Item> getEntries(RequestContext request) throws ResponseContextException {
-        return (Iterable<Item>) ((List)getEntry(getRegistryItem(request)).getVersions());
+        try {
+            return (Iterable<Item>) ((List)getEntry(getRegistryItem(request)).getVersions());
+        } catch (RegistryException e) {
+            log.error(e);
+            throw newErrorMessage("Error retrieving entries!", e.getMessage(), 500);
+        }
     }
 
     @Override

@@ -9,7 +9,14 @@ import java.util.List;
 public class ItemInfo implements IsSerializable {
     protected String id;
     protected List<WProperty> properties = new ArrayList<WProperty>();
+    protected boolean local;
     
+    public boolean isLocal() {
+        return local;
+    }
+    public void setLocal(boolean local) {
+        this.local = local;
+    }
     public String getId() {
         return id;
     }

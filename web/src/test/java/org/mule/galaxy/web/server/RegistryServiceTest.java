@@ -71,7 +71,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     public void testArtifactOperations() throws Exception
     {
         //importHelloTestWSDL();
-        Collection<WWorkspace> workspaces = gwtRegistry.getWorkspaces();
+        Collection<WWorkspace> workspaces = gwtRegistry.getWorkspaces(null);
         assertEquals(1, workspaces.size());
 
         Collection<WArtifactType> artifactTypes = gwtRegistry.getArtifactTypes();
@@ -168,31 +168,29 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     }
     
     public void testWorkspaces() throws Exception {
-        Collection<WWorkspace> workspaces = gwtRegistry.getWorkspaces();
+        Collection<WWorkspace> workspaces = gwtRegistry.getWorkspaces(null);
         assertEquals(1, workspaces.size());
         
         WWorkspace w = workspaces.iterator().next();
         
         gwtRegistry.addWorkspace(w.getPath(), "Foo", null);
         
-        workspaces = gwtRegistry.getWorkspaces();
+        workspaces = gwtRegistry.getWorkspaces(w.getId());
         assertEquals(1, workspaces.size());
         
         w = workspaces.iterator().next();
-        assertNotNull(w.getWorkspaces());
-        assertEquals(1, w.getWorkspaces().size());
-        
         assertNotNull(w.getPath());
     }
+    
     public void testEntries() throws Exception
     {
         //importHelloTestWSDL();
-        Collection<WWorkspace> workspaces = gwtRegistry.getWorkspaces();
+        Collection<WWorkspace> workspaces = gwtRegistry.getWorkspaces(null);
         assertEquals(1, workspaces.size());
         
         WWorkspace w = workspaces.iterator().next();
         
-        String entryId = gwtRegistry.newEntry(w.getId(), "Foo", "1");
+        String entryId = gwtRegistry.newEntry(w.getPath(), "Foo", "1");
         
         ExtendedEntryInfo entry = gwtRegistry.getEntry(entryId);
         assertEquals("Entry", entry.getType());

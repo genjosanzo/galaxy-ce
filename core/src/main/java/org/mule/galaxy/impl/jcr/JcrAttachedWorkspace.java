@@ -68,7 +68,7 @@ public class JcrAttachedWorkspace extends AbstractJcrItem implements AttachedWor
         return sb.toString();
     }
 
-    public Collection<Workspace> getWorkspaces() {
+    public Collection<Workspace> getWorkspaces() throws RegistryException {
         return getWorkspaceManager().getWorkspaces(this);
     }
 
@@ -85,7 +85,7 @@ public class JcrAttachedWorkspace extends AbstractJcrItem implements AttachedWor
         return null;
     }
 
-    public List<Item> getItems() {
+    public List<Item> getItems() throws RegistryException {
         return getWorkspaceManager().getItems(this);
     }
 

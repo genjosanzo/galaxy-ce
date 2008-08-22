@@ -18,13 +18,6 @@
 
 package org.mule.galaxy.web.client.registry;
 
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.WorkspacesListBox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WWorkspace;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
@@ -44,8 +37,14 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.WorkspaceOracle;
+import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableSuggestBox;
 
 public class ArtifactForm extends AbstractErrorShowingComposite {
     private TextBox nameBox;
@@ -53,13 +52,13 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
     private FormPanel form;
     private FileUpload artifactUpload;
     private TextBox versionBox;
-    private WorkspacesListBox workspacesLB;
     private final Galaxy galaxy;
     private String artifactId;
     private CheckBox disablePrevious;
     private boolean add;
     private Button addButton;
     private RegistryMenuPanel menuPanel;
+    private ValidatableSuggestBox workspaceSB;
 
     public ArtifactForm(final Galaxy galaxy) {
         this.galaxy = galaxy;
@@ -94,7 +93,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
         table = createColumnTable();
         panel.add(table);
 
-        if (add) {
+        if (!add) {
             setupAddForm();
         } else {
             setupAddVersionForm(panel);
@@ -247,25 +246,11 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
     }
 
     private void setupAddForm() {
-        galaxy.getRegistryService().getWorkspaces(new AbstractCallback(this) {
-
-            @SuppressWarnings("unchecked")
-            public void onSuccess(Object workspaces) {
-                setupAddForm((Collection<WWorkspace>) workspaces);
-            }
-
-        });
-    }
-
-    private void setupAddForm(Collection<WWorkspace> workspaces) {
         table.setWidget(0, 0, new Label("Workspace"));
 
-        workspacesLB = new WorkspacesListBox(workspaces,
-                                             null,
-                                             BrowsePanel.getLastWorkspaceId(),
-                                             false);
-        workspacesLB.setName("workspaceId");
-        table.setWidget(0, 1, workspacesLB);
+        workspaceSB = new ValidatableSuggestBox(new StringNotEmptyValidator(),
+                                                new WorkspaceOracle(galaxy, this));
+        table.setWidget(0, 1, workspaceSB);
 
         Label nameLabel = new Label("Artifact Name");
         table.setWidget(1, 0, nameLabel);

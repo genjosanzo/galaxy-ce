@@ -31,6 +31,10 @@ public abstract class AbstractItem implements Item {
     public String getId() {
         return id;
     }
+    
+    public boolean isLocal() {
+        return false;
+    }
 
     public void setInternalProperty(String name, Object value) throws PropertyException, PolicyException {
         

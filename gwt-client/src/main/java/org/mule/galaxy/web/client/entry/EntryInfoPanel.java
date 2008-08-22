@@ -111,16 +111,17 @@ public class EntryInfoPanel extends AbstractComposite {
         
         topPanel.add(rightGroup);
         
-        panel.add(newSpacer());
-        
-        panel.add(new EntryMetadataPanel(galaxy, errorPanel, "Metadata", info, false));
-        panel.add(newSpacer());
-        
-        panel.add(new EntryMetadataPanel(galaxy, errorPanel, "Versioned Metadata", version, version.isIndexInformationStale()));
-        panel.add(newSpacer());
-        
-        initComments();
-        
+        if (info.isLocal()) {
+            panel.add(newSpacer());
+            
+            panel.add(new EntryMetadataPanel(galaxy, errorPanel, "Metadata", info, false));
+            panel.add(newSpacer());
+            
+            panel.add(new EntryMetadataPanel(galaxy, errorPanel, "Versioned Metadata", version, version.isIndexInformationStale()));
+            panel.add(newSpacer());
+            
+            initComments();
+        }
         initWidget(panel);
     }
 

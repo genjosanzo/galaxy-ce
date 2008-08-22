@@ -33,9 +33,9 @@ public interface WorkspaceManager {
      */
     String getId();
     
-    Collection<Workspace> getWorkspaces() throws AccessException;
+    Collection<Workspace> getWorkspaces() throws AccessException, RegistryException;
 
-    Collection<Workspace> getWorkspaces(Workspace workspace);
+    Collection<Workspace> getWorkspaces(Workspace workspace) throws RegistryException;
 
     Workspace newWorkspace(final String name) 
     	throws DuplicateItemException, RegistryException, AccessException;
@@ -73,7 +73,7 @@ public interface WorkspaceManager {
     EntryResult newVersion(Entry entry, String versionLabel)
     	throws DuplicateItemException, RegistryException, PolicyException, AccessException;
 
-    List<Item> getItems(Workspace w);
+    List<Item> getItems(Workspace w) throws RegistryException;
     
     Item getItemById(final String id) throws NotFoundException, RegistryException, AccessException;
     

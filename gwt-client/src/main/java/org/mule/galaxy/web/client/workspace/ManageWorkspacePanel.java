@@ -18,16 +18,6 @@
 
 package org.mule.galaxy.web.client.workspace;
 
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.admin.PolicyPanel;
-import org.mule.galaxy.web.client.entry.ItemGroupPermissionPanel;
-import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.SecurityService;
-import org.mule.galaxy.web.rpc.WWorkspace;
-
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
@@ -39,12 +29,22 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.admin.PolicyPanel;
+import org.mule.galaxy.web.client.entry.ItemGroupPermissionPanel;
+import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemInfo;
+import org.mule.galaxy.web.rpc.SecurityService;
+import org.mule.galaxy.web.rpc.WWorkspace;
+
 public class ManageWorkspacePanel extends AbstractErrorShowingComposite {
 
     private FlowPanel panel;
     private String workspaceId;
     private final Galaxy galaxy;
-    private WWorkspace workspace;
     private RegistryMenuPanel menuPanel;
 
     public ManageWorkspacePanel(final Galaxy galaxy) {
@@ -66,24 +66,19 @@ public class ManageWorkspacePanel extends AbstractErrorShowingComposite {
         if (params.size() > 0) {
             workspaceId = params.get(0);
         }
+
+        menuPanel.onShow();
         
-        galaxy.getRegistryService().getWorkspaces(new AbstractCallback(this) {
-            @SuppressWarnings("unchecked")
-            public void onSuccess(Object workspaces) {
-                loadWorkspaces((Collection<WWorkspace>) workspaces);
+        galaxy.getRegistryService().getWorkspace(workspaceId, new AbstractCallback<WWorkspace>(this) {
+            public void onSuccess(WWorkspace i) {
+                loadForm(i);
             }
         });
-        menuPanel.onShow();
     }
     
-    public void loadWorkspaces(Collection<WWorkspace> workspaces) {
+    public void loadForm(WWorkspace workspace) {
         panel.clear();
-        
-        Object[] parentAndWkspc = getWorkspace(workspaceId, null, workspaces);
-        WWorkspace parent = (WWorkspace) parentAndWkspc[0];
-        String parentId = parent != null ? parent.getPath() : null;
-        workspace = (WWorkspace) parentAndWkspc[1];
-        
+
         panel.add(createPrimaryTitle("Manage Workspace - " + workspace.getName()));
         
         final TabPanel tabs = new TabPanel();
@@ -92,7 +87,7 @@ public class ManageWorkspacePanel extends AbstractErrorShowingComposite {
         tabs.setStyleName("artifactTabPanel");
         tabs.getDeckPanel().setStyleName("artifactTabDeckPanel");
         
-        tabs.add(new WorkspaceForm(galaxy, workspace, parentId), "Info");
+        tabs.add(new WorkspaceForm(galaxy, workspace), "Info");
         tabs.add(new PolicyPanel(this, galaxy, workspaceId), "Governance");
         if (galaxy.hasPermission("MANAGE_GROUPS")) {
             tabs.add(new ItemGroupPermissionPanel(galaxy, 
@@ -120,23 +115,5 @@ public class ManageWorkspacePanel extends AbstractErrorShowingComposite {
         composite.onShow(args);
     }
     
-    private Object[] getWorkspace(String id, WWorkspace parent, Collection<WWorkspace> workspaces) {
-        if (workspaces == null) {
-            return null;
-        }
-        for (Iterator<WWorkspace> itr = workspaces.iterator(); itr.hasNext();) {
-            WWorkspace w = itr.next();
-            
-            if (w.getId().equals(id)) {
-                return new Object[] { parent, w };
-            }
-            
-            Object[] child = getWorkspace(id, w, w.getWorkspaces());
-            if (child != null) {
-                return child; 
-            }
-        }
-        return null;
-    }
 
 }

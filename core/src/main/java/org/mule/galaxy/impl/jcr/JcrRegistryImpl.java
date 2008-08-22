@@ -490,7 +490,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
     }
     
-    public void move(final Entry entry, final String newWorkspaceId, final String newName) throws RegistryException, AccessException, NotFoundException {
+    public void move(final Entry entry, final String newWorkspacePath, final String newName) throws RegistryException, AccessException, NotFoundException {
         boolean wasRenamed = false;
         boolean wasMoved = false;
         final String oldPath = entry.getPath();
@@ -507,11 +507,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             }
 
             // handle workspace move
-            final Workspace workspace = (Workspace) getItemById(newWorkspaceId);
+            final Workspace workspace = (Workspace) getItemByPath(newWorkspacePath);
             accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE, workspace);
 
             // only if workspace changed
-            if (!entry.getParent().getId().equals(newWorkspaceId)) {
+            if (!entry.getParent().getId().equals(workspace.getId())) {
 
                 execute(new JcrCallback() {
                     public Object doInJcr(Session session) throws IOException, RepositoryException {

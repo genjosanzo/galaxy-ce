@@ -18,20 +18,14 @@
 
 package org.mule.galaxy.atom;
 
-import java.util.Iterator;
-
+import static org.mule.galaxy.util.AbderaUtils.newErrorMessage;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.RequestContext.Scope;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.Entry;
-import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.query.Query;
-import org.mule.galaxy.query.QueryException;
 
 /**
  * This collection will display all the artifacts within a particular workspace.
@@ -47,7 +41,12 @@ public class EntryWorkspaceCollection extends SearchableEntryCollection {
     public Iterable<Item> getEntries(RequestContext request) throws ResponseContextException {
         Workspace w = (Workspace) request.getAttribute(Scope.REQUEST, EntryResolver.WORKSPACE);
         
-        return w.getItems();
+        try {
+            return w.getItems();
+        } catch (RegistryException e) {
+            log.error(e);
+            throw newErrorMessage("Error retrieving entries!", e.getMessage(), 500);
+        }
     }
 
 }

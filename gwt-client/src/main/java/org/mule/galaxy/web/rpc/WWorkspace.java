@@ -22,23 +22,31 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.util.Collection;
 
-public class WWorkspace implements IsSerializable {
-    private String id;
+public class WWorkspace extends ItemInfo implements IsSerializable {
     private String name;
     private Collection<WWorkspace> workspaces;
     private String path;
     private String defaultLifecycleId;
-    private boolean remote;
+    private String parentPath;
     
     public WWorkspace() {
         super();
     }
+    
     public WWorkspace(String id2, String name2, String path) {
         this.id = id2;
         this.name = name2;
         this.path = path;
     }
     
+    public String getParentPath() {
+        return parentPath;
+    }
+
+    public void setParentPath(String parentPath) {
+        this.parentPath = parentPath;
+    }
+
     public String getDefaultLifecycleId() {
         return defaultLifecycleId;
     }
@@ -51,13 +59,6 @@ public class WWorkspace implements IsSerializable {
     public void setPath(String path) {
         this.path = path;
     }
-    public String getId() {
-        return id;
-    }
-    public void setId(String id) {
-        this.id = id;
-    }
-    
     public String getName() {
         return name;
     }

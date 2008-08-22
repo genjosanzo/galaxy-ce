@@ -153,33 +153,92 @@ public class RegistryServiceImpl implements RegistryService {
         return exts;
     }
 
-    public Collection<WWorkspace> getWorkspaces() throws RPCException {
+    public Collection<WWorkspace> getWorkspaces(String parentId) throws RPCException {
         try {
-            Collection<Workspace> workspaces = registry.getWorkspaces();
-            List<WWorkspace> wis = new ArrayList<WWorkspace>();
-
-            for (Workspace w : workspaces) {
-                WWorkspace ww = toWeb(w);
-                wis.add(ww);
+            if (parentId == null) {
+                Collection<Workspace> workspaces = registry.getWorkspaces();
+                
+                return toWeb(workspaces);
+            } else {
+                Workspace w = (Workspace) registry.getItemById(parentId);
+                
+                Collection<WWorkspace> workspaces = toWeb(w.getWorkspaces());
+                while (w != null) {
+                    Workspace parent = w.getParent();
+                    Collection<WWorkspace> parentWorkspaces;
+                    if (parent != null) {
+                        parentWorkspaces = toWeb(parent.getWorkspaces());
+                    } else {
+                        parentWorkspaces = toWeb(registry.getWorkspaces());
+                    }
+                    
+                    addWorkspaces(w.getName(), parentWorkspaces, workspaces);
+                    workspaces = parentWorkspaces;
+                    w = parent;
+                }
+                return workspaces;
             }
-            return wis;
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 
+    private void addWorkspaces(String name, Collection<WWorkspace> parents, Collection<WWorkspace> children) {
+        for (WWorkspace w : parents) {
+            if (name.equals(w.getName())) {
+                w.setWorkspaces(children);
+                return;
+            }
+        }
+    }
+
+    private Collection<WWorkspace> toWeb(Collection<Workspace> workspaces) {
+        if (workspaces == null) {
+            return null;
+        }
+        List<WWorkspace> wis = new ArrayList<WWorkspace>();
+        for (Workspace w : workspaces) {
+            WWorkspace ww = toWeb(w);
+            wis.add(ww);
+        }
+        
+        return wis;
+    }
+
+    public WWorkspace getWorkspace(String id) throws RPCException {
+        try {
+            Workspace w = (Workspace) registry.getItemById(id);
+            WWorkspace ww = toWeb(w);
+            
+            Workspace parent = w.getParent();
+            if (parent != null) {
+                ww.setParentPath(parent.getPath());
+            }
+            return ww;
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
     private WWorkspace toWeb(Workspace w) {
         WWorkspace ww = new WWorkspace(encode(w.getId()), w.getName(), w.getPath());
-        ww.setDefaultLifecycleId(w.getDefaultLifecycle().getId());
-
-        Collection<Workspace> children = w.getWorkspaces();
-        if (children != null && children.size() > 0) {
-            ww.setWorkspaces(new ArrayList<WWorkspace>());
-            addWorkspaces(ww, children);
+        if (w.isLocal() && w.getDefaultLifecycle() != null) {
+            ww.setDefaultLifecycleId(w.getDefaultLifecycle().getId());
         }
+//        Collection<Workspace> children = w.getWorkspaces();
+//        if (children != null && children.size() > 0) {
+//            ww.setWorkspaces(new ArrayList<WWorkspace>());
+//            addWorkspaces(ww, children);
+//        }
         return ww;
     }
 
@@ -193,18 +252,18 @@ public class RegistryServiceImpl implements RegistryService {
         return id;
     }
 
-    private void addWorkspaces(WWorkspace parent, Collection<Workspace> workspaces) {
-        for (Workspace w : workspaces) {
-            WWorkspace ww = new WWorkspace(w.getId(), w.getName(), w.getPath());
-            parent.getWorkspaces().add(ww);
-
-            Collection<Workspace> children = w.getWorkspaces();
-            if (children != null && children.size() > 0) {
-                ww.setWorkspaces(new ArrayList<WWorkspace>());
-                addWorkspaces(ww, children);
-            }
-        }
-    }
+//    private void addWorkspaces(WWorkspace parent, Collection<Workspace> workspaces) {
+//        for (Workspace w : workspaces) {
+//            WWorkspace ww = new WWorkspace(w.getId(), w.getName(), w.getPath());
+//            parent.getWorkspaces().add(ww);
+//
+//            Collection<Workspace> children = w.getWorkspaces();
+//            if (children != null && children.size() > 0) {
+//                ww.setWorkspaces(new ArrayList<WWorkspace>());
+//                addWorkspaces(ww, children);
+//            }
+//        }
+//    }
 
     public void addWorkspace(String parentPath, String workspaceName, String lifecycleId) throws RPCException, ItemNotFoundException, ItemExistsException {
         try {
@@ -282,10 +341,10 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public String newEntry(String workspaceId, String name, String version) 
+    public String newEntry(String workspacePath, String name, String version) 
         throws RPCException, ItemExistsException, WPolicyException, ItemNotFoundException {
         try {
-            Workspace w = (Workspace) registry.getItemById(workspaceId);
+            Workspace w = (Workspace) registry.getItemByPath(workspacePath);
             
             EntryResult result = w.newEntry(name, version);
             
@@ -601,13 +660,14 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     private EntryInfo createBasicEntryInfo(Entry a, 
-                                              ItemRenderer view,
-                                              EntryInfo info, 
-                                              boolean extended) {
+                                           ItemRenderer view,
+                                           EntryInfo info, 
+                                           boolean extended) {
         info.setId(a.getId());
         info.setWorkspaceId(encode(a.getParent().getId()));
         info.setName(a.getName());
         info.setPath(a.getParent().getPath());
+        info.setLocal(a.isLocal());
         int column = 0;
         
         for (int i = 0; i < view.getColumnNames().length; i++) {
@@ -1061,7 +1121,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    private ExtendedEntryInfo getEntryGroup(Entry e) {
+    private ExtendedEntryInfo getEntryGroup(Entry e) throws RegistryException {
         ExtendedEntryInfo info = new ExtendedEntryInfo();
         
         ItemRenderer view;
@@ -1129,6 +1189,7 @@ public class RegistryServiceImpl implements RegistryService {
 
             ItemInfo itemInfo = new ItemInfo();
             itemInfo.setId(item.getId());
+            itemInfo.setLocal(item.isLocal());
             populateProperties(item, itemInfo, showHidden);
             
             return itemInfo;
@@ -1430,14 +1491,14 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void move(String versionId, String workspaceId, String name, String version) throws RPCException, ItemNotFoundException {
+    public void move(String versionId, String workspacePath, String name, String version) throws RPCException, ItemNotFoundException {
         try {
             EntryVersion v = (EntryVersion) registry.getItemById(decode(versionId));
             Entry entry = v.getParent();
-            workspaceId = encode(workspaceId);
+            workspacePath = encode(workspacePath);
             
-            if (!entry.getParent().getId().equals(workspaceId)) {
-                registry.move(entry, workspaceId, name);
+            if (!entry.getParent().getId().equals(workspacePath)) {
+                registry.move(entry, workspacePath, name);
             }
             
             if (!version.equals(v.getVersionLabel())) {

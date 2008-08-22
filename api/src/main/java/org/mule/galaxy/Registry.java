@@ -61,7 +61,7 @@ public interface Registry {
 
     Item resolve(Item w, String location);
     
-    void move(Entry item, String newWorkspaceId, final String newName) throws RegistryException, AccessException, NotFoundException;
+    void move(Entry item, String newWorkspacePath, final String newName) throws RegistryException, AccessException, NotFoundException;
 
     
     /* Search functions */

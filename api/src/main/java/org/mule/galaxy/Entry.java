@@ -25,7 +25,7 @@ public interface Entry extends Item {
     
     void setDescription(String description);
     
-    List<? extends EntryVersion> getVersions();
+    List<? extends EntryVersion> getVersions() throws RegistryException;
 
     EntryVersion getVersion(String versionName);
 
