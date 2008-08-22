@@ -43,6 +43,9 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.SuggestBox;
+
+import org.mule.galaxy.web.client.util.EntrySuggestOracle;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,7 +82,8 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
 
     private Button save;
     private Button cancel;
-    private TextBox setPropertyTB;
+    private SuggestBox setPropertyTB;
+    private SuggestBox delPropertyTB;
 
     private Collection permissions;
     private Map groups;
@@ -109,7 +113,8 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
         this.phaseLB = new ListBox();
         this.setPropertyLB = new ListBox();
         this.delPropertyLB = new ListBox();
-        this.setPropertyTB = new TextBox();
+        this.setPropertyTB =  new SuggestBox(new EntrySuggestOracle(galaxy, this, "xxx"));
+        this.delPropertyTB = new SuggestBox(new EntrySuggestOracle(galaxy, this, "xxx"));
 
         // main root panel
         menuPanel = new RegistryMenuPanel(galaxy);
@@ -142,8 +147,9 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
         lifecycleLB.setEnabled(false);
         phaseLB.setEnabled(false);
         delPropertyLB.setEnabled(false);
+        //delPropertyTB.setEnabled(false);
         setPropertyLB.setEnabled(false);
-        setPropertyTB.setEnabled(false);
+        //setPropertyTB.setEnabled(false);
 
         Label label = new Label("Bulk Editing - " + artifactIds.size() + " Items");
         label.setStyleName("title");
@@ -197,10 +203,11 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
 
         } else if (sender == setPropertyCB) {
             setPropertyLB.setEnabled(checked);
-            setPropertyTB.setEnabled(checked);
+            //setPropertyTB.setEnabled(checked);
 
         } else if (sender == delPropertyCB) {
             delPropertyLB.setEnabled(checked);
+            //delPropertyTB.setEnabled(checked);
         }
     }
 
@@ -242,8 +249,8 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
 
                 for (Iterator itr = props.iterator(); itr.hasNext();) {
                     final WPropertyDescriptor prop = (WPropertyDescriptor) itr.next();
-                    setPropertyLB.addItem(prop.getName(), prop.getId());
-                    delPropertyLB.addItem(prop.getName(), prop.getId());
+                    setPropertyLB.addItem(prop.getDescription(), prop.getId());
+                    delPropertyLB.addItem(prop.getDescription(), prop.getId());
                 }
             }
 
@@ -408,6 +415,8 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
         table.setWidget(1, 0, delPropertyCB);
         table.setText(1, 1, "Remove: ");
         table.setWidget(1, 2, delPropertyLB);
+        table.setText(1, 3, "Value: ");
+        table.setWidget(1, 4, delPropertyTB);
 
         propertyPanel.add(table);
 
@@ -441,7 +450,8 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
                          setPropertyTB.getText());
         }
         if (delPropertyCB.isChecked()) {
-            deleteProperty(delPropertyLB.getValue(delPropertyLB.getSelectedIndex()));
+            deleteProperty(delPropertyLB.getValue(delPropertyLB.getSelectedIndex()),
+            delPropertyTB.getText());
         }
 
     }
@@ -488,8 +498,8 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
     }
 
 
-    private void deleteProperty(String name) {
-        service.deleteProperty(artifactIds, name, new AbstractCallback(this) {
+    private void deleteProperty(String name,  String value) {
+        service.deleteProperty(artifactIds, name, value, new AbstractCallback(this) {
 
             public void onFailure(Throwable caught) {
                 super.onFailure(caught);

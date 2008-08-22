@@ -1415,6 +1415,10 @@ public class RegistryServiceImpl implements RegistryService {
 
     }
 
+    public void deleteProperty(Collection<String> entryIds, String propertyName, String propertyValue) throws RPCException, ItemNotFoundException {
+
+    }
+
     public void deletePropertyDescriptor(String id) throws RPCException {
         typeManager.deletePropertyDescriptor(id);
     }
