@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class ArtifactListPanel extends AbstractComposite implements ClickListener{
+public class ArtifactListPanel extends AbstractComposite implements ClickListener {
 
     private FlowPanel panel;
     private FlowPanel artifactPanel;
@@ -65,7 +65,7 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
         super();
         this.galaxy = galaxy;
         this.browsePanel = browsePanel;
-        
+
         panel = new FlowPanel();
 
         SimplePanel artifactPanelBase = new SimplePanel();
@@ -146,24 +146,27 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
                 cancelLink.setText("Cancel");
                 cancelLink.setTargetHistoryToken(History.getToken());
                 cancelLink.addClickListener(this);
-                bulkEditPanel.add(asToolbarItem(new Image("images/page_deny.gif"),
-                                                cancelLink));
+                Image cancelImg = new Image("images/page_deny.gif");
+                cancelImg.setStyleName("icon-baseline");
+                bulkEditPanel.add(asToolbarItem(cancelImg, cancelLink));
 
                 // Edit entire result set
                 editAll = new Hyperlink();
                 editAll.setText("Edit All (" + resultSize + ")");
                 editAll.setTargetHistoryToken("bulk-edit");
                 editAll.addClickListener(this);
-                bulkEditPanel.add(asToolbarItem(new Image("images/page_right.gif"),
-                                                editAll));
+                Image editImage = new Image("images/page_right.gif");
+                editImage.setStyleName("icon-baseline");
+                bulkEditPanel.add(asToolbarItem(editImage, editAll));
 
                 // Edit only the checked items
                 editSelected = new Hyperlink();
                 editSelected.setText("Edit Selected");
                 editSelected.setTargetHistoryToken("bulk-edit");
                 editSelected.addClickListener(this);
-                bulkEditPanel.add(asToolbarItem(new Image("images/page_tick.gif"),
-                                                editSelected, "bulkedit-toolbar-item-first"));
+                Image editAllImg = new Image("images/page_tick.gif");
+                editAllImg.setStyleName("icon-baseline");
+                bulkEditPanel.add(asToolbarItem(editAllImg, editSelected, "bulkedit-toolbar-item-first"));
 
             } else {
 
@@ -172,8 +175,9 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
                 bulkEditLink.setText("Bulk Edit");
                 bulkEditLink.setTargetHistoryToken(History.getToken());
                 bulkEditLink.addClickListener(this);
-                bulkEditPanel.add(asToolbarItem(new Image("images/page_edit.gif"),
-                                                bulkEditLink, "bulkedit-toolbar-item-first"));
+                Image bulkImg = new Image("images/page_edit.gif");
+                bulkImg.setStyleName("icon-baseline");
+                bulkEditPanel.add(asToolbarItem(bulkImg, bulkEditLink, "bulkedit-toolbar-item-first"));
             }
 
             panel.insert(bulkEditPanel, 0);
@@ -194,24 +198,23 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
             setEditable(true);
             initArtifacts(searchResults);
 
-        // edit only what the user selectes via the checkboxes
+            // edit only what the user selectes via the checkboxes
         } else if (sender == editSelected) {
             galaxy.createPageInfo("bulk-edit", new BulkEditPanel(getSelectedArtifacts(), galaxy), 0);
             History.newItem("bulk-edit");
 
-        // edit the entire result set
+            // edit the entire result set
         } else if (sender == editAll) {
             galaxy.createPageInfo("bulk-edit", new BulkEditPanel(extractArtifactIds(), galaxy), 0);
             History.newItem("bulk-edit");
 
-        // toggle edit mode
+            // toggle edit mode
         } else if (sender == cancelLink) {
             setEditable(false);
             initArtifacts(searchResults);
         }
 
     }
-
 
 
     private Widget asToolbarItem(Image img, Widget hl) {
@@ -227,7 +230,6 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
         }
         return p;
     }
-
 
 
     private void createNavigationPanel() {
