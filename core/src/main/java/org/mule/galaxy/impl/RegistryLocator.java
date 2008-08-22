@@ -12,6 +12,7 @@ import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 
 import org.xml.sax.InputSource;
@@ -65,23 +66,26 @@ public class RegistryLocator implements WSDLLocator {
         System.out.println("importing " + importLoc);
         
         Workspace w = workspace;
-        if (importLoc.indexOf("://") == -1) {
-            Item artifact = registry.resolve(w, importLoc);
-            if (artifact != null) {
-                InputStream is = ((ArtifactVersion)((Artifact)artifact).getDefaultOrLastVersion()).getStream();
-                InputSource source = new InputSource(is);
-                source.setSystemId(artifact.getPath());
-                return source;
-            }
-        }
-        
-        
         try {
+            if (importLoc.indexOf("://") == -1) {
+                Item artifact = registry.resolve(w, importLoc);
+                if (artifact != null) {
+                    InputStream is = ((ArtifactVersion)((Artifact)artifact).getDefaultOrLastVersion()).getStream();
+                    InputSource source = new InputSource(is);
+                    source.setSystemId(artifact.getPath());
+                    return source;
+                }
+            }
+            
+            
             URL url = new URL(importLoc);
             InputSource source = new InputSource(url.openStream());
             source.setSystemId(importLoc);
             return source;
         } catch (IOException e) {
+            return new InputSource(importLoc);
+        } catch (RegistryException e) {
+            log.error(e);
             return new InputSource(importLoc);
         }
     }

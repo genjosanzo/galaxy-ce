@@ -51,6 +51,8 @@ public interface Workspace extends Item {
 
     List<Item> getItems() throws RegistryException;
     
+    Item getItem(String name) throws RegistryException, NotFoundException, AccessException;
+    
     /**
      * Creates an artifact from a Java representation of it (as opposed
      * to a byte[] level representation). The artifact must be apporved

@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.mule.galaxy.Item;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.annotation.BindToEvent;
@@ -211,6 +213,10 @@ public class DefaultEventManagerTest extends TestCase {
         }
 
         public List<Item> getItems() {
+            return null;
+        }
+
+        public Item getItem(String name) throws RegistryException, NotFoundException {
             return null;
         }
 

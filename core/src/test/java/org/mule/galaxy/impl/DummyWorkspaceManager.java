@@ -105,6 +105,10 @@ public final class DummyWorkspaceManager extends AbstractWorkspaceManager implem
         return new ArrayList<Item>();
     }
 
+    public Item getItem(Workspace w, String name) throws RegistryException, NotFoundException {
+        return null;
+    }
+
     public Workspace getWorkspace(String id) throws RegistryException, NotFoundException, AccessException {
         return null;
     }

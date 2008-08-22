@@ -19,6 +19,7 @@ import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Entry;
 import org.mule.galaxy.Item;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.collab.CommentManager;
@@ -68,12 +69,24 @@ public class JcrWorkspace extends AbstractJcrItem implements org.mule.galaxy.Wor
         return workspaces;
     }
 
-    public List<Item> getItems() {
+    public List<Item> getItems() throws RegistryException {
         if (items == null) {
             items = manager.getItems(this);
         }
         
         return items;
+    }
+
+    public Item getItem(String name) throws RegistryException, NotFoundException, AccessException {
+        if (items != null) {
+            for (Item i : items) {
+                if (name.equals(i.getName())) {
+                    return i;
+                }
+            }
+            return null;
+        }
+        return manager.getItem(this, name);
     }
 
     public Node getNode() {

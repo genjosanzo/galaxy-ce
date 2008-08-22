@@ -185,7 +185,7 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                     String type = node.getPrimaryNodeType().getName();
                     
                     return build(node, type);
-                } catch (AccessException e){
+                } catch (Exception e){
                     throw new RuntimeException(e);
                 }
             }
@@ -221,13 +221,40 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
             throw new RegistryException(e);
         }
     }
+    
+    public Item getItem(final Workspace w, final String name) throws NotFoundException, RegistryException, AccessException {
+        Item a = (Item) executeWithRegistryException(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node node = ((AbstractJcrItem) w).getNode();
+                
+                try {
+                    Node resolved = node.getNode(name);
+                    
+                    return build(resolved, resolved.getPrimaryNodeType().getName());
+                } catch (PathNotFoundException e) {
+                    return null;
+                } catch (AccessException e) {
+                    throw new RuntimeException(e);
+                } catch (RegistryException e) {
+                    throw new RuntimeException(e);
+                }
+                
+            }
+        });
+        
+        if (a == null) {
+            throw new NotFoundException(name);
+        }
+        
+        return a;
+    }
 
-    protected Item build(Node node) throws RepositoryException, ItemNotFoundException, AccessException {
+    protected Item build(Node node) throws RepositoryException, ItemNotFoundException, AccessException, RegistryException {
         return build(node, node.getPrimaryNodeType().getName());
     }
     
     protected Item build(Node node, String type) throws RepositoryException, ItemNotFoundException,
-        AccessException {
+        AccessException, RegistryException {
         if (type.equals("galaxy:artifact")) {
             Artifact a = buildArtifact(node);
     
@@ -1245,7 +1272,7 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
         }
     }
 
-    public List<Item> getItems(Workspace w) {
+    public List<Item> getItems(Workspace w) throws RegistryException {
         List<Item> items = new ArrayList<Item>();
         try {
             NodeIterator nodes = ((JcrWorkspace) w).getNode().getNodes();

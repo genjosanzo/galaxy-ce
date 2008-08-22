@@ -305,7 +305,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
 
 
-    public Item resolve(Item item, String location) {
+    public Item resolve(Item item, String location) throws RegistryException {
         String[] paths = location.split("/");
         
         while (!(item instanceof Workspace)) {
@@ -326,8 +326,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
 
         try {
-            return getItem(w, paths[paths.length-1]);
+            return w.getItem(paths[paths.length-1]);
         } catch (NotFoundException e) {
+            return null;
+        } catch (AccessException e) {
             return null;
         }
     }
@@ -367,7 +369,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     }
     
     protected Item build(Node node, String type) throws RepositoryException, ItemNotFoundException,
-        AccessDeniedException, AccessException {
+        AccessDeniedException, AccessException, RegistryException {
         if (type.equals("galaxy:artifact")) {
             Artifact a = buildArtifact(node);
     
@@ -428,31 +430,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
 
         return id.substring(idx + 1);
-    }
-    
-    public Item getItem(final Workspace w, final String name) throws NotFoundException {
-        Item a = (Item) execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node node = ((JcrWorkspace) w).getNode();
-                
-                try {
-                    Node resolved = node.getNode(name);
-                    
-                    return build(resolved, resolved.getPrimaryNodeType().getName());
-                } catch (PathNotFoundException e) {
-                    return null;
-                } catch (AccessException e) {
-                    return null;
-                }
-                
-            }
-        });
-        
-        if (a == null) {
-            throw new NotFoundException(name);
-        }
-        
-        return a;
     }
 
     private Object executeWithNotFoundDuplicate(JcrCallback jcrCallback) 
@@ -623,7 +600,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
                     Node node = nodes.nextNode();
 
-                    addNodes(node, allowedTypes, results);
+                    try {
+                        addNodes(node, allowedTypes, results);
+                    } catch (RegistryException e) {
+                        throw new RuntimeException(e);
+                    }
                     
                     if (results.size() == maxResults) {
                         break;
@@ -635,7 +616,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
             private void addNodes(Node node, List<String> allowedTypes,
                                   Set<Item> results) throws RepositoryException, ItemNotFoundException,
-                AccessDeniedException {
+                AccessDeniedException, RegistryException {
                 String type = node.getPrimaryNodeType().getName();
                 if (allowedTypes.contains(type)) {
                     try {
@@ -742,6 +723,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                             break;
                         }
                     } catch (AccessException e1) {
+                    } catch (RegistryException e) {
+                        throw new RuntimeException(e);
                     }
                 }                                                   
 

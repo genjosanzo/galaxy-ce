@@ -38,7 +38,11 @@ public class Link implements Identifiable {
     }
     public Item getLinkedTo() {
         if (registry != null && linkedTo == null && linkedToPath != null) {
-            return registry.resolve(item, linkedToPath);
+            try {
+		return registry.resolve(item, linkedToPath);
+	    } catch (RegistryException e) {
+		throw new RuntimeException(e);
+	    }
         }
         return linkedTo;
     }

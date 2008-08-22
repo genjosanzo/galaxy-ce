@@ -27,7 +27,7 @@ public interface Entry extends Item {
     
     List<? extends EntryVersion> getVersions() throws RegistryException;
 
-    EntryVersion getVersion(String versionName);
+    EntryVersion getVersion(String versionName) throws RegistryException;
 
     /**
      * Get the default version of this entry. If this hasn't been specifically set,

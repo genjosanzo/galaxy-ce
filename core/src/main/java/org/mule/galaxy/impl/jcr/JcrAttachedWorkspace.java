@@ -14,6 +14,7 @@ import org.mule.galaxy.AttachedWorkspace;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.Item;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.collab.CommentManager;
@@ -87,6 +88,10 @@ public class JcrAttachedWorkspace extends AbstractJcrItem implements AttachedWor
 
     public List<Item> getItems() throws RegistryException {
         return getWorkspaceManager().getItems(this);
+    }
+
+    public Item getItem(String name) throws RegistryException, NotFoundException, AccessException {
+        return getWorkspaceManager().getItem(this, name);
     }
 
     public LifecycleManager getLifecycleManager() {

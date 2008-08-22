@@ -32,7 +32,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         Workspace w = registry.newWorkspace("test");
         
-        registry.move(a, w.getId(), a.getName());
+        registry.move(a, w.getPath(), a.getName());
         
         assertEquals(w.getId(), a.getParent().getId());
         
@@ -41,7 +41,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals(1, results.size());
         
         // test moving it into the workspace its already in.
-        registry.move(a, w.getId(), a.getName());
+        registry.move(a, w.getPath(), a.getName());
     }
     
     public void testRename() throws Exception {

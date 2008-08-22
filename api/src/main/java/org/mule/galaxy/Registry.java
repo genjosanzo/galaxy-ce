@@ -59,7 +59,7 @@ public interface Registry {
     
     Item getItemByPath(String path) throws NotFoundException, RegistryException, AccessException;
 
-    Item resolve(Item w, String location);
+    Item resolve(Item w, String location) throws RegistryException;
     
     void move(Entry item, String newWorkspacePath, final String newName) throws RegistryException, AccessException, NotFoundException;
 

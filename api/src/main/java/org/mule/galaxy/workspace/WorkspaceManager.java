@@ -9,10 +9,9 @@ import javax.activation.MimeTypeParseException;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ContentService;
-import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Entry;
-import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.RegistryException;
@@ -89,4 +88,6 @@ public interface WorkspaceManager {
     CommentManager getCommentManager();
     
     void validate() throws RegistryException;
+
+    Item getItem(Workspace w, String name) throws RegistryException, NotFoundException, AccessException;
 }

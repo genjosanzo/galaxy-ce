@@ -191,7 +191,7 @@ public class EntryResolver implements Resolver<Target> {
         return returnUnknownLocation(context);
     }
 
-    protected Item selectVersion(Item i, RequestContext context) {
+    protected Item selectVersion(Item i, RequestContext context) throws RegistryException {
         String version = context.getParameter("version");
         if (version != null && !"".equals(version)) {
             if (!(i instanceof Entry)) {

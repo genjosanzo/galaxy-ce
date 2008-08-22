@@ -65,8 +65,6 @@ public class BrowsePanel extends AbstractBrowsePanel {
     public void onShow(List<String> params) {
         if (params.size() > 0) {
             workspaceId = params.get(0);
-        } else {
-            workspaceId = null;
         }
         
         super.onShow(params);
