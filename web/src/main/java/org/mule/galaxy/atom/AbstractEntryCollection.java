@@ -324,7 +324,7 @@ public abstract class AbstractEntryCollection
         
         if (version == null || version.equals("")) {
             EmptyResponseContext ctx = new EmptyResponseContext(500);
-            ctx.setStatusText("You must supply an X-Entry-Version header!");
+            ctx.setStatusText("You must supply an X-Artifact-Version header!");
             
             throw new ResponseContextException(ctx);
         }
