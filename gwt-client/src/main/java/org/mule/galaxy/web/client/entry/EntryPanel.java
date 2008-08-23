@@ -192,7 +192,7 @@ public class EntryPanel extends AbstractComposite {
     private void initTabs(EntryVersionInfo version) {
         artifactTabs.add(new EntryInfoPanel(galaxy, menuPanel, info, version, this, params), "Info");
         artifactTabs.add(new HistoryPanel(galaxy, menuPanel, info), "History");
-        if (galaxy.hasPermission("MANAGE_GROUPS")) {
+        if (galaxy.hasPermission("MANAGE_GROUPS") && info.isLocal()) {
             artifactTabs.add(new ItemGroupPermissionPanel(galaxy, menuPanel, info.getId(), SecurityService.ARTIFACT_PERMISSIONS), "Security");
         }
         
