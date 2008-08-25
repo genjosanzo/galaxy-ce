@@ -315,6 +315,8 @@ a:visited {
   background-repeat: no-repeat;
 }
 
+/* left side artifact filter */
+
 .toolbox .selected-link,
 .toolbox .unselected-link {
     font-size: 0.9em;
@@ -328,11 +330,15 @@ a:visited {
 }
 
 .toolbox .unselected-link {
-    border-left: solid 4px transparent;
+    //border-left: solid 4px transparent;
+    padding-left: 14px;
 }
 
 .toolbox .selected-link {
-    border-left: solid 4px #bbb;
+    //border-left: solid 4px #000;
+    background-image: url("images/checkmark.gif");
+    background-repeat: no-repeat;
+    padding-left: 14px;
 }
 
 
@@ -747,6 +753,7 @@ a:visited {
 }
 
 .bulkedit-section-title {
+    margin-left: 6px;
     padding: 2px;
     font-weight: bold;
     color: black;
@@ -754,14 +761,16 @@ a:visited {
 
 .bulkedit-section-header {
     width: 100%;
-    padding: 4px;
+    padding: 2px;
     color: black;
     background-color: #EEEEEE;
-    border: 1px solid #C0C0C0;
+    border-top: 1px solid #C0C0C0;
+    border-bottom: 1px solid #C0C0C0;
 }
 
 .bulkedit-section-table {
     padding: 6px;
+    margin-left: 6px;
 }
 
 /**

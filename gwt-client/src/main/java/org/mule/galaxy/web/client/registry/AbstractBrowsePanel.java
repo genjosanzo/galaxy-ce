@@ -32,6 +32,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.Image;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -102,8 +103,21 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
             if (showArtifactTypes) {
                 artifactTypesBox = new Toolbox(false);
                 InlineFlowPanel titlePanel = new InlineFlowPanel();
-                titlePanel.add(new Label("Display"));
+
+                Image resetImg = new Image("images/page_refresh.gif");
+                resetImg.setStyleName("icon-baseline");
+                resetImg.addClickListener(new ClickListener() {
+                    public void onClick(final Widget widget) {
+                        appliedArtifactTypeFilters.clear();
+                        refreshArtifactTypes();
+                        refreshArtifacts();
+                    }
+                });
+                // TODO: add tooltip
+
+                titlePanel.add(new Label("Display "));
                 artifactTypesBox.setTitle(titlePanel);
+                titlePanel.add(resetImg);
                 showArtifactTypes();
             }
             first = false;
@@ -144,8 +158,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
                 Collection allArtifactTypes = (Collection) o;
 
                 // Create a show all or "reset" link
-                // Make this an icon?
-                final Hyperlink h = new Hyperlink("All", getHistoryToken());
+                /*final Hyperlink h = new Hyperlink("All", getHistoryToken());
                 h.setStyleName("unselected-link");
                 h.addClickListener(new ClickListener() {
                     public void onClick(final Widget widget) {
@@ -155,6 +168,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
                     }
                 });
                 artifactTypesBox.add(h, false);
+                */
 
                 // Get list of all artifact types
                 for (Iterator itr = allArtifactTypes.iterator(); itr.hasNext();) {
