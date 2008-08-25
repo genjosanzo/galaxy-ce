@@ -15,16 +15,31 @@ public class AttachedWorkspaceTest extends AbstractGalaxyTest {
     public void testAttached() throws Exception {
         Workspace parent = registry.getWorkspaces().iterator().next();
         
+        testAttached(parent);
+    }
+    
+    public void testAttachedWithNoParent() throws Exception {
+        testAttached(null);
+    }
+    
+    public void testAttached(Workspace parent) throws Exception {
         AttachedWorkspace attached = registry.attachWorkspace(parent, 
                                                               "attached", 
                                                               "dummyWorkspaceManagerFactory",
                                                               new HashMap<String, String>());
-        
+            
         // is the attached workspace there?
-        Collection<Workspace> workspaces = parent.getWorkspaces();
-        assertEquals(1, workspaces.size());
-        
-        assertEquals(attached, workspaces.iterator().next());
+        Collection<Workspace> workspaces;
+        if (parent != null) {
+            workspaces = parent.getWorkspaces();
+            
+            assertEquals(1, workspaces.size());
+            assertEquals(attached, workspaces.iterator().next());
+        } else {
+            workspaces = registry.getWorkspaces();
+            
+            assertEquals(2, workspaces.size());
+        }
 
         DummyWorkspaceManager wm = (DummyWorkspaceManager) attached.getWorkspaceManager();
         
@@ -35,7 +50,12 @@ public class AttachedWorkspaceTest extends AbstractGalaxyTest {
         assertNotNull(attached.getCreated());
         assertNotNull(attached.getUpdated());
         assertEquals("attached", attached.getName());
-        assertEquals(parent.getPath() + "attached/", attached.getPath());
+        
+        if (parent != null) {
+            assertEquals(parent.getPath() + "attached/", attached.getPath());
+        } else {
+            assertEquals("/attached/", attached.getPath());
+        }
         
         Collection<AttachedWorkspace> wkspcs = registry.getAttachedWorkspaces();
         assertEquals(1, wkspcs.size());

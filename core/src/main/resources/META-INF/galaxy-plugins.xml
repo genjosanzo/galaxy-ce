@@ -247,7 +247,7 @@ declare variable $document external;
             <view>
                 <column column="3">
                     <name>Target Namespace</name>
-                    <expression>version.getProperty("wsdl.targetNamespace")</expression>
+                    <expression>version.hasProperty("wsdl.targetNamespace") ? version.getProperty("wsdl.targetNamespace") : "";</expression>
                 </column>
                 <column>
                     <name>Services</name>

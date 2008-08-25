@@ -100,7 +100,12 @@ public class JcrAttachedWorkspace extends AbstractJcrItem implements AttachedWor
 
     public Workspace getParent() {
         try {
-            return new JcrWorkspace(getManager(), node.getParent());
+            Node parent = node.getParent();
+            if (JcrWorkspaceManager.WORKSPACE_NODE_TYPE.equals(parent.getPrimaryNodeType().getName())) {
+                return new JcrWorkspace(getManager(), parent);
+            } else {
+                return null;
+            }
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }

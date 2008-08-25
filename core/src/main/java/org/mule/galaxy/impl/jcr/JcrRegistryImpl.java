@@ -19,7 +19,6 @@ import javax.jcr.ItemExistsException;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
@@ -179,7 +178,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                                              final String factory,
                                              final Map<String, String> configuration) throws RegistryException {
         
-        if (!(parent instanceof JcrWorkspace)) {
+        if (parent != null && !(parent instanceof JcrWorkspace)) {
             throw new RegistryException(new Message("LOCAL_ATTACH_ONLY", BundleUtils.getBundle(this.getClass())));
         }
         
@@ -254,7 +253,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
         executeWithNotFoundDuplicate(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                JcrWorkspace jw = (JcrWorkspace) w;
+                AbstractJcrItem jw = (AbstractJcrItem) w;
                 Node node = jw.getNode();
                 
                 String parentId = _parentId;
@@ -682,7 +681,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 {
                     log.debug("Query: " + qstr.toString());
                 }
-                
+
                 Query jcrQuery = qm.createQuery(qstr, Query.XPATH);
                 
                 QueryResult result = jcrQuery.execute();

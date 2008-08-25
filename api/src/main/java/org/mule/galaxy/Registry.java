@@ -41,7 +41,8 @@ public interface Registry {
      * of the WorkspaceManagerFactory and the configuration will be stored and used to 
      * reattach the virtual workspace when the Registry starts again.
      * 
-     * @param parent The workspace the virtual workspace is attached to.
+     * @param parent The workspace the virtual workspace is attached to. If null, it'll be attached as a top 
+     * level workspace.
      * @param name The name of the virtual workspace.
      * @param factory 
      * @param configuration

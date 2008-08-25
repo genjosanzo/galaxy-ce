@@ -34,7 +34,8 @@ class HeartbeatTimer extends Timer
     private int intervalSeconds = 5;
     protected SessionKilledDialog dialog;
     protected boolean serverUp = true;
-
+    protected boolean logged = false;
+    
     public HeartbeatTimer(final Galaxy galaxy)
     {
         this.galaxy = galaxy;
@@ -73,13 +74,17 @@ class HeartbeatTimer extends Timer
                 dialogVisible = true;
 
                 // problem
-                GWT.log("Server is down or session has been killed by the server", throwable);
+                if (!logged) {
+                    GWT.log("Server is down or session has been killed by the server", throwable);
+                    logged = true;
+                }
             }
 
             public void onSuccess(final Object o)
             {
                 // everything is fine, do nothing
                 // TODO hide panel, go to app root for login
+                logged = false;
             }
         });
     }
