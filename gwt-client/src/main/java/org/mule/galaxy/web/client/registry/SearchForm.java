@@ -18,6 +18,13 @@
 
 package org.mule.galaxy.web.client.registry;
 
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.WorkspaceOracle;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.SearchPredicate;
+
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -25,26 +32,17 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.SearchPredicate;
-import org.mule.galaxy.web.rpc.WPropertyDescriptor;
-
 public class SearchForm
-    extends AbstractErrorShowingComposite
-{
+        extends AbstractErrorShowingComposite {
     protected FlowPanel panel;
     private FlowPanel fieldPanel;
     private Set<SearchFormRow> rows;
@@ -55,18 +53,20 @@ public class SearchForm
     private Hyperlink freeformQueryLink;
     private TextArea freeformQueryArea;
     private final boolean allowFreeform;
-    private TextBox workspaceTB;
+    private SuggestBox workspaceTB;
     private CheckBox includeChildWkspcCB;
+    private Galaxy galaxy;
 
     public SearchForm(Galaxy galaxy, String searchText, boolean allowFreeform) {
+        this.galaxy = galaxy;
         this.allowFreeform = allowFreeform;
         rows = new HashSet<SearchFormRow>();
-        
+
         panel = new FlowPanel();
         panel.setStyleName("search-panel");
-        
+
         fieldPanel = new FlowPanel();
-        
+
         galaxy.getRegistryService().getQueryProperties(new AbstractCallback<Map<String, String>>(this) {
             public void onSuccess(Map<String, String> o) {
                 initQueryProperties(o);
@@ -75,37 +75,34 @@ public class SearchForm
 
         FlexTable table = new FlexTable();
         panel.add(table);
-        
+
         initializeFields(table);
-        
+
         panel.add(fieldPanel);
-        
+
         buttonPanel = new InlineFlowPanel();
         buttonPanel.setStyleName("search-button-panel");
-        
+
         initializeButtons(buttonPanel, searchText);
-        
+
         panel.add(buttonPanel);
-        
+
         addPredicate();
-        
+
         initWidget(panel);
     }
 
     protected void initializeFields(FlexTable table) {
         int row = table.getRowCount();
         table.setText(row, 0, "Workspace:");
-        
-        workspaceTB = new TextBox();
-        workspaceTB.setVisibleLength(80);
+
+        workspaceTB = new SuggestBox(new WorkspaceOracle(galaxy, this, "xxx"));
+        //workspaceTB.setVisibleLength(80);
         table.setWidget(row, 1, workspaceTB);
-        
-        row = table.getRowCount();
-        
-        includeChildWkspcCB = new CheckBox("Include Child Workspaces");
-        table.getFlexCellFormatter().setColSpan(row, 0, 2);
-        table.setWidget(row, 0, includeChildWkspcCB);
-        
+        includeChildWkspcCB = new CheckBox();
+        table.setText(row, 2, " Include Child Workspaces: ");
+        table.setWidget(row, 3, includeChildWkspcCB);
+
         freeformQueryArea = new TextArea();
         freeformQueryArea.setCharacterWidth(83);
         freeformQueryArea.setVisibleLines(7);
@@ -119,16 +116,16 @@ public class SearchForm
 
     protected void initializeButtons(FlowPanel buttonPanel, String searchText) {
         searchButton = new Button(searchText);
-        
+
         clearButton = new Button("Clear", new ClickListener() {
             public void onClick(Widget sender) {
                 clear();
                 fieldPanel.clear();
                 freeformQueryArea.setText("");
-                
+
                 addPredicate();
             }
-         });
+        });
 
         Button cancel = new Button("Cancel");
         cancel.addClickListener(new ClickListener() {
@@ -146,9 +143,9 @@ public class SearchForm
     }
 
     public FlowPanel getPanel() {
-        return panel;   
+        return panel;
     }
-    
+
     public void clear() {
         rows.clear();
     }
@@ -156,7 +153,7 @@ public class SearchForm
     public void addSearchListener(ClickListener listener) {
         searchButton.addClickListener(listener);
     }
-    
+
     public void initQueryProperties(Map<String, String> props) {
         propertyDescriptors = props;
         for (Iterator<SearchFormRow> itr = rows.iterator(); itr.hasNext();) {
@@ -164,103 +161,95 @@ public class SearchForm
             row.addPropertySet("----", propertyDescriptors);
         }
     }
-    
+
     public SearchFormRow addPredicate() {
         SearchFormRow pred = new SearchFormRow(this);
         if (propertyDescriptors != null)
             pred.addPropertySet("Properties:", propertyDescriptors);
-        
+
         fieldPanel.insert(pred, fieldPanel.getWidgetCount());
         rows.add(pred);
         return pred;
     }
-    
+
     public void removePredicate(SearchFormRow pred) {
         fieldPanel.remove(pred);
         rows.remove(pred);
-        
+
         // Add a new predicate if we're removing our last row
         if (rows.size() == 0) {
             addPredicate();
         }
     }
-    
+
     public void showHideFreeformQuery() {
         if (fieldPanel.remove(freeformQueryArea)) {
             freeformQueryArea.setText("");
             freeformQueryLink.setText("Use Freeform Query");
-            
+
             // Clear the panel because addPredicate will add everything back
             fieldPanel.clear();
             addPredicate();
-        }
-        else {
+        } else {
             fieldPanel.insert(freeformQueryArea, 0);
             freeformQueryArea.setText("Add a custom query...");
             freeformQueryArea.selectAll();
             freeformQueryArea.setFocus(true);
             freeformQueryLink.setText("Use Structured Query");
-            
+
             // Remove all the structured query rows
-            for (Iterator<SearchFormRow> iter=rows.iterator(); iter.hasNext();)
+            for (Iterator<SearchFormRow> iter = rows.iterator(); iter.hasNext();)
                 fieldPanel.remove(iter.next());
             rows.clear();
         }
     }
 
-    public Set<SearchPredicate> getPredicates()
-    {
+    public Set<SearchPredicate> getPredicates() {
         Set<SearchPredicate> predicates = new HashSet<SearchPredicate>();
-        
+
         for (Iterator<SearchFormRow> itr = rows.iterator(); itr.hasNext();) {
             SearchFormRow row = itr.next();
             SearchPredicate pred = row.getPredicate();
             if (pred != null)
                 predicates.add(pred);
         }
-        
+
         return predicates;
     }
 
-    public String getFreeformQuery()
-    {
+    public String getFreeformQuery() {
         return freeformQueryArea.getText();
     }
 
-    public String getWorkspacePath() 
-    {
+    public String getWorkspacePath() {
         return workspaceTB.getText();
     }
-    
-    public boolean isWorkspaceSearchRecursive() 
-    {
+
+    public boolean isWorkspaceSearchRecursive() {
         return includeChildWkspcCB.isChecked();
     }
-    
-    public void setPredicates(Set<SearchPredicate> predicates)
-    {
+
+    public void setPredicates(Set<SearchPredicate> predicates) {
         rows.clear();
         fieldPanel.clear();
-        
+
         for (Iterator<SearchPredicate> itr = predicates.iterator(); itr.hasNext();) {
             SearchPredicate p = itr.next();
-            
+
             SearchFormRow row = addPredicate();
             rows.add(row);
             row.setPredicate(p);
         }
-        
+
         // Add an empty predicate to add more
         addPredicate();
     }
 
-    public void setWorkspace(String workspace) 
-    {
+    public void setWorkspace(String workspace) {
         workspaceTB.setText(workspace);
     }
 
-    public void setWorkspaceSearchRecursive(boolean workspaceSearchRecursive) 
-    {
+    public void setWorkspaceSearchRecursive(boolean workspaceSearchRecursive) {
         includeChildWkspcCB.setChecked(workspaceSearchRecursive);
     }
 }
