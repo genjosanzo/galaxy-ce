@@ -330,12 +330,10 @@ a:visited {
 }
 
 .toolbox .unselected-link {
-    //border-left: solid 4px transparent;
     padding-left: 14px;
 }
 
 .toolbox .selected-link {
-    //border-left: solid 4px #000;
     background-image: url("images/checkmark.gif");
     background-repeat: no-repeat;
     padding-left: 14px;

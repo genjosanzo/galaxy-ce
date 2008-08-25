@@ -157,19 +157,6 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
                 artifactTypesBox.clear();
                 Collection allArtifactTypes = (Collection) o;
 
-                // Create a show all or "reset" link
-                /*final Hyperlink h = new Hyperlink("All", getHistoryToken());
-                h.setStyleName("unselected-link");
-                h.addClickListener(new ClickListener() {
-                    public void onClick(final Widget widget) {
-                        appliedArtifactTypeFilters.clear();
-                        refreshArtifactTypes();
-                        refreshArtifacts();
-                    }
-                });
-                artifactTypesBox.add(h, false);
-                */
-
                 // Get list of all artifact types
                 for (Iterator itr = allArtifactTypes.iterator(); itr.hasNext();) {
                     final WArtifactType at = (WArtifactType) itr.next();
