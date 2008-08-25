@@ -99,7 +99,7 @@ public class ArtifactGroupListPanel extends AbstractComposite {
                 Label lvalue = new Label(abbreviate(value, truncateTo));
                 // only attache if needed
                 if(value.length() > truncateTo ) {
-                    lvalue.addMouseListener(new TooltipListener(value, 5000, "tooltip"));
+                    lvalue.addMouseListener(new TooltipListener(value, 5000));
                 }
 
                 // the first column is the artifact name (value) and that's a link

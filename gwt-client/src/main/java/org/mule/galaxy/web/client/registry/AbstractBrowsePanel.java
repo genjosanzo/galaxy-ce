@@ -115,7 +115,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
                 });
                 // tooltip
                 resetImg.addMouseListener(new TooltipListener("Refresh and display all artifact types",
-                                                              5000, "tooltip"));
+                                                              10000));
 
                 titlePanel.add(new Label("Display "));
                 artifactTypesBox.setTitle(titlePanel);
