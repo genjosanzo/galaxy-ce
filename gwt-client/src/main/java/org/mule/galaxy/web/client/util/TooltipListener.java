@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 
 public class TooltipListener extends MouseListenerAdapter {
-    private static final String DEFAULT_TOOLTIP_STYLE = "TooltipPopup";
+    private static final String DEFAULT_TOOLTIP_STYLE = "tooltip";
     private static final int DEFAULT_OFFSET_X = 10;
     private static final int DEFAULT_OFFSET_Y = 10;
 

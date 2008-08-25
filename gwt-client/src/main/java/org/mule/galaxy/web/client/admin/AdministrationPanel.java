@@ -20,6 +20,8 @@ package org.mule.galaxy.web.client.admin;
 
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
+
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.MenuPanel;
@@ -40,8 +42,13 @@ public class AdministrationPanel extends MenuPanel {
         Toolbox manageBox = new Toolbox(false);
         manageBox.setTitle("Manage");
         addMenuItem(manageBox);
-
         createMenuItems(this.galaxy, manageBox);
+
+        Toolbox utilityBox = new Toolbox(false);
+        utilityBox.setTitle("Utilities");
+        addMenuItem(utilityBox);
+        createUtilityMenuItems(this.galaxy, utilityBox);
+
     }
 
     protected void createMenuItems(Galaxy galaxy, Toolbox manageBox) {
@@ -83,12 +90,26 @@ public class AdministrationPanel extends MenuPanel {
                               new UserForm(this));
         }
 
-        Hyperlink link = new Hyperlink("Admin Shell", "adminShell");
-        createPageInfo(link.getTargetHistoryToken(), new AdminShellPanel(this));
-        manageBox.add(link);
+
+
     }
 
-    protected void createLinkWithAdd(Toolbox manageBox, 
+    protected void createUtilityMenuItems(Galaxy galaxy, Toolbox utilityBox) {
+
+        Hyperlink adminLink = new Hyperlink("Admin Shell", "adminShell");
+        createPageInfo(adminLink.getTargetHistoryToken(), new AdminShellPanel(this));
+        utilityBox.add(adminLink);
+
+        // Scheduler
+        createLinkWithAdd(utilityBox,
+                          "Scheduler",
+                          "schedule",
+                          new ScheduleListPanel(this),
+                          new ScheduleForm(this));
+
+    }
+
+    protected void createLinkWithAdd(Toolbox manageBox,
                                    String title, 
                                    String tokenBase,
                                    AbstractComposite list,
