@@ -22,6 +22,7 @@ import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.client.util.TooltipListener;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WArtifactType;
@@ -30,9 +31,9 @@ import org.mule.galaxy.web.rpc.WSearchResults;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.Image;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -99,7 +100,6 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
         if (first) {
             initializeMenuAndTop();
 
-
             if (showArtifactTypes) {
                 artifactTypesBox = new Toolbox(false);
                 InlineFlowPanel titlePanel = new InlineFlowPanel();
@@ -113,7 +113,9 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
                         refreshArtifacts();
                     }
                 });
-                // TODO: add tooltip
+                // tooltip
+                resetImg.addMouseListener(new TooltipListener("Refresh and display all artifact types",
+                                                              5000, "tooltip"));
 
                 titlePanel.add(new Label("Display "));
                 artifactTypesBox.setTitle(titlePanel);
