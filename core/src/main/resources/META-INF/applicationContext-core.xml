@@ -10,7 +10,19 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
 
-  <bean id="sessionFactory" class="org.mule.galaxy.impl.jcr.JackrabbitSessionFactory">
+    <!-- use Spring's RMI classes to retrieve the RMI registry
+    <bean id="rmiRegistry" class="org.springframework.remoting.rmi.RmiRegistryFactoryBean"/>
+    <bean id="rmiServer" class="org.springmodules.jcr.jackrabbit.RmiServerRepositoryFactoryBean">
+        <property name="repository" ref="repository"/>
+        <property name="remoteAdapterFactory">
+            <bean class="org.apache.jackrabbit.rmi.server.ServerAdapterFactory"/>
+        </property>
+        <property name="registry" ref="rmiRegistry"/>
+        <property name="rmiName" value="jackrabbit"/>
+    </bean -->
+
+
+    <bean id="sessionFactory" class="org.mule.galaxy.impl.jcr.JackrabbitSessionFactory">
     <property name="repository" ref="repository"/>
     <property name="credentials">
      <bean class="javax.jcr.SimpleCredentials">
