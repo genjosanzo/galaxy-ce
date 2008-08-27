@@ -75,6 +75,8 @@ a:visited {
 
 .icon-baseline {
     vertical-align: bottom;
+    cursor: pointer;
+    cursor: hand;
 }
 
 /* Display's tooltips like in Eclipse */ 
