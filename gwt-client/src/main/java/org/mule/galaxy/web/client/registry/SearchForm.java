@@ -41,8 +41,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class SearchForm
-        extends AbstractErrorShowingComposite {
+public class SearchForm extends AbstractErrorShowingComposite {
     protected FlowPanel panel;
     private FlowPanel fieldPanel;
     private Set<SearchFormRow> rows;
@@ -97,7 +96,6 @@ public class SearchForm
         table.setText(row, 0, "Workspace:");
 
         workspaceTB = new SuggestBox(new WorkspaceOracle(galaxy, this, "xxx"));
-        //workspaceTB.setVisibleLength(80);
         table.setWidget(row, 1, workspaceTB);
         includeChildWkspcCB = new CheckBox();
         table.setText(row, 2, " Include Child Workspaces: ");

@@ -45,7 +45,7 @@ public class ValidatableListBox extends AbstractValidatableInputField {
     }
 
     protected Widget createInputWidget() {
-        listBox = new ListBox();
+        listBox = new ListBox(isMultiSelect);
         return listBox;
     }
 
