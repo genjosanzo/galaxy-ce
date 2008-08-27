@@ -27,6 +27,7 @@ public class NavigationUtil {
     public static ClickListener createNavigatingClickListener(final String token) {
         return new ClickListener() {
             public void onClick(Widget w) {
+                w.addStyleName("gwt-Hyperlink");
                 History.newItem(token);
             }
         };

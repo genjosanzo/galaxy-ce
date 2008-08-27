@@ -1021,6 +1021,7 @@ a:visited {
 }
 
 .gwt-Tree .gwt-TreeItem {
+    cursor: hand;
     cursor: pointer;
 }
 
