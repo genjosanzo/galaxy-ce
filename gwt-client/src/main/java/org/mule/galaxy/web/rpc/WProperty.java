@@ -20,7 +20,7 @@ package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -28,13 +28,12 @@ public class WProperty implements IsSerializable {
     private boolean locked;
     private String name;
     private String description;
-    private String value;
-    private List<String> listValue;
+    private Serializable value;
     private String extension;
     private boolean multiValued;
     
     public WProperty(String name, String description, 
-                     Object value, String extension,
+                     Serializable value, String extension,
                      boolean locked) {
         super();
         this.extension = extension;
@@ -60,41 +59,44 @@ public class WProperty implements IsSerializable {
     public boolean isLocked() {
         return locked;
     }
+    
     public void setLocked(boolean locked) {
         this.locked = locked;
     }
+    
     public String getName() {
         return name;
     }
+    
     public void setName(String name) {
         this.name = name;
     }
+    
     public String getDescription() {
         return description;
     }
+    
     public void setDescription(String description) {
         this.description = description;
     }
-    public String getValue() {
+    
+    public Serializable getValue() {
         return value;
     }
 
-    @SuppressWarnings("unchecked")
-    public void setValue(Object value) {
-        if (value instanceof String) {
-            this.value = (String) value;
-        } else if (value instanceof List) {
-            this.listValue = (List<String>) value;
+    public void setValue(Serializable value) {
+        this.value = (Serializable) value;
+        
+        if (value instanceof List) {
             multiValued = true;
         } else if (value instanceof Collection) {
-            this.listValue = new ArrayList<String>();
-            listValue.addAll((Collection) value);
             multiValued = true;
         }
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> getListValue() {
-        return listValue;
+        return (List<String>) value;
     }
 
     public void setMultiValued(boolean multiValued) {

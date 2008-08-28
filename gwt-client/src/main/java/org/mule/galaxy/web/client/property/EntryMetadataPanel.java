@@ -132,9 +132,10 @@ public class EntryMetadataPanel extends AbstractComposite {
     
     public void addRow(WProperty property) {
 
-        final PropertyPanel render = galaxy.getPropertyPanelFactory().createRenderer(property.getExtension(), 
-                                                                                     property.isMultiValued());
+        final AbstractPropertyRenderer renderer = 
+            galaxy.getPropertyPanelFactory().createRenderer(property.getExtension(), property.isMultiValued());
 
+        EditPropertyPanel render = new EditPropertyPanel(renderer);
         render.setProperty(property);
         render.setGalaxy(galaxy);
         render.setItemId(item.getId());
@@ -144,7 +145,7 @@ public class EntryMetadataPanel extends AbstractComposite {
         addRow(property, render);
     }
 
-    public void addRow(WProperty property, final PropertyPanel render) {
+    public void addRow(WProperty property, final EditPropertyPanel render) {
         int row = table.getRowCount();
 
         render.setDeleteListener(new ClickListener() {

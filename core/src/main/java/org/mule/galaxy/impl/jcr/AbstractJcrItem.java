@@ -253,7 +253,8 @@ public abstract class AbstractJcrItem implements Item {
             Property p = null;
             final Map<String, PropertyInfo> properties = new HashMap<String, PropertyInfo>();
             try {
-                p = node.getProperty(PROPERTIES);final Value[] values = p.getValues();
+                p = node.getProperty(PROPERTIES);
+                final Value[] values = p.getValues();
                 for (Value v : values) {
                     String name = v.getString();
                     properties.put(name, new PropertyInfoImpl(this, name, node, manager.getTypeManager()));

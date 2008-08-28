@@ -39,6 +39,7 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 public class ArtifactListPanel extends AbstractComposite implements ClickListener {
 
@@ -54,12 +55,12 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
     private FlowPanel bulkEditPanel;
     private boolean editable;
 
-    private ArrayList<CheckBox> allCBs;
     private WSearchResults searchResults;
     private Hyperlink bulkEditLink;
     private Hyperlink editSelected;
     private Hyperlink cancelLink;
     private Hyperlink editAll;
+    private List<ArtifactGroupListPanel> groupPanels;
 
     public ArtifactListPanel(AbstractBrowsePanel browsePanel, Galaxy galaxy) {
         super();
@@ -91,14 +92,15 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
         createBulkEditPanel();
         createNavigationPanel();
 
+        groupPanels = new ArrayList<ArtifactGroupListPanel>();
+        
         for (Iterator<EntryGroup> groups = o.getResults().iterator(); groups.hasNext();) {
             EntryGroup group = groups.next();
 
             ArtifactGroupListPanel list = new ArtifactGroupListPanel(group, isEditable());
-
+            groupPanels.add(list);
             // get the list of artifacts from each item (artifact) in the group
             // and set them locally -- it's much easier to manipulate them this way
-            if (isEditable()) allCBs.addAll(list.getCBCollection());
 
             SimplePanel rightTitlePanel = new SimplePanel();
             rightTitlePanel.setStyleName("right-title-panel");
@@ -125,7 +127,6 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
     // bulk edit all or some -- this handles the controls for that.
     private void createBulkEditPanel() {
 
-        allCBs = new ArrayList<CheckBox>();
         if (bulkEditPanel != null) {
             panel.remove(bulkEditPanel);
             bulkEditPanel = null;
@@ -204,11 +205,13 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
             History.newItem("bulk-edit");
 
             // edit the entire result set
+            setEditable(false);
         } else if (sender == editAll) {
             galaxy.createPageInfo("bulk-edit", new BulkEditPanel(extractArtifactIds(), galaxy), 0);
             History.newItem("bulk-edit");
 
             // toggle edit mode
+            setEditable(false);
         } else if (sender == cancelLink) {
             setEditable(false);
             initArtifacts(searchResults);
@@ -286,8 +289,8 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
 
     // helper method to pull the artifactIds out
     // from the searchResult collection
-    private Collection<Object> extractArtifactIds() {
-        Collection<Object> artifactIds = new ArrayList<Object>();
+    private Collection<String> extractArtifactIds() {
+        Collection<String> artifactIds = new ArrayList<String>();
 
         // groups will contain artifacts
         for (Iterator<EntryGroup> itr = searchResults.getResults().iterator(); itr.hasNext();) {
@@ -296,7 +299,7 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
             // each artifact
             for (Iterator<EntryInfo> it = g.getRows().iterator(); it.hasNext();) {
                 EntryInfo artifact = it.next();
-                artifactIds.add(artifact);
+                artifactIds.add(artifact.getId());
             }
         }
         return artifactIds;
@@ -304,13 +307,10 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
 
 
     // get the artifactIds from the selected checkboxes
-    private Collection<Object> getSelectedArtifacts() {
-        Collection<Object> artifactIds = new ArrayList<Object>();
-        for (Iterator<CheckBox> itr = allCBs.iterator(); itr.hasNext();) {
-            CheckBox cb = itr.next();
-            if (cb.isChecked()) {
-                artifactIds.add(cb);
-            }
+    private Collection<String> getSelectedArtifacts() {
+        Collection<String> artifactIds = new ArrayList<String>();
+        for (ArtifactGroupListPanel list : groupPanels) {
+            artifactIds.addAll(list.getSelectedEntries());
         }
         return artifactIds;
     }

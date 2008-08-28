@@ -90,9 +90,13 @@ public class XQueryIndexer extends AbstractIndexer {
                 }
             }
             
-            artifact.setProperty(property, results);
-            artifact.setLocked(property, true);
-            artifact.setVisible(property, visible);
+            if (results.size() > 0) {
+                artifact.setProperty(property, results);
+                artifact.setLocked(property, true);
+                artifact.setVisible(property, visible);
+            } else {
+                artifact.setProperty(property, null);
+            }
             
             conn.close();
         } catch(PropertyException e) {

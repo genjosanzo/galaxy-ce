@@ -1,7 +1,5 @@
 package org.mule.galaxy.web.client.property;
 
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -9,57 +7,76 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 
 /**
  * Encapsulate a list of properties that is always editable.
  */
-public abstract class ListPropertyPanel extends AbstractEditPropertyPanel {
+public abstract class AbstractListRenderer extends AbstractPropertyRenderer {
     protected List<Object> values;
-    protected Collection<String> valuesToSave = new ArrayList<String>();
-    protected Collection<String> valuesToDelete = new ArrayList<String>();
-
-    protected FlowPanel editPanel;
+    private Label valueLabel;
     protected InlineFlowPanel editValuesPanel;
-    protected InlineFlowPanel viewValuesPanel;
 
-    public void initialize() {
+    public Widget createEditForm() {
         editValuesPanel = new InlineFlowPanel();
         editValuesPanel.setStyleName("add-property-inline");
 
-        editPanel = new FlowPanel();
+        FlowPanel editPanel = new FlowPanel();
         editPanel.add(editValuesPanel);
-        editPanel.add(getAddWidget());
-
-        viewValuesPanel = new InlineFlowPanel();
-
-        values = new ArrayList<Object>();
-        if (property.getListValue() != null) {
-            values.addAll(property.getListValue());
-        }
-
-        super.initialize();
 
         loadRemote();
+        
+        editPanel.add(getAddWidget());
+        
+        return editPanel;
     }
 
-    protected abstract void loadRemote();
+    public Widget createViewWidget() {
+        InlineFlowPanel viewValuesPanel = new InlineFlowPanel();
+        valueLabel = new Label();
+        viewValuesPanel.add(valueLabel);
+
+        loadRemote();
+        
+        return viewValuesPanel;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public void initialize(Galaxy galaxy, ErrorPanel errorPanel, Object value, boolean bulkEdit) {
+        super.initialize(galaxy, errorPanel, value, bulkEdit);
+        
+        values = new ArrayList<Object>();
+        if (value != null) {
+            values.addAll((List<Object>) value);
+        }
+    }
+
+    protected void loadRemote() {
+    }
 
     protected void onFinishLoad() {
         redraw();
     }
 
     protected void redraw() {
-        redrawEditPanel();
-
-        redrawViewPanel();
+        if (editValuesPanel != null) {
+            redrawEditPanel();
+        }
+        
+        if (valueLabel != null) {
+            redrawViewPanel();
+        }
     }
 
     protected void redrawViewPanel() {
-        viewValuesPanel.clear();
         StringBuffer sb = new StringBuffer();
         for (Iterator<? extends Object> itr = values.iterator(); itr.hasNext();) {
             Object value = itr.next();
@@ -70,7 +87,7 @@ public abstract class ListPropertyPanel extends AbstractEditPropertyPanel {
             sb.append(getRenderedText(value));
         }
 
-        viewValuesPanel.add(new Label(sb.toString()));
+        valueLabel.setText(sb.toString());
     }
 
     protected void redrawEditPanel() {
@@ -88,7 +105,9 @@ public abstract class ListPropertyPanel extends AbstractEditPropertyPanel {
 
         final InlineFlowPanel valuePanel = new InlineFlowPanel();
         valuePanel.setStyleName("listProperty");
-        valuePanel.add(newLabel(getRenderedText(value), "listPropertyLeft"));
+        Label left = new Label(getRenderedText(value));
+        left.setStylePrimaryName("listPropertyLeft");
+        valuePanel.add(left);
         Image del = new Image("images/page_text_delete.gif");
         del.setStyleName("icon-baseline");
         /*
@@ -107,7 +126,6 @@ public abstract class ListPropertyPanel extends AbstractEditPropertyPanel {
         del.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
-                values.remove(value);
                 editValuesPanel.remove(container);
                 removeLabel(value);
             }
@@ -120,26 +138,15 @@ public abstract class ListPropertyPanel extends AbstractEditPropertyPanel {
     }
 
     protected void removeLabel(Object value) {
+        values.remove(value);
     }
 
     protected String getRenderedText(Object value) {
         return value.toString();
     }
 
-    protected Object getValueToSave() {
+    public Object getValueToSave() {
         return values;
-    }
-
-    protected void onSave(Object value, Object response) {
-
-    }
-
-    protected Widget createEditForm() {
-        return editPanel;
-    }
-
-    protected Widget createViewWidget() {
-        return viewValuesPanel;
     }
 
     protected abstract Widget getAddWidget();

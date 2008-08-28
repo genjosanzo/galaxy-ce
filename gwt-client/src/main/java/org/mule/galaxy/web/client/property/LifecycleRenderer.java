@@ -11,11 +11,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WPhase;
 
-public class LifecyclePropertyPanel extends AbstractEditPropertyPanel {
+public class LifecycleRenderer extends AbstractPropertyRenderer {
 
     private FlexTable lifecycleTable;
     private Label valueLabel;
@@ -25,30 +28,43 @@ public class LifecyclePropertyPanel extends AbstractEditPropertyPanel {
     private ListBox lifecyclesLB;
     private ListBox phaseLB;
     
-    protected Widget createEditForm() {
-        lifecycleTable = createColumnTable();
+    public Widget createEditForm() {
+        lifecycleTable = AbstractComposite.createColumnTable();
+        
+        if (lifecycles == null) {
+            galaxy.getRegistryService().getLifecycles(new AbstractCallback(errorPanel) {
+                public void onSuccess(Object o) {
+                    lifecycles = (Collection) o;
+                    doShowLifecycles();
+                }
+            });
+        } else {
+            doShowLifecycles();
+        }
         
         return lifecycleTable;
     }
 
-    protected Object getValueToSave() {
+    public Object getValueToSave() {
         ArrayList<String> values = new ArrayList<String>();
         values.add(getSelectedLifecycle().getId());
         values.add(getSelectedPhase().getId());
+        
         return values;
     }
 
-    protected Widget createViewWidget() {
+    public Widget createViewWidget() {
         valueLabel = new Label();
+        valueLabel.setText("Loading...");
+        
+        loadRemote();
+        
         return valueLabel;
     }
 
-    public void initialize() {
-        super.initialize();
-        
-        valueLabel.setText("Loading...");
-        
-        final List<String> ids = getProperty().getListValue();
+    @SuppressWarnings("unchecked")
+    public void loadRemote() {
+        final List<String> ids = (List<String>) value;
         if (ids != null) {
             galaxy.getRegistryService().getLifecycle(ids.get(0), new AbstractCallback(errorPanel) {
     
@@ -62,20 +78,7 @@ public class LifecyclePropertyPanel extends AbstractEditPropertyPanel {
         }
     }
 
-    public void showEdit() {
-        if (lifecycles == null) {
-            galaxy.getRegistryService().getLifecycles(new AbstractCallback(errorPanel) {
-                public void onSuccess(Object o) {
-                    lifecycles = (Collection) o;
-                    doShowLifecycles();
-                }
-            });
-        } else {
-            doShowLifecycles();
-        }
-        super.showEdit();
-    }
-    
+    @SuppressWarnings("unchecked")
     private void doShowLifecycles() {
         lifecycleTable.setText(0, 0, "Lifecycle:");
         lifecycleTable.setText(1, 0, "Phase:");
@@ -83,7 +86,7 @@ public class LifecyclePropertyPanel extends AbstractEditPropertyPanel {
         String lid = null;
         String pid = null;
         
-        List<String> values = getProperty().getListValue();
+        List<String> values = (List<String>) value;
         if (values != null) {
             lid = values.get(0);
             pid = values.get(1);
@@ -146,7 +149,8 @@ public class LifecyclePropertyPanel extends AbstractEditPropertyPanel {
         for (Iterator<WPhase> iterator = lifecycle.getPhases().iterator(); iterator.hasNext();) {
             WPhase p = iterator.next();
             
-            if ((phase == null && lifecycle.getInitialPhase().equals(p))
+            if (bulkEdit 
+                || (phase == null && lifecycle.getInitialPhase().equals(p))
                 || p.getNextPhases().contains(phase) || (phase != null && phase.getNextPhases().contains(p)) || p == phase) {
                 phaseLB.addItem(p.getName(), p.getId());
                 
@@ -179,11 +183,6 @@ public class LifecyclePropertyPanel extends AbstractEditPropertyPanel {
         phase = getSelectedPhase();
         lifecycle = getSelectedLifecycle();
         updateLabel();
-    }
-
-    protected void onSaveFailure(Throwable caught, AbstractCallback saveCallback) {
-        // TODO Auto-generated method stub
-        super.onSaveFailure(caught, saveCallback);
     }
 
     public boolean saveAsCollection() {

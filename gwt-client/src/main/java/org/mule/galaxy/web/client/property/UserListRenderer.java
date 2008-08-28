@@ -12,42 +12,38 @@ import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WUser;
 
-public class UserListPropertyPanel extends ListPropertyPanel {
+public class UserListRenderer extends AbstractListRenderer {
 
     private Collection users;
-    private InlineFlowPanel addPanel = new InlineFlowPanel();
-    private Button addButton;
     private ListBox userLB;
     
     protected void loadRemote() {
-        galaxy.getSecurityService().getUsers(new AbstractCallback(errorPanel) {
-
-            public void onSuccess(Object o) {
-                users = (Collection) o;
-                onFinishLoad();
-            }
-            
-        });
-    }
-    
-    protected void onFinishLoad() {
         userLB = new ListBox();
-        updateUsers();
-        addPanel.add(userLB);
         
-        addButton = new Button();
-        addButton.setText("Add");
-        addButton.addClickListener(new ClickListener() {
-            public void onClick(Widget arg0) {
-                addUserLabelForSelection();
-            }
-        });
-        addPanel.add(addButton);
-        
-        super.onFinishLoad();
+        if (users == null) { 
+            galaxy.getSecurityService().getUsers(new AbstractCallback(errorPanel) {
+    
+                public void onSuccess(Object o) {
+                    users = (Collection) o;
+                    onFinishLoad();
+                }
+                
+            });
+        } else {
+            onFinishLoad();
+        }
     }
     
-    protected void removeLabel(String id) {
+    protected void removeLabel(Object id) {
+        super.removeLabel(id);
+
+        updateUsers();
+    }
+
+    @Override
+    protected void redrawEditPanel() {
+        super.redrawEditPanel();
+        
         updateUsers();
     }
 
@@ -98,12 +94,19 @@ public class UserListPropertyPanel extends ListPropertyPanel {
     }
     
     protected Widget getAddWidget() {
+        InlineFlowPanel addPanel = new InlineFlowPanel();
+        addPanel.add(userLB);
+        
+        Button addButton = new Button();
+        addButton.setText("Add");
+        addButton.addClickListener(new ClickListener() {
+            public void onClick(Widget arg0) {
+                addUserLabelForSelection();
+            }
+        });
+        
+        addPanel.add(addButton);
         return addPanel;
-    }
-
-    @Override
-    public boolean saveAsCollection() {
-        return true;
     }
 
 }

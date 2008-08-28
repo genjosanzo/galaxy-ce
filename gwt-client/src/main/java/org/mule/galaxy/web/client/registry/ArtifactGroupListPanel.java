@@ -18,18 +18,22 @@
 
 package org.mule.galaxy.web.client.registry;
 
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.util.TooltipListener;
 import org.mule.galaxy.web.rpc.EntryGroup;
 import org.mule.galaxy.web.rpc.EntryInfo;
-
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Image;
-
-import java.util.ArrayList;
 
 /**
  * Lists a group of artifacts.
@@ -38,13 +42,13 @@ public class ArtifactGroupListPanel extends AbstractComposite {
 
     private EntryGroup group;
     private boolean editable;
-    private ArrayList<CheckBox> CBCollection;
+    private Map<CheckBox, String> CBCollection;
 
 
     public ArtifactGroupListPanel(final EntryGroup group, boolean editable) {
         this.group = group;
         this.editable = editable;
-        CBCollection = new ArrayList<CheckBox>();
+        CBCollection = new HashMap<CheckBox, String>();
         renderArtifacts();
     }
 
@@ -80,7 +84,7 @@ public class ArtifactGroupListPanel extends AbstractComposite {
                 CheckBox checkbox = new CheckBox();
                 checkbox.setName(info.getId());
                 table.setWidget(i + 1, 0, checkbox);
-                CBCollection.add(checkbox);
+                CBCollection.put(checkbox, info.getId());
             } else {
                 // draw nothing, we are not in edit mode
                 table.setText(0, 0, " ");
@@ -120,16 +124,21 @@ public class ArtifactGroupListPanel extends AbstractComposite {
         return group.getName();
     }
 
-    public ArrayList<CheckBox> getCBCollection() {
-        return CBCollection;
-    }
-
-
     private String abbreviate(String s, int width) {
         if (s.length() > width) {
             s = s.substring(0, width) + "...";
         }
         return s;
+    }
+
+    public Collection<String> getSelectedEntries() {            
+        List<String> ids = new ArrayList<String>();
+        for (Map.Entry<CheckBox, String> e : CBCollection.entrySet()) {
+            if (e.getKey().isChecked()) {
+                ids.add(e.getValue());
+            }
+        }
+        return ids;
     }
 
 }

@@ -24,7 +24,6 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
@@ -56,7 +55,6 @@ public class NewPropertyPanel extends Composite {
     private List propertyDescriptors;
     private final Galaxy galaxy;
     private WProperty property;
-    private PropertyPanel renderer;
     private Button cancelButton;
     private FlexTable panel;
     private InlineFlowPanel selectorPanel;
@@ -132,24 +130,26 @@ public class NewPropertyPanel extends Composite {
         
         WPropertyDescriptor pd = getPropertyDescriptor(txt);
 
-        renderer = galaxy.getPropertyPanelFactory().createRenderer(pd.getExtension(), pd.isMultiValued());
+        AbstractPropertyRenderer renderer = 
+            galaxy.getPropertyPanelFactory().createRenderer(pd.getExtension(), pd.isMultiValued());
         
+        EditPropertyPanel render = new EditPropertyPanel(renderer);
         property = new WProperty(pd.getName(), pd.getDescription(), null, pd.getExtension(), false);
         property.setMultiValued(pd.isMultiValued());
-        renderer.setProperty(property);
-        renderer.setGalaxy(galaxy);
-        renderer.setItemId(itemId);
-        renderer.setErrorPanel(errorPanel);
-        renderer.setSaveListener(new ClickListener() {
+        render.setProperty(property);
+        render.setGalaxy(galaxy);
+        render.setItemId(itemId);
+        render.setErrorPanel(errorPanel);
+        render.setSaveListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 save();
             }
         });
-        renderer.setCancelListener(cancelListener);
-        renderer.initialize();
-        renderer.showEdit();
+        render.setCancelListener(cancelListener);
+        render.initialize();
+        render.showEdit();
         
-        panel.setWidget(0, 1, renderer);
+        panel.setWidget(0, 1, render);
     }
 
     protected void save() {

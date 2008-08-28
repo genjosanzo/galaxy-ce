@@ -1,6 +1,8 @@
 package org.mule.galaxy.web.server;
 
 import java.io.InputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,7 +17,6 @@ import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.link.LinkExtension;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.Policy;
@@ -135,8 +136,28 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertNotNull(hiddenProp);
         
         // test links
-        WLinks links = gwtRegistry.getLinks(artifact.getDefaultOrLastVersion().getId(), LinkExtension.DEPENDS);
+        String avId = artifact.getDefaultOrLastVersion().getId();
+        ItemInfo av = gwtRegistry.getItemInfo(avId, true);
+        WProperty prop = av.getProperty("depends");
+        assertNotNull(prop);
+        
+        WLinks links = (WLinks) prop.getValue();
         List<LinkInfo> deps = links.getLinks();
+        assertEquals(1, deps.size());
+        
+        links = new WLinks();
+        links.setLinks(new ArrayList<LinkInfo>());
+        LinkInfo linkInfo = new LinkInfo();
+        linkInfo.setItemName("/Default Workspace/hello.xsd");
+        links.getLinks().add(linkInfo);
+        
+        gwtRegistry.setProperty(avId, "conflicts", links);
+        av = gwtRegistry.getItemInfo(avId, true);
+        prop = av.getProperty("conflicts");
+        assertNotNull(prop);
+        
+        links = (WLinks) prop.getValue();
+        deps = links.getLinks();
         assertEquals(1, deps.size());
         
         // try adding a comment
@@ -236,7 +257,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals(created.getId(), ids.get(1));
         
         Phase developed = created.getNextPhases().iterator().next();
-        gwtRegistry.setProperty(a.getId(), Registry.PRIMARY_LIFECYCLE, Arrays.asList(developed.getLifecycle().getId(), developed.getId()));
+        gwtRegistry.setProperty(a.getId(), Registry.PRIMARY_LIFECYCLE, (Serializable) Arrays.asList(developed.getLifecycle().getId(), developed.getId()));
         
         // activate a policy which will make transitioning fail
         FauxPolicy policy = new FauxPolicy();
@@ -245,7 +266,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         // Try transitioning
         Phase tested = created.getNextPhases().iterator().next();
         try {
-            gwtRegistry.setProperty(a.getId(), Registry.PRIMARY_LIFECYCLE, Arrays.asList(tested.getLifecycle().getId(), tested.getId()));
+            gwtRegistry.setProperty(a.getId(), Registry.PRIMARY_LIFECYCLE, (Serializable) Arrays.asList(tested.getLifecycle().getId(), tested.getId()));
         } catch (WPolicyException e) {
             assertEquals(1, e.getPolicyFailures().size());
             

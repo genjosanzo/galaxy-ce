@@ -18,6 +18,7 @@
 
 package org.mule.galaxy.web.server;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,11 +34,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
 
 import org.acegisecurity.context.SecurityContextHolder;
-import org.apache.abdera.i18n.text.UrlEncoding;
-import org.apache.abdera.i18n.text.CharUtils.Profile;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.Artifact;
@@ -64,7 +64,10 @@ import org.mule.galaxy.collab.Comment;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.extension.Extension;
+import org.mule.galaxy.impl.jcr.AbstractJcrItem;
+import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
+import org.mule.galaxy.impl.link.LinkExtension;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.lifecycle.Lifecycle;
@@ -119,6 +122,7 @@ import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 import org.mule.galaxy.web.rpc.WSearchResults;
 import org.mule.galaxy.web.rpc.WUser;
 import org.mule.galaxy.web.rpc.WWorkspace;
+import org.mule.galaxy.web.rpc.RegistryService.ApplyTo;
 
 public class RegistryServiceImpl implements RegistryService {
 
@@ -998,71 +1002,44 @@ public class RegistryServiceImpl implements RegistryService {
 
     public WLinks getLinks(String itemId, String property) throws RPCException {
         try {
-            WLinks wlinks = new WLinks();
-            
             Item item = registry.getItemById(itemId);
             Links links = (Links) item.getProperty(property);
-            
-            List<LinkInfo> deps = new ArrayList<LinkInfo>();
-            
-            for (Link l : links.getLinks()) {
-                deps.add(toWeb(l, false));
-            }
-            wlinks.setLinks(deps);
-            
-            deps = new ArrayList<LinkInfo>();
-            for (Link l : links.getReciprocalLinks()) {
-                deps.add(toWeb(l, true));
-            }
-            wlinks.setReciprocal(deps);
-            
             PropertyDescriptor pd = typeManager.getPropertyDescriptor(property);
             
-            wlinks.setReciprocalName(pd.getConfiguration().values().iterator().next());
-            
-            return wlinks;
+            return toWeb(links, pd);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
         }
 
     }
+
+    private WLinks toWeb(Links links, PropertyDescriptor pd) {
+        if (links == null) {
+            return null;
+        }
+        
+        WLinks wlinks = new WLinks();
+        
+        List<LinkInfo> deps = new ArrayList<LinkInfo>();
+        
+        for (Link l : links.getLinks()) {
+            deps.add(toWeb(l, false));
+        }
+        wlinks.setLinks(deps);
+        
+        deps = new ArrayList<LinkInfo>();
+        for (Link l : links.getReciprocalLinks()) {
+            deps.add(toWeb(l, true));
+        }
+        wlinks.setReciprocal(deps);
+        
+        
+        wlinks.setReciprocalName(pd.getConfiguration().values().iterator().next());
+        
+        return wlinks;
+    }
     
-    public LinkInfo addLink(String itemId, String property, String path) throws RPCException {
-        try {
-            Item item = registry.getItemById(decode(itemId));
-            Item linkTo = registry.getItemByPath(path);
-            
-            Links links = (Links) item.getProperty(property);
-            
-            Link link = new Link(item, linkTo, null, false);
-            links.addLinks(link);
-            
-            return toWeb(link, false);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new RPCException("Could not find artifact " + itemId);
-        }
-    }
-
-    public void removeLink(String itemId, String property, String linkId) throws RPCException {
-        try {
-            Item item = registry.getItemById(decode(itemId));
-            
-            Links links = (Links) item.getProperty(property);
-            
-            for (Link l : links.getLinks()) {
-                if (l.getId().equals(linkId)) {
-                    links.removeLinks(l);
-                    return;
-                }
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new RPCException("Could not find artifact " + itemId);
-        }
-    }
-
     private LinkInfo toWeb(Link l, boolean recip) {
         Item i = recip ? l.getItem() : l.getLinkedTo();
         String name;
@@ -1238,17 +1215,23 @@ public class RegistryServiceImpl implements RegistryService {
                 continue;
             }
 
-            Object val = p.getInternalValue();
-
-            val = convertQNames(val);
+            PropertyDescriptor pd = p.getPropertyDescriptor();
+            Extension ext = pd != null ? pd.getExtension() : null;
             
+            Object val = toWeb(p, ext);
+
             String desc = p.getDescription();
             if (desc == null) {
                 desc = p.getName();
             }
-            PropertyDescriptor pd = p.getPropertyDescriptor();
-            String ext = pd != null && pd.getExtension() != null ? pd.getExtension().getId() : null;
-            vi.getProperties().add(new WProperty(p.getName(), desc, val, ext, p.isLocked()));
+            
+            String extId = ext != null ? ext.getId() : null;
+            
+            vi.getProperties().add(new WProperty(p.getName(), 
+                                                 desc, 
+                                                 (Serializable) val, 
+                                                 extId, 
+                                                 p.isLocked()));
         }
 
         Collections.sort(vi.getProperties(), new Comparator() {
@@ -1258,6 +1241,18 @@ public class RegistryServiceImpl implements RegistryService {
             }
 
         });
+    }
+
+    private Object toWeb(PropertyInfo p, Extension ext) {
+        if (ext instanceof LinkExtension) {
+            Links links = (Links) p.getValue();
+            
+            return toWeb(links, p.getPropertyDescriptor());
+        } else {
+            Object internalValue = p.getInternalValue();
+            
+            return convertQNames(internalValue);
+        }
     }
 
     /**
@@ -1345,22 +1340,14 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-
-    public void setProperty(String entryId, String propertyName, Collection<String> propertyValue)
-        throws RPCException, ItemNotFoundException, WPolicyException {
-        setProperty(entryId, propertyName, (Object)propertyValue);
-    }
-
-    public void setProperty(String entryId, String propertyName, String propertyValue)
-        throws RPCException, ItemNotFoundException, WPolicyException {
-        setProperty(entryId, propertyName, (Object)propertyValue);
-    }
-
-    protected void setProperty(String itemId, String propertyName, Object propertyValue) throws RPCException, ItemNotFoundException, WPolicyException {
+    public void setProperty(String itemId, String propertyName, Serializable propertyValue) throws RPCException, ItemNotFoundException, WPolicyException {
         try {
             Item item = registry.getItemById(decode(itemId));
 
-            item.setInternalProperty(propertyName, propertyValue);
+            PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName);
+            Extension ext = pd != null ? pd.getExtension() : null;
+            
+            setProperty(item, propertyName, propertyValue, ext);
 
             registry.save(item);
         } catch (RegistryException e) {
@@ -1379,15 +1366,103 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void setProperty(Collection<String> entryIds, String propertyName, Collection<String> propertyValue)
-        throws RPCException, ItemNotFoundException {
+    private void setProperty(Item item, String propertyName, 
+                             Serializable propertyValue, Extension ext)
+        throws PropertyException, PolicyException, NotFoundException, RegistryException, AccessException {
+        if (ext instanceof LinkExtension) {
+            Links links = (Links) item.getProperty(propertyName);
+            WLinks wlinks = (WLinks) propertyValue;
+            
+            Collection<Link> linkList = new ArrayList<Link>();
+            linkList.addAll(links.getLinks());
+            for (Iterator<LinkInfo> itr = wlinks.getLinks().iterator(); itr.hasNext();) {
+                LinkInfo wl = itr.next();
+                Link l = getLink(linkList, wl);
+                
+                if (l != null) {
+                    linkList.remove(l);
+                } else {
+                    Item linkTo = registry.getItemByPath(wl.getItemName());
+                    
+                    Link link = new Link(item, linkTo, null, false);
+                    links.addLinks(link);
+                }
+            }
+            
+            for (Link l : linkList) {
+                links.removeLinks(l);
+            }
+        } else {
+            item.setInternalProperty(propertyName, propertyValue);
+        }
     }
 
-    public void setProperty(Collection<String> entryIds, String propertyName, String propertyValue)
-        throws RPCException, ItemNotFoundException {
+    private Link getLink(Collection<Link> linkList, LinkInfo l) {
+        for (Link link : linkList) {
+            String path = link.getLinkedToPath();
+            if (link.getId().equals(l.getLinkId())
+                || (path != null && path.equals(l.getItemName()))) {
+                return link;
+            }
+        }
+        return null;
     }
-    public void setProperty(Collection<String> entryIds, String propertyName, Object propertyValue) throws RPCException, ItemNotFoundException {
 
+    public void setProperty(Collection<String> entryIds, 
+                            String propertyName, 
+                            Serializable propertyValue, ApplyTo applyTo)
+        throws RPCException, ItemNotFoundException {
+        try {
+            PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName);
+            Extension ext = pd != null ? pd.getExtension() : null;
+            
+            List<Item> items = new ArrayList<Item>();
+            for (String itemId : entryIds) {
+                Item item = registry.getItemById(decode(itemId));
+                
+                switch (applyTo) {
+                case ENTRY:
+                    setProperty(item, propertyName, propertyValue, ext, items);
+                    break;
+                case ALL_VERSIONS:
+                    for (Item v : ((Entry) item).getVersions()) {
+                        setProperty(v, propertyName, propertyValue, ext, items);
+                    }
+                    break;
+                case DEFAULT_VERSION:
+                    setProperty(((Entry) item).getDefaultOrLastVersion(),
+                                propertyName, propertyValue, ext, items);
+                    break;
+                }
+                
+            }
+            
+            // don't save until we actually manage to set everything
+            for (Item i : items) {
+                registry.save(i);
+            }
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (PropertyException e) {
+            // occurs if property name is formatted wrong
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        } catch (PolicyException e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    private void setProperty(Item item, String propertyName, Serializable propertyValue, Extension ext,
+                             List<Item> items) throws PropertyException, PolicyException, NotFoundException,
+        RegistryException, AccessException {
+        setProperty(item, propertyName, propertyValue, ext);
+        
+        items.add(item);
     }
 
     public void deleteProperty(String itemId, String propertyName) throws RPCException, ItemNotFoundException {
@@ -1411,13 +1486,48 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void deleteProperty(Collection<String> entryIds, String propertyName) throws RPCException, ItemNotFoundException {
-
+    public void deleteProperty(Collection<String> entryIds, String propertyName, ApplyTo applyTo) throws RPCException, ItemNotFoundException {
+        try {
+            List<Item> items = new ArrayList<Item>();
+            for (String itemId : entryIds) {
+                Item item = registry.getItemById(decode(itemId));
+                
+                switch (applyTo) {
+                case ENTRY:
+                    item.setProperty(propertyName, null);
+                    break;
+                case ALL_VERSIONS:
+                    for (Item v : ((Entry) item).getVersions()) {
+                        v.setProperty(propertyName, null);
+                    }
+                    break;
+                case DEFAULT_VERSION:
+                    ((Entry) item).getDefaultOrLastVersion().setProperty(propertyName, null);
+                    break;
+                }
+                
+                items.add(item);
+            }
+            // don't save until we actually delete everything
+            for (Item i : items) {
+                registry.save(i);
+            }
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (PropertyException e) {
+            // occurs if property name is formatted wrong
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        } catch (PolicyException e) {
+            throw new RPCException(e.getMessage());
+        }
     }
 
-    public void deleteProperty(Collection<String> entryIds, String propertyName, String propertyValue) throws RPCException, ItemNotFoundException {
-
-    }
 
     public void deletePropertyDescriptor(String id) throws RPCException {
         typeManager.deletePropertyDescriptor(id);

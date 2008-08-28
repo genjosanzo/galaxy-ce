@@ -39,25 +39,25 @@ public abstract class AbstractComposite extends Composite {
         
     }
 
-    protected Widget asDiv(Widget w) {
+    public static Widget asDiv(Widget w) {
         FlowPanel p = new FlowPanel();
         p.add(w);
         return p;
     }
     
-    protected Label newLabel(String name, String style) {
+    public static Label newLabel(String name, String style) {
         Label label = new Label(name);
         label.setStyleName(style);
         return label;
     }
-    protected InlineFlowPanel asHorizontal(Widget w1, Widget w2) {
+    public static InlineFlowPanel asHorizontal(Widget w1, Widget w2) {
         InlineFlowPanel p = new InlineFlowPanel();
         p.add(w1);
         p.add(w2);
         return p;
     }
 
-    protected InlineFlowPanel asHorizontal(Widget w1, Widget w2, Widget w3) {
+    public static InlineFlowPanel asHorizontal(Widget w1, Widget w2, Widget w3) {
         InlineFlowPanel p = new InlineFlowPanel();
         p.add(w1);
         p.add(w2);
@@ -65,21 +65,21 @@ public abstract class AbstractComposite extends Composite {
         return p;
     }
     
-    protected FlexTable createTitledRowTable(Panel panel, String title) {
+    public static FlexTable createTitledRowTable(Panel panel, String title) {
         panel.add(createPrimaryTitle(title));
         FlexTable table = createRowTable();
         panel.add(table);
         return table;
     }
 
-    protected FlexTable createTitledColumnTable(Panel panel, String title) {
+    public static FlexTable createTitledColumnTable(Panel panel, String title) {
         panel.add(createTitle(title));
         FlexTable table = createColumnTable();
         panel.add(table);
         return table;
     }
     
-    protected FlexTable createRowTable() {
+    public static FlexTable createRowTable() {
         FlexTable table = new FlexTable();
         table.getRowFormatter().setStyleName(0, "artifactTableHeader");
         table.setStyleName("artifactTableFull");
@@ -90,14 +90,14 @@ public abstract class AbstractComposite extends Composite {
         return table;
     }
 
-    protected void styleHeaderColumn(FlexTable table) {
+    public static void styleHeaderColumn(FlexTable table) {
         for (int i = 0; i < table.getRowCount(); i++) {
             table.getCellFormatter().setStyleName(i, 0, "artifactTableHeader");
             table.getCellFormatter().setStyleName(i, 1, "artifactTableEntry");
         }
     }
 
-    protected FlexTable createColumnTable() {
+    public static FlexTable createColumnTable() {
         FlexTable table = createTable();
         table.setStyleName("columnTable");
         table.setCellSpacing(0);
@@ -106,7 +106,7 @@ public abstract class AbstractComposite extends Composite {
         return table;
     }
     
-    protected FlexTable createTable() {
+    public static FlexTable createTable() {
         FlexTable table = new FlexTable();
         table.setStyleName("artifactTable");
         table.setCellSpacing(0);
@@ -114,13 +114,13 @@ public abstract class AbstractComposite extends Composite {
         return table;
     }
 
-    protected Widget createPrimaryTitle(String title) {
+    public static Widget createPrimaryTitle(String title) {
         Label label = new Label(title);
         label.setStyleName("title");
         return label;
     }
     
-    protected InlineFlowPanel createTitle(String title) {
+    public static InlineFlowPanel createTitle(String title) {
         InlineFlowPanel titlePanel = new InlineFlowPanel();
         titlePanel.setStyleName("rightlinked-title-panel");
         
@@ -131,14 +131,14 @@ public abstract class AbstractComposite extends Composite {
     }
 
 
-    protected Label createTitleText(String title) {
+    public static Label createTitleText(String title) {
         Label label = new Label(title);
         label.setStyleName("right-title");
         return label;
     }
 
 
-    protected InlineFlowPanel createTitleWithLink(String name, Widget rightWidget) {
+    public static InlineFlowPanel createTitleWithLink(String name, Widget rightWidget) {
         InlineFlowPanel commentTitlePanel = new InlineFlowPanel();
         commentTitlePanel.setStyleName("rightlinked-title-panel");
 

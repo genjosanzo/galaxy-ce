@@ -13,62 +13,66 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.EntrySuggestOracle;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.LinkInfo;
 import org.mule.galaxy.web.rpc.WLinks;
 
-public class LinksPropertyPanel extends ListPropertyPanel {
+/**
+ * NOTE: I apologize for the mess that is this class.
+ */
+public class LinksRenderer extends AbstractListRenderer {
 
-    protected Collection<LinkInfo> links;
     private SuggestBox suggest;
-    private FlowPanel editLinksPanel;
     private Button addButton;
     private String reciprocalName;
     private Label verifyLabel;
-    
-    public void loadRemote() {
-        galaxy.getRegistryService().getLinks(itemId, 
-                                             getProperty().getName(), 
-                                             new AbstractCallback<WLinks>(errorPanel) {
-
-            public void onSuccess(WLinks o) {
-                links = new ArrayList<LinkInfo>();
-                links.addAll(o.getLinks());
-                links.addAll(o.getReciprocal());
-                
-                reciprocalName = o.getReciprocalName();
-                
-                values.clear();
-                values.addAll(links);
-                onFinishLoad();
-            }
-        });
-    }
 
     @Override
-    protected void removeLabel(Object value) {
-        if (value instanceof String) {
-            valuesToSave.remove(value);
-        } else {
-            valuesToDelete.add(((LinkInfo)value).getLinkId());
-        }
-        super.removeLabel(value);
-    }
-
-    @Override
-    protected void redrawViewPanel() {
-        viewValuesPanel.clear();
+    public void initialize(Galaxy galaxy, ErrorPanel errorPanel, Object value, boolean bulkEdit) {
+        this.galaxy = galaxy;
+        this.errorPanel = errorPanel;
+        this.value = value;
         
-        createViewWidgets(viewValuesPanel);
+        WLinks links = getLinks();
+        values = new ArrayList<Object>();
+        values.addAll(links.getLinks());
+        values.addAll(links.getReciprocal());
+        
+        reciprocalName = links.getReciprocalName();
     }
 
+    @Override
+    public Object getValueToSave() {
+        return getLinks();
+    }
+
+    private WLinks getLinks() {
+        if (value == null) {
+            WLinks links = new WLinks();
+            links.setLinks(new ArrayList<LinkInfo>());
+            links.setReciprocal(new ArrayList<LinkInfo>());
+            value = links;
+        }
+        return (WLinks) value;
+    }
+
+    @Override
     protected void redrawEditPanel() {
         editValuesPanel.clear();
 
-        for (Iterator<? extends Object> itr = values.iterator(); itr.hasNext();) {
+        WLinks links = (WLinks) value;
+        
+        addEditLinks(links.getLinks());
+    }
+
+    private void addEditLinks(List<LinkInfo> links2) {
+        for (Iterator<? extends Object> itr = links2.iterator(); itr.hasNext();) {
             Object value = itr.next();
             LinkInfo li = (LinkInfo) value;
             
@@ -85,9 +89,6 @@ public class LinksPropertyPanel extends ListPropertyPanel {
         verifyLabel = new Label();
         addPanel.add(verifyLabel);
         
-        editLinksPanel = new FlowPanel();
-        addPanel.add(editLinksPanel);
-        
         suggest = new SuggestBox(new EntrySuggestOracle(galaxy, errorPanel, "xxx"));
         addPanel.add(suggest);
 
@@ -102,6 +103,8 @@ public class LinksPropertyPanel extends ListPropertyPanel {
             }
         });
         addPanel.add(addButton);
+        
+        redrawEditPanel();
         
         return addPanel;
     }
@@ -126,32 +129,48 @@ public class LinksPropertyPanel extends ListPropertyPanel {
         });
     }
     
+    private void setEnabled(boolean e) {
+        addButton.setEnabled(e);
+    }
+
     protected boolean isDuplicate(String path) {
-        for (LinkInfo l : links) {
+        for (LinkInfo l : getLinks().getReciprocal()) {
             if (l.getItemName().equals(path)) {
                 return true;
             }
         }
         
-        return valuesToSave.contains(path);
+        return values.contains(path);
     }
 
     protected void verified(String path) {
-        valuesToSave.add(path);
-        editValuesPanel.add(createLabel(path));
+        LinkInfo l = new LinkInfo();
+        l.setItemName(path);
+        l.setItemType(LinkInfo.TYPE_ENTRY);
+        getLinks().getLinks().add(l);
+        editValuesPanel.add(createLabel(l));
         setEnabled(true);
     }
 
-    private void createViewWidgets(Panel container) {
+    public Widget createViewWidget() {
+        InlineFlowPanel container = new InlineFlowPanel();
         InlineFlowPanel linkPanel = new InlineFlowPanel();
         InlineFlowPanel recipPanel = new InlineFlowPanel();
         
         recipPanel.setStyleName("linksPropertyPanel");
         recipPanel.add(new Label("[" + reciprocalName + ": "));
 
+        addViewLinks(values, container, linkPanel, recipPanel);
+        
+        return container;
+    }
 
-        for (Iterator<LinkInfo> itr = links.iterator(); itr.hasNext();) {
-            final LinkInfo info = itr.next();
+    private void addViewLinks(Collection<Object> links, 
+                              Panel container, 
+                              InlineFlowPanel linkPanel,
+                              InlineFlowPanel recipPanel) {
+        for (Object o : links) {
+            final LinkInfo info = (LinkInfo) o;
 
             Widget w;
             if (info.getItemType() == LinkInfo.TYPE_NOT_FOUND) {
@@ -200,106 +219,19 @@ public class LinksPropertyPanel extends ListPropertyPanel {
         }
     }
     
-    protected void save() {
-        setEnabled(false);
-        
-        if (valuesToSave.isEmpty()) {
-            deleteLinks();
-            return;
-        }
-        
-        saveNext();
+    @Override
+    protected void removeLabel(Object value) {
+        getLinks().getLinks().remove(value);
+        super.removeLabel(value);
     }
 
-    @SuppressWarnings("unchecked")
-    private void saveNext() {
-        final Object value = valuesToSave.iterator().next();
-        AbstractCallback addCallback = new AbstractCallback(errorPanel) {
-
-            public void onFailure(Throwable caught) {
-                onSaveFailure(caught, this);
-            }
-
-            public void onSuccess(Object response) {
-                valuesToSave.remove(value);
-                links.add((LinkInfo) response);
-                if (valuesToSave.isEmpty()) {
-                    deleteLinks();
-                } else {
-                    saveNext();
-                }
-            }
-        };
-        
-        galaxy.getRegistryService().addLink(itemId, property.getName(), (String) value, addCallback);
-    }
-    
-    protected void deleteLinks() {
-        if (valuesToDelete.isEmpty()) {
-            onSave(null, null);
-            return;
-        }
-        
-        deleteNextLink();
-    }
-    
-    private void deleteNextLink() {
-        final String value = valuesToDelete.iterator().next();
-        
-        AbstractCallback addCallback = new AbstractCallback(errorPanel) {
-
-            public void onFailure(Throwable caught) {
-                onSaveFailure(caught, this);
-            }
-
-            public void onSuccess(Object response) {
-                removeLink(value);
-                valuesToDelete.remove(value);
-                if (valuesToDelete.isEmpty()) {
-                    onSave(null, null);
-                } else {
-                    deleteNextLink();
-                }
-            }
-        };
-        
-        galaxy.getRegistryService().removeLink(itemId, property.getName(), value, addCallback);
-    }
-    
     protected void removeLink(String value) {
+        List<LinkInfo> links = getLinks().getLinks();
         for (LinkInfo l : links) {
             if (l.getLinkId().equals(value)) {
                 links.remove(l);
                 return;
             }
-        }
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        addButton.setEnabled(enabled);
-    }
-
-    @Override
-    protected void onSave(Object value, Object response) {
-        values.clear();
-        values.addAll(links);
-
-        valuesToDelete.clear();
-        valuesToSave.clear();
-        
-        setEnabled(true);
-        
-        showView();
-
-        redraw();
-        
-        suggest.setText("");
-        verifyLabel.setText("");
-        
-        if (saveListener != null) {
-            saveListener.onClick(null);
         }
     }
 
@@ -311,12 +243,5 @@ public class LinksPropertyPanel extends ListPropertyPanel {
             return ((LinkInfo) value).getItemName();
         }
     }
-
-    protected void cancel() {
-        super.cancel();
-        valuesToDelete.clear();
-        valuesToSave.clear();
-    }
-
     
 }

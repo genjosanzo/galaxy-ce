@@ -20,12 +20,13 @@ package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import org.mule.galaxy.web.client.RPCException;
+import org.mule.galaxy.web.rpc.RegistryService.ApplyTo;
 
 public interface RegistryServiceAsync {
     void getWorkspaces(String parentId, AsyncCallback callback);
@@ -77,13 +78,7 @@ public interface RegistryServiceAsync {
     
     
     void itemExists(String path, AsyncCallback<Boolean> callback);
-
-    void addLink(String itemId, String property, String path, AsyncCallback<LinkInfo> callback);
     
-    void removeLink(String itemId, String property, String linkId, AsyncCallback callback);
-    
-    void getLinks(String artifactId, String property, AsyncCallback<WLinks> callback);
-
 
     void getEntry(String artifactId, AsyncCallback callback);
     
@@ -91,37 +86,28 @@ public interface RegistryServiceAsync {
     
     void getItemInfo(String entryVersionId, boolean showHidden, AsyncCallback<ItemInfo> callback);
     
-    void setProperty(String artifactId, 
+    // item operations
+    
+    void setProperty(String itemId, 
                      String propertyName, 
-                     String propertyValue,
+                     Serializable propertyValue,
                      AsyncCallback callback);
     
-    void setProperty(Collection artifactIds, 
-                     String propertyName,
-                     String propertyValue,
-                     AsyncCallback callback);
-
-    void setProperty(String artifactId, 
-                     String propertyName, 
-                     Collection propertyValue,
-                     AsyncCallback callback);
-    
-    void setProperty(Collection artifactIds, 
-                     String propertyName,
-                     Collection propertyValue,
-                     AsyncCallback callback);
-
-    void deleteProperty(String artifactId,
+    void deleteProperty(String itemId,
                         String propertyName, 
                         AsyncCallback callback);
-    
-    void deleteProperty(Collection artifactIds,
-                        String propertyName,
-                        AsyncCallback callback);
 
-    void deleteProperty(Collection artifactIds,
+    // bulk operations
+    
+    void setProperty(Collection itemIds, 
+                     String propertyName, 
+                     Serializable propertyValue,
+                     ApplyTo applyTo,
+                     AsyncCallback callback);
+ 
+    void deleteProperty(Collection itemIds,
                         String propertyName,
-                        String propertyValue,
+                        ApplyTo applyTo,
                         AsyncCallback callback);
 
     void addComment(String artifactId, String parentCommentId, String text, AsyncCallback callback);

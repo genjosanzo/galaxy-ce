@@ -4,23 +4,24 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SimplePropertyPanel extends AbstractEditPropertyPanel {
+public class SimpleRenderer extends AbstractPropertyRenderer {
 
     private TextBox valueTB;
     private Label valueLabel;
 
-    protected Widget createEditForm() {
+    public Widget createEditForm() {
         valueTB = new TextBox();
         valueTB.setVisibleLength(50);
+        valueTB.setText((String) value);
         return valueTB;
     }
 
-    protected Object getValueToSave() {
+    public Object getValueToSave() {
         return valueTB.getText();
     }
 
     protected String getRenderedText() {
-        String txt = (String) getProperty().getValue();
+        String txt = (String) value;
         
         if ("".equals(txt) || txt == null) {
             txt = "-----";
@@ -29,21 +30,10 @@ public class SimplePropertyPanel extends AbstractEditPropertyPanel {
         return txt;
     }
     
-    protected Widget createViewWidget() {
+    public Widget createViewWidget() {
         valueLabel = new Label();
+        valueLabel.setText(getRenderedText());
         return valueLabel;
-    }
-    
-
-    public void initialize() {
-        super.initialize();
-        valueLabel.setText(getRenderedText());
-        valueTB.setText((String) getProperty().getValue());
-    }
-
-    protected void onSave(Object value, Object response) {
-        valueLabel.setText(getRenderedText());
-        valueTB.setText((String) value);
     }
     
 }

@@ -9,23 +9,33 @@ import java.util.Collection;
 
 import org.mule.galaxy.web.client.util.StringListBox;
 
-public class SimpleListPropertyPanel extends AbstractEditPropertyPanel {
+public class SimpleListRenderer extends AbstractPropertyRenderer {
 
     private Label valueLabel;
     private SimplePanel listBoxPanel;
     private StringListBox listBox;
 
-    protected Widget createEditForm() {
+    @SuppressWarnings("unchecked")
+    public Widget createEditForm() {
         listBoxPanel = new SimplePanel();
+        listBox = new StringListBox((Collection<String>) value);
+        listBoxPanel.add(listBox);
         return listBoxPanel;
     }
 
-    protected Object getValueToSave() {
+    public Widget createViewWidget() {
+        valueLabel = new Label();
+        valueLabel.setText(getRenderedText());
+        return valueLabel;
+    }
+
+    public Object getValueToSave() {
         return listBox.getItems();
     }
 
+    @SuppressWarnings("unchecked")
     protected String getRenderedText() {
-        Collection<String> c = getProperty().getListValue();
+        Collection<String> c = (Collection<String>) value;
         
         String txt;
         if (c == null || c.size() == 0) {
@@ -36,25 +46,6 @@ public class SimpleListPropertyPanel extends AbstractEditPropertyPanel {
         }
         
         return txt;
-    }
-    
-    protected void onSave(Object value, Object response) {
-        valueLabel.setText(getRenderedText());
-        listBox = new StringListBox((Collection<String>) getProperty().getListValue());
-        listBoxPanel.clear();
-        listBoxPanel.add(listBox);
-    }
-
-    protected Widget createViewWidget() {
-        valueLabel = new Label();
-        return valueLabel;
-    }
-
-    public void initialize() {
-        super.initialize();
-        valueLabel.setText(getRenderedText());
-        listBox = new StringListBox((Collection<String>) getProperty().getListValue());
-        listBoxPanel.add(listBox);
     }
 
 }

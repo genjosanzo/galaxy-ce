@@ -18,8 +18,10 @@
 
 package org.mule.galaxy.web.rpc;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.rpc.RemoteService;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +32,12 @@ import org.mule.galaxy.web.client.RPCException;
 
 public interface RegistryService extends RemoteService {
 
+    public enum ApplyTo implements IsSerializable {
+        ENTRY,
+        DEFAULT_VERSION,
+        ALL_VERSIONS
+    }
+    
     Collection<WWorkspace> getWorkspaces(String parentId) throws RPCException;
     
     WWorkspace getWorkspace(String id) throws RPCException;
@@ -81,13 +89,6 @@ public interface RegistryService extends RemoteService {
     
     boolean itemExists(String path) throws RPCException;
     
-    LinkInfo addLink(String itemId, String property, String path) throws RPCException;
-    
-    void removeLink(String itemId, String property, String linkId) throws RPCException;
-    
-    WLinks getLinks(String itemId, String property) throws RPCException;
-    
-    
     ExtendedEntryInfo getEntry(String entryId) throws RPCException, ItemNotFoundException;
     
     ExtendedEntryInfo getArtifactByVersionId(String artifactVersionId) throws RPCException, ItemNotFoundException;
@@ -97,32 +98,21 @@ public interface RegistryService extends RemoteService {
     Collection<EntryInfo> suggestEntries(String query, String exclude) throws RPCException;
 
     Collection<String> suggestWorkspaces(String query, String exclude) throws RPCException;
-    
-    void setProperty(String entryId, 
-                     String propertyName, 
-                     String propertyValue) throws RPCException, ItemNotFoundException, WPolicyException;
-    
-    void setProperty(String entryId, 
-                     String propertyName, 
-                     Collection<String> propertyValue) throws RPCException, WPolicyException, ItemNotFoundException;
 
     void setProperty(Collection<String> entryIds,
                      String propertyName,
-                     String propertyValue) throws RPCException, WPolicyException, ItemNotFoundException;
-    
+                     Serializable propertyValue, ApplyTo applyTo) throws RPCException, WPolicyException, ItemNotFoundException;
 
-    void setProperty(Collection<String> entryIds,
+    void setProperty(String entryId,
                      String propertyName,
-                     Collection<String> propertyValue) throws RPCException, WPolicyException, ItemNotFoundException;
+                     Serializable propertyValue) throws RPCException, WPolicyException, ItemNotFoundException;
 
     void deleteProperty(String entryId, 
                         String propertyName) throws RPCException, ItemNotFoundException;
     
     void deleteProperty(Collection<String> entryIds, 
-                        String propertyName) throws RPCException, ItemNotFoundException;
-
-    void deleteProperty(Collection<String> entryIds,
-                        String propertyName, String propertyValue) throws RPCException, ItemNotFoundException;
+                        String propertyName, 
+                        ApplyTo applyTo) throws RPCException, ItemNotFoundException;
 
     void savePropertyDescriptor(WPropertyDescriptor property) throws RPCException, ItemNotFoundException, ItemExistsException;
     

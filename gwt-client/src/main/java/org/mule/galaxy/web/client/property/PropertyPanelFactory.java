@@ -1,23 +1,22 @@
 package org.mule.galaxy.web.client.property;
 
-import java.util.HashMap;
-import java.util.Map;
 
-import org.mule.galaxy.web.rpc.WProperty;
-
+/**
+ * Creates renderers for different property types.
+ */
 public class PropertyPanelFactory {
     
-    public PropertyPanel createRenderer(String ext, boolean multivalued) {
+    public AbstractPropertyRenderer createRenderer(String ext, boolean multivalued) {
         if ("lifecycleExtension".equals(ext)) {
-            return new LifecyclePropertyPanel();
+            return new LifecycleRenderer();
         } else if ("linkExtension".equals(ext)) {
-            return new LinksPropertyPanel();
+            return new LinksRenderer();
         } else if ("userExtension".equals(ext)) {
-            return new UserListPropertyPanel();
+            return new UserListRenderer();
         } else if (multivalued) {
-            return new SimpleListPropertyPanel();
+            return new SimpleListRenderer();
         } else {
-            return new SimplePropertyPanel();
+            return new SimpleRenderer();
         }
     }
 }

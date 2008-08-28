@@ -18,15 +18,18 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Link;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.event.EntryDeletedEvent;
 import org.mule.galaxy.event.EntryVersionDeletedEvent;
 import org.mule.galaxy.event.annotation.BindToEvents;
 import org.mule.galaxy.event.annotation.OnEvent;
+import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.QueryException;
@@ -45,7 +48,7 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
     public LinkDaoImpl() throws Exception {
         super(Link.class, "links", true);
     }
-
+    
     @OnEvent
     public void onEvent(final EntryDeletedEvent deleted) {
         execute(new JcrCallback() {
@@ -222,7 +225,7 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
         
         stmt.append("') and property = '").append(property);
         stmt.append("']");
-
+System.out.println(stmt.toString());
         return doQuery(stmt.toString());
     }
 

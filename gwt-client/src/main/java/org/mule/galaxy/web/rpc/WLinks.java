@@ -2,9 +2,10 @@ package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class WLinks implements IsSerializable {
+public class WLinks implements IsSerializable, Serializable {
     private List<LinkInfo> links;
     private List<LinkInfo> reciprocal;
     private String reciprocalName;

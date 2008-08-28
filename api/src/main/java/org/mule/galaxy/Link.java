@@ -22,7 +22,6 @@ public class Link implements Identifiable {
     }
     public Link() {
 	super();
-	// TODO Auto-generated constructor stub
     }
     public String getId() {
         return id;
