@@ -169,6 +169,11 @@
     <property name="settings" ref="settings" />
     <property name="typeManager" ref="typeManager" />
     <property name="userManager" ref="userManager" />
+    <property name="upgraders">
+        <list>
+            <bean class="org.mule.galaxy.impl.upgrade.v11.IndexUpgrader"/>
+        </list>
+    </property>
   </bean>
   
   <bean id="localWorkspaceManager" parent="txProxyTemplate">

@@ -47,6 +47,7 @@ import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.jcr.query.QueryBuilder;
 import org.mule.galaxy.impl.jcr.query.SimpleQueryBuilder;
+import org.mule.galaxy.impl.upgrade.Upgrader;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.policy.PolicyManager;
@@ -119,6 +120,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     private TypeManager typeManager;
     
     private ApplicationContext context;
+    
+    private Collection<Upgrader> upgraders;
     
     public JcrRegistryImpl() {
         super();
@@ -1016,7 +1019,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 }
                 
             });
-        } 
+        } else {
+            String versionStr = JcrUtil.getStringOrNull(workspaces, REPOSITORY_LAYOUT_VERSION);
+            int version = Integer.parseInt(versionStr);
+            if (version < 2) {
+                for (Upgrader u : getUpgraders()) {
+                    u.doUpgrade(version, session, workspaces);
+                }
+            }
+        }
         id = workspaces.getUUID();
         
         
@@ -1033,6 +1044,14 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         session.logout();
         
         idToWorkspaceManager.put(localWorkspaceManager.getId(), localWorkspaceManager);
+    }
+
+    public Collection<Upgrader> getUpgraders() {
+        return upgraders;
+    }
+
+    public void setUpgraders(Collection<Upgrader> upgraders) {
+        this.upgraders = upgraders;
     }
 
     public Extension getExtension(String id) {

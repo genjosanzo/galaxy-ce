@@ -55,35 +55,43 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
     @Override
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
         try {
-            if (objects.getNodes().getSize() > 0) return;
-            
-            Group adminGroup = new Group("Administrators");
-            Node gNode = objects.addNode(adminGroup.getName(), getNodeType());
-            gNode.addMixin("mix:referenceable");
-            adminGroup.setId(gNode.getUUID());
-            persist(adminGroup, gNode, session);
-            grant(adminGroup, Arrays.asList(Permission.values()));
-            
-            Group userGroup = new Group("Users");
-            gNode = objects.addNode(userGroup.getName(), getNodeType());
-            gNode.addMixin("mix:referenceable");
-            userGroup.setId(gNode.getUUID());
-            persist(userGroup, gNode, session);
-
-            List<Permission> toGrant = new ArrayList<Permission>();
-            toGrant.add(Permission.READ_ARTIFACT);
-            toGrant.add(Permission.MODIFY_ARTIFACT);
-            toGrant.add(Permission.READ_WORKSPACE);
-            toGrant.add(Permission.MODIFY_WORKSPACE);
-            grant(userGroup, toGrant);
-            
-            User admin = userManager.getByUsername("admin");
-            if (admin != null)
-            {
-                admin.addGroup(adminGroup);
-                admin.addGroup(userGroup);
-                userManager.save(admin);
+            boolean first = objects.getNodes().getSize() == 0;
+            Group adminGroup;
+            try {
+                adminGroup = getGroupByName("Administrators");
+            } catch (NotFoundException e) {
+                adminGroup = new Group("Administrators");
+                Node gNode = objects.addNode(adminGroup.getName(), getNodeType());
+                gNode.addMixin("mix:referenceable");
+                adminGroup.setId(gNode.getUUID());
+                persist(adminGroup, gNode, session);
             }
+            
+            if (first) {
+                Group userGroup = new Group("Users");
+                Node gNode = objects.addNode(userGroup.getName(), getNodeType());
+                gNode.addMixin("mix:referenceable");
+                userGroup.setId(gNode.getUUID());
+                persist(userGroup, gNode, session);
+    
+                List<Permission> toGrant = new ArrayList<Permission>();
+                toGrant.add(Permission.READ_ARTIFACT);
+                toGrant.add(Permission.MODIFY_ARTIFACT);
+                toGrant.add(Permission.READ_WORKSPACE);
+                toGrant.add(Permission.MODIFY_WORKSPACE);
+                grant(userGroup, toGrant);
+                
+                User admin = userManager.getByUsername("admin");
+                if (admin != null)
+                {
+                    admin.addGroup(adminGroup);
+                    admin.addGroup(userGroup);
+                    userManager.save(admin);
+                }
+            }
+            
+            // ensure that the admin group always has all the permissions
+            grant(adminGroup, Arrays.asList(Permission.values()));
         } catch (Exception e) {
             if (e instanceof RepositoryException) {
                 throw (RepositoryException) e;
