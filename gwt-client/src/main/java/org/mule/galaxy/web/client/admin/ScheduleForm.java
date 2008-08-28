@@ -55,7 +55,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
 
         // a simple row counter to simplify table.setWidget() calls
         int row = 0;
-        table.setText(row++, 0, "Component:");
+        table.setText(row++, 0, "Script:");
         table.setText(row++, 0, "Name:");
         table.setText(row++, 0, "Description:");
         table.setText(row++, 0, "Cron Command:");
