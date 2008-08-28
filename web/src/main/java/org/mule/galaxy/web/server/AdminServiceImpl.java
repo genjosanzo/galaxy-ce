@@ -18,13 +18,21 @@
 
 package org.mule.galaxy.web.server;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.script.Script;
 import org.mule.galaxy.script.ScriptManager;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.rpc.AdminService;
+import org.mule.galaxy.web.rpc.ItemExistsException;
+import org.mule.galaxy.web.rpc.WScript;
 
 public class AdminServiceImpl implements AdminService {
     private final Log log = LogFactory.getLog(getClass());
@@ -43,6 +51,46 @@ public class AdminServiceImpl implements AdminService {
 
     public void setScriptManager(ScriptManager scriptManager) {
         this.scriptManager = scriptManager;
+    }
+
+    public void deleteScript(String id) throws RPCException {
+        scriptManager.delete(id);
+    }
+
+    public List<WScript> getScripts() throws RPCException {
+        List<WScript> wscripts = new ArrayList<WScript>();
+        List<Script> scripts = scriptManager.listAll();
+        for (Script s : scripts) {
+            wscripts.add(toWeb(s));
+        }
+        return wscripts;
+    }
+
+    private WScript toWeb(Script s) {
+        return new WScript(s.getId(), s.getJobExpressions(), s.getName(), s.isRunOnStartup(), s.getScript());
+    }
+
+    public void save(WScript ws) throws RPCException, ItemExistsException {
+         Script s = fromWeb(ws);
+         
+         try {
+            scriptManager.save(s);
+        } catch (DuplicateItemException e) {
+            throw new ItemExistsException();
+        } catch (NotFoundException e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    private Script fromWeb(WScript ws) {
+        Script s = new Script();
+        s.setId(ws.getId());
+        s.setJobExpressions(ws.getJobExpressions());
+        s.setName(ws.getName());
+        s.setRunOnStartup(ws.isRunOnStartup());
+        s.setScript(ws.getScript());
+        
+        return s;
     }
     
 }

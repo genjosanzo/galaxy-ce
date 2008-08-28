@@ -18,6 +18,8 @@
 
 package org.mule.galaxy.web.rpc;
 
+import java.util.List;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 import org.mule.galaxy.web.client.RPCException;
 
@@ -25,4 +27,9 @@ public interface AdminService extends RemoteService {
 
     String executeScript(String scriptText) throws RPCException;
 
+    List<WScript> getScripts() throws RPCException;
+    
+    void save(WScript script) throws RPCException, ItemExistsException;
+    
+    void deleteScript(String id) throws RPCException;
 }

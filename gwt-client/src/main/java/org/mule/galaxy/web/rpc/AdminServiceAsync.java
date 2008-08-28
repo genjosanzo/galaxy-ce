@@ -18,10 +18,16 @@
 
 package org.mule.galaxy.web.rpc;
 
-import com.google.gwt.user.client.rpc.RemoteService;
+import java.util.List;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import org.mule.galaxy.web.client.RPCException;
 
 public interface AdminServiceAsync {
     void executeScript(String scriptText, AsyncCallback async);
+
+    void getScripts(AsyncCallback<List<WScript>> async);
+    
+    void save(WScript script, AsyncCallback async);
+    
+    void deleteScript(String id, AsyncCallback async);
 }
