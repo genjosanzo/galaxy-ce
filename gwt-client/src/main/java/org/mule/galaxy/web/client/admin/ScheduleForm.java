@@ -18,16 +18,15 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.util.TooltipListener;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableListBox;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextArea;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
-import org.mule.galaxy.web.client.validation.ui.ValidatableListBox;
-import org.mule.galaxy.web.client.util.TooltipListener;
 
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 
 
 public class ScheduleForm extends AbstractAdministrationForm {
@@ -81,68 +80,55 @@ public class ScheduleForm extends AbstractAdministrationForm {
         table.setWidget(row, 1, cronTB);
         Image help = new Image("images/help_16x16.gif");
         help.addMouseListener(new TooltipListener(getCronHelpString(),
-                                                      10000));
+                                                  10000));
         table.setWidget(row, 2, help);
 
         // TODO: add tooltip with cron help
         styleHeaderColumn(table);
     }
 
-    // hmmmmmm....
     private String getCronHelpString() {
-        String s = "" +
-        "<table>" +
-        "<tr>" +
-                "<td><b>Field Name</b></td>" +
-                "<td><b>Mandatory?</b></td>" +
-                "<td><b>Allowed Values</b></td>" +
-                "<td><b>Allowed Special Characters</b></td>" +
-        "</tr>" +
-        "<tr>" +
-                "<td>Seconds</td>" +
-                "<td>YES</td>" +
-                "<td>0-59</td>" +
-                "<td>, - * / </td>" +
-        "</tr>" +
-        "<tr>" +
-                "<td>Minutes</td>" +
-                "<td>YES</td>" +
-                "<td>0-59</td>" +
-                "<td>, - * / </td>" +
-        "</tr>" +
-        "<tr>" +
-                "<td>Hours</td>" +
-                "<td>YES</td>" +
-                "<td>0-23</td>" +
-                "<td>, - * / </td>" +
-        "</tr>" +
-        "<tr>" +
-                "<td>Day Of Month</td>" +
-                "<td>YES</td>" +
-                "<td>1-31</td>" +
-                "<td>, - * / L W</td>" +
-        "</tr>" +
-        "<tr>" +
-                "<td>Month</td>" +
-                "<td>YES</td>" +
-                "<td>1-12 or JAN-DEC</td>" +
-                "<td>, - * / </td>" +
-        "</tr>" +
-        "<tr>" +
-                "<td>Day Of Week</td>" +
-                "<td>YES</td>" +
-                "<td>1-7 or SUN-SAT</td>" +
-                "<td>, - * / L #</td>" +
-        "</tr>" +
-        "<tr>" +
-                "<td>Year</td>" +
-                "<td>NO</td>" +
-                "<td>empty, 1970-2099</td>" +
-                "<td>, - * / </td>" +
-        "</tr>" +
-        "</table>";
+        FlexTable t = new FlexTable();
+        t.setText(0, 0, "Field Name");
+        t.setText(0, 1, "Mandatory");
+        t.setText(0, 2, "Allowed Values");
+        t.setText(0, 3, "Allowed Special Characters");
 
-        return s;
+        t.setText(1, 0, "Seconds");
+        t.setText(1, 1, "YES");
+        t.setText(1, 2, "0-59");
+        t.setText(1, 3, ", - * / ");
+
+        t.setText(2, 0, "Minutes");
+        t.setText(2, 1, "YES");
+        t.setText(2, 2, "0-59");
+        t.setText(2, 3, ", - * / ");
+
+        t.setText(3, 0, "Hours");
+        t.setText(3, 1, "YES");
+        t.setText(3, 2, "0-23");
+        t.setText(3, 3, ", - * / ");
+
+        t.setText(4, 0, "Day Of Month");
+        t.setText(4, 1, "YES");
+        t.setText(4, 2, "0-31");
+        t.setText(4, 3, ", - * / L W");
+
+        t.setText(5, 0, "Month");
+        t.setText(5, 1, "YES");
+        t.setText(5, 2, "1-12 or JAN-DEC");
+        t.setText(5, 3, ", - * / ");
+
+        t.setText(6, 0, "Day Of Week");
+        t.setText(6, 1, "YES");
+        t.setText(6, 2, "1-7 or SUN-SAT");
+        t.setText(6, 3, ", - * / L #");
+
+        t.setText(7, 0, "Year");
+        t.setText(7, 1, "NO");
+        t.setText(7, 2, "empty, 1970-2099");
+        t.setText(7, 3, ", - * / ");
+        return t.toString();
     }
 
     public String getTitle() {
