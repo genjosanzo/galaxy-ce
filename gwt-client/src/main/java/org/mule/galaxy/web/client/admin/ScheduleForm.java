@@ -19,29 +19,23 @@
 package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableListBox;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextArea;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
+import org.mule.galaxy.web.client.validation.ui.ValidatableListBox;
+import org.mule.galaxy.web.client.util.TooltipListener;
 
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.Image;
 
-/**
- * Things we can do:
- * 1. Add a new scheduled item with a new component
- * 2. Create a new entry with an existing component
- * 3. Edit a scheduled item's properties
- */
+
 public class ScheduleForm extends AbstractAdministrationForm {
 
+    private ValidatableListBox scriptLB;
     private ValidatableTextBox nameTB;
     private ValidatableTextBox cronTB;
     private ValidatableTextArea descriptionTA;
-    private ListBox componentLB;
 
 
     public ScheduleForm(AdministrationPanel administrationPanel) {
@@ -68,8 +62,8 @@ public class ScheduleForm extends AbstractAdministrationForm {
         table.setText(row++, 0, "Cron Command:");
 
         row = 0;
-        componentLB = new ListBox();
-        table.setWidget(row, 1, componentLB);
+        scriptLB = new ValidatableListBox(new StringNotEmptyValidator());
+        table.setWidget(row, 1, scriptLB);
 
         row++;
         nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
@@ -85,13 +79,71 @@ public class ScheduleForm extends AbstractAdministrationForm {
         row++;
         cronTB = new ValidatableTextBox(new StringNotEmptyValidator());
         table.setWidget(row, 1, cronTB);
-        table.setWidget(row, 2, new Label(" "));
+        Image help = new Image("images/help_16x16.gif");
+        help.addMouseListener(new TooltipListener(getCronHelpString(),
+                                                      10000));
+        table.setWidget(row, 2, help);
 
         // TODO: add tooltip with cron help
-
         styleHeaderColumn(table);
     }
 
+    // hmmmmmm....
+    private String getCronHelpString() {
+        String s = "" +
+        "<table>" +
+        "<tr>" +
+                "<td><b>Field Name</b></td>" +
+                "<td><b>Mandatory?</b></td>" +
+                "<td><b>Allowed Values</b></td>" +
+                "<td><b>Allowed Special Characters</b></td>" +
+        "</tr>" +
+        "<tr>" +
+                "<td>Seconds</td>" +
+                "<td>YES</td>" +
+                "<td>0-59</td>" +
+                "<td>, - * / </td>" +
+        "</tr>" +
+        "<tr>" +
+                "<td>Minutes</td>" +
+                "<td>YES</td>" +
+                "<td>0-59</td>" +
+                "<td>, - * / </td>" +
+        "</tr>" +
+        "<tr>" +
+                "<td>Hours</td>" +
+                "<td>YES</td>" +
+                "<td>0-23</td>" +
+                "<td>, - * / </td>" +
+        "</tr>" +
+        "<tr>" +
+                "<td>Day Of Month</td>" +
+                "<td>YES</td>" +
+                "<td>1-31</td>" +
+                "<td>, - * / L W</td>" +
+        "</tr>" +
+        "<tr>" +
+                "<td>Month</td>" +
+                "<td>YES</td>" +
+                "<td>1-12 or JAN-DEC</td>" +
+                "<td>, - * / </td>" +
+        "</tr>" +
+        "<tr>" +
+                "<td>Day Of Week</td>" +
+                "<td>YES</td>" +
+                "<td>1-7 or SUN-SAT</td>" +
+                "<td>, - * / L #</td>" +
+        "</tr>" +
+        "<tr>" +
+                "<td>Year</td>" +
+                "<td>NO</td>" +
+                "<td>empty, 1970-2099</td>" +
+                "<td>, - * / </td>" +
+        "</tr>" +
+        "</table>";
+
+        return s;
+    }
 
     public String getTitle() {
         String s = (newItem) ? "Add" : "Edit";
@@ -110,9 +162,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
         getErrorPanel().clearErrorMessage();
         boolean isOk = true;
 
-        if (newItem) {
-            isOk &= nameTB.validate();
-        }
+        //isOk &= scriptLB.validate();
         isOk &= nameTB.validate();
         isOk &= cronTB.validate();
         return isOk;

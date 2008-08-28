@@ -66,7 +66,7 @@ public class ArtifactGroupListPanel extends AbstractComposite {
 
         // hardcode the width for the checkbox -- do this in css later
         table.getFlexCellFormatter().setWidth(0, 0, "20");
-        table.getFlexCellFormatter().setWidth(0, 1, "200");
+        table.getFlexCellFormatter().setWidth(0, 1, "180");
 
         for (int i = 0; i < numCols; i++) {
             int cPos = i + 1;
