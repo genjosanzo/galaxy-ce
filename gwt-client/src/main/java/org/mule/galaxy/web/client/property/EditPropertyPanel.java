@@ -1,9 +1,7 @@
 package org.mule.galaxy.web.client.property;
 
+import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.io.Serializable;
@@ -59,23 +57,26 @@ public class EditPropertyPanel extends AbstractComposite {
              }
             
         });
+
         
-        Hyperlink deleteHL = new Hyperlink("Delete", galaxy.getCurrentToken());
-        deleteHL.setStyleName("propertyLink");
-        deleteHL.addClickListener(new ClickListener() {
+        Image deleteImg = new Image("images/delete_config.gif");
+        deleteImg.setStyleName("icon-baseline");
+        deleteImg.setTitle("Delete");
+        deleteImg.addClickListener(new ClickListener() {
 
             public void onClick(Widget widget) {
                delete();
             }
-            
+
         });
-        
+
         InlineFlowPanel viewPanel = new InlineFlowPanel();
         viewPanel.add(renderer.createViewWidget());
         
         if (!property.isLocked()) {
             viewPanel.add(editHL);
-            viewPanel.add(deleteHL);
+            viewPanel.add(new Label(" "));
+            viewPanel.add(deleteImg);
         }
         return viewPanel;
     }
