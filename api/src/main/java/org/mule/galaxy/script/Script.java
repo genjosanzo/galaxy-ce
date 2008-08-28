@@ -3,6 +3,7 @@ package org.mule.galaxy.script;
 import java.util.Collection;
 
 import org.mule.galaxy.Identifiable;
+import org.mule.galaxy.mapping.OneToMany;
 
 public class Script implements Identifiable {
     private String id; 
@@ -29,6 +30,7 @@ public class Script implements Identifiable {
     public void setScript(String script) {
         this.script = script;
     }
+    @OneToMany(treatAsField=true)
     public Collection<String> getJobExpressions() {
         return jobExpressions;
     }
