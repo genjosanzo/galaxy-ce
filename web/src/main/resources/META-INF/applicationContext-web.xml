@@ -37,7 +37,7 @@
     </bean>
 
     <bean id="adminService" class="org.mule.galaxy.web.server.AdminServiceImpl">
-        <property name="accessControlManager" ref="accessControlManager"/>
+        <property name="scriptManager" ref="scriptManager"/>
     </bean>
 
     <bean id="demoArtifactPlugin" class="org.mule.galaxy.web.DemoArtifactPlugin" parent="abstractArtifactPlugin">

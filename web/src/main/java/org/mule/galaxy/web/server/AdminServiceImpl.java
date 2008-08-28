@@ -18,42 +18,31 @@
 
 package org.mule.galaxy.web.server;
 
-import org.mule.galaxy.web.rpc.AdminService;
-import org.mule.galaxy.web.client.RPCException;
-import org.mule.galaxy.security.AccessControlManager;
-import org.mule.galaxy.security.Permission;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.script.ScriptManager;
 import org.mule.galaxy.security.AccessException;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationContext;
-import org.springframework.beans.BeansException;
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
+import org.mule.galaxy.web.client.RPCException;
+import org.mule.galaxy.web.rpc.AdminService;
 
-public class AdminServiceImpl implements AdminService, ApplicationContextAware
-{
-    private ApplicationContext applicationContext;
-
-    private AccessControlManager accessControlManager;
+public class AdminServiceImpl implements AdminService {
+    private final Log log = LogFactory.getLog(getClass());
+    private ScriptManager scriptManager;
 
     public String executeScript(String scriptText) throws RPCException {
         try {
-            accessControlManager.assertAccess(Permission.EXECUTE_ADMIN_SCRIPTS);
+            return scriptManager.execute(scriptText);
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
+        } catch (RegistryException e) {
+            log.error(e);
+            throw new RPCException(e.getMessage());
         }
-
-        Binding binding = new Binding();
-        binding.setProperty("applicationContext", applicationContext);
-        GroovyShell shell = new GroovyShell(Thread.currentThread().getContextClassLoader(), binding);
-        Object result = shell.evaluate(scriptText);
-        return result == null ? null : result.toString();
     }
 
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+    public void setScriptManager(ScriptManager scriptManager) {
+        this.scriptManager = scriptManager;
     }
-
-    public void setAccessControlManager(AccessControlManager accessControlManager) {
-        this.accessControlManager = accessControlManager;
-    }
+    
 }

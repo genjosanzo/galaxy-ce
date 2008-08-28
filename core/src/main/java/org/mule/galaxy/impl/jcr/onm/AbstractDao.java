@@ -13,6 +13,7 @@ import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.query.InvalidQueryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
@@ -149,7 +150,7 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
 
             public void run() {
                 try {
-                    doInitializeInJcrTransaction();
+                    doInitializePriveleged();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 } catch (RepositoryException e) {
@@ -160,21 +161,26 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
         });
     }
 
-    private void doInitializeInJcrTransaction() throws IOException, RepositoryException {
+    protected void doInitializePriveleged() throws IOException, RepositoryException {
         JcrUtil.doInTransaction(getSessionFactory(), new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node root = session.getRootNode();
-                
-                Node objects = getOrCreate(root, rootNode, "galaxy:noSiblings");
-                objectsNodeId = objects.getUUID();
-
-                doCreateInitialNodes(session, objects); 
+                doInitializeInJcrTransaction(session); 
                 
                 session.save();
                 return null;
             }
         });
+    }
+
+    protected void doInitializeInJcrTransaction(Session session) throws RepositoryException,
+        UnsupportedRepositoryOperationException {
+        Node root = session.getRootNode();
+        
+        Node objects = getOrCreate(root, rootNode, "galaxy:noSiblings");
+        objectsNodeId = objects.getUUID();
+
+        doCreateInitialNodes(session, objects);
     }
 
     protected void initalizePersister() throws Exception {

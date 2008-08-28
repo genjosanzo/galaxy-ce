@@ -291,6 +291,27 @@
     <property name="persisterManager" ref="persisterManager" />
   </bean>
   
+  <bean id="scriptManager" parent="txProxyTemplate">
+    <property name="target" ref="scriptManagerTarget"/>
+    <property name="proxyTargetClass" value="true"/>
+  </bean>
+  
+  <bean id="scriptManagerTarget" class="org.mule.galaxy.impl.ScriptManagerImpl"
+        init-method="initialize">
+    <property name="accessControlManager" ref="accessControlManager" />
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="persisterManager" ref="persisterManager" />
+    <property name="scriptVariables" ref="scriptVariables" />
+  </bean>
+  
+  <bean id="scriptVariables" class="java.util.HashMap">
+     <constructor-arg>
+         <map>
+             <entry key="registry" value-ref="registry"/>
+         </map>
+     </constructor-arg>
+  </bean>
+  
   <bean id="artifactTypeDao" parent="txProxyTemplate">
     <property name="target" ref="artifactTypeDaoTarget"/>
     <property name="proxyTargetClass" value="true"/>
