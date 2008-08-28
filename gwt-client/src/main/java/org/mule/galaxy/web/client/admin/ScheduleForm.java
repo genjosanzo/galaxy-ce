@@ -39,23 +39,9 @@ import com.google.gwt.user.client.ui.Widget;
 public class ScheduleForm extends AbstractAdministrationForm {
 
     private ValidatableTextBox nameTB;
-    private ValidatableTextBox commandTB;
+    private ValidatableTextBox cronTB;
     private ValidatableTextArea descriptionTA;
-
-    // Quartz params
-    private ValidatableListBox secondLB;
-    private ValidatableListBox minuteLB;
-    private ValidatableListBox hourLB;
-    private ValidatableListBox dayOfMonthLB;
-    private ValidatableListBox monthLB;
-    private ValidatableListBox dayOfWeekLB;
-    private ListBox yearLB;
-
-    // the component to schedule will either be selected from existing ones
-    // or uploaded via a form -- the user must choose.
-    private CheckBox componentCB;
     private ListBox componentLB;
-    private FileUpload componentUpload;
 
 
     public ScheduleForm(AdministrationPanel administrationPanel) {
@@ -73,79 +59,38 @@ public class ScheduleForm extends AbstractAdministrationForm {
     }
 
     protected void addFields(FlexTable table) {
+
         // a simple row counter to simplify table.setWidget() calls
         int row = 0;
+        table.setText(row++, 0, "Component:");
         table.setText(row++, 0, "Name:");
         table.setText(row++, 0, "Description:");
-        table.setText(row++, 0, "Command:");
-        table.setText(row++, 0, "Second:");
-        table.setText(row++, 0, "Minute:");
-        table.setText(row++, 0, "Hour:");
-        table.setText(row++, 0, "Day of Month:");
-        table.setText(row++, 0, "Month:");
-        table.setText(row++, 0, "Day of Week:");
-        table.setText(row++, 0, "Year:");
+        table.setText(row++, 0, "Cron Command:");
 
         row = 0;
+        componentLB = new ListBox();
+        table.setWidget(row, 1, componentLB);
+
+        row++;
         nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
-        this.addValidationFormWidget(table, nameTB, row);
+        table.setWidget(row, 1, nameTB);
+        table.setWidget(row, 2, new Label(" "));
 
         row++;
         descriptionTA = new ValidatableTextArea(new StringNotEmptyValidator());
-        descriptionTA.getTextArea().setCharacterWidth(40);
+        descriptionTA.getTextArea().setCharacterWidth(18);
         descriptionTA.getTextArea().setVisibleLines(4);
-        this.addValidationFormWidget(table, descriptionTA, row);
+        table.setWidget(row, 1, descriptionTA);
 
         row++;
-        commandTB = new ValidatableTextBox(new StringNotEmptyValidator());
-        this.addValidationFormWidget(table, commandTB, row);
+        cronTB = new ValidatableTextBox(new StringNotEmptyValidator());
+        table.setWidget(row, 1, cronTB);
+        table.setWidget(row, 2, new Label(" "));
 
-        // init quartz "cron" params
-        row++;
-        secondLB = new ValidatableListBox(new StringNotEmptyValidator(), true);
-        secondLB.getListBox().setVisibleItemCount(5);
-        this.addValidationFormWidget(table, secondLB, row);
-
-        row++;
-        minuteLB = new ValidatableListBox(new StringNotEmptyValidator(), true);
-        minuteLB.getListBox().setVisibleItemCount(5);
-        this.addValidationFormWidget(table, minuteLB, row);
-
-        row++;
-        hourLB = new ValidatableListBox(new StringNotEmptyValidator(), true);
-        hourLB.getListBox().setVisibleItemCount(5);
-        this.addValidationFormWidget(table, hourLB, row);
-
-        row++;
-        dayOfMonthLB = new ValidatableListBox(new StringNotEmptyValidator(), true);
-        dayOfMonthLB.getListBox().setVisibleItemCount(5);
-        this.addValidationFormWidget(table, dayOfMonthLB, row);
-
-        row++;
-        monthLB = new ValidatableListBox(new StringNotEmptyValidator(), true);
-        monthLB.getListBox().setVisibleItemCount(5);
-        this.addValidationFormWidget(table, monthLB, row);
-
-        row++;
-        dayOfWeekLB = new ValidatableListBox(new StringNotEmptyValidator(), true);
-        dayOfWeekLB.getListBox().setVisibleItemCount(5);
-        this.addValidationFormWidget(table, dayOfWeekLB, row);
-
-        row++;
-        yearLB = new ListBox(true);
-        yearLB.setVisibleItemCount(5);
-        this.addValidationFormWidget(table, yearLB, row);
+        // TODO: add tooltip with cron help
 
         styleHeaderColumn(table);
     }
-
-    private void addValidationFormWidget(FlexTable table, Widget w, int row) {
-        w.setWidth("100%");
-        table.setWidget(row, 1, w);
-        table.setWidget(row, 2, new Label(" "));
-        table.getCellFormatter().setWidth(row, 2, "100%");
-    }
-
 
 
     public String getTitle() {
@@ -169,7 +114,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
             isOk &= nameTB.validate();
         }
         isOk &= nameTB.validate();
-        isOk &= commandTB.validate();
+        isOk &= cronTB.validate();
         return isOk;
     }
 
