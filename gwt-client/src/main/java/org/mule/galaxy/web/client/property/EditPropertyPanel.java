@@ -115,9 +115,9 @@ public class EditPropertyPanel extends AbstractComposite {
             
         });
         
-        buttonPanel.add(cancel);
         buttonPanel.add(save);
-        
+        buttonPanel.add(cancel);
+
         editPanel.add(buttonPanel);
         
         return editPanel;
