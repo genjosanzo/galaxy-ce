@@ -42,6 +42,7 @@ import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.Iterator;
 import java.util.List;
@@ -107,11 +108,15 @@ public class AdminShellPanel extends AbstractAdministrationComposite
                 "Tips: \n   Spring's context is available as 'applicationContext' variable" +
                 "\n   only String return values are supported (or null)"));
         table.getFlexCellFormatter().setColSpan(1, 0, 2);
+        table.getCellFormatter().setWidth(1, 0, "500px");
         table.setWidget(2, 0, scriptArea);
 
-        this.refreshScriptTree();
+        this.createScriptTree();
+        VerticalPanel vp = new VerticalPanel();
+        vp.add(createTitleText("Saved Scripts"));
+        vp.add(scriptTree);
 
-        table.setWidget(2, 1, scriptTree);
+        table.setWidget(2, 1, vp);
         table.getCellFormatter().setVerticalAlignment(2, 1, HasAlignment.ALIGN_TOP);
         table.getCellFormatter().setHorizontalAlignment(2, 1, HasAlignment.ALIGN_LEFT);
 
@@ -119,6 +124,9 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         FlowPanel scriptOutputPanel = new FlowPanel();
         scriptResultsLabel.setWordWrap(false);
         scriptOutputPanel.add(scriptResultsLabel);
+
+        // results of script execution
+        table.setWidget(4, 0, scriptOutputPanel);
 
         // add user control buttons
         InlineFlowPanel buttons = new InlineFlowPanel();
@@ -131,17 +139,14 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
         table.setWidget(3, 0, buttons);
 
-        // results of script execution
-        table.setWidget(4, 0, scriptOutputPanel);
         panel.add(table);
     }
 
 
-    protected void refreshScriptTree() {
+    protected void createScriptTree() {
         scriptTree = new Tree();
         scriptTree.addTreeListener(new TreeListener() {
             public void onTreeItemSelected(TreeItem ti) {
-                // TODO: load into editor window
                 WScript ws = (WScript) ti.getUserObject();
                 scriptArea.setText(ws.getScript());
             }
@@ -151,6 +156,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         });
 
         adminPanel.getGalaxy().getAdminService().getScripts(new AbstractCallback(adminPanel) {
+            @SuppressWarnings("unchecked")
             public void onFailure(Throwable caught) {
                 super.onFailure(caught);
             }
@@ -239,9 +245,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
             // save as should null out the Id so it creates a new copy
             ws.setId(null);
         }
-
         ws.setScript(scriptArea.getText());
-
         adminPanel.getGalaxy().getAdminService().save(ws, new AbstractCallback(adminPanel) {
             public void onFailure(Throwable caught) {
                 saveBtn.setEnabled(true);
@@ -254,6 +258,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
                 reset();
             }
         });
+        scriptTree.clear();
     }
 
 

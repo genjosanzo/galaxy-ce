@@ -61,18 +61,17 @@ public class BrowsePanel extends AbstractBrowsePanel {
             return "browse";
         }
     }
-    
+
     public void onShow(List<String> params) {
         if (params.size() > 0) {
             workspaceId = params.get(0);
         }
-        
+
         super.onShow(params);
     }
 
     protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(galaxy) 
-        {
+        return new RegistryMenuPanel(galaxy) {
             protected void addBottomLinks(Toolbox topMenuLinks) {
                 manageWkspcImg = new Image("images/editor_area.gif");
                 manageWkspcLink = new Hyperlink("Manage Workspace", "");
@@ -85,14 +84,14 @@ public class BrowsePanel extends AbstractBrowsePanel {
     protected void initializeMenuAndTop() {
         FlowPanel browseToolbar = new FlowPanel();
         browseToolbar.setStyleName("toolbar");
-        
-        browsePanel = new FlowPanel(); 
+
+        browsePanel = new FlowPanel();
         cv = new ColumnView();
         browsePanel.add(browseToolbar);
         browsePanel.add(cv);
         currentTopPanel = browsePanel;
         menuPanel.setTop(browsePanel);
-        
+
         cv.addTreeListener(new TreeListener() {
             public void onTreeItemSelected(TreeItem ti) {
                 setActiveWorkspace((String) ti.getUserObject());
@@ -105,50 +104,48 @@ public class BrowsePanel extends AbstractBrowsePanel {
 
     public void refresh() {
         refreshWorkspaces();
-        
         super.refresh();
     }
-    
+
     public void refreshWorkspaces() {
         final TreeItem treeItem = new TreeItem();
-        
+
         // Load the workspaces into a tree on the left
         service.getWorkspaces(workspaceId, new AbstractCallback(this) {
 
             @SuppressWarnings("unchecked")
             public void onSuccess(Object o) {
                 workspaces = (Collection<WWorkspace>) o;
-                
+
                 initWorkspaces(treeItem, workspaces);
 
                 if (workspaceId == null) {
                     TreeItem child = treeItem.getChild(0);
                     workspaceTreeItem = child;
-                    
                     setActiveWorkspace((String) child.getUserObject());
                 }
-                
+
                 cv.setRootItem(treeItem, workspaceTreeItem);
-                
+
                 String token = "manage-workspace/" + workspaceId;
                 manageWkspcImg.addClickListener(NavigationUtil.createNavigatingClickListener(token));
                 manageWkspcLink.setTargetHistoryToken(token);
             }
         });
     }
-    
+
     private void initWorkspaces(TreeItem ti, Collection<WWorkspace> workspaces) {
         for (Iterator<WWorkspace> itr = workspaces.iterator(); itr.hasNext();) {
             WWorkspace wi = itr.next();
-            
+
             TreeItem treeItem = ti.addItem(wi.getName());
             treeItem.setUserObject(wi.getId());
-            
+
             if (workspaceId != null && workspaceId.equals(wi.getId())) {
                 setActiveWorkspace(workspaceId);
                 workspaceTreeItem = treeItem;
             }
-            
+
             Collection<WWorkspace> children = wi.getWorkspaces();
             if (children != null) {
                 initWorkspaces(treeItem, children);
@@ -162,20 +159,20 @@ public class BrowsePanel extends AbstractBrowsePanel {
 
     private WWorkspace getWorkspace(String workspaceId2, Collection<WWorkspace> workspaces2) {
         if (workspaces2 == null) return null;
-        
+
         for (Iterator<WWorkspace> itr = workspaces2.iterator(); itr.hasNext();) {
             WWorkspace w = itr.next();
-            
+
             if (w.getId().equals(workspaceId2)) {
                 return w;
             }
-            
+
             WWorkspace child = getWorkspace(workspaceId2, w.getWorkspaces());
             if (child != null) return child;
         }
         return null;
     }
-    
+
     public void setActiveWorkspace(String workspaceId) {
         BrowsePanel.lastWorkspaceId = workspaceId;
         this.workspaceId = workspaceId;
@@ -183,16 +180,16 @@ public class BrowsePanel extends AbstractBrowsePanel {
     }
 
     protected void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback) {
-        galaxy.getRegistryService().getArtifacts(workspaceId, null, false, 
-                                                 getAppliedArtifactTypeFilters(), 
-                                                 new HashSet<SearchPredicate>(), null, 
+        galaxy.getRegistryService().getArtifacts(workspaceId, null, false,
+                                                 getAppliedArtifactTypeFilters(),
+                                                 new HashSet<SearchPredicate>(), null,
                                                  resultStart, maxResults, callback);
     }
-    
+
     public String getWorkspaceId() {
         return workspaceId;
     }
-    
+
     public static String getLastWorkspaceId() {
         return lastWorkspaceId;
     }

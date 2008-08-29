@@ -817,6 +817,23 @@ a:visited {
     padding-top: 8px;
 }
 
+.adminShell-Tree {
+  background: white;
+}
+
+.adminShell-Tree .adminShell-TreeItem {
+    cursor: hand;
+    cursor: pointer;
+    background-image: url("images/page_code.gif");
+    background-repeat: no-repeat;
+    padding-left: 20px;
+}
+
+.adminShell-Tree .adminShell-TreeItem-selected {
+  background-color: #F5F5D6;
+}
+
+
 /**
  **
  ** Lifecycle
@@ -841,6 +858,7 @@ a:visited {
     padding-top: 5px;
     padding-left: 5px;
 }
+
 
 
 /**
@@ -1023,6 +1041,9 @@ a:visited {
 .gwt-Tree .gwt-TreeItem {
     cursor: hand;
     cursor: pointer;
+    background-image: url("images/page_code.gif");
+    background-repeat: no-repeat;
+    padding-left: 20px;
 }
 
 .gwt-Tree .gwt-TreeItem-selected {
