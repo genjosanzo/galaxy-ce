@@ -48,33 +48,36 @@ public class EditPropertyPanel extends AbstractComposite {
     }
     
     public InlineFlowPanel createViewPanel() {
-        Hyperlink editHL = new Hyperlink("Edit", galaxy.getCurrentToken());
-        editHL.setStyleName("propertyLink");
-        editHL.addClickListener(new ClickListener() {
+        Image editImg = new Image("images/page_edit.gif");
+        editImg.setStyleName("icon-baseline");
+        editImg.setTitle("Edit");
+        editImg.addClickListener(new ClickListener() {
 
             public void onClick(Widget widget) {
                 showEdit();
-             }
-            
+            }
+
         });
 
-        
+
         Image deleteImg = new Image("images/delete_config.gif");
         deleteImg.setStyleName("icon-baseline");
         deleteImg.setTitle("Delete");
         deleteImg.addClickListener(new ClickListener() {
 
             public void onClick(Widget widget) {
-               delete();
+                delete();
             }
 
         });
 
         InlineFlowPanel viewPanel = new InlineFlowPanel();
         viewPanel.add(renderer.createViewWidget());
-        
+
         if (!property.isLocked()) {
-            viewPanel.add(editHL);
+            // interesting... spacer label has to be a new object ref, otherwise not honored...
+            viewPanel.add(new Label(" "));
+            viewPanel.add(editImg);
             viewPanel.add(new Label(" "));
             viewPanel.add(deleteImg);
         }
