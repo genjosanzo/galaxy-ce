@@ -72,6 +72,7 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
                 
             });
         } catch (Exception e1) {
+            logger.error(e1);
             throw new RegistryException(e1);
         }
     }
