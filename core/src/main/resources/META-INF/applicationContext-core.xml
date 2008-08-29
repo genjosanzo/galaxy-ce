@@ -171,7 +171,7 @@
     <property name="userManager" ref="userManager" />
     <property name="upgraders">
         <list>
-            <bean class="org.mule.galaxy.impl.upgrade.v11.IndexUpgrader"/>
+            <bean class="org.mule.galaxy.impl.upgrade.V11Upgrader"/>
         </list>
     </property>
   </bean>

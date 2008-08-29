@@ -995,7 +995,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             JcrWorkspace w = new JcrWorkspace(localWorkspaceManager, node);
             w.setName(settings.getDefaultWorkspaceName());
 
-            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "2");
+            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "3");
 
             final PropertyDescriptor lifecyclePD = new PropertyDescriptor();
             lifecyclePD.setProperty(PRIMARY_LIFECYCLE);
@@ -1022,11 +1022,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         } else {
             String versionStr = JcrUtil.getStringOrNull(workspaces, REPOSITORY_LAYOUT_VERSION);
             int version = Integer.parseInt(versionStr);
-            if (version < 2) {
+            if (version < 3) {
                 for (Upgrader u : getUpgraders()) {
-                    u.doUpgrade(version, session, workspaces);
+                    u.doUpgrade(version, session, session.getRootNode());
                 }
             }
+            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "3");
         }
         id = workspaces.getUUID();
         
