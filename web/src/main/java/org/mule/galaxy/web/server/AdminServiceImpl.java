@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.RegistryException;
@@ -45,7 +46,11 @@ public class AdminServiceImpl implements AdminService {
             throw new RPCException(e.getMessage());
         } catch (RegistryException e) {
             log.error(e);
-            throw new RPCException(e.getMessage());
+            Throwable t = ExceptionUtils.getRootCause(e);
+            String msg = t != null
+                    ? t.getMessage()
+                    : e.getMessage();
+            throw new RPCException(msg);
         }
     }
 
