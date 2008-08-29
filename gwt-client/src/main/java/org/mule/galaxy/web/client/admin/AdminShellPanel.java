@@ -18,7 +18,10 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -31,10 +34,13 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasAlignment;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Tree;
+import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Iterator;
@@ -46,38 +52,43 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
     private Tree scriptTree;
     private FlexTable table;
-    private Button cancelBtn;
     private Button evaluateBtn;
     private CheckBox saveAsCB;
     private ValidatableTextBox saveAsTB;
     private Button saveBtn;
+    private Button deleteBtn;
+    private Button cancelBtn;
     private TextArea scriptArea;
     private Label scriptResultsLabel;
 
     public AdminShellPanel(AdministrationPanel a) {
         super(a);
-        initLocalWidgets();
     }
 
-    /* create objects, set initial state including listeners */
-    private void initLocalWidgets() {
 
+    public void onShow() {
+        super.onShow();
+
+        // create objects, set initial state including listeners
         // display existing scripts in a tree
         scriptTree = new Tree();
+
         // main page layout
         table = new FlexTable();
 
         saveBtn = new Button("Save");
-        saveBtn.setEnabled(false);
         saveBtn.addClickListener(this);
 
         cancelBtn = new Button("Cancel");
         cancelBtn.addClickListener(this);
 
+        deleteBtn = new Button("Delete");
+        deleteBtn.addClickListener(this);
+
         evaluateBtn = new Button("Evaluate");
         evaluateBtn.addClickListener(this);
 
-        saveAsCB = new CheckBox("Save Script As ... ");
+        saveAsCB = new CheckBox("Save As... ");
         saveAsCB.addClickListener(this);
 
         saveAsTB = new ValidatableTextBox(new StringNotEmptyValidator());
@@ -90,14 +101,6 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
         scriptResultsLabel = new Label();
 
-
-    }
-
-
-    public void onShow() {
-        super.onShow();
-
-        table.setStyleName("admin-shell-table");
         // text area to paste script into
         table.setWidget(0, 0, createPrimaryTitle("Galaxy Admin Shell"));
         table.setWidget(1, 0, new Label("Type or paste a Groovy script to be executed on the server. A return value will be displayed below the area. " +
@@ -106,18 +109,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         table.getFlexCellFormatter().setColSpan(1, 0, 2);
         table.setWidget(2, 0, scriptArea);
 
-        // create a tree of available scripts
-        adminPanel.getGalaxy().getAdminService().getScripts(new AbstractCallback(adminPanel) {
-            public void onFailure(Throwable caught) {
-                super.onFailure(caught);
-            }
-
-            public void onSuccess(Object o) {
-                adminPanel.clearErrorMessage();
-                addTreeItems((List<WScript>) o);
-            }
-        });
-
+        this.refreshScriptTree();
 
         table.setWidget(2, 1, scriptTree);
         table.getCellFormatter().setVerticalAlignment(2, 1, HasAlignment.ALIGN_TOP);
@@ -131,10 +123,11 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         // add user control buttons
         InlineFlowPanel buttons = new InlineFlowPanel();
         buttons.add(evaluateBtn);
-        buttons.add(cancelBtn);
         buttons.add(saveAsCB);
         buttons.add(saveAsTB);
         buttons.add(saveBtn);
+        buttons.add(deleteBtn);
+        buttons.add(cancelBtn);
 
         table.setWidget(3, 0, buttons);
 
@@ -144,45 +137,73 @@ public class AdminShellPanel extends AbstractAdministrationComposite
     }
 
 
-    // populate the availalb e
+    protected void refreshScriptTree() {
+        scriptTree = new Tree();
+        scriptTree.addTreeListener(new TreeListener() {
+            public void onTreeItemSelected(TreeItem ti) {
+                // TODO: load into editor window
+                WScript ws = (WScript) ti.getUserObject();
+                scriptArea.setText(ws.getScript());
+            }
+
+            public void onTreeItemStateChanged(TreeItem ti) {
+            }
+        });
+
+        adminPanel.getGalaxy().getAdminService().getScripts(new AbstractCallback(adminPanel) {
+            public void onFailure(Throwable caught) {
+                super.onFailure(caught);
+            }
+
+            @SuppressWarnings("unchecked")
+            public void onSuccess(Object o) {
+                addTreeItems((List<WScript>) o);
+            }
+        });
+    }
+
     private void addTreeItems(List<WScript> scripts) {
+        scriptTree.add(createTitleText("Saved Scripts"));
         for (Iterator<WScript> itr = scripts.iterator(); itr.hasNext();) {
             WScript s = itr.next();
-            scriptTree.addItem(s.getName());
+            TreeItem treeItem = scriptTree.addItem(s.getName());
+            treeItem.setUserObject(s);
         }
-
+        if (scriptTree.getItemCount() == 1) {
+            scriptTree.addItem("None Available");
+        }
     }
 
 
-    // only use one listener for all events. It's less overheard and easier to read
+    protected void reset() {
+        onShow();
+    }
+
+
+    // only use one listener for all events. It's less overhead and easier to read
     public void onClick(Widget sender) {
         if (sender == saveBtn) {
-            saveBtn.setEnabled(false);
+            save();
+        }
 
-            WScript ws = new WScript();
-            ws.setScript(scriptArea.getText());
-            adminPanel.getGalaxy().getAdminService().save(ws, new AbstractCallback(adminPanel) {
-                public void onFailure(Throwable caught) {
-                    super.onFailure(caught);
+        if (sender == deleteBtn) {
+            final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter() {
+                public void onConfirm() {
+                    delete();
                 }
 
-                public void onSuccess(Object o) {
-                    adminPanel.clearErrorMessage();
-                    adminPanel.setMessage("Script Saved.");
-                    saveBtn.setEnabled(true);
-                }
-            });
+            }, "Are you sure you want to delete this script?");
+            new LightBox(dialog).show();
         }
 
         if (sender == saveAsCB) {
             saveAsTB.getTextBox().setEnabled(true);
-            saveAsTB.getTextBox().setFocus(true);
-            saveBtn.setEnabled(true);
+            if (saveAsCB.isChecked()) {
+                saveAsTB.getTextBox().setFocus(true);
+            }
         }
 
         if (sender == cancelBtn) {
-            scriptArea.setText("");
-            saveAsCB.setEnabled(false);
             History.back();
         }
 
@@ -207,18 +228,69 @@ public class AdminShellPanel extends AbstractAdministrationComposite
     }
 
 
+    private void save() {
+        saveBtn.setEnabled(false);
+        WScript ws = new WScript();
+
+        // try and get it from the tree first
+        TreeItem ti = scriptTree.getSelectedItem();
+        if (ti != null) {
+            ws = (WScript) ti.getUserObject();
+        }
+
+        if (saveAsCB.isChecked()) {
+            ws.setName(saveAsTB.getText());
+            // save as should null out the Id so it creates a new copy
+            ws.setId(null);
+        }
+
+        ws.setScript(scriptArea.getText());
+
+        adminPanel.getGalaxy().getAdminService().save(ws, new AbstractCallback(adminPanel) {
+            public void onFailure(Throwable caught) {
+                saveBtn.setEnabled(true);
+                super.onFailure(caught);
+            }
+
+            public void onSuccess(Object o) {
+                saveBtn.setEnabled(true);
+                adminPanel.setMessage("Script Saved.");
+                reset();
+            }
+        });
+    }
+
+
+    private void delete() {
+        TreeItem ti = scriptTree.getSelectedItem();
+        WScript wsx = (WScript) ti.getUserObject();
+
+        deleteBtn.setEnabled(false);
+        adminPanel.getGalaxy().getAdminService().deleteScript(wsx.getId(), new AbstractCallback(adminPanel) {
+            public void onFailure(Throwable caught) {
+                deleteBtn.setEnabled(true);
+                super.onFailure(caught);
+            }
+
+            public void onSuccess(Object o) {
+                deleteBtn.setEnabled(true);
+                adminPanel.setMessage("Script Deleted.");
+                // cleanup
+                reset();
+            }
+        });
+    }
+
     public void onKeyPress(Widget widget, char keyCode, int modifiers) {
         if ((keyCode == KEY_ENTER) && (modifiers == 0)) {
-            // FIXME: save
+            save();
         }
     }
 
 
     public void onKeyDown(Widget widget, char c, int i) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void onKeyUp(Widget widget, char c, int i) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 }
