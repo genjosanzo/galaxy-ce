@@ -135,16 +135,19 @@ public class EntryInfoPanel extends AbstractComposite {
     private void initDescription(final FlowPanel descPanel) {
         descPanel.clear();
         descPanel.add(new Label(info.getDescription()));
-        
-        Hyperlink hl = new Hyperlink("Edit", "edit-description-" + info.getId());
-        hl.addClickListener(new ClickListener() {
+
+        Image editImg = new Image("images/page_edit.gif");
+        editImg.setStyleName("icon-baseline");
+        editImg.setTitle("Edit");
+
+        editImg.addClickListener(new ClickListener() {
 
             public void onClick(Widget w) {
                 initDescriptionForm(descPanel);
             }
             
         });
-        descPanel.add(hl);
+        descPanel.add(editImg);
     }
 
     private void initComments() {

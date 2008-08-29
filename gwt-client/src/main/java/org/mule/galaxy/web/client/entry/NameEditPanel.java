@@ -28,15 +28,10 @@ import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WWorkspace;
 
+import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
@@ -87,15 +82,17 @@ public class NameEditPanel extends Composite {
     private void initName() {
         panel.add(new Label(name + " "));
 
-        Hyperlink editHL = new Hyperlink("Edit", galaxy.getCurrentToken());
-        editHL.addClickListener(new ClickListener() {
+        Image editImg = new Image("images/page_edit.gif");
+        editImg.setStyleName("icon-baseline");
+        editImg.setTitle("Edit");
+        editImg.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
                 showEditPanel();
             }
             
         });
-        panel.add(editHL);
+        panel.add(editImg);
     }
 
     protected void showEditPanel() {
