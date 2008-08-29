@@ -34,15 +34,14 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasAlignment;
-import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.TreeListener;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Iterator;
 import java.util.List;
@@ -64,12 +63,11 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
     public AdminShellPanel(AdministrationPanel a) {
         super(a);
+        initLocalWidgets();
     }
 
 
-    public void onShow() {
-        super.onShow();
-
+    private void initLocalWidgets() {
         // create objects, set initial state including listeners
         // display existing scripts in a tree
         scriptTree = new Tree();
@@ -101,6 +99,10 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         scriptArea.setVisibleLines(30);
 
         scriptResultsLabel = new Label();
+    }
+
+    public void onShow() {
+        super.onShow();
 
         // text area to paste script into
         table.setWidget(0, 0, createPrimaryTitle("Galaxy Admin Shell"));
@@ -177,8 +179,10 @@ public class AdminShellPanel extends AbstractAdministrationComposite
     }
 
 
-    protected void reset() {
+    protected void refresh() {
         onShow();
+        saveAsCB.setChecked(false);
+        saveAsTB.setText(null);
     }
 
 
@@ -235,7 +239,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         WScript ws = new WScript();
 
         // try and get it from the tree first
-        TreeItem ti = scriptTree.getSelectedItem();
+        final TreeItem ti = scriptTree.getSelectedItem();
         if (ti != null) {
             ws = (WScript) ti.getUserObject();
         }
@@ -254,11 +258,15 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
             public void onSuccess(Object o) {
                 saveBtn.setEnabled(true);
-                adminPanel.setMessage("Script Saved.");
-                reset();
+                adminPanel.setMessage("Script Saved");
+                refresh();
+                if (ti != null) {
+                    scriptTree.setSelectedItem(ti);
+                }
             }
         });
-        scriptTree.clear();
+
+
     }
 
 
@@ -275,9 +283,9 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
             public void onSuccess(Object o) {
                 deleteBtn.setEnabled(true);
-                adminPanel.setMessage("Script Deleted.");
-                // cleanup
-                reset();
+                scriptArea.setText(null);
+                adminPanel.setMessage("Script Deleted");
+                refresh();
             }
         });
     }
