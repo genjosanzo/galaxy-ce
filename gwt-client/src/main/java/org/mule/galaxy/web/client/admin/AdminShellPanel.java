@@ -163,14 +163,10 @@ public class AdminShellPanel extends AbstractAdministrationComposite
     }
 
     private void addTreeItems(List<WScript> scripts) {
-        scriptTree.add(createTitleText("Saved Scripts"));
         for (Iterator<WScript> itr = scripts.iterator(); itr.hasNext();) {
             WScript s = itr.next();
             TreeItem treeItem = scriptTree.addItem(s.getName());
             treeItem.setUserObject(s);
-        }
-        if (scriptTree.getItemCount() == 1) {
-            scriptTree.addItem("None Available");
         }
     }
 
