@@ -2,7 +2,10 @@ package org.mule.galaxy.impl.upgrade;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -17,15 +20,33 @@ import javax.jcr.query.QueryManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.value.StringValue;
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Link;
+import org.mule.galaxy.Registry;
 import org.mule.galaxy.impl.jcr.AbstractJcrItem;
+import org.mule.galaxy.impl.jcr.JcrArtifact;
 import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.impl.jcr.JcrWorkspace;
+import org.mule.galaxy.impl.jcr.JcrWorkspaceManager;
+import org.mule.galaxy.impl.link.LinkExtension;
+import org.mule.galaxy.type.PropertyDescriptor;
+import org.mule.galaxy.type.Type;
+import org.mule.galaxy.type.TypeManager;
 
 public class V11Upgrader extends Upgrader {
 
     private final Log log = LogFactory.getLog(getClass());
     
+    private TypeManager typeManager;
+    
+    private Registry registry;
+    
+    private JcrWorkspaceManager manager;
+    
     @Override
-    public void doUpgrade(int version, Session session, Node root) throws RepositoryException {
+    public void doUpgrade(int version, Session session, Node root) throws Exception {
         if (version >= 3) return;
         
         log.info("Upgrading to version 1.1....");
@@ -51,6 +72,7 @@ public class V11Upgrader extends Upgrader {
      * Sets index field to true on property descriptors if they refer to an Index.
      */
     private void upgradeIndexes(Node root, QueryManager qm) throws RepositoryException {
+        
         Node pds = root.getNode("propertyDescriptors");
         for (NodeIterator itr = pds.getNodes(); itr.hasNext();) {
             Node pd = itr.nextNode();
@@ -84,7 +106,7 @@ public class V11Upgrader extends Upgrader {
     /**
      * Changes the lifecycle fields to a metadata property on the artifact
      */
-    private void upgradeLifecycle(Node root, QueryManager qm) throws RepositoryException {
+    private void upgradeLifecycle(Node root, QueryManager qm) throws Exception {
         Query q = qm.createQuery("//element(*, galaxy:artifact)/*", Query.XPATH);
         
         for (NodeIterator itr = q.execute().getNodes(); itr.hasNext();) {
@@ -111,6 +133,19 @@ public class V11Upgrader extends Upgrader {
                 
             }
         }
+         
+
+        final PropertyDescriptor lifecyclePD = new PropertyDescriptor();
+        lifecyclePD.setProperty(Registry.PRIMARY_LIFECYCLE);
+        lifecyclePD.setDescription("Primary lifecycle");
+        lifecyclePD.setExtension(registry.getExtension("lifecycleExtension"));
+        
+        final Type defaultType = new Type();
+        defaultType.setName("Base Type");
+        defaultType.setProperties(Arrays.asList(lifecyclePD));
+
+        typeManager.savePropertyDescriptor(lifecyclePD);
+        typeManager.saveType(defaultType);
     }
 
     /**
@@ -148,20 +183,45 @@ public class V11Upgrader extends Upgrader {
     /**
      * links are now represented much differently.
      */
-    private void upgradeLinks(Node root, QueryManager qm, Session session) throws RepositoryException {
-//        Query q = qm.createQuery("//element(*, galaxy:artifactVersion)/dependencies", Query.XPATH);
-//
-//        Node links = root.getNode("links");
-//        
-//        for (NodeIterator itr = q.execute().getNodes(); itr.hasNext();) {
-//            Node d = itr.nextNode();
-//            
-//            Node link = links.addNode(UUID.randomUUID().toString(), "galaxy:link");
-//            link.addMixin("mix:referenceable");
-//            JcrUtil.setProperty("item", "local$" + d.getParent().getUUID(), link);
-//            JcrUtil.setProperty("linkedToPath", "local$" + d.getParent().getUUID(), link);
-//            
-//            d.remove();
-//        }
+    private void upgradeLinks(Node root, QueryManager qm, Session session) throws Exception {
+        Query q = qm.createQuery("//element(*, galaxy:artifactVersion)/dependencies", Query.XPATH);
+
+        Node links = root.getNode("links");
+        for (NodeIterator itr = q.execute().getNodes(); itr.hasNext();) {
+            Node d = itr.nextNode();
+            
+            Node avNode = d.getParent();
+            Node aNode = avNode.getParent();
+           
+            JcrWorkspace w = new JcrWorkspace(manager, aNode.getParent());
+            JcrArtifact a = new JcrArtifact(w, aNode, manager);
+            
+            ContentHandler ch = a.getContentHandler();
+            for (EntryVersion av : a.getVersions()) {
+                Set<String> dependencies = ch.detectDependencies(((ArtifactVersion)av).getData(), w);
+               
+                for (String dep : dependencies) {
+                    Node l = links.addNode(UUID.randomUUID().toString(), "galaxy:link");
+                    JcrUtil.setProperty("linkedToPath", dep, l);
+                    JcrUtil.setProperty("item", av.getId(), l);
+                    JcrUtil.setProperty("autoDetected", true, l);
+                    JcrUtil.setProperty("property", LinkExtension.DEPENDS, l);
+                }
+            }
+            d.remove();
+        }
     }
+
+    public void setTypeManager(TypeManager typeManager) {
+        this.typeManager = typeManager;
+    }
+
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
+    }
+
+    public void setLocalWorkspaceManager(JcrWorkspaceManager localWorkspaceManager) {
+        this.manager = localWorkspaceManager;
+    }
+    
 }

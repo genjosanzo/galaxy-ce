@@ -171,7 +171,11 @@
     <property name="userManager" ref="userManager" />
     <property name="upgraders">
         <list>
-            <bean class="org.mule.galaxy.impl.upgrade.V11Upgrader"/>
+            <bean class="org.mule.galaxy.impl.upgrade.V11Upgrader">
+                <property name="registry" ref="registryTarget"/>
+                <property name="typeManager" ref="typeManager" />
+                <property name="localWorkspaceManager" ref="localWorkspaceManager"/>
+            </bean>
         </list>
     </property>
   </bean>

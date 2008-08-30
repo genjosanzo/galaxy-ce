@@ -12,6 +12,7 @@ public abstract class Upgrader {
      * @param root The root of the JCR tree. This may not in fact be the real root node 
      * as we may import nodes into a subnode.
      * @throws RepositoryException
+     * @throws Exception 
      */
-    public abstract void doUpgrade(int version, Session session, Node root) throws RepositoryException;
+    public abstract void doUpgrade(int version, Session session, Node root) throws Exception;
 }

@@ -973,7 +973,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
     public void initialize() throws Exception {
         
-        Session session = getSessionFactory().getSession();
+        final Session session = getSessionFactory().getSession();
         Node root = session.getRootNode();
         
         Node workspaces = JcrUtil.getOrCreate(root, "workspaces", "galaxy:noSiblings");
@@ -1021,11 +1021,21 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             });
         } else {
             String versionStr = JcrUtil.getStringOrNull(workspaces, REPOSITORY_LAYOUT_VERSION);
-            int version = Integer.parseInt(versionStr);
+            final int version = Integer.parseInt(versionStr);
             if (version < 3) {
-                for (Upgrader u : getUpgraders()) {
-                    u.doUpgrade(version, session, session.getRootNode());
-                }
+                SecurityUtils.doPriveleged(new Runnable() {
+
+                    public void run() {
+                        for (Upgrader u : getUpgraders()) {
+                            try {
+                                u.doUpgrade(version, session, session.getRootNode());
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
+                    
+                });
             }
             workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "3");
         }
