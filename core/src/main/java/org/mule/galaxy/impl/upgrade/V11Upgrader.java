@@ -2,7 +2,6 @@ package org.mule.galaxy.impl.upgrade;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -23,7 +22,6 @@ import org.apache.jackrabbit.value.StringValue;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.EntryVersion;
-import org.mule.galaxy.Link;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.impl.jcr.AbstractJcrItem;
 import org.mule.galaxy.impl.jcr.JcrArtifact;
@@ -31,6 +29,9 @@ import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.JcrWorkspace;
 import org.mule.galaxy.impl.jcr.JcrWorkspaceManager;
 import org.mule.galaxy.impl.link.LinkExtension;
+import org.mule.galaxy.lifecycle.Lifecycle;
+import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
@@ -44,6 +45,8 @@ public class V11Upgrader extends Upgrader {
     private Registry registry;
     
     private JcrWorkspaceManager manager;
+    
+    private LifecycleManager lifecycleManager;
     
     @Override
     public void doUpgrade(int version, Session session, Node root) throws Exception {
@@ -64,6 +67,8 @@ public class V11Upgrader extends Upgrader {
         upgradePlugins(root, qm, session);
 
         upgradeLinks(root, qm, session);
+
+        upgradePolicies(root, qm, session);
         
         log.info("Upgrade to version 1.1 complete!");
     }
@@ -211,6 +216,60 @@ public class V11Upgrader extends Upgrader {
             d.remove();
         }
     }
+    private void upgradePolicies(Node root, QueryManager qm, Session session) throws Exception {
+        Node policies = JcrUtil.getOrCreate(root, "policyActivations");
+        
+        JcrUtil.dump(policies);
+        Node items = JcrUtil.getOrCreate(policies, "items");
+        
+        String lifecycles = JcrUtil.getOrCreate(items, "lifecycles").getPath();
+        Node phases = JcrUtil.getOrCreate(items, "phases");
+        
+        try {
+            Node artifacts = policies.getNode("artifacts");
+        
+            copyToItems(JcrUtil.getOrCreate(artifacts, "lifecycles"), lifecycles, session);
+            updatePhases(JcrUtil.getOrCreate(artifacts, "phases"), phases, session);
+            
+            artifacts.remove();
+        } catch (PathNotFoundException e) {
+        }
+
+        try {
+            Node workspaces = policies.getNode("workspaces");
+
+            copyToItems(JcrUtil.getOrCreate(workspaces, "lifecycles"), lifecycles, session);
+            updatePhases(JcrUtil.getOrCreate(workspaces, "phases"), phases, session);
+            workspaces.remove();
+        } catch (PathNotFoundException e) {
+        }
+        JcrUtil.dump(policies);
+    }
+
+    private void updatePhases(Node root, Node rootDest, Session session) throws RepositoryException {
+        for (NodeIterator items = root.getNodes(); items.hasNext();) {
+            Node item = items.nextNode();
+            for (NodeIterator lifecycles = item.getNodes(); lifecycles.hasNext();) {
+                Node lifecycle = lifecycles.nextNode();
+                Lifecycle l = lifecycleManager.getLifecycleById(lifecycle.getName());
+                for (NodeIterator phases = lifecycle.getNodes(); phases.hasNext();) {
+                    Node phase = phases.nextNode();
+                    Phase p = l.getPhase(phase.getName());
+                    
+                    Node itemDest = JcrUtil.getOrCreate(rootDest, "local$" + item.getName());
+                    
+                    session.move(phase.getPath(), itemDest.getPath() + "/" + p.getId());
+                }
+            }
+        }
+    }
+
+    private void copyToItems(Node artifacts, String dest, Session session) throws RepositoryException {
+        for (NodeIterator nodes = artifacts.getNodes(); nodes.hasNext();) {
+            Node node = nodes.nextNode();
+            session.move(node.getPath(), dest + "/local$" + node.getName());
+        }
+    }
 
     public void setTypeManager(TypeManager typeManager) {
         this.typeManager = typeManager;
@@ -222,6 +281,10 @@ public class V11Upgrader extends Upgrader {
 
     public void setLocalWorkspaceManager(JcrWorkspaceManager localWorkspaceManager) {
         this.manager = localWorkspaceManager;
+    }
+
+    public void setLifecycleManager(LifecycleManager lifecycleManager) {
+        this.lifecycleManager = lifecycleManager;
     }
     
 }

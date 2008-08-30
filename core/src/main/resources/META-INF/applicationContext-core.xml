@@ -175,6 +175,7 @@
                 <property name="registry" ref="registryTarget"/>
                 <property name="typeManager" ref="typeManager" />
                 <property name="localWorkspaceManager" ref="localWorkspaceManager"/>
+                <property name="lifecycleManager" ref="lifecycleManager" />
             </bean>
         </list>
     </property>
