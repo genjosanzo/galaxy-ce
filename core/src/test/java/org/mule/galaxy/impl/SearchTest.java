@@ -244,6 +244,7 @@ public class SearchTest extends AbstractGalaxyTest {
         
         User user = getAdmin();
         e.setProperty("contact", user);
+        registry.save(e);
         
         User c2 = (User) e.getProperty("contact");
         assertNotNull(c2);

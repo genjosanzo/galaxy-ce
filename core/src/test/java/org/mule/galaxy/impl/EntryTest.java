@@ -55,7 +55,8 @@ public class EntryTest extends AbstractGalaxyTest {
         assertNotNull(ev);
         String address = "http://localhost:9000/foo";
         ev.setProperty("endpoint", address);
-    
+        registry.save(ev);
+        
         Query q = new Query(Entry.class).add(OpRestriction.eq("endpoint", address));
         
         SearchResults results = registry.search(q);
