@@ -238,7 +238,21 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals("true", versionEl.getAttributeValue("enabled"));
         assertNotNull(versionEl.getAttributeValue("created"));
         
-        ExtensibleElement metadata = e.getExtension(new QName(AbstractItemCollection.NAMESPACE, "metadata"));
+        QName metadataQ = new QName(AbstractItemCollection.NAMESPACE, "metadata");
+        List<ExtensibleElement> extensions = e.getExtensions(metadataQ);
+        ExtensibleElement metadata = null;
+        ExtensibleElement global = null;
+        for (ExtensibleElement el : extensions) {
+            String id = el.getAttributeValue("id");
+            if ("versioned".equals(id))
+                metadata = el;
+            else if ("global".equals(id))
+                global = el;
+        }
+        
+        assertNotNull(metadata);
+        assertNotNull(global);
+        
         List<Element> properties = metadata.getExtensions(new QName(AbstractItemCollection.NAMESPACE, "property"));
         assertTrue(properties.size() > 0);
         int size = properties.size();
@@ -268,6 +282,10 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         prop.setAttributeValue("value", "test3");
         prop.setAttributeValue("visible", "false");
         
+        prop = factory.newElement(new QName(AbstractItemCollection.NAMESPACE, "property"), global);
+        prop.setAttributeValue("name", "test-global");
+        prop.setAttributeValue("value", "test-global");
+        
         versionEl.setAttributeValue("label", "3.0");
         versionEl.setAttributeValue("enabled", "false");
         
@@ -281,12 +299,28 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals(200, res.getStatus());
         
         entryDoc = res.getDocument();
-//        prettyPrint(entryDoc);
         e = entryDoc.getRoot();
         
-        metadata = e.getExtension(new QName(AbstractItemCollection.NAMESPACE, "metadata"));
+        metadata = null;
+        global = null;
+        extensions = e.getExtensions(metadataQ);
+        for (ExtensibleElement el : extensions) {
+            String id = el.getAttributeValue("id");
+            if ("versioned".equals(id))
+                metadata = el;
+            else if ("global".equals(id))
+                global = el;
+        }
+        assertNotNull(metadata);
+        assertNotNull(global);
+        
+        // check versioned metadata
         properties = metadata.getExtensions(new QName(AbstractItemCollection.NAMESPACE, "property"));
         assertEquals(size + 3, properties.size());
+        
+        // check global metadata
+        properties = global.getExtensions(new QName(AbstractItemCollection.NAMESPACE, "property"));
+        assertEquals(1, properties.size());
         
         res.release();
         

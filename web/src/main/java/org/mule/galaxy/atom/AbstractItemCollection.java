@@ -186,11 +186,11 @@ public abstract class AbstractItemCollection
         }
 
         if (ev != null) {
-//            addMetadata(entry, atomEntry, request, null);
-            addMetadata(ev, atomEntry, request, null);
+            addMetadata(ev, atomEntry, request, "versioned");
+            addMetadata(eOrW, atomEntry, request, "global");
         } else {
             // workspaces can have metadata too
-            addMetadata(item, atomEntry, request, null);
+            addMetadata(item, atomEntry, request, "global");
         }
         
         return link;
@@ -200,8 +200,9 @@ public abstract class AbstractItemCollection
         Element metadata = factory.newElement(new QName(NAMESPACE, "metadata"));
         
         if (id != null) {
-            
+            metadata.setAttributeValue("id", id);
         }
+        
         boolean showHidden = BooleanUtils.toBoolean(request.getParameter("showHiddenProperties"));
        
         for (PropertyInfo p : entryObj.getProperties()) {
@@ -431,7 +432,6 @@ public abstract class AbstractItemCollection
             Document<Entry> entryDoc = request.getDocument();
             Entry atomEntry = entryDoc.getRoot();
             
-            
             if (entry instanceof Artifact) {
                 entry.setDescription(summary);
                 mapEntryExtensions(ev, atomEntry);
@@ -466,7 +466,18 @@ public abstract class AbstractItemCollection
                 atomExt.updateItem(item, factory, e);
             } else if (NAMESPACE.equals(q.getNamespaceURI())) {
                 if ("metadata".equals(q.getLocalPart())) {
-                    updateMetadata(item, e);
+                    String id = e.getAttributeValue("id");
+                    if (item instanceof EntryVersion) {
+                        if ("global".equals(id)) {
+                            // this is metadata which applies to the entry/artifact
+                            updateMetadata(item.getParent(), e);
+                        } else {
+                            // this is versioned metadata
+                            updateMetadata(item, e);
+                        }
+                    } else {
+                        updateMetadata(item, e);
+                    }
                 } else if ("version".equals(q.getLocalPart())) {
                     updateVersion(getEntryVersion(item), e);
                 } else if ("item-info".equals(q.getLocalPart())) {
