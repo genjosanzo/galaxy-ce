@@ -277,7 +277,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         // Try to show the hidden metadata
         String v3Uri = colUri.toString() + "/Default%20Workspace/hello_world.wsdl;atom?version=3.0";
-        res = client.get(v3Uri + "&showHiddenMetadata=true", defaultOpts);
+        res = client.get(v3Uri + "&showHiddenProperties=true", defaultOpts);
         assertEquals(200, res.getStatus());
         
         entryDoc = res.getDocument();

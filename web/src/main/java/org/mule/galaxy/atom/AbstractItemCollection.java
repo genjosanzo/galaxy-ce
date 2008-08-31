@@ -441,6 +441,8 @@ public abstract class AbstractItemCollection
             } else {
                 mapEntryExtensions(item, atomEntry);
             }
+            
+            registry.save(item);
         } catch (ParseException e) {
             throw new ResponseContextException(500, e);
         } catch (IOException e) {
@@ -449,24 +451,26 @@ public abstract class AbstractItemCollection
             throw new ResponseContextException(500, e);
         } catch (PolicyException e) {
             throw AbderaUtils.createArtifactPolicyExceptionResponse(e);
+        } catch (AccessException e) {
+            throw new ResponseContextException(401, e);
         }
     }
 
-    protected void mapEntryExtensions(Item av, Entry entry) throws ResponseContextException,
-        PolicyException, RegistryException {
+    protected void mapEntryExtensions(Item item, Entry entry) throws ResponseContextException,
+        PolicyException, RegistryException, AccessException {
         for (Element e : entry.getElements()) {
             QName q = e.getQName();
             
             AtomExtension atomExt = getExtension(q);
             if (atomExt != null) {
-                atomExt.updateItem(av, factory, e);
+                atomExt.updateItem(item, factory, e);
             } else if (NAMESPACE.equals(q.getNamespaceURI())) {
                 if ("metadata".equals(q.getLocalPart())) {
-                    updateMetadata(av, e);
+                    updateMetadata(item, e);
                 } else if ("version".equals(q.getLocalPart())) {
-                    updateVersion(getEntryVersion(av), e);
+                    updateVersion(getEntryVersion(item), e);
                 } else if ("item-info".equals(q.getLocalPart())) {
-                    updateItemInfo(getEntryOrWorkspace(av), e);
+                    updateItemInfo(getEntryOrWorkspace(item), e);
                 }
             }
         }
