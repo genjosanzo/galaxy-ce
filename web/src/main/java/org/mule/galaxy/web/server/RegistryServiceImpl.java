@@ -1609,7 +1609,6 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             EntryVersion v = (EntryVersion) registry.getItemById(decode(versionId));
             Entry entry = v.getParent();
-            workspacePath = encode(workspacePath);
             
             if (!entry.getParent().getId().equals(workspacePath)) {
                 registry.move(entry, workspacePath, name);

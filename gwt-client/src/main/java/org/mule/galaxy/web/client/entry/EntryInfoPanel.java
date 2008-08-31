@@ -85,7 +85,8 @@ public class EntryInfoPanel extends AbstractComposite {
                                                     version.getId(), 
                                                     (String) info.getValue(0),
                                                     version.getVersionLabel(),
-                                                    info.getWorkspaceId(), artifactPanel, callbackParams);
+                                                    info.getPath(), 
+                                                    artifactPanel, callbackParams);
         
         table.setWidget(0, 0, new Label("Name:"));
         table.setWidget(0, 1, nep);

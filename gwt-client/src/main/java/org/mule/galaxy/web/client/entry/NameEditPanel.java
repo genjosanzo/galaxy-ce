@@ -18,24 +18,27 @@
 
 package org.mule.galaxy.web.client.entry;
 
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.Widget;
+
+import java.util.List;
+
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.WorkspaceOracle;
-import org.mule.galaxy.web.client.util.WorkspacesListBox;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WWorkspace;
-
-import com.google.gwt.user.client.ui.*;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
-
-import java.util.Collection;
-import java.util.List;
+import org.mule.galaxy.web.rpc.ItemNotFoundException;
 
 /**
  * A panel for editing the name of a registry entry.
@@ -45,7 +48,7 @@ public class NameEditPanel extends Composite {
     private InlineFlowPanel panel;
     private final String versionId;
     private String name;
-    private final String workspaceId;
+    private final String workspacePath;
     private final Galaxy galaxy;
     private final ErrorPanel errorPanel;
 
@@ -58,7 +61,7 @@ public class NameEditPanel extends Composite {
                          String versionId,
                          String name,
                          String version,
-                         String workspaceId, 
+                         String workspacePath, 
                          final EntryPanel callbackPanel, 
                          final List<String> callbackParams) {
         super();
@@ -67,7 +70,7 @@ public class NameEditPanel extends Composite {
         this.versionId = versionId;
         this.name = name;
         this.version = version;
-        this.workspaceId = workspaceId;
+        this.workspacePath = workspacePath;
 
         panel = new InlineFlowPanel();
 
@@ -101,13 +104,16 @@ public class NameEditPanel extends Composite {
         final HorizontalPanel row = new HorizontalPanel();
 
         final SuggestBox workspaceSB = new SuggestBox(new WorkspaceOracle(galaxy, errorPanel));
+        workspaceSB.setText(workspacePath);
         row.add(workspaceSB);
+        
         row.add(new HTML("&nbsp;"));
         final ValidatableTextBox nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
         nameTB.getTextBox().setText(name);
 
         row.add(nameTB);
         
+        row.add(new HTML("&nbsp;"));
         final ValidatableTextBox versionTB = new ValidatableTextBox(new StringNotEmptyValidator());
         versionTB.getTextBox().setText(version);
         versionTB.getTextBox().setVisibleLength(5);
@@ -145,11 +151,20 @@ public class NameEditPanel extends Composite {
     }
 
     protected void save(final String newWorkspacePath, final String newName, String newVersion) {
-        if (!newWorkspacePath.equals(this.workspaceId) 
+        if (!newWorkspacePath.equals(this.workspacePath) 
             || !newName.equals(this.name)
             || !newVersion.equals(this.version)) {
             // save only if name or workspace changed
             galaxy.getRegistryService().move(versionId, newWorkspacePath, newName, newVersion, new AbstractCallback(errorPanel) {
+
+                @Override
+                public void onFailure(Throwable caught) {
+                    if (caught instanceof ItemNotFoundException) {
+                        errorPanel.setMessage("No parent workspace exists with that name!");
+                    } else {
+                        super.onFailure(caught);
+                    }
+                }
 
                 public void onSuccess(Object arg0) {
                     // need to refresh the whole panel to fetch new workspace location and entry name
