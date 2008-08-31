@@ -551,20 +551,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         continue;
                     }
                         
-                    if (i == 0 ) {
-                        if (startsWithExact) {
-                            qstr.append("/*[jcr:like(@name, '").append(paths[i]).append("%')]");
-                        } else {
-                            qstr.append("/*[jcr:like(@name, '%").append(paths[i]).append("%')]");
-                        }
-                    } else if (i == (paths.length-1)) {
-                        if (endsWithExact) {
-                            qstr.append("/*[jcr:like(@name, '%").append(paths[i]).append("')]");
-                        } else {
-                            qstr.append("/*[jcr:like(@name, '%").append(paths[i]).append("%')]");
-                        }
+                    if (i == 0 && startsWithExact) {
+                        qstr.append("/*[jcr:like(fn:lower-case(@name), '").append(paths[i].toLowerCase()).append("%')]");
+                    } else if (i == (paths.length - 1) && endsWithExact) {
+                        qstr.append("/*[jcr:like(fn:lower-case(@name), '%").append(paths[i].toLowerCase()).append("')]");
                     } else {
-                        qstr.append("/").append(paths[i]);
+                        qstr.append("/*[jcr:like(fn:lower-case(@name), '%").append(paths[i].toLowerCase()).append("%')]");
                     }
                 }
                 
@@ -595,7 +587,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         .append("' or *//@jcr:primaryType='").append(type).append("'");
                 }
                 qstr.append("]");
-                
+
                 QueryResult result = qm.createQuery(qstr.toString(), Query.XPATH).execute();
                 
                 Set<Item> results = new HashSet<Item>();

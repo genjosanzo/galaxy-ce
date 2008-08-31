@@ -170,6 +170,9 @@ public class SearchTest extends AbstractGalaxyTest {
 
         results = registry.suggest("/Test1/Test2/T", 10, "/bar", Workspace.class);
         assertEquals(1, results.getTotal());
+
+        results = registry.suggest("/test1/test2/t", 10, "/bar", Workspace.class);
+        assertEquals(1, results.getTotal());
     }
     
     public void testQueryPropertyListing() throws Exception {
