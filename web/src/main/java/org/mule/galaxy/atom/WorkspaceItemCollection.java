@@ -31,15 +31,15 @@ import org.mule.galaxy.Workspace;
  * This collection will display all the artifacts within a particular workspace.
  * It maps to workspace URLs such as "/api/registry/myWorkspace/".
  */
-public class EntryWorkspaceCollection extends SearchableEntryCollection {
+public class WorkspaceItemCollection extends SearchableItemCollection {
 
-    public EntryWorkspaceCollection(Registry registry) {
+    public WorkspaceItemCollection(Registry registry) {
         super(registry);
     }
 
     @Override
     public Iterable<Item> getEntries(RequestContext request) throws ResponseContextException {
-        Workspace w = (Workspace) request.getAttribute(Scope.REQUEST, EntryResolver.WORKSPACE);
+        Workspace w = (Workspace) request.getAttribute(Scope.REQUEST, ItemResolver.WORKSPACE);
         
         try {
             return w.getItems();

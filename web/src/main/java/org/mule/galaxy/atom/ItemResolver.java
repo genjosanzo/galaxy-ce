@@ -41,7 +41,7 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.security.AccessException;
 
-public class EntryResolver implements Resolver<Target> {
+public class ItemResolver implements Resolver<Target> {
 
     private static final String WORKSPACES_CLASSIFIER = "workspaces";
     public static final String WORKSPACE = "workspace";
@@ -50,8 +50,8 @@ public class EntryResolver implements Resolver<Target> {
     
     private Registry registry;
     private EntryHistoryCollection historyCollection;
-    private SearchableEntryCollection searchableCollection;
-    private EntryWorkspaceCollection entryWorkspaceCollection;
+    private SearchableItemCollection searchableCollection;
+    private WorkspaceItemCollection workspaceItemCollection;
     private CommentCollectionProvider commentCollection;
     private WorkspaceCollection workspaceCollection;
     
@@ -219,7 +219,7 @@ public class EntryResolver implements Resolver<Target> {
         if (WORKSPACES_CLASSIFIER.equals(classifier)) {
             context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, workspaceCollection);
         } else {
-            context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, entryWorkspaceCollection);
+            context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, workspaceItemCollection);
         }
          
         if ("GET".equals(context.getMethod()) || "POST".equals(context.getMethod()) || "HEAD".equals(context.getMethod())) {
@@ -239,41 +239,21 @@ public class EntryResolver implements Resolver<Target> {
     public void setRegistry(Registry registry) {
         this.registry = registry;
     }
-
-    public EntryHistoryCollection getHistoryCollection() {
-        return historyCollection;
-    }
-
+    
     public void setHistoryCollection(EntryHistoryCollection historyCollection) {
         this.historyCollection = historyCollection;
     }
 
-    public SearchableEntryCollection getSearchableCollection() {
-        return searchableCollection;
-    }
-
-    public void setSearchableCollection(SearchableEntryCollection searchableCollection) {
+    public void setSearchableCollection(SearchableItemCollection searchableCollection) {
         this.searchableCollection = searchableCollection;
     }
 
-    public EntryWorkspaceCollection getEntryWorkspaceCollection() {
-        return entryWorkspaceCollection;
-    }
-
-    public void setEntryWorkspaceCollection(EntryWorkspaceCollection entryWorkspaceCollection) {
-        this.entryWorkspaceCollection = entryWorkspaceCollection;
-    }
-
-    public CommentCollectionProvider getCommentCollection() {
-        return commentCollection;
+    public void setWorkspaceItemCollection(WorkspaceItemCollection entryWorkspaceCollection) {
+        this.workspaceItemCollection = entryWorkspaceCollection;
     }
 
     public void setCommentCollection(CommentCollectionProvider commentCollection) {
         this.commentCollection = commentCollection;
-    }
-
-    public WorkspaceCollection getWorkspaceCollection() {
-        return workspaceCollection;
     }
 
     public void setWorkspaceCollection(WorkspaceCollection workspaceCollection) {

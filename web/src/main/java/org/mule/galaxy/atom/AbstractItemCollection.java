@@ -82,7 +82,7 @@ import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.util.AbderaUtils;
 import org.mule.galaxy.util.SecurityUtils;
 
-public abstract class AbstractEntryCollection 
+public abstract class AbstractItemCollection 
     extends AbstractEntityCollectionAdapter<Item> {
     public static final String NAMESPACE = "http://galaxy.mule.org/1.0";
     public static final String ID_PREFIX = "urn:galaxy:artifact:";    
@@ -93,7 +93,7 @@ public abstract class AbstractEntryCollection
     protected Factory factory;
     protected Registry registry;
     
-    public AbstractEntryCollection(Registry registry) {
+    public AbstractItemCollection(Registry registry) {
         super();
         this.registry = registry;
         factory = Abdera.getInstance().getFactory();
@@ -354,7 +354,7 @@ public abstract class AbstractEntryCollection
 
     @Override
     public String getHref(RequestContext request) {
-        String href = (String) request.getAttribute(Scope.REQUEST, EntryResolver.COLLECTION_HREF);
+        String href = (String) request.getAttribute(Scope.REQUEST, ItemResolver.COLLECTION_HREF);
         if (href == null) {
             // this is the url we use when pulling down the services document
             href = request.getTargetBasePath() + "/registry";
@@ -401,7 +401,7 @@ public abstract class AbstractEntryCollection
     }
 
     protected Item getRegistryItem(RequestContext request) {
-        return (Item) request.getAttribute(Scope.REQUEST, EntryResolver.ITEM);
+        return (Item) request.getAttribute(Scope.REQUEST, ItemResolver.ITEM);
     }
 
     protected String getVersionLabel(Entry atomEntry) throws ResponseContextException {

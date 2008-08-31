@@ -10,11 +10,11 @@
     http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
 
   <!-- Collections -->
-  <bean name="searchableCollection" class="org.mule.galaxy.atom.SearchableEntryCollection">
+  <bean name="searchableCollection" class="org.mule.galaxy.atom.SearchableItemCollection">
     <constructor-arg ref="registry"/>
   </bean>
   
-  <bean name="entryWorkspaceCollection" class="org.mule.galaxy.atom.EntryWorkspaceCollection">
+  <bean name="workspaceItemCollection" class="org.mule.galaxy.atom.WorkspaceItemCollection">
     <constructor-arg ref="registry"/>
   </bean>
   
@@ -37,10 +37,10 @@
   <bean id="org.apache.abdera.protocol.server.Provider"
         class="org.mule.galaxy.atom.ServiceProvider">
     <property name="targetResolver">
-      <bean class="org.mule.galaxy.atom.EntryResolver">
+      <bean class="org.mule.galaxy.atom.ItemResolver">
         <property name="registry" ref="registry"/>
         <property name="searchableCollection" ref="searchableCollection"/>
-        <property name="entryWorkspaceCollection" ref="entryWorkspaceCollection"/>
+        <property name="workspaceItemCollection" ref="workspaceItemCollection"/>
         <property name="workspaceCollection" ref="workspaceCollection"/>
         <property name="historyCollection" ref="historyCollection"/>
         <property name="commentCollection" ref="commentCollection"/>

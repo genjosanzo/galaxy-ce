@@ -45,7 +45,7 @@ public class EntryCollectionTest extends AbstractAtomTest {
         entry.setId(factory.newUuidUri());
         entry.setContent("");
         
-        Element versionEl = factory.newExtensionElement(new QName(AbstractEntryCollection.NAMESPACE, "version"), entry);
+        Element versionEl = factory.newExtensionElement(new QName(AbstractItemCollection.NAMESPACE, "version"), entry);
         versionEl.setAttributeValue("label", "1.0");
         
         ClientResponse res = client.post(base, entry, defaultOpts);

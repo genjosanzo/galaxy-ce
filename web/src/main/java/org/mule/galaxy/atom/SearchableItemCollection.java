@@ -60,9 +60,9 @@ import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 
-public class SearchableEntryCollection extends AbstractEntryCollection {
+public class SearchableItemCollection extends AbstractItemCollection {
 
-    public SearchableEntryCollection(Registry registry) {
+    public SearchableItemCollection(Registry registry) {
         super(registry);
     }
 
@@ -176,7 +176,7 @@ public class SearchableEntryCollection extends AbstractEntryCollection {
                                             RequestContext request)
         throws RegistryException, PolicyException, IOException, MimeTypeParseException, ResponseContextException, DuplicateItemException, AccessException  {
 
-        Workspace workspace = (Workspace) request.getAttribute(Scope.REQUEST, EntryResolver.ITEM);
+        Workspace workspace = (Workspace) request.getAttribute(Scope.REQUEST, ItemResolver.ITEM);
 
         if (workspace == null) {
             EmptyResponseContext ctx = new EmptyResponseContext(500);
@@ -195,7 +195,7 @@ public class SearchableEntryCollection extends AbstractEntryCollection {
     @Override
     public Item postEntry(String title, IRI id, String summary, Date updated, List<Person> authors,
                           Content content, RequestContext request) throws ResponseContextException {
-        Workspace workspace = (Workspace) request.getAttribute(Scope.REQUEST, EntryResolver.ITEM);
+        Workspace workspace = (Workspace) request.getAttribute(Scope.REQUEST, ItemResolver.ITEM);
 
         
         try {

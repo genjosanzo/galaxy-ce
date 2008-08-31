@@ -52,7 +52,7 @@ public class WorkspaceCollectionTest extends AbstractAtomTest {
         // Once we support workspace descriptions, the description will go here
         entry.setContent("");
         
-        Element wInfo = factory.newElement(new QName(AbstractEntryCollection.NAMESPACE, "workspace-info"));
+        Element wInfo = factory.newElement(new QName(AbstractItemCollection.NAMESPACE, "workspace-info"));
         wInfo.setAttributeValue("name", "MyWorkspace");
         entry.addExtension(wInfo);
         
@@ -71,7 +71,7 @@ public class WorkspaceCollectionTest extends AbstractAtomTest {
         }
         assertNotNull(itemsResponse);
         
-        wInfo = entry.getExtension(new QName(AbstractEntryCollection.NAMESPACE, "workspace-info"));
+        wInfo = entry.getExtension(new QName(AbstractItemCollection.NAMESPACE, "workspace-info"));
         assertNotNull(wInfo);
         res.release();
         
