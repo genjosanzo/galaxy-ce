@@ -28,6 +28,7 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.activity.ActivityManager.EventType;
+import org.mule.galaxy.event.PropertyChangedEvent;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
@@ -148,11 +149,18 @@ public abstract class AbstractJcrItem implements Item {
         if (pd != null && pd.getExtension() != null) {
             pd.getExtension().store(this, pd, value);
 	} else {
-	    setInternalProperty(name, value);
+	    setInternalProperty(name, value, false);
+
+	    manager.getEventManager().fireEvent(
+	        new PropertyChangedEvent(SecurityUtils.getCurrentUser(), getPath(), name, value));
 	}    
     }
 
     public void setInternalProperty(String name, Object value) throws PropertyException, PolicyException {
+        setInternalProperty(name, value, true);
+    }
+    
+    private void setInternalProperty(String name, Object value, boolean log) throws PropertyException, PolicyException {
         try {
             if (name.contains(" ")) {
                 throw new PropertyException(new Message("SPACE_NOT_ALLOWED", getBundle()));
@@ -165,10 +173,12 @@ public abstract class AbstractJcrItem implements Item {
             } else {
                 ensureProperty(name);
             }
-
-            final String message = MessageFormat.format("Property {0} of {1} was set to: {2}", name, getPath(), value);
-            manager.getActivityManager().logActivity(SecurityUtils.getCurrentUser(),
-                                                     message, EventType.INFO);
+            
+            if (log) {
+                // We need to re-extract the property value because we need to log the external value
+                manager.getEventManager().fireEvent(
+                    new PropertyChangedEvent(SecurityUtils.getCurrentUser(), getPath(), name, getProperty(name)));
+            }
             update();
         } catch (RepositoryException e) {
             throw new RuntimeException(e);

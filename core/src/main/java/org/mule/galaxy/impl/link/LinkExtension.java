@@ -12,6 +12,7 @@ import org.mule.galaxy.Link;
 import org.mule.galaxy.Links;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.event.PropertyChangedEvent;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.extension.IdentifiableExtension;
 import org.mule.galaxy.policy.PolicyException;
@@ -80,6 +81,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
 
     @Override
     public void store(Item item, PropertyDescriptor pd, Object value) throws PolicyException {
+//        manager.getEventManager().fireEvent(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item.getPath(), name, value));
         if (value instanceof Collection) {
             for (Object o : (Collection) value) {
                 Link l = (Link) o;
