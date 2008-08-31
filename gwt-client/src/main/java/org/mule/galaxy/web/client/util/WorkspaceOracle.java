@@ -56,6 +56,17 @@ public class WorkspaceOracle extends SuggestOracle {
                 }
             });
         }
+        if (suggestions.size() == 0) {
+            suggestions.add(new Suggestion() {
+                public String getDisplayString() {
+                    return "<i>No results found</i>";
+                }
+
+                public String getReplacementString() {
+                    return null;
+                }
+            });
+        }
         response.setSuggestions(suggestions);
         callback.onSuggestionsReady(request, response);
     }
