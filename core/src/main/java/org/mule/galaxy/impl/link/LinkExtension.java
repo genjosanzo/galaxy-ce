@@ -81,7 +81,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
 
     @Override
     public void store(Item item, PropertyDescriptor pd, Object value) throws PolicyException {
-//        manager.getEventManager().fireEvent(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item.getPath(), name, value));
+        eventManager.fireEvent(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item.getPath(), name, value));
         if (value instanceof Collection) {
             for (Object o : (Collection) value) {
                 Link l = (Link) o;
@@ -159,6 +159,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
                     links = new ArrayList<Link>();
                     links.add(l);
                 }
+                eventManager.fireEvent(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item.getPath(), pd.getProperty(), getLinks()));
             } catch (DuplicateItemException e) {
                 throw new RuntimeException(e);
             } catch (NotFoundException e) {
@@ -186,6 +187,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
             }
             reciprocal = null;
             this.links = null;
+            eventManager.fireEvent(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item.getPath(), pd.getProperty(), getLinks()));
         }
     }
 }

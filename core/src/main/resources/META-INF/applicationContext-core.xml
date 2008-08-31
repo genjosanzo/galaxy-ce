@@ -214,6 +214,7 @@
     <property name="id" value="linkExtension"/>
     <property name="registry" ref="registry"/>
     <property name="typeManager" ref="typeManager"/>
+    <property name="eventManager" ref="eventManager"/>
   </bean>
   
   <bean id="linkDao" parent="txProxyTemplate">

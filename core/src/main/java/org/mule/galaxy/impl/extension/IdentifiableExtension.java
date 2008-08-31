@@ -2,9 +2,7 @@ package org.mule.galaxy.impl.extension;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.DuplicateItemException;
@@ -12,7 +10,7 @@ import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.extension.Extension;
+import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.type.PropertyDescriptor;
 
@@ -21,7 +19,8 @@ import org.mule.galaxy.type.PropertyDescriptor;
  */
 public class IdentifiableExtension<T extends Identifiable> extends AbstractExtension {
     protected Dao<T> dao;
-
+    protected EventManager eventManager;
+    
     @SuppressWarnings("unchecked")
     public Object get(Item entry, PropertyDescriptor pd, boolean getWithNoData) {
         Object storedValue = entry.getInternalProperty(pd.getProperty());
@@ -94,6 +93,10 @@ public class IdentifiableExtension<T extends Identifiable> extends AbstractExten
 
     public void setDao(Dao<T> dao) {
         this.dao = dao;
+    }
+
+    public void setEventManager(EventManager eventManager) {
+        this.eventManager = eventManager;
     }
 
 }

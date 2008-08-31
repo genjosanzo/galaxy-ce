@@ -70,4 +70,15 @@ public class Link implements Identifiable {
         this.property = property;
     }
     
+    public String toString() {
+	if (linkedToPath != null) {
+	    return linkedToPath;
+	}
+	
+	if (linkedTo != null) {
+	    return linkedTo.getPath();
+	}
+	
+	return super.toString();
+    }
 }
