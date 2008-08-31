@@ -180,7 +180,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
                     if (msg.startsWith("ArtifactPolicyException")) {
                         parseAndShowPolicyMessages(msg);
                     } else {
-                        setMessage(msg);
+                        menuPanel.setMessage(msg);
                     }
             }
         });
@@ -251,6 +251,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
 
         workspaceSB = new ValidatableSuggestBox(new StringNotEmptyValidator(),
                                                 new WorkspaceOracle(galaxy, this));
+        workspaceSB.getTextBox().setName("workspacePath");
         table.setWidget(0, 1, workspaceSB);
 
         Label nameLabel = new Label("Artifact Name");

@@ -108,7 +108,6 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
         final FlexTable table = createColumnTable();
         workspacesSuggest = new SuggestBox(new WorkspaceOracle(galaxy, this, parentWorkspacePath));
         workspacesSuggest.setText(parentWorkspacePath);
-        workspacesSuggest.setText(parentWorkspacePath);
         
         table.setText(0, 0, "Parent Workspace:");
         table.setWidget(0, 1, workspacesSuggest);

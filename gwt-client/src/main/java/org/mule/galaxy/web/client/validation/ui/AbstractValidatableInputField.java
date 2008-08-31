@@ -36,7 +36,14 @@ public abstract class AbstractValidatableInputField extends AbstractValidatableW
     private ValidationListener validationListener;
     private Validator validator;
 
+    public AbstractValidatableInputField() {
+    }
+    
     public AbstractValidatableInputField(final Validator validator) {
+        init(validator);
+    }
+    
+    protected void init(Validator validator) {
         Widget inputWidget = this.createInputWidget();
         validationListener = new FieldValidationListener(this.getValidationLabel());
         this.validator = new CallbackValidator(validator, validationListener, inputWidget);

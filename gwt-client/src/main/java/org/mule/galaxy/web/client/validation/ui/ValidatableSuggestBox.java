@@ -20,6 +20,7 @@ package org.mule.galaxy.web.client.validation.ui;
 
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.SuggestOracle;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import org.mule.galaxy.web.client.validation.Validator;
 
@@ -30,10 +31,13 @@ public class ValidatableSuggestBox extends AbstractValidatableInputField {
     
     protected SuggestBox suggestBox;
     private final SuggestOracle oracle;
-
+    private TextBox textBox;
+    
     public ValidatableSuggestBox(final Validator validator, final SuggestOracle oracle) {
-        super(validator);
+        super();
         this.oracle = oracle;
+        
+        init(validator);
     }
 
     public boolean validate() {
@@ -41,12 +45,17 @@ public class ValidatableSuggestBox extends AbstractValidatableInputField {
     }
 
     protected Widget createInputWidget() {
-        suggestBox = new SuggestBox(oracle);
+        textBox = new TextBox();
+        suggestBox = new SuggestBox(oracle, textBox);
         return suggestBox;
     }
 
     public SuggestBox getSuggestBox() {
         return suggestBox;
+    }
+
+    public TextBox getTextBox() {
+        return textBox;
     }
     
     public String getText() {
