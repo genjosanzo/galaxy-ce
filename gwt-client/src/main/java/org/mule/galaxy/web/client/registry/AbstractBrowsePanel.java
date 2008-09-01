@@ -121,6 +121,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
                 artifactTypesBox.setTitle(titlePanel);
                 titlePanel.add(resetImg);
                 showArtifactTypes();
+                refreshArtifactTypes();
             }
             first = false;
         }
@@ -144,7 +145,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
     }
 
     public void refresh() {
-        refreshArtifactTypes();
+//        refreshArtifactTypes();
 
         menuPanel.loadViews();
     }
