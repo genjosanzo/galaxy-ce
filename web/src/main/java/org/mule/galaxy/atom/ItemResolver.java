@@ -39,6 +39,10 @@ import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.Query;
+import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.security.AccessException;
 
 public class ItemResolver implements Resolver<Target> {
@@ -192,6 +196,31 @@ public class ItemResolver implements Resolver<Target> {
     }
 
     protected Item selectVersion(Item i, RequestContext context) throws RegistryException {
+        if (i instanceof Entry) {
+            String[] params = context.getParameterNames();
+            Query query = new Query(Artifact.class, Entry.class);
+            query.add(OpRestriction.eq("name", i.getName()));
+            query.fromPath(i.getParent().getPath());
+
+            for (int c = 0; c < params.length; c++) {
+                String param = params[c];
+
+                if (!"showHiddenProperties".equals(param) && !"version".equals(param)) {
+                    query.add(OpRestriction.eq(param, context.getParameter(param)));
+                }
+            }
+
+            if (query.getRestrictions().size() > 1) {
+                SearchResults results = registry.search(query);
+    
+                if (results.getTotal() == 0) {
+                    return null;
+                }
+    
+                i = results.getResults().iterator().next();
+            }
+        }
+        
         String version = context.getParameter("version");
         if (version != null && !"".equals(version)) {
             if (!(i instanceof Entry)) {

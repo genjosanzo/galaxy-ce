@@ -76,6 +76,10 @@ import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.Query;
+import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.type.PropertyDescriptor;
@@ -402,7 +406,7 @@ public abstract class AbstractItemCollection
     }
 
     protected Item getRegistryItem(RequestContext request) {
-        return (Item) request.getAttribute(Scope.REQUEST, ItemResolver.ITEM);
+        return  (Item) request.getAttribute(Scope.REQUEST, ItemResolver.ITEM);
     }
 
     protected String getVersionLabel(Entry atomEntry) throws ResponseContextException {
