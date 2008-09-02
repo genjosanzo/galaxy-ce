@@ -32,10 +32,12 @@ cli.U(longOpt: 'apiUrl', args: 1, 'Galaxy API url (default: /api/registry)')
 cli.u(longOpt: 'username', args: 1, 'Galaxy username (default: admin)')
 cli.p(longOpt: 'password', args: 1, 'Galaxy password (default: admin)')
 cli.w(longOpt: 'workspace', args: 1, 'Galaxy workspace to configure, escaped \'Like%20this\' (default: Mule)')
+cli.o(longOpt: 'overwriteArtifacts', 'If specified, artifact versions will be deleted first and re-created from scratch')
 cli.d(longOpt: 'deleteWorkspace', 'If specified, a workspace will be deleted first and re-created from scratch')
 cli.m(longOpt: 'muleHome', args: 1, 'Override MULE_HOME (default: value of the MULE_HOME env property)')
 cli.X(longOpt: 'debug', 'If enabled, prints debug info at runtime')
 cli.t(longOpt: 'threads', args: 1, 'Number of processing threads (default: CPU cores x 4')
+cli.v(longOpt: 'version', args: 1, 'Version number used for artifacts (default: 1)')
 
 def opts = cli.parse(args)
 
@@ -60,6 +62,8 @@ def workspace = opts.w ?: 'Mule'
 def deleteWorkspace = opts.d
 def debug = opts.X
 def numUnits = new Integer(opts.t ?: Runtime.runtime.availableProcessors() * 4)
+def version = opts.v ?: '1'
+def overwrite = new Boolean(opts.o ?: false);
 
 // Passed in as -Dmule.home
 def muleHome = opts.m ?: System.properties.'mule.home'
@@ -113,7 +117,7 @@ def upload = { libFolder ->
     localDir.eachFileMatch( ~/.*\.jar$/ ) { file ->
         def task = {
             println file.name
-            galaxy.create("$workspace/lib/$libFolder", mimeType, file.name, file.newInputStream())
+            galaxy.create("$workspace/lib/$libFolder", mimeType, file.name, file.newInputStream(), version, overwrite)
         } as Callable
 
         compService.submit task

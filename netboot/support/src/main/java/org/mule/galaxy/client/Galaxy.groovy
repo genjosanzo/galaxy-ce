@@ -24,6 +24,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials
 import org.apache.commons.httpclient.auth.AuthScope
 import org.apache.commons.httpclient.methods.DeleteMethod
 import org.apache.commons.httpclient.methods.GetMethod
+import org.apache.commons.httpclient.methods.HeadMethod
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity
 import org.apache.commons.httpclient.methods.PostMethod
 import org.apache.commons.httpclient.methods.PutMethod
@@ -50,21 +51,37 @@ class Galaxy {
                 })
             },
 
-            create: {path, contentType, artifactName, InputStream body ->
-
-                def post = new PostMethod("http://$host:$port$apiUrl/$path")
-                post.addRequestHeader 'Content-Type', contentType
-                // TODO Probably allow for customizing the initial version label
-                post.addRequestHeader 'X-Artifact-Version', '1'
-                post.addRequestHeader 'Slug', artifactName
-
-                assert body != null
-
-                post.requestEntity = new InputStreamRequestEntity(body)
-                remoteCall(post, {status, responseStream ->
-                    assert status == 201
+            create: {path, contentType, artifactName, InputStream body, version, overwrite ->
+                if (overwrite) {
+                    def delete = new DeleteMethod("http://$host:$port$apiUrl/$path/$artifactName?version=$version")
+                    remoteCall(delete, {status, responseStream ->
+                        //assert status == 204
+                        status
+                    })
+                } 
+                
+                def head = new HeadMethod("http://$host:$port$apiUrl/$path/$artifactName")
+                def headStat = remoteCall(head, {status, responseStream ->
                     status
                 })
+                
+                if (headStat == 200) {
+                    update(path + "/$artifactName", contentType, version, body)        
+                } else {
+                    def post = new PostMethod("http://$host:$port$apiUrl/$path")
+                    post.addRequestHeader 'Content-Type', contentType
+                    // TODO Probably allow for customizing the initial version label
+                    post.addRequestHeader 'X-Artifact-Version', version
+                    post.addRequestHeader 'Slug', artifactName
+    
+                    assert body != null
+    
+                    post.requestEntity = new InputStreamRequestEntity(body)
+                    remoteCall(post, {status, responseStream ->
+                        assert status == 201
+                        status
+                    })
+                }
             },
 
             createWorkspace: {parent, name ->
@@ -97,7 +114,7 @@ class Galaxy {
                 post.requestEntity = new StringRequestEntity(entry)
 
                 remoteCall(post, {status, responseStream ->
-                    assert status == 201
+                    assert status == 201 || status == 409
                     status
                 })
             },
