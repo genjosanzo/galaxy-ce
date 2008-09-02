@@ -47,7 +47,7 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
         for (Script s : listAll()) {
             if (s.isRunOnStartup()) {
                 try {
-                    execute(s.getScript());
+                    execute(s.getScript(), s);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -56,6 +56,10 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
     }
     
     public String execute(final String scriptText) throws AccessException, RegistryException {
+        return execute(scriptText, null);
+    }
+    
+    public String execute(final String scriptText, Script script) throws AccessException, RegistryException {
         accessControlManager.assertAccess(Permission.EXECUTE_ADMIN_SCRIPTS);
         
         final Binding binding = new Binding();
@@ -63,6 +67,10 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
         
         for (Map.Entry<String, Object> e : scriptVariables.entrySet()) {
             binding.setProperty(e.getKey(), e.getValue());
+        }
+
+        if (script != null) {
+            binding.setProperty("script", script);
         }
         
         try {

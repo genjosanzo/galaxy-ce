@@ -319,6 +319,7 @@
      <constructor-arg>
          <map>
              <entry key="registry" value-ref="registry"/>
+             <entry key="activityManager" value-ref="activityManager"/>
          </map>
      </constructor-arg>
   </bean>
