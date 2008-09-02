@@ -1,14 +1,15 @@
 package org.mule.galaxy.security;
 
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.Entry;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Workspace;
 
 @SuppressWarnings("unchecked")
 public enum Permission {
-    READ_ARTIFACT("Read Artifact", Artifact.class, Workspace.class),
-    MODIFY_ARTIFACT("Modify Artifact", Artifact.class, Workspace.class),
-    DELETE_ARTIFACT("Delete Artifact", Artifact.class, Workspace.class),
+    READ_ARTIFACT("Read Artifact/Entry", Entry.class, Artifact.class, Workspace.class),
+    MODIFY_ARTIFACT("Modify Artifact/Entry", Entry.class, Artifact.class, Workspace.class),
+    DELETE_ARTIFACT("Delete Artifact/Entry", Entry.class, Artifact.class, Workspace.class),
     READ_WORKSPACE("Read Workspace", Workspace.class),
     MODIFY_WORKSPACE("Modify Workspace", Workspace.class),
     DELETE_WORKSPACE("Delete Workspace", Workspace.class),
