@@ -18,9 +18,10 @@
 
 package org.mule.galaxy.web.rpc;
 
+import com.google.gwt.user.client.rpc.RemoteService;
+
 import java.util.List;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import org.mule.galaxy.web.client.RPCException;
 
 public interface AdminService extends RemoteService {
@@ -32,4 +33,12 @@ public interface AdminService extends RemoteService {
     void save(WScript script) throws RPCException, ItemExistsException;
     
     void deleteScript(String id) throws RPCException;
+
+    List<WScriptJob> getScriptJobs() throws RPCException;
+
+    WScriptJob getScriptJob(String id) throws RPCException, ItemExistsException;
+    
+    void save(WScriptJob script) throws RPCException, ItemExistsException;
+    
+    void deleteScriptJob(String id) throws RPCException;
 }

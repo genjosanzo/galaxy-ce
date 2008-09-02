@@ -20,6 +20,8 @@ package org.mule.galaxy.web.rpc;
 
 import java.util.List;
 
+import org.mule.galaxy.web.client.RPCException;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface AdminServiceAsync {
@@ -30,4 +32,13 @@ public interface AdminServiceAsync {
     void save(WScript script, AsyncCallback async);
     
     void deleteScript(String id, AsyncCallback async);
+
+    void getScriptJobs(AsyncCallback<List<WScriptJob>> async);
+    
+    void getScriptJob(String id, AsyncCallback async);
+    
+    void save(WScriptJob script, AsyncCallback async);
+    
+    void deleteScriptJob(String id, AsyncCallback async);
+
 }

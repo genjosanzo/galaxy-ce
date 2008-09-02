@@ -103,7 +103,7 @@ public class AdministrationPanel extends MenuPanel {
         // Scheduler
         createLinkWithAdd(utilityBox,
                           "Scheduler",
-                          "schedule",
+                          "schedules",
                           new ScheduleListPanel(this),
                           new ScheduleForm(this));
 

@@ -8,14 +8,12 @@ public class WScript implements IsSerializable {
     private String id; 
     private String name;
     private String script;
-    private Collection<String> jobExpressions;
     private boolean runOnStartup;
     
-    public WScript(String id, Collection<String> jobExpressions, String name, boolean runOnStartup,
+    public WScript(String id, String name, boolean runOnStartup,
                    String script) {
         super();
         this.id = id;
-        this.jobExpressions = jobExpressions;
         this.name = name;
         this.runOnStartup = runOnStartup;
         this.script = script;
@@ -40,12 +38,6 @@ public class WScript implements IsSerializable {
     }
     public void setScript(String script) {
         this.script = script;
-    }
-    public Collection<String> getJobExpressions() {
-        return jobExpressions;
-    }
-    public void setJobExpressions(Collection<String> jobExpressions) {
-        this.jobExpressions = jobExpressions;
     }
     public boolean isRunOnStartup() {
         return runOnStartup;

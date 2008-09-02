@@ -18,15 +18,22 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
+
+import java.util.Collections;
+import java.util.List;
+
 import org.mule.galaxy.web.client.util.TooltipListener;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableListBox;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextArea;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
-
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WScript;
+import org.mule.galaxy.web.rpc.WScriptJob;
 
 
 public class ScheduleForm extends AbstractAdministrationForm {
@@ -35,7 +42,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
     private ValidatableTextBox nameTB;
     private ValidatableTextBox cronTB;
     private ValidatableTextArea descriptionTA;
-
+    private WScriptJob job;
 
     public ScheduleForm(AdministrationPanel administrationPanel) {
         super(administrationPanel, "schedules", "Scheduled item was saved.", "Scheduled item was deleted.",
@@ -43,12 +50,15 @@ public class ScheduleForm extends AbstractAdministrationForm {
     }
 
     protected void fetchItem(String id) {
+        adminPanel.getGalaxy().getAdminService().getScriptJob(id, getFetchCallback());
     }
 
     protected void initializeItem(Object o) {
+        job = (WScriptJob) o;
     }
 
     protected void initializeNewItem() {
+        job = new WScriptJob();
     }
 
     protected void addFields(FlexTable table) {
@@ -63,20 +73,24 @@ public class ScheduleForm extends AbstractAdministrationForm {
         row = 0;
         scriptLB = new ValidatableListBox(new StringNotEmptyValidator());
         table.setWidget(row, 1, scriptLB);
+        loadScripts();
 
         row++;
         nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
         table.setWidget(row, 1, nameTB);
         table.setWidget(row, 2, new Label(" "));
-
+        nameTB.setText(job.getName());
+        
         row++;
         descriptionTA = new ValidatableTextArea(new StringNotEmptyValidator());
         descriptionTA.getTextArea().setCharacterWidth(18);
         descriptionTA.getTextArea().setVisibleLines(4);
         table.setWidget(row, 1, descriptionTA);
-
+        descriptionTA.setText(job.getDescription());
+        
         row++;
         cronTB = new ValidatableTextBox(new StringNotEmptyValidator());
+        cronTB.setText(job.getExpression());
         table.setWidget(row, 1, cronTB);
         Image help = new Image("images/help_16x16.gif");
         help.addMouseListener(new TooltipListener(getCronHelpString(),
@@ -85,6 +99,27 @@ public class ScheduleForm extends AbstractAdministrationForm {
 
         // TODO: add tooltip with cron help
         styleHeaderColumn(table);
+    }
+
+    private void loadScripts() {
+        adminPanel.getGalaxy().getAdminService().getScripts(new AbstractCallback<List<WScript>>(adminPanel) {
+
+            public void onSuccess(List<WScript> scripts) {
+                finishLoadScripts(scripts);
+            }
+            
+        });
+    }
+
+    protected void finishLoadScripts(List<WScript> scripts) {
+        ListBox lb = scriptLB.getListBox();
+        for (WScript s : scripts) {
+            lb.addItem(s.getName(), s.getId());
+            
+            if (job.getScript().equals(s.getId())) {
+                lb.setSelectedIndex(lb.getItemCount()-1);
+            }
+        }
     }
 
     private String getCronHelpString() {
@@ -141,6 +176,16 @@ public class ScheduleForm extends AbstractAdministrationForm {
             return;
         }
         super.save();
+        
+        job.setName(nameTB.getText());
+        job.setDescription(descriptionTA.getText());
+        job.setExpression(cronTB.getText());
+        ListBox lb = scriptLB.getListBox();
+        int selectedIndex = lb.getSelectedIndex();
+        if (selectedIndex != -1) {
+            job.setScript(lb.getValue(selectedIndex));
+        }
+        adminPanel.getGalaxy().getAdminService().save(job, getSaveCallback());
     }
 
 

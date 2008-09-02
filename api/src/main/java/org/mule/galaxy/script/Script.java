@@ -1,15 +1,13 @@
 package org.mule.galaxy.script;
 
-import java.util.Collection;
+import java.io.Serializable;
 
 import org.mule.galaxy.Identifiable;
-import org.mule.galaxy.mapping.OneToMany;
 
-public class Script implements Identifiable {
+public class Script implements Identifiable, Serializable {
     private String id; 
     private String name;
     private String script;
-    private Collection<String> jobExpressions;
     private boolean runOnStartup;
     
     public String getId() {
@@ -29,13 +27,6 @@ public class Script implements Identifiable {
     }
     public void setScript(String script) {
         this.script = script;
-    }
-    @OneToMany(treatAsField=true)
-    public Collection<String> getJobExpressions() {
-        return jobExpressions;
-    }
-    public void setJobExpressions(Collection<String> jobExpressions) {
-        this.jobExpressions = jobExpressions;
     }
     public boolean isRunOnStartup() {
         return runOnStartup;

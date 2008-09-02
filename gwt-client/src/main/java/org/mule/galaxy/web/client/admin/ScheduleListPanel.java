@@ -18,17 +18,54 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.AbstractComposite;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Hyperlink;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WLifecycle;
+import org.mule.galaxy.web.rpc.WPhase;
+import org.mule.galaxy.web.rpc.WScriptJob;
 
 /**
  *  Show all scheduled items
  */
-public class ScheduleListPanel extends AbstractComposite {
-    public ScheduleListPanel(AdministrationPanel administrationPanel) {
-        super();
+public class ScheduleListPanel extends AbstractAdministrationComposite {
+    
+    public ScheduleListPanel(AdministrationPanel a) {
+        super(a);
     }
 
     public void onShow() {
         super.onShow();
+        
+        final FlexTable table = createTitledRowTable(panel, "Scheduled Jobs");
+
+        table.setText(0, 0, "Name");
+        table.setText(0, 1, "Script");
+        table.setText(0, 2, "Cron Command");
+
+        adminPanel.getGalaxy().getAdminService().getScriptJobs(new AbstractCallback<List<WScriptJob>>(adminPanel) {
+
+            public void onSuccess(List<WScriptJob> jobs) {
+                showJobs(table, jobs);
+            }
+
+        });
     }
+
+    protected void showJobs(FlexTable table, List<WScriptJob> jobs) {
+         int i = 1;
+         for (WScriptJob j : jobs) {
+             table.setWidget(i, 0, new Hyperlink(j.getName(), "schedules/" + j.getId()));
+             table.setText(i, 1, j.getScriptName());
+             table.setText(i, 2, j.getExpression());
+             
+             i++;
+         }
+     }
+
 }

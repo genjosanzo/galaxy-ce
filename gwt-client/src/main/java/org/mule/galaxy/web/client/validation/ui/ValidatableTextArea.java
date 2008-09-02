@@ -46,4 +46,12 @@ public class ValidatableTextArea extends AbstractValidatableInputField {
     public TextArea getTextArea() {
         return textArea;
     }
+
+    public void setText(String text) {
+        textArea.setText(text);
+    }
+
+    public String getText() {
+        return textArea.getText();
+    }
 }

@@ -6,9 +6,13 @@ import groovy.lang.GroovyShell;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
 
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.impl.jcr.JcrUtil;
@@ -77,6 +81,19 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
         }
     }
 
+    @Override
+    protected void doDelete(String id, Session session) throws RepositoryException {
+        // cascade delete all the related jobs
+        QueryManager qm = getQueryManager(session);
+        
+        QueryResult result = qm.createQuery("//element(*, galaxy:scriptJob)[@script='" + id + "']", Query.XPATH).execute();
+        
+        for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
+            nodes.nextNode().remove();
+        }
+        
+        super.doDelete(id, session);
+    }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
