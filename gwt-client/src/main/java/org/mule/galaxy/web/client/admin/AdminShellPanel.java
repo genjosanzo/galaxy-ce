@@ -260,8 +260,9 @@ public class AdminShellPanel extends AbstractAdministrationComposite
                 saveBtn.setEnabled(true);
                 adminPanel.setMessage("Script Saved");
                 refresh();
+                // if it was not a New script, redisplay it in the window.
                 if (ti != null) {
-                    scriptTree.setSelectedItem(ti);
+                    scriptTree.setSelectedItem(ti, true);
                 }
             }
         });

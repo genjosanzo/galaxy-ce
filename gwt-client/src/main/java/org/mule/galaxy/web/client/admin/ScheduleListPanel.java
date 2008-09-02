@@ -47,6 +47,7 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
         table.setText(0, 0, "Name");
         table.setText(0, 1, "Script");
         table.setText(0, 2, "Cron Command");
+        table.setText(0, 3, "Description");
 
         adminPanel.getGalaxy().getAdminService().getScriptJobs(new AbstractCallback<List<WScriptJob>>(adminPanel) {
 
@@ -63,7 +64,8 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
              table.setWidget(i, 0, new Hyperlink(j.getName(), "schedules/" + j.getId()));
              table.setText(i, 1, j.getScriptName());
              table.setText(i, 2, j.getExpression());
-             
+             table.setText(i, 3, j.getDescription());
+
              i++;
          }
      }
