@@ -108,8 +108,8 @@ public class Query {
         return this;
     }
     
-    public Query fromPath(String workspace) {
-        this.fromPath = workspace;
+    public Query fromPath(String path) {
+        this.fromPath = path;
         return this;
     }
 

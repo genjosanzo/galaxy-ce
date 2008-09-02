@@ -65,54 +65,65 @@ public class ConfigurationSupport
         String newUrl = regUrl.getProtocol() + "://" + regUrl.getHost() + ":" + regUrl.getPort() + regUrl.getPath();
         String query = regUrl.getQuery();
 
-        if(query==null)
+        if (query==null)
         {
-            query = getRequiredProperty(properties, GalaxyProperties.PROPERTY_QUERY);
-            if(query==null)
-            {
-                throw new IllegalArgumentException("No query was set in the properties or on the server URL");
-            }
+            query = getOptionalProperty(properties, GalaxyProperties.PROPERTY_QUERY, null);
         }
-        query = query.replaceAll("q=", "");
         
-        query = UrlEncoding.encode(query);
-        newUrl += "?q=" + query;
-
+        if (query != null) {
+            query = query.replaceAll("q=", "");
+            
+            query = UrlEncoding.encode(query);
+            newUrl += "?q=" + query;
+        }
+        
         ClientResponse res = client.get(newUrl, opts);
         if (res.getStatus() == 200)
         {
-            Document<Feed> feedDoc = res.getDocument();
-            List<Entry> entries = feedDoc.getRoot().getEntries();
-            if (entries.size() == 0)
+            if ("application/atom+xml".equals(res.getContentType().getBaseType())) 
             {
-                throw new IOException("No entries found for request: " + url);
-            }
-
-            Resource[] artifacts = new Resource[entries.size()];
-            int i=0;
-            for (Iterator<Entry> entryIterator = entries.iterator(); entryIterator.hasNext();i++)
+                return getResourcesFromFeed(res, url, opts);
+            } 
+            else 
             {
-                Entry entry = entryIterator.next();
-                // GET the actual artifact doc
-                String artifactUrlLink = entry.getContentSrc().toString();
-                res = client.get(artifactUrlLink, opts);
-                if (res.getStatus() == 200)
-                {
-                    artifacts[i] = new Resource(res.getInputStream(), artifactUrlLink);
-                }
-                else
-                {
-                    throw new IOException("Failed to read config from Registry, Status was: " +
-                            res.getStatus() + ", " + res.getStatusText());
-                }
+                return new Resource[] { new Resource(res.getInputStream(), url) };
             }
-            return artifacts;
         }
         else
         {
             throw new IOException("Failed to read config from Registry, Status was: " +
                     res.getStatus() + ", " + res.getStatusText());
         }
+    }
+
+    private Resource[] getResourcesFromFeed(ClientResponse res, String url, RequestOptions opts)
+        throws IOException {
+        Document<Feed> feedDoc = res.getDocument();
+        List<Entry> entries = feedDoc.getRoot().getEntries();
+        if (entries.size() == 0)
+        {
+            throw new IOException("No entries found for request: " + url);
+        }
+
+        Resource[] artifacts = new Resource[entries.size()];
+        int i=0;
+        for (Iterator<Entry> entryIterator = entries.iterator(); entryIterator.hasNext();i++)
+        {
+            Entry entry = entryIterator.next();
+            // GET the actual artifact doc
+            String artifactUrlLink = entry.getContentSrc().toString();
+            res = client.get(artifactUrlLink, opts);
+            if (res.getStatus() == 200)
+            {
+                artifacts[i] = new Resource(res.getInputStream(), artifactUrlLink);
+            }
+            else
+            {
+                throw new IOException("Failed to read config from Registry, Status was: " +
+                        res.getStatus() + ", " + res.getStatusText());
+            }
+        }
+        return artifacts;
     }
 
 

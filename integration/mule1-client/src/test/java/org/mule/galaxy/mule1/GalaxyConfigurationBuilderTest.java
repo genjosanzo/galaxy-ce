@@ -26,6 +26,21 @@ public class GalaxyConfigurationBuilderTest extends AbstractAtomTest
 
     }
 
+    public void testDirectMuleConfig() throws Exception
+    {
+        String configURL = "http://admin:admin@localhost:9002/api/registry/Default%20Workspace/hello-config.xml";
+
+        GalaxyConfigurationBuilder builder = new GalaxyConfigurationBuilder();
+
+        manager = builder.configure(configURL);
+
+        //Assert components
+        UMOModel model = (UMOModel)manager.getModels().get("main");
+        assertNotNull(model);
+        assertNotNull(model.getComponent("GreeterUMO"));
+        assertNotNull(model.getComponent("ChitChatUMO"));
+    }
+    
     public void testMuleConfigWithProperties() throws Exception
     {
 
