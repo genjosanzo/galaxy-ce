@@ -579,7 +579,9 @@ public abstract class AbstractItemCollection
         Item entry = getRegistryItem(request);
 
         try {
-            entry.delete();
+            if (entry != null) {
+                entry.delete();
+            }
         } catch (RegistryException e) {
             throw new RuntimeException(e);
         } catch (AccessException e) {
