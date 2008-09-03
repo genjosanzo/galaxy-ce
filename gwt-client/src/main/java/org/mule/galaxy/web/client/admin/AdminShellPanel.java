@@ -108,6 +108,8 @@ public class AdminShellPanel extends AbstractAdministrationComposite
     public void onShow() {
         super.onShow();
 
+        scriptArea.setText(null);
+
         // text area to paste script into
         table.setWidget(0, 0, createPrimaryTitle("Galaxy Admin Shell"));
         table.setWidget(1, 0, new Label("Type or paste a Groovy script to be executed on the server. A return value will be displayed below the area. " +
