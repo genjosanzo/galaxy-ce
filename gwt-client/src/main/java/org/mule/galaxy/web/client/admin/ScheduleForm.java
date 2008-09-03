@@ -115,7 +115,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
         for (WScript s : scripts) {
             lb.addItem(s.getName(), s.getId());
             
-            if (job.getScript().equals(s.getId())) {
+            if (s.getId().equals(job.getScript())) {
                 lb.setSelectedIndex(lb.getItemCount()-1);
             }
         }
