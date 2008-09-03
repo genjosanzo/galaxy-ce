@@ -2011,7 +2011,11 @@ public class RegistryServiceImpl implements RegistryService {
         return sb.toString();
     }
 
-    public Collection<WActivity> getActivities(Date from, Date to, String user, String eventTypeStr, int start,
+    public Collection<WActivity> getActivities(Date from, Date to, 
+                                               String user,
+                                               String itemPath,
+                                               String text,
+                                               String eventTypeStr, int start,
                                     int results, boolean ascending) throws RPCException {
 
         if ("All".equals(user)) {
@@ -2045,8 +2049,20 @@ public class RegistryServiceImpl implements RegistryService {
             eventType = EventType.ERROR;
         }
 
+        
         try {
-            Collection<Activity> activities = activityManager.getActivities(from, to, user, eventType, start,
+            String itemId = null;
+            if (itemPath != null && !"[All Items]".equals(itemPath)) {
+                try {
+                    itemId = registry.getItemByPath(itemPath).getId();
+                } catch (NotFoundException e) {
+                    throw new RPCException("You do not have sufficient permissions to view activities relating to that item.");
+                }
+            }
+            
+            Collection<Activity> activities = activityManager.getActivities(from, to, user, 
+                                                                            itemId, text,
+                                                                            eventType, start, 
                                                                             results, ascending);
 
             ArrayList<WActivity> wactivities = new ArrayList<WActivity>();
@@ -2056,6 +2072,9 @@ public class RegistryServiceImpl implements RegistryService {
             }
             return wactivities;
         } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
         }
     }

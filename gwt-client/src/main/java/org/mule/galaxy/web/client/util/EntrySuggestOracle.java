@@ -18,6 +18,10 @@ public class EntrySuggestOracle extends SuggestOracle {
     private ErrorPanel errorPanel;
     private final String exclude;
     
+    public EntrySuggestOracle(Galaxy galaxy, ErrorPanel errorPanel) {
+        this(galaxy, errorPanel, "xxx");
+    }
+    
     public EntrySuggestOracle(Galaxy galaxy, ErrorPanel errorPanel, String exclude) {
         super();
         this.errorPanel = errorPanel;

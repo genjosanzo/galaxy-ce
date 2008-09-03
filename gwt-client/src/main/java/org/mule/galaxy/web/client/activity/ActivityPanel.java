@@ -28,6 +28,8 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.SuggestOracle;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -37,6 +39,7 @@ import java.util.Iterator;
 
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.EntrySuggestOracle;
 import org.mule.galaxy.web.client.util.GWTCDatePicker;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -57,6 +60,8 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
     private FlexTable table;
     private int maxResults;
     private FlowPanel mainPanel;
+    private SuggestBox itemSB;
+    private TextBox textTB;
 
     public ActivityPanel(final Galaxy galaxy) {
         super();
@@ -76,7 +81,7 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
         panel.setStyleName("activity-panel");
         base.add(panel);
 
-        SimplePanel searchContainer = new SimplePanel();
+        FlowPanel searchContainer = new FlowPanel();
         searchContainer.setStyleName("activity-search-panel-container");
         panel.add(searchContainer);
 
@@ -84,16 +89,19 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
         searchPanel.setStyleName("activity-search-panel");
         searchContainer.add(searchPanel);
 
+        FlexTable searchTable = new FlexTable();
+        searchTable.setCellSpacing(3);
+        searchPanel.add(searchTable);
+        
         fromTB = createDatePicker();
         toTB = createDatePicker();
 
-        searchPanel.add(new Label("From:"));
-        searchPanel.add(fromTB);
+        searchTable.setWidget(0, 0, new Label("From:"));
+        searchTable.setWidget(0, 1, fromTB);
 
-        searchPanel.add(new Label("To:"));
-        searchPanel.add(toTB);
-
-        searchPanel.add(new Label("User:"));
+        searchTable.setWidget(1, 0, new Label("To:"));
+        searchTable.setWidget(1, 1, toTB);
+        
         userLB = new ListBox();
         userLB.addItem("All");
         userLB.addItem("System", "system");
@@ -104,22 +112,35 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
             }
         });
 
-        searchPanel.add(new Label("Type:"));
+        searchTable.setWidget(0, 2, new Label("User:"));
+        searchTable.setWidget(0, 3, userLB);
+
+        searchTable.setWidget(1, 2, new Label("Type:"));
         eventLB = new ListBox();
         eventLB.addItem("All");
         eventLB.addItem("Info");
         eventLB.addItem("Error");
         eventLB.addItem("Warning");
-        searchPanel.add(eventLB);
+        searchTable.setWidget(1, 3, eventLB);
+        
+        searchTable.setWidget(0, 4, new Label("Text Contains:"));
+        textTB = new TextBox();
+        searchTable.setWidget(0, 5, textTB);
 
-        searchPanel.add(new Label("Max Results:"));
+        searchTable.setWidget(1, 4, new Label("Relating to:"));
+        itemSB = new SuggestBox(new EntrySuggestOracle(galaxy, this));
+        itemSB.setText("[All Items]");
+        searchTable.setWidget(1, 5, itemSB);
+
+
+        searchTable.setWidget(0, 6, new Label("Max Results:"));
         resultsLB = new ListBox();
         resultsLB.addItem("10");
         resultsLB.addItem("25");
         resultsLB.addItem("50");
         resultsLB.addItem("100");
         resultsLB.addItem("200");
-        searchPanel.add(resultsLB);
+        searchTable.setWidget(0, 7, resultsLB);
 
         Button search = new Button("Search");
         search.addClickListener(new ClickListener() {
@@ -129,7 +150,6 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
             }
 
         });
-        searchPanel.add(search);
 
         Button reset = new Button("Reset");
         reset.addClickListener(new ClickListener() {
@@ -140,8 +160,12 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
             }
 
         });
-        searchPanel.add(reset);
-
+        InlineFlowPanel btnPanel = new InlineFlowPanel();
+        btnPanel.setStyleName("activity-search-panel");
+        btnPanel.add(search);
+        btnPanel.add(reset);
+        searchContainer.add(btnPanel);
+        
         resultsPanel = new FlowPanel();
         panel.add(resultsPanel);
 
@@ -199,7 +223,10 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
                 return;
             }
         }
-        galaxy.getRegistryService().getActivities(fromDate, toDate, user, eventType, resultStart, maxResults,
+        galaxy.getRegistryService().getActivities(fromDate, toDate, user, 
+                                                  itemSB.getText(),
+                                                  textTB.getText(),
+                                                  eventType, resultStart, maxResults,
                                                   ascending, callback);
     }
 

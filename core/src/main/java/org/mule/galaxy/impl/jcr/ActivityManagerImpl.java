@@ -51,10 +51,10 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
     public Collection<Activity> getActivities(final Date from, 
                                               final Date to, 
                                               final String user, 
+                                              final String itemId, 
+                                              final String text, 
                                               final EventType eventType, 
-                                              final int start, 
-                                              final int results, 
-                                              final boolean ascending) throws AccessException {
+                                              final int start, final int results, final boolean ascending) throws AccessException {
         accessControlManager.assertAccess(Permission.VIEW_ACTIVITY);
         
         return (Collection<Activity>) execute(new JcrCallback() {
@@ -89,6 +89,22 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
 
                 if (eventType != null) {
                     append(qstr, "eventType", "=", eventType.toString(), first, true);
+                    first = false;
+                }
+
+                if (itemId != null) {
+                    append(qstr, "itemId", "=", itemId, first, true);
+                    first = false;
+                }
+                
+                if (text != null && text.length() > 0) {
+                    if (first) {
+                        qstr.append("[");
+                    } else {
+                        qstr.append(" and ");
+                    }
+                    
+                    qstr.append("jcr:contains(@message, '").append(text).append("')");
                     first = false;
                 }
                 

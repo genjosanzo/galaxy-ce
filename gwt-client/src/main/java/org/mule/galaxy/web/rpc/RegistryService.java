@@ -159,7 +159,8 @@ public interface RegistryService extends RemoteService {
 
     void setActivePolicies(String workspace, String lifecycle, String phase, Collection<String> ids) throws RPCException, WPolicyException, ItemNotFoundException;
 
-    Collection<WActivity> getActivities(Date from, Date to, String user, String eventType, int start, int results, boolean ascending) throws RPCException;
+    Collection<WActivity> getActivities(Date from, Date to, String user, String itemId, String text, 
+                                        String eventType, int start, int results, boolean ascending) throws RPCException;
     
     WUser getUserInfo() throws RPCException;
 }

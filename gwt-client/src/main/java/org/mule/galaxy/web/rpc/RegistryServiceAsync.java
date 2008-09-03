@@ -146,7 +146,8 @@ public interface RegistryServiceAsync {
 
     void setActivePolicies(String workspace, String lifecycle, String phase, Collection<String> ids, AsyncCallback c);
     
-    void getActivities(Date from, Date to, String user, String eventType, int start, int results, boolean ascending, AsyncCallback c);
+    void getActivities(Date from, Date to, String user, String itemId, String text,
+                       String eventType, int start, int results, boolean ascending, AsyncCallback c);
     
     void getUserInfo(AsyncCallback c);
 

@@ -600,7 +600,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                         throw new RuntimeException(e);
                     }
                     
-                    if (results.size() == maxResults) {
+                    if (results.size() >= maxResults) {
                         break;
                     }
                 }
@@ -631,6 +631,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                 
                 for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
                     addNodes(nodes.nextNode(), allowedTypes, results);
+                    
+                    if (results.size() == maxResults) {
+                        return;
+                    }
                 }
             }
         });
