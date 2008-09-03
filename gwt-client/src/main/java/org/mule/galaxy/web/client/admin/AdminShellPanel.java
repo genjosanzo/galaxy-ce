@@ -28,6 +28,7 @@ import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WScript;
 
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -219,6 +220,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
         if (sender == clearBtn) {
             scriptArea.setText(null);
+            scriptTree.setSelectedItem(null);
         }
 
         if (sender == cancelBtn) {
@@ -247,6 +249,12 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
 
     private void save() {
+        if (scriptTree.getSelectedItem() == null) {
+            // TODO use validatable textarea instead
+            Window.alert("Please select a script to save or give it a new name.");
+            return;
+        }
+
         saveBtn.setEnabled(false);
         WScript ws = new WScript();
 
