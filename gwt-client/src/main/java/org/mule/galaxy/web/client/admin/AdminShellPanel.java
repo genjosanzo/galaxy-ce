@@ -262,6 +262,8 @@ public class AdminShellPanel extends AbstractAdministrationComposite
             ws.setId(null);
         }
         ws.setScript(scriptArea.getText());
+        // a local ref to satisfy anonymous inner class requirements
+        final WScript localCopyWs = ws;
         adminPanel.getGalaxy().getAdminService().save(ws, new AbstractCallback(adminPanel) {
             public void onFailure(Throwable caught) {
                 saveBtn.setEnabled(true);
@@ -270,7 +272,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
             public void onSuccess(Object o) {
                 saveBtn.setEnabled(true);
-                adminPanel.setMessage("Script Saved");
+                adminPanel.setMessage("Script '" + localCopyWs.getName() + "' has been saved");
                 refresh();
                 // if it was not a New script, redisplay it in the window.
                 if (ti != null) {
