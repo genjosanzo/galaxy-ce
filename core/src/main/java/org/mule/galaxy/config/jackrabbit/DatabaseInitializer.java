@@ -58,8 +58,9 @@ public class DatabaseInitializer implements InitializingBean {
                             "(this is not an error)", e);
 
                     // chained SQL exceptions
-                    for (Throwable throwable : e) {
-                        logger.debug(throwable);
+                    SQLException next;
+                    while ((next = e.getNextException()) != null) {
+                        logger.debug(next);
                     }
                 }
 
