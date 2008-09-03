@@ -57,6 +57,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
     private ValidatableTextBox saveAsTB;
     private Button saveBtn;
     private Button deleteBtn;
+    private Button clearBtn;
     private Button cancelBtn;
     private TextArea scriptArea;
     private Label scriptResultsLabel;
@@ -83,6 +84,9 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
         deleteBtn = new Button("Delete");
         deleteBtn.addClickListener(this);
+
+        clearBtn = new Button("Clear");
+        clearBtn.addClickListener(this);
 
         evaluateBtn = new Button("Evaluate");
         evaluateBtn.addClickListener(this);
@@ -137,6 +141,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         buttons.add(saveAsTB);
         buttons.add(saveBtn);
         buttons.add(deleteBtn);
+        buttons.add(clearBtn);
         buttons.add(cancelBtn);
 
         table.setWidget(3, 0, buttons);
@@ -208,6 +213,10 @@ public class AdminShellPanel extends AbstractAdministrationComposite
             if (saveAsCB.isChecked()) {
                 saveAsTB.getTextBox().setFocus(true);
             }
+        }
+
+        if (sender == clearBtn) {
+            scriptArea.setText(null);
         }
 
         if (sender == cancelBtn) {
