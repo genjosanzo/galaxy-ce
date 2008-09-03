@@ -97,7 +97,6 @@ public class ScheduleForm extends AbstractAdministrationForm {
                                                   10000));
         table.setWidget(row, 2, help);
 
-        // TODO: add tooltip with cron help
         styleHeaderColumn(table);
     }
 
