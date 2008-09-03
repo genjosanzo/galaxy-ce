@@ -142,6 +142,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         table.setWidget(3, 0, buttons);
 
         panel.add(table);
+        saveBtn.setEnabled(true);
     }
 
 
