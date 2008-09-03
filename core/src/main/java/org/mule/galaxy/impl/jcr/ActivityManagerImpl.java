@@ -202,14 +202,14 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
     }
 
     public void logActivity(String activity, EventType eventType) {
-        logActivity(null, activity, eventType);
+        logActivity(activity, eventType, null, null);
     }
 
-    public void logActivity(User user, String activity, EventType eventType) {
+    public void logActivity(String activity, EventType eventType, User user, String itemId) {
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
         try {
-            save(new Activity(user, eventType, c, activity));
+            save(new Activity(user, eventType, c, itemId, activity));
         } catch (DuplicateItemException e1) {
             // should never happen
             throw new RuntimeException(e1);

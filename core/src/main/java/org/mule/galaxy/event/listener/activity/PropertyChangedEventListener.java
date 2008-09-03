@@ -18,6 +18,6 @@ public class PropertyChangedEventListener extends AbstractActivityLoggingListene
         final String message = MessageFormat.format(
                 "* Property {0} of {1} was set to {2}", event.getPropertyName(), event.getItemPath(), event.getNewValue());
 
-        getActivityManager().logActivity(event.getUser(), message, ActivityManager.EventType.INFO);
+        getActivityManager().logActivity(message, ActivityManager.EventType.INFO, event.getUser(), event.getItemId());
     }
 }

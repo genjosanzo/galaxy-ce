@@ -19,6 +19,6 @@ public class EntryVersionDeletedEventListener extends AbstractActivityLoggingLis
                 "Version {0} of entry {1} was deleted",
                 event.getVersionLabel(), event.getItemPath());
 
-        getActivityManager().logActivity(event.getUser(), message, ActivityManager.EventType.INFO);
+        getActivityManager().logActivity(message, ActivityManager.EventType.INFO, event.getUser(), event.getItemId());
     }
 }

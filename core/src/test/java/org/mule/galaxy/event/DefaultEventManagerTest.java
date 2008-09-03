@@ -90,7 +90,7 @@ public class DefaultEventManagerTest extends TestCase {
         final InheritedBindingWithOnEvent listener = new InheritedBindingWithOnEvent();
         em.addListener(listener);
 
-        final PropertyChangedEvent event = new PropertyChangedEvent(new User(), "/some/artifact", "testProperty", "newValue");
+        final PropertyChangedEvent event = new PropertyChangedEvent(new User(), new DummyWorkspace(), "testProperty", "newValue");
         em.fireEvent(event);
 
         assertTrue(listener.called);
@@ -117,7 +117,7 @@ public class DefaultEventManagerTest extends TestCase {
         MultiEventListener listener = new MultiEventListener();
         em.addListener(listener);
         
-        final PropertyChangedEvent event1 = new PropertyChangedEvent(new User(), "/some/artifact", "testProperty", "newValue");
+        final PropertyChangedEvent event1 = new PropertyChangedEvent(new User(), new DummyWorkspace(), "testProperty", "newValue");
         em.fireEvent(event1);
 
         final WorkspaceDeletedEvent event2 = new WorkspaceDeletedEvent(new DummyWorkspace());

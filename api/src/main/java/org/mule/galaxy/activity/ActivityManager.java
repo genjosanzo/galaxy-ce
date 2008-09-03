@@ -33,5 +33,5 @@ public interface ActivityManager {
     
     void logActivity(String activity, EventType eventType);
     
-    void logActivity(User user, String activity, EventType eventType);
+    void logActivity(String activity, EventType eventType, User user, String itemId);
 }

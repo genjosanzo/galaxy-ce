@@ -16,6 +16,6 @@ public class EntryDeletedEventListener extends AbstractActivityLoggingListener {
     @Async
     public void onEvent(EntryDeletedEvent event) {
         final String message = MessageFormat.format("Entry {0} was deleted", event.getItemPath());
-        getActivityManager().logActivity(event.getUser(), message, ActivityManager.EventType.INFO);
+        getActivityManager().logActivity(message, ActivityManager.EventType.INFO, event.getUser(), event.getItemId());
     }
 }

@@ -1,16 +1,16 @@
 package org.mule.galaxy.event;
 
+import org.mule.galaxy.Item;
 import org.mule.galaxy.security.User;
 
-public class PropertyChangedEvent extends GalaxyEvent {
+public class PropertyChangedEvent extends ItemEvent {
 
-    private String itemPath;
     private String propertyName;
     private Object newValue;
 
-    public PropertyChangedEvent(User user, String itemPath, String propertyName, Object newValue) {
+    public PropertyChangedEvent(User user, Item item, String propertyName, Object newValue) {
+	super(item);
         setUser(user);
-        this.itemPath = itemPath;
         this.propertyName = propertyName;
         this.newValue = newValue;
     }
@@ -21,9 +21,5 @@ public class PropertyChangedEvent extends GalaxyEvent {
 
     public Object getNewValue() {
         return newValue;
-    }
-
-    public String getItemPath() {
-        return itemPath;
     }
 }

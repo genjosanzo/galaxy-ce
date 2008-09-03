@@ -14,7 +14,7 @@ public class Activity implements Identifiable, Serializable {
     private EventType eventType;
     private Calendar date;
     private String message;
-    private Item item;
+    private String itemId;
     
     public Activity(User user, EventType eventType, Calendar date, String message) {
         super();
@@ -24,13 +24,13 @@ public class Activity implements Identifiable, Serializable {
         this.message = message;
     }
 
-    public Activity(User user, EventType eventType, Calendar date, Item item, String message) {
+    public Activity(User user, EventType eventType, Calendar date, String item, String message) {
         super();
         this.user = user;
         this.eventType = eventType;
         this.date = date;
         this.message = message;
-        this.item = item;
+        this.itemId = item;
     }
     public Activity() {
         super();
@@ -67,11 +67,12 @@ public class Activity implements Identifiable, Serializable {
         this.message = message;
     }
 
-    public Item getItem() {
-        return item;
+    public String getItemId() {
+        return itemId;
     }
 
-    public void setItem(Item item) {
-        this.item = item;
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
     }
+
 }

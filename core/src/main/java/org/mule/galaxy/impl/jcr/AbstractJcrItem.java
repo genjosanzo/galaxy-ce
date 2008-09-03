@@ -152,7 +152,7 @@ public abstract class AbstractJcrItem implements Item {
 	    setInternalProperty(name, value, false);
 
 	    manager.getEventManager().fireEvent(
-	        new PropertyChangedEvent(SecurityUtils.getCurrentUser(), getPath(), name, value));
+	        new PropertyChangedEvent(SecurityUtils.getCurrentUser(), this, name, value));
 	}    
     }
 
@@ -177,7 +177,7 @@ public abstract class AbstractJcrItem implements Item {
             if (log) {
                 // We need to re-extract the property value because we need to log the external value
                 manager.getEventManager().fireEvent(
-                    new PropertyChangedEvent(SecurityUtils.getCurrentUser(), getPath(), name, getProperty(name)));
+                    new PropertyChangedEvent(SecurityUtils.getCurrentUser(), this, name, getProperty(name)));
             }
             update();
         } catch (RepositoryException e) {

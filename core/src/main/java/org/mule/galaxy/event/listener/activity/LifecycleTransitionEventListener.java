@@ -20,6 +20,6 @@ public class LifecycleTransitionEventListener extends AbstractActivityLoggingLis
                                                     event.getArtifactPath(),
                                                     event.getNewPhaseName(), 
                                                     event.getLifecycleName());
-        getActivityManager().logActivity(event.getUser(), message, ActivityManager.EventType.INFO);
+        getActivityManager().logActivity(message, ActivityManager.EventType.INFO, event.getUser(), null);
     }
 }
