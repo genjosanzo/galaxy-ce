@@ -14,7 +14,7 @@
         Set up a shared in-memory JNDI context with bindings for use by Jackrabbit and Galaxy.
         Application code can still use new InitialContext() to lookup from the app server's JNDI.
     -->
-    <bean name="jndiContext" class="org.mule.config.spring.jndi.SpringInitialContextFactory"
+    <bean name="jndiContext" class="org.mule.galaxy.config.SpringInitialContextFactory"
           factory-method="makeInitialContext"
           scope="singleton">
         <property name="entries">
