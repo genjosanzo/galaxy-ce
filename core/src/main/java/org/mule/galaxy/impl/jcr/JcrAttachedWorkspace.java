@@ -30,6 +30,7 @@ public class JcrAttachedWorkspace extends AbstractJcrItem implements AttachedWor
     private static final String CONFIGURATION = "configuration";
     private WorkspaceManager workspaceManager;
     private Map<String, String> configuration;
+    private List<Item> items;
 
     public JcrAttachedWorkspace(Node node, JcrWorkspaceManager manager) throws RepositoryException {
         super(node, manager);
@@ -87,7 +88,10 @@ public class JcrAttachedWorkspace extends AbstractJcrItem implements AttachedWor
     }
 
     public List<Item> getItems() throws RegistryException {
-        return getWorkspaceManager().getItems(this);
+        if (items == null) {
+            items = getWorkspaceManager().getItems(this);
+        }
+        return items;
     }
 
     public Item getItem(String name) throws RegistryException, NotFoundException, AccessException {

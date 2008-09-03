@@ -47,15 +47,5 @@ public abstract class AbstractWorkspace extends AbstractItem implements Workspac
         AccessException {
         return manager.newWorkspace(this, name);
     }
-    
-    public Workspace getWorkspace(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Collection<Workspace> getWorkspaces() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
 }

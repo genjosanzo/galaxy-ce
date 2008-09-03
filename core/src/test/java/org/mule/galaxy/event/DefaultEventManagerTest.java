@@ -4,6 +4,7 @@ import static org.mule.galaxy.event.DefaultEvents.PROPERTY_CHANGED;
 import static org.mule.galaxy.event.DefaultEvents.WORKSPACE_DELETED;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -198,6 +199,14 @@ public class DefaultEventManagerTest extends TestCase {
 
         public DummyWorkspace() {
             super(null, null);
+        }
+
+        public Workspace getWorkspace(String name) {
+            return null;
+        }
+
+        public Collection<Workspace> getWorkspaces() throws RegistryException {
+            return null;
         }
 
         public CommentManager getCommentManager() {
