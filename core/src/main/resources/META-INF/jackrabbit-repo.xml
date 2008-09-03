@@ -25,7 +25,7 @@
     -->
     <FileSystem class="org.mule.galaxy.config.jackrabbit.JndiDatabaseFileSystem">
         <param name="dataSourceLocation" value="jdbc/galaxy/InternalDS"/>
-        <param name="initialContextFactory" value="org.mule.config.spring.jndi.SpringInitialContextFactory"/>
+        <param name="initialContextFactory" value="org.mule.galaxy.config.jndi.SpringInitialContextFactory"/>
         <param name="schema" value="derby"/>
         <param name="schemaObjectPrefix" value="repo_"/>
     </FileSystem>
@@ -68,7 +68,7 @@
         -->
         <FileSystem class="org.mule.galaxy.config.jackrabbit.JndiDatabaseFileSystem">
             <param name="dataSourceLocation" value="jdbc/galaxy/InternalDS"/>
-            <param name="initialContextFactory" value="org.mule.config.spring.jndi.SpringInitialContextFactory"/>
+            <param name="initialContextFactory" value="org.mule.galaxy.config.jndi.SpringInitialContextFactory"/>
             <param name="schema" value="derby"/>
             <param name="schemaObjectPrefix" value="workspace_"/>
         </FileSystem>
@@ -79,7 +79,7 @@
         -->
         <PersistenceManager class="org.mule.galaxy.config.jackrabbit.JndiDatabasePersistenceManager">
             <param name="dataSourceLocation" value="jdbc/galaxy/InternalDS"/>
-            <param name="initialContextFactory" value="org.mule.config.spring.jndi.SpringInitialContextFactory"/>
+            <param name="initialContextFactory" value="org.mule.galaxy.config.jndi.SpringInitialContextFactory"/>
             <param name="schemaObjectPrefix" value="Jackrabbit Core_"/>
             <param name="schema" value="derby"/>
             <param name="externalBLOBs" value="true"/>
@@ -95,7 +95,7 @@
             <param name="path" value="${wsp.home}/index"/>
             <FileSystem class="org.mule.galaxy.config.jackrabbit.JndiDatabaseFileSystem">
                 <param name="dataSourceLocation" value="jdbc/galaxy/InternalDS"/>
-                <param name="initialContextFactory" value="org.mule.config.spring.jndi.SpringInitialContextFactory"/>
+                <param name="initialContextFactory" value="org.mule.galaxy.config.jndi.SpringInitialContextFactory"/>
                 <param name="schema" value="derby"/>
                 <param name="schemaObjectPrefix" value="search_index_w_"/>
             </FileSystem>
@@ -112,7 +112,7 @@
         -->
         <FileSystem class="org.mule.galaxy.config.jackrabbit.JndiDatabaseFileSystem">
             <param name="dataSourceLocation" value="jdbc/galaxy/InternalDS"/>
-            <param name="initialContextFactory" value="org.mule.config.spring.jndi.SpringInitialContextFactory"/>
+            <param name="initialContextFactory" value="org.mule.galaxy.config.jndi.SpringInitialContextFactory"/>
             <param name="schema" value="derby"/>
             <param name="schemaObjectPrefix" value="filesystem_version_"/>
         </FileSystem>
@@ -125,7 +125,7 @@
         -->
         <PersistenceManager class="org.mule.galaxy.config.jackrabbit.JndiDatabasePersistenceManager">
             <param name="dataSourceLocation" value="jdbc/galaxy/InternalDS"/>
-            <param name="initialContextFactory" value="org.mule.config.spring.jndi.SpringInitialContextFactory"/>
+            <param name="initialContextFactory" value="org.mule.galaxy.config.jndi.SpringInitialContextFactory"/>
             <param name="schemaObjectPrefix" value="version_"/>
             <param name="schema" value="derby"/>
             <param name="externalBLOBs" value="true"/>
@@ -143,7 +143,7 @@
         <param name="path" value="${rep.home}/repository/index"/>
         <FileSystem class="org.mule.galaxy.config.jackrabbit.JndiDatabaseFileSystem">
             <param name="dataSourceLocation" value="jdbc/galaxy/InternalDS"/>
-            <param name="initialContextFactory" value="org.mule.config.spring.jndi.SpringInitialContextFactory"/>
+            <param name="initialContextFactory" value="org.mule.galaxy.config.jndi.SpringInitialContextFactory"/>
             <param name="schema" value="derby"/>
             <param name="schemaObjectPrefix" value="search_index_"/>
         </FileSystem>
