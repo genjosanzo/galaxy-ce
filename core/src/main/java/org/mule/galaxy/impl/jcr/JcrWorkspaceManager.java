@@ -179,12 +179,14 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
     public Item getItemById(final String id) throws NotFoundException, RegistryException, AccessException {
         return (Item) executeWithNotFound(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Node node = session.getNodeByUUID(trimWorkspaceManagerId(id));
-                
                 try {
+                    Node node = session.getNodeByUUID(trimWorkspaceManagerId(id));
+                    
                     String type = node.getPrimaryNodeType().getName();
                     
                     return build(node, type);
+                } catch (ItemNotFoundException e){
+                    throw new RuntimeException(new NotFoundException(id));
                 } catch (Exception e){
                     throw new RuntimeException(e);
                 }
