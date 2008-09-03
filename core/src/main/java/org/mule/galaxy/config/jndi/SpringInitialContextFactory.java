@@ -1,4 +1,4 @@
-package org.mule.galaxy.config;
+package org.mule.galaxy.config.jndi;
 
 import java.util.HashMap;
 import java.util.Hashtable;
