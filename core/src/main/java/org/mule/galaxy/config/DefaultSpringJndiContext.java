@@ -1,7 +1,5 @@
 package org.mule.galaxy.config;
 
-import org.mule.config.spring.jndi.DefaultNameParser;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Hashtable;
