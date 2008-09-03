@@ -9,7 +9,7 @@
 
     <properties>
         <slf4jVersion>1.5.0</slf4jVersion>
-        <gwtVersion>1.5.0-rc1</gwtVersion>
+        <gwtVersion>1.5.2</gwtVersion>
         <springVersion>2.5.5</springVersion>
         <!--
             Well, it's broken too, and some assemblies override it to
@@ -344,6 +344,12 @@
             <dependency>
                 <groupId>com.google.gwt</groupId>
                 <artifactId>gwt-mac</artifactId>
+                <version>${gwtVersion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.gwt</groupId>
+                <artifactId>gwt-incubator</artifactId>
                 <version>${gwtVersion}</version>
             </dependency>
 

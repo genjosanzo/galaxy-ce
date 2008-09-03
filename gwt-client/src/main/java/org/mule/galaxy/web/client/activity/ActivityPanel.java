@@ -32,6 +32,10 @@ import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.SuggestOracle;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.widgetideas.client.event.KeyDownHandler;
+import com.google.gwt.widgetideas.client.event.KeyDownEvent;
+import com.google.gwt.widgetideas.datepicker.client.DateBox;
+import com.google.gwt.i18n.client.DateTimeFormat;
 
 import java.util.Collection;
 import java.util.Date;
@@ -49,8 +53,6 @@ import org.mule.galaxy.web.rpc.WUser;
 public class ActivityPanel extends AbstractErrorShowingComposite {
 
     private FlowPanel panel;
-    private TextBox fromTB;
-    private TextBox toTB;
     private ListBox userLB;
     private ListBox eventLB;
     private ListBox resultsLB;
@@ -62,6 +64,8 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
     private FlowPanel mainPanel;
     private SuggestBox itemSB;
     private TextBox textTB;
+    private DateBox startDate;
+    private DateBox endDate;
 
     public ActivityPanel(final Galaxy galaxy) {
         super();
@@ -93,14 +97,42 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
         searchTable.setCellSpacing(3);
         searchPanel.add(searchTable);
         
-        fromTB = createDatePicker();
-        toTB = createDatePicker();
+        startDate = new DateBox();
+        endDate = new DateBox();
+
+        DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy-MM-dd");
+        startDate.setAnimationEnabled(true);
+        startDate.setDateFormat(dateFormat);
+        endDate.setAnimationEnabled(true);
+        endDate.setDateFormat(dateFormat);
+
+        startDate.addKeyDownHandler(new KeyDownHandler() {
+            public void onKeyDown(KeyDownEvent e) {
+                if (e.getKeyCode() == KEY_RIGHT
+                        && startDate.getCursorPos() == startDate.getText().length()) {
+                    startDate.hideDatePicker();
+                    endDate.setFocus(true);
+                }
+            }
+        });
+
+        endDate.addKeyDownHandler(new KeyDownHandler() {
+            public void onKeyDown(KeyDownEvent e) {
+                if ((e.getKeyCode() == KEY_LEFT) && endDate.getCursorPos() == 0) {
+                    startDate.setFocus(true);
+                    endDate.hideDatePicker();
+                }
+            }
+        });
+
+        // always start with today's date
+        startDate.showDate(new Date());
 
         searchTable.setWidget(0, 0, new Label("From:"));
-        searchTable.setWidget(0, 1, fromTB);
+        searchTable.setWidget(0, 1, startDate);
 
         searchTable.setWidget(1, 0, new Label("To:"));
-        searchTable.setWidget(1, 1, toTB);
+        searchTable.setWidget(1, 1, endDate);
         
         userLB = new ListBox();
         userLB.addItem("All");
@@ -202,8 +234,8 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
             }
 
         };
-        String fromStr = fromTB.getText();
-        String toStr = toTB.getText();
+        String fromStr = startDate.getText();
+        String toStr = endDate.getText();
         Date fromDate = null;
         if (fromStr != null && !"".equals(fromStr)) {
             try {
@@ -320,36 +352,9 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
         }
     }
 
-    private TextBox createDatePicker() {
-
-        final TextBox tb = new TextBox();
-        tb.setVisibleLength(10);
-        panel.add(tb);
-
-        final GWTCDatePicker datePicker = new GWTCDatePicker(true);
-        datePicker.setMinimalDate(new Date(0));
-        
-        datePicker.addChangeListener(new ChangeListener() {
-            public void onChange(Widget sender) {
-                datePicker.hide();
-                tb.setText(datePicker.getSelectedDateStr("yyyy-MM-dd"));
-            }
-        });
-
-        tb.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
-                datePicker.show(tb);
-            }
-
-        });
-
-        return tb;
-    }
 
     // reset search params to default values
     private void reset() {
-        fromTB.setText("");
-        toTB.setText("");
         userLB.setSelectedIndex(0);
         eventLB.setSelectedIndex(0);
         resultsLB.setSelectedIndex(2);
