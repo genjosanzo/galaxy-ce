@@ -354,6 +354,11 @@
             <artifactId>log4j</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>opensymphony</groupId>
+            <artifactId>quartz</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

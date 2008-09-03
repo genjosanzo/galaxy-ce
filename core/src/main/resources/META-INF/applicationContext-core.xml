@@ -10,6 +10,9 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
 
+    <import resource="datasource.xml"/>
+    <import resource="scheduler.xml"/>
+
     <!-- use Spring's RMI classes to retrieve the RMI registry
     <bean id="rmiRegistry" class="org.springframework.remoting.rmi.RmiRegistryFactoryBean"/>
     <bean id="rmiServer" class="org.springmodules.jcr.jackrabbit.RmiServerRepositoryFactoryBean">
@@ -39,7 +42,7 @@
   <bean id="indexer.xpath" class="org.mule.galaxy.impl.index.XPathIndexer"/>
   <bean id="indexer.xquery" class="org.mule.galaxy.impl.index.XQueryIndexer"/>
   
-  <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean" destroy-method="destroy">
+  <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean" destroy-method="destroy" depends-on="jndiContext, dbInitializer">
     <!-- normal factory beans params -->
     <property name="configuration" value="classpath:/META-INF/jackrabbit-repo.xml"/>
     <property name="homeDir" value="file:./galaxy-data"/>
@@ -465,5 +468,5 @@
         <property name="contentService" ref="contentService"/>
         <property name="jcrTemplate" ref="jcrTemplate" />
     </bean>
-
+    
 </beans>

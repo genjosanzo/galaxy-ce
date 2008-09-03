@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean name="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <!-- Expose application context via a scheduler context -->
+        <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
+        <property name="waitForJobsToCompleteOnShutdown" value="true"/>
+        <!-- TODO wire a listener writing to activity log -->
+        <!--<property name="schedulerListeners" .../>-->
+        <!--<property name="globalJobListeners" .../>-->
+
+        <!-- Probably jcrTransactionManager won't work till JcrDataStore is implemented, use jdbc -->
+        <!--<property name="transactionManager" ref="jcrTransactionManager"/>-->
+
+        <property name="schedulerName" value="galaxy_job_scheduler"/>
+
+        <property name="dataSource" ref="derbyDataSource"/>
+
+        <property name="quartzProperties">
+            <props>
+                <prop key="org.quartz.jobStore.isClustered">false</prop>
+                <prop key="org.quartz.scheduler.instanceId">AUTO</prop>
+            </props>
+        </property>
+    </bean>
+
+</beans>
