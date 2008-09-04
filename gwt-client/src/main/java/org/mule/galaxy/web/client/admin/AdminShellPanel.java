@@ -249,7 +249,12 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
 
     private void save() {
-        if (scriptTree.getSelectedItem() == null) {
+        // validate script name
+        if (!saveAsTB.validate()) {
+            return;
+        }
+
+        if (scriptTree.getItemCount() > 0 && scriptTree.getSelectedItem() == null) {
             // TODO use validatable textarea instead
             Window.alert("Please select a script to save or give it a new name.");
             return;
