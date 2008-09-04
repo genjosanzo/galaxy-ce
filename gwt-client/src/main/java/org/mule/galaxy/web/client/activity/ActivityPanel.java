@@ -44,7 +44,6 @@ import java.util.Iterator;
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.EntrySuggestOracle;
-import org.mule.galaxy.web.client.util.GWTCDatePicker;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WActivity;
