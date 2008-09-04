@@ -23,15 +23,18 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 
-import java.util.Collections;
 import java.util.List;
 
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
+import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.client.util.TooltipListener;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableListBox;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextArea;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.AdminServiceAsync;
 import org.mule.galaxy.web.rpc.WScript;
 import org.mule.galaxy.web.rpc.WScriptJob;
 
@@ -187,6 +190,16 @@ public class ScheduleForm extends AbstractAdministrationForm {
         adminPanel.getGalaxy().getAdminService().save(job, getSaveCallback());
     }
 
+    protected void delete() {
+        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter() {
+            public void onConfirm() {
+                ScheduleForm.super.delete();
+                AdminServiceAsync svc = adminPanel.getGalaxy().getAdminService();
+                svc.deleteScriptJob(job.getId(), getDeleteCallback());
+            }
+        }, "Are you sure you want to delete schedule " + job.getName() + "?");
+        new LightBox(dialog).show();
+    }
 
     protected boolean validate() {
         getErrorPanel().clearErrorMessage();
