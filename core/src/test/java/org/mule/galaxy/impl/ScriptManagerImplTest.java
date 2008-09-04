@@ -18,7 +18,7 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
         Script script = new Script();
         script.setName("test");
         script.setRunOnStartup(true);
-        script.setScript("System.out.println(\"hello\"); org.mule.galaxy.impl.ScriptManagerImplTest.count++; return \"hello\";");
+        script.setScript("println 'hello'; org.mule.galaxy.impl.ScriptManagerImplTest.count++; 'hello'");
         
         scriptManager.save(script);
         
