@@ -80,7 +80,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         deleteBtn = new Button("Delete");
         deleteBtn.addClickListener(this);
 
-        clearBtn = new Button("Clear");
+        clearBtn = new Button("Reset");
         clearBtn.addClickListener(this);
 
         evaluateBtn = new Button("Evaluate");
@@ -223,9 +223,8 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         }
 
         if (sender == clearBtn) {
-            scriptArea.setText(null);
-            scriptTree.setSelectedItem(null);
-            
+            adminPanel.clearErrorMessage();
+            refresh();
         }
 
         if (sender == evaluateBtn) {
@@ -301,7 +300,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
     private void delete() {
         TreeItem ti = scriptTree.getSelectedItem();
-        WScript wsx = (WScript) ti.getUserObject();
+        final WScript wsx = (WScript) ti.getUserObject();
 
         deleteBtn.setEnabled(false);
         adminPanel.getGalaxy().getAdminService().deleteScript(wsx.getId(), new AbstractCallback(adminPanel) {
@@ -313,7 +312,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
             public void onSuccess(Object o) {
                 deleteBtn.setEnabled(true);
                 scriptArea.setText(null);
-                adminPanel.setMessage("Script Deleted");
+                adminPanel.setMessage("Script '" + wsx.getName() + "' has been deleted");
                 refresh();
             }
         });
