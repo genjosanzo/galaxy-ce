@@ -18,15 +18,6 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.LightBox;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WScript;
-
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -42,8 +33,15 @@ import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.Iterator;
 import java.util.List;
+
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
+import org.mule.galaxy.web.client.util.LightBox;
+import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WScript;
 
 public class AdminShellPanel extends AbstractAdministrationComposite
         implements ClickListener, KeyboardListener {
@@ -170,15 +168,13 @@ public class AdminShellPanel extends AbstractAdministrationComposite
             }
         });
 
-        adminPanel.getGalaxy().getAdminService().getScripts(new AbstractCallback(adminPanel) {
-            @SuppressWarnings("unchecked")
+        adminPanel.getGalaxy().getAdminService().getScripts(new AbstractCallback<List<WScript>>(adminPanel) {
             public void onFailure(Throwable caught) {
                 super.onFailure(caught);
             }
 
-            @SuppressWarnings("unchecked")
-            public void onSuccess(Object o) {
-                addTreeItems((List<WScript>) o);
+            public void onSuccess(List<WScript> o) {
+                addTreeItems(o);
             }
         });
     }
