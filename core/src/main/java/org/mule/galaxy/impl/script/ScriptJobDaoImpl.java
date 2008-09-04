@@ -41,16 +41,17 @@ public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob>  {
     }
 
     @Override
-    public void save(ScriptJob t) throws DuplicateItemException, NotFoundException {
-        super.save(t);
+    public void save(ScriptJob scriptJob) throws DuplicateItemException, NotFoundException {
+        super.save(scriptJob);
 
         try {
-            JobDetail job = new JobDetail(t.getId(), null, ExecuteScriptJob.class);
+            final String jobName = scriptJob.getName() + '-' + scriptJob.getId();
+            JobDetail job = new JobDetail(jobName, null, ExecuteScriptJob.class);
             job.setDurability(true);
-            job.getJobDataMap().put(ExecuteScriptJob.SCRIPT_ID, t.getScript().getId());
+            job.getJobDataMap().put(ExecuteScriptJob.SCRIPT_ID, scriptJob.getScript().getId());
             
-            CronTrigger trigger = new CronTrigger(t.getId(), null, t.getExpression());
-            trigger.setJobName(t.getId());
+            CronTrigger trigger = new CronTrigger("cronTrigger-" + scriptJob.getId(), null, scriptJob.getExpression());
+            trigger.setJobName(jobName);
             
             scheduler.scheduleJob(job, trigger);
         } catch (SchedulerException e) {
