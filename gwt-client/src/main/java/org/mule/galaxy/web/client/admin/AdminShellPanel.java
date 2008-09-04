@@ -27,7 +27,6 @@ import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WScript;
 
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -58,14 +57,12 @@ public class AdminShellPanel extends AbstractAdministrationComposite
     private Button saveBtn;
     private Button deleteBtn;
     private Button clearBtn;
-    private Button cancelBtn;
     private TextArea scriptArea;
     private Label scriptResultsLabel;
     private CheckBox loadOnStartupCB;
 
     public AdminShellPanel(AdministrationPanel a) {
         super(a);
-        initLocalWidgets();
     }
 
 
@@ -79,9 +76,6 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
         saveBtn = new Button("Save");
         saveBtn.addClickListener(this);
-
-        cancelBtn = new Button("Cancel");
-        cancelBtn.addClickListener(this);
 
         deleteBtn = new Button("Delete");
         deleteBtn.addClickListener(this);
@@ -112,6 +106,8 @@ public class AdminShellPanel extends AbstractAdministrationComposite
     public void onShow() {
         super.onShow();
 
+        initLocalWidgets();
+        
         scriptArea.setText(null);
 
         // text area to paste script into
@@ -152,8 +148,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         persistButtonTable.setWidget(0, 1, saveAsCB);
         persistButtonTable.setWidget(0, 2, saveAsTB);
         persistButtonTable.setWidget(0, 3, saveBtn);
-        persistButtonTable.setWidget(0, 4, cancelBtn);
-        persistButtonTable.setWidget(0, 5, deleteBtn);
+        persistButtonTable.setWidget(0, 4, deleteBtn);
 
         table.setWidget(4, 0, persistButtonTable);
 
@@ -189,10 +184,9 @@ public class AdminShellPanel extends AbstractAdministrationComposite
     }
 
     private void addTreeItems(List<WScript> scripts) {
-        for (Iterator<WScript> itr = scripts.iterator(); itr.hasNext();) {
-            WScript s = itr.next();
-            TreeItem treeItem = scriptTree.addItem(s.getName());
-            treeItem.setUserObject(s);
+        for (WScript script : scripts) {
+            TreeItem treeItem = scriptTree.addItem(script.getName());
+            treeItem.setUserObject(script);
         }
     }
 
@@ -231,10 +225,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         if (sender == clearBtn) {
             scriptArea.setText(null);
             scriptTree.setSelectedItem(null);
-        }
-
-        if (sender == cancelBtn) {
-            History.back();
+            
         }
 
         if (sender == evaluateBtn) {
@@ -265,8 +256,6 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         // validate script name
         if (scriptTree.getItemCount() > 0 && scriptTree.getSelectedItem() == null
                 && !saveAsTB.validate()) {
-            // TODO use validatable textarea instead
-            Window.alert("Please select a script to save or give it a new name.");
             return;
         }
 
