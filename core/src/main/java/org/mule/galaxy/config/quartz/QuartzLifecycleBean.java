@@ -10,7 +10,10 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class QuartzStarterBean implements ApplicationListener {
+/**
+ * An application lifecycle listener to start/shutdown quartz.
+ */
+public class QuartzLifecycleBean implements ApplicationListener {
 
     private final Log logger = LogFactory.getLog(getClass());
 

@@ -39,7 +39,7 @@
         </property>
     </bean>
 
-    <bean id="schedulerLauncher" class="org.mule.galaxy.config.quartz.QuartzStarterBean">
+    <bean id="schedulerLifecycle" class="org.mule.galaxy.config.quartz.QuartzLifecycleBean">
         <property name="scheduler" ref="scheduler"/>
     </bean>
 
