@@ -312,6 +312,7 @@
   
   <bean id="scriptManagerTarget" class="org.mule.galaxy.impl.script.ScriptManagerImpl"
         init-method="initialize">
+    <property name="activityManager" ref="activityManager" />
     <property name="accessControlManager" ref="accessControlManager" />
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />

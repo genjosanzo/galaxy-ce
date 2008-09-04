@@ -6,15 +6,15 @@ import groovy.lang.GroovyShell;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.activity.ActivityManager;
+import org.mule.galaxy.activity.ActivityManager.EventType;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.script.Script;
@@ -32,6 +32,8 @@ import org.springmodules.jcr.JcrCallback;
  */
 public class ScriptManagerImpl extends AbstractReflectionDao<Script> 
     implements ScriptManager, ApplicationContextAware {
+    private final Log log = LogFactory.getLog(getClass());
+
     private ApplicationContext applicationContext;
 
     private AccessControlManager accessControlManager;
@@ -39,6 +41,8 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
     private Map<String, Object> scriptVariables;
     
     private ScriptJobDaoImpl scriptJobDao;
+    
+    private ActivityManager activityManager;
     
     public ScriptManagerImpl() throws Exception {
         super(Script.class, "scripts", true);
@@ -54,8 +58,11 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
             if (s.isRunOnStartup()) {
                 try {
                     execute(s.getScript(), s);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                } catch (Throwable e) {
+                    activityManager.logActivity("Could not run startup script '" 
+                                                + s.getName() + "'. " + e.getMessage(), EventType.ERROR);
+                    
+                    log.error("Could not run startup script '" + s.getName() + "'.", e);
                 }
             }
         }
@@ -126,6 +133,10 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
 
     public void setScriptJobDao(ScriptJobDaoImpl scriptJobDao) {
         this.scriptJobDao = scriptJobDao;
+    }
+
+    public void setActivityManager(ActivityManager activityManager) {
+        this.activityManager = activityManager;
     }
     
 }
