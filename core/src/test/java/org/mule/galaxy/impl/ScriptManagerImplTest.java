@@ -15,8 +15,6 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
     protected Dao<ScriptJob> scriptJobDao;
     
     public void testScripts() throws Exception {
-    }
-    public void xtestScripts() throws Exception {
         Script script = new Script();
         script.setName("test");
         script.setRunOnStartup(true);

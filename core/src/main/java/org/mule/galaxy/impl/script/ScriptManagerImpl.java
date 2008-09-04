@@ -102,10 +102,10 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
 
     @Override
     protected void doDelete(String id, Session session) throws RepositoryException {
-        super.doDelete(id, session);
-        
         // Delete all scriptJobs which are associated with this Job
         scriptJobDao.deleteJobsWithScript(id);
+        
+        super.doDelete(id, session);
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
