@@ -62,10 +62,12 @@ public class ArtifactGroupListPanel extends AbstractComposite {
 
         // create the colum headers
         // the first column is blank on purpose as it's reserved for the checkbox
-        table.setWidget(0, 0, new Image("images/clearpixel.gif"));
+        Image clearPixel = new Image("images/clearpixel.gif");
+        table.setWidget(0, 0, clearPixel);
 
-        // hardcode the width for the checkbox -- do this in css later
-        table.getFlexCellFormatter().setWidth(0, 0, "20");
+        // first column is wider in edit mode to accomodate the checkbox
+        String firstColWidth = (this.editable) ? "20" : "1";
+        table.getFlexCellFormatter().setWidth(0, 0, firstColWidth);
         table.getFlexCellFormatter().setWidth(0, 1, "180");
 
         for (int i = 0; i < numCols; i++) {
@@ -87,7 +89,7 @@ public class ArtifactGroupListPanel extends AbstractComposite {
                 CBCollection.put(checkbox, info.getId());
             } else {
                 // draw nothing, we are not in edit mode
-                table.setText(0, 0, " ");
+                table.setWidget(0, 0, clearPixel);
             }
 
             // draw the rest of the colums

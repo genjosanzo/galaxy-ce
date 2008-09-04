@@ -20,7 +20,6 @@ package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.util.ConfirmDialog;
 import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
@@ -62,6 +61,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
     private Button cancelBtn;
     private TextArea scriptArea;
     private Label scriptResultsLabel;
+    private CheckBox loadOnStartupCB;
 
     public AdminShellPanel(AdministrationPanel a) {
         super(a);
@@ -97,6 +97,9 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
         saveAsTB = new ValidatableTextBox(new StringNotEmptyValidator());
         saveAsTB.getTextBox().setEnabled(false);
+
+        loadOnStartupCB = new CheckBox("Run on startup ");
+        loadOnStartupCB.addClickListener(this);
 
         // where the scripts are pasted into
         scriptArea = new TextArea();
@@ -137,17 +140,22 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         // results of script execution
         table.setWidget(4, 0, scriptOutputPanel);
 
-        // add user control buttons
-        InlineFlowPanel buttons = new InlineFlowPanel();
-        buttons.add(evaluateBtn);
-        buttons.add(saveAsCB);
-        buttons.add(saveAsTB);
-        buttons.add(saveBtn);
-        buttons.add(deleteBtn);
-        buttons.add(clearBtn);
-        buttons.add(cancelBtn);
+        // add user control buttons in a table
+        FlexTable execButtonTable = new FlexTable();
+        execButtonTable.setWidget(0, 0, evaluateBtn);
+        execButtonTable.setWidget(0, 1, clearBtn);
 
-        table.setWidget(3, 0, buttons);
+        table.setWidget(3, 0, execButtonTable);
+
+        FlexTable persistButtonTable = new FlexTable();
+        persistButtonTable.setWidget(0, 0, loadOnStartupCB);
+        persistButtonTable.setWidget(0, 1, saveAsCB);
+        persistButtonTable.setWidget(0, 2, saveAsTB);
+        persistButtonTable.setWidget(0, 3, saveBtn);
+        persistButtonTable.setWidget(0, 4, cancelBtn);
+        persistButtonTable.setWidget(0, 5, deleteBtn);
+
+        table.setWidget(4, 0, persistButtonTable);
 
         panel.add(table);
         saveBtn.setEnabled(true);
@@ -160,6 +168,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
             public void onTreeItemSelected(TreeItem ti) {
                 WScript ws = (WScript) ti.getUserObject();
                 scriptArea.setText(ws.getScript());
+                loadOnStartupCB.setChecked(ws.isRunOnStartup());
             }
 
             public void onTreeItemStateChanged(TreeItem ti) {
@@ -192,6 +201,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         onShow();
         saveAsCB.setChecked(false);
         saveAsTB.setText(null);
+        loadOnStartupCB.setChecked(false);
     }
 
 
@@ -248,13 +258,13 @@ public class AdminShellPanel extends AbstractAdministrationComposite
     }
 
 
-    private void save() {
-        // validate script name
-        if (!saveAsTB.validate()) {
-            return;
-        }
 
-        if (scriptTree.getItemCount() > 0 && scriptTree.getSelectedItem() == null) {
+
+    private void save() {
+
+        // validate script name
+        if (scriptTree.getItemCount() > 0 && scriptTree.getSelectedItem() == null
+                && !saveAsTB.validate()) {
             // TODO use validatable textarea instead
             Window.alert("Please select a script to save or give it a new name.");
             return;
@@ -275,6 +285,8 @@ public class AdminShellPanel extends AbstractAdministrationComposite
             ws.setId(null);
         }
         ws.setScript(scriptArea.getText());
+        ws.setRunOnStartup(loadOnStartupCB.isChecked());
+
         // a local ref to satisfy anonymous inner class requirements
         final WScript localCopyWs = ws;
         adminPanel.getGalaxy().getAdminService().save(ws, new AbstractCallback(adminPanel) {
