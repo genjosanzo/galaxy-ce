@@ -27,8 +27,9 @@
                 <prop key="org.quartz.jobStore.isClustered">false</prop>
                 <prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.CloudscapeDelegate</prop>
                 <prop key="org.quartz.scheduler.instanceId">AUTO</prop>
+                <prop key="org.quartz.jobStore.useProperties">true</prop>
             </props>
         </property>
     </bean>
-
+    
 </beans>

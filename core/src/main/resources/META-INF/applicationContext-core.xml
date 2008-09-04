@@ -310,12 +310,13 @@
     <property name="proxyTargetClass" value="true"/>
   </bean>
   
-  <bean id="scriptManagerTarget" class="org.mule.galaxy.impl.ScriptManagerImpl"
+  <bean id="scriptManagerTarget" class="org.mule.galaxy.impl.script.ScriptManagerImpl"
         init-method="initialize">
     <property name="accessControlManager" ref="accessControlManager" />
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
     <property name="scriptVariables" ref="scriptVariables" />
+    <property name="scriptJobDao" ref="scriptJobDaoTarget"/>
   </bean>
   
   <bean id="scriptVariables" class="java.util.HashMap">
@@ -332,8 +333,9 @@
     <property name="proxyTargetClass" value="true"/>
   </bean>
   
-  <bean id="scriptJobDaoTarget" class="org.mule.galaxy.impl.ScriptJobDaoImpl"
+  <bean id="scriptJobDaoTarget" class="org.mule.galaxy.impl.script.ScriptJobDaoImpl"
         init-method="initialize">
+    <property name="scheduler" ref="scheduler" />
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisterManager" ref="persisterManager" />
   </bean>

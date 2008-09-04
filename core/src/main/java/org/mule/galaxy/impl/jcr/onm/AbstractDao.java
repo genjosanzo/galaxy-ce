@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.jcr.AccessDeniedException;
+import javax.jcr.InvalidItemStateException;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -14,10 +16,14 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.query.InvalidQueryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
+import javax.jcr.version.VersionException;
 
 import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Dao;
@@ -245,6 +251,10 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     
     protected void doDelete(String id, Session session) throws RepositoryException {
         Node node = findNode(id, session);
+        doDeleteNode(session, node);
+    }
+
+    protected void doDeleteNode(Session session, Node node) throws RepositoryException {
         node.remove();
         session.save();
     }

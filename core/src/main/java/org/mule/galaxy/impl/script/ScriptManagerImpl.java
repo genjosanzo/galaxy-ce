@@ -1,4 +1,4 @@
-package org.mule.galaxy.impl;
+package org.mule.galaxy.impl.script;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
@@ -27,6 +27,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springmodules.jcr.JcrCallback;
 
+/**
+ * Manages the executing and DAO of Scripts. Scheduling is done in the ScriptJobDaoImpl.
+ */
 public class ScriptManagerImpl extends AbstractReflectionDao<Script> 
     implements ScriptManager, ApplicationContextAware {
     private ApplicationContext applicationContext;
@@ -34,6 +37,8 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
     private AccessControlManager accessControlManager;
 
     private Map<String, Object> scriptVariables;
+    
+    private ScriptJobDaoImpl scriptJobDao;
     
     public ScriptManagerImpl() throws Exception {
         super(Script.class, "scripts", true);
@@ -44,6 +49,7 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
         UnsupportedRepositoryOperationException {
         super.doInitializeInJcrTransaction(session);
         
+        // Run startup scripts
         for (Script s : listAll()) {
             if (s.isRunOnStartup()) {
                 try {
@@ -57,6 +63,10 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
     
     public String execute(final String scriptText) throws AccessException, RegistryException {
         return execute(scriptText, null);
+    }
+
+    public String execute(final Script script) throws AccessException, RegistryException {
+        return execute(script.getScript(), script);
     }
     
     public String execute(final String scriptText, Script script) throws AccessException, RegistryException {
@@ -89,18 +99,13 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
         }
     }
 
+
     @Override
     protected void doDelete(String id, Session session) throws RepositoryException {
-        // cascade delete all the related jobs
-        QueryManager qm = getQueryManager(session);
-        
-        QueryResult result = qm.createQuery("//element(*, galaxy:scriptJob)[@script='" + id + "']", Query.XPATH).execute();
-        
-        for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
-            nodes.nextNode().remove();
-        }
-        
         super.doDelete(id, session);
+        
+        // Delete all scriptJobs which are associated with this Job
+        scriptJobDao.deleteJobsWithScript(id);
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -117,6 +122,10 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
     
     public void setScriptVariables(Map<String, Object> scriptVariables) {
         this.scriptVariables = scriptVariables;
+    }
+
+    public void setScriptJobDao(ScriptJobDaoImpl scriptJobDao) {
+        this.scriptJobDao = scriptJobDao;
     }
     
 }
