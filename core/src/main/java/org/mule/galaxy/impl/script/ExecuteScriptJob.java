@@ -23,10 +23,11 @@ import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.SessionFactory;
 
 public class ExecuteScriptJob implements Job, ApplicationContextAware {
+    
     public static final String SCRIPT_ID = "scriptId";
     public static final String SESSION_FACTORY = "sessionFactory";
     public static final String SCRIPT_MANAGER = "scriptManager";
-    private ApplicationContext context;
+    private transient ApplicationContext context;
 
     public void execute(JobExecutionContext ctx) throws JobExecutionException {
         JobDataMap data = ctx.getJobDetail().getJobDataMap();
