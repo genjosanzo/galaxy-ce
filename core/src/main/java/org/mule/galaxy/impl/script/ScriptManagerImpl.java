@@ -60,7 +60,7 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
                     execute(s.getScript(), s);
                 } catch (Throwable e) {
                     activityManager.logActivity("Could not run startup script '" 
-                                                + s.getName() + "'. " + e.getMessage(), EventType.ERROR);
+                                                + s.getName() + "'. " + e.getCause().getMessage(), EventType.ERROR);
                     
                     log.error("Could not run startup script '" + s.getName() + "'.", e);
                 }
