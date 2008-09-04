@@ -27,7 +27,6 @@ import org.mule.galaxy.web.client.registry.EntryForm;
 import org.mule.galaxy.web.client.registry.SearchPanel;
 import org.mule.galaxy.web.client.registry.ViewPanel;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
-import org.mule.galaxy.web.client.util.NavigationUtil;
 import org.mule.galaxy.web.client.workspace.ManageWorkspacePanel;
 import org.mule.galaxy.web.client.workspace.WorkspaceForm;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -57,7 +56,6 @@ import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.Hyperlink;
 
 import java.util.ArrayList;
 import java.util.Collections;
