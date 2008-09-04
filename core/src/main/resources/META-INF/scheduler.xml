@@ -3,7 +3,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean name="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+    <bean name="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" depends-on="dbInitializer">
         <!--
             Avoid deadlocks when duplicate spring app context initialization happens, typically
             when a saved durable job tries to recover and obtain an app context. The scheduler
