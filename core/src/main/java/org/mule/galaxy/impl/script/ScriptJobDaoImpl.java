@@ -60,6 +60,17 @@ public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob>  {
         }
     }
 
+    @Override
+    protected void doDelete(String id, Session session) throws RepositoryException {
+        try {
+            scheduler.deleteJob(id, null);
+        } catch (SchedulerException e) {
+            throw new RuntimeException(e);
+        }
+        
+        super.doDelete(id, session);
+    }
+
     public void deleteJobsWithScript(final String scriptId) {
         execute(new JcrCallback() {
 
@@ -76,8 +87,7 @@ public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob>  {
                     try {
                         scheduler.deleteJob(node.getUUID(), null);
                     } catch (SchedulerException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
                     
                     node.remove();
