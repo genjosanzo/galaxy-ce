@@ -4,6 +4,13 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean name="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <!--
+            Avoid deadlocks when duplicate spring app context initialization happens, typically
+            when a saved durable job tries to recover and obtain an app context. The scheduler
+            will be started by a separate launcher bean when everything is available and calm.
+        -->
+        <property name="autoStartup" value="false"/>
+        
         <!-- Expose application context via a scheduler context -->
         <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
         <property name="waitForJobsToCompleteOnShutdown" value="true"/>
@@ -31,5 +38,9 @@
             </props>
         </property>
     </bean>
-    
+
+    <bean id="schedulerLauncher" class="org.mule.galaxy.config.quartz.QuartzStarterBean">
+        <property name="scheduler" ref="scheduler"/>
+    </bean>
+
 </beans>
