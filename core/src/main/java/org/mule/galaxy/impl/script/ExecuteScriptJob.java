@@ -40,13 +40,12 @@ public class ExecuteScriptJob implements Job, ApplicationContextAware {
             SecurityUtils.doPriveleged(new Runnable() {
                 public void run() {
                     try {
-                        JcrUtil.doInTransaction(sessionFactory, new JcrCallback() {
+                        Object result = JcrUtil.doInTransaction(sessionFactory, new JcrCallback() {
 
                             public Object doInJcr(Session session) throws IOException, RepositoryException {
                                 try {
                                     Script script = scriptManager.get(scriptId);
-
-                                    scriptManager.execute(script);
+                                    return scriptManager.execute(script);
                                 } catch (AccessException e) {
                                     throw new RuntimeException(e);
                                 } catch (RegistryException e) {
@@ -54,11 +53,11 @@ public class ExecuteScriptJob implements Job, ApplicationContextAware {
                                 } catch (NotFoundException e) {
                                     throw new RuntimeException(e);
                                 }
-
-                                return null;
                             }
 
                         });
+
+                        // TODO log activity with results of execution
                     } catch (Exception e) {
                         if (e instanceof RuntimeException) {
                             throw (RuntimeException)e;
