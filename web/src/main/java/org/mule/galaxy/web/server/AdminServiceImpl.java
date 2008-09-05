@@ -28,6 +28,7 @@ import org.mule.galaxy.Dao;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.script.CronParseException;
 import org.mule.galaxy.script.Script;
 import org.mule.galaxy.script.ScriptJob;
 import org.mule.galaxy.script.ScriptManager;
@@ -120,6 +121,8 @@ public class AdminServiceImpl implements AdminService {
         } catch (DuplicateItemException e) {
             throw new ItemExistsException();
         } catch (NotFoundException e) {
+            throw new RPCException(e.getMessage());
+        } catch (CronParseException e) {
             throw new RPCException(e.getMessage());
         }
     }

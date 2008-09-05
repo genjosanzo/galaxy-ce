@@ -15,16 +15,13 @@ import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+import org.mule.galaxy.script.CronParseException;
 import org.mule.galaxy.script.ScriptJob;
-import org.mule.galaxy.script.ScriptManager;
+import org.quartz.CronExpression;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.Trigger;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springmodules.jcr.JcrCallback;
 
 public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob> {
@@ -37,6 +34,16 @@ public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob> {
     @Override
     protected String getNodeType() {
         return "galaxy:scriptJob";
+    }
+
+    @Override
+    public void save(ScriptJob t) throws DuplicateItemException, NotFoundException {
+        try {
+            new CronExpression(t.getExpression());
+        } catch (ParseException e) {
+            throw new CronParseException(e.getMessage());
+        }
+        super.save(t);
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.mule.galaxy.impl;
 import java.util.List;
 
 import org.mule.galaxy.Dao;
+import org.mule.galaxy.script.CronParseException;
 import org.mule.galaxy.script.Script;
 import org.mule.galaxy.script.ScriptJob;
 import org.mule.galaxy.script.ScriptManager;
@@ -27,11 +28,18 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
         ScriptJob sj = new ScriptJob();
         sj.setName("test");
         sj.setDescription("test");
-        sj.setExpression("* * * ? * *");
+        sj.setExpression("bad expression");
         sj.setScript(script);
         
+        try {
+            scriptJobDao.save(sj);
+            fail("Expected parse exception");
+        } catch (CronParseException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        sj.setExpression("* * * ? * *");
         scriptJobDao.save(sj);
-
         Thread.sleep(2000);
         
         assertTrue(count >= 2);
