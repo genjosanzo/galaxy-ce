@@ -70,7 +70,6 @@ class Galaxy {
                 } else {
                     def post = new PostMethod("http://$host:$port$apiUrl/$path")
                     post.addRequestHeader 'Content-Type', contentType
-                    // TODO Probably allow for customizing the initial version label
                     post.addRequestHeader 'X-Artifact-Version', version
                     post.addRequestHeader 'Slug', artifactName
     
