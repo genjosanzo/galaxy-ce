@@ -55,6 +55,7 @@ public class SearchForm extends AbstractErrorShowingComposite {
     private SuggestBox workspaceTB;
     private CheckBox includeChildWkspcCB;
     private Galaxy galaxy;
+    private FlexTable fieldTable;
 
     public SearchForm(Galaxy galaxy, String searchText, boolean allowFreeform) {
         this.galaxy = galaxy;
@@ -72,11 +73,11 @@ public class SearchForm extends AbstractErrorShowingComposite {
             }
         });
 
-        FlexTable table = new FlexTable();
-        panel.add(table);
+        fieldTable = new FlexTable();
 
-        initializeFields(table);
-
+        initializeFields(fieldTable);
+        fieldPanel.add(fieldTable);
+        
         panel.add(fieldPanel);
 
         buttonPanel = new InlineFlowPanel();
@@ -95,7 +96,7 @@ public class SearchForm extends AbstractErrorShowingComposite {
         int row = table.getRowCount();
         table.setText(row, 0, "Workspace:");
 
-        workspaceTB = new SuggestBox(new WorkspaceOracle(galaxy, this, "xxx"));
+        workspaceTB = new SuggestBox(new WorkspaceOracle(galaxy, this));
         table.setWidget(row, 1, workspaceTB);
         includeChildWkspcCB = new CheckBox();
         table.setText(row, 2, " Include Child Workspaces: ");
@@ -104,7 +105,7 @@ public class SearchForm extends AbstractErrorShowingComposite {
         freeformQueryArea = new TextArea();
         freeformQueryArea.setCharacterWidth(83);
         freeformQueryArea.setVisibleLines(7);
-        freeformQueryLink = new Hyperlink("Use Freeform Query", "no-history");
+        freeformQueryLink = new Hyperlink("Use Freeform Query", galaxy.getCurrentToken());
         freeformQueryLink.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
                 showHideFreeformQuery();
@@ -118,9 +119,8 @@ public class SearchForm extends AbstractErrorShowingComposite {
         clearButton = new Button("Clear", new ClickListener() {
             public void onClick(Widget sender) {
                 clear();
-                fieldPanel.clear();
+                resetFieldPanel();
                 freeformQueryArea.setText("");
-
                 addPredicate();
             }
         });
@@ -185,10 +185,10 @@ public class SearchForm extends AbstractErrorShowingComposite {
             freeformQueryArea.setText("");
             freeformQueryLink.setText("Use Freeform Query");
 
-            // Clear the panel because addPredicate will add everything back
-            fieldPanel.clear();
+            resetFieldPanel();
             addPredicate();
         } else {
+            fieldPanel.clear();
             fieldPanel.insert(freeformQueryArea, 0);
             freeformQueryArea.setText("Add a custom query...");
             freeformQueryArea.selectAll();
@@ -196,8 +196,6 @@ public class SearchForm extends AbstractErrorShowingComposite {
             freeformQueryLink.setText("Use Structured Query");
 
             // Remove all the structured query rows
-            for (Iterator<SearchFormRow> iter = rows.iterator(); iter.hasNext();)
-                fieldPanel.remove(iter.next());
             rows.clear();
         }
     }
@@ -229,7 +227,7 @@ public class SearchForm extends AbstractErrorShowingComposite {
 
     public void setPredicates(Set<SearchPredicate> predicates) {
         rows.clear();
-        fieldPanel.clear();
+        resetFieldPanel();
 
         for (Iterator<SearchPredicate> itr = predicates.iterator(); itr.hasNext();) {
             SearchPredicate p = itr.next();
@@ -241,6 +239,11 @@ public class SearchForm extends AbstractErrorShowingComposite {
 
         // Add an empty predicate to add more
         addPredicate();
+    }
+
+    protected void resetFieldPanel() {
+        fieldPanel.clear();
+        fieldPanel.add(fieldTable);
     }
 
     public void setWorkspace(String workspace) {

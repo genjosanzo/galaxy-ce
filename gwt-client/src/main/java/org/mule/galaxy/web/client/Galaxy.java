@@ -174,6 +174,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
                 if (!suppressTabHistory) {
                     if (tab == 0) {
                         History.newItem("browse");
+                    } else if (tab == 1) {
+                        History.newItem("search");
                     } else {
                         History.newItem("tab-" + tab);
                     }
@@ -214,7 +216,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         createPageInfo("new-entry-version/" + WILDCARD, new EntryForm(this), 0);
         createPageInfo("add-workspace", new WorkspaceForm(this), 0);
         createPageInfo("manage-workspace", new ManageWorkspacePanel(this), 0);
-        createPageInfo("search", new SearchPanel(this), 0);
+        createPageInfo("search", new SearchPanel(this), 1);
         createPageInfo("view", new ViewPanel(this), 0);
 
         new HeartbeatTimer(Galaxy.this);
@@ -244,7 +246,6 @@ public class Galaxy implements EntryPoint, HistoryListener {
         tabPanel.insert(registryPanel, "Registry", 0);
 
         // search all workspaces tab
-        createPageInfo("tab-1", new SearchPanel(this), 1);
         tabPanel.insert(searchPanel, "Search", tabPanel.getWidgetCount());
 
         if (hasPermission("VIEW_ACTIVITY")) {
