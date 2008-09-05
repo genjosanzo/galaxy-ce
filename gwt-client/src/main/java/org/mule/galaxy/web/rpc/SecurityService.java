@@ -16,11 +16,7 @@ public interface SecurityService extends RemoteService {
     int GLOBAL_PERMISSIONS = 2;
     
     WUser getUser(String id) throws RPCException;
-    
-    /**
-     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WUser>
-     * @return
-     */
+
     Collection<WUser> getUsers();
     
     String addUser(WUser user, String password) throws ItemExistsException;
@@ -29,22 +25,12 @@ public interface SecurityService extends RemoteService {
         throws PasswordChangeException, ItemNotFoundException, RPCException;
     
     void deleteUser(String userId);
-    
-    /**
-     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WPermission>
-     */
-    Collection<WPermission> getPermissions(int permissionType);
-    
-    /**
-     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WGroup, java.util.Collection<org.mule.galaxy.web.rpc.WPermissionGrant>>
-     */
-    Map getGroupPermissions();
 
-    /**
-     * @throws RPCException 
-     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WGroup, java.util.Collection<org.mule.galaxy.web.rpc.WPermissionGrant>>
-     */
-    Map getGroupPermissions(String itemId) throws RPCException;
+    Collection<WPermission> getPermissions(int permissionType);
+
+    Map<WGroup, Collection<WPermissionGrant>> getGroupPermissions();
+
+    Map<WGroup, Collection<WPermissionGrant>> getGroupPermissions(String itemId) throws RPCException;
     
     /**
      * @throws RPCException 
@@ -56,20 +42,10 @@ public interface SecurityService extends RemoteService {
     
     void deleteGroup(String id) throws RPCException;
     
-    /**
-     * @gwt.typeArgs group2Permissions <org.mule.galaxy.web.rpc.WGroup, java.util.Collection<org.mule.galaxy.web.rpc.WPermissionGrant>>
-     */
-    void applyPermissions(Map group2Permissions) throws RPCException;
 
-    /**
-     * @throws RPCException 
-     * @gwt.typeArgs group2Permissions <org.mule.galaxy.web.rpc.WGroup, java.util.Collection<org.mule.galaxy.web.rpc.WPermissionGrant>>
-     */
-    void applyPermissions(String itemId, Map group2Permissions) throws RPCException;
-    
-    /**
-     * @throws RPCException 
-     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WGroup>
-     */
+    void applyPermissions(Map<WGroup, Collection<WPermissionGrant>> group2Permissions) throws RPCException;
+
+    void applyPermissions(String itemId, Map<WGroup, Collection<WPermissionGrant>> group2Permissions) throws RPCException;
+
     Collection getGroups() throws RPCException;
 }

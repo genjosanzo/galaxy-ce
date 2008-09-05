@@ -18,6 +18,16 @@
 
 package org.mule.galaxy.web.server;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
@@ -43,17 +53,6 @@ import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WPermission;
 import org.mule.galaxy.web.rpc.WPermissionGrant;
 import org.mule.galaxy.web.rpc.WUser;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 public class SecurityServiceImpl implements SecurityService {
 
@@ -205,7 +204,7 @@ public class SecurityServiceImpl implements SecurityService {
         }
     }
 
-    public Map getGroupPermissions() {
+    public Map<WGroup, Collection<WPermissionGrant>> getGroupPermissions() {
         Map<WGroup, Collection<WPermissionGrant>> wgroups = new HashMap<WGroup, Collection<WPermissionGrant>>();
         List<Group> groups = accessControlManager.getGroups();
         
@@ -277,7 +276,7 @@ public class SecurityServiceImpl implements SecurityService {
         }
     }
 
-    public Map getGroupPermissions(String itemId) throws RPCException {
+    public Map<WGroup, Collection<WPermissionGrant>> getGroupPermissions(String itemId) throws RPCException {
         Map<WGroup, Collection<WPermissionGrant>> wgroups = new HashMap<WGroup, Collection<WPermissionGrant>>();
         List<Group> groups = accessControlManager.getGroups();
         

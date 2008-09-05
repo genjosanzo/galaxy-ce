@@ -27,10 +27,6 @@ public class WLifecycle implements IsSerializable {
     
     private String name;
     private String id;
-    
-    /**
-     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WPhase>
-     */
     private Collection<WPhase> phases;
     private WPhase initialPhase;
     private boolean defaultLifecycle;

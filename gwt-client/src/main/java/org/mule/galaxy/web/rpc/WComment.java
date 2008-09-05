@@ -28,10 +28,6 @@ public class WComment implements IsSerializable {
     private String user;
     private String date;
     private String text;
-    
-    /**
-     * @gwt.typeArgs <org.mule.galaxy.web.rpc.WComment>
-     */
     private List<WComment> comments;
 
     public WComment() {

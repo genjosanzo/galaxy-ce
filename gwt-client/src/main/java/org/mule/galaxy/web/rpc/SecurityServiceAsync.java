@@ -2,6 +2,7 @@ package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import java.util.Collection;
 import java.util.Map;
 
 
@@ -20,11 +21,11 @@ public interface SecurityServiceAsync {
     
     void getGroupPermissions(AsyncCallback callback);
     
-    void applyPermissions(Map group2Permissions, AsyncCallback callback);
+    void applyPermissions(Map<WGroup, Collection<WPermissionGrant>> group2Permissions, AsyncCallback callback);
 
     void getGroupPermissions(String itemId, AsyncCallback callback);
     
-    void applyPermissions(String itemId, Map group2Permissions, AsyncCallback callback);
+    void applyPermissions(String itemId, Map<WGroup, Collection<WPermissionGrant>> group2Permissions, AsyncCallback callback);
 
     void getGroups(AsyncCallback abstractCallback);
 

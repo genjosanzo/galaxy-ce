@@ -30,15 +30,7 @@ public class WUser implements IsSerializable  {
     private String id;
     private String username;
     private String email;
-   
-    /**
-     * @gwt.typeArgs <java.lang.String>
-     */
     private Collection<String> groupIds;
-    
-    /**
-     * @gwt.typeArgs <java.lang.String>
-     */
     private Collection<String> permissions;
     
     public String getName() {

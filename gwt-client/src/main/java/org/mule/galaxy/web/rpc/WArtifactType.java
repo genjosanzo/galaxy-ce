@@ -26,13 +26,7 @@ public class WArtifactType implements IsSerializable {
     private String id;
     private String mediaType;
     private String description;
-    /**
-     * @gwt.typeArgs <java.lang.String>
-     */
     private Collection<String> documentTypes;
-    /**
-     * @gwt.typeArgs <java.lang.String>
-     */
     private Collection<String> fileExtensions;
     
     

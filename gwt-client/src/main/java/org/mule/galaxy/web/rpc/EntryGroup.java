@@ -25,9 +25,6 @@ import java.util.List;
 
 public class EntryGroup implements IsSerializable {
     private String name;
-    /**
-     * @gwt.typeArgs <java.lang.String>
-     */
     private List<String> columns = new ArrayList<String>();
     
     private List<EntryInfo> rows = new ArrayList<EntryInfo>();

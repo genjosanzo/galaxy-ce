@@ -31,10 +31,6 @@ public class WIndex implements IsSerializable {
     private String resultType;
     private String property;
     private String mediaType;
-    
-    /**
-     * @gwt.typeArgs <java.lang.String> 
-     */
     private Collection<String> documentTypes;
     
     public WIndex(String id, String description, 
