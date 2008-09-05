@@ -104,12 +104,23 @@ public interface RegistryServiceAsync {
                      Serializable propertyValue,
                      ApplyTo applyTo,
                      AsyncCallback callback);
+
+    void setProperty(String query,
+                     String propertyName, 
+                     Serializable propertyValue,
+                     ApplyTo applyTo,
+                     AsyncCallback callback);
  
     void deleteProperty(Collection itemIds,
                         String propertyName,
                         ApplyTo applyTo,
                         AsyncCallback callback);
-
+ 
+    void deleteProperty(String query,
+                        String propertyName,
+                        ApplyTo applyTo,
+                        AsyncCallback callback);
+    
     void addComment(String artifactId, String parentCommentId, String text, AsyncCallback callback);
     
     void setDescription(String artifactId, String description, AsyncCallback callback);

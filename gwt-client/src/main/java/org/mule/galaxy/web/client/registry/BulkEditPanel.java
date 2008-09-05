@@ -55,7 +55,7 @@ import org.mule.galaxy.web.rpc.RegistryService.ApplyTo;
 public class BulkEditPanel extends AbstractErrorShowingComposite
         implements ClickListener {
 
-    private Collection<String> artifactIds;
+    private String query;
 
     private VerticalPanel wrapperPanel;
     private FlowPanel securityPanel;
@@ -99,11 +99,24 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
 
     private RadioButton applyDelToAllVersions;
 
-    public BulkEditPanel(Collection<String> artifactIds, Galaxy galaxy) {
-        super();
+    private final long resultCount;
+
+    private Collection<String> entryIds;
+
+    public BulkEditPanel(Collection<String> entryIds, Galaxy galaxy) {
+        this(entryIds.size(), galaxy);
+        this.entryIds = entryIds;
+    }
+    
+    public BulkEditPanel(String query, long resultCount, Galaxy galaxy) {
+        this(resultCount, galaxy);
+        this.query = query;
+    }
+    
+    public BulkEditPanel(long resultCount, Galaxy galaxy) {
+        this.resultCount = resultCount;
         this.galaxy = galaxy;
         this.service = galaxy.getRegistryService();
-        this.artifactIds = artifactIds;
         this.permissions = new ArrayList();
         this.groups = new HashMap();
 
@@ -161,7 +174,7 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
         setPropertyLB.setEnabled(false);
         //setPropertyTB.setEnabled(false);
 
-        Label label = new Label("Bulk Editing - " + artifactIds.size() + " Items");
+        Label label = new Label("Bulk Editing - " + resultCount + " Items");
         label.setStyleName("title");
         wrapperPanel.add(label);
         wrapperPanel.setStyleName("bulkedit-panel");
@@ -452,11 +465,13 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
         } else {
             applyTo = ApplyTo.ALL_VERSIONS;
         }
-        galaxy.getRegistryService().setProperty(artifactIds, 
-                                                propertyDescriptor.getName(), 
-                                                (Serializable) value,
-                                                applyTo,
-                                                callback);
+        
+        RegistryServiceAsync svc = galaxy.getRegistryService();
+        if (entryIds != null) {
+            svc.setProperty(entryIds, propertyDescriptor.getName(), (Serializable)value, applyTo, callback);
+        } else {
+            svc.setProperty(query, propertyDescriptor.getName(), (Serializable)value, applyTo, callback);
+        }
     }
 
 
@@ -479,7 +494,7 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
             applyTo = ApplyTo.ALL_VERSIONS;
         }
         
-        service.deleteProperty(artifactIds, name, applyTo, new AbstractCallback(this) {
+        AbstractCallback callback = new AbstractCallback(this) {
             public void onFailure(Throwable caught) {
                 setEnabled(true);
                 super.onFailure(caught);
@@ -488,7 +503,13 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
             public void onSuccess(Object arg0) {
                 finishRPCCalls();
             }
-        });
+        };
+        
+        if (entryIds != null) {
+            service.deleteProperty(entryIds, name, applyTo, callback);
+        } else {
+            service.deleteProperty(query, name, applyTo, callback);
+        }
     }
 
     private void setEnabled(boolean enabled) {

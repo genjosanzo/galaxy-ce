@@ -286,10 +286,10 @@ public class Query {
             
             String workspace = dequote(tokens.pop(), tokens);
             
+            boolean recursive = false;
             if (!tokens.isEmpty()) {
                 next = tokens.pop();
 
-                boolean recursive = false;
                 if (next.toLowerCase().equals("recursive")) {
                     recursive = true;
                     
@@ -299,12 +299,14 @@ public class Query {
                         next = null;
                     }
                 }
-                
-                if (workspace.startsWith("@")) {
-                    q.fromId(workspace.substring(1), recursive);
-                } else {
-                    q.fromPath(workspace, recursive);
-                }
+            } else {
+                next = null;
+            }
+            
+            if (workspace.startsWith("@")) {
+                q.fromId(workspace.substring(1), recursive);
+            } else {
+                q.fromPath(workspace, recursive);
             }
         }
 

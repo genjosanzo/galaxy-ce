@@ -207,7 +207,7 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
             // edit the entire result set
             setEditable(false);
         } else if (sender == editAll) {
-            galaxy.createPageInfo("bulk-edit", new BulkEditPanel(extractArtifactIds(), galaxy), 0);
+            galaxy.createPageInfo("bulk-edit", new BulkEditPanel(searchResults.getQuery(), searchResults.getTotal(), galaxy), 0);
             History.newItem("bulk-edit");
 
             // toggle edit mode
@@ -285,26 +285,6 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
             panel.insert(activityNavPanel, 0);
         }
     }
-
-
-    // helper method to pull the artifactIds out
-    // from the searchResult collection
-    private Collection<String> extractArtifactIds() {
-        Collection<String> artifactIds = new ArrayList<String>();
-
-        // groups will contain artifacts
-        for (Iterator<EntryGroup> itr = searchResults.getResults().iterator(); itr.hasNext();) {
-            EntryGroup g = itr.next();
-
-            // each artifact
-            for (Iterator<EntryInfo> it = g.getRows().iterator(); it.hasNext();) {
-                EntryInfo artifact = it.next();
-                artifactIds.add(artifact.getId());
-            }
-        }
-        return artifactIds;
-    }
-
 
     // get the artifactIds from the selected checkboxes
     private Collection<String> getSelectedArtifacts() {

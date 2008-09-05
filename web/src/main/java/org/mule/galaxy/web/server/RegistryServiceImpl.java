@@ -495,7 +495,9 @@ public class RegistryServiceImpl implements RegistryService {
 
         try {
             if (workspaceId != null) {
-                return getSearchResults(artifactTypes, ((Workspace)registry.getItemById(workspaceId)).getItems());
+                WSearchResults results = getSearchResults(artifactTypes, ((Workspace)registry.getItemById(workspaceId)).getItems());
+                results.setQuery("select artifact, entry from '@" + workspaceId + "'");
+                return results;
             } else if (workspacePath != null && !"".equals(workspacePath) && !"/".equals(workspacePath)) {
                 q.fromPath(workspacePath, includeChildWkspcs);
             }
@@ -506,7 +508,9 @@ public class RegistryServiceImpl implements RegistryService {
             else
                 results = registry.search(q);
 
-            return getSearchResults(artifactTypes, results.getResults());
+            WSearchResults wr = getSearchResults(artifactTypes, results.getResults());
+            wr.setQuery(q.toString());
+            return wr;
         } catch (QueryException e) {
             throw new RPCException(e.getMessage());
         } catch (RegistryException e) {
@@ -1408,7 +1412,7 @@ public class RegistryServiceImpl implements RegistryService {
         return null;
     }
 
-    public void setProperty(Collection<String> entryIds, 
+    public void setProperty(String query,
                             String propertyName, 
                             Serializable propertyValue, ApplyTo applyTo)
         throws RPCException, ItemNotFoundException {
@@ -1416,25 +1420,10 @@ public class RegistryServiceImpl implements RegistryService {
             PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName);
             Extension ext = pd != null ? pd.getExtension() : null;
             
+            SearchResults results = registry.search(query, 0, -1);
             List<Item> items = new ArrayList<Item>();
-            for (String itemId : entryIds) {
-                Item item = registry.getItemById(decode(itemId));
-                
-                switch (applyTo) {
-                case ENTRY:
-                    setProperty(item, propertyName, propertyValue, ext, items);
-                    break;
-                case ALL_VERSIONS:
-                    for (Item v : ((Entry) item).getVersions()) {
-                        setProperty(v, propertyName, propertyValue, ext, items);
-                    }
-                    break;
-                case DEFAULT_VERSION:
-                    setProperty(((Entry) item).getDefaultOrLastVersion(),
-                                propertyName, propertyValue, ext, items);
-                    break;
-                }
-                
+            for (Item item : results.getResults()) {
+                setProperty(item, propertyName, propertyValue, applyTo, ext, items);
             }
             
             // don't save until we actually manage to set everything
@@ -1454,6 +1443,60 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (PolicyException e) {
             throw new RPCException(e.getMessage());
+        }
+    }
+
+    public void setProperty(Collection<String> entryIds,
+                            String propertyName, 
+                            Serializable propertyValue, 
+                            ApplyTo applyTo)
+        throws RPCException, ItemNotFoundException {
+        try {
+            PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName);
+            Extension ext = pd != null ? pd.getExtension() : null;
+            
+            List<Item> items = new ArrayList<Item>();
+            for (String itemId : entryIds) {
+                Item item = registry.getItemById(decode(itemId));
+                setProperty(item, propertyName, propertyValue, applyTo, ext, items);
+            }
+            
+            // don't save until we actually manage to set everything
+            for (Item i : items) {
+                registry.save(i);
+            }
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (PropertyException e) {
+            // occurs if property name is formatted wrong
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        } catch (PolicyException e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
+    
+    private void setProperty(Item item, String propertyName, Serializable propertyValue, ApplyTo applyTo,
+                             Extension ext, List<Item> items) throws PropertyException, PolicyException,
+        NotFoundException, RegistryException, AccessException {
+        switch (applyTo) {
+        case ENTRY:
+            setProperty(item, propertyName, propertyValue, ext, items);
+            break;
+        case ALL_VERSIONS:
+            for (Item v : ((Entry) item).getVersions()) {
+                setProperty(v, propertyName, propertyValue, ext, items);
+            }
+            break;
+        case DEFAULT_VERSION:
+            setProperty(((Entry) item).getDefaultOrLastVersion(),
+                        propertyName, propertyValue, ext, items);
+            break;
         }
     }
 
@@ -1492,21 +1535,7 @@ public class RegistryServiceImpl implements RegistryService {
             for (String itemId : entryIds) {
                 Item item = registry.getItemById(decode(itemId));
                 
-                switch (applyTo) {
-                case ENTRY:
-                    item.setProperty(propertyName, null);
-                    break;
-                case ALL_VERSIONS:
-                    for (Item v : ((Entry) item).getVersions()) {
-                        v.setProperty(propertyName, null);
-                    }
-                    break;
-                case DEFAULT_VERSION:
-                    ((Entry) item).getDefaultOrLastVersion().setProperty(propertyName, null);
-                    break;
-                }
-                
-                items.add(item);
+                deleteProperty(item, propertyName, applyTo, items);
             }
             // don't save until we actually delete everything
             for (Item i : items) {
@@ -1526,6 +1555,49 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (PolicyException e) {
             throw new RPCException(e.getMessage());
         }
+    }
+
+    public void deleteProperty(String query, String propertyName, ApplyTo applyTo) throws RPCException, ItemNotFoundException {
+        try {
+            SearchResults results = registry.search(query, 0, -1);
+            List<Item> items = new ArrayList<Item>();
+            for (Item item : results.getResults()) {
+                deleteProperty(item, propertyName, applyTo, items);
+            }
+            // don't save until we actually delete everything
+            for (Item i : items) {
+                registry.save(i);
+            }
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (PropertyException e) {
+            // occurs if property name is formatted wrong
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        } catch (PolicyException e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
+    private void deleteProperty(Item item, String propertyName, ApplyTo applyTo, List<Item> items)
+        throws PropertyException, PolicyException, RegistryException {
+        switch (applyTo) {
+        case ENTRY:
+            item.setProperty(propertyName, null);
+            break;
+        case ALL_VERSIONS:
+            for (Item v : ((Entry) item).getVersions()) {
+                v.setProperty(propertyName, null);
+            }
+            break;
+        case DEFAULT_VERSION:
+            ((Entry) item).getDefaultOrLastVersion().setProperty(propertyName, null);
+            break;
+        }
+        
+        items.add(item);
     }
 
 

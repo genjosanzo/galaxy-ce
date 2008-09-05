@@ -26,6 +26,8 @@ public class WSearchResults implements IsSerializable {
     private long total;
 
     private Collection<EntryGroup> results;
+
+    private String query;
     
     public long getTotal() {
         return total;
@@ -39,4 +41,11 @@ public class WSearchResults implements IsSerializable {
     public void setResults(Collection<EntryGroup> results) {
         this.results = results;
     }
+    public String getQuery() {
+        return query;
+    }
+    public void setQuery(String query) {
+        this.query = query;
+    }
+    
 }

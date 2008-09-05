@@ -99,21 +99,31 @@ public interface RegistryService extends RemoteService {
 
     Collection<String> suggestWorkspaces(String query, String exclude) throws RPCException;
 
-    void setProperty(Collection<String> entryIds,
+    void setProperty(String query,
                      String propertyName,
-                     Serializable propertyValue, ApplyTo applyTo) throws RPCException, WPolicyException, ItemNotFoundException;
+                     Serializable propertyValue, 
+                     ApplyTo applyTo) throws RPCException, WPolicyException, ItemNotFoundException;
 
     void setProperty(String entryId,
                      String propertyName,
                      Serializable propertyValue) throws RPCException, WPolicyException, ItemNotFoundException;
 
+    void setProperty(Collection<String> itemIds,
+                     String propertyName,
+                     Serializable propertyValue, 
+                     ApplyTo applyTo) throws RPCException, WPolicyException, ItemNotFoundException;
+
     void deleteProperty(String entryId, 
                         String propertyName) throws RPCException, ItemNotFoundException;
     
-    void deleteProperty(Collection<String> entryIds, 
+    void deleteProperty(String query,
                         String propertyName, 
                         ApplyTo applyTo) throws RPCException, ItemNotFoundException;
 
+    void deleteProperty(Collection<String> itemIds,
+                        String propertyName, 
+                        ApplyTo applyTo) throws RPCException, ItemNotFoundException;
+    
     void savePropertyDescriptor(WPropertyDescriptor property) throws RPCException, ItemNotFoundException, ItemExistsException;
     
     void deletePropertyDescriptor(String id) throws RPCException;
