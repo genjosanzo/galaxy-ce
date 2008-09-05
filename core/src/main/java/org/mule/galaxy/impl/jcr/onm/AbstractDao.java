@@ -263,11 +263,11 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
         throws RepositoryException, NotFoundException {
         String id = t.getId();
         Node node = null;
+        boolean isNew = true;
         
         if (id == null) {
             String genId = generateNodeName(t);
-            node = getNodeForObject(getObjectsNode(session), t)
-                .addNode(genId, getNodeType());
+            node = getNodeForObject(getObjectsNode(session), t).addNode(genId, getNodeType());
             node.addMixin("mix:referenceable");
             
             t.setId(ISO9075.decode(getId(t, node, session)));
@@ -278,11 +278,17 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
             if (node == null && !generateId) {
                 node = getNodeForObject(getObjectsNode(session), t).addNode(ISO9075.encode(getObjectNodeName(t)), getNodeType());
                 node.addMixin("mix:referenceable");
+            } else {
+                isNew = false;
             }
         }
         
         if (node == null) throw new NotFoundException(t.getId());
         
+        doSave(t, node, isNew, session);
+    }
+
+    protected void doSave(T t, Node node, boolean isNew, Session session) throws RepositoryException {
         try {
             persist(t, node, session);
         } catch (Exception e) {

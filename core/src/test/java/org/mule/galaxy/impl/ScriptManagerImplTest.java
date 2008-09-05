@@ -39,6 +39,13 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
         List<ScriptJob> jobs = scriptJobDao.listAll();
         assertEquals(1, jobs.size());
         
+        sj.setName("Foo");
+        scriptJobDao.save(sj);
+
+        count = 0;
+        Thread.sleep(2000);
+        assertTrue(count >= 1);
+        
         scriptManager.delete(script.getId());
         
         jobs = scriptJobDao.listAll();

@@ -40,7 +40,7 @@ public class ExecuteScriptJob implements Job, ApplicationContextAware {
             SecurityUtils.doPriveleged(new Runnable() {
                 public void run() {
                     try {
-                        Object result = JcrUtil.doInTransaction(sessionFactory, new JcrCallback() {
+                        JcrUtil.doInTransaction(sessionFactory, new JcrCallback() {
 
                             public Object doInJcr(Session session) throws IOException, RepositoryException {
                                 try {

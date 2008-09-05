@@ -21,9 +21,13 @@ import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springmodules.jcr.JcrCallback;
 
-public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob>  {
+public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob> {
     private Scheduler scheduler;
     
     public ScriptJobDaoImpl() throws Exception {
@@ -36,21 +40,21 @@ public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob>  {
     }
 
     @Override
-    public void initialize() throws Exception {
-        super.initialize();
-    }
-
-    @Override
-    public void save(ScriptJob t) throws DuplicateItemException, NotFoundException {
-        super.save(t);
-
+    protected void doSave(ScriptJob t, Node node, boolean isNew, Session session) throws RepositoryException {
+        String origName = getJobName(t.getId(), JcrUtil.getStringOrNull(node, "name"));
+        
+        super.doSave(t, node, isNew, session);
+        
         try {
-            JobDetail job = new JobDetail(t.getId(), null, ExecuteScriptJob.class);
+            scheduler.unscheduleJob(origName, null);
+            String name = getJobName(t.getId(), t.getName());
+            
+            JobDetail job = new JobDetail(name, null, ExecuteScriptJob.class);
             job.setDurability(true);
             job.getJobDataMap().put(ExecuteScriptJob.SCRIPT_ID, t.getScript().getId());
             
-            CronTrigger trigger = new CronTrigger(t.getId(), null, t.getExpression());
-            trigger.setJobName(t.getId());
+            CronTrigger trigger = new CronTrigger(name, null, t.getExpression());
+            trigger.setJobName(name);
             
             scheduler.scheduleJob(job, trigger);
         } catch (SchedulerException e) {
@@ -61,16 +65,20 @@ public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob>  {
     }
 
     @Override
-    protected void doDelete(String id, Session session) throws RepositoryException {
+    protected void doDeleteNode(Session session, Node node) throws RepositoryException {
         try {
+            String id = getJobName(node.getUUID(), JcrUtil.getStringOrNull(node, "name"));
+
             if (!scheduler.deleteJob(id, null)) {
                 throw new RepositoryException("Job to delete doesn't exist. JobID: " + id);
             }
         } catch (SchedulerException e) {
             throw new RuntimeException(e);
         }
-        
-        super.doDelete(id, session);
+    }
+
+    private String getJobName(String uuid, String name) {
+        return name + "-" + uuid;
     }
 
     public void deleteJobsWithScript(final String scriptId) {
@@ -87,7 +95,7 @@ public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob>  {
                     Node node = nodes.nextNode();
                     
                     try {
-                        scheduler.deleteJob(node.getUUID(), null);
+                        scheduler.deleteJob(getJobName(node.getUUID(), JcrUtil.getStringOrNull(node, "name")), null);
                     } catch (SchedulerException e) {
                         throw new RuntimeException(e);
                     }
@@ -100,7 +108,7 @@ public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob>  {
             
         });
     }
-    
+
     public void setScheduler(Scheduler scheduler) {
         this.scheduler = scheduler;
     }
