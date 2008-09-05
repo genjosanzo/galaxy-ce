@@ -29,6 +29,8 @@ public class WSearchResults implements IsSerializable {
 
     private String query;
     
+    private String feed;
+    
     public long getTotal() {
         return total;
     }
@@ -47,5 +49,10 @@ public class WSearchResults implements IsSerializable {
     public void setQuery(String query) {
         this.query = query;
     }
-    
+    public String getFeed() {
+        return feed;
+    }
+    public void setFeed(String feed) {
+        this.feed = feed;
+    }
 }

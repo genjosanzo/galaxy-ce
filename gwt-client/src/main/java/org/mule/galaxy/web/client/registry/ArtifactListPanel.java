@@ -26,6 +26,7 @@ import org.mule.galaxy.web.rpc.EntryInfo;
 import org.mule.galaxy.web.rpc.WSearchResults;
 
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -126,7 +127,6 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
     // each panel that links artifacts will have the option to
     // bulk edit all or some -- this handles the controls for that.
     private void createBulkEditPanel() {
-
         if (bulkEditPanel != null) {
             panel.remove(bulkEditPanel);
             bulkEditPanel = null;
@@ -134,10 +134,24 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
 
         long resultSize = searchResults.getTotal();
 
-        if (resultSize > 0) {
+        ClickListener cl = new ClickListener() {
+            public void onClick(Widget sender) {
+                Window.open(searchResults.getFeed(), null, "scrollbars=yes");
+            }
+        };
+        
+        Image img = new Image("images/feed-icon.png");
+        img.setTitle("Feed");
+        img.addClickListener(cl);
+        img.setStyleName("icon-baseline");
+        
+        Hyperlink hl = new Hyperlink("Feed", galaxy.getCurrentToken());
+        hl.addClickListener(cl);
 
-            bulkEditPanel = new FlowPanel();
-            bulkEditPanel.setStyleName("bulkedit-panel");
+        bulkEditPanel = new FlowPanel();
+        bulkEditPanel.setStyleName("bulkedit-panel");
+
+        if (resultSize > 0) {
 
             //  we are in edit mode, offer new choices
             if (isEditable()) {
@@ -170,7 +184,8 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
                 bulkEditPanel.add(asToolbarItem(editAllImg, editSelected, "bulkedit-toolbar-item-first"));
 
             } else {
-
+                bulkEditPanel.add(asToolbarItem(img, hl));
+                
                 // Bulk edit link
                 bulkEditLink = new Hyperlink();
                 bulkEditLink.setText("Bulk Edit");
@@ -181,6 +196,9 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
                 bulkEditPanel.add(asToolbarItem(bulkImg, bulkEditLink, "bulkedit-toolbar-item-first"));
             }
 
+            panel.insert(bulkEditPanel, 0);
+        } else {
+            bulkEditPanel.add(asToolbarItem(img, hl, "bulkedit-toolbar-item-first"));
             panel.insert(bulkEditPanel, 0);
         }
     }

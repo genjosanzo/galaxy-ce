@@ -38,6 +38,8 @@ import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
 
 import org.acegisecurity.context.SecurityContextHolder;
+import org.apache.abdera.i18n.text.UrlEncoding;
+import org.apache.abdera.i18n.text.CharUtils.Profile;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.Artifact;
@@ -493,10 +495,14 @@ public class RegistryServiceImpl implements RegistryService {
                                        int start, int maxResults) throws RPCException {
         Query q = getQuery(searchPredicates, start, maxResults);
 
+        final String context = contextPathResolver.getContextPath();
+        
         try {
             if (workspaceId != null) {
-                WSearchResults results = getSearchResults(artifactTypes, ((Workspace)registry.getItemById(workspaceId)).getItems());
+                Workspace workspace = ((Workspace)registry.getItemById(workspaceId));
+                WSearchResults results = getSearchResults(artifactTypes, workspace.getItems());
                 results.setQuery("select artifact, entry from '@" + workspaceId + "'");
+                results.setFeed(getLink(context + "/api/registry", workspace));
                 return results;
             } else if (workspacePath != null && !"".equals(workspacePath) && !"/".equals(workspacePath)) {
                 q.fromPath(workspacePath, includeChildWkspcs);
@@ -510,6 +516,7 @@ public class RegistryServiceImpl implements RegistryService {
 
             WSearchResults wr = getSearchResults(artifactTypes, results.getResults());
             wr.setQuery(q.toString());
+            wr.setFeed(context + "/api/registry?q=" + UrlEncoding.encode(wr.getQuery(), Profile.PATH.filter()));
             return wr;
         } catch (QueryException e) {
             throw new RPCException(e.getMessage());
@@ -1276,9 +1283,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     private String getLink(String base, Item a) {
         StringBuilder sb = new StringBuilder();
-        Workspace w = (Workspace) a.getParent();
-
-        sb.append(base).append(w.getPath()).append(a.getName());
+        sb.append(base).append(a.getPath());
         return sb.toString();
     }
 
