@@ -18,6 +18,7 @@
 
 package org.mule.galaxy.netboot
 
+import javax.xml.namespace.QName
 import java.util.concurrent.Callable
 import org.apache.commons.httpclient.methods.GetMethod
 import org.mule.galaxy.client.Galaxy
@@ -33,7 +34,7 @@ class Workspace {
     def String parentWorkspace = ''
     def String name
     def String cacheDir
-    def String query = "select artifact where artifact.contentType='application/java-archive'"
+    def QName infoQ = new QName("http://galaxy.mulesource.org/1.0", "artifact-info");
     
     def Galaxy galaxy
 
@@ -54,9 +55,8 @@ class Workspace {
         try {
             def enc = FastURLEncoder.&encode // just a method shortcut for readability
             def safe = FastURLEncoder.createSafeOctetBitSet() // don't make latin chars unreadable, only special ones
-            def encodedQuery = enc(query, safe, true) // space as +
             def encodedName = enc(name, safe, false) // space as %20, not +
-            def relativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$encodedName?q=$encodedQuery" : "$encodedName?q=$encodedQuery"
+            def relativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$encodedName" : "$encodedName"
             response = galaxy.get(relativeUrl)
 
             // local cache dir
@@ -73,12 +73,19 @@ class Workspace {
                 def task = {
                     def jarName = node.title.text()
 
-                    File localJar = new File(dir, jarName)
+                    def name = node."*:artifact-info"?.@name.text();
+                    
+                    // maybe someone put in an entry or another workspace
+                    if (name == null) {
+                        return;
+                    }
+                    
+                    File localJar = new File(dir, name)
 
                     // TODO plug voters here to decide if it needs to be downloaded really
                     if (lastUpdatedVote (localJar, node)) {
                         println "Updating a local copy of $jarName"
-                        def jarRelativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$encodedName/$jarName" : "$encodedName/$jarName"
+                        def jarRelativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$encodedName/$name" : "$encodedName/$name"
                         GetMethod content = galaxy.get(jarRelativeUrl)
                         try {
                             // stream to a temp location to protect startup from corrupted jars
