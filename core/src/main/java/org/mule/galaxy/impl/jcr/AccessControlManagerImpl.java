@@ -346,11 +346,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         execute(new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                NodeIterator nodes = getGroupNodesForUser(user);
-
-                while (nodes.hasNext()) {
-                    Node node = nodes.nextNode();
-                    
+                for (Node node : getGroupNodesForUser(user)) {
                     try {
                         Property p = node.getProperty(GRANTS);
                         for (Value v : p.getValues()) {
@@ -381,16 +377,14 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         return perms;
     }
 
-    protected void extractPermissions(final User user, final Item item, final Set<Permission> perms,
+    protected void extractPermissions(final User user, 
+                                      final Item item, 
+                                      final Set<Permission> perms,
                                       final Set<Permission> revocations) throws RepositoryException {
         if (user.getGroups() == null || user.getGroups().size() == 0)
             return;
-        
-        NodeIterator nodes = getItemNodesForUser(user, item.getId());
 
-        while (nodes.hasNext()) {
-            Node node = nodes.nextNode();
-            
+        for (Node node : getItemNodesForUser(user, item.getId())) {
             try {
                 Property grantsProperty = node.getProperty(GRANTS);
                 for (Value v : grantsProperty.getValues()) {
@@ -429,29 +423,25 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         }
     }
 
-    private NodeIterator getGroupNodesForUser(final User user) throws RepositoryException {
+    private List<Node> getGroupNodesForUser(final User user) throws RepositoryException {
         return getItemNodesForUser(user, null);
     }
-    private NodeIterator getItemNodesForUser(final User user, String item) throws RepositoryException {
-        StringBuilder sb = new StringBuilder();
-        sb.append("//element(*, galaxy:group)[");
-        boolean first = true;
+    private List<Node> getItemNodesForUser(final User user, String item) throws RepositoryException {
+        List<Node> nodes = new ArrayList<Node>();
         for (Group g : user.getGroups()) {
-            if (first) {
-                first = false;
-            } else {
-                sb.append(" or ");
-            }
+            Node groupNode = getNodeByUUID(g.getId());
             
-            sb.append("@jcr:uuid=")
-              .append(JcrUtil.stringToXPathLiteral(g.getId()));
+            if (item != null) {
+                try {
+                    nodes.add(groupNode.getNode(item));
+                } catch (PathNotFoundException e) {
+                }
+            } else {
+                nodes.add(groupNode);
+            }
         }
-        sb.append("]");
         
-        if (item != null){
-            sb.append("/").append(ISO9075.encode(item));
-        }
-        return query(sb.toString()).getNodes();
+        return nodes;
     }
 
     public void grant(Group group, Permission p, Item item) throws AccessException {
