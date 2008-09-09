@@ -58,16 +58,14 @@ public class GalaxyLauncher
 
         launcher.launchWithConfig(config);
     }
-
-
-
+    
     public void shutdown()
     {
         System.out.println("Mule Netboot Shutting down...");
     }
 
 
-    public void launchWithConfig(NetbootConfig config) throws Exception
+    public void launchWithConfig(NetbootConfig config) throws Throwable
     {
         config.validate();
         GalaxyClientClassPathConfig classpath = new GalaxyClientClassPathConfig(new File(config.getMuleHome()));
@@ -92,7 +90,7 @@ public class GalaxyLauncher
         catch (InvocationTargetException e)
         {
             // rethrow a nested root cause
-            throw (Exception) e.getCause();
+            throw (Throwable) e.getCause();
         }
 
         // dereference explicitly to help GC

@@ -46,15 +46,31 @@ public class WorkspaceTest extends AbstractAtomTest {
         def muleHome = new File("target/mule");
         System.setProperty("mule.home", muleHome.absolutePath);
         
-        def w = new NetBootWorkspace(galaxy: g,
-                                     name: 'boot',
-                                     netBootWorkspace: "Mule",
-                                     netBootCacheDir: muleHome.canonicalPath).init().process();
+        def w = newWorkspace(g, muleHome);
+        w.process();
         
         // does the jar exist?
         def downloadedTestJar = new File(muleHome, "lib/boot/test.jar");
         assertTrue(downloadedTestJar.exists());
-                              
+        downloadedTestJar.delete();
+
+        w = newWorkspace(g, muleHome);
+        w.query = 'version=1'
+        w.process();
+        assertTrue(downloadedTestJar.exists());
+        downloadedTestJar.delete();
+        
+        w = newWorkspace(g, muleHome);
+        w.query = 'version=2'
+        w.process();
+        assertFalse(downloadedTestJar.exists());
+        downloadedTestJar.delete();
     }
     
+    Workspace newWorkspace(Galaxy g, muleHome) {
+        return new NetBootWorkspace(galaxy: g,
+                                    name: 'boot',
+                                    netBootWorkspace: "Mule",
+                                    netBootCacheDir: muleHome.canonicalPath).init()
+    }
 }

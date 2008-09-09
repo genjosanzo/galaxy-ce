@@ -31,10 +31,12 @@ import com.google.gdata.util.httputil.FastURLEncoder
 
 class Workspace {
 
+    def QName infoQ = new QName("http://galaxy.mulesource.org/1.0", "artifact-info")
+     
     def String parentWorkspace = ''
     def String name
     def String cacheDir
-    def QName infoQ = new QName("http://galaxy.mulesource.org/1.0", "artifact-info");
+    def String query = ''
     
     def Galaxy galaxy
 
@@ -49,7 +51,7 @@ class Workspace {
 
 
     def List<URL> process() {
-
+        exec.prestartAllCoreThreads()
         GetMethod response
 
         try {
@@ -57,6 +59,7 @@ class Workspace {
             def safe = FastURLEncoder.createSafeOctetBitSet() // don't make latin chars unreadable, only special ones
             def encodedName = enc(name, safe, false) // space as %20, not +
             def relativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$encodedName" : "$encodedName"
+            
             response = galaxy.get(relativeUrl)
 
             // local cache dir
@@ -84,10 +87,19 @@ class Workspace {
 
                     // TODO plug voters here to decide if it needs to be downloaded really
                     if (lastUpdatedVote (localJar, node)) {
-                        println "Updating a local copy of $jarName"
                         def jarRelativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$encodedName/$name" : "$encodedName/$name"
+                        if (query) {
+                            jarRelativeUrl += "?${query}"
+                        }
+                        
                         GetMethod content = galaxy.get(jarRelativeUrl)
                         try {
+                            // we queried for an artifact which didn't exist
+                            if (content.statusCode == 404) {
+                                if (localJar.exists()) localJar.delete();
+                                return;
+                            }
+                            
                             // stream to a temp location to protect startup from corrupted jars
                             // TODO this is the place to plug checksum verification
                             final File downloadsDir = new File(System.properties.'mule.home', 'lib/cache/_temp_downloads')

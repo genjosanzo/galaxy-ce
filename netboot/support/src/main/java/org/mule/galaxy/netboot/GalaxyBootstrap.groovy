@@ -152,15 +152,22 @@ Debug: $debug""")
             def appWsFutures = []
             workspaces.each { String ws ->
                 def name = ws.contains('/') ? ws.substring(ws.lastIndexOf('/') + 1) : ws
+                def query;
+                if (name.contains('?')) {
+                    def idx = name.lastIndexOf('?');
+                    query = name.substring(idx + 1);
+                    name = name.substring(0, idx);
+                }
                 def parentWorkspace = ws.contains('/') ? ws.substring(0, ws.lastIndexOf('/')) : ''
-
+                    println "grabbing ${name} with query ${query} from ${parentWorkspace}"
 
                 appWsFutures << exec.submit({
                     File file = new File(cacheDir, parentWorkspace)
                     new Workspace(galaxy: g,
                                   name: name,
                                   parentWorkspace: parentWorkspace,
-                                  cacheDir: file.canonicalPath).process()
+                                  cacheDir: file.canonicalPath,
+                                  query: query).process()
                 } as Callable)
             }
 

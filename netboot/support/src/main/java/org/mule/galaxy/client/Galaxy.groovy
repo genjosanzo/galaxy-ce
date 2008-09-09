@@ -46,7 +46,7 @@ class Galaxy {
             get: { path ->
                 def get = new GetMethod("http://$host:$port$apiUrl/$path")
                 remoteCall(get, {status, responseStream ->
-                    assert status >= 200 && status < 400
+                    assert (status >= 200 && status < 400) || status == 404
                     return get
                 })
             },
