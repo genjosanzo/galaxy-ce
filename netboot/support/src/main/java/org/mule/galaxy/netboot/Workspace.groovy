@@ -99,7 +99,8 @@ class Workspace {
                                 if (localJar.exists()) localJar.delete();
                                 return;
                             }
-                            
+
+                            println "Updating a local copy of $jarName"
                             // stream to a temp location to protect startup from corrupted jars
                             // TODO this is the place to plug checksum verification
                             final File downloadsDir = new File(System.properties.'mule.home', 'lib/cache/_temp_downloads')
