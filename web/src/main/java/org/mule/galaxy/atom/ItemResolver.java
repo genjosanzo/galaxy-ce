@@ -62,6 +62,7 @@ public class ItemResolver implements Resolver<Target> {
     public Target resolve(Request request) {
         RequestContext context = (RequestContext) request;
         String path = context.getTargetPath();
+        
         if (path.startsWith("/api")) {
             path = path.substring(4);
         }
@@ -166,6 +167,9 @@ public class ItemResolver implements Resolver<Target> {
         context.setAttribute(WORKSPACE, item.getParent());
         
         item = selectVersion(item, context);
+        if (item == null) {
+            return returnUnknownLocation(context);
+        }
         context.setAttribute(ITEM, item);
         
         context.setAttribute(COLLECTION_HREF, getPathWithoutArtifact(context));
