@@ -66,7 +66,7 @@
                 <artifactId>galaxy-maven-publish-plugin</artifactId>
                 <version>${version}</version>
                 <configuration>
-                    <url>http://localhost:9002/api/registry/Applications/BackgroundCheck</url>
+                    <url>http://localhost:8080/api/registry/Applications/BackgroundCheck</url>
                     <username>admin</username>
                     <password>admin</password>
                     
