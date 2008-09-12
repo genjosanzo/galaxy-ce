@@ -40,7 +40,7 @@ public class DefaultEventManagerTest extends TestCase {
         assertSame(event, listener.getEvent());
 
         // now remove the listeners for the event and re-fire
-        em.removeListener(TestEvent.class);
+        em.removeListener(listener);
         listener.reset();
         em.fireEvent(event);
 

@@ -1,20 +1,22 @@
 package org.mule.galaxy.impl.event;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.event.GalaxyEvent;
 import org.mule.galaxy.event.annotation.BindToEvent;
 import org.mule.galaxy.event.annotation.BindToEvents;
 import org.mule.galaxy.event.annotation.OnEvent;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.text.MessageFormat;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class DefaultEventManager implements EventManager {
@@ -23,8 +25,10 @@ public class DefaultEventManager implements EventManager {
 
     protected final Object listenersLock = new Object();
 
-    protected LinkedHashMap<Class, List<InternalGalaxyEventListener>> listeners = new LinkedHashMap<Class, List<InternalGalaxyEventListener>>();
+    protected LinkedHashMap<Class, List<InternalGalaxyEventListener>> event2listeners = new LinkedHashMap<Class, List<InternalGalaxyEventListener>>();
 
+    protected Map<Object, List<InternalGalaxyEventListener>> listeners = new HashMap<Object, List<InternalGalaxyEventListener>>();
+    
     /**
      * Use Spring's wrapper around TPTE, exposes config properties as a JavaBean.
      */
@@ -77,7 +81,7 @@ public class DefaultEventManager implements EventManager {
         }
         
         for (String eventName : eventNames) {
-            registerListener(adapter, eventName);
+            registerListener(listenerCandidate, adapter, eventName);
         }
 
         //synchronized (listenersLock) {
@@ -111,9 +115,11 @@ public class DefaultEventManager implements EventManager {
         return annotationPresent ? clazz.getAnnotation(annotation) : null;
     }
 
-    protected void registerListener(final InternalGalaxyEventListener listener, final String eventName) {
+    protected void registerListener(Object listener, 
+                                    final InternalGalaxyEventListener adapter, 
+                                    final String eventName) {
 
-        if (listener == null) {
+        if (adapter == null) {
             throw new IllegalArgumentException(
                     String.format("Attempt detected to register a null listener for %s event", eventName));
         }
@@ -121,20 +127,22 @@ public class DefaultEventManager implements EventManager {
         // get event name and load its class
         String evtClassName = "org.mule.galaxy.event." + eventName + "Event";
         ClassLoader current = Thread.currentThread().getContextClassLoader();
+        List<InternalGalaxyEventListener> allAdapters = new ArrayList<InternalGalaxyEventListener>();
         synchronized (listenersLock) {
             try {
                 Class<? extends GalaxyEvent> eventClass = Class.forName(evtClassName, true, current).asSubclass(GalaxyEvent.class);
-                List<InternalGalaxyEventListener> evtListeners = listeners.get(eventClass);
+                List<InternalGalaxyEventListener> evtListeners = event2listeners.get(eventClass);
                 if (evtListeners == null) {
                     evtListeners = new LinkedList<InternalGalaxyEventListener>();
                 }
-                evtListeners.add(listener);
-                listeners.put(eventClass, evtListeners);
-
+                evtListeners.add(adapter);
+                event2listeners.put(eventClass, evtListeners);
+                allAdapters.add(adapter);
+                
                 if (logger.isDebugEnabled()) {
-                    Object listenerObj = listener instanceof DelegatingGalaxyEventListener
-                            ? ((DelegatingGalaxyEventListener) listener).getDelegateListener()
-                            : listener;
+                    Object listenerObj = adapter instanceof DelegatingGalaxyEventListener
+                            ? ((DelegatingGalaxyEventListener) adapter).getDelegateListener()
+                            : adapter;
 
                     final String message =
                             MessageFormat.format("Registered {0} as a listener for {1}", listenerObj, eventClass.getName());
@@ -142,29 +150,41 @@ public class DefaultEventManager implements EventManager {
                 }
 
             } catch (ClassNotFoundException e) {
-                final String realListenerClass = listener instanceof DelegatingGalaxyEventListener
-                        ? ((DelegatingGalaxyEventListener) listener).getDelegateListener().getClass().getName()
-                        : listener.getClass().getName();
+                final String realListenerClass = adapter instanceof DelegatingGalaxyEventListener
+                        ? ((DelegatingGalaxyEventListener) adapter).getDelegateListener().getClass().getName()
+                        : adapter.getClass().getName();
                 throw new IllegalArgumentException(String.format("Event class %s not found for listener %s",
                                                                  evtClassName, realListenerClass));
             }
+            
+            listeners.put(listener, allAdapters);
         }
     }
+    
+    public List<Object> getListeners() {
+        return new ArrayList<Object>(listeners.keySet());
+    }
 
-    public void removeListener(final Class eventClass) {
+    public void removeListener(Object listener) {
         synchronized (listenersLock) {
-            // TODO don't like the way it's done really
-            if (listeners.remove(eventClass) == null) {
-                if (logger.isWarnEnabled()) {
-                    logger.warn("Attempt to remove listeners which were never registered for " + eventClass);
+            List<InternalGalaxyEventListener> adapters = listeners.get((Object)listener);
+            if (adapters != null) {
+                for (InternalGalaxyEventListener i : adapters) {
+                    removeAdapater(i);
                 }
             }
         }
     }
 
+    protected void removeAdapater(InternalGalaxyEventListener i) {
+        for (List<InternalGalaxyEventListener> list : event2listeners.values()) {
+            list.remove(i);
+        }
+    }
+
     public void fireEvent(final GalaxyEvent event) {
         synchronized (listenersLock) {
-            List<InternalGalaxyEventListener> eventListeners = listeners.get(event.getClass());
+            List<InternalGalaxyEventListener> eventListeners = event2listeners.get(event.getClass());
 
             if (eventListeners != null && !eventListeners.isEmpty()) {
                 for (InternalGalaxyEventListener listener : eventListeners) {
