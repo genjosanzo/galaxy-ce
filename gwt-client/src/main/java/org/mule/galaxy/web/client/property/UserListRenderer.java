@@ -95,6 +95,7 @@ public class UserListRenderer extends AbstractListRenderer {
     
     protected Widget getAddWidget() {
         InlineFlowPanel addPanel = new InlineFlowPanel();
+        addPanel.setStyleName("renderer-add-panel");
         addPanel.add(userLB);
         
         Button addButton = new Button();

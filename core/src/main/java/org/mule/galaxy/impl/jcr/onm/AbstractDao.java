@@ -65,12 +65,18 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     }
     
     @SuppressWarnings("unchecked")
-    public T get(final String id) {
-        return (T) execute(new JcrCallback() {
+    public T get(final String id) throws NotFoundException {
+        T t =  (T) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 return doGet(id, session);
             }
         });
+        
+        if (t == null) {
+            throw new NotFoundException(id);
+        }
+        
+        return t;
     }
 
     public void save(final T t) throws DuplicateItemException, NotFoundException {

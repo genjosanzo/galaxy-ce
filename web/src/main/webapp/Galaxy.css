@@ -575,7 +575,6 @@ a:visited {
 /* properties */
 .add-property-panel {
     background-color: white;
-    padding: 4px;
     width: auto;
     vertical-align: top;
 }
@@ -606,16 +605,11 @@ a:visited {
 }
 
 .listPropertyContainer {
-    margin: 3px;
+    margin-top: 10px;
     padding-top: 3px;
     padding-bottom: 3px;
     border: 1px solid #ddd;
     background-color: #ccc;
-    
-    display:-moz-inline-stack;
-    display:inline-block;
-    zoom:1;
-    *display:inline;
 }
 
 .listProperty {

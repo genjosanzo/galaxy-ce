@@ -6,6 +6,7 @@ import java.util.List;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.view.View;
@@ -31,7 +32,7 @@ public class ArtifactViewManagerImpl
         });
     }
 
-    public View getArtifactView(String id) {
+    public View getArtifactView(String id) throws NotFoundException {
         return get(id);
     }
 

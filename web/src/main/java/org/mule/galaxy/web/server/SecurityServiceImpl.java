@@ -67,7 +67,10 @@ public class SecurityServiceImpl implements SecurityService {
             User u = createUser(user);
             if (user.getGroupIds() != null) {
                 for (Object o : user.getGroupIds()) {
-                    u.addGroup(accessControlManager.getGroup(o.toString()));
+                    try {
+                        u.addGroup(accessControlManager.getGroup(o.toString()));
+                    } catch (NotFoundException e) {
+                    }
                 }
             }
             userManager.create(u, password);
@@ -179,26 +182,28 @@ public class SecurityServiceImpl implements SecurityService {
             WGroup wGroup = (WGroup) e.getKey();
             Collection permGrants = (Collection) e.getValue();
             
-            Group group = accessControlManager.getGroup(wGroup.getId());
-            
-            List<Permission> grants = new ArrayList<Permission>();
-            List<Permission> revocations = new ArrayList<Permission>();
-            
-            for (Iterator pgItr = permGrants.iterator(); pgItr.hasNext();) {
-                WPermissionGrant permGrant = (WPermissionGrant)pgItr.next();
-                
-                Permission p = Permission.valueOf(permGrant.getPermission());
-                if (permGrant.getGrant() == WPermissionGrant.GRANTED) {
-                    grants.add(p);
-                } else {
-                    revocations.add(p);
-                }
-            }
-            
             try {
+                Group group = accessControlManager.getGroup(wGroup.getId());
+                
+                List<Permission> grants = new ArrayList<Permission>();
+                List<Permission> revocations = new ArrayList<Permission>();
+                
+                for (Iterator pgItr = permGrants.iterator(); pgItr.hasNext();) {
+                    WPermissionGrant permGrant = (WPermissionGrant)pgItr.next();
+                    
+                    Permission p = Permission.valueOf(permGrant.getPermission());
+                    if (permGrant.getGrant() == WPermissionGrant.GRANTED) {
+                        grants.add(p);
+                    } else {
+                        revocations.add(p);
+                    }
+                }
+                
                 accessControlManager.grant(group, grants);
                 accessControlManager.revoke(group, revocations);
             } catch (AccessException e1) {
+                throw new RPCException(e1.getMessage());
+            } catch (NotFoundException e1) {
                 throw new RPCException(e1.getMessage());
             }
         }
@@ -322,14 +327,14 @@ public class SecurityServiceImpl implements SecurityService {
     }
     
     public void save(WGroup wgroup) throws RPCException, ItemExistsException {
-        Group g = null;
-        if (wgroup.getId() != null) {
-            g = accessControlManager.getGroup(wgroup.getId());
-        } else {
-            g = new Group();
-        }
-        g.setName(wgroup.getName());
         try {
+            Group g = null;
+            if (wgroup.getId() != null) {
+                g = accessControlManager.getGroup(wgroup.getId());
+            } else {
+                g = new Group();
+            }
+            g.setName(wgroup.getName());
             accessControlManager.save(g);
         } catch (AccessException e1) {
             throw new RPCException(e1.getMessage());

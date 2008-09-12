@@ -189,26 +189,29 @@ public abstract class AbstractItemCollection
             atomEntry.addExtension(version);
         }
 
-        if (ev != null) {
-            addMetadata(ev, atomEntry, request, "versioned");
-            addMetadata(eOrW, atomEntry, request, "global");
-        } else {
-            // workspaces can have metadata too
-            addMetadata(item, atomEntry, request, "global");
+//        boolean showProperties = BooleanUtils.toBoolean(request.getParameter("showProperties"));
+        boolean showHidden = BooleanUtils.toBoolean(request.getParameter("showHiddenProperties"));
+        
+        if (showHidden) {
+            if (ev != null) {
+                addMetadata(ev, atomEntry, request, "versioned", showHidden);
+                addMetadata(eOrW, atomEntry, request, "global", showHidden);
+            } else {
+                // workspaces can have metadata too
+                addMetadata(item, atomEntry, request, "global", showHidden);
+            }
         }
         
         return link;
     }
 
-    protected void addMetadata(Item entryObj, Entry atomEntry, RequestContext request, String id) {
+    protected void addMetadata(Item entryObj, Entry atomEntry, RequestContext request, String id, boolean showHidden) {
         Element metadata = factory.newElement(new QName(NAMESPACE, "metadata"));
         
         if (id != null) {
             metadata.setAttributeValue("id", id);
         }
         
-        boolean showHidden = BooleanUtils.toBoolean(request.getParameter("showHiddenProperties"));
-       
         for (PropertyInfo p : entryObj.getProperties()) {
             PropertyDescriptor pd = p.getPropertyDescriptor();
             

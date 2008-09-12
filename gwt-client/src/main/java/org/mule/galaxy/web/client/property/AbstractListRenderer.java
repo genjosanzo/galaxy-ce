@@ -4,10 +4,8 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -22,11 +20,11 @@ import org.mule.galaxy.web.client.util.InlineFlowPanel;
 public abstract class AbstractListRenderer extends AbstractPropertyRenderer {
     protected List<Object> values;
     private Label valueLabel;
-    protected InlineFlowPanel editValuesPanel;
+    protected FlowPanel editValuesPanel;
 
     public Widget createEditForm() {
-        editValuesPanel = new InlineFlowPanel();
-        editValuesPanel.setStyleName("add-property-inline");
+        editValuesPanel = new FlowPanel();
+//        editValuesPanel.setStyleName("add-property-inline");
 
         FlowPanel editPanel = new FlowPanel();
         editPanel.add(editValuesPanel);
@@ -100,8 +98,8 @@ public abstract class AbstractListRenderer extends AbstractPropertyRenderer {
     }
 
     protected Widget createLabel(final Object value) {
-        final SimplePanel container = new SimplePanel();
-        container.setStyleName("listPropertyContainer");
+        final FlowPanel container = new FlowPanel();
+        container.setStyleName("clearfix listPropertyContainer");
 
         final InlineFlowPanel valuePanel = new InlineFlowPanel();
         valuePanel.setStyleName("listProperty");

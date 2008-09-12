@@ -21,6 +21,7 @@ import javax.jcr.query.QueryResult;
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.User;
@@ -53,7 +54,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     }
 
     @Override
-    public User get(String id) {
+    public User get(String id) throws NotFoundException {
         if (SecurityUtils.SYSTEM_USER.getId().equals(id)) {
             return SecurityUtils.SYSTEM_USER;
         }

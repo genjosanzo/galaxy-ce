@@ -13,5 +13,5 @@ public interface ArtifactViewManager {
     
     void delete(String id);
 
-    View getArtifactView(String id);
+    View getArtifactView(String id) throws NotFoundException;
 }

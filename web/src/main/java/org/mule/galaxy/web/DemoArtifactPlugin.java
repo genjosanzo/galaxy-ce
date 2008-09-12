@@ -42,6 +42,16 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
         
         PropertyDescriptor pd = new PropertyDescriptor("location", "Location", false, false);
         typeManager.savePropertyDescriptor(pd);
+        
+        pd = new PropertyDescriptor("business.group", "Business Groups", true, false);
+        typeManager.savePropertyDescriptor(pd);
+        
+        pd = new PropertyDescriptor("url", "URL", false, false);
+        typeManager.savePropertyDescriptor(pd);
+        
+        pd = new PropertyDescriptor("contacts", "Contacts", false, false);
+        pd.setExtension(registry.getExtension("userExtension"));
+        typeManager.savePropertyDescriptor(pd);
     }
 
     private void add(Workspace w, User user, String name, String resource) 

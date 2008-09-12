@@ -85,7 +85,7 @@ public class LinksRenderer extends AbstractListRenderer {
     @Override
     protected Widget getAddWidget() {
         FlowPanel addPanel = new FlowPanel();
-        
+        addPanel.setStyleName("renderer-add-panel");
         verifyLabel = new Label();
         addPanel.add(verifyLabel);
         

@@ -79,7 +79,7 @@ public interface AccessControlManager {
 
     void assertAccess(Permission permission, Item item) throws AccessException;
 
-    Group getGroup(String id);
+    Group getGroup(String id) throws NotFoundException;
 
     void save(Group group) throws AccessException, DuplicateItemException, NotFoundException;
 

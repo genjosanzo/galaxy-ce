@@ -701,14 +701,16 @@ public class RegistryServiceImpl implements RegistryService {
                                               int resultStart,
                                               int maxResults)
             throws RPCException {
-        View view = artifactViewManager.getArtifactView(viewId);
-
         try {
+            View view = artifactViewManager.getArtifactView(viewId);
+
             return getSearchResults(null, registry.search(view.getQuery(), resultStart, maxResults).getResults());
         } catch (QueryException e) {
             throw new RPCException(e.getMessage());
         } catch (RegistryException e) {
             log.error("Could not query the registry.", e);
+            throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
             throw new RPCException(e.getMessage());
         }
     }
@@ -726,17 +728,17 @@ public class RegistryServiceImpl implements RegistryService {
 
     public WArtifactView getArtifactView(String id) throws RPCException, ItemExistsException, ItemNotFoundException {
         User user = getCurrentUser();
-        WArtifactView view = toWeb(artifactViewManager.getArtifactView(id));
         try {
+            WArtifactView view = toWeb(artifactViewManager.getArtifactView(id));
             updateRecentArtifactViews(user, id);
+
+            return view;
         } catch (DuplicateItemException e) {
             throw new ItemExistsException();
         } catch (NotFoundException e) {
             log.error(e.getMessage(), e);
             throw new ItemNotFoundException();
         }
-
-        return view;
     }
 
     private void updateRecentArtifactViews(User user, String id) throws DuplicateItemException, NotFoundException {
@@ -790,7 +792,10 @@ public class RegistryServiceImpl implements RegistryService {
         List<String> ids = getRecentArtifactViewIds(currentUser);
         if (ids != null) {
             for (String id : ids) {
-                views.add(toWeb(artifactViewManager.getArtifactView(id)));
+                try {
+                    views.add(toWeb(artifactViewManager.getArtifactView(id)));
+                } catch (NotFoundException e) {
+                }
             }
         }
         return views;

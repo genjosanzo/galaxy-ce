@@ -649,6 +649,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
 
         q.setStart(startOfResults);
         q.setMaxResults(maxResults);
+        
         return search(q);
     }
 

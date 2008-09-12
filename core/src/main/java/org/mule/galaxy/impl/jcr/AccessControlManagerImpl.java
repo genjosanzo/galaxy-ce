@@ -154,7 +154,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         return listAll();
     }
 
-    public Group getGroup(String id) {
+    public Group getGroup(String id) throws NotFoundException {
         return get(id);
     }
     
