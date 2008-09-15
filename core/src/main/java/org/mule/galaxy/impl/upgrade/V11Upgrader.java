@@ -2,6 +2,8 @@ package org.mule.galaxy.impl.upgrade;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -13,6 +15,7 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
+import javax.jcr.query.InvalidQueryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 
@@ -69,10 +72,12 @@ public class V11Upgrader extends Upgrader {
         upgradeLinks(root, qm, session);
 
         upgradePolicies(root, qm, session);
+
+        upgradeCreatedDates(root, qm, session);
         
         log.info("Upgrade to version 1.1 complete!");
     }
-    
+
     /**
      * Sets index field to true on property descriptors if they refer to an Index.
      */
@@ -219,7 +224,6 @@ public class V11Upgrader extends Upgrader {
     private void upgradePolicies(Node root, QueryManager qm, Session session) throws Exception {
         Node policies = JcrUtil.getOrCreate(root, "policyActivations");
         
-        JcrUtil.dump(policies);
         Node items = JcrUtil.getOrCreate(policies, "items");
         
         String lifecycles = JcrUtil.getOrCreate(items, "lifecycles").getPath();
@@ -243,7 +247,6 @@ public class V11Upgrader extends Upgrader {
             workspaces.remove();
         } catch (PathNotFoundException e) {
         }
-        JcrUtil.dump(policies);
     }
 
     private void updatePhases(Node root, Node rootDest, Session session) throws RepositoryException {
@@ -268,6 +271,28 @@ public class V11Upgrader extends Upgrader {
         for (NodeIterator nodes = artifacts.getNodes(); nodes.hasNext();) {
             Node node = nodes.nextNode();
             session.move(node.getPath(), dest + "/local$" + node.getName());
+        }
+    }
+    
+    private void upgradeCreatedDates(Node root, QueryManager qm, Session session) 
+        throws InvalidQueryException, RepositoryException {
+        Query q = qm.createQuery("//element(*, galaxy:workspace)", Query.XPATH);
+        
+        for (NodeIterator itr = q.execute().getNodes(); itr.hasNext();) {
+            Node d = itr.nextNode();
+            
+            Calendar created = JcrUtil.getCalendarOrNull(d, "created");
+            if (created == null) {
+                created = JcrUtil.getCalendarOrNull(d, "updated");
+                
+                if (created == null) {
+                    created = Calendar.getInstance();
+                    created.setTime(new Date());
+                    d.setProperty("updated", created);
+                }
+                
+                d.setProperty("created", created);
+            }
         }
     }
 
