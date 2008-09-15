@@ -500,9 +500,15 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             if (workspaceId != null) {
                 Workspace workspace = ((Workspace)registry.getItemById(workspaceId));
-                WSearchResults results = getSearchResults(artifactTypes, workspace.getItems());
+                List<Item> items = workspace.getItems();
+                List<Item> trimmedItems = new ArrayList<Item>();
+                for (int i = start; i < start+maxResults && i < items.size(); i++) {
+                    trimmedItems.add(items.get(i));
+                }
+                WSearchResults results = getSearchResults(artifactTypes, trimmedItems);
                 results.setQuery("select artifact, entry from '@" + workspaceId + "'");
                 results.setFeed(getLink(context + "/api/registry", workspace));
+                results.setTotal(items.size());
                 return results;
             } else if (workspacePath != null && !"".equals(workspacePath) && !"/".equals(workspacePath)) {
                 q.fromPath(workspacePath, includeChildWkspcs);
