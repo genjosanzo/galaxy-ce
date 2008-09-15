@@ -18,6 +18,7 @@ import javax.xml.namespace.QName;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
+import org.apache.abdera.model.ExtensibleElement;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyException;
@@ -97,7 +98,7 @@ public class LifecycleExtension extends AbstractExtension implements AtomExtensi
         
     }
 
-    public void updateItem(Item item, Factory factory, Element e) throws ResponseContextException {
+    public void updateItem(Item item, Factory factory, ExtensibleElement e) throws ResponseContextException {
         String property = e.getAttributeValue("property");
         assertNotEmpty(property, "Lifecycle property attribute cannot be null.");
         
@@ -145,21 +146,21 @@ public class LifecycleExtension extends AbstractExtension implements AtomExtensi
         return UNDERSTOOD;
     }
 
-    public void annotateAtomEntry(Item item, PropertyDescriptor pd, Entry element, Factory factory) {
-        Element lifecycle = factory.newElement(LIFECYCLE_QNAME);
+    public void annotateAtomEntry(Item item, PropertyDescriptor pd, Entry entry, ExtensibleElement metadata, Factory factory) {
+        ExtensibleElement lifecycle = factory.newElement(LIFECYCLE_QNAME);
         lifecycle.setAttributeValue("property", pd.getProperty());
         
         Phase phase = (Phase) item.getProperty(pd.getProperty());
         lifecycle.setAttributeValue("name", phase.getLifecycle().getName());
         lifecycle.setAttributeValue("phase", phase.getName());
         
-        element.addExtension(lifecycle);
+        metadata.addExtension(lifecycle);
         
         buildAvailablePhases(phase, phase.getNextPhases(), "next-phases", lifecycle, factory);
         buildAvailablePhases(phase, phase.getPreviousPhases(), "previous-phases", lifecycle, factory);
     }
 
-    private Element buildAvailablePhases(Phase phase, Set<Phase> phases, String name, Element lifecycle, Factory factory) {
+    private Element buildAvailablePhases(Phase phase, Set<Phase> phases, String name, ExtensibleElement lifecycle, Factory factory) {
         Element availPhases = factory.newElement(new QName(Constants.ATOM_NAMESPACE, name), lifecycle);
         StringBuilder sb = new StringBuilder();
         boolean first = true;

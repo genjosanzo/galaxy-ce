@@ -204,7 +204,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res = client.get(v2Uri, defaultOpts);
         
         entryDoc = res.getDocument();
-//        prettyPrint(entryDoc);
+        prettyPrint(entryDoc);
         e = entryDoc.getRoot();
         
         assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl;atom?version=0.2", e.getEditLink().getHref().toString());
@@ -219,20 +219,8 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals("{http://schemas.xmlsoap.org/wsdl/}definitions", info.getAttributeValue("documentType"));
         assertNotNull(info.getAttributeValue("created"));
         
-        Element lifecycleEl = e.getExtension(new QName(AbstractItemCollection.NAMESPACE, "lifecycle"));
-        assertNotNull(lifecycleEl);
-        assertEquals("primary.lifecycle", lifecycleEl.getAttributeValue("property"));
-        assertEquals("Default", lifecycleEl.getAttributeValue("name"));
-        assertEquals("Created", lifecycleEl.getAttributeValue("phase"));
-        
-        Element next = lifecycleEl.getFirstChild(new QName(AbstractItemCollection.NAMESPACE, "next-phases"));
-        assertNotNull(next);
-        
-        Element previous = lifecycleEl.getFirstChild(new QName(AbstractItemCollection.NAMESPACE, "previous-phases"));
-        assertNotNull(previous);
-        
         Element versionEl = e.getExtension(new QName(AbstractItemCollection.NAMESPACE, "version"));
-        assertNotNull(lifecycleEl);
+        assertNotNull(versionEl);
         assertEquals("0.2", versionEl.getAttributeValue("label"));
         assertEquals("true", versionEl.getAttributeValue("default"));
         assertEquals("true", versionEl.getAttributeValue("enabled"));
@@ -252,6 +240,18 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         assertNotNull(metadata);
         assertNotNull(global);
+
+        Element lifecycleEl = metadata.getExtension(new QName(AbstractItemCollection.NAMESPACE, "lifecycle"));
+        assertNotNull(lifecycleEl);
+        assertEquals("primary.lifecycle", lifecycleEl.getAttributeValue("property"));
+        assertEquals("Default", lifecycleEl.getAttributeValue("name"));
+        assertEquals("Created", lifecycleEl.getAttributeValue("phase"));
+        
+        Element next = lifecycleEl.getFirstChild(new QName(AbstractItemCollection.NAMESPACE, "next-phases"));
+        assertNotNull(next);
+        
+        Element previous = lifecycleEl.getFirstChild(new QName(AbstractItemCollection.NAMESPACE, "previous-phases"));
+        assertNotNull(previous);
         
         List<Element> properties = metadata.getExtensions(new QName(AbstractItemCollection.NAMESPACE, "property"));
         assertTrue(properties.size() > 0);
@@ -300,6 +300,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         
         entryDoc = res.getDocument();
         e = entryDoc.getRoot();
+        prettyPrint(e);
         
         metadata = null;
         global = null;
@@ -332,7 +333,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
 //        prettyPrint(entryDoc);
         e = entryDoc.getRoot();
         
-        lifecycleEl = e.getExtension(new QName(AbstractItemCollection.NAMESPACE, "lifecycle"));
+        lifecycleEl = metadata.getExtension(new QName(AbstractItemCollection.NAMESPACE, "lifecycle"));
         assertNotNull(lifecycleEl);
         assertEquals("Default", lifecycleEl.getAttributeValue("name"));
         assertEquals("Developed", lifecycleEl.getAttributeValue("phase"));

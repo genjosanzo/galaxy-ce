@@ -47,6 +47,7 @@ import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
+import org.apache.abdera.model.ExtensibleElement;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.model.Text;
 import org.apache.abdera.model.Text.Type;
@@ -189,24 +190,21 @@ public abstract class AbstractItemCollection
             atomEntry.addExtension(version);
         }
 
-//        boolean showProperties = BooleanUtils.toBoolean(request.getParameter("showProperties"));
-        boolean showHidden = BooleanUtils.toBoolean(request.getParameter("showHiddenProperties"));
-        
-        if (showHidden) {
-            if (ev != null) {
-                addMetadata(ev, atomEntry, request, "versioned", showHidden);
-                addMetadata(eOrW, atomEntry, request, "global", showHidden);
-            } else {
-                // workspaces can have metadata too
-                addMetadata(item, atomEntry, request, "global", showHidden);
-            }
+        if (ev != null) {
+            addMetadata(ev, atomEntry, request, "versioned");
+            addMetadata(eOrW, atomEntry, request, "global");
+        } else {
+            // workspaces can have metadata too
+            addMetadata(item, atomEntry, request, "global");
         }
         
         return link;
     }
 
-    protected void addMetadata(Item entryObj, Entry atomEntry, RequestContext request, String id, boolean showHidden) {
-        Element metadata = factory.newElement(new QName(NAMESPACE, "metadata"));
+    protected void addMetadata(Item entryObj, Entry atomEntry, RequestContext request, String id) {
+        boolean showHidden = BooleanUtils.toBoolean(request.getParameter("showHiddenProperties"));
+        
+        ExtensibleElement metadata = factory.newElement(new QName(NAMESPACE, "metadata"));
         
         if (id != null) {
             metadata.setAttributeValue("id", id);
@@ -217,7 +215,7 @@ public abstract class AbstractItemCollection
             
             if (p.isVisible() || showHidden) {
                 if (pd != null && pd.getExtension() instanceof AtomExtension) {
-                    ((AtomExtension) pd.getExtension()).annotateAtomEntry(entryObj, pd, atomEntry, factory);
+                    ((AtomExtension) pd.getExtension()).annotateAtomEntry(entryObj, pd, atomEntry, metadata, factory);
                 } else {
                     Element prop = factory.newElement(new QName(NAMESPACE, "property"), metadata);
                     prop.setAttributeValue("name", p.getName());
@@ -468,10 +466,7 @@ public abstract class AbstractItemCollection
         for (Element e : entry.getElements()) {
             QName q = e.getQName();
             
-            AtomExtension atomExt = getExtension(q);
-            if (atomExt != null) {
-                atomExt.updateItem(item, factory, e);
-            } else if (NAMESPACE.equals(q.getNamespaceURI())) {
+            if (NAMESPACE.equals(q.getNamespaceURI())) {
                 if ("metadata".equals(q.getLocalPart())) {
                     String id = e.getAttributeValue("id");
                     if (item instanceof EntryVersion) {
@@ -545,35 +540,42 @@ public abstract class AbstractItemCollection
     
     private void updateMetadata(Item av, Element e) throws ResponseContextException, PolicyException {
         for (Element propEl : e.getElements()) {
-            String name = propEl.getAttributeValue("name");
-            if (name == null)
-                throwMalformed("You must specify name attributes on metadata properties.");
+            QName q = propEl.getQName();
             
-            String value = propEl.getAttributeValue("value");
-            String visible = propEl.getAttributeValue("visible");
-            if (value != null) {
-                try {
-                    av.setProperty(name, value);
-                } catch (PropertyException e1) {
-                    // Ignore as its probably because its locked
-                }
-            } else {
-                List<Element> elements = propEl.getElements();
-                ArrayList<String> values = new ArrayList<String>();
-                for (Element valueEl : elements) {
-                    if (valueEl.getQName().getLocalPart().equals("value")) {
-                        values.add(valueEl.getText().trim());
+            AtomExtension atomExt = getExtension(q);
+            if (atomExt != null) {
+                atomExt.updateItem(av, factory, (ExtensibleElement) propEl);
+            }  else {
+                String name = propEl.getAttributeValue("name");
+                if (name == null)
+                    throwMalformed("You must specify name attributes on metadata properties.");
+                
+                String value = propEl.getAttributeValue("value");
+                if (value != null) {
+                    try {
+                        av.setProperty(name, value);
+                    } catch (PropertyException e1) {
+                        // Ignore as its probably because its locked
+                    }
+                } else {
+                    List<Element> elements = propEl.getElements();
+                    ArrayList<String> values = new ArrayList<String>();
+                    for (Element valueEl : elements) {
+                        if (valueEl.getQName().getLocalPart().equals("value")) {
+                            values.add(valueEl.getText().trim());
+                        }
+                    }
+                    try {
+                        av.setProperty(name, values);
+                    } catch (PropertyException e1) {
+                        // Ignore as its probably because its locked
                     }
                 }
-                try {
-                    av.setProperty(name, values);
-                } catch (PropertyException e1) {
-                    // Ignore as its probably because its locked
+                
+                String visible = propEl.getAttributeValue("visible");
+                if (visible != null) {
+                    av.setVisible(name, BooleanUtils.toBoolean(visible));
                 }
-            }
-            
-            if (visible != null) {
-                av.setVisible(name, BooleanUtils.toBoolean(visible));
             }
         }
     }
