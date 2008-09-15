@@ -49,7 +49,8 @@ public class BrowsePanel extends AbstractBrowsePanel {
     private FlowPanel browsePanel;
     private Image manageWkspcImg;
     private Hyperlink manageWkspcLink;
-
+    private boolean loadChildren;
+    
     public BrowsePanel(Galaxy galaxy) {
         super(galaxy);
     }
@@ -66,6 +67,10 @@ public class BrowsePanel extends AbstractBrowsePanel {
         if (params.size() > 0) {
             workspaceId = params.get(0);
         }
+        
+        // this is the first time we're showing this workspace
+        // so we'll also need to load the children
+        loadChildren = true;
 
         super.onShow(params);
     }
@@ -123,6 +128,7 @@ public class BrowsePanel extends AbstractBrowsePanel {
                     TreeItem child = treeItem.getChild(0);
                     workspaceTreeItem = child;
                     setActiveWorkspace((String) child.getUserObject());
+                    
                 }
 
                 cv.setRootItem(treeItem, workspaceTreeItem);
@@ -130,6 +136,13 @@ public class BrowsePanel extends AbstractBrowsePanel {
                 String token = "manage-workspace/" + workspaceId;
                 manageWkspcImg.addClickListener(NavigationUtil.createNavigatingClickListener(token));
                 manageWkspcLink.setTargetHistoryToken(token);
+                
+                if (loadChildren) {
+                    // this is the first load of the browse. This will trigger
+                    // a load of the child workspaces of the selected item
+                    loadChildren = false;
+                    refreshWorkspaces();
+                }
             }
         });
     }

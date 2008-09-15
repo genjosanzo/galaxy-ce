@@ -42,6 +42,7 @@ import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.client.util.WorkspaceOracle;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemExistsException;
+import org.mule.galaxy.web.rpc.ItemNotFoundException;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WWorkspace;
 
@@ -206,8 +207,10 @@ public class WorkspaceForm extends AbstractErrorShowingComposite {
 
             @Override
             public void onFailure(Throwable caught) {
-                if (caught instanceof ItemExistsException) {
-                    setMessage("Could not find parent workspace: " + parentWorkspace);
+                if (caught instanceof ItemNotFoundException) {
+                    menuPanel.setMessage("Could not find parent workspace: " + parentWorkspace);
+                } else if (caught instanceof ItemExistsException) {
+                    menuPanel.setMessage("A workspace with that path already exists.");
                 } else {
                     super.onFailure(caught);
                 }
