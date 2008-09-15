@@ -1,10 +1,14 @@
 package org.mule.galaxy.event;
 
+import java.util.List;
+
 public interface EventManager {
 
     void addListener(Object listener);
 
-    void removeListener(Class eventClass);
+    List<Object> getListeners();
+    
+    void removeListener(Object listener);
 
     void fireEvent(GalaxyEvent event);
 }

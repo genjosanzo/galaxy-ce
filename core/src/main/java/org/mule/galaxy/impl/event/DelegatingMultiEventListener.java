@@ -1,13 +1,13 @@
 package org.mule.galaxy.impl.event;
 
-import org.mule.galaxy.event.GalaxyEvent;
-import org.mule.galaxy.event.annotation.OnEvent;
-
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mule.galaxy.event.GalaxyEvent;
+import org.mule.galaxy.event.annotation.OnEvent;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springmodules.jcr.SessionFactory;
 
 /**
  * Delegates to a listener observing multiple events (through the {@link org.mule.galaxy.event.annotation.BindToEvents} annotation and thus
@@ -18,8 +18,10 @@ class DelegatingMultiEventListener extends AbstractDelegatingGalaxyEventListener
 
     private Map<Class<? extends GalaxyEvent>, Method> eventToMethodMap = new HashMap<Class<? extends GalaxyEvent>, Method>();
 
-    public DelegatingMultiEventListener(final Object listenerCandidate, final ThreadPoolTaskExecutor executor) {
-        super(listenerCandidate, executor);
+    public DelegatingMultiEventListener(final Object listenerCandidate, 
+                                        final ThreadPoolTaskExecutor executor,
+                                        final SessionFactory sessionFactory) {
+        super(listenerCandidate, executor, sessionFactory);
         delegate = listenerCandidate;
         // discover and initialize event-to-method mappings
         Method[] methods = listenerCandidate.getClass().getMethods();

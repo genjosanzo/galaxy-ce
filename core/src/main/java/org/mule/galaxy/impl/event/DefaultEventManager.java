@@ -18,6 +18,7 @@ import org.mule.galaxy.event.annotation.BindToEvent;
 import org.mule.galaxy.event.annotation.BindToEvents;
 import org.mule.galaxy.event.annotation.OnEvent;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springmodules.jcr.SessionFactory;
 
 public class DefaultEventManager implements EventManager {
 
@@ -28,13 +29,18 @@ public class DefaultEventManager implements EventManager {
     protected LinkedHashMap<Class, List<InternalGalaxyEventListener>> event2listeners = new LinkedHashMap<Class, List<InternalGalaxyEventListener>>();
 
     protected Map<Object, List<InternalGalaxyEventListener>> listeners = new HashMap<Object, List<InternalGalaxyEventListener>>();
-    
+     
     /**
      * Use Spring's wrapper around TPTE, exposes config properties as a JavaBean.
      */
     private ThreadPoolTaskExecutor executor;
 
-    public DefaultEventManager(final List<?> newListeners, final ThreadPoolTaskExecutor executor) {
+    private SessionFactory sessionFactory;
+    
+    public DefaultEventManager(final List<?> newListeners, 
+                               final SessionFactory sessionFactory,
+                               final ThreadPoolTaskExecutor executor) {
+        this.sessionFactory = sessionFactory;
         this.executor = executor;
         for (Object listener : newListeners) {
             addListener(listener);
@@ -63,7 +69,7 @@ public class DefaultEventManager implements EventManager {
                     if (adapter != null) {
                         throw new IllegalArgumentException("Multiple @OnEvent entry-points detected for " + clazz.getName());
                     }
-                    adapter = new DelegatingSingleEventListener(annotation, listenerCandidate, method, executor);
+                    adapter = new DelegatingSingleEventListener(annotation, listenerCandidate, method, executor, sessionFactory);
                 }
             }
 
@@ -75,7 +81,7 @@ public class DefaultEventManager implements EventManager {
         } else if (clazz.isAnnotationPresent(BindToEvents.class)) {
             // multi-event listeners
             eventNames = clazz.getAnnotation(BindToEvents.class).value();
-            adapter = new DelegatingMultiEventListener(listenerCandidate, executor);
+            adapter = new DelegatingMultiEventListener(listenerCandidate, executor, sessionFactory);
         } else {
             throw new IllegalArgumentException(clazz.getName() + " doesn't have a BindToEvent(s) annotation");
         }
@@ -210,4 +216,5 @@ public class DefaultEventManager implements EventManager {
     public ThreadPoolTaskExecutor getExecutor() {
         return executor;
     }
+    
 }

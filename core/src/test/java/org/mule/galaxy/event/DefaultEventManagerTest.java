@@ -29,7 +29,7 @@ public class DefaultEventManagerTest extends TestCase {
     private ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 
     public void testRemoveListener() {
-        EventManager em = new DefaultEventManager(Collections.emptyList(), executor);
+        EventManager em = new DefaultEventManager(Collections.emptyList(), null, executor);
         TestSingleEventListener listener = new TestSingleEventListener();
         TestEvent event = new TestEvent(this);
         em.addListener(listener);
@@ -48,7 +48,7 @@ public class DefaultEventManagerTest extends TestCase {
     }
 
     public void testNullInput() throws Exception {
-        EventManager em = new DefaultEventManager(Collections.emptyList(), executor);
+        EventManager em = new DefaultEventManager(Collections.emptyList(), null, executor);
         try {
             em.addListener(null);
             fail("Should've thrown an IllegalArgumentException");
@@ -58,7 +58,7 @@ public class DefaultEventManagerTest extends TestCase {
     }
 
     public void testMissingOnEventAnnotation() throws Exception {
-        EventManager em = new DefaultEventManager(Collections.emptyList(), executor);
+        EventManager em = new DefaultEventManager(Collections.emptyList(), null, executor);
         try {
             em.addListener(new ClassAnnotationMissingOnEvent());
             fail("Should've thrown an IllegalArgumentException");
@@ -68,7 +68,7 @@ public class DefaultEventManagerTest extends TestCase {
     }
 
     public void testMissingBindEventAnnotation() throws Exception {
-        EventManager em = new DefaultEventManager(Collections.emptyList(), executor);
+        EventManager em = new DefaultEventManager(Collections.emptyList(), null, executor);
         try {
             em.addListener(new Object());
             fail("Should've thrown an IllegalArgumentException");
@@ -78,7 +78,7 @@ public class DefaultEventManagerTest extends TestCase {
     }
 
     public void testAnnotationInheritance() throws Exception {
-        EventManager em = new DefaultEventManager(Collections.emptyList(), executor);
+        EventManager em = new DefaultEventManager(Collections.emptyList(), null, executor);
         final InheritedBindingWithOnEvent listener = new InheritedBindingWithOnEvent();
         em.addListener(listener);
 
@@ -86,7 +86,7 @@ public class DefaultEventManagerTest extends TestCase {
     }
 
     public void testOnEventAnnotation() throws Exception {
-        EventManager em = new DefaultEventManager(Collections.emptyList(), executor);
+        EventManager em = new DefaultEventManager(Collections.emptyList(), null, executor);
         final InheritedBindingWithOnEvent listener = new InheritedBindingWithOnEvent();
         em.addListener(listener);
 
@@ -101,7 +101,7 @@ public class DefaultEventManagerTest extends TestCase {
      * Single event, multiple @OnEvent entrypoints should fail
      */
     public void testMultipleOnEventAnnotationsSingleListener() throws Exception {
-        EventManager em = new DefaultEventManager(Collections.emptyList(), executor);
+        EventManager em = new DefaultEventManager(Collections.emptyList(), null, executor);
         SingleEventMultipleEntryPoints listener = new SingleEventMultipleEntryPoints();
         try {
             em.addListener(listener);
@@ -113,7 +113,7 @@ public class DefaultEventManagerTest extends TestCase {
     }
 
     public void testMultiEventListener() {
-        EventManager em = new DefaultEventManager(Collections.emptyList(), executor);
+        EventManager em = new DefaultEventManager(Collections.emptyList(), null, executor);
         MultiEventListener listener = new MultiEventListener();
         em.addListener(listener);
         
@@ -128,7 +128,7 @@ public class DefaultEventManagerTest extends TestCase {
     }
 
     public void testNonMatchingOnEventParam() {
-        EventManager em = new DefaultEventManager(Collections.emptyList(), executor);
+        EventManager em = new DefaultEventManager(Collections.emptyList(), null, executor);
         NonMatchingOnEventParam listener = new NonMatchingOnEventParam();
         try {
             em.addListener(listener);

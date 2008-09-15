@@ -1,8 +1,6 @@
 package org.mule.galaxy.impl.event;
 
-import org.mule.galaxy.event.GalaxyEvent;
-import org.mule.galaxy.event.annotation.Async;
-
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.ExecutionException;
@@ -11,10 +9,19 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.event.GalaxyEvent;
+import org.mule.galaxy.event.annotation.Async;
+import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.core.task.TaskRejectedException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springmodules.jcr.JcrCallback;
+import org.springmodules.jcr.SessionFactory;
 
 /**
  * A supporting class for delegating galaxy listener implementations.
@@ -38,9 +45,14 @@ public abstract class AbstractDelegatingGalaxyEventListener implements Delegatin
      */
     protected final ThreadPoolTaskExecutor executor;
 
-    public AbstractDelegatingGalaxyEventListener(final Object listenerCandidate, final ThreadPoolTaskExecutor executor) {
+    protected final SessionFactory sessionFactory;
+    
+    public AbstractDelegatingGalaxyEventListener(final Object listenerCandidate,
+                                                 final ThreadPoolTaskExecutor executor,
+                                                 final SessionFactory sessionFactory) {
         this.delegate = listenerCandidate;
         this.executor = executor;
+        this.sessionFactory = sessionFactory;
     }
 
     /**
@@ -79,7 +91,7 @@ public abstract class AbstractDelegatingGalaxyEventListener implements Delegatin
      * @param method method to invoke
      */
     protected void internalOnEvent(final GalaxyEvent event, final Method method) {
-        final MethodInvoker wrapper = new MethodInvoker(event, method);
+        final MethodInvoker wrapper = new MethodInvoker(event, method, sessionFactory);
 
         if (!method.isAnnotationPresent(Async.class)) {
             // synchronous execution in the event-dispatching thread
@@ -129,14 +141,45 @@ public abstract class AbstractDelegatingGalaxyEventListener implements Delegatin
     protected class MethodInvoker implements Runnable {
         private final GalaxyEvent event;
         private Method method;
+        private final SessionFactory sessionFactory;
 
-        public MethodInvoker(final GalaxyEvent event, final Method method) {
+        public MethodInvoker(final GalaxyEvent event, final Method method, SessionFactory sessionFactory) {
             this.event = event;
             this.method = method;
+            this.sessionFactory = sessionFactory;
+        }
+        
+        public void run() {
+            SecurityUtils.doPriveleged(new Runnable() {
+                public void run() {
+                    runAsAdmin();
+                }
+            }); 
+        }
+        
+        public void runAsAdmin() {
+            // allow a null sessionFactory so its easier to run tests
+            if (sessionFactory != null) {
+                try {
+                    JcrUtil.doInTransaction(sessionFactory, new JcrCallback() {
+                        public Object doInJcr(Session session) throws IOException, RepositoryException {
+                            runInTransaction();
+                            return null;
+                        }
+                    });
+                } catch (IOException e) {
+                    throw new RuntimeException();
+                } catch (RepositoryException e) {
+                    throw new RuntimeException();
+                }
+            } else {
+                runInTransaction();
+            }
         }
 
-        public void run() {
+        public void runInTransaction() {
             try {
+                
                 method.invoke(delegate, event);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);

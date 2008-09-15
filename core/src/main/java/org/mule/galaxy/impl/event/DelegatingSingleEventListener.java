@@ -1,12 +1,12 @@
 package org.mule.galaxy.impl.event;
 
-import org.mule.galaxy.event.GalaxyEvent;
-import org.mule.galaxy.event.annotation.BindToEvent;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+import org.mule.galaxy.event.GalaxyEvent;
+import org.mule.galaxy.event.annotation.BindToEvent;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springmodules.jcr.SessionFactory;
 
 /**
  * Delegates to a single method marked with the {@link org.mule.galaxy.event.annotation.OnEvent} annotation.
@@ -14,8 +14,12 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 class DelegatingSingleEventListener extends AbstractDelegatingGalaxyEventListener {
     private final Method method;
 
-    public DelegatingSingleEventListener(final Annotation annotation, final Object listenerCandidate, final Method method, final ThreadPoolTaskExecutor executor) {
-        super(listenerCandidate, executor);
+    public DelegatingSingleEventListener(final Annotation annotation, 
+                                         final Object listenerCandidate, 
+                                         final Method method, 
+                                         final ThreadPoolTaskExecutor executor,
+                                         final SessionFactory sessionFactory) {
+        super(listenerCandidate, executor, sessionFactory);
         this.method = method;
         validateMethodParams(method);
         final String eventName = ((BindToEvent) annotation).value() + "Event";
