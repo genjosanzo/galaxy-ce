@@ -50,8 +50,8 @@ public class AdminServiceImpl implements AdminService {
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
         } catch (RegistryException e) {
-            log.error(e);
             Throwable t = ExceptionUtils.getRootCause(e);
+            log.error(t);
             String msg = t != null
                     ? t.getMessage()
                     : e.getMessage();
