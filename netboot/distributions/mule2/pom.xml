@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mule.galaxy.netboot</groupId>
         <artifactId>netboot-distributions</artifactId>
-        <version>1.5-SNAPSHOT</version>
+        <version>1.5-RC</version>
     </parent>
     <artifactId>mule2-netboot-distribution</artifactId>
     <packaging>pom</packaging>
