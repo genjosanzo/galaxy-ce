@@ -53,6 +53,10 @@ public class BrowsePanel extends AbstractBrowsePanel {
     
     public BrowsePanel(Galaxy galaxy) {
         super(galaxy);
+        
+        // this is the first time we're showing this workspace
+        // so we'll also need to load the children
+        loadChildren = true;
     }
 
     protected String getHistoryToken() {
@@ -68,9 +72,6 @@ public class BrowsePanel extends AbstractBrowsePanel {
             workspaceId = params.get(0);
         }
         
-        // this is the first time we're showing this workspace
-        // so we'll also need to load the children
-        loadChildren = true;
 
         super.onShow(params);
     }
@@ -96,15 +97,6 @@ public class BrowsePanel extends AbstractBrowsePanel {
         browsePanel.add(cv);
         currentTopPanel = browsePanel;
         menuPanel.setTop(browsePanel);
-
-        cv.addTreeListener(new TreeListener() {
-            public void onTreeItemSelected(TreeItem ti) {
-                setActiveWorkspace((String) ti.getUserObject());
-            }
-
-            public void onTreeItemStateChanged(TreeItem ti) {
-            }
-        });
     }
 
     public void refresh() {
@@ -113,6 +105,10 @@ public class BrowsePanel extends AbstractBrowsePanel {
     }
 
     public void refreshWorkspaces() {
+        refreshWorkspaces(true);
+    }
+
+    public void refreshWorkspaces(final boolean reloadArtifacts) {
         final TreeItem treeItem = new TreeItem();
 
         // Load the workspaces into a tree on the left
@@ -122,13 +118,12 @@ public class BrowsePanel extends AbstractBrowsePanel {
             public void onSuccess(Object o) {
                 workspaces = (Collection<WWorkspace>) o;
 
-                initWorkspaces(treeItem, workspaces);
+                initWorkspaces(treeItem, workspaces, reloadArtifacts);
 
                 if (workspaceId == null) {
                     TreeItem child = treeItem.getChild(0);
                     workspaceTreeItem = child;
-                    setActiveWorkspace((String) child.getUserObject());
-                    
+                    setActiveWorkspace((String) child.getUserObject(), reloadArtifacts);
                 }
 
                 cv.setRootItem(treeItem, workspaceTreeItem);
@@ -141,13 +136,13 @@ public class BrowsePanel extends AbstractBrowsePanel {
                     // this is the first load of the browse. This will trigger
                     // a load of the child workspaces of the selected item
                     loadChildren = false;
-                    refreshWorkspaces();
+                    refreshWorkspaces(false);
                 }
             }
         });
     }
 
-    private void initWorkspaces(TreeItem ti, Collection<WWorkspace> workspaces) {
+    private void initWorkspaces(TreeItem ti, Collection<WWorkspace> workspaces, boolean reloadArtifacts) {
         for (Iterator<WWorkspace> itr = workspaces.iterator(); itr.hasNext();) {
             WWorkspace wi = itr.next();
 
@@ -155,13 +150,13 @@ public class BrowsePanel extends AbstractBrowsePanel {
             treeItem.setUserObject(wi.getId());
 
             if (workspaceId != null && workspaceId.equals(wi.getId())) {
-                setActiveWorkspace(workspaceId);
+                setActiveWorkspace(workspaceId, reloadArtifacts);
                 workspaceTreeItem = treeItem;
             }
 
             Collection<WWorkspace> children = wi.getWorkspaces();
             if (children != null) {
-                initWorkspaces(treeItem, children);
+                initWorkspaces(treeItem, children, reloadArtifacts);
             }
         }
     }
@@ -186,10 +181,12 @@ public class BrowsePanel extends AbstractBrowsePanel {
         return null;
     }
 
-    public void setActiveWorkspace(String workspaceId) {
+    public void setActiveWorkspace(String workspaceId, boolean reloadArtifacts) {
         BrowsePanel.lastWorkspaceId = workspaceId;
         this.workspaceId = workspaceId;
-        refreshArtifacts();
+        if (reloadArtifacts) {
+            refreshArtifacts();
+        }
     }
 
     protected void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback) {

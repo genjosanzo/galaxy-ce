@@ -7,6 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-maven-publish-plugin</artifactId>
+  <version>1.5-RC</version>
     <packaging>maven-plugin</packaging>
     <name>Galaxy Maven Publishing Plugin</name>
     <reporting>

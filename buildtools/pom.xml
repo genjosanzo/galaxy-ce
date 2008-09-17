@@ -6,6 +6,7 @@
         <version>1.5-RC</version>
     </parent>
     <artifactId>galaxy-buildtools</artifactId>
+  <version>1.5-RC</version>
     <packaging>jar</packaging>
     <name>Galaxy Build Tools</name>
     <description>These are the tools used by the Galaxy's build procedure</description>

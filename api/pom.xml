@@ -7,6 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-api</artifactId>
+  <version>1.5-RC</version>
   <packaging>jar</packaging>
   <name>Galaxy API</name>
 

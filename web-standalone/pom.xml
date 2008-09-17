@@ -8,6 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-web-standalone</artifactId>
+  <version>1.5-RC</version>
   <name>Galaxy Web Application Standalone</name>
 
   <dependencies>
