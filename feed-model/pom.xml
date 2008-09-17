@@ -2,12 +2,12 @@
   <parent>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-parent</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5-RC</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-feed-model</artifactId>
-  <version> 1.5-SNAPSHOT</version>
+  <version>1.5-RC</version>
   <packaging>jar</packaging>
   <name>Galaxy Feed Extensions</name>
 
