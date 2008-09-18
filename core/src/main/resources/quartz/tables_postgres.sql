@@ -1,8 +1,3 @@
--- Thanks to Patrick Lightbody for submitting this...
---
--- In your Quartz properties file, you'll need to set 
--- org.quartz.jobStore.driverDelegateClass = org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
-
 drop table qrtz_job_listeners;
 drop table qrtz_trigger_listeners;
 drop table qrtz_fired_triggers;
