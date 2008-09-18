@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-    <bean name="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" 
+    <bean name="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"
           depends-on="dbInitializer">
         <!--
             Avoid deadlocks when duplicate spring app context initialization happens, typically
@@ -11,7 +13,7 @@
             will be started by a separate launcher bean when everything is available and calm.
         -->
         <property name="autoStartup" value="false"/>
-        
+
         <!-- Expose application context via a scheduler context -->
         <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
         <property name="waitForJobsToCompleteOnShutdown" value="true"/>
@@ -31,12 +33,7 @@
         <property name="dataSource" ref="internalDataSource"/>
 
         <property name="quartzProperties">
-            <props>
-                <prop key="org.quartz.jobStore.isClustered">false</prop>
-                <prop key="org.quartz.jobStore.driverDelegateClass">org.mule.galaxy.config.quartz.BlobFixDelegate</prop>
-                <prop key="org.quartz.scheduler.instanceId">AUTO</prop>
-                <prop key="org.quartz.jobStore.useProperties">true</prop>
-            </props>
+            <util:properties location="classpath:META-INF/scheduler.properties"/>
         </property>
     </bean>
 

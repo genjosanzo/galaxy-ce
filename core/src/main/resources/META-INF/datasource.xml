@@ -5,9 +5,16 @@
 
     <!-- SimpleDriverDataSource is a slightly better version of DriverManagerDataSource (improved classloading behavior) -->
     <bean name="internalDataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <!-- TODO: change this via the configurator -->
         <property name="driverClass" value="org.apache.derby.jdbc.EmbeddedDriver"/>
-        <!-- TODO reuse the homeDir constant -->
         <property name="url" value="jdbc:derby:./galaxy-data/db;create=true"/>
+        <!-- TODO reuse the homeDir constant -->
+    </bean>
+
+    <bean name="dbInitializer" class="org.mule.galaxy.config.jackrabbit.DatabaseInitializer">
+        <property name="dataSource" ref="internalDataSource"/>
+        <!-- TODO: change this via the configurator -->
+        <property name="ddlScript" value="classpath:/quartz/tables_derby.sql"/>
     </bean>
 
     <!--
@@ -22,11 +29,6 @@
                 <entry key="jdbc/galaxy/InternalDS" value-ref="internalDataSource"/>
             </map>
         </property>
-    </bean>
-
-    <bean name="dbInitializer" class="org.mule.galaxy.config.jackrabbit.DatabaseInitializer">
-        <property name="dataSource" ref="internalDataSource"/>
-        <property name="ddlScript" value="classpath:/quartz/tables_derby.sql"/>
     </bean>
 
 </beans>
