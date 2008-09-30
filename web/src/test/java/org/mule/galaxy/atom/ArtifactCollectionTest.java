@@ -292,6 +292,11 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res = client.put(v2Uri, e, defaultOpts);
         assertEquals(204, res.getStatus());
         res.release();
+
+        String asdf = colUri.toString() + "/Default%20Workspace/hello_world.wsdl;atom";
+        res = client.put(asdf, e, defaultOpts);
+        assertEquals(204, res.getStatus());
+        res.release();
         
         // Try to show the hidden metadata
         String v3Uri = colUri.toString() + "/Default%20Workspace/hello_world.wsdl;atom?version=3.0";

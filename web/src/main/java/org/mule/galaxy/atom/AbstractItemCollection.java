@@ -369,7 +369,12 @@ public abstract class AbstractItemCollection
     }
 
     public String getId(Item item) {
-        return ID_PREFIX + item.getId();
+        Item versionOrItem = getEntryVersion(item);
+        if (versionOrItem == null) {
+            versionOrItem = item;
+        }
+        
+        return ID_PREFIX + versionOrItem.getId();
     }
 
     @Override
