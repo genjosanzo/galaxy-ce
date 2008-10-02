@@ -35,6 +35,7 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HasAlignment;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -100,7 +101,9 @@ public class SearchForm extends AbstractErrorShowingComposite {
         table.setWidget(row, 1, workspaceTB);
         includeChildWkspcCB = new CheckBox();
         table.setText(row, 2, " Include Child Workspaces: ");
+        table.getCellFormatter().setHorizontalAlignment(row, 2, HasAlignment.ALIGN_RIGHT);
         table.setWidget(row, 3, includeChildWkspcCB);
+        table.getCellFormatter().setHorizontalAlignment(row, 3, HasAlignment.ALIGN_LEFT);
 
         freeformQueryArea = new TextArea();
         freeformQueryArea.setCharacterWidth(83);
