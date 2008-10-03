@@ -13,6 +13,10 @@
         <namespace>
             <local-name>mule</local-name>
             <uri>http://www.mulesource.org/schema/mule/core/2.0</uri>
+        <namespace>
+            <local-name>mule</local-name>
+            <uri>http://www.mulesource.org/schema/mule/core/2.1</uri>
+        </namespace>
         </namespace>
         <indexes>
             <index>
