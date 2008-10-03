@@ -89,7 +89,6 @@ public class EditPropertyPanel extends AbstractComposite {
         editPanel.setStyleName("add-property-inline");
 
         Widget editForm = renderer.createEditForm();
-        editForm.setStyleName("add-property-inline");
         editPanel.add(editForm);
         
         FlowPanel buttonPanel = new FlowPanel();
