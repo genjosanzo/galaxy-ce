@@ -2,11 +2,11 @@
                 xmlns:g="http://www.mulesource.org/schema/galaxy-plugins">
     <xsl:output method="text" version="1.0" encoding="UTF-8" indent="no" omit-xml-declaration="yes" xml:space="default"/>
 
-    <xsl:template match="g:galaxy-plugins">
+    <xsl:template match="g:galaxy">
         <xsl:apply-templates/>
     </xsl:template>
 
-    <xsl:template match="g:galaxy-plugin">
+    <xsl:template match="g:artifact-type">
 h1. <xsl:value-of select="g:name"/> Plugin
 
 <xsl:value-of select="g:description"/>
