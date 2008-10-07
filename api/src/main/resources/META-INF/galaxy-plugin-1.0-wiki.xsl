@@ -14,8 +14,7 @@ h1. <xsl:value-of select="g:name"/> Plugin
 h3. Properties associated with this plugin
 
 ||Property||Value||
-|Content Type|<xsl:value-of select="g:content-type"/>|
-<xsl:apply-templates select="g:namespace"/>
+|Content Type|<xsl:value-of select="g:content-type"/>|<xsl:apply-templates select="g:namespace"/>
 
 
 h3. Indexes
