@@ -15,7 +15,7 @@ h3. Properties associated with this plugin
 
 ||Property||Value||
 |Content Type|<xsl:value-of select="g:content-type"/>|
-|Namespace|<xsl:value-of select="g:namespace/g:local-name"/> (<xsl:value-of select="g:namespace/g:uri"/>)|
+<xsl:apply-templates select="g:namespace"/>
 
 
 h3. Indexes
@@ -41,6 +41,9 @@ Policies allow for design time or runtime rules to be applied to artifacts in th
 
 <xsl:template match="g:policy">
 |<xsl:value-of select="g:name"/>|<xsl:value-of select="g:description"/>|</xsl:template>
+
+<xsl:template match="g:namespace">
+|Namespace|<xsl:value-of select="g:local-name"/> (<xsl:value-of select="g:uri"/>)|</xsl:template>
 
     <xsl:template match="g:notes">
 <xsl:value-of select="."/>
