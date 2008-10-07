@@ -37,7 +37,7 @@ Policies allow for design time or runtime rules to be applied to artifacts in th
     </xsl:template>
 
 <xsl:template match="g:index">
-|<xsl:value-of select="g:description"/>|<xsl:value-of select="indexer"/>|</xsl:template>
+|<xsl:value-of select="g:description"/>|<xsl:value-of select="g:indexer"/>|</xsl:template>
 
 <xsl:template match="g:policy">
 |<xsl:value-of select="g:name"/>|<xsl:value-of select="g:description"/>|</xsl:template>
