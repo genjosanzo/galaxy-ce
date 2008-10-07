@@ -15,7 +15,7 @@ h3. Properties associated with this plugin
 
 ||Property||Value||
 |Content Type|<xsl:value-of select="g:content-type"/>|
-|Namespace|<xsl:value-of select="g:namespace/g:prefix"/> (<xsl:value-of select="g:namespace/g:uri"/>)|
+|Namespace|<xsl:value-of select="g:namespace/g:local-name"/> (<xsl:value-of select="g:namespace/g:uri"/>)|
 
 
 h3. Indexes
@@ -29,7 +29,7 @@ Policies allow for design time or runtime rules to be applied to artifacts in th
 
     <xsl:template match="g:indexes">
         <xsl:apply-templates select="g:notes"/>
-||Field Name||Display Name||Description||Type||<xsl:apply-templates select="g:index"/></xsl:template>
+||Display Name||Type||<xsl:apply-templates select="g:index"/></xsl:template>
 
     <xsl:template match="g:policies">
         <xsl:apply-templates select="g:notes"/>
@@ -37,7 +37,7 @@ Policies allow for design time or runtime rules to be applied to artifacts in th
     </xsl:template>
 
 <xsl:template match="g:index">
-|<xsl:value-of select="g:field-name"/>|<xsl:value-of select="g:display-name"/>|<xsl:value-of select="g:description"/>|<xsl:value-of select="g:language"/>|</xsl:template>
+|<xsl:value-of select="g:description"/>|<xsl:value-of select="indexer"/>|</xsl:template>
 
 <xsl:template match="g:policy">
 |<xsl:value-of select="g:name"/>|<xsl:value-of select="g:description"/>|</xsl:template>
