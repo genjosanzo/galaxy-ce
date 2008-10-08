@@ -32,7 +32,10 @@ public class PropertyInfoImpl implements PropertyInfo {
         this.name= name;
         this.desc = pd;
         this.value = value;
-        loadedDescriptor = pd != null;
+        if (pd != null) {
+            loadedDescriptor = true;
+            description = pd.getDescription();
+        }
     }
     public String getName() {
         return name;
