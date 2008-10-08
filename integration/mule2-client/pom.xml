@@ -12,7 +12,7 @@
     <name>Galaxy Mule 2 Client</name>
 
     <properties>
-        <muleVersion>2.0.1</muleVersion>
+        <muleVersion>2.1.0</muleVersion>
     </properties>
 
     <dependencies>
@@ -71,6 +71,32 @@
                     <groupId>xml-apis</groupId>
                     <artifactId>xmlParserAPIs</artifactId>
                 </exclusion>
+                
+                <!-- We already have tehse on the classpath -->
+                <exclusion>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-httpclient</groupId>
+                    <artifactId>commons-httpclient.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>activation</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -104,6 +130,32 @@
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
+                
+                <!-- We already have tehse on the classpath -->
+                <exclusion>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-httpclient</groupId>
+                    <artifactId>commons-httpclient.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>activation</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -121,6 +173,32 @@
                     <groupId>org.slf4j</groupId>
                     <artifactId>jcl104-over-slf4j</artifactId>
                 </exclusion>
+                
+                <!-- We already have tehse on the classpath -->
+                <exclusion>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-httpclient</groupId>
+                    <artifactId>commons-httpclient.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>activation</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -133,6 +211,32 @@
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>jcl104-over-slf4j</artifactId>
+                </exclusion>
+                
+                <!-- We already have tehse on the classpath -->
+                <exclusion>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-httpclient</groupId>
+                    <artifactId>commons-httpclient.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>activation</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -157,6 +261,32 @@
                 <exclusion>
                     <groupId>xml-apis</groupId>
                     <artifactId>xmlParserAPIs</artifactId>
+                </exclusion>
+                
+                <!-- We already have tehse on the classpath -->
+                <exclusion>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-httpclient</groupId>
+                    <artifactId>commons-httpclient.osgi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>activation</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

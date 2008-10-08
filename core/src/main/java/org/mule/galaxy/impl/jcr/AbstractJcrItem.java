@@ -280,7 +280,7 @@ public abstract class AbstractJcrItem implements Item {
                     Object value = ext.get(this, pd, false);
                     
                     if (value != null) {
-                        properties.put(pd.getProperty(), new PropertyInfoImpl(this, pd.getProperty(), node, manager.getTypeManager(), value));
+                        properties.put(pd.getProperty(), new PropertyInfoImpl(this, pd.getProperty(), node, pd, value));
                     }
                 }
             }

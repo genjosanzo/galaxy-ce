@@ -117,7 +117,7 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
                 
                 Index idx = new Index(indexType.getDescription(),
                                       pluginXml.getContentType(),
-                                      getQName(indexType.getNamespace()),
+                                      getQNames(indexType.getNamespace()),
                                       ClassUtils.resolveClassName(indexType.getSearchInputType(),
                                                                   getClass().getClassLoader()),
                                       indexType.getIndexer(),
@@ -159,6 +159,37 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
         }
     }
 
+    protected Set<QName> getQNames(NamespaceType namespaceType)
+    {
+        Set<QName> types = new HashSet<QName>();
+        
+        if (namespaceType == null)
+        {
+            if (pluginQNames.size() == 0)
+            {
+                throw new IllegalArgumentException("No plugin namespace set");
+            }
+            else
+            {
+                types.addAll(pluginQNames);
+                return types;
+            }
+        }
+
+        QName name;
+        if (namespaceType.getUri() != null)
+        {
+            name = new QName(namespaceType.getUri(), namespaceType.getLocalName());
+        }
+        else
+        {
+            name = new QName(namespaceType.getLocalName());
+        }
+        
+        types.add(name);
+        return types;
+    }
+    
     protected QName getQName(NamespaceType namespaceType)
     {
         if (namespaceType == null)

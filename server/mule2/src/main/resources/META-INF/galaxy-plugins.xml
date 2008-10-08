@@ -12,6 +12,10 @@
         <!--<large-icon>META-INF/images/mule2_32x32.png</large-icon>-->
         <namespace>
             <local-name>mule</local-name>
+            <uri>http://www.mulesource.org/schema/mule/core/2.1</uri>
+        </namespace>
+        <namespace>
+            <local-name>mule</local-name>
             <uri>http://www.mulesource.org/schema/mule/core/2.0</uri>
         <namespace>
             <local-name>mule</local-name>
@@ -25,7 +29,7 @@
                 <search-input-type>java.lang.String</search-input-type>
                 <configuration>
                   <property>mule2.description</property>
-                  <expression><![CDATA[/*[local-name()='${namespace.local-name}' and namespace-uri()='${namespace.uri}']/*[local-name()='description']]]></expression>
+                  <expression><![CDATA[/*[local-name()='${namespace.local-name}']/*[local-name()='description']]]></expression>
                 </configuration>
             </index>
             <!--<index>-->
@@ -71,10 +75,9 @@
                 <configuration>
                   <property>mule2.service</property>
                   <expression><![CDATA[
-declare default element namespace "${namespace.uri}";
 declare variable $document external;
 <values> {
-    for $svc in $document//service
+    for $svc in $document//*[local-name()='service']
         return <value>{data($svc/@name)}</value>
 } </values>
 ]]></expression></configuration>
@@ -86,10 +89,9 @@ declare variable $document external;
                 <configuration>
                   <property>mule2.endpoint</property>
                   <expression><![CDATA[
-declare default element namespace "${namespace.uri}";
 declare variable $document external;
 <values> {
-    for $svc in $document/mule/endpoint
+    for $svc in $document/*[local-name()='mule']/*[local-name()='endpoint']
         return <value>{data($svc/@name)}</value>
 } </values>
 ]]>
@@ -102,10 +104,9 @@ declare variable $document external;
                 <configuration>
                   <property>mule2.model</property>
                   <expression><![CDATA[
-declare default element namespace "${namespace.uri}";
 declare variable $document external;
 <values> {
-    for $svc in $document/mule/model
+    for $svc in $document/*[local-name()='mule']/*[local-name()='model']
         return <value>{data($svc/@name)}</value>
 } </values>
 ]]>

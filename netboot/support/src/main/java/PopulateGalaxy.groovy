@@ -17,6 +17,7 @@
  */
 
 import org.mule.galaxy.client.Galaxy
+import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.ExecutorCompletionService
@@ -71,6 +72,11 @@ def muleHome = opts.m ?: System.properties.'mule.home'
 if (!muleHome) {
     println '''\nMULE_HOME is not set\n'''
     cli.usage()
+    System.exit(-1)
+}
+
+if (!new File(muleHome).exists()) {
+    println '''A mule installation does not exist at \"${muleHome}\"'''
     System.exit(-1)
 }
 

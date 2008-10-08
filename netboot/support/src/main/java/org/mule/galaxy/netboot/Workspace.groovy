@@ -44,7 +44,7 @@ class Workspace {
 
     def List<Voter> voters = []
 
-    def numUnits = Runtime.runtime.availableProcessors() * 4
+    def numUnits = Runtime.runtime.availableProcessors() * 2
 
     def ExecutorService exec = Executors.newFixedThreadPool(numUnits)
     def ExecutorCompletionService compService = new ExecutorCompletionService(exec)

@@ -17,20 +17,22 @@ public class PropertyInfoImpl implements PropertyInfo {
     private String description;
     private Object desc;
     private boolean loadedDescriptor;
-    private final TypeManager tm;
+    private TypeManager tm;
     private final Item item;
     private final Object value;
     
     public PropertyInfoImpl(Item item, String name, Node node, TypeManager tm) {
-        this(item, name, node, tm, null);
+        this(item, name, node, null, null);
+        this.tm = tm;
     }
 
-    public PropertyInfoImpl(Item item, String name, Node node, TypeManager tm, Object value) {
+    public PropertyInfoImpl(Item item, String name, Node node, PropertyDescriptor pd, Object value) {
         this.item = item;
         this.node = node;
         this.name= name;
-        this.tm = tm;
+        this.desc = pd;
         this.value = value;
+        loadedDescriptor = pd != null;
     }
     public String getName() {
         return name;

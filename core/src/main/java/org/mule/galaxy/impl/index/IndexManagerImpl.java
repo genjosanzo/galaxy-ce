@@ -296,18 +296,15 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                                 // lookup a version associated with this session
                                 final ArtifactVersion version = (ArtifactVersion) getRegistry().getItemById(artifactVersionId);
                                 
-                                doIndex(version);
+                                try {
+                                    doIndex(version);
+                                } catch (Throwable t) {
+                                    handleIndexingException(t);
+                                }
 
                                 ((JcrVersion) version).setIndexedPropertiesStale(false);
                                 session.save();
-                            } catch (RepositoryException e) {
-                                handleIndexingException(e);
-                            } catch (NotFoundException e) {
-                                handleIndexingException(e);
-                            } catch (RegistryException e) {
-                                handleIndexingException(e);
-                            } catch (AccessException e) {
-                                // this can't happen
+                            } catch (Throwable e) {
                                 handleIndexingException(e);
                             } 
                         }
@@ -455,9 +452,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                     
                     try {
                         getIndexer(idx.getIndexer()).index(version, ch, idx);
-                    } catch (IndexException e) {
-                        handleIndexingException(idx, e);
-                    } catch (IOException e) {
+                    } catch (Throwable e) {
                         handleIndexingException(idx, e);
                     }
                 }

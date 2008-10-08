@@ -31,7 +31,7 @@ public class QueryTest extends AbstractGalaxyTest {
         results = registry.search(new Query(Artifact.class)
             .fromId(workspace.getId())
                  .add(OpRestriction.eq("mule2.service", "GreeterUMO"))
-                 .add(OpRestriction.eq("documentType", Constants.MULE2_QNAME))).getResults();
+                 .add(OpRestriction.eq("documentType", Constants.MULE2_1_QNAME))).getResults();
         assertEquals(1, results.size());
 
         results = registry.search(new Query(Artifact.class)
@@ -57,7 +57,7 @@ public class QueryTest extends AbstractGalaxyTest {
 
         results = registry.search(new Query(Artifact.class)
             .fromId(workspace.getId())
-                 .add(OpRestriction.not(OpRestriction.eq("documentType", Constants.MULE2_QNAME)))).getResults();
+                 .add(OpRestriction.not(OpRestriction.eq("documentType", Constants.MULE2_1_QNAME)))).getResults();
         assertEquals(1, results.size());
 
         results = registry.search(new Query(Artifact.class)

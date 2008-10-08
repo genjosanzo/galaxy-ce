@@ -62,6 +62,7 @@ public class ItemResolver implements Resolver<Target> {
     public Target resolve(Request request) {
         RequestContext context = (RequestContext) request;
         String path = context.getTargetPath();
+        System.out.println(context.getMethod() + " on " + path);
         
         if (path.startsWith("/api")) {
             path = path.substring(4);

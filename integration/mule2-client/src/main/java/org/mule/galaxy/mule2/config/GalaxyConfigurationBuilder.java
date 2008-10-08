@@ -11,6 +11,7 @@ package org.mule.galaxy.mule2.config;
 
 import org.mule.api.MuleContext;
 import org.mule.api.config.ConfigurationException;
+import org.mule.api.lifecycle.LifecycleManager;
 import org.mule.config.ConfigResource;
 import org.mule.config.builders.AbstractConfigurationBuilder;
 import org.mule.config.spring.SpringXmlConfigurationBuilder;
@@ -100,4 +101,8 @@ public class GalaxyConfigurationBuilder extends AbstractConfigurationBuilder
             throw new ConfigurationException(e);
         }
     }
+
+	protected void applyLifecycle(LifecycleManager arg0) throws Exception {
+	}
+    
 }
