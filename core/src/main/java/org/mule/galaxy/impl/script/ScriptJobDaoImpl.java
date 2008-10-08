@@ -74,8 +74,8 @@ public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob> {
     @Override
     protected void doDeleteNode(Session session, Node node) throws RepositoryException {
         try {
-            String id = getJobName(node.getUUID(), JcrUtil.getStringOrNull(node, "name"));
-
+            String id = getJobName(node.getName(), JcrUtil.getStringOrNull(node, "name"));
+            
             if (!scheduler.deleteJob(id, null)) {
                 throw new RepositoryException("Job to delete doesn't exist. JobID: " + id);
             }
@@ -102,7 +102,7 @@ public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob> {
                     Node node = nodes.nextNode();
                     
                     try {
-                        scheduler.deleteJob(getJobName(node.getUUID(), JcrUtil.getStringOrNull(node, "name")), null);
+                        scheduler.deleteJob(getJobName(node.getName(), JcrUtil.getStringOrNull(node, "name")), null);
                     } catch (SchedulerException e) {
                         throw new RuntimeException(e);
                     }
