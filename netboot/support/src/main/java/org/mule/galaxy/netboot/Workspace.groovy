@@ -60,7 +60,7 @@ class Workspace {
             def encodedName = enc(name, safe, false) // space as %20, not +
             def relativeUrl = parentWorkspace.size() > 0 ? "$parentWorkspace/$encodedName" : "$encodedName"
             
-            response = galaxy.get(relativeUrl)
+            response = galaxy.get(relativeUrl + "?showProperties=false")
 
             // local cache dir
             def dir = new File(cacheDir, name)

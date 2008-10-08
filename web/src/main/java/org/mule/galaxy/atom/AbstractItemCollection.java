@@ -190,12 +190,16 @@ public abstract class AbstractItemCollection
             atomEntry.addExtension(version);
         }
 
-        if (ev != null) {
-            addMetadata(ev, atomEntry, request, "versioned");
-            addMetadata(eOrW, atomEntry, request, "global");
-        } else {
-            // workspaces can have metadata too
-            addMetadata(item, atomEntry, request, "global");
+        String param = request.getParameter("showProperties");
+        boolean showProperties = BooleanUtils.toBoolean(param);
+        if (param == null || showProperties) {
+            if (ev != null) {
+                addMetadata(ev, atomEntry, request, "versioned");
+                addMetadata(eOrW, atomEntry, request, "global");
+            } else {
+                // workspaces can have metadata too
+                addMetadata(item, atomEntry, request, "global");
+            }
         }
         
         return link;
