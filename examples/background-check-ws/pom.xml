@@ -14,7 +14,7 @@
     </description>
     
     <properties>
-        <mule.version>2.1.0-SNAPSHOT</mule.version>
+        <mule.version>2.1.0</mule.version>
     </properties>
 
     <dependencies>
