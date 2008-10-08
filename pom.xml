@@ -540,9 +540,9 @@
         </site>
     </distributionManagement>
     <scm>
-        <connection>scm:svn:https://svn.muleforge.org/galaxy/trunk</connection>
-        <developerConnection>scm:svn:https://svn.muleforge.org/galaxy/trunk</developerConnection>
-        <url>http://svn.galaxy.muleforge.org/</url>
+        <connection>scm:svn:https://svn.muleforge.org/galaxy/branches/galaxy-1.5.x</connection>
+        <developerConnection>scm:svn:https://svn.muleforge.org/galaxy/branches/galaxy-1.5.x</developerConnection>
+        <url>http://svn.galaxy.muleforge.org/branches/galaxy-1.5.x</url>
     </scm>
 
     <profiles>
