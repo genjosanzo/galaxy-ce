@@ -76,7 +76,7 @@ if (!muleHome) {
 }
 
 if (!new File(muleHome).exists()) {
-    println '''A mule installation does not exist at \"${muleHome}\"'''
+    println "A mule installation does not exist at \"$muleHome\""
     System.exit(-1)
 }
 
