@@ -1,12 +1,14 @@
 package org.mule.galaxy.ldap;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.userdetails.UserDetails;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
+import org.mule.galaxy.security.Group;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.security.ldap.LdapUserManager;
@@ -31,6 +33,10 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
         System.out.println(authorities.length);
         
         assertTrue(authorities.length > 5);
+
+        Set<Group> groups = user.getGroups();
+        assertNotNull(groups);
+        assertEquals(1, groups.size());
         
         UserDetailsWrapper wrapper = (UserDetailsWrapper) details;
         assertEquals(1, wrapper.getUser().getGroups().size());
@@ -42,10 +48,11 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
         Collection<Item> artifacts = w.getItems();
         
         assertEquals(1, artifacts.size());
-//        
+        
 //        List<User> users = userManager.listAll();
 //        
 //        assertEquals(1, users.size());
+        
     }
 
     protected String getPassword() {

@@ -41,7 +41,7 @@
         <module>integration</module>
         <module>server</module>
         <module>netboot</module>
-        <module>examples/background-check-ws</module>
+        <module>examples</module>
     </modules>
 
     <dependencyManagement>

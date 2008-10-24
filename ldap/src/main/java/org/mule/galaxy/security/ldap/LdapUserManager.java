@@ -37,7 +37,7 @@ public class LdapUserManager
 
     private String emailAttribute = "email";
     private String groupSearchBase;
-    private String groupSearchFilter = "(uniqueMemeber={0})";
+    private String groupSearchFilter = "(uniqueMember={0})";
     
     /**
      * The ID of the attribute which contains the role name for a group
