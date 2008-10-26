@@ -3,7 +3,6 @@ package org.mule.galaxy.impl.jcr;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
-import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.impl.jcr.onm.FieldDescriptor;

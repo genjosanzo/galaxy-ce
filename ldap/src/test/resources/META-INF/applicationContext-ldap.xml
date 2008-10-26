@@ -8,12 +8,13 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
     
     <bean id="initialDirContextFactory"
-            class="org.acegisecurity.ldap.DefaultInitialDirContextFactory">
+            class="org.acegisecurity.ldap.DefaultInitialDirContextFactory"
+            depends-on="directoryService ldapService">
       <constructor-arg value="ldap://localhost:10389/"/>
       <property name="managerDn"><value>uid=admin,ou=system</value></property>
       <property name="managerPassword"><value>secret</value></property>
     </bean>
-
+   
     <bean id="userSearch"
             class="org.acegisecurity.ldap.search.FilterBasedLdapUserSearch">
       <constructor-arg index="0">

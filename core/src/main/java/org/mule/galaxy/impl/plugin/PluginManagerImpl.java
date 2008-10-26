@@ -81,14 +81,7 @@ public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo>
             }
         };
         
-        try {
-            User admin = userManager.getByUsername("admin");
-            
-            SecurityUtils.doAs(admin, runnable);
-        } catch (NotFoundException e) {
-            SecurityUtils.doPriveleged(runnable);
-        }
-        
+        SecurityUtils.doPriveleged(runnable);
     }
     
     public List<PluginInfo> getInstalledPlugins() {

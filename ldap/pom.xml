@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-ldap</artifactId>
-  <version>1.6-SNAPSHOT</version>
+    <version>1.6-SNAPSHOT</version>
     <name>Galaxy LDAP Integration</name>
     <dependencies>
 
@@ -38,11 +38,48 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.directory.server</groupId>
+            <artifactId>apacheds-core</artifactId>
+            <version>1.5.4</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.directory.server</groupId>
+            <artifactId>apacheds-server-jndi</artifactId>
+            <version>1.5.4</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.directory.server</groupId>
+            <artifactId>apacheds-xbean-spring</artifactId>
+            <version>1.5.4</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.xbean</groupId>
+            <artifactId>xbean-spring</artifactId>
+            <version>3.4.3</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Define as otherwise there are conflicts -->
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <optional>true</optional>
             <scope>compile</scope>
         </dependency>
+        
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-core</artifactId>
@@ -50,20 +87,18 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
+    
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <excludes>
-                        <!-- We need to somehow embed an LDAP server -->
-                        <exclude>**/*</exclude>
-                    </excludes>
+                    <forkMode>none</forkMode>
+                    <useSystemClassLoader>true</useSystemClassLoader>
                 </configuration>
             </plugin>
         </plugins>
+        
     </build>
 </project>

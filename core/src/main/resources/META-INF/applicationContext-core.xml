@@ -327,6 +327,8 @@
              <entry key="registry" value-ref="registry"/>
              <entry key="activityManager" value-ref="activityManager"/>
              <entry key="eventManager" value-ref="eventManager"/>
+             <entry key="policyManager" value-ref="policyManager"/>
+             <entry key="lifecycleManager" value-ref="lifecycleManager"/>
          </map>
      </constructor-arg>
   </bean>

@@ -73,7 +73,7 @@ public class LdapUserManager
     }
 
     public User get(String id) throws NotFoundException {
-        return getUserDetails(id, false).getUser();
+        return getUserDetails(id, true).getUser();
     }
     
     public UserDetailsWrapper getUserDetails(String username, boolean fillInGroups) throws NotFoundException {
