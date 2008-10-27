@@ -1,5 +1,5 @@
 package org.mule.galaxy.example.policy;
-
+// START SNIPPET: policy
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -45,5 +45,5 @@ public class AlwaysFailPolicy implements Policy {
 
 	public void setRegistry(Registry registry) {
 	}
-
 }
+// END SNIPPET: policy
