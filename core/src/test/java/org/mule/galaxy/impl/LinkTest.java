@@ -138,13 +138,11 @@ public class LinkTest extends AbstractGalaxyTest {
                                                       "hello-import-absolute.xsd", 
                                                       "0.1", 
                                                       getResourceAsStream("/schema/hello-import-absolute.xsd"));
-        
-        Entry entry = schema.getEntry();
-        
+
         Links links = (Links) schema.getEntryVersion().getProperty(LinkExtension.DEPENDS);
         Collection<Link> deps = links.getLinks();
         assertNotNull(deps);
-        assertEquals(1, deps.size());
+        assertEquals(2, deps.size());
         
         Link next = deps.iterator().next();
         assertNull(next.getLinkedTo());
