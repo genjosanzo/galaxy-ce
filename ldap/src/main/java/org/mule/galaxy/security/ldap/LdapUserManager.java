@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 
@@ -25,6 +26,7 @@ import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserExistsException;
 import org.mule.galaxy.security.UserManager;
+import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -35,6 +37,7 @@ public class LdapUserManager
 
     private final Log log = LogFactory.getLog(getClass());
 
+    private String nameAttribute = "cn";
     private String emailAttribute = "email";
     private String groupSearchBase;
     private String groupSearchFilter = "(uniqueMember={0})";
@@ -73,12 +76,16 @@ public class LdapUserManager
     }
 
     public User get(String id) throws NotFoundException {
+	if (id.equals(SecurityUtils.SYSTEM_USER.getUsername())) {
+	    return SecurityUtils.SYSTEM_USER;
+	}
+	
         return getUserDetails(id, true).getUser();
     }
     
     public UserDetailsWrapper getUserDetails(String username, boolean fillInGroups) throws NotFoundException {
         LdapUserDetails d = userSearch.searchForUser(username);
-
+        
         if (d == null) {
             throw new NotFoundException(username);
         }
@@ -105,16 +112,33 @@ public class LdapUserManager
         
         user.setId(username);
         user.setUsername(username);
-         
+        
         Attributes atts = d.getAttributes();
         if (atts != null)
         {
             Attribute att = atts.get(emailAttribute);
             if (att != null)
             {
-                user.setEmail(att.toString());
+                try {
+		    user.setEmail(att.get().toString());
+		} catch (NamingException e) {
+		    log.error(e);
+		}
             }
             
+            att = atts.get(nameAttribute);
+            if (att != null) 
+            {
+                try {
+		    user.setName(att.get().toString());
+		} catch (NamingException e) {
+		    log.error(e);
+		}
+            }
+            else 
+            {
+        	user.setName(user.getUsername());
+            }
         }
         
         Set<Permission> grantedPermissions;
@@ -206,6 +230,14 @@ public class LdapUserManager
 
     public void setGroupRoleAttribute(String groupRoleAttribute) {
         this.groupRoleAttribute = groupRoleAttribute;
+    }
+
+    public String getNameAttribute() {
+        return nameAttribute;
+    }
+
+    public void setNameAttribute(String nameAttribute) {
+        this.nameAttribute = nameAttribute;
     }
 
 }

@@ -33,6 +33,8 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
         
         User user = userManager.get("admin");
         assertNotNull(user);
+        assertNotNull(user.getUsername());
+        assertNotNull(user.getName());
         
         UserDetails details = lUserManager.loadUserByUsername("admin");
         GrantedAuthority[] authorities = details.getAuthorities();

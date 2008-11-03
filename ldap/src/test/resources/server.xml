@@ -140,7 +140,7 @@
 
   <ldapService id="ldapsService"
               enabled="true"
-              ipPort="10636"
+              ipPort="61636"
               enableLdaps="true">
     <directoryService>#directoryService</directoryService>
     <socketAcceptor>#socketAcceptor</socketAcceptor>
@@ -148,7 +148,7 @@
 
 
   <ldapService id="ldapService"
-              ipPort="60389"
+              ipPort="61389"
               allowAnonymousAccess="false"
               saslHost="ldap.example.com"
               saslPrincipal="ldap/ldap.example.com@EXAMPLE.COM"
