@@ -10,7 +10,7 @@
     <bean id="initialDirContextFactory"
             class="org.acegisecurity.ldap.DefaultInitialDirContextFactory"
             depends-on="directoryService ldapService">
-      <constructor-arg value="ldap://localhost:61389/"/>
+      <constructor-arg value="ldap://localhost:62389/"/>
       <property name="managerDn"><value>uid=admin,ou=system</value></property>
       <property name="managerPassword"><value>secret</value></property>
     </bean>

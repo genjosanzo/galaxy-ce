@@ -148,7 +148,7 @@
 
 
   <ldapService id="ldapService"
-              ipPort="61389"
+              ipPort="62389"
               allowAnonymousAccess="false"
               saslHost="ldap.example.com"
               saslPrincipal="ldap/ldap.example.com@EXAMPLE.COM"
