@@ -29,9 +29,11 @@
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
-
+    
+  <spring:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
+  
   <defaultDirectoryService id="directoryService" instanceId="default"
-                           workingDirectory="target/example.com"
+                           workingDirectory="${basedir}/target/example.com"
                            allowAnonymousAccess="true"
                            accessControlEnabled="false"
                            denormalizeOpAttrsEnabled="false"
