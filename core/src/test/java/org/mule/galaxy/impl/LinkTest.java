@@ -128,6 +128,29 @@ public class LinkTest extends AbstractGalaxyTest {
         assertTrue(dep.isAutoDetected());
     }
     
+    public void testAbsoluteSchemaDependencies() throws Exception {
+
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+        
+        EntryResult schema = workspace.createArtifact("application/xml", 
+                                                      "hello-import-absolute.xsd", 
+                                                      "0.1", 
+                                                      getResourceAsStream("/schema/hello-import-absolute.xsd"));
+        
+        Entry entry = schema.getEntry();
+        
+        Links links = (Links) schema.getEntryVersion().getProperty(LinkExtension.DEPENDS);
+        Collection<Link> deps = links.getLinks();
+        assertNotNull(deps);
+        assertEquals(1, deps.size());
+        
+        Link next = deps.iterator().next();
+        assertNull(next.getLinkedTo());
+        
+    }
+    
     public void testMissingWsdlDependencies() throws Exception {
 
         Collection<Workspace> workspaces = registry.getWorkspaces();

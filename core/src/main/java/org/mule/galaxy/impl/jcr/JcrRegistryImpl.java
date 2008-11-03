@@ -315,19 +315,23 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
         
         Workspace w = (Workspace) item;
-        
-        for (int i = 0; i < paths.length - 1; i++) {
-            String p = paths[i];
-            
-            // TODO: escaping?
-            if (p.equals("..")) {
-                w = ((Workspace)w.getParent());
-            } else if (!p.equals(".")) {
-                w = w.getWorkspace(p);
-            }
-        }
 
         try {
+            for (int i = 0; i < paths.length - 1 && w != null; i++) {
+                String p = paths[i];
+                
+                // TODO: escaping?
+                if (p.equals("..")) {
+                    w = ((Workspace)w.getParent());
+                } else if (!p.equals(".")) {
+                    w = w.getWorkspace(p);
+                }
+            }
+            
+            if (w == null) {
+        	return null;
+            }
+            
             return w.getItem(paths[paths.length-1]);
         } catch (NotFoundException e) {
             return null;
