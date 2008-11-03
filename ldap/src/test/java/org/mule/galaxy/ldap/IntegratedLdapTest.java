@@ -68,7 +68,11 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
     @Override
     protected ConfigurableApplicationContext createApplicationContext(
 	    String[] locations) {
-	// Apache DS uses XBea
+	if (System.getProperty("basedir") == null) {
+	    System.setProperty("basedir", "");
+	}
+	
+	// Apache DS uses XBean
 	return new ClassPathXmlApplicationContext(locations);
     }
 
