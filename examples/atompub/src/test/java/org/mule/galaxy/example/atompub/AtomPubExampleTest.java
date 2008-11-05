@@ -32,7 +32,7 @@ public class AtomPubExampleTest extends AbstractAtomTest {
         entry.setId(factory.newUuidUri());
         entry.setContent("");
         
-        // Create a <workspace-inf> element
+        // Create a <workspace-info> element
         Element wInfo = factory.newElement(new QName(AbstractItemCollection.NAMESPACE, "workspace-info"));
         wInfo.setAttributeValue("name", "Services");
         entry.addExtension(wInfo);
@@ -40,6 +40,19 @@ public class AtomPubExampleTest extends AbstractAtomTest {
         ClientResponse result = client.post("http://localhost:9002/api/registry", entry, defaultOpts);
         // END SNIPPET: createworkspace
         assertEquals(201, result.getStatus());
+        
+        // START SNIPPET: addwsdl
+        // Store a WSDL inside the Services workspace
+        RequestOptions opts = new RequestOptions();
+        opts.setContentType("application/xml; charset=utf-8");
+        opts.setSlug("hello.wsdl");
+        opts.setHeader("X-Artifact-Version", "1.0");
+        opts.setAuthorization(defaultOpts.getAuthorization());
+        
+        result = client.post("http://localhost:9002/api/registry/Services", 
+                             getClass().getResourceAsStream("/hello.wsdl"), 
+                             opts);
+        // END SNIPPET: addwsdl
         
     }
 }
