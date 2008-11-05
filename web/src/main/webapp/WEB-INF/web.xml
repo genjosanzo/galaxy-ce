@@ -15,7 +15,6 @@
             classpath:/META-INF/applicationContext-acegi-security.xml
             classpath:/META-INF/applicationContext-acegi-security-web.xml
             classpath:/META-INF/applicationContext-web.xml
-            classpath:/META-INF/applicationContext-ldap.xml
             classpath*:/META-INF/galaxy-applicationContext.xml
         </param-value>
     </context-param>
