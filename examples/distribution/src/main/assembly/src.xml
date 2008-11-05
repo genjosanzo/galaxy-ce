@@ -38,5 +38,17 @@
         <exclude>.*/**</exclude>
       </excludes>
     </fileSet>
+    <fileSet>
+      <directory>../atompub/src/test/resources</directory>
+      <outputDirectory>atompub</outputDirectory>
+      <useDefaultExcludes>true</useDefaultExcludes>
+      <excludes>
+        <exclude>target/**</exclude>
+        <exclude>galaxy-data/**</exclude>
+        <exclude>derby.log</exclude>
+        <exclude>.*</exclude>
+        <exclude>.*/**</exclude>
+      </excludes>
+    </fileSet>
   </fileSets>
 </assembly>

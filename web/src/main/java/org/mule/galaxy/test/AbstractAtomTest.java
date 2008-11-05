@@ -22,6 +22,7 @@ package org.mule.galaxy.test;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 import javax.jcr.Node;
@@ -73,6 +74,10 @@ public class AbstractAtomTest extends TestCase {
         
         registry = (Registry) getApplicationContext().getBean("registry");
         sessionFactory = (SessionFactory) getApplicationContext().getBean("sessionFactory");
+    }
+
+    protected InputStream getResourceAsStream(String name) {
+	return getClass().getResourceAsStream(name);
     }
 
     protected void login(final String username, final String password) {

@@ -11,8 +11,10 @@
     <name>Examples</name>
     <packaging>pom</packaging>   
     <modules>
+        <module>atompub</module>
         <module>background-check-ws</module>
         <module>custom-policy</module>
+        <module>notifier</module>
         <module>distribution</module>
     </modules>
 

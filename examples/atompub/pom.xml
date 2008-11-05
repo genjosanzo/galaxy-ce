@@ -6,11 +6,11 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.galaxy</groupId>
-    <artifactId>galaxy-example-custom-policy</artifactId>
+    <artifactId>galaxy-example-atompub</artifactId>
     <version>1.6-SNAPSHOT</version>
-    <name>Example: Custom Policy</name>
+    <name>Example: AtomPub</name>
     <description>
-      An example policy which always fails.
+      Example AtomPub requests to send to the server.
     </description>
 
     <dependencies>
@@ -19,11 +19,27 @@
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-core</artifactId>
             <version>${version}</version>
+            <scope>test</scope>
         </dependency>
         
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-core</artifactId>
+            <version>${version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.mule.galaxy</groupId>
+            <artifactId>galaxy-web</artifactId>
+            <version>${version}</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.mule.galaxy</groupId>
+            <artifactId>galaxy-web</artifactId>
             <version>${version}</version>
             <type>test-jar</type>
             <scope>test</scope>
