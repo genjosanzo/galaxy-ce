@@ -1,26 +1,45 @@
 package org.mule.galaxy.example.atompub;
 
+import java.util.Date;
+
+import javax.xml.namespace.QName;
+
+import org.apache.abdera.model.Element;
+import org.apache.abdera.model.Entry;
 import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
 import org.apache.axiom.om.util.Base64;
+import org.mule.galaxy.atom.AbstractItemCollection;
 import org.mule.galaxy.test.AbstractAtomTest;
 
 public class AtomPubExampleTest extends AbstractAtomTest {
     public void testExamples() throws Exception {
+        // START SNIPPET: setup
         AbderaClient client = new AbderaClient();
 
         RequestOptions defaultOpts = client.getDefaultRequestOptions();
         defaultOpts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
         defaultOpts.setContentType("application/atom+xml;type=entry");
-
-        // Create a "Services" workspace
-        ClientResponse result = client.post("http://localhost:9002/api/registry",
-                                            getResourceAsStream("/add-workspace.xml"),
-                                            defaultOpts);
-        assertEquals(201, result.getStatus());
-        prettyPrint(result.getDocument());
+        // END SNIPPET: setup
         
-        result = client.get("http://localhost:9002/api/registry", defaultOpts);
+        // START SNIPPET: createworkspace
+        // Create a "Services" workspace
+        Entry entry = factory.newEntry();
+        entry.setTitle("Services");
+        entry.setUpdated(new Date());
+        entry.addAuthor("Ignored");
+        entry.setId(factory.newUuidUri());
+        entry.setContent("");
+        
+        // Create a <workspace-inf> element
+        Element wInfo = factory.newElement(new QName(AbstractItemCollection.NAMESPACE, "workspace-info"));
+        wInfo.setAttributeValue("name", "Services");
+        entry.addExtension(wInfo);
+        
+        ClientResponse result = client.post("http://localhost:9002/api/registry", entry, defaultOpts);
+        // END SNIPPET: createworkspace
+        assertEquals(201, result.getStatus());
+        
     }
 }

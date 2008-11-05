@@ -39,7 +39,7 @@
       </excludes>
     </fileSet>
     <fileSet>
-      <directory>../atompub/src/test/resources</directory>
+      <directory>../atompub</directory>
       <outputDirectory>atompub</outputDirectory>
       <useDefaultExcludes>true</useDefaultExcludes>
       <excludes>
