@@ -1124,6 +1124,7 @@ public class RegistryServiceImpl implements RegistryService {
         ExtendedEntryInfo info = new ExtendedEntryInfo();
         
         ItemRenderer view;
+        final String context = contextPathResolver.getContextPath();
         if (e instanceof Artifact) {
             Artifact a = (Artifact) e;
             ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), 
@@ -1137,16 +1138,16 @@ public class RegistryServiceImpl implements RegistryService {
                 view = rendererManager.getArtifactRenderer(a.getContentType().toString());
             }
 
-            final String context = contextPathResolver.getContextPath();
-
+            
             info.setArtifactLink(getLink(context + "/api/registry", a));
-            info.setArtifactFeedLink(getLink(context + "/api/registry", a) + ";history");
-            info.setCommentsFeedLink(context + "/api/comments");
         } else {
             view = rendererManager.getArtifactRenderer("application/octet-stream");
             info.setType("Entry");
         }
 
+        info.setArtifactFeedLink(getLink(context + "/api/registry", e) + ";history");
+        info.setCommentsFeedLink(context + "/api/comments");
+        
         createBasicEntryInfo(e, view, info, true);
 
         info.setDescription(e.getDescription());
