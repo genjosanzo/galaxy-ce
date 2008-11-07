@@ -175,11 +175,14 @@
     <property name="userManager" ref="userManager" />
     <property name="upgraders">
         <list>
-            <bean class="org.mule.galaxy.impl.upgrade.V11Upgrader">
+            <bean class="org.mule.galaxy.impl.upgrade.V15Upgrader">
                 <property name="registry" ref="registryTarget"/>
                 <property name="typeManager" ref="typeManager" />
                 <property name="localWorkspaceManager" ref="localWorkspaceManager"/>
                 <property name="lifecycleManager" ref="lifecycleManager" />
+            </bean>
+            <bean class="org.mule.galaxy.impl.upgrade.V151Upgrader">
+                <property name="typeManager" ref="typeManager" />
             </bean>
         </list>
     </property>

@@ -1,11 +1,14 @@
 package org.mule.galaxy.example.atompub;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
+import org.apache.abdera.model.ExtensibleElement;
 import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
@@ -54,5 +57,35 @@ public class AtomPubExampleTest extends AbstractAtomTest {
                              opts);
         // END SNIPPET: addwsdl
         
+        // START SNIPPET: getwsdl
+        // Get the metadata for the WSDL
+        result = client.get("http://localhost:9002/api/registry/Services/hello.wsdl;atom", defaultOpts);
+        // END SNIPPET: addwsdl
+        
+        prettyPrint(result.getDocument());
+        
+        // START SNIPPET: lifecycle
+        // Get the metadata for the WSDL
+        Document<Entry> entryDoc = result.getDocument();
+        entry = entryDoc.getRoot();
+        
+        // Find the versioned metadata
+        String namespace = "http://galaxy.mule.org/1.0";
+        List<ExtensibleElement> extensions = entry.getExtensions(new QName(namespace, "metadata"));
+        ExtensibleElement metadata = null;
+        for (ExtensibleElement e : extensions) {
+            if ("versioned".equals(e.getAttributeValue("id"))) {
+                metadata = e;
+            }
+        }
+        
+        // Transition to the next phase
+        ExtensibleElement lifecycle = metadata.getExtension(new QName(namespace, "lifecycle"));
+        lifecycle.setAttributeValue("phase", "Developed");
+        
+        // Update the metadata
+        result = client.put("http://localhost:9002/api/registry/Services/hello.wsdl;atom", entry, defaultOpts);
+        // END SNIPPET: lifecycle
+        assertEquals(204, result.getStatus());
     }
 }
