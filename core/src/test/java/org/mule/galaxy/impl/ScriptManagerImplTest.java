@@ -40,7 +40,7 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
         
         sj.setExpression("* * * ? * *");
         scriptJobDao.save(sj);
-        Thread.sleep(3000);
+        Thread.sleep(2000);
         
         assertTrue(count >= 2);
         
@@ -51,7 +51,7 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
         scriptJobDao.save(sj);
 
         count = 0;
-        Thread.sleep(2000);
+        Thread.sleep(3000);
         assertTrue(count >= 1);
         
         scriptManager.delete(script.getId());
