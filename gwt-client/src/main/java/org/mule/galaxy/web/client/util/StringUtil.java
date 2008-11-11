@@ -11,7 +11,6 @@ public class StringUtil {
         if (dotPos != -1) {
             extension = s.substring(dotPos + 1);
         }
-        GWT.log("File extension is " + extension, new Exception());
         return extension;
     }
 
