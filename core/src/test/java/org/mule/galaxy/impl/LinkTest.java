@@ -1,7 +1,6 @@
 package org.mule.galaxy.impl;
 
 
-import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -14,9 +13,6 @@ import org.mule.galaxy.Links;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.link.LinkExtension;
-import org.mule.galaxy.query.OpRestriction;
-import org.mule.galaxy.query.Query;
-import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class LinkTest extends AbstractGalaxyTest {
