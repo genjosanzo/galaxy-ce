@@ -181,19 +181,19 @@ public class EntryForm extends AbstractErrorShowingComposite {
     }
 
     private void setupAddForm() {
-        table.setWidget(0, 0, new Label("Workspace"));
+        table.setWidget(0, 0, new Label("Workspace:"));
 
         workspaceSB = new ValidatableSuggestBox(new StringNotEmptyValidator(),
                                                 new WorkspaceOracle(galaxy, menuPanel));
         table.setWidget(0, 1, workspaceSB);
 
-        Label nameLabel = new Label("Entry Name");
+        Label nameLabel = new Label("Entry Name:");
         table.setWidget(1, 0, nameLabel);
 
         nameBox = new ValidatableTextBox(new StringNotEmptyValidator());
         table.setWidget(1, 1, nameBox);
 
-        Label versionLabel = new Label("Version Label");
+        Label versionLabel = new Label("Version Label:");
         table.setWidget(2, 0, versionLabel);
 
         versionBox = new ValidatableTextBox(new StringNotEmptyValidator());

@@ -116,14 +116,14 @@ public class ArtifactForm extends AbstractErrorShowingComposite
     private void setupAddForm() {
 
         // note how spacing uses a clear pixel on the second column
-        table.setWidget(0, 0, new Label("Workspace"));
+        table.setWidget(0, 0, new Label("Workspace:"));
 
         workspaceSB = new ValidatableSuggestBox(new StringNotEmptyValidator(),
                                                 new WorkspaceOracle(galaxy, this));
         workspaceSB.getTextBox().setName("workspacePath");
         table.setWidget(0, 2, workspaceSB);
 
-        table.setWidget(1, 0, new Label("Artifact Name "));
+        table.setWidget(1, 0, new Label("Artifact Name:"));
 
         // to control formatting
         final Image spacerimg = new Image("images/clearpixel.gif");
@@ -157,13 +157,13 @@ public class ArtifactForm extends AbstractErrorShowingComposite
         });
 
 
-        table.setWidget(2, 0, new Label("Version Label"));
+        table.setWidget(2, 0, new Label("Version Label:"));
 
         versionBox = new ValidatableTextBox(new StringNotEmptyValidator());
         table.setWidget(2, 2, versionBox);
         versionBox.getTextBox().setName("versionLabel");
 
-        table.setWidget(3, 0, new Label("Artifact"));
+        table.setWidget(3, 0, new Label("Artifact:"));
 
         setupRemainingTable(3);
     }
@@ -172,7 +172,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite
     private void setupAddVersionForm(FlowPanel panel) {
 
         // note how spacing uses a clear pixel on the second column
-        table.setText(0, 0, "Version Label");
+        table.setText(0, 0, "Version Label:");
 
         Image spacerimg = new Image("images/clearpixel.gif");
         spacerimg.setWidth("1px");
@@ -182,14 +182,14 @@ public class ArtifactForm extends AbstractErrorShowingComposite
         table.setWidget(0, 2, versionBox);
         versionBox.getTextBox().setName("versionLabel");
 
-        table.setText(1, 0, "Disable Previous");
+        table.setText(1, 0, "Disable Previous:");
 
         disablePrevious = new CheckBox();
         disablePrevious.setChecked(true);
         disablePrevious.setName("disablePrevious");
         table.setWidget(1, 2, disablePrevious);
 
-        table.setWidget(2, 0, new Label("Artifact"));
+        table.setWidget(2, 0, new Label("Artifact:"));
 
         panel.add(new Hidden("artifactId", artifactId));
 
