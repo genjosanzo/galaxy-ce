@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -23,7 +22,6 @@ import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.security.User;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.event.LifecycleTransitionEvent;
 import org.mule.galaxy.extension.AtomExtension;
@@ -79,7 +77,7 @@ public class LifecycleExtension extends AbstractExtension implements AtomExtensi
             Phase oldPhase = (Phase) item.getProperty(pd.getProperty());
             LifecycleTransitionEvent event = new LifecycleTransitionEvent(SecurityUtils.getCurrentUser(),
                                             item,
-                                            oldPhase.getName(),
+                                            oldPhase != null ? oldPhase.getName() : null,
                                             phase.getName(),
                                             phase.getLifecycle().getName());
 
