@@ -101,6 +101,7 @@ public class LifecycleRenderer extends AbstractPropertyRenderer {
             if (l.getId().equals(lid)) {
                 lifecycle = l;
                 phase = lifecycle.getPhaseById(pid);
+                lifecyclesLB.setSelectedIndex(lifecyclesLB.getItemCount()-1);
             }
         }
         
@@ -110,6 +111,8 @@ public class LifecycleRenderer extends AbstractPropertyRenderer {
                 WLifecycle selected = getSelectedLifecycle();
                 
                 showPhasesForLifecycle(selected);
+                
+                lifecycle = selected;
             }
             
         });
@@ -145,12 +148,14 @@ public class LifecycleRenderer extends AbstractPropertyRenderer {
         return null;
     }
 
-    private void showPhasesForLifecycle(WLifecycle lifecycle) {
-        for (Iterator<WPhase> iterator = lifecycle.getPhases().iterator(); iterator.hasNext();) {
+    private void showPhasesForLifecycle(WLifecycle selected) {
+        phaseLB.clear();
+    
+        for (Iterator<WPhase> iterator = selected.getPhases().iterator(); iterator.hasNext();) {
             WPhase p = iterator.next();
             
             if (bulkEdit 
-                || (phase == null && lifecycle.getInitialPhase().equals(p))
+                || ((phase == null || selected != this.lifecycle) && selected.getInitialPhase().equals(p))
                 || p.getNextPhases().contains(phase) || (phase != null && phase.getNextPhases().contains(p)) || p == phase) {
                 phaseLB.addItem(p.getName(), p.getId());
                 
