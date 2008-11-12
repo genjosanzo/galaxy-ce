@@ -76,10 +76,10 @@ public class LifecycleExtension extends AbstractExtension implements AtomExtensi
             if (!lifecycleManager.isTransitionAllowed(item, pd.getProperty(), phase)) {
                 throw new PolicyException(item, "Transition to phase " + phase + " is not allowed.");
             }
-
+            Phase oldPhase = (Phase) item.getProperty(pd.getProperty());
             LifecycleTransitionEvent event = new LifecycleTransitionEvent(SecurityUtils.getCurrentUser(),
                                             item,
-                                            "",
+                                            oldPhase.getName(),
                                             phase.getName(),
                                             phase.getLifecycle().getName());
 
