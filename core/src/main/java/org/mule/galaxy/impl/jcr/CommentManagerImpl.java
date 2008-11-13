@@ -67,9 +67,9 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
         }
 
         // fire the event
-        EntryCommentCreatedEvent event = new EntryCommentCreatedEvent(c.getItem(), c);
-        event.setUser(SecurityUtils.getCurrentUser());
         // FIXME: null pointer on test and itemNotFoundException over rpc
+        //EntryCommentCreatedEvent event = new EntryCommentCreatedEvent(c.getItem(), c);
+        //event.setUser(SecurityUtils.getCurrentUser());
         //eventManager.fireEvent(event);
     }
 
