@@ -1,5 +1,14 @@
 package org.mule.galaxy.impl.jcr;
 
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.util.SecurityUtils;
+import org.mule.galaxy.collab.Comment;
+import org.mule.galaxy.collab.CommentManager;
+import org.mule.galaxy.event.EntryCommentCreatedEvent;
+import org.mule.galaxy.event.EventManager;
+import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -8,14 +17,9 @@ import javax.jcr.Session;
 
 import org.springmodules.jcr.JcrCallback;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.collab.Comment;
-import org.mule.galaxy.collab.CommentManager;
-import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
-
 public class CommentManagerImpl extends AbstractReflectionDao<Comment> implements CommentManager {
+
+    private EventManager eventManager;
 
     public CommentManagerImpl() throws Exception {
         super(Comment.class, "comments", true);
@@ -32,16 +36,16 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
                 StringBuilder qstr = new StringBuilder();
                 qstr.append("/jcr:root/comments/*[");
                 if (!includeChildren) {
-                    qstr.append("not(@parent) and"); 
+                    qstr.append("not(@parent) and");
                 }
                 qstr.append("@item='")
-                    .append(artifactId)
-                    .append("'] order by @date ascending");
+                        .append(artifactId)
+                        .append("'] order by @date ascending");
                 return query(qstr.toString(), session);
             }
         });
     }
-    
+
     @SuppressWarnings("unchecked")
     public List<Comment> getRecentComments(final int maxResults) {
         return (List<Comment>) execute(new JcrCallback() {
@@ -61,9 +65,25 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
             // should never happen
             throw new RuntimeException(e1);
         }
+
+        // fire the event
+        EntryCommentCreatedEvent event = new EntryCommentCreatedEvent(c.getItem(), c);
+        event.setUser(SecurityUtils.getCurrentUser());
+        // FIXME: null pointer on test and itemNotFoundException over rpc
+        //eventManager.fireEvent(event);
     }
 
     public Comment getComment(String commentId) throws NotFoundException {
         return get(commentId);
     }
+
+    public EventManager getEventManager() {
+        return eventManager;
+    }
+
+    public void setEventManager(final EventManager eventManager) {
+        this.eventManager = eventManager;
+    }
+
+
 }

@@ -15,6 +15,7 @@ public class DefaultEvents {
     // entry
     public static final String ENTRY_VERSION_CREATED = "EntryVersionCreated";
     public static final String ENTRY_VERSION_DELETED = "EntryVersionDeleted";
+    public static final String ENTRY_COMMENT_CREATED = "EntryCommentCreated";
 
     // entry version
     public static final String ENTRY_CREATED = "EntryCreated";

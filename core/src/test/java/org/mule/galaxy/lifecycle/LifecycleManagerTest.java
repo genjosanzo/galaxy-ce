@@ -11,13 +11,16 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.event.DefaultEvents;
 import org.mule.galaxy.event.LifecycleTransitionEvent;
+import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.event.annotation.BindToEvent;
 import org.mule.galaxy.event.annotation.OnEvent;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class LifecycleManagerTest extends AbstractGalaxyTest {
+
     protected LifecycleManager lifecycleManager;
+    protected EventManager eventManager;
     
     public void testLifecycleInitialization() throws Exception {
         Collection<Lifecycle> lifecycles = lifecycleManager.getLifecycles();

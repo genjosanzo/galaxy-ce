@@ -22,6 +22,7 @@ public class CommentTest extends AbstractGalaxyTest {
         c.setDate(cal);
         c.setUser(getAdmin());
         c.setText("Hello.");
+        c.setItem(artifact);
         
         commentManager.addComment(c);
         
@@ -38,7 +39,8 @@ public class CommentTest extends AbstractGalaxyTest {
         c2.setDate(cal);
         c2.setUser(getAdmin());
         c2.setText("Hello.");
-        
+        c2.setItem(artifact);
+
         commentManager.addComment(c2);
         
         comments = commentManager.getComments(artifact.getId());
