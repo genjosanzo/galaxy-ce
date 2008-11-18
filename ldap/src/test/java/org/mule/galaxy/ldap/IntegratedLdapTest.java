@@ -3,7 +3,6 @@ package org.mule.galaxy.ldap;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.directory.server.ldap.LdapService;
 import org.apache.xbean.spring.context.ClassPathXmlApplicationContext;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Workspace;
@@ -20,8 +19,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class IntegratedLdapTest extends AbstractGalaxyTest {
     
     public void testUserManager() throws Exception {
-	LdapService s = (LdapService) applicationContext.getBean("ldapService");
-	s.start();
 	
         UserManager userManager = (UserManager) applicationContext.getBean("userManager");
         assertTrue(userManager instanceof LdapUserManager);
