@@ -42,7 +42,7 @@ public class UserDetailsWrapper implements LdapUserDetails {
             for (int i = 0; i < pArray.length; i++) {
                 authorities[i] = new GrantedAuthorityImpl(pArray[i].toString());
             }
-            authorities[pArray.length+1] = new GrantedAuthorityImpl("role_user");
+            authorities[pArray.length] = new GrantedAuthorityImpl("role_user");
         }
         return authorities;
     }
