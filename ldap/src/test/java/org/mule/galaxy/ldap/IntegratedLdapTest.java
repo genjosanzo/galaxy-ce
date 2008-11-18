@@ -1,20 +1,17 @@
 package org.mule.galaxy.ldap;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.userdetails.UserDetails;
 import org.apache.directory.server.ldap.LdapService;
 import org.apache.xbean.spring.context.ClassPathXmlApplicationContext;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
-import org.mule.galaxy.security.Group;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.security.ldap.LdapUserManager;
 import org.mule.galaxy.test.AbstractGalaxyTest;
+import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
@@ -28,27 +25,23 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
 	
         UserManager userManager = (UserManager) applicationContext.getBean("userManager");
         assertTrue(userManager instanceof LdapUserManager);
+//        
+        User user = SecurityUtils.getCurrentUser();
+        assertEquals(1, user.getGroups().size());
         
-        LdapUserManager lUserManager = (LdapUserManager) userManager;
-        
-        User user = userManager.get("admin");
+        user = userManager.get(user.getId());
         assertNotNull(user);
-        assertNotNull(user.getUsername());
-        assertNotNull(user.getName());
         
-        UserDetails details = lUserManager.loadUserByUsername("admin");
-        GrantedAuthority[] authorities = details.getAuthorities();
-        System.out.println(authorities.length);
+        List<User> users = userManager.listAll();
+        assertNotNull(users);
         
-        assertTrue(authorities.length > 5);
+        assertEquals(1, users.size());
+        
+        user = users.iterator().next();
+        assertEquals("admin", user.getUsername());
+        assertNull(user.getEmail());
+        assertEquals("system administrator", user.getName());
 
-        Set<Group> groups = user.getGroups();
-        assertNotNull(groups);
-        assertEquals(1, groups.size());
-        
-        UserDetailsWrapper wrapper = (UserDetailsWrapper) details;
-        assertEquals(1, wrapper.getUser().getGroups().size());
-        
         importHelloWsdl();
         
         // do our perms work?
@@ -56,11 +49,6 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
         Collection<Item> artifacts = w.getItems();
         
         assertEquals(1, artifacts.size());
-        
-//        List<User> users = userManager.listAll();
-//        
-//        assertEquals(1, users.size());
-        
     }
 
     protected String getPassword() {

@@ -12,7 +12,10 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.Identifiable;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.mapping.OneToMany;
 
 /**
@@ -20,7 +23,9 @@ import org.mule.galaxy.mapping.OneToMany;
  * limited set of use cases, but is good enough for most of our usages.
  */
 public class ClassPersister {
-    
+
+    private final Log log = LogFactory.getLog(getClass());
+
     private Class type;
     private Map<String, FieldDescriptor> propertyToFD = new HashMap<String, FieldDescriptor>();
     private List<String> parents = new ArrayList<String>();
@@ -87,16 +92,19 @@ public class ClassPersister {
             }
             
             FieldPersister persister = persisterManager.getPersister(fd.getType());
-            Object value = persister.build(n, fd, session);
-            
-            if (value != null) {
-                try {
-                    fd.getWriteMethod().invoke(o, value);
-                } catch(IllegalArgumentException e) {
-                    System.out.println("Writing " + value + " with type " + value.getClass().getName() + " to" + fd.getName());
-                    e.printStackTrace();
-                }
+            try {
+                Object value = persister.build(n, fd, session);
                 
+                if (value != null) {
+                    try {
+                        fd.getWriteMethod().invoke(o, value);
+                    } catch(IllegalArgumentException e) {
+                        log.error("Error writing " + value + " with type " + value.getClass().getName() + " to" + fd.getName(), e);
+                    }
+                    
+                }
+            } catch (NotFoundException e) {
+                log.debug("While retreiving '" + n.getPath() + "': " + e.getMessage());
             }
         }
         

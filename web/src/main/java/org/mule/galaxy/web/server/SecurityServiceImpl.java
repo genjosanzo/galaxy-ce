@@ -93,11 +93,11 @@ public class SecurityServiceImpl implements SecurityService {
         WUser w = createWUser(user);
         
         ArrayList<String> groupIds = new ArrayList<String>();
-        
-        for (Group g : user.getGroups()) {
-            groupIds.add(g.getId());
+        if (user.getGroups() != null) {
+            for (Group g : user.getGroups()) {
+                groupIds.add(g.getId());
+            }
         }
-        
         w.setGroupIds(groupIds);
         
         return w;

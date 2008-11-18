@@ -1,15 +1,18 @@
 package org.mule.galaxy.security.ldap;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
+import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
+import javax.naming.directory.BasicAttributes;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.SearchResult;
 
 import org.acegisecurity.ldap.InitialDirContextFactory;
+import org.acegisecurity.ldap.LdapCallback;
+import org.acegisecurity.ldap.LdapEntryMapper;
 import org.acegisecurity.ldap.LdapTemplate;
 import org.acegisecurity.ldap.LdapUserSearch;
 import org.acegisecurity.userdetails.UserDetails;
@@ -19,50 +22,26 @@ import org.acegisecurity.userdetails.ldap.LdapUserDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
-import org.mule.galaxy.security.AccessControlManager;
-import org.mule.galaxy.security.Group;
-import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserExistsException;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.util.SecurityUtils;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.dao.DataAccessException;
 
 public class LdapUserManager 
-    implements UserManager, UserDetailsService, ApplicationContextAware {
+    implements UserManager, UserDetailsService {
 
     private final Log log = LogFactory.getLog(getClass());
 
-    private String nameAttribute = "cn";
-    private String emailAttribute = "email";
-    private String groupSearchBase;
-    private String groupSearchFilter = "(uniqueMember={0})";
+    private Map<String, String> userSearchAttributes;
     
-    /**
-     * The ID of the attribute which contains the role name for a group
-     */
-    private String groupRoleAttribute = "cn";
-    
+    private String userSearchBase;
     private LdapUserSearch userSearch;
+    private LdapEntryMapper userMapper;
+    
     private LdapTemplate ldapTemplate;
     private InitialDirContextFactory initialDirContextFactory;
-    private AccessControlManager accessControlManager;
-
-    private ApplicationContext applicationContext;
     
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException,
-        DataAccessException {
-        try {
-            return getUserDetails(username, true);
-        } catch (NotFoundException e) {
-            throw new UsernameNotFoundException(username);
-        }
-    }
-
     public void setUserSearch(LdapUserSearch userSearch) {
         this.userSearch = userSearch;
     }
@@ -75,105 +54,63 @@ public class LdapUserManager
         throw new UnsupportedOperationException();
     }
 
+    public User authenticate(String username, String password) {
+        throw new UnsupportedOperationException();
+    }
+
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException,
+        DataAccessException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     public User get(String id) throws NotFoundException {
 	if (id.equals(SecurityUtils.SYSTEM_USER.getUsername())) {
 	    return SecurityUtils.SYSTEM_USER;
 	}
-	
-        return getUserDetails(id, true).getUser();
-    }
-    
-    public UserDetailsWrapper getUserDetails(String username, boolean fillInGroups) throws NotFoundException {
-        LdapUserDetails d = userSearch.searchForUser(username);
-        
-        if (d == null) {
-            throw new NotFoundException(username);
+	try {
+            LdapUserDetails d = userSearch.searchForUser(id);
+
+            return (User) userMapper.mapAttributes(d.getDn(), d.getAttributes());
+	} catch (UsernameNotFoundException e) {
+	    throw new NotFoundException(id);
+	} catch (NamingException e) {
+            throw new RuntimeException(e);
         }
-        
-        User user = new User();
-        if (fillInGroups) {
-            Set groupNames = 
-                getLdapTemplate().searchForSingleAttributeValues(groupSearchBase, 
-                                                                 groupSearchFilter,
-                                                                 new String[] {d.getDn(), username}, 
-                                                                 groupRoleAttribute);
-    
-            Set<Group> groups = new HashSet<Group>();
-            for (Object o : groupNames) {
-                try {
-                    groups.add(getAccessControlManager().getGroupByName(o.toString()));
-                } catch (NotFoundException e) {
-                    log.info("Could not find group " + o.toString() + " for user " + username);
-                }
-            }
-            
-            user.setGroups(groups);
-        }
-        
-        user.setId(username);
-        user.setUsername(username);
-        
-        Attributes atts = d.getAttributes();
-        if (atts != null)
-        {
-            Attribute att = atts.get(emailAttribute);
-            if (att != null)
-            {
-                try {
-		    user.setEmail(att.get().toString());
-		} catch (NamingException e) {
-		    log.error(e);
-		}
-            }
-            
-            att = atts.get(nameAttribute);
-            if (att != null) 
-            {
-                try {
-		    user.setName(att.get().toString());
-		} catch (NamingException e) {
-		    log.error(e);
-		}
-            }
-            else 
-            {
-        	user.setName(user.getUsername());
-            }
-        }
-        
-        Set<Permission> grantedPermissions;
-        if (fillInGroups) {
-            grantedPermissions = getAccessControlManager().getGrantedPermissions(user);
-        } else {
-            grantedPermissions = new HashSet<Permission>();
-        }
-        
-        return new UserDetailsWrapper(user, 
-                                      grantedPermissions, 
-                                      d.getPassword());
     }
 
     public List<User> listAll() {
-        return new ArrayList<User>();
+        return (List<User>) getLdapTemplate().execute(new LdapCallback() {
+
+            public Object doInDirContext(DirContext dirContext) throws NamingException {
+                List<User> users = new ArrayList<User>();
+                
+                BasicAttributes atts = new BasicAttributes();
+                for (Map.Entry<String, String> e : userSearchAttributes.entrySet()) {
+                    atts.put(e.getKey(), e.getValue());
+                }
+                
+                NamingEnumeration<SearchResult> results = dirContext.search(userSearchBase, atts);
+                while (results.hasMore()) {
+                    SearchResult result = results.next();
+                    
+                    users.add((User) userMapper.mapAttributes(null, result.getAttributes()));
+                }
+            
+                return users;
+            }
+            
+        });
     }
 
     public void save(User t) {
-        // TODO Auto-generated method stub
         
     }
 
     public Class<User> getTypeClass() {
         return User.class;
     }
-
-    public User authenticate(String username, String password) {
-        try {
-            return get(username);
-        } catch (NotFoundException e) {
-            return null;
-        }
-    }
-
+    
     public void create(User user, String password) throws UserExistsException {
         throw new UnsupportedOperationException();
     }
@@ -196,48 +133,25 @@ public class LdapUserManager
         }
         return ldapTemplate;
     }
-
-    public void setAccessControlManager(AccessControlManager accessControlManager) {
-        this.accessControlManager = accessControlManager;
-    }
-
-    private AccessControlManager getAccessControlManager() {
-        if (accessControlManager == null) {
-            accessControlManager = (AccessControlManager) applicationContext.getBean("accessControlManager");
-        }
-        return accessControlManager;
-    }
     
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
     public void setInitialDirContextFactory(InitialDirContextFactory initialDirContextFactory) {
         this.initialDirContextFactory = initialDirContextFactory;
     }
 
-    public void setEmailAttribute(String emailAttribute) {
-        this.emailAttribute = emailAttribute;
+    public void setUserSearchBase(String userSearchBase) {
+        this.userSearchBase = userSearchBase;
     }
 
-    public void setGroupSearchBase(String groupSearchBase) {
-        this.groupSearchBase = groupSearchBase;
+    public Map<String, String> getUserSearchAttributes() {
+        return userSearchAttributes;
     }
 
-    public void setGroupSearchFilter(String groupSearchFilter) {
-        this.groupSearchFilter = groupSearchFilter;
+    public void setUserSearchAttributes(Map<String, String> userSearchAttributes) {
+        this.userSearchAttributes = userSearchAttributes;
     }
 
-    public void setGroupRoleAttribute(String groupRoleAttribute) {
-        this.groupRoleAttribute = groupRoleAttribute;
-    }
-
-    public String getNameAttribute() {
-        return nameAttribute;
-    }
-
-    public void setNameAttribute(String nameAttribute) {
-        this.nameAttribute = nameAttribute;
+    public void setUserMapper(LdapEntryMapper userMapper) {
+        this.userMapper = userMapper;
     }
 
 }
