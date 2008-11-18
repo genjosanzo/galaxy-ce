@@ -43,11 +43,6 @@
             <bean class="org.acegisecurity.providers.ldap.authenticator.BindAuthenticator">
                 <constructor-arg ref="initialDirContextFactory"/>
                 <property name="userSearch" ref="userSearch"/>
-                <property name="userDnPatterns">
-                    <list>
-                        <value>uid={0},ou=system</value>
-                    </list>
-                </property>
             </bean>
         </constructor-arg>
         <constructor-arg>
