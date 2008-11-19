@@ -43,6 +43,7 @@ public class AtomPubExampleTest extends AbstractAtomTest {
         ClientResponse result = client.post("http://localhost:9002/api/registry", entry, defaultOpts);
         // END SNIPPET: createworkspace
         assertEquals(201, result.getStatus());
+        result.release();
         
         // START SNIPPET: addwsdl
         // Store a WSDL inside the Services workspace
@@ -56,6 +57,7 @@ public class AtomPubExampleTest extends AbstractAtomTest {
                              getClass().getResourceAsStream("/hello.wsdl"), 
                              opts);
         // END SNIPPET: addwsdl
+        result.release();
         
         // START SNIPPET: getwsdl
         // Get the metadata for the WSDL
@@ -63,6 +65,7 @@ public class AtomPubExampleTest extends AbstractAtomTest {
         // END SNIPPET: addwsdl
         
         prettyPrint(result.getDocument());
+        result.release();
         
         // START SNIPPET: lifecycle
         // Get the metadata for the WSDL
@@ -87,5 +90,6 @@ public class AtomPubExampleTest extends AbstractAtomTest {
         result = client.put("http://localhost:9002/api/registry/Services/hello.wsdl;atom", entry, defaultOpts);
         // END SNIPPET: lifecycle
         assertEquals(204, result.getStatus());
+        result.release();
     }
 }
