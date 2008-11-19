@@ -123,6 +123,7 @@
               <bean class="org.mule.galaxy.event.listener.activity.EntryCreatedEventListener" parent="abstractActivityLogger"/>
               <bean class="org.mule.galaxy.event.listener.activity.EntryDeletedEventListener" parent="abstractActivityLogger"/>
               <bean class="org.mule.galaxy.event.listener.activity.EntryMovedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.EntryCommentCreatedEventListener" parent="abstractActivityLogger"/>
               <!-- entry version -->
               <bean class="org.mule.galaxy.event.listener.activity.EntryVersionCreatedEventListener" parent="abstractActivityLogger"/>
               <bean class="org.mule.galaxy.event.listener.activity.EntryVersionDeletedEventListener" parent="abstractActivityLogger"/>
