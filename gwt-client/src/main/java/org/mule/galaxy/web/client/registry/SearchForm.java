@@ -18,6 +18,24 @@
 
 package org.mule.galaxy.web.client.registry;
 
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasAlignment;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.Widget;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
@@ -25,75 +43,120 @@ import org.mule.galaxy.web.client.util.WorkspaceOracle;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 
-import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.HasAlignment;
-
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 public class SearchForm extends AbstractErrorShowingComposite {
-    protected FlowPanel panel;
-    private FlowPanel fieldPanel;
+    private FlowPanel panel;
+    protected FlowPanel searchFieldPanel;
     private Set<SearchFormRow> rows;
     private Map<String, String> propertyDescriptors;
     private Button searchButton;
     private Button clearButton;
     private InlineFlowPanel buttonPanel;
-    private Hyperlink freeformQueryLink;
     private TextArea freeformQueryArea;
-    private final boolean allowFreeform;
     private SuggestBox workspaceTB;
     private CheckBox includeChildWkspcCB;
     private Galaxy galaxy;
-    private FlexTable fieldTable;
-
-    public SearchForm(Galaxy galaxy, String searchText, boolean allowFreeform) {
+    private boolean freeform = false;
+    private Hyperlink freeformQueryLink;
+    private int topRows;
+    private FlexTable searchTable;
+    private final String searchText;
+    private boolean freeformQuerySet;
+    
+    public SearchForm(Galaxy galaxy, String searchText) {
+        this(galaxy, searchText, true);
+    }
+    
+    protected SearchForm(Galaxy galaxy, String searchText, boolean init) {
         this.galaxy = galaxy;
-        this.allowFreeform = allowFreeform;
+        this.searchText = searchText;
         rows = new HashSet<SearchFormRow>();
 
         panel = new FlowPanel();
         panel.setStyleName("search-panel");
 
-        fieldPanel = new FlowPanel();
+        // where we put the structured search stuff
+        searchFieldPanel = new FlowPanel();
+        panel.add(searchFieldPanel);
+        if (init) {
+            initialize();
+        }
+        
+        initWidget(panel);
+    }
 
+    protected void initialize() {
         galaxy.getRegistryService().getQueryProperties(new AbstractCallback<Map<String, String>>(this) {
             public void onSuccess(Map<String, String> o) {
                 initQueryProperties(o);
             }
         });
 
-        fieldTable = new FlexTable();
-
-        initializeFields(fieldTable);
-        fieldPanel.add(fieldTable);
+        searchTable = new FlexTable();
         
-        panel.add(fieldPanel);
+        initializeTopInfo(searchTable);
+        searchFieldPanel.add(searchTable);
+        
+        // Store the # of rows used so we can clear everything below
+        // when we switch to freeform view
+        topRows = searchTable.getRowCount();
 
+        freeformQueryArea = new TextArea();
+        freeformQueryArea.setCharacterWidth(83);
+        freeformQueryArea.setVisibleLines(7);
+        freeformQueryArea.selectAll();
+        freeformQueryArea.setFocus(true);
+        freeformQueryArea.setText("Add a custom query...");
+        freeformQueryArea.addChangeListener(new ChangeListener() {
+
+            public void onChange(Widget arg0) {
+                freeformQuerySet = true;
+            }
+        });
+        switchForm(freeform);      
+
+        // Search, clear, etc buttons
         buttonPanel = new InlineFlowPanel();
         buttonPanel.setStyleName("search-button-panel");
-
+        
         initializeButtons(buttonPanel, searchText);
-
         panel.add(buttonPanel);
+    }
+    
+    protected void switchForm(boolean freeform) {
+        if (!freeform) {
+            searchFieldPanel.remove(freeformQueryArea);
+            initializeStructuredSearchFields(searchTable);
+            
+            for (SearchFormRow row : rows) {
+                searchFieldPanel.add(row);
+            }
+        } else {
+            while (topRows < searchTable.getRowCount()) {
+                searchTable.removeRow(searchTable.getRowCount()-1);
+            }
+            searchFieldPanel.add(freeformQueryArea);
+            
+            removeSearchFormRows();
+        }
 
-        addPredicate();
-
-        initWidget(panel);
+        this.freeform = freeform;
     }
 
-    protected void initializeFields(FlexTable table) {
+    private void removeSearchFormRows() {
+        for (SearchFormRow row : rows) {
+            searchFieldPanel.remove(row);
+        }
+    }
+    
+
+    /**
+     * This is used for views to add a view name and configure whether or not the view is shared.
+     * @param table
+     */
+    protected void initializeTopInfo(FlexTable table) {
+    }
+    
+    protected void initializeStructuredSearchFields(FlexTable table) {
         int row = table.getRowCount();
         table.setText(row, 0, "Workspace:");
 
@@ -104,16 +167,6 @@ public class SearchForm extends AbstractErrorShowingComposite {
         table.getCellFormatter().setHorizontalAlignment(row, 2, HasAlignment.ALIGN_RIGHT);
         table.setWidget(row, 3, includeChildWkspcCB);
         table.getCellFormatter().setHorizontalAlignment(row, 3, HasAlignment.ALIGN_LEFT);
-
-        freeformQueryArea = new TextArea();
-        freeformQueryArea.setCharacterWidth(83);
-        freeformQueryArea.setVisibleLines(7);
-        freeformQueryLink = new Hyperlink("Use Freeform Query", galaxy.getCurrentToken());
-        freeformQueryLink.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
-                showHideFreeformQuery();
-            }
-        });
     }
 
     protected void initializeButtons(FlowPanel buttonPanel, String searchText) {
@@ -121,10 +174,12 @@ public class SearchForm extends AbstractErrorShowingComposite {
 
         clearButton = new Button("Clear", new ClickListener() {
             public void onClick(Widget sender) {
-                clear();
-                resetFieldPanel();
-                freeformQueryArea.setText("");
-                addPredicate();
+                if (freeform) {
+                    freeformQueryArea.setText("");
+                } else {
+                    clear();
+                    addPredicate();
+                }
             }
         });
 
@@ -135,9 +190,21 @@ public class SearchForm extends AbstractErrorShowingComposite {
             }
         });
 
-        if (allowFreeform) {
-            buttonPanel.add(freeformQueryLink);
-        }
+        ClickListener switchListener = new ClickListener() {
+            public void onClick(Widget sender) {
+                switchForm(!freeform);
+                if (freeform) {
+                    freeformQueryLink.setText("Use Structured Query");
+                } else {
+                    freeformQueryLink.setText("Use Freeform Query");
+                }
+            }
+        };
+        
+        freeformQueryLink = new Hyperlink("Use Freeform Query", galaxy.getCurrentToken());
+        freeformQueryLink.addClickListener(switchListener);
+        buttonPanel.add(freeformQueryLink);
+         
         buttonPanel.add(searchButton);
         buttonPanel.add(clearButton);
         buttonPanel.add(cancel);
@@ -148,6 +215,10 @@ public class SearchForm extends AbstractErrorShowingComposite {
     }
 
     public void clear() {
+        for (Iterator<SearchFormRow> itr = rows.iterator(); itr.hasNext();) {
+            SearchFormRow row = itr.next();
+            searchFieldPanel.remove(row);
+        }
         rows.clear();
     }
 
@@ -168,38 +239,18 @@ public class SearchForm extends AbstractErrorShowingComposite {
         if (propertyDescriptors != null)
             pred.addPropertySet("Properties:", propertyDescriptors);
 
-        fieldPanel.insert(pred, fieldPanel.getWidgetCount());
+        searchFieldPanel.insert(pred, searchFieldPanel.getWidgetCount());
         rows.add(pred);
         return pred;
     }
 
     public void removePredicate(SearchFormRow pred) {
-        fieldPanel.remove(pred);
+        searchFieldPanel.remove(pred);
         rows.remove(pred);
 
         // Add a new predicate if we're removing our last row
         if (rows.size() == 0) {
             addPredicate();
-        }
-    }
-
-    public void showHideFreeformQuery() {
-        if (fieldPanel.remove(freeformQueryArea)) {
-            freeformQueryArea.setText("");
-            freeformQueryLink.setText("Use Freeform Query");
-
-            resetFieldPanel();
-            addPredicate();
-        } else {
-            fieldPanel.clear();
-            fieldPanel.insert(freeformQueryArea, 0);
-            freeformQueryArea.setText("Add a custom query...");
-            freeformQueryArea.selectAll();
-            freeformQueryArea.setFocus(true);
-            freeformQueryLink.setText("Use Structured Query");
-
-            // Remove all the structured query rows
-            rows.clear();
         }
     }
 
@@ -217,7 +268,15 @@ public class SearchForm extends AbstractErrorShowingComposite {
     }
 
     public String getFreeformQuery() {
+        if (!freeformQuerySet || !freeform) {
+            return "";
+        }
         return freeformQueryArea.getText();
+    }
+
+    public void setFreeformQuery(String queryString) {
+        freeformQueryArea.setText(queryString);
+        switchForm(true);
     }
 
     public String getWorkspacePath() {
@@ -229,24 +288,19 @@ public class SearchForm extends AbstractErrorShowingComposite {
     }
 
     public void setPredicates(Set<SearchPredicate> predicates) {
-        rows.clear();
-        resetFieldPanel();
-
-        for (Iterator<SearchPredicate> itr = predicates.iterator(); itr.hasNext();) {
-            SearchPredicate p = itr.next();
-
-            SearchFormRow row = addPredicate();
-            rows.add(row);
-            row.setPredicate(p);
+        removeSearchFormRows();
+        
+        if (predicates != null) {
+            for (Iterator<SearchPredicate> itr = predicates.iterator(); itr.hasNext();) {
+                SearchPredicate p = itr.next();
+    
+                SearchFormRow row = addPredicate();
+                rows.add(row);
+                row.setPredicate(p);
+            }       
         }
-
-        // Add an empty predicate to add more
+        // a blank row to add more search terms
         addPredicate();
-    }
-
-    protected void resetFieldPanel() {
-        fieldPanel.clear();
-        fieldPanel.add(fieldTable);
     }
 
     public void setWorkspace(String workspace) {

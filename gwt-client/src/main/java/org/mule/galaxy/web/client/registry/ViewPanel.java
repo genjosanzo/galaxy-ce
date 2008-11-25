@@ -18,27 +18,22 @@
 
 package org.mule.galaxy.web.client.registry;
 
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WArtifactView;
-
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
+
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LightBox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WArtifactView;
 
 
 /**
@@ -52,16 +47,18 @@ public class ViewPanel extends AbstractBrowsePanel {
     protected static final String NEW_VIEW_ID = "new";
     
     private String viewId;
-    private SearchForm searchForm;
-    private ValidatableTextBox nameTB;
+    private ViewSearchForm viewForm;
     private WArtifactView view;
-    private CheckBox sharedCB;
-    protected Button delete;
-    protected Button cancel;
-    private FlowPanel editPanel;
+    private FlowPanel headerPanel;
     private boolean editMode;
     private Hyperlink editLink;
-
+    
+    // Is this a test search we're executing.
+    protected boolean testSearch;
+    
+    // do we need to update the artifact list?
+    private boolean stale = true;
+    
     public ViewPanel(Galaxy galaxy) {
         super(galaxy, false);
     }
@@ -82,11 +79,15 @@ public class ViewPanel extends AbstractBrowsePanel {
 
     public void onShow(List<String> params) {
         if (params.size() > 0) {
-            viewId = params.get(0);
+            String newId = params.get(0);
+            if (!newId.equals(viewId)) {
+                stale = true;
+                if (artifactListPanel != null) {
+                    artifactListPanel.clear();
+                }
+            }
+            viewId = newId;
         }
-
-        editPanel = new InlineFlowPanel();
-        currentTopPanel = editPanel;
         
         if (params.size() > 1) {
             editMode = "edit".equals(params.get(1));
@@ -94,64 +95,12 @@ public class ViewPanel extends AbstractBrowsePanel {
             editMode = false;
         }
         
+        menuPanel.setTop(null);
         FlowPanel browseToolbar = new FlowPanel();
         browseToolbar.setStyleName("toolbar");
         
-        final ViewPanel viewPanel = this;
-        searchForm = new SearchForm(galaxy, "Save", false) {
-
-            protected void initializeButtons(FlowPanel buttonPanel, String searchText) {
-                super.initializeButtons(buttonPanel, searchText);
-
-                buttonPanel.remove(buttonPanel.getWidgetCount()-1);
-                delete = new Button();
-                delete.setText("Delete");
-                delete.addClickListener(new ClickListener() {
-                    public void onClick(Widget arg0) {
-                        viewPanel.delete();
-                    }
-                });
-
-                buttonPanel.add(delete);
-
-                cancel = new Button();
-                cancel.setText("Cancel");
-                cancel.addClickListener(new ClickListener() {
-                    public void onClick(Widget arg0) {   
-                        if (NEW_VIEW_ID.equals(viewId)) {
-                            History.back();
-                        } else {
-                            // Browse back to the view
-                            History.newItem("view/" + viewId);
-                        }
-
-                    }
-                });
-                buttonPanel.add(cancel);
-            }
-
-            protected void initializeFields(FlexTable table) {
-                if (NEW_VIEW_ID.equals(viewId)) {
-                    panel.add(createTitleText("New View"));
-                } else {
-                    panel.add(createTitleText("Edit View"));
-                }
-
-                nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
-                nameTB.getTextBox().setVisibleLength(25);
-                table.setText(0, 0, "View Name: ");
-                table.setWidget(0, 1, nameTB);
-
-                sharedCB = new CheckBox("Shared");
-                table.getFlexCellFormatter().setColSpan(1, 0, 2);
-                table.setWidget(1, 0, sharedCB);
-                
-                super.initializeFields(table);
-            }
-            
-        };
-        
-        searchForm.addSearchListener(new ClickListener() {
+        viewForm = new ViewSearchForm(this, galaxy, "Save");
+        viewForm.addSearchListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 if (!validate()) {
                     return;
@@ -162,12 +111,15 @@ public class ViewPanel extends AbstractBrowsePanel {
         
         if (NEW_VIEW_ID.equals(viewId)) {
             view = new WArtifactView();
-            showSearchForm();
+            viewForm.setPredicates(view.getPredicates());
+            showViewForm(true);
         }
+
+        loadView();
         
         super.onShow(params);
         
-        if (NEW_VIEW_ID.equals(viewId) || editMode) {
+        if (NEW_VIEW_ID.equals(viewId)) {
             if (artifactListPanel != null) {
                 artifactListPanel.clear();
             }
@@ -176,23 +128,27 @@ public class ViewPanel extends AbstractBrowsePanel {
 
     private void loadView() {
         galaxy.getRegistryService().getArtifactView(viewId, new AbstractCallback(this) {
+
             public void onSuccess(Object o) {
                 view = (WArtifactView) o;
-                nameTB.getTextBox().setText(view.getName());
-                sharedCB.setChecked(view.isShared());
+                viewForm.getNameTB().setText(view.getName());
+                viewForm.getSharedCB().setChecked(view.isShared());
+
+                headerPanel = new InlineFlowPanel();
+                headerPanel.add(createPrimaryTitle(view.getName()));
+                headerPanel.add(new Label(" "));
                 
-                editPanel.clear();
-                editPanel.add(createPrimaryTitle(view.getName()));
-                editPanel.add(new Label(" "));
-                editLink = new Hyperlink("Edit", "view/" + viewId + "_edit");
-                editPanel.add(editLink);
-                searchForm.setPredicates(view.getPredicates());
-                searchForm.setWorkspace(view.getWorkspace());
-                searchForm.setWorkspaceSearchRecursive(view.isWorkspaceSearchRecursive());
+                editLink = new Hyperlink("Edit", "view/" + viewId + "/edit");
+                headerPanel.add(editLink);
+                viewForm.setPredicates(view.getPredicates());
+                viewForm.setWorkspace(view.getWorkspace());
+                viewForm.setWorkspaceSearchRecursive(view.isWorkspaceSearchRecursive());
                 
-                if (editMode) {
-                    showSearchForm();
+                if (view.getQueryString() != null && !"".equals(view.getQueryString())) {
+                    viewForm.setFreeformQuery(view.getQueryString());
+                    
                 }
+                showViewForm(editMode);
             }
         });
     }
@@ -203,7 +159,7 @@ public class ViewPanel extends AbstractBrowsePanel {
         {
             public void onConfirm()
             {
-               galaxy.getRegistryService().deleteArtifactView(viewId, new AbstractCallback(menuPanel)
+                galaxy.getRegistryService().deleteArtifactView(viewId, new AbstractCallback(menuPanel)
                 {
                     public void onSuccess(Object arg0)
                     {
@@ -216,21 +172,24 @@ public class ViewPanel extends AbstractBrowsePanel {
 
 
     public void refresh() {
-        if (!editMode || NEW_VIEW_ID.equals(viewId)) {
+        if (testSearch || (!NEW_VIEW_ID.equals(viewId) && stale)) {
             refreshArtifacts();
-        } 
-
-        loadView();
+        }
         
         menuPanel.loadViews(viewId, null);
     }
     
+    public void onHide() {
+    }
+    
     protected void save() {
-        view.setName(nameTB.getTextBox().getText());
-        view.setShared(sharedCB.isChecked());
-        view.setPredicates(searchForm.getPredicates());
-        view.setWorkspace(searchForm.getWorkspacePath());
-        view.setWorkspaceSearchRecursive(searchForm.isWorkspaceSearchRecursive());
+        stale = true;
+        view.setName(viewForm.getNameTB().getText());
+        view.setShared(viewForm.getSharedCB().isChecked());
+        view.setPredicates(viewForm.getPredicates());
+        view.setWorkspace(viewForm.getWorkspacePath());
+        view.setWorkspaceSearchRecursive(viewForm.isWorkspaceSearchRecursive());
+        view.setQueryString(viewForm.getFreeformQuery());
         
         galaxy.getRegistryService().saveArtifactView(view, new AbstractCallback(menuPanel) {
             public void onSuccess(Object id) {
@@ -239,28 +198,56 @@ public class ViewPanel extends AbstractBrowsePanel {
             }
         });
         
-        menuPanel.setTop(editPanel);
+        showViewForm(false);
     }
 
     protected boolean validate() {
         boolean isOk = true;
 
-        isOk &= nameTB.validate();
+        isOk &= viewForm.getNameTB().validate();
 
         return isOk;
     }
 
-    private void showSearchForm() {
+    private void showViewForm(boolean showViewForm) {
         currentTopPanel = new FlowPanel();
-        currentTopPanel.add(searchForm);
+        if (showViewForm) {
+            currentTopPanel.add(viewForm);
+        } else {
+            currentTopPanel.add(headerPanel);
+        }
         menuPanel.setTop(currentTopPanel);
     }
     
     protected void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback) {
-        if (NEW_VIEW_ID.equals(viewId)) {
-            return;
+        if (testSearch) {
+            galaxy.getRegistryService().getArtifacts(null, 
+                                                     viewForm.getWorkspacePath(), 
+                                                     viewForm.isWorkspaceSearchRecursive(),
+                                                     getAppliedArtifactTypeFilters(), 
+                                                     viewForm.getPredicates(), 
+                                                     viewForm.getFreeformQuery(), 
+                                                     resultStart, maxResults, callback);
+            testSearch = false;
+        } else {
+            if (NEW_VIEW_ID.equals(viewId)) {
+                return;
+            }
+            galaxy.getRegistryService().getArtifactsForView(viewId, resultStart, maxResults, callback);
         }
-        
-        galaxy.getRegistryService().getArtifactsForView(viewId, resultStart, maxResults, callback);
+        stale = false;
+    }
+
+    public void setTestSearch(boolean b) {
+        this.testSearch = b;
+        this.stale = true;
+    }
+
+    public String getViewId() {
+        return viewId;
+    }
+
+    public void setStale(boolean stale) {
+        this.stale = stale;
     }
 }
