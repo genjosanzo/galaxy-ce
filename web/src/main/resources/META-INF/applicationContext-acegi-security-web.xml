@@ -39,6 +39,7 @@
 
    <bean id="authenticationProcessingFilter" class="org.acegisecurity.ui.webapp.AuthenticationProcessingFilter">
       <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="alwaysUseDefaultTargetUrl" value="true"/>
       <property name="authenticationFailureUrl"><value>/login.jsp?login_error=1</value></property>
       <property name="defaultTargetUrl"><value>/index.html</value></property>
       <property name="filterProcessesUrl"><value>/j_acegi_security_check</value></property>
