@@ -20,22 +20,21 @@ package org.mule.galaxy.web.client.registry;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.FormHandler;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormSubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormSubmitEvent;
 import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.FocusListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,14 +42,14 @@ import java.util.List;
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.WorkspaceOracle;
-import org.mule.galaxy.web.client.util.TooltipListener;
 import org.mule.galaxy.web.client.util.StringUtil;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.util.TooltipListener;
+import org.mule.galaxy.web.client.util.WorkspaceOracle;
 import org.mule.galaxy.web.client.validation.FileUploadValidator;
+import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableFileUpload;
 import org.mule.galaxy.web.client.validation.ui.ValidatableSuggestBox;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
-import org.mule.galaxy.web.client.validation.ui.ValidatableFileUpload;
 
 public class ArtifactForm extends AbstractErrorShowingComposite
         implements FormHandler, ClickListener {
@@ -104,6 +103,13 @@ public class ArtifactForm extends AbstractErrorShowingComposite
         table = createColumnTable();
         panel.add(table);
 
+        
+        table.setWidget(0, 0, new Label("Artifact:"));
+
+        artifactUpload = new ValidatableFileUpload(new FileUploadValidator());
+        artifactUpload.getFileUpload().setName("artifactFile");
+        table.setWidget(0, 2, artifactUpload);
+
         if (add) {
             setupAddForm();
         } else {
@@ -116,23 +122,23 @@ public class ArtifactForm extends AbstractErrorShowingComposite
     private void setupAddForm() {
 
         // note how spacing uses a clear pixel on the second column
-        table.setWidget(0, 0, new Label("Workspace:"));
+        table.setWidget(1, 0, new Label("Workspace:"));
 
         workspaceSB = new ValidatableSuggestBox(new StringNotEmptyValidator(),
                                                 new WorkspaceOracle(galaxy, this));
         workspaceSB.getTextBox().setName("workspacePath");
-        table.setWidget(0, 2, workspaceSB);
+        table.setWidget(1, 2, workspaceSB);
 
-        table.setWidget(1, 0, new Label("Artifact Name:"));
+        table.setWidget(2, 0, new Label("Artifact Name:"));
 
         // to control formatting
         final Image spacerimg = new Image("images/clearpixel.gif");
         spacerimg.setWidth("16px");
-        table.setWidget(1, 1, spacerimg);
+        table.setWidget(2, 1, spacerimg);
 
         nameBox = new TextBox();
         nameBox.setName("name");
-        table.setWidget(1, 2, nameBox);
+        table.setWidget(2, 2, nameBox);
 
         // warn user if the artifact name does not contain an extention.
         nameBox.addFocusListener(new FocusListener() {
@@ -157,13 +163,11 @@ public class ArtifactForm extends AbstractErrorShowingComposite
         });
 
 
-        table.setWidget(2, 0, new Label("Version Label:"));
+        table.setWidget(3, 0, new Label("Version Label:"));
 
         versionBox = new ValidatableTextBox(new StringNotEmptyValidator());
-        table.setWidget(2, 2, versionBox);
+        table.setWidget(3, 2, versionBox);
         versionBox.getTextBox().setName("versionLabel");
-
-        table.setWidget(3, 0, new Label("Artifact:"));
 
         setupRemainingTable(3);
     }
@@ -172,36 +176,30 @@ public class ArtifactForm extends AbstractErrorShowingComposite
     private void setupAddVersionForm(FlowPanel panel) {
 
         // note how spacing uses a clear pixel on the second column
-        table.setText(0, 0, "Version Label:");
+        table.setText(1, 0, "Version Label:");
 
         Image spacerimg = new Image("images/clearpixel.gif");
         spacerimg.setWidth("1px");
-        table.setWidget(0, 1, spacerimg);
+        table.setWidget(1, 1, spacerimg);
 
         versionBox = new ValidatableTextBox(new StringNotEmptyValidator());
-        table.setWidget(0, 2, versionBox);
+        table.setWidget(1, 2, versionBox);
         versionBox.getTextBox().setName("versionLabel");
 
-        table.setText(1, 0, "Disable Previous:");
+        table.setText(2, 0, "Disable Previous:");
 
         disablePrevious = new CheckBox();
         disablePrevious.setChecked(true);
         disablePrevious.setName("disablePrevious");
-        table.setWidget(1, 2, disablePrevious);
-
-        table.setWidget(2, 0, new Label("Artifact:"));
+        table.setWidget(2, 2, disablePrevious);
 
         panel.add(new Hidden("artifactId", artifactId));
 
-        setupRemainingTable(2);
+        setupRemainingTable(3);
     }
 
 
     private void setupRemainingTable(int row) {
-        artifactUpload = new ValidatableFileUpload(new FileUploadValidator());
-        artifactUpload.getFileUpload().setName("artifactFile");
-        table.setWidget(row, 2, artifactUpload);
-
         addButton = new Button("Add");
         addButton.addClickListener(this);
 
@@ -278,6 +276,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite
                 parseAndShowPolicyMessages(msg);
             } else {
                 menuPanel.setMessage(msg);
+                resetFormFields();
             }
     }
 
