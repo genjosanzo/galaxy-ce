@@ -152,9 +152,9 @@ public class ArtifactForm extends AbstractErrorShowingComposite
                             "if you want retain the uploaded filename",
                                                                  10000));
 
-                    table.setWidget(1, 1, warnimg);
+                    table.setWidget(2, 1, warnimg);
                 } else {
-                    table.setWidget(1, 1, spacerimg);
+                    table.setWidget(2, 1, spacerimg);
                 }
             }
             public void onFocus(final Widget sender) {
