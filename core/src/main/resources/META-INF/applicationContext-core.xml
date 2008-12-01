@@ -4,11 +4,18 @@
   xmlns:p="http://www.springframework.org/schema/p"
   xmlns:a="http://abdera.apache.org"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
   xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
     http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations" value="classpath:galaxy.properties"/>
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    </bean>
 
     <import resource="datasource.xml"/>
     <import resource="scheduler.xml"/>
@@ -45,7 +52,7 @@
   <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean" destroy-method="destroy" depends-on="jndiContext, dbInitializer">
     <!-- normal factory beans params -->
     <property name="configuration" value="classpath:/META-INF/jackrabbit-repo.xml"/>
-    <property name="homeDir" value="file:./galaxy-data"/>
+    <property name="homeDir" value="file:${galaxy.data}"/>
   </bean>
 
   <bean id="jcrInitializer" class="org.mule.galaxy.impl.jcr.JcrInitializer"

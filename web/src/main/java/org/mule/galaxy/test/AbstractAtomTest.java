@@ -53,7 +53,7 @@ import org.springmodules.jcr.SessionFactory;
 
 import junit.framework.TestCase;
 
-public class AbstractAtomTest extends TestCase {
+public abstract class AbstractAtomTest extends TestCase {
     
     protected Registry registry;
     protected Provider provider;
@@ -65,10 +65,7 @@ public class AbstractAtomTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-//        System.setProperty("javax.xml.validation.SchemaFactory:http://www.w3.org/2001/XMLSchema",
-//                           "org.apache.xerces.jaxp.validation.XMLSchemaFactory");
-
-
+        System.setProperty("galaxy.data", "./target/galaxy-data");
         super.setUp();
         initializeJetty();
         
