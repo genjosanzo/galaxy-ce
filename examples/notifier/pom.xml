@@ -132,6 +132,16 @@
     
     <repositories>
         <repository>
+            <id>apache-incubating</id>
+            <name>Apache Incubating Repository</name>
+            <url>http://people.apache.org/repo/m2-incubating-repository/</url>
+        </repository>
+        <repository>
+            <id>java.net</id>
+            <url>http://download.java.net/maven/1/</url>
+            <layout>legacy</layout>
+        </repository>
+        <repository>
             <id>muleforge</id>
             <url>http://repository.muleforge.org/</url>
         </repository>
@@ -142,8 +152,19 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-    </repositories>    
+    </repositories>
+
     <pluginRepositories>
+        <pluginRepository>
+            <id>apache-incubating</id>
+            <name>Apache Incubating Repository</name>
+            <url>http://people.apache.org/repo/m2-incubating-repository/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>java.net</id>
+            <url>http://download.java.net/maven/1/</url>
+            <layout>legacy</layout>
+        </pluginRepository>
         <pluginRepository>
             <id>muleforge</id>
             <url>http://repository.muleforge.org/</url>
