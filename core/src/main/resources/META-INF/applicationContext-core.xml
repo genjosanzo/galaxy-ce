@@ -302,6 +302,7 @@
   <bean id="commentManagerTarget" class="org.mule.galaxy.impl.jcr.CommentManagerImpl"
         init-method="initialize" depends-on="persisterManager">
     <property name="sessionFactory" ref="sessionFactory" />
+    <property name="eventManager" ref="eventManager" />
     <property name="persisterManager" ref="persisterManager" />
   </bean>
     

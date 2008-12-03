@@ -39,7 +39,6 @@ public class CommentTest extends AbstractGalaxyTest {
         c2.setDate(cal);
         c2.setUser(getAdmin());
         c2.setText("Hello.");
-        c2.setItem(artifact);
 
         commentManager.addComment(c2);
         
@@ -50,5 +49,7 @@ public class CommentTest extends AbstractGalaxyTest {
         Set<Comment> comments2 = c3.getComments();
         assertNotNull(comments2);
         assertEquals(1, comments2.size());
+        
+        
     }
 }

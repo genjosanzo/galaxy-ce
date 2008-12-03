@@ -1,20 +1,20 @@
 package org.mule.galaxy.impl.jcr;
 
-import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.util.SecurityUtils;
-import org.mule.galaxy.collab.Comment;
-import org.mule.galaxy.collab.CommentManager;
-import org.mule.galaxy.event.EntryCommentCreatedEvent;
-import org.mule.galaxy.event.EventManager;
-import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
-
 import java.io.IOException;
 import java.util.List;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.collab.Comment;
+import org.mule.galaxy.collab.CommentManager;
+import org.mule.galaxy.event.EntryCommentCreatedEvent;
+import org.mule.galaxy.event.EventManager;
+import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+import org.mule.galaxy.util.SecurityUtils;
 import org.springmodules.jcr.JcrCallback;
 
 public class CommentManagerImpl extends AbstractReflectionDao<Comment> implements CommentManager {
@@ -68,9 +68,15 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
 
         // fire the event
         // FIXME: null pointer on test and itemNotFoundException over rpc
-        //EntryCommentCreatedEvent event = new EntryCommentCreatedEvent(c.getItem(), c);
-        //event.setUser(SecurityUtils.getCurrentUser());
-        //eventManager.fireEvent(event);
+        Item item = c.getItem();
+        Comment parent = c;
+        while (item == null) {
+            parent = c.getParent();
+            item = parent.getItem();
+        }
+        EntryCommentCreatedEvent event = new EntryCommentCreatedEvent(item, c);
+        event.setUser(SecurityUtils.getCurrentUser());
+        eventManager.fireEvent(event);
     }
 
     public Comment getComment(String commentId) throws NotFoundException {
