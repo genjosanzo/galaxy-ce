@@ -1,11 +1,15 @@
 package org.mule.galaxy.ldap;
 
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.xbean.spring.context.ClassPathXmlApplicationContext;
+import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.collab.Comment;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.security.ldap.LdapUserManager;
@@ -39,13 +43,25 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
         assertNull(user.getEmail());
         assertEquals("system administrator", user.getName());
 
-        importHelloWsdl();
+        Artifact a = importHelloWsdl();
         
         // do our perms work?
         Workspace w = registry.getWorkspaces().iterator().next();
         Collection<Item> artifacts = w.getItems();
         
         assertEquals(1, artifacts.size());
+
+        Comment c = new Comment();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        c.setDate(cal);
+        c.setUser(getAdmin());
+        c.setText("Hello.");
+        c.setItem(a);
+        
+        commentManager.addComment(c);
+        
+        commentManager.getComments(a.getId());
     }
 
     protected String getPassword() {

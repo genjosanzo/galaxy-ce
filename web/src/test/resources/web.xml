@@ -18,7 +18,6 @@
             classpath:/META-INF/applicationContext-web.xml
             classpath*:/META-INF/galaxy-applicationContext.xml
             classpath:/META-INF/applicationContext-test.xml
-            classpath:/META-INF/applicationContext-ldap.xml
         </param-value>
     </context-param>
 
