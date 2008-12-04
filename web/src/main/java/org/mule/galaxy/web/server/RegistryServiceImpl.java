@@ -91,6 +91,7 @@ import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.TypeManager;
+import org.mule.galaxy.util.UserUtils;
 import org.mule.galaxy.view.ArtifactViewManager;
 import org.mule.galaxy.view.View;
 import org.mule.galaxy.web.client.RPCException;
@@ -1167,7 +1168,9 @@ public class RegistryServiceImpl implements RegistryService {
             List<Comment> comments = commentManager.getComments(e.getId());
             for (Comment c : comments) {
                 final SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATETIME_FORMAT);
-                WComment wc = new WComment(c.getId(), c.getUser().getUsername(), dateFormat.format(c
+                WComment wc = new WComment(c.getId(), 
+                                           UserUtils.getUsername(c.getUser()), 
+                                           dateFormat.format(c
                         .getDate().getTime()), c.getText());
                 wcs.add(wc);
     
@@ -1212,11 +1215,10 @@ public class RegistryServiceImpl implements RegistryService {
 
     private EntryVersionInfo toWeb(EntryVersion av, boolean showHidden) {
         // remote workspaces don't support authors yet
-        String authorName = null;
+        String authorName = UserUtils.getUsername(av.getAuthor());
         String authorUser = null;
         User author = av.getAuthor();
         if (author != null) {
-            authorName = author.getName();
             authorUser = author.getUsername();
         }
         
@@ -1333,8 +1335,10 @@ public class RegistryServiceImpl implements RegistryService {
             commentManager.addComment(comment);
 
             SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATETIME_FORMAT);
-            return new WComment(comment.getId(), comment.getUser().getUsername(), dateFormat.format(comment
-                    .getDate().getTime()), comment.getText());
+            return new WComment(comment.getId(), 
+                                UserUtils.getUsername(comment.getUser()), 
+                                dateFormat.format(comment.getDate().getTime()), 
+                                comment.getText());
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -1357,7 +1361,7 @@ public class RegistryServiceImpl implements RegistryService {
     private void addComments(WComment parent, Set<Comment> comments) {
         for (Comment c : comments) {
             SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATETIME_FORMAT);
-            WComment child = new WComment(c.getId(), c.getUser().getUsername(), dateFormat.format(c.getDate()
+            WComment child = new WComment(c.getId(), UserUtils.getUsername(c.getUser()), dateFormat.format(c.getDate()
                     .getTime()), c.getText());
             parent.getComments().add(child);
 
