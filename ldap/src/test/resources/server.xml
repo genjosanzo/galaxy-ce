@@ -140,7 +140,7 @@
 
   <ldapService id="ldapsService"
               enabled="true"
-              ipPort="62009"
+              ipPort="62010"
               enableLdaps="true">
     <directoryService>#directoryService</directoryService>
     <socketAcceptor>#socketAcceptor</socketAcceptor>
