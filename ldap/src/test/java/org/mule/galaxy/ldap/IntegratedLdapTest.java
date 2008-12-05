@@ -55,13 +55,17 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
         c.setDate(cal);
-        c.setUser(getAdmin());
+        c.setUser(user);
         c.setText("Hello.");
         c.setItem(a);
         
         commentManager.addComment(c);
         
-        commentManager.getComments(a.getId());
+        List<Comment> comments = commentManager.getComments(a.getId());
+        assertEquals(1, comments.size());
+        
+        Comment c2 = comments.iterator().next();
+        assertNotNull(c2.getUser());
     }
 
     protected String getPassword() {

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.jcr.Node;
+import javax.jcr.Session;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.BasicAttributes;
@@ -22,6 +24,9 @@ import org.acegisecurity.userdetails.ldap.LdapUserDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.impl.jcr.onm.DaoPersister;
+import org.mule.galaxy.impl.jcr.onm.FieldDescriptor;
+import org.mule.galaxy.impl.jcr.onm.PersisterManager;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserExistsException;
 import org.mule.galaxy.security.UserManager;
@@ -41,7 +46,16 @@ public class LdapUserManager
     
     private LdapTemplate ldapTemplate;
     private InitialDirContextFactory initialDirContextFactory;
+    private PersisterManager persisterManager;
     
+    public void initialize() throws Exception {
+        persisterManager.getPersisters().put(User.class.getName(), new DaoPersister(this));
+    }
+    
+    public void setPersisterManager(PersisterManager persisterManager) {
+        this.persisterManager = persisterManager;
+    }
+
     public void setUserSearch(LdapUserSearch userSearch) {
         this.userSearch = userSearch;
     }

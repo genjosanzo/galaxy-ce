@@ -9,8 +9,8 @@
     
     <bean id="initialDirContextFactory"
             class="org.acegisecurity.ldap.DefaultInitialDirContextFactory"
-            >
-      <constructor-arg value="ldap://localhost:10389/"/>
+            depends-on="directoryService ldapService">
+      <constructor-arg value="ldap://localhost:62009/"/>
       <property name="managerDn"><value>uid=admin,ou=system</value></property>
       <property name="managerPassword"><value>secret</value></property>
     </bean>
@@ -24,12 +24,15 @@
     
     <bean id="userDetailsMapper" class="org.mule.galaxy.security.ldap.UserLdapEntryMapper" />
     
-    <bean id="userManager"
-          class="org.mule.galaxy.security.ldap.LdapUserManager">
+    <bean id="userManagerTarget"
+          class="org.mule.galaxy.security.ldap.LdapUserManager"
+          init-method="initialize">
       <property name="initialDirContextFactory" ref="initialDirContextFactory"/>
-      
+      <property name="persisterManager" ref="persisterManager" />
       <property name="userSearch" ref="userSearch"/>
       <property name="userMapper" ref="userDetailsMapper"/>
+      
+      <!-- Configure these two properties -->
       <property name="userSearchBase" value="ou=system"/>
       <property name="userSearchAttributes">
           <map>
