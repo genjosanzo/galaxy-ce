@@ -159,7 +159,7 @@ public class EntryInfoPanel extends AbstractComposite {
         commentsPanel.setStyleName("comments");
         commentsBase.add(commentsPanel);
         
-        Hyperlink addComment = new Hyperlink("Add", "add-comment");
+        Hyperlink addComment = new Hyperlink("Add", galaxy.getCurrentToken());
         addComment.addClickListener(new AddCommentClickListener(commentsPanel, null));
         
         InlineFlowPanel commentTitlePanel = createTitleWithLink("Comments", addComment);
@@ -195,7 +195,7 @@ public class EntryInfoPanel extends AbstractComposite {
         Label dateLabel = new Label(" at " + c.getDate());
         userLabel.setStyleName("user");
         
-        Hyperlink replyLink = new Hyperlink("Reply", "reply-" + c.getId());
+        Hyperlink replyLink = new Hyperlink("Reply", galaxy.getCurrentToken());
         replyLink.addClickListener(new AddCommentClickListener(commentPanel, c.getId()));
         title.add(img);
         title.add(replyLink);
