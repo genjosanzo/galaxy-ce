@@ -18,6 +18,7 @@
       <directory>../background-check-ws</directory>
       <outputDirectory>background-check-ws</outputDirectory>
       <useDefaultExcludes>true</useDefaultExcludes>
+      <filtered>true</filtered>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>galaxy-data/**</exclude>
