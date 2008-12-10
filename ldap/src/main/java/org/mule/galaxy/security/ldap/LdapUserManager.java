@@ -110,7 +110,8 @@ public class LdapUserManager
                     
                     users.add((User) userMapper.mapAttributes(null, result.getAttributes()));
                 }
-            
+
+                dirContext.close();
                 return users;
             }
             
