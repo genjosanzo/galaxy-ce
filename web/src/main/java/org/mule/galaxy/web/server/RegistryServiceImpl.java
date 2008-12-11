@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
 
 import org.acegisecurity.context.SecurityContextHolder;
@@ -66,8 +65,6 @@ import org.mule.galaxy.collab.Comment;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.extension.Extension;
-import org.mule.galaxy.impl.jcr.AbstractJcrItem;
-import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.impl.link.LinkExtension;
 import org.mule.galaxy.index.Index;
@@ -94,6 +91,7 @@ import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.TypeManager;
+import org.mule.galaxy.util.UserUtils;
 import org.mule.galaxy.view.ArtifactViewManager;
 import org.mule.galaxy.view.View;
 import org.mule.galaxy.web.client.RPCException;
@@ -124,7 +122,6 @@ import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 import org.mule.galaxy.web.rpc.WSearchResults;
 import org.mule.galaxy.web.rpc.WUser;
 import org.mule.galaxy.web.rpc.WWorkspace;
-import org.mule.galaxy.web.rpc.RegistryService.ApplyTo;
 
 public class RegistryServiceImpl implements RegistryService {
 
@@ -816,13 +813,17 @@ public class RegistryServiceImpl implements RegistryService {
         wv.setId(v.getId());
 
         try {
-            Query q = Query.fromString(v.getQuery());
-
-
-            wv.setPredicates(getPredicates(q));
+            if (v.isFreeform()) {
+                wv.setQueryString(v.getQuery());
+            } else {
+                Query q = Query.fromString(v.getQuery());
+    
+                wv.setPredicates(getPredicates(q));
+                wv.setWorkspace(q.getFromPath());
+                wv.setWorkspaceSearchRecursive(q.isFromRecursive());
+            }
+            
             wv.setShared(v.getUser() == null);
-            wv.setWorkspace(q.getFromPath());
-            wv.setWorkspaceSearchRecursive(q.isFromRecursive());
         } catch (QueryException e) {
             log.error("Could not parse query. " + e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -894,11 +895,18 @@ public class RegistryServiceImpl implements RegistryService {
         if (!wv.isShared()) {
             v.setUser(getCurrentUser());
         }
-        Query query = getQuery(wv.getPredicates(), 0, 0);
-        query.fromPath(wv.getWorkspace(), wv.isWorkspaceSearchRecursive());
-
-        v.setQuery(query.toString());
-
+        
+        if (wv.getQueryString() != null && !"".equals(wv.getQueryString())) {
+            v.setQuery(wv.getQueryString());
+            v.setFreeform(true);
+        } else {
+            Query query = getQuery(wv.getPredicates(), 0, 0);
+            query.fromPath(wv.getWorkspace(), wv.isWorkspaceSearchRecursive());
+    
+            v.setQuery(query.toString());
+            v.setFreeform(false);
+        }
+        
         return v;
     }
 
@@ -1124,6 +1132,7 @@ public class RegistryServiceImpl implements RegistryService {
         ExtendedEntryInfo info = new ExtendedEntryInfo();
         
         ItemRenderer view;
+        final String context = contextPathResolver.getContextPath();
         if (e instanceof Artifact) {
             Artifact a = (Artifact) e;
             ArtifactType type = artifactTypeDao.getArtifactType(a.getContentType().toString(), 
@@ -1137,16 +1146,16 @@ public class RegistryServiceImpl implements RegistryService {
                 view = rendererManager.getArtifactRenderer(a.getContentType().toString());
             }
 
-            final String context = contextPathResolver.getContextPath();
-
+            
             info.setArtifactLink(getLink(context + "/api/registry", a));
-            info.setArtifactFeedLink(getLink(context + "/api/registry", a) + ";history");
-            info.setCommentsFeedLink(context + "/api/comments");
         } else {
             view = rendererManager.getArtifactRenderer("application/octet-stream");
             info.setType("Entry");
         }
 
+        info.setArtifactFeedLink(getLink(context + "/api/registry", e) + ";history");
+        info.setCommentsFeedLink(context + "/api/comments");
+        
         createBasicEntryInfo(e, view, info, true);
 
         info.setDescription(e.getDescription());
@@ -1159,7 +1168,9 @@ public class RegistryServiceImpl implements RegistryService {
             List<Comment> comments = commentManager.getComments(e.getId());
             for (Comment c : comments) {
                 final SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATETIME_FORMAT);
-                WComment wc = new WComment(c.getId(), c.getUser().getUsername(), dateFormat.format(c
+                WComment wc = new WComment(c.getId(), 
+                                           UserUtils.getUsername(c.getUser()), 
+                                           dateFormat.format(c
                         .getDate().getTime()), c.getText());
                 wcs.add(wc);
     
@@ -1204,11 +1215,10 @@ public class RegistryServiceImpl implements RegistryService {
 
     private EntryVersionInfo toWeb(EntryVersion av, boolean showHidden) {
         // remote workspaces don't support authors yet
-        String authorName = null;
+        String authorName = UserUtils.getUsername(av.getAuthor());
         String authorUser = null;
         User author = av.getAuthor();
         if (author != null) {
-            authorName = author.getName();
             authorUser = author.getUsername();
         }
         
@@ -1325,8 +1335,10 @@ public class RegistryServiceImpl implements RegistryService {
             commentManager.addComment(comment);
 
             SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATETIME_FORMAT);
-            return new WComment(comment.getId(), comment.getUser().getUsername(), dateFormat.format(comment
-                    .getDate().getTime()), comment.getText());
+            return new WComment(comment.getId(), 
+                                UserUtils.getUsername(comment.getUser()), 
+                                dateFormat.format(comment.getDate().getTime()), 
+                                comment.getText());
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -1349,7 +1361,7 @@ public class RegistryServiceImpl implements RegistryService {
     private void addComments(WComment parent, Set<Comment> comments) {
         for (Comment c : comments) {
             SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_DATETIME_FORMAT);
-            WComment child = new WComment(c.getId(), c.getUser().getUsername(), dateFormat.format(c.getDate()
+            WComment child = new WComment(c.getId(), UserUtils.getUsername(c.getUser()), dateFormat.format(c.getDate()
                     .getTime()), c.getText());
             parent.getComments().add(child);
 

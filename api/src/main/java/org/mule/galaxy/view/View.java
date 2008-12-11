@@ -8,6 +8,7 @@ public class View implements Identifiable {
     private User user;
     private String name;
     private String query;
+    private boolean freeform;
     
     public String getId() {
         return id;
@@ -32,5 +33,11 @@ public class View implements Identifiable {
     }
     public void setQuery(String query) {
         this.query = query;
+    }
+    public boolean isFreeform() {
+        return freeform;
+    }
+    public void setFreeform(boolean freeform) {
+        this.freeform = freeform;
     }
 }

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
@@ -56,7 +55,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
         try {
             boolean first = objects.getNodes().getSize() == 0;
-            Group adminGroup;
+            Group adminGroup; 
             try {
                 adminGroup = getGroupByName("Administrators");
             } catch (NotFoundException e) {
@@ -81,13 +80,31 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
                 toGrant.add(Permission.MODIFY_WORKSPACE);
                 grant(userGroup, toGrant);
                 
+                
                 User admin = userManager.getByUsername("admin");
-                if (admin != null)
-                {
+                if (admin != null) {
                     admin.addGroup(adminGroup);
                     admin.addGroup(userGroup);
                     userManager.save(admin);
                 }
+//
+//                Group anonGroup = new Group("Anonymous");
+//                gNode = objects.addNode(anonGroup.getName(), getNodeType());
+//                gNode.addMixin("mix:referenceable");
+//                anonGroup.setId(gNode.getUUID());
+//                persist(anonGroup, gNode, session);
+//    
+//                toGrant = new ArrayList<Permission>();
+//                toGrant.add(Permission.READ_ARTIFACT);
+//                toGrant.add(Permission.READ_WORKSPACE);
+//                grant(anonGroup, toGrant);
+//
+//
+//                User anon = userManager.getByUsername("anonymous");
+//                if (anon != null) {
+//                	anon.addGroup(anonGroup);
+//                	userManager.save(anon);
+//                }
             }
             
             // ensure that the admin group always has all the permissions

@@ -4,11 +4,18 @@
   xmlns:p="http://www.springframework.org/schema/p"
   xmlns:a="http://abdera.apache.org"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
   xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
     http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
+
+    <bean id="properties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations" value="classpath:galaxy.properties"/>
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    </bean>
 
     <import resource="datasource.xml"/>
     <import resource="scheduler.xml"/>
@@ -45,7 +52,7 @@
   <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean" destroy-method="destroy" depends-on="jndiContext, dbInitializer">
     <!-- normal factory beans params -->
     <property name="configuration" value="classpath:/META-INF/jackrabbit-repo.xml"/>
-    <property name="homeDir" value="file:./galaxy-data"/>
+    <property name="homeDir" value="file:${galaxy.data}"/>
   </bean>
 
   <bean id="jcrInitializer" class="org.mule.galaxy.impl.jcr.JcrInitializer"
@@ -123,6 +130,7 @@
               <bean class="org.mule.galaxy.event.listener.activity.EntryCreatedEventListener" parent="abstractActivityLogger"/>
               <bean class="org.mule.galaxy.event.listener.activity.EntryDeletedEventListener" parent="abstractActivityLogger"/>
               <bean class="org.mule.galaxy.event.listener.activity.EntryMovedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.EntryCommentCreatedEventListener" parent="abstractActivityLogger"/>
               <!-- entry version -->
               <bean class="org.mule.galaxy.event.listener.activity.EntryVersionCreatedEventListener" parent="abstractActivityLogger"/>
               <bean class="org.mule.galaxy.event.listener.activity.EntryVersionDeletedEventListener" parent="abstractActivityLogger"/>
@@ -175,11 +183,14 @@
     <property name="userManager" ref="userManager" />
     <property name="upgraders">
         <list>
-            <bean class="org.mule.galaxy.impl.upgrade.V11Upgrader">
+            <bean class="org.mule.galaxy.impl.upgrade.V15Upgrader">
                 <property name="registry" ref="registryTarget"/>
                 <property name="typeManager" ref="typeManager" />
                 <property name="localWorkspaceManager" ref="localWorkspaceManager"/>
                 <property name="lifecycleManager" ref="lifecycleManager" />
+            </bean>
+            <bean class="org.mule.galaxy.impl.upgrade.V151Upgrader">
+                <property name="typeManager" ref="typeManager" />
             </bean>
         </list>
     </property>
@@ -291,6 +302,7 @@
   <bean id="commentManagerTarget" class="org.mule.galaxy.impl.jcr.CommentManagerImpl"
         init-method="initialize" depends-on="persisterManager">
     <property name="sessionFactory" ref="sessionFactory" />
+    <property name="eventManager" ref="eventManager" />
     <property name="persisterManager" ref="persisterManager" />
   </bean>
     
@@ -327,6 +339,8 @@
              <entry key="registry" value-ref="registry"/>
              <entry key="activityManager" value-ref="activityManager"/>
              <entry key="eventManager" value-ref="eventManager"/>
+             <entry key="policyManager" value-ref="policyManager"/>
+             <entry key="lifecycleManager" value-ref="lifecycleManager"/>
          </map>
      </constructor-arg>
   </bean>

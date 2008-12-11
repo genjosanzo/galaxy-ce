@@ -17,7 +17,7 @@ public class LifecycleTransitionEventListener extends AbstractActivityLoggingLis
     public void onEvent(LifecycleTransitionEvent event) {
         final String message = MessageFormat.format("Item {0} was transitioned to phase {2} " +
                                                     "in lifecycle {3}",
-                                                    event.getArtifactPath(),
+                                                    event.getItemPath(),
                                                     event.getNewPhaseName(), 
                                                     event.getLifecycleName());
         getActivityManager().logActivity(message, ActivityManager.EventType.INFO, event.getUser(), null);

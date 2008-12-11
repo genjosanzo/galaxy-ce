@@ -315,19 +315,23 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         }
         
         Workspace w = (Workspace) item;
-        
-        for (int i = 0; i < paths.length - 1; i++) {
-            String p = paths[i];
-            
-            // TODO: escaping?
-            if (p.equals("..")) {
-                w = ((Workspace)w.getParent());
-            } else if (!p.equals(".")) {
-                w = w.getWorkspace(p);
-            }
-        }
 
         try {
+            for (int i = 0; i < paths.length - 1 && w != null; i++) {
+                String p = paths[i];
+                
+                // TODO: escaping?
+                if (p.equals("..")) {
+                    w = ((Workspace)w.getParent());
+                } else if (!p.equals(".")) {
+                    w = w.getWorkspace(p);
+                }
+            }
+            
+            if (w == null) {
+        	return null;
+            }
+            
             return w.getItem(paths[paths.length-1]);
         } catch (NotFoundException e) {
             return null;
@@ -992,7 +996,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
             JcrWorkspace w = new JcrWorkspace(localWorkspaceManager, node);
             w.setName(settings.getDefaultWorkspaceName());
 
-            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "3");
+            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "4");
 
             final PropertyDescriptor lifecyclePD = new PropertyDescriptor();
             lifecyclePD.setProperty(PRIMARY_LIFECYCLE);
@@ -1019,7 +1023,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         } else {
             String versionStr = JcrUtil.getStringOrNull(workspaces, REPOSITORY_LAYOUT_VERSION);
             final int version = Integer.parseInt(versionStr);
-            if (version < 3) {
+            if (version < 4) {
                 SecurityUtils.doPriveleged(new Runnable() {
 
                     public void run() {
@@ -1034,7 +1038,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     
                 });
             }
-            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "3");
+            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "4");
         }
         id = workspaces.getUUID();
         

@@ -39,7 +39,7 @@ import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
 
-public class V11Upgrader extends Upgrader {
+public class V15Upgrader extends Upgrader {
 
     private final Log log = LogFactory.getLog(getClass());
     
@@ -55,7 +55,7 @@ public class V11Upgrader extends Upgrader {
     public void doUpgrade(int version, Session session, Node root) throws Exception {
         if (version >= 3) return;
         
-        log.info("Upgrading to version 1.1....");
+        log.info("Upgrading to version 1.5....");
         
         QueryManager qm = session.getWorkspace().getQueryManager();
         

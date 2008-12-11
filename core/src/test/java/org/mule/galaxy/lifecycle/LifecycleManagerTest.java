@@ -9,11 +9,18 @@ import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
+import org.mule.galaxy.event.DefaultEvents;
+import org.mule.galaxy.event.LifecycleTransitionEvent;
+import org.mule.galaxy.event.EventManager;
+import org.mule.galaxy.event.annotation.BindToEvent;
+import org.mule.galaxy.event.annotation.OnEvent;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class LifecycleManagerTest extends AbstractGalaxyTest {
+
     protected LifecycleManager lifecycleManager;
+    protected EventManager eventManager;
     
     public void testLifecycleInitialization() throws Exception {
         Collection<Lifecycle> lifecycles = lifecycleManager.getLifecycles();
@@ -54,10 +61,14 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         Phase current = getPhase(version);
         assertEquals(created.getName(), current.getName());
         
+        EventCounter counter = new EventCounter();
+        eventManager.addListener(counter);
+        
         version.setProperty(Registry.PRIMARY_LIFECYCLE, dev);
         
         current = getPhase(version);
         assertEquals(dev.getName(), current.getName());
+        assertEquals(1, counter.getCounter());
         
         try {
             version.setProperty(Registry.PRIMARY_LIFECYCLE, dev);
@@ -225,4 +236,17 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         // todo: invalid nextPhases
     }
     
+    @BindToEvent(DefaultEvents.LIFECYCLE_TRANSITION)
+    public static final class EventCounter {
+        private int counter;
+        
+        @OnEvent
+        public void onEvent(LifecycleTransitionEvent e) {
+            counter++;
+        }
+
+        public int getCounter() {
+            return counter;
+        }
+    }
 }

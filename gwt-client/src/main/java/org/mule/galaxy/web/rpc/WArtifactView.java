@@ -12,6 +12,8 @@ public class WArtifactView implements IsSerializable {
     private boolean shared;
     private String workspace;
     private boolean workspaceSearchRecursive;
+    private String queryString;
+    
     public String getId() {
         return id;
     }
@@ -47,6 +49,12 @@ public class WArtifactView implements IsSerializable {
     }
     public void setWorkspaceSearchRecursive(boolean workspaceSearchRecursive) {
         this.workspaceSearchRecursive = workspaceSearchRecursive;
+    }
+    public String getQueryString() {
+        return queryString;
+    }
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
     }
     
 }

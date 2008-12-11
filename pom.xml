@@ -4,7 +4,7 @@
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
     <name>Galaxy</name>
 
     <properties>
@@ -41,7 +41,7 @@
         <module>integration</module>
         <module>server</module>
         <module>netboot</module>
-        <module>examples/background-check-ws</module>
+        <module>examples</module>
     </modules>
 
     <dependencyManagement>
@@ -540,9 +540,9 @@
         </site>
     </distributionManagement>
     <scm>
-        <connection>scm:svn:https://svn.muleforge.org/galaxy/branches/galaxy-1.5.x</connection>
-        <developerConnection>scm:svn:https://svn.muleforge.org/galaxy/branches/galaxy-1.5.x</developerConnection>
-        <url>http://svn.galaxy.muleforge.org/branches/galaxy-1.5.x</url>
+        <connection>scm:svn:https://svn.muleforge.org/galaxy/branches/my-branch</connection>
+        <developerConnection>scm:svn:https://svn.muleforge.org/galaxy/branches/my-branch</developerConnection>
+        <url>http://svn.galaxy.muleforge.org/branches/my-branch</url>
     </scm>
 
     <profiles>

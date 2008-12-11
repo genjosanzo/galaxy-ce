@@ -48,6 +48,7 @@ public class SearchPanel extends AbstractBrowsePanel {
         
         searchPanel = new FlowPanel(); 
         searchForm = createSearchForm();
+        searchForm.setPredicates(null);
         searchPanel.add(searchForm);
         currentTopPanel = searchPanel;
         menuPanel.setTop(searchPanel);
@@ -60,7 +61,7 @@ public class SearchPanel extends AbstractBrowsePanel {
     }
 
     protected SearchForm createSearchForm() {
-        return new SearchForm(galaxy, "Search", true);
+        return new SearchForm(galaxy, "Search");
     }
 
     protected void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback) {

@@ -1,7 +1,6 @@
 package org.mule.galaxy.impl;
 
 
-import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -14,9 +13,6 @@ import org.mule.galaxy.Links;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.link.LinkExtension;
-import org.mule.galaxy.query.OpRestriction;
-import org.mule.galaxy.query.Query;
-import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class LinkTest extends AbstractGalaxyTest {
@@ -126,6 +122,27 @@ public class LinkTest extends AbstractGalaxyTest {
         Link dep = deps.iterator().next();
         assertEquals(schema.getEntry().getId(), dep.getLinkedTo().getId());
         assertTrue(dep.isAutoDetected());
+    }
+    
+    public void testAbsoluteSchemaDependencies() throws Exception {
+
+        Collection<Workspace> workspaces = registry.getWorkspaces();
+        assertEquals(1, workspaces.size());
+        Workspace workspace = workspaces.iterator().next();
+        
+        EntryResult schema = workspace.createArtifact("application/xml", 
+                                                      "hello-import-absolute.xsd", 
+                                                      "0.1", 
+                                                      getResourceAsStream("/schema/hello-import-absolute.xsd"));
+
+        Links links = (Links) schema.getEntryVersion().getProperty(LinkExtension.DEPENDS);
+        Collection<Link> deps = links.getLinks();
+        assertNotNull(deps);
+        assertEquals(2, deps.size());
+        
+        Link next = deps.iterator().next();
+        assertNull(next.getLinkedTo());
+        
     }
     
     public void testMissingWsdlDependencies() throws Exception {

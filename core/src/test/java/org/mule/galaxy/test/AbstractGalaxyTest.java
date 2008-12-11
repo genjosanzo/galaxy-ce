@@ -14,7 +14,7 @@ import javax.jcr.SimpleCredentials;
 
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.providers.AuthenticationProvider;
+import org.acegisecurity.providers.ProviderManager;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,8 +29,8 @@ import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.activity.ActivityManager;
 import org.mule.galaxy.collab.CommentManager;
+import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.impl.index.IndexManagerImpl;
-import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.lifecycle.LifecycleManager;
@@ -71,11 +71,13 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     protected AccessControlManager accessControlManager;
     protected ArtifactViewManager artifactViewManager;
     protected TypeManager typeManager;
+    protected EventManager eventManager;
     
     private boolean participate;
     
     public AbstractGalaxyTest() {
         super();
+        System.setProperty("galaxy.data", "./target/galaxy-data");
         setPopulateProtectedVariables(true);
     }
 
@@ -106,7 +108,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     }
 
     protected void login(final String username, final String password) {
-        AuthenticationProvider provider = (AuthenticationProvider) applicationContext.getBean("authenticationProvider");
+        ProviderManager provider = (ProviderManager) applicationContext.getBean("authenticationManager");
         Authentication auth = provider.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         SecurityContextHolder.getContext().setAuthentication(auth);
     }

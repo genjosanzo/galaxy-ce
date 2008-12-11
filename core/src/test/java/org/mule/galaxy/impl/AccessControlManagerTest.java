@@ -26,6 +26,9 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
         
         group = getGroup("Administrators", groups);
         assertNotNull(group);
+//        
+//        Group groupByName = accessControlManager.getGroupByName("Anonymous");
+//        assertNotNull(groupByName);
         
         Group groupByName = accessControlManager.getGroupByName("Administrators");
         assertNotNull(groupByName);

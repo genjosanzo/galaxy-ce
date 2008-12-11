@@ -1,16 +1,9 @@
 package org.mule.galaxy.security;
 
-import java.util.Collection;
-
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.Workspace;
 
 public interface UserManager extends Dao<User> {
-    // NOTE: These roles will be customizable in a future release
-    
-    String ROLE_USER = "role_user";
-    String ROLE_ADMINISTRATOR = "role_administrator";
     
     User authenticate(String username, String password);
     

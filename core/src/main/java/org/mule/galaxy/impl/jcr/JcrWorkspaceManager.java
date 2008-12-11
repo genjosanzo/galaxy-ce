@@ -432,7 +432,7 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
 
     protected void initializeLifecycle(Entry entry, EntryVersion v) {
         Lifecycle lifecycle = entry.getParent().getDefaultLifecycle();
-        
+
         for (PropertyDescriptor pd : entry.getType().getProperties()) {
             if (pd.getExtension() instanceof LifecycleExtension) {
                 try {

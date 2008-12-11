@@ -6,17 +6,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.ValueFormatException;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
+import javax.jcr.version.VersionException;
 
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UserDetailsService;
@@ -43,7 +48,6 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     private static final String CREATED = "created";
     private static final String EMAIL = "email";
     private static final String ENABLED = "enabled";
-    private static final String ROLES = "roles";
 
     private AccessControlManager accessControlManager;
     private ApplicationContext applicationContext;
@@ -84,6 +88,9 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     }
 
     public User getByUsername(final String username) {
+	if (SecurityUtils.SYSTEM_USER.getUsername().equals(username)) {
+	    return SecurityUtils.SYSTEM_USER;
+	}
         return (User) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node userNode = findUser(username, session);
@@ -270,27 +277,31 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         activeUsersNodeId = activeUsers.getUUID();
         
         if (objects.getNodes().getSize() == 0) {
-            String id = generateNodeName(null);
-            Node node = objects.addNode(id);
-            node.addMixin("mix:referenceable");
-            node.setProperty(PASSWORD, "admin");
-            node.setProperty(ENABLED, true);
-            
-            JcrUtil.setProperty(USERNAME, "admin", node);
-            JcrUtil.setProperty(NAME, "Administrator", node);
-            JcrUtil.setProperty(EMAIL, "", node);
-            HashSet<String> roles = new HashSet<String>();
-            roles.add(UserManager.ROLE_ADMINISTRATOR);
-            roles.add(UserManager.ROLE_USER);
-            JcrUtil.setProperty(ROLES, roles, node);
-            
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(new Date());
-            JcrUtil.setProperty(CREATED, cal, node);
-            
-            activeUsers.addNode("admin");
+            addUser(objects, activeUsers, "admin", "Administrator");
+//            addUser(objects, activeUsers, "anonymous", "Anonymous");
         }
     }
+
+	private void addUser(Node objects, Node activeUsers, String username,
+			String name) throws ItemExistsException, PathNotFoundException,
+			VersionException, ConstraintViolationException, LockException,
+			RepositoryException, NoSuchNodeTypeException, ValueFormatException {
+		String id = generateNodeName(null);
+		Node node = objects.addNode(id);
+		node.addMixin("mix:referenceable");
+		node.setProperty(PASSWORD, username);
+		node.setProperty(ENABLED, true);
+		
+		JcrUtil.setProperty(USERNAME, username, node);
+		JcrUtil.setProperty(NAME, name, node);
+		JcrUtil.setProperty(EMAIL, "", node);
+		
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		JcrUtil.setProperty(CREATED, cal, node);
+		
+		activeUsers.addNode(username);
+	}
 
     private AccessControlManager getAccessControlManager() {
         if (accessControlManager == null) {

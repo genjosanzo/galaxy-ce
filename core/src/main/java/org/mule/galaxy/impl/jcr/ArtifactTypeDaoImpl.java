@@ -1,5 +1,9 @@
 package org.mule.galaxy.impl.jcr;
 
+import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.ArtifactTypeDao;
+import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,21 +20,17 @@ import javax.xml.namespace.QName;
 
 import org.springmodules.jcr.JcrCallback;
 
-import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.ArtifactTypeDao;
-import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
+public class ArtifactTypeDaoImpl extends AbstractReflectionDao<ArtifactType>
+        implements ArtifactTypeDao {
 
-public class ArtifactTypeDaoImpl extends AbstractReflectionDao<ArtifactType> 
-    implements ArtifactTypeDao {
-    
     private ArtifactType defaultArtifactType;
-    
+
     public ArtifactTypeDaoImpl() throws Exception {
         super(ArtifactType.class, "artifactTypes", true);
     }
 
     public ArtifactType getArtifactType(final String contentType, final QName documentType) {
-        return (ArtifactType)execute(new JcrCallback() {
+        return (ArtifactType) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
 
                 QueryManager qm = getQueryManager(session);
@@ -39,14 +39,14 @@ public class ArtifactTypeDaoImpl extends AbstractReflectionDao<ArtifactType>
 
                 if (documentType != null) {
                     query.append("[@documentTypes = ")
-                         .append(JcrUtil.stringToJCRSearchExp(documentType.toString()))
-                         .append("]");
+                            .append(JcrUtil.stringToJCRSearchExp(documentType.toString()))
+                            .append("]");
                 } else {
                     query.append("[@contentType=")
-                         .append(JcrUtil.stringToJCRSearchExp(contentType))
-                         .append("]");
+                            .append(JcrUtil.stringToJCRSearchExp(contentType))
+                            .append("]");
                 }
-                
+
                 Query q = qm.createQuery(query.toString(), Query.XPATH);
 
                 QueryResult qr = q.execute();
@@ -75,24 +75,25 @@ public class ArtifactTypeDaoImpl extends AbstractReflectionDao<ArtifactType>
     }
 
     public ArtifactType getArtifactType(String fileExtension) {
-        List<ArtifactType> types = find("fileExtensions", fileExtension);
-        
+        String stmt = "/jcr:root/" + rootNode + "/*[fn:lower-case(fileExtensions)='" + fileExtension.toLowerCase() + "']";
+        List<ArtifactType> types = doQuery(stmt);
+
         if (types.size() > 0) {
             return types.get(0);
         }
-        
+
         return null;
     }
 
     protected List<ArtifactType> doListAll(Session session) throws RepositoryException {
         List<ArtifactType> types = super.doListAll(session);
-        
+
         Collections.sort(types, new Comparator<ArtifactType>() {
             public int compare(ArtifactType o1, ArtifactType o2) {
                 return o1.getDescription().compareTo(o2.getDescription());
             }
         });
-        
+
         return types;
     }
 

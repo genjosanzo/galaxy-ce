@@ -20,18 +20,18 @@ package org.mule.galaxy.web.client.registry;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.FormHandler;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormSubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormSubmitEvent;
 import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -42,23 +42,31 @@ import java.util.List;
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.StringUtil;
+import org.mule.galaxy.web.client.util.TooltipListener;
 import org.mule.galaxy.web.client.util.WorkspaceOracle;
+import org.mule.galaxy.web.client.validation.FileUploadValidator;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableFileUpload;
 import org.mule.galaxy.web.client.validation.ui.ValidatableSuggestBox;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 
-public class ArtifactForm extends AbstractErrorShowingComposite {
-    private TextBox nameBox;
+public class ArtifactForm extends AbstractErrorShowingComposite
+        implements FormHandler, ClickListener {
+
     private FlexTable table;
     private FormPanel form;
-    private FileUpload artifactUpload;
-    private TextBox versionBox;
+    private ValidatableFileUpload artifactUpload;
+    private TextBox nameBox;
+    private ValidatableTextBox versionBox;
+    private ValidatableSuggestBox workspaceSB;
     private final Galaxy galaxy;
     private String artifactId;
     private CheckBox disablePrevious;
     private boolean add;
     private Button addButton;
+    private Button cancelButton;
     private RegistryMenuPanel menuPanel;
-    private ValidatableSuggestBox workspaceSB;
 
     public ArtifactForm(final Galaxy galaxy) {
         this.galaxy = galaxy;
@@ -73,6 +81,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
     public void onHide() {
         form.clear();
     }
+
 
     public void onShow(List<String> params) {
         if (params.size() > 0) {
@@ -94,6 +103,13 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
         table = createColumnTable();
         panel.add(table);
 
+        
+        table.setWidget(0, 0, new Label("Artifact:"));
+
+        artifactUpload = new ValidatableFileUpload(new FileUploadValidator());
+        artifactUpload.getFileUpload().setName("artifactFile");
+        table.setWidget(0, 2, artifactUpload);
+
         if (add) {
             setupAddForm();
         } else {
@@ -102,97 +118,180 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
         menuPanel.onShow();
     }
 
+
+    private void setupAddForm() {
+
+        // note how spacing uses a clear pixel on the second column
+        table.setWidget(1, 0, new Label("Workspace:"));
+
+        workspaceSB = new ValidatableSuggestBox(new StringNotEmptyValidator(),
+                                                new WorkspaceOracle(galaxy, this));
+        workspaceSB.getTextBox().setName("workspacePath");
+        table.setWidget(1, 2, workspaceSB);
+
+        table.setWidget(2, 0, new Label("Artifact Name:"));
+
+        // to control formatting
+        final Image spacerimg = new Image("images/clearpixel.gif");
+        spacerimg.setWidth("16px");
+        table.setWidget(2, 1, spacerimg);
+
+        nameBox = new TextBox();
+        nameBox.setName("name");
+        table.setWidget(2, 2, nameBox);
+
+        // warn user if the artifact name does not contain an extention.
+        nameBox.addFocusListener(new FocusListener() {
+            public void onLostFocus(final Widget sender) {
+                String s = ((TextBox) sender).getText();
+                if (s.length() > 0 && StringUtil.getFileExtension(s).length() == 0) {
+                    // warn icon and tooltip
+                    Image warnimg = new Image("images/icon_alert.gif");
+                    warnimg.addMouseListener(new TooltipListener(" Warning: Artifact name does not contain a valid file extension. " +
+                            "Galaxy will not be able to reliably detect the artifact type. You may leave this field empty" +
+                            "if you want retain the uploaded filename",
+                                                                 10000));
+
+                    table.setWidget(2, 1, warnimg);
+                } else {
+                    table.setWidget(2, 1, spacerimg);
+                }
+            }
+            public void onFocus(final Widget sender) {
+            } 
+
+        });
+
+
+        table.setWidget(3, 0, new Label("Version Label:"));
+
+        versionBox = new ValidatableTextBox(new StringNotEmptyValidator());
+        table.setWidget(3, 2, versionBox);
+        versionBox.getTextBox().setName("versionLabel");
+
+        setupRemainingTable(3);
+    }
+
+
+    private void setupAddVersionForm(FlowPanel panel) {
+
+        // note how spacing uses a clear pixel on the second column
+        table.setText(1, 0, "Version Label:");
+
+        Image spacerimg = new Image("images/clearpixel.gif");
+        spacerimg.setWidth("1px");
+        table.setWidget(1, 1, spacerimg);
+
+        versionBox = new ValidatableTextBox(new StringNotEmptyValidator());
+        table.setWidget(1, 2, versionBox);
+        versionBox.getTextBox().setName("versionLabel");
+
+        table.setText(2, 0, "Disable Previous:");
+
+        disablePrevious = new CheckBox();
+        disablePrevious.setChecked(true);
+        disablePrevious.setName("disablePrevious");
+        table.setWidget(2, 2, disablePrevious);
+
+        panel.add(new Hidden("artifactId", artifactId));
+
+        setupRemainingTable(3);
+    }
+
+
     private void setupRemainingTable(int row) {
-        artifactUpload = new FileUpload();
-        artifactUpload.setName("artifactFile");
-        table.setWidget(row, 1, artifactUpload);
-
         addButton = new Button("Add");
-        addButton.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
-                addButton.setText("Uploading...");
-                addButton.setEnabled(false);
-                form.submit();
-            }
-        });
+        addButton.addClickListener(this);
 
-        Button cancel = new Button("Cancel");
-        cancel.addClickListener(new ClickListener() {
-            public void onClick(final Widget widget) {
-                History.back();
-            }
-        });
+        cancelButton = new Button("Cancel");
+        cancelButton.addClickListener(this);
 
         InlineFlowPanel buttons = new InlineFlowPanel();
         buttons.add(addButton);
-        buttons.add(cancel);
+        buttons.add(cancelButton);
 
-        table.setWidget(row + 1, 1, buttons);
-
-        form.addFormHandler(new FormHandler() {
-            public void onSubmit(FormSubmitEvent event) {
-
-                // whitespace will throw an invalid path exception
-                // on the server -- so trim this optional value
-                if (nameBox != null) {
-                    String name = nameBox.getText().trim();
-                    if (name != null || !"".equals(name)) {
-                        nameBox.setText(name);
-                    }
-                }
-
-                if (artifactUpload.getFilename().length() == 0) {
-                    Window.alert("You did not specify a filename!");
-                    event.setCancelled(true);
-                }
-
-                // trim version to prevent path error
-                String version = versionBox.getText().trim();
-                versionBox.setText(version);
-                if (version == null || "".equals(version)) {
-                    setMessage("You must specify a version label.");
-                    event.setCancelled(true);
-                }
-
-                addButton.setText("Add");
-                addButton.setEnabled(true);
-            }
-
-            public void onSubmitComplete(FormSubmitCompleteEvent event) {
-                String msg = event.getResults();
-
-                // some platforms insert css info into the pre-tag -- just remove it all
-                msg = msg.replaceAll("\\<.*?\\>", "");
-
-                // This is our 200 OK response
-                // eg:  OK 9c495a52-4a07-4697-ba73-f94f95cd3020
-                if (msg.startsWith("OK ")) {
-                    String artifactId2 = artifactId;
-                    if (add) {
-                        // remove the "OK " string to get the artifactId
-                        artifactId2 = msg.substring(3);
-                    }
-                    // send them to the view artifact info page on success.
-                    History.newItem("artifact/" + artifactId2);
-                } else
-
-                    // something bad happened...
-                    if (msg.startsWith("ArtifactPolicyException")) {
-                        parseAndShowPolicyMessages(msg);
-                    } else {
-                        menuPanel.setMessage(msg);
-                    }
-            }
-        });
-
-        styleHeaderColumn(table);
+        table.setWidget(row + 1, 2, buttons);
 
         if (add) {
             setTitle("Add Artifact");
         } else {
             setTitle("Add New Artifact Version");
         }
+
+        form.addFormHandler(this);
+        styleHeaderColumn(table);
+
     }
+
+
+    public void onSubmit(final FormSubmitEvent event) {
+
+        // block uploads once the addButton is pressed
+        addButton.setText("Uploading...");
+        addButton.setEnabled(false);
+
+        // last chance to validate
+        if (!validate()) {
+            resetFormFields();
+            event.setCancelled(true);
+            return;
+        }
+
+        // whitespace will throw an invalid path exception
+        // on the server -- so trim this optional value
+        if (nameBox != null) {
+            String name = nameBox.getText().trim();
+            if (name != null || !"".equals(name)) {
+                nameBox.setText(name);
+            }
+        }
+
+        // also trim the version to prevent path error
+        String version = versionBox.getText().trim();
+        versionBox.setText(version);
+    }
+
+
+    public void onSubmitComplete(FormSubmitCompleteEvent event) {
+
+        String msg = event.getResults();
+
+        // some platforms insert css info into the pre-tag -- just remove it all
+        msg = msg.replaceAll("\\<.*?\\>", "");
+
+        // This is our 200 OK response
+        // eg:  OK 9c495a52-4a07-4697-ba73-f94f95cd3020
+        if (msg.startsWith("OK ")) {
+            String artifactId2 = artifactId;
+            if (add) {
+                // remove the "OK " string to get the artifactId
+                artifactId2 = msg.substring(3);
+            }
+            // send them to the view artifact info page on success.
+            History.newItem("artifact/" + artifactId2);
+        } else
+
+            // something bad happened...
+            if (msg.startsWith("ArtifactPolicyException")) {
+                parseAndShowPolicyMessages(msg);
+            } else {
+                menuPanel.setMessage(msg);
+                resetFormFields();
+            }
+    }
+
+
+    public void onClick(Widget sender) {
+        if (sender == addButton) {
+            form.submit();
+        }
+
+        if (sender == cancelButton) {
+            History.back();
+        }
+
+    }
+
 
     protected void parseAndShowPolicyMessages(String msg) {
         String[] split = msg.split("\n");
@@ -231,6 +330,7 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
         History.newItem(token);
     }
 
+
     private void addWarningOrFailure(List<String> warnings, List<String> failures, String lines, boolean warning) {
         if (lines == null) return;
 
@@ -241,58 +341,31 @@ public class ArtifactForm extends AbstractErrorShowingComposite {
         }
     }
 
+
     private String getMessage(String s) {
         s = s.substring(9);
         return s;
     }
 
-    private void setupAddForm() {
-        table.setWidget(0, 0, new Label("Workspace"));
 
-        workspaceSB = new ValidatableSuggestBox(new StringNotEmptyValidator(),
-                                                new WorkspaceOracle(galaxy, this));
-        workspaceSB.getTextBox().setName("workspacePath");
-        table.setWidget(0, 1, workspaceSB);
+    private boolean validate() {
+        menuPanel.clearErrorMessage();
+        boolean v = true;
 
-        Label nameLabel = new Label("Artifact Name");
-        table.setWidget(1, 0, nameLabel);
+        if (add) {
+            //v &= nameBox.validate();
+            v &= workspaceSB.validate();
+        }
 
-        nameBox = new TextBox();
-        nameBox.setName("name");
-        table.setWidget(1, 1, nameBox);
-
-        Label versionLabel = new Label("Version Label");
-        table.setWidget(2, 0, versionLabel);
-
-        versionBox = new TextBox();
-        table.setWidget(2, 1, versionBox);
-        versionBox.setName("versionLabel");
-
-        Label artifactLabel = new Label("Artifact");
-        table.setWidget(3, 0, artifactLabel);
-
-        setupRemainingTable(3);
+        v &= versionBox.validate();
+        v &= artifactUpload.validate();
+        return v;
     }
 
-    private void setupAddVersionForm(FlowPanel panel) {
-        table.setText(0, 0, "Version Label");
 
-        versionBox = new TextBox();
-        table.setWidget(0, 1, versionBox);
-        versionBox.setName("versionLabel");
-
-        table.setText(1, 0, "Disable Previous");
-
-        disablePrevious = new CheckBox();
-        disablePrevious.setChecked(true);
-        disablePrevious.setName("disablePrevious");
-        table.setWidget(1, 1, disablePrevious);
-
-        Label artifactLabel = new Label("Artifact");
-        table.setWidget(2, 0, artifactLabel);
-
-        panel.add(new Hidden("artifactId", artifactId));
-
-        setupRemainingTable(2);
+    private void resetFormFields() {
+        addButton.setText("Add");
+        addButton.setEnabled(true);
     }
+
 }

@@ -94,6 +94,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     protected PropertyPanelFactory propertyPanelFactory = new PropertyPanelFactory();
     protected List extensions;
     private String currentToken;
+	protected Label footer;
 
     /**
      * This is the entry point method.
@@ -202,7 +203,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         });
 
 
-        Label footer = new Label(getProductName() + ", Copyright 2008 MuleSource, Inc.");
+        footer = new Label(getFooterText());
         footer.setStyleName("footer");
         base.add(footer);
         RootPanel.get().add(base);
@@ -221,6 +222,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
         new HeartbeatTimer(Galaxy.this);
     }
+
+	protected String getFooterText() {
+		return getProductName() + ", Copyright 2008 MuleSource, Inc.";
+	}
 
     protected void initializeBody() {
         base.add(tabPanel);

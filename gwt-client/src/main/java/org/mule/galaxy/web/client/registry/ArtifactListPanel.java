@@ -18,16 +18,8 @@
 
 package org.mule.galaxy.web.client.registry;
 
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.EntryGroup;
-import org.mule.galaxy.web.rpc.EntryInfo;
-import org.mule.galaxy.web.rpc.WSearchResults;
-
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -41,6 +33,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.EntryGroup;
+import org.mule.galaxy.web.rpc.WSearchResults;
 
 public class ArtifactListPanel extends AbstractComposite implements ClickListener {
 

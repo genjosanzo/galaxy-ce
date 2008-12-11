@@ -1,22 +1,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.mule.galaxy</groupId>
-        <artifactId>galaxy-parent</artifactId>
-        <version>1.5.1-SNAPSHOT</version>
+        <artifactId>galaxy-examples-parent</artifactId>
+        <version>1.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.galaxy</groupId>
-    <artifactId>galaxy-background-check-service</artifactId>
-  <version>1.5.1-SNAPSHOT</version>
+    <artifactId>galaxy-example-background-check-service</artifactId>
+    <version>1.5-SNAPSHOT</version>
     <name>Example: Background Check Service</name>
     <description>
       An example service which checks the background of an individual. 
     </description>
-    
     <properties>
-        <mule.version>2.1.0</mule.version>
+        <mule.version>2.1.1</mule.version>
     </properties>
-
+    
     <dependencies>
     
         <dependency>
@@ -176,39 +175,6 @@
         </plugins>
     </build>
 
-    <!-- This packages up the source code when releases are made -->
-    <profiles>
-        <profile>
-            <id>deploy</id>
-            <build>
-                <filters>
-                    <filter>${basedir}/src/main/assembly/filter.properties</filter>
-                </filters>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>2.2-beta-2</version>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>${basedir}/src/main/assembly/src.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>make-assembly</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>attached</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-    
     <repositories>
         <repository>
             <id>apache-incubating</id>
@@ -231,7 +197,8 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-    </repositories>    
+    </repositories>
+
     <pluginRepositories>
         <pluginRepository>
             <id>apache-incubating</id>
@@ -254,5 +221,5 @@
                 <enabled>true</enabled>
             </snapshots>
         </pluginRepository>
-    </pluginRepositories>
+   </pluginRepositories>
 </project>

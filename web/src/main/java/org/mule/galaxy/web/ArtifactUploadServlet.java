@@ -87,6 +87,10 @@ public class ArtifactUploadServlet implements Controller {
                     if ("artifactFile".equals(f)) {
                         uploadItem = item;
                         contentType = item.getContentType();
+                        
+                        if (name == null) {
+                            name = item.getName();
+                        }
                     } else if ("workspacePath".equals(f)) {
                         wkspcPath = item.getString();
                     } else if ("name".equals(f)) {
@@ -190,10 +194,14 @@ public class ArtifactUploadServlet implements Controller {
         } catch (MimeTypeParseException e) {
             writer.write("Invalid mime type.");
         } catch (DuplicateItemException e) {
-            resp.setStatus(409);
-            writer.write("An artifact with that name already exists.");
+//            resp.setStatus(409);
+            if (artifactId == null) {
+                writer.write("An item with that name already exists.");
+            } else {
+                writer.write("A version with that label already exists.");
+            }
         } catch (AccessException e) {
-            resp.setStatus(401);
+//            resp.setStatus(401);
             writer.write("AccessException.");
         }
         writer.close();

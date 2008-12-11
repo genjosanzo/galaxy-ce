@@ -8,30 +8,69 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
     
     <bean id="initialDirContextFactory"
-            class="org.acegisecurity.ldap.DefaultInitialDirContextFactory">
-      <constructor-arg value="ldap://localhost:10389/"/>
+            class="org.acegisecurity.ldap.DefaultInitialDirContextFactory"
+            depends-on="directoryService ldapService">
+      <constructor-arg value="ldap://localhost:62009/"/>
       <property name="managerDn"><value>uid=admin,ou=system</value></property>
       <property name="managerPassword"><value>secret</value></property>
     </bean>
-
-    <bean id="userSearch"
-            class="org.acegisecurity.ldap.search.FilterBasedLdapUserSearch">
-      <constructor-arg index="0">
-        <value>ou=system</value>
-      </constructor-arg>
-      <constructor-arg index="1">
-        <value>(uid={0})</value>
-      </constructor-arg>
-      <constructor-arg index="2" ref="initialDirContextFactory" />
+    
+    <bean id="userSearch" class="org.acegisecurity.ldap.search.FilterBasedLdapUserSearch">
+      <constructor-arg value="ou=system"/>
+      <constructor-arg value="(uid={0})"/>
+      <constructor-arg ref="initialDirContextFactory" />
       <property name="searchSubtree" value="true"/>
     </bean>
     
-    <bean id="userManager"
-          class="org.mule.galaxy.security.ldap.LdapUserManager">
+    <bean id="userDetailsMapper" class="org.mule.galaxy.security.ldap.UserLdapEntryMapper" />
+    
+    <bean id="userManagerTarget"
+          class="org.mule.galaxy.security.ldap.LdapUserManager"
+          init-method="initialize">
       <property name="initialDirContextFactory" ref="initialDirContextFactory"/>
+      <property name="persisterManager" ref="persisterManager" />
       <property name="userSearch" ref="userSearch"/>
-      <property name="groupSearchBase" value="ou=groups,ou=system"/>
-      <property name="groupSearchFilter" value="(uniqueMember={0})"/>
+      <property name="userMapper" ref="userDetailsMapper"/>
+      
+      <!-- Configure these two properties -->
+      <property name="userSearchBase" value="ou=system"/>
+      <property name="userSearchAttributes">
+          <map>
+              <entry key="objectclass" value="person"/>
+          </map>
+      </property>
     </bean>
+    
+    <bean id="ldapAuthProvider" class="org.mule.galaxy.security.ldap.GalaxyAuthenticationProvider">
+        <constructor-arg>
+            <bean class="org.acegisecurity.providers.ldap.authenticator.BindAuthenticator">
+                <constructor-arg ref="initialDirContextFactory"/>
+                <property name="userSearch" ref="userSearch"/>
+            </bean>
+        </constructor-arg>
+        <constructor-arg>
+            <bean class="org.mule.galaxy.security.ldap.LdapAuthoritiesPopulator">
+                <constructor-arg ref="initialDirContextFactory" />
+                <constructor-arg value="ou=groups,ou=system" />
+                <property name="groupSearchFilter" value="uniqueMember={0}"/>
+                <property name="searchSubtree" value="true"/>
+                <property name="rolePrefix" value=""/>
+                <property name="convertToUpperCase" value="false"/>
+                <property name="accessControlManager" ref="accessControlManager"/>
+            </bean>
+        </constructor-arg>
+        <property name="accessControlManager" ref="accessControlManager"/>
+        <property name="userMapper" ref="userDetailsMapper"/>
+    </bean>
+    
+    <bean id="authenticationManager" class="org.acegisecurity.providers.ProviderManager">
+      <property name="providers">
+         <list>
+           <ref bean="ldapAuthProvider"/>
+           <ref bean="anonymousAuthenticationProvider"/>
+           <ref bean="rememberMeAuthenticationProvider"/>
+         </list>
+      </property>
+   </bean>
     
 </beans>

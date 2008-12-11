@@ -41,8 +41,5 @@
         <property name="scriptJobDao" ref="scriptJobDao"/>
     </bean>
 
-    <bean id="demoArtifactPlugin" class="org.mule.galaxy.web.DemoArtifactPlugin" parent="abstractArtifactPlugin">
-      <property name="userManager" ref="userManager"/>
-    </bean>
-    
+    <bean id="demoArtifactPlugin" class="org.mule.galaxy.web.DemoArtifactPlugin" parent="abstractArtifactPlugin"/>    
 </beans>

@@ -15,6 +15,10 @@ public class ItemEvent extends GalaxyEvent {
 	this.itemPath = item.getPath();
     }
 
+    public ItemEvent() {
+    }
+
+
     public String getItemId() {
         return itemId;
     }

@@ -84,6 +84,10 @@ public class JcrEntry extends AbstractJcrItem implements Entry {
     public Type getType() {
         String id = getStringOrNull(TYPE);
         
+        if (id == null) {
+            throw new IllegalStateException("Items in the registry require a type!");
+        }
+        
         try {
             return manager.getTypeManager().getType(id);
         } catch (Exception e) {

@@ -22,6 +22,7 @@ package org.mule.galaxy.test;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 import javax.jcr.Node;
@@ -52,7 +53,7 @@ import org.springmodules.jcr.SessionFactory;
 
 import junit.framework.TestCase;
 
-public class AbstractAtomTest extends TestCase {
+public abstract class AbstractAtomTest extends TestCase {
     
     protected Registry registry;
     protected Provider provider;
@@ -64,15 +65,16 @@ public class AbstractAtomTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-//        System.setProperty("javax.xml.validation.SchemaFactory:http://www.w3.org/2001/XMLSchema",
-//                           "org.apache.xerces.jaxp.validation.XMLSchemaFactory");
-
-
+        System.setProperty("galaxy.data", "./target/galaxy-data");
         super.setUp();
         initializeJetty();
         
         registry = (Registry) getApplicationContext().getBean("registry");
         sessionFactory = (SessionFactory) getApplicationContext().getBean("sessionFactory");
+    }
+
+    protected InputStream getResourceAsStream(String name) {
+	return getClass().getResourceAsStream(name);
     }
 
     protected void login(final String username, final String password) {

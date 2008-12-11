@@ -2,17 +2,17 @@
     <parent>
         <groupId>org.mule.galaxy</groupId>
         <artifactId>galaxy-parent</artifactId>
-        <version>1.5.1-SNAPSHOT</version>
+        <version>1.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-client-mule2</artifactId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Galaxy Mule 2 Client</name>
 
     <properties>
-        <muleVersion>2.1.0</muleVersion>
+        <muleVersion>2.1.2</muleVersion>
     </properties>
 
     <dependencies>

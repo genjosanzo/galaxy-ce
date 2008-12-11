@@ -208,7 +208,7 @@ public class HistoryPanel extends AbstractComposite {
             }
 
             public void onSuccess(Object o) {
-                History.newItem("artifact/" + info.getId() + "_2");
+                History.newItem("artifact/" + info.getId() + "/1");
             }
 
         };

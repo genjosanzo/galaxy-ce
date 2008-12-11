@@ -22,6 +22,7 @@ import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.collab.Comment;
 import org.mule.galaxy.collab.CommentManager;
+import org.mule.galaxy.util.UserUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -103,7 +104,7 @@ public class CommentCollectionProvider extends AbstractEntityCollectionAdapter<C
 
     @Override
     public String getTitle(Comment c) throws ResponseContextException {
-        return "Comment on " + c.getItem().getPath() + " by " + c.getUser().getName();
+        return "Comment on " + c.getItem().getPath() + " by " + UserUtils.getUsername(c.getUser());
     }
 
     public String getTitle(RequestContext request) {
