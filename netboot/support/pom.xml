@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mule.galaxy.netboot</groupId>
         <artifactId>netboot-parent</artifactId>
-        <version>1.5-SNAPSHOT</version>
+        <version>1.5.1</version>
     </parent>
     <artifactId>mule-netboot-support</artifactId>
     <packaging>jar</packaging>
