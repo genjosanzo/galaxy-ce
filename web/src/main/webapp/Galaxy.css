@@ -150,7 +150,7 @@ a:visited {
 }
 
 .top-panel .gwt-Hyperlink a {
-    color: white;
+    color: black;
     text-decoration: underline;
     margin-left: 5px;
 }
@@ -165,6 +165,9 @@ a:visited {
      margin: 0 auto 5px;
 }
 
+.top-panel .title {
+    background-color: #E5EDF5;
+}
 /**
  **
  ** Search Panel
