@@ -983,6 +983,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         indexesId = JcrUtil.getOrCreate(root, "indexes").getUUID();
         artifactTypesId = JcrUtil.getOrCreate(root, "artifactTypes").getUUID();
 
+        idToWorkspaceManager.put(localWorkspaceManager.getId(), localWorkspaceManager);
+        
         NodeIterator nodes = workspaces.getNodes();
         // ignore the system node
         if (nodes.getSize() == 0) {
@@ -1023,7 +1025,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         } else {
             String versionStr = JcrUtil.getStringOrNull(workspaces, REPOSITORY_LAYOUT_VERSION);
             final int version = Integer.parseInt(versionStr);
-            if (version < 4) {
+            if (version < 5) {
                 SecurityUtils.doPriveleged(new Runnable() {
 
                     public void run() {
@@ -1038,7 +1040,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
                     
                 });
             }
-            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "4");
+//            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "5");
         }
         id = workspaces.getUUID();
         
@@ -1055,7 +1057,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         
         session.logout();
         
-        idToWorkspaceManager.put(localWorkspaceManager.getId(), localWorkspaceManager);
     }
 
     public Collection<Upgrader> getUpgraders() {

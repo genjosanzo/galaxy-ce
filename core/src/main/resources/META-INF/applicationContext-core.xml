@@ -192,6 +192,7 @@
             <bean class="org.mule.galaxy.impl.upgrade.V151Upgrader">
                 <property name="typeManager" ref="typeManager" />
             </bean>
+            <bean class="org.mule.galaxy.impl.upgrade.V152Upgrader"/>
         </list>
     </property>
   </bean>

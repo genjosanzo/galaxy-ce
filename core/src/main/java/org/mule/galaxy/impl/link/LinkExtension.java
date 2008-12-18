@@ -18,6 +18,7 @@ import org.mule.galaxy.Item;
 import org.mule.galaxy.Link;
 import org.mule.galaxy.Links;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.event.PropertyChangedEvent;
 import org.mule.galaxy.extension.AtomExtension;
@@ -90,25 +91,45 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
     @Override
     public void store(Item item, PropertyDescriptor pd, Object value) throws PolicyException {
         eventManager.fireEvent(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item, name, value));
-        if (value instanceof Collection) {
-            for (Object o : (Collection) value) {
-                Link l = (Link) o;
-                new LinksImpl(pd, item).addLinks(l);
+
+        try {
+            if (value instanceof Collection) {
+                for (Object o : (Collection) value) {
+                    Link l = (Link) o;
+                    new LinksImpl(pd, item).addLinks(l);
+                }
+            } else if (value == null) {
+                ((LinkDao) dao).deleteLinks(item, pd.getProperty());
+                item.setInternalProperty(pd.getProperty(), null);
+            } else {
+                throw new UnsupportedOperationException();
             }
-        } else if (value == null) {
-            ((LinkDao) dao).deleteLinks(item, pd.getProperty());
-        } else {
-            throw new UnsupportedOperationException();
+        } catch (PropertyException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public Object get(final Item item, final PropertyDescriptor pd, boolean getWithNoData) {
-        Links links = new LinksImpl(pd, item);
+        Boolean hasLinks = (Boolean) item.getInternalProperty(pd.getProperty());
         
-        if (!getWithNoData && links.getReciprocalLinks().isEmpty() && links.getLinks().isEmpty()) {
+        if (!getWithNoData && (hasLinks == null || !hasLinks)) {
             return null;
         }
+        
+        LinksImpl links = new LinksImpl(pd, item);
+        
+        if (!getWithNoData && links.getReciprocalLinks().isEmpty() && links.getLinks().isEmpty()) {
+            try {
+                item.setInternalProperty(pd.getProperty(), null);
+            } catch (PropertyException e) {
+                throw new RuntimeException(e);
+            } catch (PolicyException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
+        }
+        
         return links;
     }
     
@@ -180,10 +201,19 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
                     links = new ArrayList<Link>();
                     links.add(l);
                 }
+
+                item.setInternalProperty(pd.getProperty(), true);
+                if (l.getLinkedTo() != null) {
+                    l.getLinkedTo().setInternalProperty(pd.getProperty(), true);
+                }
                 eventManager.fireEvent(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item, pd.getProperty(), getLinks()));
             } catch (DuplicateItemException e) {
                 throw new RuntimeException(e);
             } catch (NotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (PropertyException e) {
+                throw new RuntimeException(e);
+            } catch (PolicyException e) {
                 throw new RuntimeException(e);
             }
         }

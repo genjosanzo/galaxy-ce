@@ -218,6 +218,10 @@ public abstract class AbstractJcrItem implements Item {
     }
 
     private void ensureProperty(String name) throws RepositoryException {
+        ensureProperty(node, name);
+    }
+    
+    public static void ensureProperty(Node node, String name) throws RepositoryException {
         Property p = null;
         try {
             p = node.getProperty(PROPERTIES);
