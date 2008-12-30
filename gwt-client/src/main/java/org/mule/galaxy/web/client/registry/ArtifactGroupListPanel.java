@@ -32,7 +32,7 @@ import java.util.Map;
 
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.util.TooltipListener;
-import org.mule.galaxy.web.rpc.EntryGroup;
+import org.mule.galaxy.web.rpc.ResultGroup;
 import org.mule.galaxy.web.rpc.EntryInfo;
 
 /**
@@ -40,12 +40,12 @@ import org.mule.galaxy.web.rpc.EntryInfo;
  */
 public class ArtifactGroupListPanel extends AbstractComposite {
 
-    private EntryGroup group;
+    private ResultGroup group;
     private boolean editable;
     private Map<CheckBox, String> CBCollection;
 
 
-    public ArtifactGroupListPanel(final EntryGroup group, boolean editable) {
+    public ArtifactGroupListPanel(final ResultGroup group, boolean editable) {
         this.group = group;
         this.editable = editable;
         CBCollection = new HashMap<CheckBox, String>();

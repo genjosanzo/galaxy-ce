@@ -95,7 +95,7 @@ import org.mule.galaxy.util.UserUtils;
 import org.mule.galaxy.view.ArtifactViewManager;
 import org.mule.galaxy.view.View;
 import org.mule.galaxy.web.client.RPCException;
-import org.mule.galaxy.web.rpc.EntryGroup;
+import org.mule.galaxy.web.rpc.ResultGroup;
 import org.mule.galaxy.web.rpc.EntryInfo;
 import org.mule.galaxy.web.rpc.EntryVersionInfo;
 import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
@@ -543,7 +543,6 @@ public class RegistryServiceImpl implements RegistryService {
                 Entry entry = (Entry) i;
                 
                 info.setId(entry.getId());
-                info.setWorkspaceId(encode(entry.getParent().getId()));
                 info.setName(entry.getName());
                 info.setPath(entry.getParent().getPath());
                 
@@ -592,28 +591,34 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     private WSearchResults getSearchResults(Set<String> artifactTypes, Collection<? extends Item> results) {
-        Map<String, EntryGroup> name2group = new HashMap<String, EntryGroup>();
+        Map<String, ResultGroup> name2group = new HashMap<String, ResultGroup>();
         Map<String, ItemRenderer> name2view = new HashMap<String, ItemRenderer>();
 
         int total = 0;
 
-        for (Item obj : results) {
-            if (obj instanceof Workspace) {
-                continue;
-            }
-            
-            Entry e = (Entry) obj;
+        for (Item i : results) {
             String groupName;
             ArtifactType type = null;
-            if (e instanceof Artifact) {
+            
+            Artifact artifact = null;
+            if (i instanceof Artifact) {
+                artifact = (Artifact) i;
+            } else if (i instanceof ArtifactVersion) {
+                artifact = ((ArtifactVersion) i).getParent();
+            }
+            
+            if (artifact != null) {
                 type = artifactTypeDao.getArtifactType(
-                    ((Artifact) e).getContentType().toString(), 
-                    ((Artifact) e).getDocumentType());
+                    artifact.getContentType().toString(), 
+                    artifact.getDocumentType());
 
                 groupName = type.getDescription();
+            } else if (i instanceof Workspace) {
+                groupName = "Workspaces";
             } else {
                 groupName = "Entries";
             }
+
             // If we want to filter based on the artifact type, filter!
             if (artifactTypes != null && artifactTypes.size() != 0
                     && (type == null
@@ -623,41 +628,40 @@ public class RegistryServiceImpl implements RegistryService {
 
             total++;
 
-            EntryGroup g = name2group.get(groupName);
+            ResultGroup g = name2group.get(groupName);
             ItemRenderer view = name2view.get(groupName);
 
             if (g == null) {
-                g = new EntryGroup();
+                g = new ResultGroup();
                 g.setName(groupName);
                 name2group.put(groupName, g);
 
-                if (e instanceof Artifact) {
-                    Artifact a = (Artifact) e;
-                    view = rendererManager.getArtifactRenderer(a.getDocumentType());
-                    if (view == null) {
-                        view = rendererManager.getArtifactRenderer(a.getContentType().toString());
-                    }
-                } else {
-                    // Hack
-                    view = rendererManager.getArtifactRenderer("application/octet-stream");
+                if (i instanceof Artifact) {
+                    Artifact a = (Artifact) i;
+                    view = rendererManager.getRenderer(a.getDocumentType());
                 }
+                
+                if (view == null) {
+                    view = rendererManager.getDefaultRenderer();
+                }
+                
                 name2view.put(groupName, view);
 
-                int i = 0;
-                for (String col : view.getColumnNames()) {
-                    if (view.isSummary(i)) {
-                        g.getColumns().add(col);
+                int col = 0;
+                for (String colName : view.getColumnNames()) {
+                    if (view.isSummary(col)) {
+                        g.getColumns().add(colName);
                     }
-                    i++;
+                    col++;
                 }
             }
 
-            EntryInfo info = createBasicEntryInfo(e, view);
+            EntryInfo info = createBasicEntryInfo(i, view);
 
             g.getRows().add(info);
         }
 
-        List<EntryGroup> values = new ArrayList<EntryGroup>();
+        List<ResultGroup> values = new ArrayList<ResultGroup>();
         List<String> keys = new ArrayList<String>();
         keys.addAll(name2group.keySet());
         Collections.sort(keys);
@@ -672,28 +676,28 @@ public class RegistryServiceImpl implements RegistryService {
         return wsr;
     }
 
-    private EntryInfo createBasicEntryInfo(Entry a, ItemRenderer view) {
+    private EntryInfo createBasicEntryInfo(Item item, ItemRenderer view) {
         EntryInfo info = new EntryInfo();
-        return createBasicEntryInfo(a, view, info, false);
+        return createBasicEntryInfo(item, view, info, false);
     }
 
-    private EntryInfo createBasicEntryInfo(Entry a, 
+    private EntryInfo createBasicEntryInfo(Item item, 
                                            ItemRenderer view,
                                            EntryInfo info, 
-                                           boolean extended) {
-        info.setId(a.getId());
-        info.setWorkspaceId(encode(a.getParent().getId()));
-        info.setName(a.getName());
-        info.setPath(a.getParent().getPath());
-        info.setLocal(a.isLocal());
+                                           boolean extended) { 
+        info.setName(item.getName());
+        info.setPath(item.getParent().getPath());
+        info.setLocal(item.isLocal());
+        info.setId(item.getId());
+        
         int column = 0;
         
         for (int i = 0; i < view.getColumnNames().length; i++) {
             if (!extended && view.isSummary(i)) {
-                info.setColumn(column, view.getColumnValue(a, i));
+                info.setColumn(column, view.getColumnValue(item, i));
                 column++;
             } else if (extended && view.isDetail(i)) {
-                info.setColumn(column, view.getColumnValue(a, i));
+                info.setColumn(column, view.getColumnValue(item, i));
                 column++;
             }
         }
@@ -1141,15 +1145,15 @@ public class RegistryServiceImpl implements RegistryService {
             info.setType(type.getDescription());
             info.setMediaType(type.getContentType());
             
-            view = rendererManager.getArtifactRenderer(a.getDocumentType());
+            view = rendererManager.getRenderer(a.getDocumentType());
             if (view == null) {
-                view = rendererManager.getArtifactRenderer(a.getContentType().toString());
+                view = rendererManager.getDefaultRenderer();
             }
 
             
             info.setArtifactLink(getLink(context + "/api/registry", a));
         } else {
-            view = rendererManager.getArtifactRenderer("application/octet-stream");
+            view = rendererManager.getDefaultRenderer();
             info.setType("Entry");
         }
 
@@ -1930,9 +1934,9 @@ public class RegistryServiceImpl implements RegistryService {
             List<ApprovalMessage> approvals = entry.getValue();
 
             Artifact a = (Artifact) i.getParent();
-            ItemRenderer view = rendererManager.getArtifactRenderer(a.getDocumentType());
+            ItemRenderer view = rendererManager.getRenderer(a.getDocumentType());
             if (view == null) {
-                view = rendererManager.getArtifactRenderer(a.getContentType().toString());
+                view = rendererManager.getDefaultRenderer();
             }
 
             EntryInfo info = createBasicEntryInfo(a, view);

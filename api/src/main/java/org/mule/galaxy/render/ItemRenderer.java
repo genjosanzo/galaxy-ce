@@ -1,8 +1,5 @@
 package org.mule.galaxy.render;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.mule.galaxy.Item;
 
 /**
@@ -16,6 +13,4 @@ public interface ItemRenderer {
     boolean isSummary(int column);
     
     boolean isDetail(int column);
-    
-    // Collection<Artifact> sort(Collection<Artifact> artifacts, int column)
 }

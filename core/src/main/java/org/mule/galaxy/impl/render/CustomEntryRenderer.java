@@ -4,13 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mule.galaxy.Artifact;
-import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.render.ItemRenderer;
 import org.mule.galaxy.render.Column;
 import org.mule.galaxy.render.ColumnEvaluator;
+import org.mule.galaxy.render.ItemRenderer;
 
 public class CustomEntryRenderer implements ItemRenderer {
     private List<Column> columns = new ArrayList<Column>();

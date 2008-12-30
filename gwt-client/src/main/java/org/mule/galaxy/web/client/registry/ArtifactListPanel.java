@@ -37,7 +37,7 @@ import java.util.List;
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.EntryGroup;
+import org.mule.galaxy.web.rpc.ResultGroup;
 import org.mule.galaxy.web.rpc.WSearchResults;
 
 public class ArtifactListPanel extends AbstractComposite implements ClickListener {
@@ -93,8 +93,8 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
 
         groupPanels = new ArrayList<ArtifactGroupListPanel>();
         
-        for (Iterator<EntryGroup> groups = o.getResults().iterator(); groups.hasNext();) {
-            EntryGroup group = groups.next();
+        for (Iterator<ResultGroup> groups = o.getResults().iterator(); groups.hasNext();) {
+            ResultGroup group = groups.next();
 
             ArtifactGroupListPanel list = new ArtifactGroupListPanel(group, isEditable());
             groupPanels.add(list);

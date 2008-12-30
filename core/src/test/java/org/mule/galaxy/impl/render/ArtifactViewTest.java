@@ -12,7 +12,7 @@ public class ArtifactViewTest extends AbstractGalaxyTest {
     public void testView() throws Exception {
         assertNotNull(rendererManager);
         
-        CustomEntryRenderer view = (CustomEntryRenderer) rendererManager.getArtifactRenderer(Constants.WSDL_DEFINITION_QNAME);
+        CustomEntryRenderer view = (CustomEntryRenderer) rendererManager.getRenderer(Constants.WSDL_DEFINITION_QNAME);
         
         assertEquals(8, view.getColumns().size());
         

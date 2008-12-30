@@ -25,7 +25,7 @@ import java.util.Collection;
 public class WSearchResults implements IsSerializable {
     private long total;
 
-    private Collection<EntryGroup> results;
+    private Collection<ResultGroup> results;
 
     private String query;
     
@@ -37,10 +37,10 @@ public class WSearchResults implements IsSerializable {
     public void setTotal(long total) {
         this.total = total;
     }
-    public Collection<EntryGroup> getResults() {
+    public Collection<ResultGroup> getResults() {
         return results;
     }
-    public void setResults(Collection<EntryGroup> results) {
+    public void setResults(Collection<ResultGroup> results) {
         this.results = results;
     }
     public String getQuery() {

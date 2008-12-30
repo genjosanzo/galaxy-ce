@@ -6,9 +6,9 @@ import javax.xml.namespace.QName;
 
 public interface RendererManager {
     
-    ItemRenderer getArtifactRenderer(String contentType);
+    ItemRenderer getDefaultRenderer();
     
-    ItemRenderer getArtifactRenderer(QName documentType);
+    ItemRenderer getRenderer(QName documentType);
     
     void addRenderer(ItemRenderer view, QName... documentTypes);
     

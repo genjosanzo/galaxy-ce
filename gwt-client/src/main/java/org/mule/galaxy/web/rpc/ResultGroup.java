@@ -23,7 +23,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EntryGroup implements IsSerializable {
+public class ResultGroup implements IsSerializable {
     private String name;
     private List<String> columns = new ArrayList<String>();
     

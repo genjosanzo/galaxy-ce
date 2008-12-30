@@ -13,11 +13,11 @@ public class RendererManagerImpl implements RendererManager {
     private Map<QName, ItemRenderer> artifactViews = new HashMap<QName, ItemRenderer>();
     private ItemRenderer defaultView = new DefaultEntryRenderer();
 
-    public ItemRenderer getArtifactRenderer(String contentType) {
+    public ItemRenderer getDefaultRenderer() {
         return defaultView;
     }
 
-    public ItemRenderer getArtifactRenderer(QName documentType) {
+    public ItemRenderer getRenderer(QName documentType) {
         ItemRenderer view = artifactViews.get(documentType);
         if (view != null) {
             return view;

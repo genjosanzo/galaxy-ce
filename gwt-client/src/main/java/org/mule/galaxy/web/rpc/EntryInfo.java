@@ -26,7 +26,6 @@ import java.util.Map;
 public class EntryInfo extends ItemInfo implements IsSerializable {
 
     private Map<Integer, String> col2Value = new HashMap<Integer, String>();
-    private String workspaceId;
     private String name;
     private String path;
     
@@ -44,14 +43,6 @@ public class EntryInfo extends ItemInfo implements IsSerializable {
     
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getWorkspaceId() {
-        return workspaceId;
-    }
-
-    public void setWorkspaceId(String workspaceId) {
-        this.workspaceId = workspaceId;
     }
 
     public void setColumn(int col, String value) {
