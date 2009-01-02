@@ -5,7 +5,6 @@ import java.util.Collection;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.policy.PolicyException;
 
 public interface LifecycleManager {
     

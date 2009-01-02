@@ -30,6 +30,7 @@ import org.mule.galaxy.Workspace;
 import org.mule.galaxy.activity.ActivityManager;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.EventManager;
+import org.mule.galaxy.impl.cache.ThreadLocalCacheProviderFacade;
 import org.mule.galaxy.impl.index.IndexManagerImpl;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.index.IndexManager;
@@ -208,6 +209,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         return new String[] {
             "/META-INF/applicationContext-core.xml",
             "/META-INF/applicationContext-acegi-security.xml",
+            "/META-INF/applicationContext-cache.xml",
             "classpath*:/META-INF/galaxy-applicationContext.xml",
             "/META-INF/applicationContext-test.xml"
         };
@@ -229,12 +231,16 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
             TransactionSynchronizationManager.bindResource(sessionFactory, sessionFactory.getSessionHolder(session));
         }
 
+        ThreadLocalCacheProviderFacade.enableCache();
+        
         login("admin", getPassword());
     }
 
     @Override
     protected void onTearDown() throws Exception {
         logout();
+        
+        ThreadLocalCacheProviderFacade.clearCache();
         ((IndexManagerImpl) applicationContext.getBean("indexManagerTarget")).destroy();
 
         if (repository != null) {

@@ -18,6 +18,21 @@ public class PropertyTest extends AbstractGalaxyTest {
         assertEquals(1, type.getProperties().size());
     }
     
+    public void testProperties2() throws Exception {
+        typeManager.getPropertyDescriptors(true);
+        typeManager.getPropertyDescriptors(true);
+        
+        PropertyDescriptor pd = new PropertyDescriptor("location", 
+                                                       "Geographic Location",
+                                                       false,
+                                                       false);
+        
+        typeManager.savePropertyDescriptor(pd);
+        assertEquals("location", pd.getProperty());
+        
+        typeManager.deletePropertyDescriptor(pd.getId());
+    }
+    
     public void testProperties() throws Exception {
        importHelloWsdl();
        
@@ -38,6 +53,7 @@ public class PropertyTest extends AbstractGalaxyTest {
 //       assertEquals(23, pds.size());
        assertNotNull(pds);
        
+       pds = typeManager.getPropertyDescriptors(true);
        PropertyDescriptor pd3 = typeManager.getPropertyDescriptorByName(pd.getProperty());
        assertNotNull(pd3);
        

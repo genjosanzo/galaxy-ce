@@ -1,14 +1,14 @@
 package org.mule.galaxy.impl;
 
+import java.util.List;
+
 import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.impl.jcr.ArtifactTypeDaoImpl;
+import org.mule.galaxy.ArtifactTypeDao;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.Constants;
 
-import java.util.List;
-
 public class ArtifactTypeDaoTest extends AbstractGalaxyTest {
-    protected ArtifactTypeDaoImpl artifactTypeDao;
+    protected ArtifactTypeDao artifactTypeDao;
     
     public void testDao() throws Exception {
         ArtifactType a = new ArtifactType();

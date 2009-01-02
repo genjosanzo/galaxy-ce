@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
@@ -22,7 +21,6 @@ import org.mule.galaxy.collab.Comment;
 import org.mule.galaxy.security.Group;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
-import org.mule.galaxy.security.ldap.LdapUserManager;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -39,8 +37,7 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
     public void testUserManager() throws Exception {
 	
         UserManager userManager = (UserManager) applicationContext.getBean("userManager");
-        assertTrue(userManager instanceof LdapUserManager);
-//        
+
         User user = SecurityUtils.getCurrentUser();
         assertEquals(1, user.getGroups().size());
         
@@ -153,6 +150,7 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
     @Override
     protected String[] getConfigLocations() {
         return new String[] { "/META-INF/applicationContext-core.xml",
+                              "/META-INF/applicationContext-cache.xml",
                               "/META-INF/applicationContext-acegi-security.xml",
                               "/META-INF/applicationContext-test.xml",
                               "/META-INF/applicationContext-ldap.xml",
