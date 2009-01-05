@@ -137,6 +137,7 @@ public class WorkspaceCollectionTest extends AbstractAtomTest {
         entry.setId(factory.newUuidUri());
         // Once we support workspace descriptions, the description will go here
         entry.setContent("");
+        res.release();
         
         res = client.post(dwBase + ";workspaces", entry, defaultOpts);
         assertEquals(201, res.getStatus());
@@ -156,6 +157,7 @@ public class WorkspaceCollectionTest extends AbstractAtomTest {
         
         res = client.post(dwBase + "/MyWorkspace", getWsdl(), opts);
         assertEquals(201, res.getStatus());
+        res.release();
         
         // TODO: test the entry's links. They aren't quite right yet.
         
