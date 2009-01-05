@@ -20,6 +20,8 @@ package org.mule.galaxy.web.server;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -121,6 +123,13 @@ public class SecurityServiceImpl implements SecurityService {
             
             webUsers.add(w);
         }
+        
+        Collections.sort(webUsers, new Comparator<WUser>() {
+
+            public int compare(WUser o1, WUser o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
         return webUsers;
     }
 
