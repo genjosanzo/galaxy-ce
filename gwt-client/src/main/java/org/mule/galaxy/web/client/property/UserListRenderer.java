@@ -16,9 +16,11 @@ public class UserListRenderer extends AbstractListRenderer {
 
     private Collection users;
     private ListBox userLB;
+    private Button addButton;
     
     protected void loadRemote() {
         userLB = new ListBox();
+        userLB.addItem("Loading...");
         
         if (users == null) { 
             galaxy.getSecurityService().getUsers(new AbstractCallback(errorPanel) {
@@ -56,6 +58,8 @@ public class UserListRenderer extends AbstractListRenderer {
                 userLB.addItem(user.getName(), user.getId());
             }
         }
+
+        addButton.setEnabled(true);
     }
 
     protected void addUserLabelForSelection() {
@@ -98,14 +102,14 @@ public class UserListRenderer extends AbstractListRenderer {
         addPanel.setStyleName("renderer-add-panel");
         addPanel.add(userLB);
         
-        Button addButton = new Button();
+        addButton = new Button();
         addButton.setText("Add");
         addButton.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 addUserLabelForSelection();
             }
         });
-        
+        addButton.setEnabled(false);
         addPanel.add(addButton);
         return addPanel;
     }
