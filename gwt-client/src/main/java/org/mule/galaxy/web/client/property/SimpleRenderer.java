@@ -3,11 +3,12 @@ package org.mule.galaxy.web.client.property;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import org.mule.galaxy.web.client.util.ExternalHyperlink;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 
 public class SimpleRenderer extends AbstractPropertyRenderer {
 
     private TextBox valueTB;
-    private Label valueLabel;
 
     public Widget createEditForm() {
         valueTB = new TextBox();
@@ -20,20 +21,42 @@ public class SimpleRenderer extends AbstractPropertyRenderer {
         return valueTB.getText();
     }
 
-    protected String getRenderedText() {
+    public Widget createViewWidget() {
         String txt = (String) value;
         
+        return createWidget(txt);
+    }
+
+    public static Widget createWidget(String txt) {
         if ("".equals(txt) || txt == null) {
-            txt = "-----";
+            return new Label("-----");
         }
         
-        return txt;
-    }
-    
-    public Widget createViewWidget() {
-        valueLabel = new Label();
-        valueLabel.setText(getRenderedText());
-        return valueLabel;
+        String[] split = txt.split(" ");
+        boolean foundLink = false;
+        boolean first = true;
+        InlineFlowPanel panel = new InlineFlowPanel();
+        
+        for (String s : split) {
+            if (!first) {
+                panel.add(new Label(" "));
+            } else {
+                first = false;
+            }
+            
+            if (s.matches("\\b(https?|ftp)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]")) {
+                foundLink = true;
+                panel.add(new ExternalHyperlink(s, s));
+            } else {
+                panel.add(new Label(s));
+            }
+        }
+        
+        if (foundLink) {
+            return panel;
+        } else {
+            return new Label(txt);
+        }
     }
     
 }
