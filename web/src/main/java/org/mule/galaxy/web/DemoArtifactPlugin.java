@@ -54,6 +54,9 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
 
         pd = new PropertyDescriptor("ci.server", "CI Server", false, false);
         typeManager.savePropertyDescriptor(pd);
+
+        pd = new PropertyDescriptor("scm", "Source Control", false, false);
+        typeManager.savePropertyDescriptor(pd);
         
         pd = new PropertyDescriptor("contacts", "Contacts", false, false);
         pd.setExtension(registry.getExtension("userExtension"));
