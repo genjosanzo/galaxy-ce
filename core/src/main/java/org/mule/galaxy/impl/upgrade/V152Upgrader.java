@@ -1,5 +1,6 @@
 package org.mule.galaxy.impl.upgrade;
 
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Session;
@@ -54,9 +55,12 @@ public class V152Upgrader extends Upgrader {
     private void updateItem(String itemId, String property, Session session) throws Exception {
         itemId = itemId.substring(itemId.indexOf(JcrRegistry.WORKSPACE_MANAGER_SEPARATOR)+1);
             
-        Node node = session.getNodeByUUID(itemId);
-        JcrUtil.setProperty(property, true, node);
-        AbstractJcrItem.ensureProperty(node, property);
+        try {
+            Node node = session.getNodeByUUID(itemId);
+            JcrUtil.setProperty(property, true, node);
+            AbstractJcrItem.ensureProperty(node, property);
+        } catch (ItemNotFoundException e) {
+        }
     }         
 
 }
