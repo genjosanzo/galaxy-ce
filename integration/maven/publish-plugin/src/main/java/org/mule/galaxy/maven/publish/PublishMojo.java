@@ -212,7 +212,7 @@ public class PublishMojo extends AbstractMojo {
         }
         
         String auth = null;
-        if (serverId != null) 
+        if (serverId != null) {
             Server server = settings.getServer(serverId);
             
             if (server == null) {
