@@ -21,6 +21,9 @@ import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
 import org.apache.axiom.om.util.Base64;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.CiManagement;
+import org.apache.maven.model.IssueManagement;
+import org.apache.maven.model.Scm;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
@@ -65,11 +68,27 @@ public class PublishMojoTest extends AbstractAtomTest {
         
         expect(project.getArtifact()).andStubReturn(projectArtifact);
         org.easymock.EasyMock.expect(projectArtifact.getVersion()).andStubReturn("1.0");
-        
+
         // Just mock up an arbitrary file
         projectArtifactFile = new File("src/test/resources/project-artifact");
         assertTrue(projectArtifactFile.exists());
         org.easymock.EasyMock.expect(projectArtifact.getFile()).andStubReturn(projectArtifactFile);
+
+        expect(project.getParent()).andStubReturn(null);
+        expect(project.getGroupId()).andStubReturn("org.mule.galaxy");
+        expect(project.getArtifactId()).andStubReturn("project-artifact");
+        
+        Scm scm = new Scm();
+        scm.setUrl("http://test.com");
+        expect(project.getScm()).andStubReturn(scm);
+        
+        CiManagement ci = new CiManagement();
+        ci.setUrl("http://test.com");
+        expect(project.getCiManagement()).andStubReturn(ci);
+
+        IssueManagement im = new IssueManagement();
+        im.setUrl("http://test.com");
+        expect(project.getIssueManagement()).andStubReturn(im);
         
         server = createMock(Server.class);
         expect(server.getUsername()).andStubReturn("admin");
@@ -77,7 +96,7 @@ public class PublishMojoTest extends AbstractAtomTest {
         
         settings = createMock(Settings.class);
         expect(settings.getServer(SERVER_ID)).andStubReturn(server);
-        
+                
         EasyMock.replay(project, server, settings);
         
         assertNotNull(project.getArtifacts());
@@ -128,6 +147,8 @@ public class PublishMojoTest extends AbstractAtomTest {
         // Upload a second version
         org.easymock.EasyMock.reset(mavenArtifact);
         org.easymock.EasyMock.expect(mavenArtifact.getVersion()).andStubReturn("3.0");
+        org.easymock.EasyMock.expect(mavenArtifact.getGroupId()).andStubReturn("foo");
+        org.easymock.EasyMock.expect(mavenArtifact.getArtifactId()).andStubReturn("foo");
         org.easymock.EasyMock.expect(mavenArtifact.getFile()).andStubReturn(artifactFile);
         org.easymock.EasyMock.replay(mavenArtifact);
         

@@ -200,6 +200,7 @@ public class PublishMojo extends AbstractMojo {
     private boolean useArtifactVersion;
     
     private Factory factory;
+    private String scmUrl;
     
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (skip) {
@@ -258,6 +259,8 @@ public class PublishMojo extends AbstractMojo {
             artifacts.add(project.getArtifact());
         }
         
+        initScmUrl();
+
         if (artifacts.size() > 0) {
             List<?> filterIncludes = dependencyIncludes != null ? Arrays.asList(dependencyIncludes) : Collections.EMPTY_LIST;
             List<?> filterExcludes = dependencyExcludes != null ? Arrays.asList(dependencyExcludes) : Collections.EMPTY_LIST;
@@ -275,7 +278,7 @@ public class PublishMojo extends AbstractMojo {
                 publishArtifact(a);
             }
         }
-        
+
         if (includes != null || excludes != null) {
             DirectoryScanner scanner = new DirectoryScanner();
             scanner.setIncludes(includes);
@@ -290,6 +293,18 @@ public class PublishMojo extends AbstractMojo {
                 }
             }
         }
+    }
+
+    private void initScmUrl() {
+        // Find the SCM URL
+        MavenProject parent = project;
+        do {
+            String newUrl = parent.getScm() != null ? parent.getScm().getUrl() : null;
+            if (newUrl != null) {
+                scmUrl = newUrl;
+            }
+            parent = parent.getParent();
+        } while (parent != null);
     }
 
     private void ensureWorkspaceExists() throws MojoFailureException {
@@ -521,6 +536,7 @@ public class PublishMojo extends AbstractMojo {
         Element mavenProjectId = null;
         Element mavenArtifactId = null;
         Element ciInfo = null;
+        Element sourceControl = null;
         Element issueTracker = null;
         
         for (Element e : elements) {
@@ -532,6 +548,8 @@ public class PublishMojo extends AbstractMojo {
                 ciInfo = e;
             } else if ("issue.tracker".equals(e.getAttributeValue("name"))) {
                 issueTracker = e;
+            } else if ("scm".equals(e.getAttributeValue("name"))) {
+                sourceControl = e;
             } 
         }
         
@@ -548,6 +566,12 @@ public class PublishMojo extends AbstractMojo {
             issueTracker.setAttributeValue("value", issueTrackerUrl);
         }
 
+        // Publish SCM information only for the main artifact or resources
+        if (scmUrl != null) {
+            sourceControl = ensureElementExists(sourceControl, new QName("property"), metadata, "scm");
+            sourceControl.setAttributeValue("value", scmUrl);
+        }
+        
         String ciServerUrl = project.getCiManagement() != null ? project.getCiManagement().getUrl() : null;
         if (ciServerUrl != null) {
             ciInfo = ensureElementExists(ciInfo, new QName("property"), metadata, "ci.server");
