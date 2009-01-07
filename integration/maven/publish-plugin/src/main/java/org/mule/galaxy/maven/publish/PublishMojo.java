@@ -560,24 +560,26 @@ public class PublishMojo extends AbstractMojo {
         mavenProjectId = ensureElementExists(mavenProjectId, new QName("property"), metadata, "maven.project.id");
         mavenProjectId.setAttributeValue("value", project.getGroupId() + ":" + project.getArtifactId());
 
-        String issueTrackerUrl = project.getIssueManagement() != null ? project.getIssueManagement().getUrl() : null;
-        if (issueTrackerUrl != null) {
-            issueTracker = ensureElementExists(issueTracker, new QName("property"), metadata, "issue.tracker");
-            issueTracker.setAttributeValue("value", issueTrackerUrl);
+        // Publish information only for the main artifact or resources
+        if (a == project.getArtifact() || a == null) {
+            String issueTrackerUrl = project.getIssueManagement() != null ? project.getIssueManagement().getUrl() : null;
+            if (issueTrackerUrl != null) {
+                issueTracker = ensureElementExists(issueTracker, new QName("property"), metadata, "issue.tracker");
+                issueTracker.setAttributeValue("value", issueTrackerUrl);
+            }
+            
+            if (scmUrl != null) {
+                sourceControl = ensureElementExists(sourceControl, new QName("property"), metadata, "scm");
+                sourceControl.setAttributeValue("value", scmUrl);
+            }
+            
+            String ciServerUrl = project.getCiManagement() != null ? project.getCiManagement().getUrl() : null;
+            if (ciServerUrl != null) {
+                ciInfo = ensureElementExists(ciInfo, new QName("property"), metadata, "ci.server");
+                ciInfo.setAttributeValue("value", ciServerUrl);
+            }
         }
 
-        // Publish SCM information only for the main artifact or resources
-        if (scmUrl != null) {
-            sourceControl = ensureElementExists(sourceControl, new QName("property"), metadata, "scm");
-            sourceControl.setAttributeValue("value", scmUrl);
-        }
-        
-        String ciServerUrl = project.getCiManagement() != null ? project.getCiManagement().getUrl() : null;
-        if (ciServerUrl != null) {
-            ciInfo = ensureElementExists(ciInfo, new QName("property"), metadata, "ci.server");
-            ciInfo.setAttributeValue("value", ciServerUrl);
-        }
-        
         // Only publish an artifact ID if this is an actual artifact
         if (a != null) {
             mavenArtifactId = ensureElementExists(mavenArtifactId, new QName("property"), metadata, "maven.artifact.id");
@@ -590,6 +592,7 @@ public class PublishMojo extends AbstractMojo {
                                            + ". Got \"" + res.getStatusText() + 
                                            "\" (" + res.getStatus() + ") for URL " + artifactUrl + ".");
         }
+
         res.release();
     }
 
