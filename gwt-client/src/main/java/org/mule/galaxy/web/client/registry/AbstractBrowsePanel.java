@@ -54,7 +54,7 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
     protected final Galaxy galaxy;
     protected RegistryMenuPanel menuPanel;
     private boolean first = true;
-    private int resultStart;
+    protected int resultStart;
     private final boolean showArtifactTypes;
 
     public AbstractBrowsePanel(Galaxy galaxy) {
@@ -78,9 +78,11 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
     }
 
     public void onShow(List<String> params) {
-        if (params.size() > 1) {
+        int resultStartParamIdx = getResultStartParameterIndex();
+        
+        if (params.size() > resultStartParamIdx) {
             try {
-                resultStart = Integer.valueOf(params.get(1)).intValue();
+                resultStart = Integer.valueOf(params.get(resultStartParamIdx)).intValue();
             } catch (NumberFormatException e) {
             }
 
@@ -132,6 +134,10 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
         if (currentTopPanel != null) {
             menuPanel.setTop(currentTopPanel);
         }
+    }
+
+    protected int getResultStartParameterIndex() {
+        return 1;
     }
 
     protected abstract String getHistoryToken();

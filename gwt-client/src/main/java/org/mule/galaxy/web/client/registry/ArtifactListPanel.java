@@ -263,7 +263,7 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
             activityNavPanel.setStyleName("activity-nav-panel");
             Hyperlink hl;
 
-            if (resultSize > maxResults && resultStart < searchResults.getTotal()) {
+            if (resultStart + maxResults < resultSize) {
                 hl = new Hyperlink("Next", browsePanel.getHistoryToken() + "/" + (resultStart + maxResults));
                 hl.setStyleName("activity-nav-next");
                 hl.addClickListener(new ClickListener() {

@@ -55,6 +55,7 @@ public class SearchPanel extends AbstractBrowsePanel {
         
         searchForm.addSearchListener(new ClickListener() {
             public void onClick(Widget arg0) {
+                SearchPanel.this.resultStart = 0;
                 refreshArtifacts();
             }
         });
@@ -72,5 +73,9 @@ public class SearchPanel extends AbstractBrowsePanel {
                                                  searchForm.getPredicates(), 
                                                  searchForm.getFreeformQuery(), 
                                                  resultStart, maxResults, callback);
+    }
+
+    protected int getResultStartParameterIndex() {
+        return 0;
     }
 }

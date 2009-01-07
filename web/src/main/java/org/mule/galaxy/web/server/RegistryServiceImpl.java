@@ -502,7 +502,7 @@ public class RegistryServiceImpl implements RegistryService {
                 for (int i = start; i < start+maxResults && i < items.size(); i++) {
                     trimmedItems.add(items.get(i));
                 }
-                WSearchResults results = getSearchResults(artifactTypes, trimmedItems);
+                WSearchResults results = getSearchResults(artifactTypes, trimmedItems, items.size());
                 results.setQuery("select artifact, entry from '@" + workspaceId + "'");
                 results.setFeed(getLink(context + "/api/registry", workspace));
                 results.setTotal(items.size());
@@ -517,7 +517,7 @@ public class RegistryServiceImpl implements RegistryService {
             else
                 results = registry.search(q);
 
-            WSearchResults wr = getSearchResults(artifactTypes, results.getResults());
+            WSearchResults wr = getSearchResults(artifactTypes, results.getResults(), results.getTotal());
             wr.setQuery(q.toString());
             wr.setFeed(context + "/api/registry?q=" + UrlEncoding.encode(wr.getQuery(), Profile.PATH.filter()));
             return wr;
@@ -590,11 +590,12 @@ public class RegistryServiceImpl implements RegistryService {
         return q;
     }
 
-    private WSearchResults getSearchResults(Set<String> artifactTypes, Collection<? extends Item> results) {
+    private WSearchResults getSearchResults(Set<String> artifactTypes, 
+                                            Collection<? extends Item> results,
+                                            long total) {
         Map<String, ResultGroup> name2group = new HashMap<String, ResultGroup>();
         Map<String, ItemRenderer> name2view = new HashMap<String, ItemRenderer>();
 
-        int total = 0;
 
         for (Item i : results) {
             if (i instanceof Workspace) {
@@ -629,8 +630,6 @@ public class RegistryServiceImpl implements RegistryService {
                     || !artifactTypes.contains(type.getId()))) {
                 continue;
             }
-
-            total++;
 
             ResultGroup g = name2group.get(groupName);
             ItemRenderer view = name2view.get(groupName);
@@ -714,8 +713,8 @@ public class RegistryServiceImpl implements RegistryService {
             throws RPCException {
         try {
             View view = artifactViewManager.getArtifactView(viewId);
-
-            return getSearchResults(null, registry.search(view.getQuery(), resultStart, maxResults).getResults());
+            SearchResults result = registry.search(view.getQuery(), resultStart, maxResults);
+            return getSearchResults(null, result.getResults(), result.getTotal());
         } catch (QueryException e) {
             throw new RPCException(e.getMessage());
         } catch (RegistryException e) {
