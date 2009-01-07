@@ -597,6 +597,10 @@ public class RegistryServiceImpl implements RegistryService {
         int total = 0;
 
         for (Item i : results) {
+            if (i instanceof Workspace) {
+                continue;
+            }
+            
             String groupName;
             ArtifactType type = null;
             
