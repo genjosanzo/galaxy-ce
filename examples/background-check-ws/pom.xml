@@ -119,7 +119,7 @@
                         <include>src/main/resources/*.wsdl</include>
                         <include>src/main/resources/mule-config.xml</include>
                     </includes>
-                    
+                    <publishProjectMetadata>true</publishProjectMetadata> 
                     <!-- 
                       This is configured here so it can be disabled during the larger 
                       Galaxy build when there is no Galaxy instance running.
