@@ -42,6 +42,18 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
         
         pd = new PropertyDescriptor("url", "URL", false, false);
         typeManager.savePropertyDescriptor(pd);
+
+        pd = new PropertyDescriptor("maven.project.id", "Maven Project Id", false, false);
+        typeManager.savePropertyDescriptor(pd);
+
+        pd = new PropertyDescriptor("maven.artifact.id", "Maven Artifact Id", false, false);
+        typeManager.savePropertyDescriptor(pd);
+
+        pd = new PropertyDescriptor("issue.tracker", "Issue Tracker", false, false);
+        typeManager.savePropertyDescriptor(pd);
+
+        pd = new PropertyDescriptor("ci.server", "CI Server", false, false);
+        typeManager.savePropertyDescriptor(pd);
         
         pd = new PropertyDescriptor("contacts", "Contacts", false, false);
         pd.setExtension(registry.getExtension("userExtension"));

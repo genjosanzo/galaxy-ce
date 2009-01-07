@@ -540,9 +540,9 @@
         </site>
     </distributionManagement>
     <scm>
-        <connection>scm:svn:https://svn.muleforge.org/galaxy/branches/my-branch</connection>
-        <developerConnection>scm:svn:https://svn.muleforge.org/galaxy/branches/my-branch</developerConnection>
-        <url>http://svn.galaxy.muleforge.org/branches/my-branch</url>
+        <connection>scm:svn:https://svn.muleforge.org/galaxy/trunk</connection>
+        <developerConnection>scm:svn:https://svn.muleforge.org/galaxy/trunk</developerConnection>
+        <url>http://svn.galaxy.muleforge.org/browse/galaxy/trunk</url>
     </scm>
 
     <profiles>
@@ -651,5 +651,10 @@
             </plugin>
         </plugins>
     </reporting>
-
+    <issueManagement>
+        <url>http://www.mulesource.org/jira/browse/GALAXY</url>
+    </issueManagement>
+    <ciManagement>
+        <url>http://bamboo.muleforge.org/browse/GALAXY-FORGE</url>
+    </ciManagement>
 </project>

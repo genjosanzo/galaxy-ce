@@ -142,6 +142,14 @@ public class PublishMojo extends AbstractMojo {
     private boolean publishProjectArtifact = true;
 
     /**
+     * Whether or not to publish metadata such as the Maven artifact/group IDs
+     * and SCM information.
+     *
+     * @parameter
+     */
+    private boolean publishProjectMetadata = true;
+    
+    /**
      * Whether or not to clear the artifacts from the workspace before
      * uploading new ones.
      *
@@ -191,6 +199,8 @@ public class PublishMojo extends AbstractMojo {
      */
     private boolean useArtifactVersion;
     
+    private Factory factory;
+    
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (skip) {
             getLog().info("Skipping Galaxy publishing.");
@@ -202,7 +212,7 @@ public class PublishMojo extends AbstractMojo {
         }
         
         String auth = null;
-        if (serverId != null) {
+        if (serverId != null) 
             Server server = settings.getServer(serverId);
             
             if (server == null) {
@@ -221,7 +231,9 @@ public class PublishMojo extends AbstractMojo {
             auth = username + ":" + password;
         }
         
-        client = new AbderaClient();
+        Abdera abdera = Abdera.getInstance();
+        factory = abdera.getFactory();
+        client = new AbderaClient(abdera);
         
         authorization = "Basic " + Base64.encode(auth.getBytes());
     
@@ -274,7 +286,7 @@ public class PublishMojo extends AbstractMojo {
             String[] files = scanner.getIncludedFiles();
             if (files != null) {
                 for (String file : files) {
-                    publishFile(new File(file), project.getArtifact().getVersion());
+                    publishFile(new File(file), project.getArtifact().getVersion(), null);
                 }
             }
         }
@@ -319,9 +331,7 @@ public class PublishMojo extends AbstractMojo {
         
         String[] workspaces = workspaceUrl.split("/");
         
-        RequestOptions defaultOpts = client.getDefaultRequestOptions();
-        defaultOpts.setAuthorization(authorization);
-        defaultOpts.setContentType("application/atom+xml;type=entry");
+        RequestOptions defaultOpts = getEntryRequestOptions();
         
         Factory factory = Abdera.getInstance().getFactory();
         
@@ -353,6 +363,13 @@ public class PublishMojo extends AbstractMojo {
             
             wkspcUrl += "/" + wkspc;
         }
+    }
+
+    private RequestOptions getEntryRequestOptions() {
+        RequestOptions defaultOpts = client.getDefaultRequestOptions();
+        defaultOpts.setAuthorization(authorization);
+        defaultOpts.setContentType("application/atom+xml;type=entry");
+        return defaultOpts;
     }
 
     private void clearWorkspace() throws MojoFailureException {
@@ -407,10 +424,10 @@ public class PublishMojo extends AbstractMojo {
         }
         File file = a.getFile();
         
-        publishFile(file, version);
+        publishFile(file, version, a);
     }
 
-    private void publishFile(File file, String version) throws MojoFailureException, MojoExecutionException {
+    private void publishFile(File file, String version, Artifact a) throws MojoFailureException, MojoExecutionException {
         if (version == null) {
             throw new NullPointerException("Version can not be null!");
         }
@@ -422,14 +439,14 @@ public class PublishMojo extends AbstractMojo {
         opts.setContentType("application/octet-stream");
         opts.setSlug(name);
         opts.setHeader("X-Artifact-Version", version);
+
+        String artifactUrl = url;
+        if (!url.endsWith("/")) {
+            artifactUrl += "/";
+        }
+        artifactUrl += UrlEncoding.encode(name, Profile.PATH.filter());
         
         try {
-            String artifactUrl = url;
-            if (!url.endsWith("/")) {
-                artifactUrl += "/";
-            }
-            artifactUrl += UrlEncoding.encode(name, Profile.PATH.filter());
-            
             // Check to see if this artifact exists already.
             ClientResponse res = client.head(artifactUrl, opts);
             int artifactExists = res.getStatus();
@@ -468,6 +485,96 @@ public class PublishMojo extends AbstractMojo {
             throw new MojoExecutionException("Could not upload artifact to Galaxy: " 
                                              + name, e);
         }
+        
+        if (publishProjectMetadata) {
+            publishProjectMetadata(name, artifactUrl + ";atom", a);
+        }
+    }
+
+    private void publishProjectMetadata(String name, String artifactUrl, Artifact a) throws MojoExecutionException {
+        try{         
+            RequestOptions defaultOpts = getEntryRequestOptions();
+            ClientResponse res = client.get(artifactUrl, defaultOpts);
+            Document<Entry> entryDoc = res.getDocument();
+            Entry entry = entryDoc.getRoot();
+            
+            List<Element> extensions = entry.getExtensions(new QName(NAMESPACE, "metadata"));
+            for (Element e : extensions) {
+                if ("versioned".equals(e.getAttributeValue("id"))) {
+                    publishProjectMetadata(entry, e, name, artifactUrl, defaultOpts, a);
+                }
+            }
+            res.release();
+        } catch (Exception e) {
+            throw new MojoExecutionException("Could not publish metadata for artifact to Galaxy: " 
+                                             + name, e);
+        }
+    }
+
+    private void publishProjectMetadata(Element entry, 
+                                        Element metadata, 
+                                        String name, 
+                                        String artifactUrl, 
+                                        RequestOptions defaultOpts, 
+                                        Artifact a) throws MojoFailureException {
+        List<Element> elements = metadata.getElements();
+        Element mavenProjectId = null;
+        Element mavenArtifactId = null;
+        Element ciInfo = null;
+        Element issueTracker = null;
+        
+        for (Element e : elements) {
+            if ("maven.project.id".equals(e.getAttributeValue("name"))) {
+                mavenProjectId = e;
+            } else if ("maven.project.id".equals(e.getAttributeValue("name"))) {
+                mavenArtifactId = e;
+            } else if ("ci.server".equals(e.getAttributeValue("name"))) {
+                ciInfo = e;
+            } else if ("issue.tracker".equals(e.getAttributeValue("name"))) {
+                issueTracker = e;
+            } 
+        }
+        
+        if (factory == null) {
+            throw new NullPointerException("foobar");
+        }
+        
+        mavenProjectId = ensureElementExists(mavenProjectId, new QName("property"), metadata, "maven.project.id");
+        mavenProjectId.setAttributeValue("value", project.getGroupId() + ":" + project.getArtifactId());
+
+        String issueTrackerUrl = project.getIssueManagement() != null ? project.getIssueManagement().getUrl() : null;
+        if (issueTrackerUrl != null) {
+            issueTracker = ensureElementExists(issueTracker, new QName("property"), metadata, "issue.tracker");
+            issueTracker.setAttributeValue("value", issueTrackerUrl);
+        }
+
+        String ciServerUrl = project.getCiManagement() != null ? project.getCiManagement().getUrl() : null;
+        if (ciServerUrl != null) {
+            ciInfo = ensureElementExists(ciInfo, new QName("property"), metadata, "ci.server");
+            ciInfo.setAttributeValue("value", ciServerUrl);
+        }
+        
+        // Only publish an artifact ID if this is an actual artifact
+        if (a != null) {
+            mavenArtifactId = ensureElementExists(mavenArtifactId, new QName("property"), metadata, "maven.artifact.id");
+            mavenArtifactId.setAttributeValue("value", a.getGroupId() + ":" + a.getArtifactId());
+        }
+        
+        ClientResponse res = client.put(artifactUrl, entry, defaultOpts);
+        if (res.getStatus() >= 300) {
+            throw new MojoFailureException("Could not update artifact metadata: " + name
+                                           + ". Got \"" + res.getStatusText() + 
+                                           "\" (" + res.getStatus() + ") for URL " + artifactUrl + ".");
+        }
+        res.release();
+    }
+
+    private Element ensureElementExists(Element element, QName name, Element metadata, String propName) {
+        if (element == null) {
+            element = factory.newElement(name, metadata);
+            element.setAttributeValue("name", propName);
+        }        
+        return element;
     }
 
     public void setProject(MavenProject project) {
