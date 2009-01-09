@@ -71,7 +71,7 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
         Item item = c.getItem();
         Comment parent = c;
         while (item == null) {
-            parent = c.getParent();
+            parent = parent.getParent();
             item = parent.getItem();
         }
         EntryCommentCreatedEvent event = new EntryCommentCreatedEvent(item, c);
