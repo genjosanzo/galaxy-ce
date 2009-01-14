@@ -3,7 +3,6 @@ package org.mule.galaxy.impl.jcr;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,16 +39,13 @@ import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Settings;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.event.EntryMovedEvent;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.jcr.query.QueryBuilder;
 import org.mule.galaxy.impl.jcr.query.SimpleQueryBuilder;
-import org.mule.galaxy.impl.upgrade.Upgrader;
 import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.AbstractFunction;
 import org.mule.galaxy.query.FunctionCall;
@@ -64,7 +60,6 @@ import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.type.PropertyDescriptor;
-import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.Message;
@@ -78,12 +73,12 @@ import org.springframework.dao.DataAccessException;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
-public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistry, ApplicationContextAware {
-    private static final String REPOSITORY_LAYOUT_VERSION = "version";
-
+public class JcrRegistryImpl extends JcrTemplate implements Registry, ApplicationContextAware {
     private final Log log = LogFactory.getLog(getClass());
 
-    private Settings settings;
+    private String id;
+    
+    private String workspacesId;
     
     private ContentService contentService;
 
@@ -95,17 +90,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     private UserManager userManager;
     
-    private String workspacesId;
-
-    private String indexesId;
-
-    private String artifactTypesId;
-    
     private AccessControlManager accessControlManager;
 
     private EventManager eventManager;
-    
-    private String id;
     
     private SimpleQueryBuilder simpleQueryBuilder = new SimpleQueryBuilder(new String[0]);
 
@@ -121,8 +108,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     
     private ApplicationContext context;
     
-    private Collection<Upgrader> upgraders;
-    
     public JcrRegistryImpl() {
         super();
         
@@ -133,7 +118,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     public String getUUID() {
         return id;
     }
-
 
     public Collection<Workspace> getWorkspaces() throws AccessException {
         return localWorkspaceManager.getWorkspaces();
@@ -344,14 +328,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return getNodeByUUID(workspacesId);
     }
 
-    public Node getIndexNode() {
-        return getNodeByUUID(indexesId);
-    }
-    
-    public Node getArtifactTypesNode() {
-        return getNodeByUUID(artifactTypesId);
-    }
-    
     private WorkspaceManager getWorkspaceManager(String wmId) {
         WorkspaceManager wm = idToWorkspaceManager.get(wmId);
         if (wm == null) {
@@ -971,102 +947,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return simpleQueryBuilder;
     }
 
-
-    public void initialize() throws Exception {
-        
-        final Session session = getSessionFactory().getSession();
-        Node root = session.getRootNode();
-        
-        Node workspaces = JcrUtil.getOrCreate(root, "workspaces", "galaxy:noSiblings");
-        
-        workspacesId = workspaces.getUUID();
-        indexesId = JcrUtil.getOrCreate(root, "indexes").getUUID();
-        artifactTypesId = JcrUtil.getOrCreate(root, "artifactTypes").getUUID();
-
-        idToWorkspaceManager.put(localWorkspaceManager.getId(), localWorkspaceManager);
-        
-        NodeIterator nodes = workspaces.getNodes();
-        // ignore the system node
-        if (nodes.getSize() == 0) {
-            Node node = workspaces.addNode(settings.getDefaultWorkspaceName(),
-                                           "galaxy:workspace");
-            node.addMixin("mix:referenceable");
-            Calendar now = Calendar.getInstance();
-            now.setTime(new Date());
-            node.setProperty(AbstractJcrItem.CREATED, now);
-            
-            JcrWorkspace w = new JcrWorkspace(localWorkspaceManager, node);
-            w.setName(settings.getDefaultWorkspaceName());
-
-            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "4");
-
-            final PropertyDescriptor lifecyclePD = new PropertyDescriptor();
-            lifecyclePD.setProperty(PRIMARY_LIFECYCLE);
-            lifecyclePD.setDescription("Primary lifecycle");
-            lifecyclePD.setExtension(getExtension("lifecycleExtension"));
-            
-            final Type defaultType = new Type();
-            defaultType.setName("Base Type");
-            defaultType.setProperties(Arrays.asList(lifecyclePD));
-            
-            SecurityUtils.doPriveleged(new Runnable() {
-
-                public void run() {
-                    try {
-                        TypeManager tm = localWorkspaceManager.getTypeManager();
-                        tm.savePropertyDescriptor(lifecyclePD);
-                        tm.saveType(defaultType);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                
-            });
-        } else {
-            String versionStr = JcrUtil.getStringOrNull(workspaces, REPOSITORY_LAYOUT_VERSION);
-            final int version = Integer.parseInt(versionStr);
-            if (version < 5) {
-                SecurityUtils.doPriveleged(new Runnable() {
-
-                    public void run() {
-                        for (Upgrader u : getUpgraders()) {
-                            try {
-                                u.doUpgrade(version, session, session.getRootNode());
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    }
-                    
-                });
-            }
-//            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "5");
-        }
-        id = workspaces.getUUID();
-        
-        
-        session.save();
-        
-        for (ContentHandler ch : contentService.getContentHandlers()) {
-            ch.setRegistry(this);
-        }
-        
-        for (Policy a : policyManager.getPolicies()) {
-            a.setRegistry(this);
-        }
-        
-        session.logout();
-        
-    }
-
-    public Collection<Upgrader> getUpgraders() {
-        return upgraders;
-    }
-
-    public void setUpgraders(Collection<Upgrader> upgraders) {
-        this.upgraders = upgraders;
-    }
-
     public Extension getExtension(String id) {
         for (Extension e : getExtensions()) {
             if (e.getId().equals(id)) {
@@ -1118,6 +998,17 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
         return props;
     }
 
+    public void initialize() throws RepositoryException {
+        final Session session = getSessionFactory().getSession();
+        Node root = session.getRootNode();
+        Node workspaces = JcrUtil.getOrCreate(root, "workspaces", "galaxy:noSiblings");
+        
+        workspacesId = workspaces.getUUID();
+        
+        session.save();
+        session.logout();
+    }
+    
     public void setExtensions(List<Extension> extensions) {
         this.extensions = extensions;
     }
@@ -1128,11 +1019,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     public void setFunctionRegistry(FunctionRegistry functionRegistry) {
         this.functionRegistry = functionRegistry;
     }
-
-    public void setSettings(Settings settings) {
-        this.settings = settings;
-    }
-
+    
     public void setContentService(ContentService contentService) {
         this.contentService = contentService;
     }
@@ -1163,6 +1050,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, JcrRegistr
     public void setLocalWorkspaceManager(JcrWorkspaceManager localWorkspaceManager) {
         this.localWorkspaceManager = localWorkspaceManager;
         localWorkspaceManager.setRegistry(this);
+        idToWorkspaceManager.put(localWorkspaceManager.getId(), localWorkspaceManager);
     }
 
     public EventManager getEventManager() {

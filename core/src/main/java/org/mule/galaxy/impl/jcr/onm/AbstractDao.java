@@ -35,9 +35,7 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     protected String objectsNodeId;
     protected String idAttributeName;
     protected boolean generateId;
-    protected PersisterManager persisterManager;
     protected Class<T> type;
-    protected ClassPersister persister;
     
     protected AbstractDao(Class<T> t, String rootNode) throws Exception {
         this(t, rootNode, false);
@@ -54,10 +52,6 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
 	return type;
     }
 
-    public void setPersisterManager(PersisterManager persisterManager) {
-        this.persisterManager = persisterManager;
-    }
-    
     @SuppressWarnings("unchecked")
     public T get(final String id) throws NotFoundException {
         T t =  (T) execute(new JcrCallback() {
@@ -150,8 +144,6 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     }
     
     public void initialize() throws Exception {
-        initalizePersister();
-        
         SecurityUtils.doPriveleged(new Runnable() {
 
             public void run() {
@@ -187,12 +179,6 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
         objectsNodeId = objects.getUUID();
 
         doCreateInitialNodes(session, objects);
-    }
-
-    protected void initalizePersister() throws Exception {
-        persisterManager.getPersisters().put(type.getName(), new DaoPersister(this));
-//        this.persister = new ClassPersister(type, rootNode, persisterManager);
-//        persisterManager.getClassPersisters().put(type.getName(), persister);
     }
 
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
@@ -349,6 +335,10 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
             
             return nodes.nextNode();
         }
+    }
+
+    public String getRootNodeName() {
+        return rootNode;
     }
 
     protected boolean isIdNodeName() {

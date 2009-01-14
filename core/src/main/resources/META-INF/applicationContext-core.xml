@@ -73,7 +73,7 @@
         class="org.mule.galaxy.impl.lifecycle.LifecycleManagerImpl" 
         init-method="initialize">
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="persisterManager" ref="persisterManager" />
+
     <property name="eventManager" ref="eventManager" />
   </bean>
         
@@ -88,7 +88,7 @@
     <property name="contentService" ref="contentService"/>
     <property name="typeManager" ref="typeManager" />
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="persisterManager" ref="persisterManager" />
+
   </bean>
   
   <bean id="policyManager" parent="txProxyTemplate">
@@ -113,7 +113,7 @@
         depends-on="jcrInitializer">
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="userManager" ref="userManager" />
-    <property name="persisterManager" ref="persisterManager" />
+
   </bean>
   
   <bean id="jcrTemplate" class="org.springmodules.jcr.JcrTemplate">
@@ -162,29 +162,18 @@
       </constructor-arg>
   </bean>
   
-  <bean id="registry" parent="txProxyTemplate">
-    <property name="target" ref="registryTarget"/>
-    
-  </bean>
-  
-  <bean id="registryTarget" class="org.mule.galaxy.impl.jcr.JcrRegistryImpl"
-        init-method="initialize"
-        depends-on="jcrInitializer">
-    <property name="accessControlManager" ref="accessControlManager" />
+  <bean id="registryInitializer" class="org.mule.galaxy.impl.jcr.RegistryInitializer" 
+    init-method="intialize" lazy-init="false">
     <property name="contentService" ref="contentService" />
-    <property name="eventManager" ref="eventManager"/>
-    <property name="functionRegistry" ref="functionRegistry" />
+    <property name="lifecycleExtension" ref="lifecycleExtension" />
+    <property name="localWorkspaceManager" ref="localWorkspaceManager" />
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="lifecycleManager" ref="lifecycleManager" />
-    <property name="localWorkspaceManager" ref="localWorkspaceManager"/>
     <property name="policyManager" ref="policyManager" />
     <property name="settings" ref="settings" />
-    <property name="typeManager" ref="typeManager" />
-    <property name="userManager" ref="userManager" />
     <property name="upgraders">
         <list>
             <bean class="org.mule.galaxy.impl.upgrade.V15Upgrader">
-                <property name="registry" ref="registryTarget"/>
+                <property name="registry" ref="registry"/>
                 <property name="typeManager" ref="typeManager" />
                 <property name="localWorkspaceManager" ref="localWorkspaceManager"/>
                 <property name="lifecycleManager" ref="lifecycleManager" />
@@ -197,14 +186,32 @@
     </property>
   </bean>
   
+  <bean id="registry" parent="txProxyTemplate">
+    <property name="target" ref="registryTarget"/>
+    
+  </bean>
+  
+  <bean id="registryTarget" class="org.mule.galaxy.impl.jcr.JcrRegistryImpl"
+        init-method="initialize">
+    <property name="accessControlManager" ref="accessControlManager" />
+    <property name="contentService" ref="contentService" />
+    <property name="eventManager" ref="eventManager"/>
+    <property name="functionRegistry" ref="functionRegistry" />
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="lifecycleManager" ref="lifecycleManager" />
+    <property name="localWorkspaceManager" ref="localWorkspaceManager"/>
+    <property name="policyManager" ref="policyManager" />
+    <property name="typeManager" ref="typeManager" />
+    <property name="userManager" ref="userManager" />
+  </bean>
+  
   <bean id="localWorkspaceManager" parent="txProxyTemplate">
     <property name="target" ref="localWorkspaceManagerTarget"/>
     
   </bean>
   
   <bean id="localWorkspaceManagerTarget"
-        class="org.mule.galaxy.impl.jcr.JcrWorkspaceManager"
-        depends-on="jcrInitializer">
+        class="org.mule.galaxy.impl.jcr.JcrWorkspaceManager">
     <property name="accessControlManager" ref="accessControlManager" />
     <property name="activityManager" ref="activityManager" />
     <property name="artifactTypeDao" ref="artifactTypeDao" />
@@ -240,10 +247,9 @@
   
   <bean id="linkDaoTarget" 
         class="org.mule.galaxy.impl.link.LinkDaoImpl"
-        init-method="initialize" 
-        depends-on="persisterManager">
+        init-method="initialize">
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="persisterManager" ref="persisterManager" />
+
   </bean>
   
   <bean id="linkQueryBuilder" class="org.mule.galaxy.impl.link.LinkExtensionQueryBuilder">
@@ -275,9 +281,9 @@
   </bean>
   
   <bean id="userManagerTarget" class="org.mule.galaxy.impl.jcr.UserManagerImpl"
-        init-method="initialize" depends-on="persisterManager">
+        init-method="initialize">
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="persisterManager" ref="persisterManager" />
+
   </bean>
 
   <bean class="org.mule.galaxy.impl.lifecycle.PhaseQueryBuilder">
@@ -299,10 +305,10 @@
   </bean>
   
   <bean id="commentManagerTarget" class="org.mule.galaxy.impl.jcr.CommentManagerImpl"
-        init-method="initialize" depends-on="persisterManager">
+        init-method="initialize">
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="eventManager" ref="eventManager" />
-    <property name="persisterManager" ref="persisterManager" />
+
   </bean>
     
   <bean id="activityManager" parent="txProxyTemplate">
@@ -313,7 +319,7 @@
         init-method="initialize">
     <property name="accessControlManager" ref="accessControlManager" />
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="persisterManager" ref="persisterManager" />
+
   </bean>
   
   <bean id="scriptManager" parent="txProxyTemplate">
@@ -325,7 +331,7 @@
     <property name="activityManager" ref="activityManager" />
     <property name="accessControlManager" ref="accessControlManager" />
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="persisterManager" ref="persisterManager" />
+
     <property name="scriptVariables" ref="scriptVariables" />
     <property name="scriptJobDao" ref="scriptJobDaoTarget"/>
   </bean>
@@ -350,7 +356,7 @@
         init-method="initialize">
     <property name="scheduler" ref="scheduler" />
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="persisterManager" ref="persisterManager" />
+
   </bean>
   
   <bean id="artifactTypeDao" parent="txProxyTemplate">
@@ -361,7 +367,7 @@
   <bean id="artifactTypeDaoTarget" class="org.mule.galaxy.impl.jcr.ArtifactTypeDaoImpl"
     init-method="initialize" >
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="persisterManager" ref="persisterManager" />
+
   </bean>
     
   <bean id="typeManager" parent="txProxyTemplate">
@@ -377,9 +383,10 @@
   
   <bean id="propertyDescriptorDao" 
         class="org.mule.galaxy.impl.jcr.PropertyDescriptorDaoImpl"
-        init-method="initialize" >
+        init-method="initialize" 
+        depends-on="jcrInitializer">
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="persisterManager" ref="persisterManager" />
+
   </bean>
   
   <bean id="typeDao" class="org.mule.galaxy.impl.jcr.onm.IdentifiableReflectionDao"
@@ -388,7 +395,6 @@
     <constructor-arg value="types"/>
     <constructor-arg value="true"/>
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="persisterManager" ref="persisterManager" />
   </bean>
   
   <bean id="artifactViewManager" parent="txProxyTemplate">
@@ -399,7 +405,7 @@
         class="org.mule.galaxy.impl.view.ArtifactViewManagerImpl"
         init-method="initialize">
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="persisterManager" ref="persisterManager" />
+
   </bean>
   
   <bean id="persisterManager" class="org.mule.galaxy.impl.jcr.onm.PersisterManager">
@@ -443,18 +449,20 @@
     <property name="registry" ref="registry"/>
   </bean>
 
-  <bean id="pluginManager" parent="txProxyTemplate">
-    <property name="target" ref="pluginManagerTarget"/>
-    
+  <bean id="pluginManager" class="org.mule.galaxy.impl.plugin.PluginManagerImpl" 
+        parent="abstractArtifactPlugin"  init-method="initialize">
+    <property name="pluginDao" ref="pluginDao"/>
+    <property name="policyManager" ref="policyManager"/>
+    <property name="jcrTemplate" ref="jcrTemplate"/>
+  </bean>
+
+  <bean id="pluginDao" parent="txProxyTemplate">
+    <property name="target" ref="pluginDaoTarget"/>
   </bean>
   
-  <bean id="pluginManagerTarget" class="org.mule.galaxy.impl.plugin.PluginManagerImpl"
-         parent="abstractArtifactPlugin" init-method="initialize">
-    <property name="jcrTemplate" ref="jcrTemplate"/>
-    <property name="policyManager" ref="policyManager"/>
-    <property name="sessionFactory" ref="sessionFactory" />
-    <property name="persisterManager" ref="persisterManager" />
-    <property name="userManager" ref="userManager"/>
+  <bean id="pluginDaoTarget" class="org.mule.galaxy.impl.plugin.PluginDaoImpl"
+        init-method="initialize">
+    <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
 
   <bean class="org.mule.galaxy.impl.plugin.OtherArtifactPlugin" parent="abstractArtifactPlugin"/>

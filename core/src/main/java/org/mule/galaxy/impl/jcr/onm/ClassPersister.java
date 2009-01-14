@@ -33,9 +33,8 @@ public class ClassPersister {
     private PersisterManager persisterManager;
     private String path;
     
-    public ClassPersister(Class type, String path, PersisterManager persisterManager) throws Exception {
+    public ClassPersister(Class type, String path) throws Exception {
         this.type = type;
-        this.persisterManager = persisterManager;
         this.path = path;
         
         BeanInfo info = Introspector.getBeanInfo(type);
@@ -74,6 +73,10 @@ public class ClassPersister {
         }
     }
     
+    public void setPersisterManager(PersisterManager persisterManager) {
+        this.persisterManager = persisterManager;
+    }
+
     public void persist(Object o, Node n, Session session) throws Exception {
         for (FieldDescriptor fd : propertyToFD.values()) {
             Object result = fd.getReadMethod().invoke(o, new Object[0]);

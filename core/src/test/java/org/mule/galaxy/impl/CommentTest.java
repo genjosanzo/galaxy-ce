@@ -42,11 +42,23 @@ public class CommentTest extends AbstractGalaxyTest {
 
         commentManager.addComment(c2);
         
+
+        Comment c3 = new Comment();
+        c3.setParent(c2);
+        
+        cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        c3.setDate(cal);
+        c3.setUser(getAdmin());
+        c3.setText("Hello.");
+
+        commentManager.addComment(c3);
+        
         comments = commentManager.getComments(artifact.getId());
         assertEquals(1, comments.size());
         
-        Comment c3 = comments.get(0);
-        Set<Comment> comments2 = c3.getComments();
+        Comment c4 = comments.get(0);
+        Set<Comment> comments2 = c4.getComments();
         assertNotNull(comments2);
         assertEquals(1, comments2.size());
         

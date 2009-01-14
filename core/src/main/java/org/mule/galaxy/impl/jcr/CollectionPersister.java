@@ -59,7 +59,7 @@ public class CollectionPersister implements FieldPersister {
             
             QueryResult result = q.execute();
             
-            ClassPersister cp = persisterManager.getClassPersisters().get(fd.getClassPersister().getType().getName());
+            ClassPersister cp = persisterManager.getClassPersister(fd.getClassPersister().getType().getName());
             for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
                 Object obj = cp.build(nodes.nextNode(), session);
                 collection.add(obj);

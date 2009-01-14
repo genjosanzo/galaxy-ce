@@ -9,8 +9,8 @@ import javax.jcr.query.QueryManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.Registry;
 import org.mule.galaxy.impl.jcr.AbstractJcrItem;
-import org.mule.galaxy.impl.jcr.JcrRegistry;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 
 public class V152Upgrader extends Upgrader {
@@ -53,7 +53,7 @@ public class V152Upgrader extends Upgrader {
     }
 
     private void updateItem(String itemId, String property, Session session) throws Exception {
-        itemId = itemId.substring(itemId.indexOf(JcrRegistry.WORKSPACE_MANAGER_SEPARATOR)+1);
+        itemId = itemId.substring(itemId.indexOf(Registry.WORKSPACE_MANAGER_SEPARATOR)+1);
             
         try {
             Node node = session.getNodeByUUID(itemId);

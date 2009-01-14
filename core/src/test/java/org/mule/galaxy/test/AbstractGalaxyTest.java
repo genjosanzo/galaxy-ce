@@ -33,6 +33,7 @@ import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.impl.cache.ThreadLocalCacheProviderFacade;
 import org.mule.galaxy.impl.index.IndexManagerImpl;
 import org.mule.galaxy.impl.jcr.JcrVersion;
+import org.mule.galaxy.impl.jcr.RegistryInitializer;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
@@ -73,6 +74,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     protected ArtifactViewManager artifactViewManager;
     protected TypeManager typeManager;
     protected EventManager eventManager;
+    protected RegistryInitializer registryInitializer;
     
     private boolean participate;
     

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.xml.bind.JAXBContext;
@@ -17,10 +16,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.Dao;
-import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.impl.jcr.JcrUtil;
-import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.plugin.Plugin;
 import org.mule.galaxy.plugin.PluginInfo;
@@ -32,8 +29,6 @@ import org.mule.galaxy.plugins.config.jaxb.GalaxyType;
 import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.render.RendererManager;
-import org.mule.galaxy.security.User;
-import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.beans.BeansException;
@@ -43,7 +38,7 @@ import org.springframework.util.ClassUtils;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
-public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo> 
+public class PluginManagerImpl
     implements ApplicationContextAware, PluginManager {
     public static final String PLUGIN_SERVICE_PATH = "META-INF/";
 
@@ -57,27 +52,26 @@ public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo>
     protected IndexManager indexManager;
     protected PolicyManager policyManager;
     private ApplicationContext context;
-    private JcrTemplate jcrTemplate;
     private List<Plugin> plugins = new ArrayList<Plugin>();
     private TypeManager typeManager;
-    private UserManager userManager;
+    private Dao<PluginInfo> pluginDao;
+    private JcrTemplate jcrTemplate;
     
-    public PluginManagerImpl() throws Exception {
-        super(PluginInfo.class, "plugins", true);
-    }
-    public void setJcrTemplate(JcrTemplate jcrTemplate) {
-        this.jcrTemplate = jcrTemplate;
-    }
-
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         this.context = context;
     }
 
-    @Override
-    protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
+    public void initialize() {
         Runnable runnable = new Runnable() {
             public void run() {
-                initializePlugins();
+                try {
+                    initializePlugins();
+                } catch (Exception e) {
+                    if (e instanceof RuntimeException) {
+                        throw (RuntimeException) e;
+                    }
+                    throw new RuntimeException(e);
+                }
             }
         };
         
@@ -85,43 +79,50 @@ public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo>
     }
     
     public List<PluginInfo> getInstalledPlugins() {
-        return listAll();
+        return pluginDao.listAll();
     }
     
     public PluginInfo getPluginInfo(String pluginName) {
-        List<PluginInfo> plugins = find("plugin", pluginName);
+        List<PluginInfo> plugins = pluginDao.find("plugin", pluginName);
 
         return plugins.isEmpty() ? null : plugins.get(0);
     }
     
-    public void initializePlugins() {
-        try {
-            loadXmlPlugins();
-            loadSpringPlugins();
-            
-            for (Plugin p : plugins) {
-                PluginInfo pluginInfo = getPluginInfo(p.getName());
-
-                Integer previousVersion = null;
-
-                if (pluginInfo == null) {
-                    pluginInfo = new PluginInfo();
-                    pluginInfo.setPlugin(p.getName());
-                    pluginInfo.setVersion(p.getVersion());
+    public void initializePlugins() throws Exception {
+        JcrUtil.doInTransaction(jcrTemplate.getSessionFactory(), new JcrCallback()
+        {
+            public Object doInJcr(Session session) throws IOException, RepositoryException
+            {
+                try {
+                    loadXmlPlugins();
+                    loadSpringPlugins();
                     
-                    save(pluginInfo);
+                    for (Plugin p : plugins) {
+                        PluginInfo pluginInfo = getPluginInfo(p.getName());
+        
+                        Integer previousVersion = null;
+        
+                        if (pluginInfo == null) {
+                            pluginInfo = new PluginInfo();
+                            pluginInfo.setPlugin(p.getName());
+                            pluginInfo.setVersion(p.getVersion());
+                            
+                            pluginDao.save(pluginInfo);
+                        }
+                        else
+                        {
+                            previousVersion = p.getVersion();
+                        }
+        
+                        p.update(previousVersion);
+                        p.initialize();
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
-                else
-                {
-                    previousVersion = p.getVersion();
-                }
-
-                p.update(previousVersion);
-                p.initialize();
+                return null;
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
     
     @SuppressWarnings("unchecked")
@@ -131,56 +132,42 @@ public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo>
 
     protected void loadXmlPlugins() throws Exception
     {
-        JcrUtil.doInTransaction(jcrTemplate.getSessionFactory(), new JcrCallback()
+        JAXBContext jc = JAXBContext.newInstance("org.mule.galaxy.plugins.config.jaxb");
+
+        Enumeration e = getClass().getClassLoader().getResources(PLUGIN_SERVICE_PATH + GALAXY_PLUGIN_DESCRIPTOR);
+        while (e.hasMoreElements())
         {
-            public Object doInJcr(Session session) throws IOException, RepositoryException
+            URL url = (URL) e.nextElement();
+            log.info("Loading plugins from: " + url.toString());
+            Unmarshaller u = jc.createUnmarshaller();
+            JAXBElement ele = (JAXBElement) u.unmarshal(url.openStream());
+
+            GalaxyType pluginsType = (GalaxyType) ele.getValue();
+            List<GalaxyArtifactType> pluginsList = pluginsType.getArtifactType();
+
+            for (GalaxyArtifactType pluginType : pluginsList)
             {
-                try
-                {
-                    JAXBContext jc = JAXBContext.newInstance("org.mule.galaxy.plugins.config.jaxb");
-
-                    Enumeration e = getClass().getClassLoader().getResources(PLUGIN_SERVICE_PATH + GALAXY_PLUGIN_DESCRIPTOR);
-                    while (e.hasMoreElements())
-                    {
-                        URL url = (URL) e.nextElement();
-                        log.info("Loading plugins from: " + url.toString());
-                        Unmarshaller u = jc.createUnmarshaller();
-                        JAXBElement ele = (JAXBElement) u.unmarshal(url.openStream());
-
-                        GalaxyType pluginsType = (GalaxyType) ele.getValue();
-                        List<GalaxyArtifactType> pluginsList = pluginsType.getArtifactType();
-
-                        for (GalaxyArtifactType pluginType : pluginsList)
-                        {
-                            XmlArtifactTypePlugin plugin = new XmlArtifactTypePlugin(pluginType);
-                            plugin.setArtifactTypeDao(artifactTypeDao);
-                            plugin.setIndexManager(indexManager);
-                            plugin.setRegistry(registry);
-                            plugin.setRendererManager(rendererManager);
-                            plugin.setPolicyManager(policyManager);
-                            plugin.setTypeManager(typeManager);
-                            
-                            plugins.add(plugin);
-                        }
-                        
-                        GalaxyPoliciesType policies = pluginsType.getPolicies();
-                        if (policies != null) {
-                            for (ArtifactPolicyType p : policies.getArtifactPolicy()) {
-                                Class clazz = ClassUtils.forName(p.getClazz());
-                                Policy policy = (Policy)clazz.newInstance();
-                                policy.setRegistry(registry);
-                                policyManager.addPolicy(policy);
-                            }
-                        }
-                    }
-                }
-                catch (Exception e1)
-                {
-                    e1.printStackTrace();
-                }
-                return null;
+                XmlArtifactTypePlugin plugin = new XmlArtifactTypePlugin(pluginType);
+                plugin.setArtifactTypeDao(artifactTypeDao);
+                plugin.setIndexManager(indexManager);
+                plugin.setRegistry(registry);
+                plugin.setRendererManager(rendererManager);
+                plugin.setPolicyManager(policyManager);
+                plugin.setTypeManager(typeManager);
+                
+                plugins.add(plugin);
             }
-        });
+            
+            GalaxyPoliciesType policies = pluginsType.getPolicies();
+            if (policies != null) {
+                for (ArtifactPolicyType p : policies.getArtifactPolicy()) {
+                    Class clazz = ClassUtils.forName(p.getClazz());
+                    Policy policy = (Policy)clazz.newInstance();
+                    policy.setRegistry(registry);
+                    policyManager.addPolicy(policy);
+                }
+            }
+        }
 
     }
 
@@ -200,6 +187,14 @@ public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo>
         this.indexManager = indexManager;
     }
 
+    public void setJcrTemplate(JcrTemplate jcrTemplate) {
+        this.jcrTemplate = jcrTemplate;
+    }
+
+    public void setPluginDao(Dao<PluginInfo> pluginDao) {
+        this.pluginDao = pluginDao;
+    }
+
     public void setPolicyManager(PolicyManager policyManager) {
         this.policyManager = policyManager;
     }
@@ -207,9 +202,4 @@ public class PluginManagerImpl extends AbstractReflectionDao<PluginInfo>
     public void setTypeManager(TypeManager typeManager) {
         this.typeManager = typeManager;
     }
-    
-    public void setUserManager(UserManager userManager) {
-        this.userManager = userManager;
-    }
-    
 }

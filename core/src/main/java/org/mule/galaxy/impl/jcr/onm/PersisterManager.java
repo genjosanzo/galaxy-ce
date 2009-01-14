@@ -1,5 +1,6 @@
 package org.mule.galaxy.impl.jcr.onm;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,12 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.mule.galaxy.Dao;
 import org.mule.galaxy.impl.jcr.CollectionPersister;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 
 /**
  * 
  */
-public class PersisterManager {
+public class PersisterManager implements BeanPostProcessor {
     private Map<String, FieldPersister> persisters = new HashMap<String, FieldPersister>();
     private Map<String, ClassPersister> classPersisters = new HashMap<String, ClassPersister>();
     private FieldPersister defaultPersister = new DefaultPersister();
@@ -26,17 +30,50 @@ public class PersisterManager {
         persisters.put(Class.class.getName(), new ClassFieldPersister());
     }
 
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        // Now that all the proxies are init'd, use the proxied version so we get caching goodness
+        if (bean instanceof Dao && bean instanceof Proxy) {
+            Dao dao = (Dao)bean;
+            String type = dao.getTypeClass().getName();
+            getPersisters().put(type, new DaoPersister(dao));
+        }
+        
+        return bean;
+    }
+
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        if (bean instanceof Dao) {
+            Dao dao = (Dao)bean;
+            String type = dao.getTypeClass().getName();
+            getPersisters().put(type, new DaoPersister(dao));
+            
+            if (bean instanceof AbstractReflectionDao) {
+                try {
+                    ClassPersister p = new ClassPersister(dao.getTypeClass(), ((AbstractReflectionDao)dao).getRootNodeName());
+                    p.setPersisterManager(this);
+                    classPersisters.put(type, p);
+                    ((AbstractReflectionDao) dao).setPersister(p);
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+        return bean;
+    }
+
     public FieldPersister getPersister(Class<?> c) {
         FieldPersister p = persisters.get(c.getName());
         if (p == null) {
             if (Enum.class.isAssignableFrom(c)) {
                 persisters.put(c.getName(), enumPersister);
                 return enumPersister;
-            }
+            } 
+            
+            p = defaultPersister;
         }
-        if (p == null) {
-            return defaultPersister;
-        }
+        
         return p;
     }
 
@@ -57,8 +94,8 @@ public class PersisterManager {
         this.defaultPersister = defaultPersister;
     }
 
-    public Map<String, ClassPersister> getClassPersisters() {
-        return classPersisters;
+    public ClassPersister getClassPersister(String name) {
+        return classPersisters.get(name);
     }
     
     public void setClassPersisters(Map<String, ClassPersister> classPersister) {
