@@ -13,7 +13,6 @@ import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
 import org.apache.axiom.om.util.Base64;
-import org.mule.galaxy.atom.AbstractItemCollection;
 import org.mule.galaxy.test.AbstractAtomTest;
 
 public class AtomPubExampleTest extends AbstractAtomTest {
@@ -36,7 +35,7 @@ public class AtomPubExampleTest extends AbstractAtomTest {
         entry.setContent("");
         
         // Create a <workspace-info> element
-        Element wInfo = factory.newElement(new QName(AbstractItemCollection.NAMESPACE, "workspace-info"));
+        Element wInfo = factory.newElement(new QName("http://galaxy.mule.org/1.0", "workspace-info"));
         wInfo.setAttributeValue("name", "Services");
         entry.addExtension(wInfo);
         
