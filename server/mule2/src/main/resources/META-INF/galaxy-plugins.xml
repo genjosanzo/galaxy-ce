@@ -10,6 +10,15 @@
         <content-type>application/mule2+xml</content-type>
         <!--<small-icon>META-INF/images/mule2_16x16.png</small-icon>-->
         <!--<large-icon>META-INF/images/mule2_32x32.png</large-icon>-->
+        <!--  -->
+        <namespace>
+            <local-name>mule</local-name>
+            <uri>http://www.mulesource.org/schema/mule/core</uri>
+        </namespace>
+        <namespace>
+            <local-name>mule</local-name>
+            <uri>http://www.mulesource.org/schema/mule/core/2.2</uri>
+        </namespace>
         <namespace>
             <local-name>mule</local-name>
             <uri>http://www.mulesource.org/schema/mule/core/2.1</uri>
@@ -17,10 +26,6 @@
         <namespace>
             <local-name>mule</local-name>
             <uri>http://www.mulesource.org/schema/mule/core/2.0</uri>
-        <namespace>
-            <local-name>mule</local-name>
-            <uri>http://www.mulesource.org/schema/mule/core/2.1</uri>
-        </namespace>
         </namespace>
         <indexes>
             <index>

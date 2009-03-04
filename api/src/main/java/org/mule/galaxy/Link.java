@@ -1,7 +1,5 @@
 package org.mule.galaxy;
 
-import org.mule.galaxy.security.AccessException;
-
 public class Link implements Identifiable {
     
     private String id;
@@ -9,11 +7,12 @@ public class Link implements Identifiable {
     private Item linkedTo;
     private String linkedToPath;
     private boolean isAutoDetected;
-    private Registry registry;
     private String property;
     
-    public Link(Item item, Item linkedTo, String linkedToPath,
-	    boolean isAutoDetected) {
+    public Link(Item item, 
+                Item linkedTo, 
+                String linkedToPath,
+	        boolean isAutoDetected) {
 	super();
 	this.item = item;
 	this.linkedTo = linkedTo;
@@ -36,13 +35,6 @@ public class Link implements Identifiable {
         this.item = item;
     }
     public Item getLinkedTo() {
-        if (registry != null && linkedTo == null && linkedToPath != null) {
-            try {
-		return registry.resolve(item, linkedToPath);
-	    } catch (RegistryException e) {
-		throw new RuntimeException(e);
-	    }
-        }
         return linkedTo;
     }
     public void setLinkedTo(Item linkedTo) {
@@ -59,9 +51,6 @@ public class Link implements Identifiable {
     }
     public void setAutoDetected(boolean isAutoDetected) {
         this.isAutoDetected = isAutoDetected;
-    }
-    public void setRegistry(Registry registry) {
-        this.registry = registry;
     }
     public String getProperty() {
         return property;

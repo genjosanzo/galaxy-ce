@@ -63,6 +63,11 @@ public class EntryTest extends AbstractGalaxyTest {
         
         assertEquals(1, results.getTotal());
         
+        q = new Query(EntryVersion.class).add(OpRestriction.eq("name", e.getName()));
+        
+        results = registry.search(q);
+        assertEquals(1, results.getTotal());
+        
         q = new Query(Entry.class, Artifact.class);
         
         importHelloWsdl();

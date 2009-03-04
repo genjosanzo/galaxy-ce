@@ -32,6 +32,7 @@ import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.impl.cache.ThreadLocalCacheProviderFacade;
 import org.mule.galaxy.impl.index.IndexManagerImpl;
+import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.impl.jcr.RegistryInitializer;
 import org.mule.galaxy.index.IndexManager;
@@ -190,7 +191,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
 
             Node node = session.getRootNode();
 //            JcrUtil.dump(node);
-//            JcrUtil.dump(node.getNode("workspaces"));
+            JcrUtil.dump(node.getNode("links"));
             for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
                 Node child = itr.nextNode();
                 if (!child.getName().startsWith("jcr:")) {

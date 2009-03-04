@@ -339,7 +339,7 @@
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-core</artifactId>
-            <version>1.4.2</version>
+            <version>1.5.3-MuleSource-03032009</version>
             <exclusions>
                 <exclusion>
                     <groupId>xerces</groupId>
@@ -355,7 +355,7 @@
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-server</artifactId>
-            <version>1.4</version>
+            <version>1.5.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>xerces</groupId>
@@ -375,7 +375,7 @@
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-api</artifactId>
-            <version>1.4</version>
+            <version>1.5.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>xerces</groupId>
@@ -391,7 +391,7 @@
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-core</artifactId>
-            <version>2.2.0</version>
+            <version>2.3.2</version>
         </dependency>
         
         <dependency>

@@ -70,7 +70,6 @@
             class: FQN of class implementing the PersistenceManager interface
         -->
         <PersistenceManager class="org.apache.jackrabbit.core.persistence.mem.InMemPersistenceManager">
-          <param name="schemaObjectPrefix" value="Jackrabbit Core_"/>
         </PersistenceManager>
         <!--
             Search index and the file system it uses.
@@ -99,7 +98,6 @@
             implementations.
         -->
         <PersistenceManager class="org.apache.jackrabbit.core.persistence.mem.InMemPersistenceManager">
-          <param name="schemaObjectPrefix" value="version_"/>
         </PersistenceManager>
     </Versioning>
 

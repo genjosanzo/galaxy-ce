@@ -22,6 +22,9 @@ import javax.xml.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.GalaxyException;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.impl.render.CustomEntryRenderer;
 import org.mule.galaxy.impl.render.MvelColumn;
 import org.mule.galaxy.index.Index;
@@ -33,6 +36,7 @@ import org.mule.galaxy.plugins.config.jaxb.NamespaceType;
 import org.mule.galaxy.plugins.config.jaxb.ViewType;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.render.Column;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.util.TemplateParser;
 import org.springframework.util.ClassUtils;
@@ -71,6 +75,12 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
     }
 
     @Override
+    protected void doUpgrade() throws Exception {
+        loadQNames();
+        updateIndexes();
+    }
+
+    @Override
     public void doInstall() throws Exception
     {
         Set<String> extensions = new HashSet<String>();
@@ -91,6 +101,11 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
         
         artifactTypeDao.save(new ArtifactType(pluginXml.getName(), pluginXml.getContentType(), extensions, pluginQNames));
 
+        updateIndexes();
+    }
+
+    private void updateIndexes() throws AccessException, DuplicateItemException, NotFoundException,
+        GalaxyException {
         Properties props = new Properties(System.getProperties());
         String prefix = "";
         int i = 2;
@@ -115,27 +130,45 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
                     populateConfiguration(configType, config, props);
                 }
                 
-                Index idx = new Index(indexType.getDescription(),
-                                      pluginXml.getContentType(),
-                                      getQNames(indexType.getNamespace()),
-                                      ClassUtils.resolveClassName(indexType.getSearchInputType(),
-                                                                  getClass().getClassLoader()),
-                                      indexType.getIndexer(),
-                                      config);
+                Index idx;
+                try {
+                    idx = indexManager.getIndexByName(indexType.getDescription());
+                    idx.setMediaType(pluginXml.getContentType());
+                    idx.setDocumentTypes(getQNames(indexType.getNamespace()));
+                    idx.setQueryType(ClassUtils.resolveClassName(indexType.getSearchInputType(),
+                                                                 getClass().getClassLoader()));
+                    idx.setIndexer(indexType.getIndexer());
+                    idx.setConfiguration(config);
 
+                } catch (NotFoundException e) {
+                    idx = new Index(indexType.getDescription(),
+                                    pluginXml.getContentType(),
+                                    getQNames(indexType.getNamespace()),
+                                    ClassUtils.resolveClassName(indexType.getSearchInputType(),
+                                                                getClass().getClassLoader()),
+                                    indexType.getIndexer(),
+                                    config);
 
-                String property = config.get("property");
-                if (property != null) {
-                    PropertyDescriptor pd = new PropertyDescriptor();
-                    pd.setProperty(property);
-                    pd.setDescription(indexType.getDescription());
-                    pd.setIndex(true);
-                    
-                    typeManager.savePropertyDescriptor(pd);
-                    idx.addPropertyDescriptor(pd);
                 }
 
                 indexManager.save(idx, true);
+
+                // Create a property descriptor for the indexed property
+                String property = config.get("property");
+                if (property != null) {
+                    PropertyDescriptor pd = new PropertyDescriptor();
+
+                    pd.setProperty(property);
+                    pd.setDescription(indexType.getDescription());
+                    pd.setIndex(true);
+    
+                    try {
+                        typeManager.savePropertyDescriptor(pd);
+                        idx.addPropertyDescriptor(pd);
+                    } catch (DuplicateItemException e1) {
+                        
+                    }
+                }
                 
                 if (logger.isDebugEnabled())
                 {
@@ -267,11 +300,6 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
 
     private void loadQNames() 
     {
-        if (pluginQNames != null) 
-        {
-            return;
-        }
-        
         pluginQNames = new ArrayList<QName>(pluginXml.getNamespace().size());
         for (Iterator<NamespaceType> iterator = pluginXml.getNamespace().iterator(); iterator.hasNext();)
         {

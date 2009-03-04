@@ -392,9 +392,10 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                 
                 try {
                     // Store the data
+                    Object loadedData = data;
                     if (inputStream != null) {
                         InputStream s = next.getStream();
-                        Object data = getData((Workspace)artifact.getParent(), artifact.getContentType(), s);
+                        loadedData = getData((Workspace)artifact.getParent(), artifact.getContentType(), s);
                         next.setData(data);
                     } else {
                         next.setData(data);
@@ -406,7 +407,19 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                     
                     // Add it as the most recent version
                     jcrArtifact.getVersions().add(next);
+
+                    Set<String> dependencies = ch.detectDependencies(loadedData, artifact.getParent());
+                    Set<Link> links = new HashSet<Link>();
+                    for (String p : dependencies) {
+                        Item resolvedItem = registry.resolve(artifact, p);
+                        
+                        links.add(new Link(next, resolvedItem, p, true));
+                    }
                     
+                    if (links.size() > 0) {
+                        next.setProperty(LinkExtension.DEPENDS, links);
+                    }
+                        
                     initializeLifecycle(jcrArtifact, next);        
                     
                     ch.addMetadata(next);
@@ -424,6 +437,10 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                     return result;
                 } catch (RegistryException e) {
                     // this will get dewrapped
+                    throw new RuntimeException(e);
+                } catch (PropertyException e) {
+                    throw new RuntimeException(e);
+                } catch (PolicyException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -625,7 +642,9 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                     Set<String> dependencies = ch.detectDependencies(loadedData, workspace);
                     Set<Link> links = new HashSet<Link>();
                     for (String p : dependencies) {
-                        links.add(new Link(jcrVersion, null, p, true));
+                        Item resolvedItem = registry.resolve(artifact, p);
+                        
+                        links.add(new Link(jcrVersion, resolvedItem, p, true));
                     }
                     
                     if (links.size() > 0) {

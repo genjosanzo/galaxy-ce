@@ -661,7 +661,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 {
                     log.debug("Query: " + qstr.toString());
                 }
-
+                
                 Query jcrQuery = qm.createQuery(qstr, Query.XPATH);
                 
                 QueryResult result = jcrQuery.execute();
@@ -741,6 +741,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         String all = "@jcr:primaryType=\"galaxy:entry\" or @jcr:primaryType=\"galaxy:entryVersion\"" +
             " or @jcr:primaryType=\"galaxy:artifact\" or @jcr:primaryType=\"galaxy:artifactVersion\"" +
             " or @jcr:primaryType=\"galaxy:workspace\"";
+        
+        boolean typeEntries = false;
+        boolean typeVersions = false;
+        
         for (Class<?> selectType : query.getSelectTypes()) {
             if (typeQuery.length() > 1) {
                 typeQuery.append(" or ");
@@ -751,12 +755,16 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 break;
             } else if (selectType.equals(Entry.class)) {
                 typeQuery.append("@jcr:primaryType=\"galaxy:entry\"");
+                typeEntries = true;
             } else if (selectType.equals(Artifact.class)) {
                 typeQuery.append("@jcr:primaryType=\"galaxy:artifact\"");
+                typeEntries = true;
             } else if (selectType.equals(EntryVersion.class)) {
                 typeQuery.append("@jcr:primaryType=\"galaxy:entryVersion\"");
+                typeVersions = true;
             } else if (selectType.equals(ArtifactVersion.class)) {
                 typeQuery.append("@jcr:primaryType=\"galaxy:artifactVersion\"");
+                typeVersions = true;
             } else if (selectType.equals(Workspace.class)) {
                 typeQuery.append("@jcr:primaryType=\"galaxy:workspace\"");
             } else {
@@ -813,11 +821,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
 
         for (Restriction r : query.getRestrictions()) {
             if (r instanceof OpRestriction) {
-                if (!handleOperator((OpRestriction) r, query, artifactQuery, true)) {
+                if (!handleOperator((OpRestriction) r, query, artifactQuery, true, typeEntries, typeVersions)) {
                     return null;
                 }
             } else if (r instanceof FunctionCall) {
-                if (!handleFunction((FunctionCall) r, query, functions, artifactQuery)) {
+                if (!handleFunction((FunctionCall) r, query, functions, artifactQuery, typeEntries, typeVersions)) {
                     return null;
                 }
             }
@@ -839,7 +847,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
     private boolean handleFunction(FunctionCall r, 
                                    org.mule.galaxy.query.Query query, 
                                    Map<FunctionCall, AbstractFunction> functions, 
-                                   StringBuilder qstr) throws QueryException {
+                                   StringBuilder qstr,
+                                   boolean typeEntries,
+                                   boolean typeVersions) throws QueryException {
         AbstractFunction fn = functionRegistry.getFunction(r.getModule(), r.getName());
         
         functions.put(r, fn);
@@ -849,7 +859,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         
         if (restrictions != null && restrictions.size() > 0) {
             for (OpRestriction opR : restrictions) {
-                if (!handleOperator(opR, query, qstr, true)) return false;
+                if (!handleOperator(opR, query, qstr, true, typeEntries, typeVersions)) return false;
             }
         }
         return true;
@@ -858,7 +868,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
     private boolean handleOperator(OpRestriction r, 
                                    org.mule.galaxy.query.Query query, 
                                    StringBuilder queryStr,
-                                   boolean prepend)
+                                   boolean prepend, 
+                                   boolean typeEntries, 
+                                   boolean typeVersions)
         throws QueryException {
         
         boolean not = false;
@@ -874,9 +886,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         
         // Do special stuff if this is an OR/AND operator
         if (operator.equals(Operator.OR)) {
-            return join(r, query, queryStr, "or");
+            return join(r, query, queryStr, "or", typeEntries, typeVersions);
         } else if (operator.equals(Operator.AND)) {
-            return join(r, query, queryStr, "and");
+            return join(r, query, queryStr, "and", typeEntries, typeVersions);
         }
         
         String property = (String) r.getLeft();
@@ -891,22 +903,31 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         }
 
         boolean searchChild = false;
-        // are we searching a property on the artifact itself or the artifact version?
-        if ((builder.appliesTo(Entry.class) || builder.appliesTo(Artifact.class))
-            && (builder.appliesTo(EntryVersion.class) || builder.appliesTo(ArtifactVersion.class))
-            && !query.getSelectTypes().contains(Workspace.class)) {
-            searchChild = true;
-            queryStr.append("(");
+        boolean searchParent = false;
+        
+        if ((builder.appliesTo(Entry.class) || builder.appliesTo(Artifact.class))) {
+            if (typeVersions && !typeEntries) {
+                searchParent = true;
+                queryStr.append("(");
+            }
+        } 
+        
+        if (builder.appliesTo(EntryVersion.class) || builder.appliesTo(ArtifactVersion.class)) {
+            if (typeEntries && !typeVersions) {
+                searchChild = true;
+                queryStr.append("(");
+            }
         } 
         
         if (builder.build(queryStr, property, "", r.getRight(), not, operator)) {
-            if (searchChild) {
+            if (searchChild || searchParent) {
                 if (not) {
                     queryStr.append(" and ");
                 } else {
                     queryStr.append(" or ");
                 }
-                if (builder.build(queryStr, property, "*/", r.getRight(), not, operator)) {
+                String predicate = searchChild ? "*/" : "../";
+                if (builder.build(queryStr, property, predicate, r.getRight(), not, operator)) {
                     queryStr.append(")");
                     return true;
                 }
@@ -917,19 +938,23 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         return false;
     }
 
-    private boolean join(OpRestriction r, org.mule.galaxy.query.Query query, 
-                         StringBuilder queryStr, String opName) throws QueryException {
+    private boolean join(OpRestriction r, 
+                         org.mule.galaxy.query.Query query, 
+                         StringBuilder queryStr, 
+                         String opName,
+                         boolean typeEntries,
+                         boolean typeVersions) throws QueryException {
         Restriction r1 = (Restriction) r.getLeft();
         Restriction r2 = (Restriction) r.getRight();
         queryStr.append("(");
-        if (!handleOperator((OpRestriction) r1, query, queryStr, false)) {
+        if (!handleOperator((OpRestriction) r1, query, queryStr, false, typeEntries, typeVersions)) {
             return false;
         }
         queryStr.append(" ")
              .append(opName)
              .append(" ");
         
-        if (!handleOperator((OpRestriction) r2, query, queryStr, false)) {
+        if (!handleOperator((OpRestriction) r2, query, queryStr, false, typeEntries, typeVersions)) {
             return false;
         }
         queryStr.append(")");

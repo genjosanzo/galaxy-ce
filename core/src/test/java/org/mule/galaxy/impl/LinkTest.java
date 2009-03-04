@@ -13,6 +13,9 @@ import org.mule.galaxy.Links;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.link.LinkExtension;
+import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.Query;
+import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class LinkTest extends AbstractGalaxyTest {
@@ -120,6 +123,24 @@ public class LinkTest extends AbstractGalaxyTest {
         deps = links.getLinks();
         assertEquals(1, deps.size());
         Link dep = deps.iterator().next();
+        assertEquals(schema.getEntry().getId(), dep.getLinkedTo().getId());
+        assertTrue(dep.isAutoDetected());
+        
+
+        EntryResult schema3 = workspace.createArtifact("application/xml", 
+                                                       "hello-include.xsd", 
+                                                       "0.1", 
+                                                       getResourceAsStream("/schema/hello-import.xsd"));
+        
+        EntryVersion s3version = schema3.getEntryVersion();
+        
+        // reload so the cache is fresh
+        s3version = (EntryVersion) registry.getItemById(s3version.getId());
+        
+        links = (Links) s2version.getProperty(LinkExtension.DEPENDS);
+        deps = links.getLinks();
+        assertEquals(1, deps.size());
+        dep = deps.iterator().next();
         assertEquals(schema.getEntry().getId(), dep.getLinkedTo().getId());
         assertTrue(dep.isAutoDetected());
     }
@@ -279,25 +300,31 @@ public class LinkTest extends AbstractGalaxyTest {
         v2.setProperty(LinkExtension.CONFLICTS, Arrays.asList(new Link(v2, a1, null, false)));
         
         // test forward link
-//        Query query = new Query(Entry.class).add(OpRestriction.eq(LinkExtension.CONFLICTS, "a2"));
+        Query query = new Query(Entry.class).add(OpRestriction.eq(LinkExtension.CONFLICTS, "a2"));
+        
+        SearchResults results = registry.search(query);
+        assertEquals(1, results.getTotal());
+
+//        // test full path
+//        query = new Query().add(OpRestriction.eq(LinkExtension.CONFLICTS, "/Default Workspace/a1"));
 //        
-//        SearchResults results = registry.search(query);
+//        results = registry.search(query);
 //        assertEquals(1, results.getTotal());
 //        
         // test reciprocal
-//        query = new Query().add(OpRestriction.eq(LinkExtension.CONFLICTS + ".reciprocal", "a1"));
-//        
-//        results = registry.search(query);
-//        assertEquals(1, results.getTotal());
+        query = new Query().add(OpRestriction.eq(LinkExtension.CONFLICTS + ".reciprocal", "a1"));
+        
+        results = registry.search(query);
+        assertEquals(1, results.getTotal());
         
         // test IN
-//        query = new Query(Entry.class).add(OpRestriction.in(LinkExtension.CONFLICTS, Arrays.asList("a2", "a1", "foo.xml")));
-//        results = registry.search(query);
-//        assertEquals(1, results.getTotal());
+        query = new Query(Entry.class).add(OpRestriction.in(LinkExtension.CONFLICTS, Arrays.asList("a2", "a1", "foo.xml")));
+        results = registry.search(query);
+        assertEquals(1, results.getTotal());
 
         // test reciprocal IN
-//        query = new Query().add(OpRestriction.in(LinkExtension.CONFLICTS + ".reciprocal", Arrays.asList("a2", "a1", "foo.xml")));
-//        results = registry.search(query);
-//        assertEquals(1, results.getTotal());
+        query = new Query().add(OpRestriction.in(LinkExtension.CONFLICTS + ".reciprocal", Arrays.asList("a2", "a1", "foo.xml")));
+        results = registry.search(query);
+        assertEquals(1, results.getTotal());
     }
 }

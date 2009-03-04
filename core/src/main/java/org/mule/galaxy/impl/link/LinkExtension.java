@@ -19,7 +19,6 @@ import org.mule.galaxy.Link;
 import org.mule.galaxy.Links;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.Registry;
 import org.mule.galaxy.event.PropertyChangedEvent;
 import org.mule.galaxy.extension.AtomExtension;
 import org.mule.galaxy.extension.Extension;
@@ -46,7 +45,6 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
     
     private TypeManager typeManager;
     private List<String> configuration = new ArrayList<String>();
-    private Registry registry;
     
     public void initialize() throws Exception {
         setName("Link");
@@ -133,13 +131,6 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
         return links;
     }
     
-    protected Collection<Link> addRegistry(Collection<Link> links) {
-        for (Link l : links) {
-            l.setRegistry(registry);
-        }
-        return links;
-    }
-
     @Override
     public Map<String, String> getQueryProperties(PropertyDescriptor pd) {
         HashMap<String, String> props = new HashMap<String, String>();
@@ -170,10 +161,6 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
 
     public void setTypeManager(TypeManager typeManager) {
         this.typeManager = typeManager;
-    }
-
-    public void setRegistry(Registry registry) {
-        this.registry = registry;
     }
     
     public final class LinksImpl implements Links {
@@ -220,14 +207,14 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
 
         public Collection<Link> getLinks() {
             if (links == null) {
-                links = addRegistry(((LinkDao) dao).getLinks(item, pd.getProperty()));
+                links = ((LinkDao) dao).getLinks(item, pd.getProperty());
             }
             return links;
         }
 
         public Collection<Link> getReciprocalLinks() {
             if (reciprocal == null) {
-                reciprocal = addRegistry(((LinkDao) dao).getReciprocalLinks(item, pd.getProperty()));
+                reciprocal = ((LinkDao) dao).getReciprocalLinks(item, pd.getProperty());
             }
             return reciprocal;
         }

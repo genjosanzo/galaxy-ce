@@ -47,7 +47,6 @@ import org.mule.galaxy.index.Indexer;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.QueryException;
-import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.util.SecurityUtils;
@@ -167,7 +166,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         return i;
     }
     public Index getIndexByName(final String name) throws NotFoundException {
-        List<Index> indexes = find("name", name);
+        List<Index> indexes = find("description", name);
         if (indexes.size() == 0) {
             throw new NotFoundException(name);
         }

@@ -3,10 +3,8 @@ package org.mule.galaxy.impl.link;
 import java.beans.IntrospectionException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Link;
 import org.mule.galaxy.impl.extension.IdentifiableExtension;

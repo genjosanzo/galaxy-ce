@@ -1,6 +1,15 @@
 package org.mule.galaxy.impl;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+import javax.jcr.Node;
+
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.DuplicateItemException;
@@ -13,16 +22,6 @@ import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.IOUtils;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.jcr.Node;
 
 import org.w3c.dom.Document;
 

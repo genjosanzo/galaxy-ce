@@ -4,8 +4,6 @@ import javax.jcr.Node;
 
 import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.index.Index;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.TypeManager;
 
@@ -15,7 +13,7 @@ public class PropertyInfoImpl implements PropertyInfo {
     private String name;
     private boolean index;
     private String description;
-    private Object desc;
+    private PropertyDescriptor desc;
     private boolean loadedDescriptor;
     private TypeManager tm;
     private final Item item;
@@ -80,12 +78,10 @@ public class PropertyInfoImpl implements PropertyInfo {
         
         desc = tm.getPropertyDescriptorByName(getName());
         
-        if (desc instanceof Index) {
-            index = true;
-            description = ((Index) desc).getDescription();
-        } else if (desc != null) {
-            description = ((PropertyDescriptor) desc).getDescription();
+        if (desc != null) {
+            description = desc.getDescription();
         }
+        
         loadedDescriptor = true;
     }
 

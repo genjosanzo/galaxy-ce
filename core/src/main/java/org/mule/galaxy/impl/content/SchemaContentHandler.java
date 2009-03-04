@@ -31,6 +31,7 @@ public class SchemaContentHandler extends XmlDocumentContentHandler implements X
         
         namespaces.put("xsd", Constants.SCHEMA_QNAME.getNamespaceURI());
         imports.add(xpath.compile("//xsd:import/@schemaLocation"));
+        imports.add(xpath.compile("//xsd:include/@schemaLocation"));
         
         supportedFileExtensions.clear();
         supportedFileExtensions.add("xsd");
