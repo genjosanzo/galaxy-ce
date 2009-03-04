@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.jcr.Node;
-import javax.jcr.Session;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.BasicAttributes;
@@ -25,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.impl.jcr.onm.DaoPersister;
-import org.mule.galaxy.impl.jcr.onm.FieldDescriptor;
 import org.mule.galaxy.impl.jcr.onm.PersisterManager;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserExistsException;
