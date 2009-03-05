@@ -2,10 +2,7 @@ package org.mule.galaxy.impl.jcr;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import javax.activation.MimeTypeParseException;
@@ -14,10 +11,8 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.Entry;
+import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.RegistryException;
