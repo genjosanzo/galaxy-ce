@@ -652,13 +652,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                     // will be dewrapped later
                     throw new RuntimeException(e);
                 }
-                
+
                 if (qstr == null) {
                     return new SearchResults(0, items);
                 }
                 
-                if (log.isDebugEnabled())
-                {
+                if (log.isDebugEnabled()) {
                     log.debug("Query: " + qstr.toString());
                 }
                 
@@ -742,8 +741,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
             " or @jcr:primaryType=\"galaxy:artifact\" or @jcr:primaryType=\"galaxy:artifactVersion\"" +
             " or @jcr:primaryType=\"galaxy:workspace\"";
         
-        boolean typeEntries = false;
-        boolean typeVersions = false;
+        boolean searchEntries = false;
+        boolean searchVersions = false;
         
         for (Class<?> selectType : query.getSelectTypes()) {
             if (typeQuery.length() > 1) {
@@ -755,16 +754,16 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 break;
             } else if (selectType.equals(Entry.class)) {
                 typeQuery.append("@jcr:primaryType=\"galaxy:entry\"");
-                typeEntries = true;
+                searchEntries = true;
             } else if (selectType.equals(Artifact.class)) {
                 typeQuery.append("@jcr:primaryType=\"galaxy:artifact\"");
-                typeEntries = true;
+                searchEntries = true;
             } else if (selectType.equals(EntryVersion.class)) {
                 typeQuery.append("@jcr:primaryType=\"galaxy:entryVersion\"");
-                typeVersions = true;
+                searchVersions = true;
             } else if (selectType.equals(ArtifactVersion.class)) {
                 typeQuery.append("@jcr:primaryType=\"galaxy:artifactVersion\"");
-                typeVersions = true;
+                searchVersions = true;
             } else if (selectType.equals(Workspace.class)) {
                 typeQuery.append("@jcr:primaryType=\"galaxy:workspace\"");
             } else {
@@ -788,6 +787,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 base.append("//*");
             } else {
                 base.append("/*");
+
+                if (searchVersions) {
+                    base.append("/*");
+                }
             }
             
             base.append(typeQuery);
@@ -810,6 +813,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 base.append("//*");
             } else {
                 base.append("/*");
+                
+                if (searchVersions) {
+                    base.append("/*");
+                }
             }
 
             base.append(typeQuery);
@@ -821,11 +828,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
 
         for (Restriction r : query.getRestrictions()) {
             if (r instanceof OpRestriction) {
-                if (!handleOperator((OpRestriction) r, query, artifactQuery, true, typeEntries, typeVersions)) {
+                if (!handleOperator((OpRestriction) r, query, artifactQuery, true, searchEntries, searchVersions)) {
                     return null;
                 }
             } else if (r instanceof FunctionCall) {
-                if (!handleFunction((FunctionCall) r, query, functions, artifactQuery, typeEntries, typeVersions)) {
+                if (!handleFunction((FunctionCall) r, query, functions, artifactQuery, searchEntries, searchVersions)) {
                     return null;
                 }
             }

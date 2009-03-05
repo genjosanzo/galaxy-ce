@@ -71,7 +71,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
     protected Node getDefaultLifecycleNode(Session session)
             throws RepositoryException {
         QueryManager qm = getQueryManager(session);
-        javax.jcr.query.Query q = qm.createQuery("//(*, galaxy:lifecycle)[@default='true']", javax.jcr.query.Query.XPATH);
+        javax.jcr.query.Query q = qm.createQuery("/jcr:root/lifecycles/*[@default='true']", javax.jcr.query.Query.XPATH);
 
         NodeIterator nodes = q.execute().getNodes();
         if (nodes.getSize() == 0) {
@@ -135,8 +135,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
         if (fallbackLifecycleId.equals(lifecycleId)) {
             throw new IllegalArgumentException("The fallback lifecycle cannot be the same as the lifecycle being deleted.");
         }
-        System.out.println("deleting " + lifecycleId + " and falling back to " + fallbackLifecycleId);
-
+        
         final Lifecycle lifecycle = getLifecycleById(lifecycleId);
 
         execute(new JcrCallback() {

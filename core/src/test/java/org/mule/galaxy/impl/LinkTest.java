@@ -75,6 +75,39 @@ public class LinkTest extends AbstractGalaxyTest {
         assertEquals(portType.getEntry().getId(), dep.getLinkedTo().getId());
         assertTrue(dep.isAutoDetected());
         
+        // Move the hello port type and see if that works
+        registry.newWorkspace("Test");
+        registry.move(portType.getEntry(), "/Test", "hello-portType.wsdl");
+        
+        // Ensure that the service wsdl still has a link, but it's linked to item should be null
+        links = (Links) svcWsdl.getEntryVersion().getProperty(LinkExtension.DEPENDS);
+        deps = links.getLinks();
+        assertEquals(1, deps.size());
+        
+        dep = deps.iterator().next();
+        assertNull(dep.getLinkedTo());
+        assertEquals("hello-portType.wsdl", dep.getLinkedToPath());
+        assertTrue(dep.isAutoDetected());
+        
+        links = (Links) portType.getEntryVersion().getProperty(LinkExtension.DEPENDS);
+        deps = links.getLinks();
+        assertEquals(1, deps.size());
+        dep = deps.iterator().next();
+        assertEquals("hello.xsd", dep.getLinkedToPath());
+        assertNull(dep.getLinkedTo());
+        
+        // Move it back and see if it works
+        registry.move(portType.getEntry(), "/Default Workspace", "hello-portType.wsdl");
+        
+        links = (Links) portType.getEntryVersion().getProperty(LinkExtension.DEPENDS);
+        deps = links.getLinks();
+        assertEquals(1, deps.size());
+        dep = deps.iterator().next();
+        assertEquals("hello.xsd", dep.getLinkedToPath());
+        assertNotNull(dep.getLinkedTo());
+        System.out.println(dep.getLinkedTo().getPath());
+        assertEquals(schemaEntry.getId(), dep.getLinkedTo().getId());
+
         // yeah, this doesn't make sense dependency-wise, but we're just seeing if user specified dependencies work
         EntryVersion schemaV = schema.getEntryVersion();
         links = (Links) schemaV.getProperty(LinkExtension.DEPENDS);
@@ -300,19 +333,25 @@ public class LinkTest extends AbstractGalaxyTest {
         v2.setProperty(LinkExtension.CONFLICTS, Arrays.asList(new Link(v2, a1, null, false)));
         
         // test forward link
-        Query query = new Query(Entry.class).add(OpRestriction.eq(LinkExtension.CONFLICTS, "a2"));
+        Query query = new Query(Entry.class).add(OpRestriction.eq(LinkExtension.CONFLICTS, "a1"));
         
         SearchResults results = registry.search(query);
         assertEquals(1, results.getTotal());
 
-//        // test full path
-//        query = new Query().add(OpRestriction.eq(LinkExtension.CONFLICTS, "/Default Workspace/a1"));
-//        
-//        results = registry.search(query);
-//        assertEquals(1, results.getTotal());
-//        
+        // test full path
+        query = new Query().add(OpRestriction.eq(LinkExtension.CONFLICTS, r1.getEntry().getPath()));
+        
+        results = registry.search(query);
+        assertEquals(1, results.getTotal());
+       
         // test reciprocal
-        query = new Query().add(OpRestriction.eq(LinkExtension.CONFLICTS + ".reciprocal", "a1"));
+        query = new Query().add(OpRestriction.eq(LinkExtension.CONFLICTS + ".reciprocal", v2.getPath()));
+        
+        results = registry.search(query);
+        assertEquals(1, results.getTotal());
+
+        // test reciprocal like
+        query = new Query().add(OpRestriction.like(LinkExtension.CONFLICTS + ".reciprocal", "a2?version=0.1"));
         
         results = registry.search(query);
         assertEquals(1, results.getTotal());
@@ -323,7 +362,7 @@ public class LinkTest extends AbstractGalaxyTest {
         assertEquals(1, results.getTotal());
 
         // test reciprocal IN
-        query = new Query().add(OpRestriction.in(LinkExtension.CONFLICTS + ".reciprocal", Arrays.asList("a2", "a1", "foo.xml")));
+        query = new Query().add(OpRestriction.in(LinkExtension.CONFLICTS + ".reciprocal", Arrays.asList("a2?version=0.1", "a1", "foo.xml")));
         results = registry.search(query);
         assertEquals(1, results.getTotal());
     }

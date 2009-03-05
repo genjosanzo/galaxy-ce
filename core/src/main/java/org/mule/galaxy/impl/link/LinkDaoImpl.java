@@ -2,9 +2,11 @@ package org.mule.galaxy.impl.link;
 
 import static org.mule.galaxy.event.DefaultEvents.ENTRY_CREATED;
 import static org.mule.galaxy.event.DefaultEvents.ENTRY_DELETED;
+import static org.mule.galaxy.event.DefaultEvents.ENTRY_MOVED;
 import static org.mule.galaxy.event.DefaultEvents.ENTRY_VERSION_DELETED;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,6 +21,8 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
+import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Entry;
 import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Link;
@@ -27,6 +31,7 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.event.EntryCreatedEvent;
 import org.mule.galaxy.event.EntryDeletedEvent;
+import org.mule.galaxy.event.EntryMovedEvent;
 import org.mule.galaxy.event.EntryVersionDeletedEvent;
 import org.mule.galaxy.event.annotation.BindToEvents;
 import org.mule.galaxy.event.annotation.OnEvent;
@@ -36,12 +41,13 @@ import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springmodules.jcr.JcrCallback;
 
-@BindToEvents({ENTRY_CREATED, ENTRY_DELETED, ENTRY_VERSION_DELETED})
+@BindToEvents({ENTRY_CREATED, ENTRY_MOVED, ENTRY_DELETED, ENTRY_VERSION_DELETED})
 public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao, ApplicationContextAware {
 
     private Registry registry;
@@ -50,39 +56,10 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
     public LinkDaoImpl() throws Exception {
         super(Link.class, "links", true);
     }
-    
-    @OnEvent
-    public void onEvent(final EntryDeletedEvent deleted) {
-        execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                deleteAssociatedLinks(deleted.getItemId(), session);
-                return null;
-            }
-        });
-    }
-
-    @OnEvent
-    public void onEvent(final EntryVersionDeletedEvent deleted) {
-        execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                deleteAssociatedLinks(deleted.getItemId(), session);
-                return null;
-            }
-        });
-    }
-    
-    @OnEvent
-    public void onEvent(final EntryCreatedEvent created) {
-        execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                addLinks(created.getItemId(), session);
-                return null;
-            }
-        });
-    }
 
     /**
-     * Checks for Links which were not resolved and see if this new entry matches them.
+     * Checks for 1) Links which were not resolved and see if this new entry matches them 
+     * 2) Links which are associated with this ID and tries to resolve them
      * 
      * @param id
      * @param session
@@ -91,13 +68,15 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
      */
     protected void addLinks(String id, Session session) throws IOException, RepositoryException {
         try {
+            // First, see if this item which was moved matches any outstanding unmatched links 
             Item item = getRegistry().getItemById(id);
+            List<String> versionIds = getVersionIds(id);
             
             StringBuilder stmt = new StringBuilder();
             stmt.append("//").append(rootNode)
              .append("/*[not(@linkedTo) and jcr:like(@linkedToPath, '%")
              .append(item.getName())
-             .append("')]");
+             .append("%')]");
             
             QueryManager qm = getQueryManager(session);
             Query q = qm.createQuery(stmt.toString(), Query.XPATH);
@@ -107,10 +86,35 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
             for (NodeIterator nodes = qr.getNodes(); nodes.hasNext();) {
                 Node node = nodes.nextNode();
                 Item linkItem = getRegistry().getItemById(JcrUtil.getStringOrNull(node, "item"));
-                String path = JcrUtil.getStringOrNull(node, "item");
+                String path = JcrUtil.getStringOrNull(node, "linkedToPath");
                 Item resolve = registry.resolve(linkItem, path);
                 if (resolve != null) {
-                    node.setProperty("linkedTo", id);
+                    node.setProperty("linkedTo", resolve.getId());
+                }
+            }
+
+            // Now try to resolve links which are associated with this item
+            stmt = new StringBuilder();
+            stmt.append("//").append(rootNode)
+             .append("/*[not(@linkedTo) and (@item = '")
+             .append(id);
+            
+            // Find the children of this node....
+            for (String childId : versionIds) {
+                stmt.append("' or @item = '")
+                    .append(childId);
+            }
+            stmt.append("')]");
+
+            q = qm.createQuery(stmt.toString(), Query.XPATH);
+            for (NodeIterator nodes = q.execute().getNodes(); nodes.hasNext();) {
+                Node node = nodes.nextNode();
+                Item linkItem = getRegistry().getItemById(JcrUtil.getStringOrNull(node, "item"));
+                String path = JcrUtil.getStringOrNull(node, "linkedToPath");
+                Item resolve = registry.resolve(linkItem, path);
+                
+                if (resolve != null) {
+                    node.setProperty("linkedTo", resolve.getId());
                 }
             }
         } catch (NotFoundException e) {
@@ -140,13 +144,69 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
             Node node = nodes.nextNode();
             
             Boolean auto = JcrUtil.getBooleanOrNull(node, "autoDetected");
-            if (auto != null && auto) {
+            String linkedTo = JcrUtil.getStringOrNull(node, "linkedTo");
+            if (auto != null && auto && id.equals(linkedTo)) {
                 // we may want to auto resolve this again in the future
                 node.setProperty("linkedTo", (String) null);
             } else {
                 node.remove();
             }
         }
+    }
+    
+    protected void clearDetectedLinks(final String id, Session session) throws IOException, RepositoryException {
+        final StringBuilder stmt = new StringBuilder();
+        stmt.append("//").append(rootNode)
+            .append("/*[@item = '")
+            .append(id)
+            .append("' or linkedTo = '")
+            .append(id);
+        
+        // Find the children of this node....
+        for (String childId : getVersionIds(id)) {
+            stmt.append("' or @item = '")
+                .append(childId)
+                .append("' or linkedTo = '")
+                .append(childId);
+        }
+        
+        stmt.append("']");
+        
+        QueryManager qm = getQueryManager(session);
+        Query q = qm.createQuery(stmt.toString(), Query.XPATH);
+        
+        QueryResult qr = q.execute();
+        
+        for (NodeIterator nodes = qr.getNodes(); nodes.hasNext();) {
+            Node node = nodes.nextNode();
+            
+            Boolean auto = JcrUtil.getBooleanOrNull(node, "autoDetected");
+            if (auto != null && auto) {
+                // we may want to auto resolve this again in the future
+                node.setProperty("linkedTo", (String) null);
+            }
+        }
+    }
+
+    private List<String> getVersionIds(final String id) {
+        final List<String> versionIds = new ArrayList<String>();
+        try {
+            Item item = registry.getItemById(id);
+            
+            if (item instanceof Entry) {
+
+                for (EntryVersion ev : ((Entry) item).getVersions()) {
+                    versionIds.add(ev.getId());
+                }
+            }
+        } catch (NotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (RegistryException e) {
+            throw new RuntimeException(e);
+        } catch (AccessException e) {
+            throw new RuntimeException(e);
+        }
+        return versionIds;
     }
     
     public List<Link> getReciprocalLinks(Item item, final String property) {
@@ -214,7 +274,25 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
         }
     }
 
-    public Collection<Item> getReciprocalItems(final String property, final boolean like, final Object value) {
+    public Collection<Item> getReciprocalItems(final String property, 
+                                               final boolean like, 
+                                               final Object value) {
+        Collection<Link> links = getLinks(property, "item", like, value);
+
+        Set<Item> items = new HashSet<Item>();
+        for (Link l : links) {
+            Item linkedTo = l.getLinkedTo();
+            
+            items.add(linkedTo);
+        }
+        
+        return items;
+    }
+    
+    public List<Link> getLinks(final String property,
+                               String linkProperty,
+                               final boolean like, 
+                               final Object value) {
         // Find the Items which we'll use for the next part of the query
         Set<Item> linkToItems = new HashSet<Item>();
 
@@ -246,22 +324,13 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
             if (first) first = false;
             else stmt.append("' or ");
             
-            stmt.append("linkedTo = '").append(i.getId());
+            stmt.append(linkProperty).append(" = '").append(i.getId());
         }
 
         stmt.append("') and property = '").append(property);
         stmt.append("']");
-        System.out.println("GetRecip " + stmt);
         
-        Set<Item> items = new HashSet<Item>();
-        List<Link> links = doQuery(stmt.toString());
-        for (Link l : links) {
-            Item linkedTo = l.getLinkedTo();
-            
-            items.add(linkedTo);
-        }
-        
-        return items;
+        return doQuery(stmt.toString());
     }
 
     /**
@@ -283,79 +352,94 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
             path = path.substring(idx+1);
         }
 
+        String version = null;
+        idx = path.lastIndexOf('?');
+        if (idx != -1) {
+            int vidx = path.lastIndexOf("version=");
+            if (vidx != -1) {
+                version = path.substring(vidx + "version=".length());
+            }
+            
+            path = path.substring(0, idx);
+            q.setSelectTypes(EntryVersion.class, ArtifactVersion.class);
+        }
+        
         if (!like) {
             q.add(OpRestriction.eq("name", path));
         } else {
             q.add(OpRestriction.like("name", path));
         }
         
+        if (version != null) {
+            q.add(OpRestriction.eq("version", version));
+        }
+        
         SearchResults results = registry.search(q);
         
         items.addAll(results.getResults());
-
-        System.out.println("Found " + items.size() + " items that were in the clause " + q);
-
     }
     
     public List<Link> getLinks(final String property, final boolean like, final Object path) {
-        return getLinks(property, like, path, "item");
+        return getLinks(property, "linkedTo", like, path);
     }
     
-    public List<Link> getLinks(final String property, final boolean like, final Object path, String linkField) {
-        StringBuilder stmt = new StringBuilder();
-        stmt.append("//").append(rootNode).append("/*");
-        int c = 0;
-        
-        if (path instanceof String) {
-            c = find(stmt, like, (String) path, c, linkField);
-        } else if (path instanceof Collection) {
-            for (Object o : (Collection) path) {
-                c = find(stmt, like, (String) o, c, linkField);
+    @OnEvent
+    public void onEvent(final EntryDeletedEvent deleted) {
+        SecurityUtils.doPriveleged(new Runnable() {
+            public void run() {
+                execute(new JcrCallback() {
+                    public Object doInJcr(final Session session) throws IOException, RepositoryException {
+                        deleteAssociatedLinks(deleted.getItemId(), session);
+                        return null;
+                    }
+                });
             }
-        } else {
-            throw new UnsupportedOperationException();
-        }
-        
-        if (c == 0) {
-            return Collections.emptyList();
-        }
-        
-        stmt.append("') and property = '").append(property);
-        stmt.append("']");
-
-        return doQuery(stmt.toString());
+        });
     }
 
-    private int find(StringBuilder stmt, final boolean like, String value, int c, String linkField) {
-        org.mule.galaxy.query.Query q = 
-            new org.mule.galaxy.query.Query(EntryVersion.class);
-        
-        if (!like) {
-            q.add(OpRestriction.eq("name", value));
-        } else {
-            q.add(OpRestriction.like("name", value));
-        }
-        
-        try {
-            SearchResults results = getRegistry().search(q);
-            for (Item i : results.getResults()) {
-                if (c > 0) {
-                    stmt.append("' or ").append(linkField).append("='").append(i.getId());
-                } else {
-                    stmt.append("[(").append(linkField).append("='").append(i.getId());
-                }
-                c++;
+    @OnEvent
+    public void onEvent(final EntryVersionDeletedEvent deleted) {
+        SecurityUtils.doPriveleged(new Runnable() {
+            public void run() {
+                execute(new JcrCallback() {
+                    public Object doInJcr(final Session session) throws IOException, RepositoryException {
+                        deleteAssociatedLinks(deleted.getItemId(), session);
+                        return null;
+                    }
+                });
             }
-        } catch (QueryException e) {
-            throw new RuntimeException(e);
-        } catch (RegistryException e) {
-            throw new RuntimeException(e);
-        }
-        return c;
+        });
     }
-
-
     
+    @OnEvent
+    public void onEvent(final EntryCreatedEvent created) {
+        SecurityUtils.doPriveleged(new Runnable() {
+            public void run() {
+                execute(new JcrCallback() {
+                    public Object doInJcr(final Session session) throws IOException, RepositoryException {
+                        addLinks(created.getItemId(), session);
+                        return null;
+                    }
+                });
+            }
+        });
+    }
+    
+    @OnEvent
+    public void onEvent(final EntryMovedEvent created) {
+        SecurityUtils.doPriveleged(new Runnable() {
+            public void run() {
+                execute(new JcrCallback() {
+                    public Object doInJcr(final Session session) throws IOException, RepositoryException {
+                        clearDetectedLinks(created.getItemId(), session);
+                        addLinks(created.getItemId(), session);
+                        return null;
+                    }
+                });
+            }
+        });
+    }
+
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
     }
