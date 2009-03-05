@@ -51,7 +51,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(String.class, idx.getQueryType());
         assertNotNull(idx.getConfiguration().get(XQueryIndexer.XQUERY_EXPRESSION));
         assertEquals("mule2.service", idx.getConfiguration().get(XQueryIndexer.PROPERTY_NAME));
-        assertEquals(2, idx.getDocumentTypes().size());
+        assertEquals(4, idx.getDocumentTypes().size());
 
         // Import a document which should now be indexed
         

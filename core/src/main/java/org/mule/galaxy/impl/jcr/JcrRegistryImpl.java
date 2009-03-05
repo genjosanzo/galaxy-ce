@@ -292,6 +292,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
 
 
     public Item resolve(Item item, String location) throws RegistryException {
+        if (location.length() == 0) return null;
+        
         String[] paths = location.split("/");
         
         while (!(item instanceof Workspace)) {
@@ -308,7 +310,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 if (p.equals("..")) {
                     w = ((Workspace)w.getParent());
                 } else if (!p.equals(".")) {
-                    w = w.getWorkspace(p);
+                    Item child = w.getItem(p);
+                    
+                    if (child instanceof Workspace) {
+                        w = (Workspace) child;
+                    } else {
+                        return null;
+                    }
                 }
             }
             
