@@ -230,7 +230,7 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                 Node node = ((AbstractJcrItem) w).getNode();
                 
                 try {
-                    Node resolved = node.getNode(name);
+                    Node resolved = node.getNode(JcrUtil.escape(name));
                     
                     return build(resolved, resolved.getPrimaryNodeType().getName());
                 } catch (PathNotFoundException e) {
