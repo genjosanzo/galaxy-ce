@@ -424,6 +424,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.4.3</version>
                 <configuration>
+                    <argLine>-Xms64m -Xmx256m</argLine> 
                 </configuration>
             </plugin>
             <!--
