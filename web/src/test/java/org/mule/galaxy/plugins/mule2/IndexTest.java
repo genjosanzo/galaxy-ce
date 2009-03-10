@@ -23,8 +23,12 @@ import javax.xml.namespace.QName;
 public class IndexTest extends AbstractGalaxyTest {
 
 
+    public void testIndexesMule22() throws Exception {
+        testIndexes(getResourceAsStream("/mule2/hello-config.xml"), Constants.MULE2_2_QNAME);
+    }
+    
     public void testIndexesMule21() throws Exception {
-        testIndexes(getResourceAsStream("/mule2/hello-config.xml"), Constants.MULE2_1_QNAME);
+        testIndexes(getResourceAsStream("/mule2/hello-config-21.xml"), Constants.MULE2_1_QNAME);
     }
     
     public void testIndexesMule20() throws Exception {
