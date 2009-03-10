@@ -12,7 +12,7 @@
     <name>Galaxy Mule 2 Client</name>
 
     <properties>
-        <muleVersion>2.1.2</muleVersion>
+        <muleVersion>2.2.0</muleVersion>
     </properties>
 
     <dependencies>
