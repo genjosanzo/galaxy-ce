@@ -1,7 +1,6 @@
 package org.mule.galaxy.impl.jcr;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -18,16 +17,12 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 
-import org.springmodules.jcr.JcrCallback;
-
 import org.apache.jackrabbit.value.StringValue;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.activity.ActivityManager.EventType;
 import org.mule.galaxy.event.PropertyChangedEvent;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.policy.PolicyException;
@@ -37,6 +32,7 @@ import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.DateUtil;
 import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.SecurityUtils;
+import org.springmodules.jcr.JcrCallback;
 
 
 public abstract class AbstractJcrItem implements Item {
