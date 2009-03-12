@@ -994,15 +994,15 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                     
                     entry.getVersions().remove(version);
                     
-                    if (((JcrVersion)version).isLatest()) {
-                        JcrVersion newLatest = (JcrVersion) entry.getVersions().get(0);
+                    if (((JcrEntryVersion)version).isLatest()) {
+                        JcrEntryVersion newLatest = (JcrEntryVersion) entry.getVersions().get(0);
                         
                         newLatest.setLatest(true);
                     }
                     
                     EntryVersionDeletedEvent event = new EntryVersionDeletedEvent(version);
                     
-                    ((JcrVersion) version).getNode().remove();
+                    ((JcrEntryVersion) version).getNode().remove();
     
                     session.save();
 
@@ -1066,7 +1066,7 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                     approve((EntryVersion) version);
                 }
                 
-                ((JcrVersion) version).setEnabledInternal(enabled);
+                ((JcrEntryVersion) version).setEnabledInternal(enabled);
                 
                 session.save();
                 return null;
@@ -1081,8 +1081,8 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 EntryVersion oldDefault = ((Entry)version.getParent()).getDefaultOrLastVersion();
                 
-                ((JcrVersion) oldDefault).setDefault(false);
-                ((JcrVersion) version).setDefault(true);
+                ((JcrEntryVersion) oldDefault).setDefault(false);
+                ((JcrEntryVersion) version).setDefault(true);
                 
                 session.save();
                 return null;
