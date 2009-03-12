@@ -537,7 +537,7 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                                          String versionLabel, 
                                          InputStream inputStream) 
         throws RegistryException, PolicyException, IOException, MimeTypeParseException, DuplicateItemException, AccessException {
-        accessControlManager.assertAccess(Permission.READ_ARTIFACT);
+        accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE, workspace);
         contentType = trimContentType(contentType);
         MimeType ct = new MimeType(contentType);
 
@@ -768,7 +768,8 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
     }
 
     public EntryResult newEntry(final Workspace workspace, final String name, final String versionLabel)
-        throws RegistryException, PolicyException, DuplicateItemException {
+        throws RegistryException, PolicyException, DuplicateItemException, AccessException {
+        accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE, workspace);
         
         final User user = SecurityUtils.getCurrentUser();
 

@@ -1,6 +1,11 @@
 package org.mule.galaxy.impl;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.mule.galaxy.Artifact;
+import org.mule.galaxy.Workspace;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Group;
 import org.mule.galaxy.security.Permission;
@@ -8,9 +13,6 @@ import org.mule.galaxy.security.PermissionGrant;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.SecurityUtils;
-
-import java.util.List;
-import java.util.Set;
 
 public class AccessControlManagerTest extends AbstractGalaxyTest {
     
@@ -103,6 +105,42 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
             }
         }
     }
+    
+    public void testReadOnly() throws Exception {
+        Group ro = new Group();
+        ro.setName("ReadOnly");
+        accessControlManager.save(ro);
+
+        ro = accessControlManager.getGroupByName("ReadOnly");
+        
+        accessControlManager.grant(ro, Permission.READ_ARTIFACT);
+        accessControlManager.grant(ro, Permission.READ_WORKSPACE);
+        
+        User user = new User();
+        user.setUsername("guest");
+        user.setEmail("guest@guest.com");
+        Set<Group> groups = new HashSet<Group>();
+        groups.add(ro);
+        user.setGroups(groups);
+        
+        userManager.create(user, "guest");
+        
+        login("guest", "guest");
+        
+        try {
+            importHelloWsdl();
+            fail("Bad security!");
+        } catch (AccessException e) {
+        }
+        
+
+        try {
+            ((Workspace) registry.getItemByPath("Default Workspace")).newEntry("test", "1.0");
+            fail("Bad security!");
+        } catch (AccessException e) {
+        }
+    }
+    
     
     public void testAccess() throws Exception {
         Artifact artifact = importHelloWsdl();
