@@ -1,6 +1,8 @@
 package org.mule.galaxy.impl;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.script.CronParseException;
@@ -10,7 +12,7 @@ import org.mule.galaxy.script.ScriptManager;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class ScriptManagerImplTest extends AbstractGalaxyTest {
-    public static int count = 0;
+    public static CountDownLatch latch = new CountDownLatch(1);
     
     protected ScriptManager scriptManager;
     protected Dao<ScriptJob> scriptJobDao;
@@ -19,7 +21,7 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
         Script script = new Script();
         script.setName("test");
         script.setRunOnStartup(true);
-        script.setScript("println 'hello'; org.mule.galaxy.impl.ScriptManagerImplTest.count++; 'hello'");
+        script.setScript("println 'hello'; org.mule.galaxy.impl.ScriptManagerImplTest.latch.countDown(); 'hello'");
         
         scriptManager.save(script);
         
@@ -40,9 +42,9 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
         
         sj.setExpression("* * * ? * *");
         scriptJobDao.save(sj);
-        Thread.sleep(2000);
+        latch.await(10, TimeUnit.SECONDS);
         
-        assertTrue(count >= 2);
+        assertEquals(0, latch.getCount());
         
         List<ScriptJob> jobs = scriptJobDao.listAll();
         assertEquals(1, jobs.size());
@@ -50,9 +52,9 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
         sj.setName("Foo");
         scriptJobDao.save(sj);
 
-        count = 0;
-        Thread.sleep(3000);
-        assertTrue(count >= 1);
+        latch = new CountDownLatch(1);
+        latch.await(10, TimeUnit.SECONDS);
+        assertEquals(0, latch.getCount());
         
         scriptManager.delete(script.getId());
         
