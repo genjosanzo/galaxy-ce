@@ -8,6 +8,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
+import org.apache.abdera.model.ExtensibleElement;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
@@ -87,6 +88,77 @@ public class EntryCollectionTest extends AbstractAtomTest {
         feed = feedDoc.getRoot();
         entries = feed.getEntries();
         assertEquals(2, entries.size());
+    }
+    
+    public void testProperties() throws Exception {
+        AbderaClient client = new AbderaClient(abdera);
+        RequestOptions defaultOpts = client.getDefaultRequestOptions();
+        defaultOpts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
+        defaultOpts.setContentType("application/atom+xml;type=entry");
+        
+        String base = "http://localhost:9002/api/registry/Default%20Workspace";
+        
+        // Create an entry
+        System.out.println("Creating Entry for " + base);
+
+        Entry entry = createNewEntry("1.0");
+        prettyPrint(entry);
+        ClientResponse res = client.post(base, entry, defaultOpts);
+        entry = assertAndGetEntry(res, 201);
+        
+        entry.setContent("Hello");
+        
+        // Update description
+        res.release();
+        res = client.put(base + "/MyService;atom", entry, defaultOpts);
+        assertEquals(204, res.getStatus());
+        
+        // check to see if it's all OK
+        res.release();
+        res = client.get(base + "/MyService;atom", defaultOpts);
+        entry = assertAndGetEntry(res, 200);
+        assertEquals("Hello", entry.getContent());
+        
+        ExtensibleElement metadata = getVersionedMetadata(entry);
+
+        Element prop = factory.newElement(new QName(AbstractItemCollection.NAMESPACE, "property"), metadata);
+        prop.setAttributeValue("name", "test");
+        prop.setAttributeValue("value", "test");
+        
+        // Create a new version
+        res.release();
+        res = client.put(base + "/MyService;atom", entry, defaultOpts);
+        assertEquals(204, res.getStatus());
+        
+        // Remove the property
+        res = client.get(base + "/MyService;atom", defaultOpts);
+        entry = assertAndGetEntry(res, 200);
+        assertEquals("Hello", entry.getContent());
+        
+        metadata = getVersionedMetadata(entry);
+        prop = getProperty(metadata, "test");
+        assertNotNull(prop);
+        prop.removeAttribute(new QName("value"));
+        
+        prettyPrint(entry);
+        
+        // Update and test again
+        res.release();
+        res = client.put(base + "/MyService;atom", entry, defaultOpts);
+        assertEquals(204, res.getStatus());
+
+        res = client.get(base + "/MyService;atom", defaultOpts);
+        entry = assertAndGetEntry(res, 200);
+        metadata = getVersionedMetadata(entry);
+        prop = getProperty(metadata, "test");
+        assertNull(prop);
+    }
+
+    private Element getProperty(ExtensibleElement metadata, String name) {
+        for (Element e : metadata.getExtensions(new QName(AbstractItemCollection.NAMESPACE, "property"))) {
+            if (name.equals(e.getAttributeValue("name"))) return e;
+        }
+        return null;
     }
 
     private Entry createNewEntry(String version) {

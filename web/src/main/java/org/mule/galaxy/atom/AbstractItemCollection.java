@@ -23,20 +23,16 @@ import static org.mule.galaxy.util.AbderaUtils.throwMalformed;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import javax.xml.namespace.QName;
 
-import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.i18n.iri.IRI;
@@ -56,7 +52,6 @@ import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.RequestContext.Scope;
 import org.apache.abdera.protocol.server.context.EmptyResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
-import org.apache.abdera.protocol.server.context.SimpleResponseContext;
 import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
@@ -74,13 +69,7 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.extension.AtomExtension;
 import org.mule.galaxy.extension.Extension;
-import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
-import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.PolicyException;
-import org.mule.galaxy.query.OpRestriction;
-import org.mule.galaxy.query.Query;
-import org.mule.galaxy.query.QueryException;
-import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.type.PropertyDescriptor;
@@ -560,25 +549,31 @@ public abstract class AbstractItemCollection
                     throwMalformed("You must specify name attributes on metadata properties.");
                 
                 String value = propEl.getAttributeValue("value");
-                if (value != null) {
-                    try {
+
+                try {
+                    if (value != null) {
                         av.setProperty(name, value);
-                    } catch (PropertyException e1) {
-                        // Ignore as its probably because its locked
-                    }
-                } else {
-                    List<Element> elements = propEl.getElements();
-                    ArrayList<String> values = new ArrayList<String>();
-                    for (Element valueEl : elements) {
-                        if (valueEl.getQName().getLocalPart().equals("value")) {
-                            values.add(valueEl.getText().trim());
+                    } else if ("".equals(value)) {
+                        // remove the property
+                        av.setProperty(name, null);
+                    } else {
+                        List<Element> elements = propEl.getElements();
+                        ArrayList<String> values = new ArrayList<String>();
+                        for (Element valueEl : elements) {
+                            if (valueEl.getQName().getLocalPart().equals("value")) {
+                                values.add(valueEl.getText().trim());
+                            }
+                        }
+                        
+                        if (values.size() == 0) {
+                            // remove the property
+                            av.setProperty(name, null);
+                        } else {
+                            av.setProperty(name, values);
                         }
                     }
-                    try {
-                        av.setProperty(name, values);
-                    } catch (PropertyException e1) {
-                        // Ignore as its probably because its locked
-                    }
+                } catch (PropertyException e1) {
+                    // Ignore as its probably because its locked
                 }
                 
                 String visible = propEl.getAttributeValue("visible");

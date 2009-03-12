@@ -200,10 +200,8 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         String v2Uri = colUri.toString() + "/Default%20Workspace/hello_world.wsdl;atom?version=0.2";
         System.out.println("Getting entry " + v2Uri);
         res = client.get(v2Uri, defaultOpts);
-        
-        entryDoc = res.getDocument();
-        prettyPrint(entryDoc);
-        e = entryDoc.getRoot();
+
+        e = assertAndGetEntry(res, 200);
         
         assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl;atom?version=0.2", e.getEditLink().getHref().toString());
         assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl?version=0.2", e.getContentSrc().toString());
@@ -224,17 +222,8 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals("true", versionEl.getAttributeValue("enabled"));
         assertNotNull(versionEl.getAttributeValue("created"));
         
-        QName metadataQ = new QName(AbstractItemCollection.NAMESPACE, "metadata");
-        List<ExtensibleElement> extensions = e.getExtensions(metadataQ);
-        ExtensibleElement metadata = null;
-        ExtensibleElement global = null;
-        for (ExtensibleElement el : extensions) {
-            String id = el.getAttributeValue("id");
-            if ("versioned".equals(id))
-                metadata = el;
-            else if ("global".equals(id))
-                global = el;
-        }
+        ExtensibleElement metadata = getVersionedMetadata(e);
+        ExtensibleElement global = getGlobalMetadata(e);
         
         assertNotNull(metadata);
         assertNotNull(global);
@@ -299,24 +288,11 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         // Try to show the hidden metadata
         String v3Uri = colUri.toString() + "/Default%20Workspace/hello_world.wsdl;atom?version=3.0";
         res = client.get(v3Uri + "&showHiddenProperties=true", defaultOpts);
-        assertEquals(200, res.getStatus());
-        
-        entryDoc = res.getDocument();
-        e = entryDoc.getRoot();
+        e = assertAndGetEntry(res, 200);
         prettyPrint(e);
         
-        metadata = null;
-        global = null;
-        extensions = e.getExtensions(metadataQ);
-        for (ExtensibleElement el : extensions) {
-            String id = el.getAttributeValue("id");
-            if ("versioned".equals(id))
-                metadata = el;
-            else if ("global".equals(id))
-                global = el;
-        }
-        assertNotNull(metadata);
-        assertNotNull(global);
+        metadata = getVersionedMetadata(e);
+        global = getGlobalMetadata(e);
         
         // check versioned metadata
         properties = metadata.getExtensions(new QName(AbstractItemCollection.NAMESPACE, "property"));

@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -31,6 +32,7 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.Repository;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
+import javax.xml.namespace.QName;
 
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
@@ -39,6 +41,10 @@ import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Base;
+import org.apache.abdera.model.Document;
+import org.apache.abdera.model.Entry;
+import org.apache.abdera.model.ExtensibleElement;
+import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.server.Provider;
 import org.apache.abdera.writer.Writer;
 import org.apache.abdera.writer.WriterFactory;
@@ -46,6 +52,7 @@ import org.apache.commons.io.IOUtils;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.atom.AbstractItemCollection;
 import org.mule.galaxy.impl.index.IndexManagerImpl;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -124,6 +131,34 @@ public abstract class AbstractAtomTest extends TestCase {
         return WebApplicationContextUtils.getWebApplicationContext(context.getServletContext());
     }
 
+    protected Entry assertAndGetEntry(ClientResponse res, int status) {
+        assertEquals(status, res.getStatus());
+        
+        Document<Entry> entryDoc = res.getDocument();
+        return entryDoc.getRoot();
+    }
+
+    protected ExtensibleElement getVersionedMetadata(Entry entry) {
+        return getMetadata(entry, "versioned");
+    }
+    
+    protected ExtensibleElement getGlobalMetadata(Entry entry) {
+        return getMetadata(entry, "global");
+    }
+
+    private ExtensibleElement getMetadata(Entry entry, String type) {
+        QName metadataQ = new QName(AbstractItemCollection.NAMESPACE, "metadata");
+        List<ExtensibleElement> extensions = entry.getExtensions(metadataQ);
+        ExtensibleElement metadata = null;
+        for (ExtensibleElement el : extensions) {
+            String id = el.getAttributeValue("id");
+            if (type.equals(id))
+                metadata = el;
+        }
+        
+        return metadata;
+    }
+    
     protected void prettyPrint(Base doc) throws IOException {
         WriterFactory writerFactory = abdera.getWriterFactory();
         Writer writer = writerFactory.getWriter("prettyxml");
