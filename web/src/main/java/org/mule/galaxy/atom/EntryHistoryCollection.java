@@ -19,6 +19,9 @@
 package org.mule.galaxy.atom;
 
 
+import static org.mule.galaxy.util.AbderaUtils.createArtifactPolicyExceptionResponse;
+import static org.mule.galaxy.util.AbderaUtils.newErrorMessage;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -29,7 +32,6 @@ import javax.activation.MimeType;
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.Content;
 import org.apache.abdera.model.Document;
-import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
@@ -45,7 +47,6 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
-import static org.mule.galaxy.util.AbderaUtils.*;
 
 public class EntryHistoryCollection extends AbstractItemCollection {
     private final Log log = LogFactory.getLog(getClass());

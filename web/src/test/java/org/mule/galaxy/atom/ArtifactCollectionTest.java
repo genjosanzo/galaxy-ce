@@ -9,7 +9,6 @@ import javax.xml.namespace.QName;
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.i18n.text.CharUtils.Profile;
-import org.apache.abdera.model.Base;
 import org.apache.abdera.model.Collection;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
@@ -22,7 +21,6 @@ import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
 import org.apache.axiom.om.util.Base64;
 import org.mule.galaxy.test.AbstractAtomTest;
-import org.mule.galaxy.util.IOUtils;
 
 public class ArtifactCollectionTest extends AbstractAtomTest {
 
