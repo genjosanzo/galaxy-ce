@@ -181,7 +181,10 @@
             <bean class="org.mule.galaxy.impl.upgrade.V151Upgrader">
                 <property name="typeManager" ref="typeManager" />
             </bean>
-            <bean class="org.mule.galaxy.impl.upgrade.V152Upgrader"/>
+            <bean class="org.mule.galaxy.impl.upgrade.V152Upgrader">
+                <property name="sessionFactory" ref="sessionFactory"/>
+                <property name="registry" ref="registry"/>
+            </bean>
         </list>
     </property>
   </bean>
