@@ -13,7 +13,7 @@
       An example service which checks the background of an individual. 
     </description>
     <properties>
-        <mule.version>2.1.1</mule.version>
+        <mule.version>2.2.0</mule.version>
     </properties>
     
     <dependencies>
