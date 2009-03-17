@@ -18,8 +18,8 @@
 
 package org.mule.galaxy.web.client.activity;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -29,13 +29,11 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.SuggestOracle;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.client.event.KeyDownHandler;
 import com.google.gwt.widgetideas.client.event.KeyDownEvent;
+import com.google.gwt.widgetideas.client.event.KeyDownHandler;
 import com.google.gwt.widgetideas.datepicker.client.DateBox;
-import com.google.gwt.i18n.client.DateTimeFormat;
 
 import java.util.Collection;
 import java.util.Date;

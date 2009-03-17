@@ -18,8 +18,6 @@
 
 package org.mule.galaxy.web.client;
 
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -30,6 +28,7 @@ import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 
 public class SessionKilledDialog extends DialogBox
 {

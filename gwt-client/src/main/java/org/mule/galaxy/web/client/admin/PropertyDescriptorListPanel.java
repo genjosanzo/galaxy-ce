@@ -18,14 +18,14 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WPropertyDescriptor;
-
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Hyperlink;
 
 import java.util.Collection;
 import java.util.Iterator;
+
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 
 public class PropertyDescriptorListPanel
     extends AbstractAdministrationComposite

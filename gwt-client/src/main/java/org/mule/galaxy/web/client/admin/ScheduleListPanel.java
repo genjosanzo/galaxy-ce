@@ -21,13 +21,9 @@ package org.mule.galaxy.web.client.admin;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Hyperlink;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WLifecycle;
-import org.mule.galaxy.web.rpc.WPhase;
 import org.mule.galaxy.web.rpc.WScriptJob;
 
 /**

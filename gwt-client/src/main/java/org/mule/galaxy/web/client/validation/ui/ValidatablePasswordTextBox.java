@@ -18,10 +18,9 @@
 
 package org.mule.galaxy.web.client.validation.ui;
 
-import org.mule.galaxy.web.client.validation.Validator;
-
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.Widget;
+import org.mule.galaxy.web.client.validation.Validator;
 
 /**
  * A password textbox which has an embedded validation label right below it.

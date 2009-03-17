@@ -1,7 +1,6 @@
 package org.mule.galaxy.web.client.util;
 
 import com.google.gwt.user.client.ui.SuggestOracle;
-import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,9 +8,7 @@ import java.util.List;
 
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.registry.ArtifactForm;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.EntryInfo;
 
 public class WorkspaceOracle extends SuggestOracle {
 

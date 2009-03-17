@@ -18,19 +18,9 @@
 
 package org.mule.galaxy.web.client.util;
 
-import org.mule.galaxy.web.client.AbstractComposite;
-
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 public class QNameListBox extends AbstractUserModifiableListBox {
 

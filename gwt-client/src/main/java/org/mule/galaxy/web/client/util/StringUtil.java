@@ -1,6 +1,5 @@
 package org.mule.galaxy.web.client.util;
 
-import com.google.gwt.core.client.GWT;
 
 public class StringUtil {
 

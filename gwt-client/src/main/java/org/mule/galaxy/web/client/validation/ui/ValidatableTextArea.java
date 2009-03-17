@@ -18,10 +18,9 @@
 
 package org.mule.galaxy.web.client.validation.ui;
 
-import org.mule.galaxy.web.client.validation.Validator;
-
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
+import org.mule.galaxy.web.client.validation.Validator;
 
 /**
  * A textarea which has an embedded validation label right below it.

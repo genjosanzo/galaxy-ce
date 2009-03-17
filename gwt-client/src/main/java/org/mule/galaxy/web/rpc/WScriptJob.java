@@ -1,7 +1,6 @@
 package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
-import org.mule.galaxy.Identifiable;
 
 public class WScriptJob implements IsSerializable {
     private String id;

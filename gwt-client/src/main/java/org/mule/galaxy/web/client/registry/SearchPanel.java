@@ -18,12 +18,11 @@
 
 package org.mule.galaxy.web.client.registry;
 
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.rpc.AbstractCallback;
 
 public class SearchPanel extends AbstractBrowsePanel {
 

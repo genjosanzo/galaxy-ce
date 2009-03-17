@@ -1,9 +1,9 @@
 package org.mule.galaxy.web.client.property;
 
-import java.io.Serializable;
-import java.util.Collection;
-
 import com.google.gwt.user.client.ui.Widget;
+
+import java.io.Serializable;
+
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.AbstractCallback;

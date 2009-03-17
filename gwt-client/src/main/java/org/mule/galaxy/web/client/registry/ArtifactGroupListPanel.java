@@ -32,8 +32,8 @@ import java.util.Map;
 
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.util.TooltipListener;
-import org.mule.galaxy.web.rpc.ResultGroup;
 import org.mule.galaxy.web.rpc.EntryInfo;
+import org.mule.galaxy.web.rpc.ResultGroup;
 
 /**
  * Lists a group of artifacts.

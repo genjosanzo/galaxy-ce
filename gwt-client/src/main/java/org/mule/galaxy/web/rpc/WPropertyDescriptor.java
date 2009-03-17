@@ -18,9 +18,9 @@
 
 package org.mule.galaxy.web.rpc;
 
-import java.util.Map;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
+
+import java.util.Map;
 
 public class WPropertyDescriptor implements IsSerializable {
     private String id;

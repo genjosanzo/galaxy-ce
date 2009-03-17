@@ -1,7 +1,5 @@
 package org.mule.galaxy.web.rpc;
 
-import java.util.Collection;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class WScript implements IsSerializable {

@@ -18,13 +18,13 @@
 
 package org.mule.galaxy.web.client.util;
 
-import org.mule.galaxy.web.rpc.WWorkspace;
-
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.ListBox;
 
 import java.util.Collection;
 import java.util.Iterator;
+
+import org.mule.galaxy.web.rpc.WWorkspace;
 
 public class WorkspacesListBox extends Composite {
 

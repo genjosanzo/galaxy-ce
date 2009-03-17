@@ -18,8 +18,6 @@ package org.mule.galaxy.web.client.util;
  */
 
 
-import java.util.Date;
-
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ChangeListenerCollection;
@@ -35,6 +33,8 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SourcesChangeEvents;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.Date;
 
 /**
  * @author Manuel Carrasco Moñino

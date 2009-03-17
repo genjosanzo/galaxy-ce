@@ -18,9 +18,8 @@
 
 package org.mule.galaxy.web.client.validation;
 
-import org.mule.galaxy.web.client.util.StringUtil;
-
 import com.google.gwt.user.client.ui.FileUpload;
+import org.mule.galaxy.web.client.util.StringUtil;
 
 public class FileUploadValidator implements Validator {
 

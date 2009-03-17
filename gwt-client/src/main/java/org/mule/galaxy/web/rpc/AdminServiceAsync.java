@@ -18,11 +18,9 @@
 
 package org.mule.galaxy.web.rpc;
 
-import java.util.List;
-
-import org.mule.galaxy.web.client.RPCException;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import java.util.List;
 
 public interface AdminServiceAsync {
     void executeScript(String scriptText, AsyncCallback async);

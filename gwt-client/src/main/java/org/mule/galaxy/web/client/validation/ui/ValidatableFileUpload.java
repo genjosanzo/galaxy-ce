@@ -1,9 +1,8 @@
 package org.mule.galaxy.web.client.validation.ui;
 
-import org.mule.galaxy.web.client.validation.Validator;
-
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.Widget;
+import org.mule.galaxy.web.client.validation.Validator;
 
 public class ValidatableFileUpload extends AbstractValidatableInputField {
 

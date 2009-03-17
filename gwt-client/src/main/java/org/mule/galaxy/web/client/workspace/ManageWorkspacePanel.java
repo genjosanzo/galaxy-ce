@@ -24,9 +24,7 @@ import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.mule.galaxy.web.client.AbstractComposite;
@@ -36,7 +34,6 @@ import org.mule.galaxy.web.client.admin.PolicyPanel;
 import org.mule.galaxy.web.client.entry.ItemGroupPermissionPanel;
 import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.SecurityService;
 import org.mule.galaxy.web.rpc.WWorkspace;
 

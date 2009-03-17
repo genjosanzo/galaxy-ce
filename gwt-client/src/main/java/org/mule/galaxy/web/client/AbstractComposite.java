@@ -18,8 +18,6 @@
 
 package org.mule.galaxy.web.client;
 
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -28,6 +26,8 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
+
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 
 public abstract class AbstractComposite extends Composite {
 

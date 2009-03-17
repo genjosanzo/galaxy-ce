@@ -18,18 +18,6 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.ErrorPanel;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.PageInfo;
-import org.mule.galaxy.web.client.entry.PolicyResultsPanel;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.LifecycleSelectionPanel;
-import org.mule.galaxy.web.client.util.PolicySelectionPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WPolicyException;
-import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -44,6 +32,18 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.PageInfo;
+import org.mule.galaxy.web.client.entry.PolicyResultsPanel;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.LifecycleSelectionPanel;
+import org.mule.galaxy.web.client.util.PolicySelectionPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.WPolicyException;
 
 public class PolicyPanel extends AbstractComposite {
 

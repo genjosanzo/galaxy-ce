@@ -17,8 +17,6 @@
 
 package org.mule.galaxy.web.client.util;
 
-import java.util.Iterator;
-
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -26,6 +24,8 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.DockPanel.DockLayoutConstant;
+
+import java.util.Iterator;
 
 public class GWTCBox extends Panel {
     HTML title = null;

@@ -1,7 +1,6 @@
 package org.mule.galaxy.web.client.util;
 
 import com.google.gwt.user.client.ui.SuggestOracle;
-import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
 
 import java.util.ArrayList;
 import java.util.Collection;

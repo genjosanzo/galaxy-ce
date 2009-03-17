@@ -18,10 +18,9 @@
 
 package org.mule.galaxy.web.client.validation.ui;
 
-import org.mule.galaxy.web.client.validation.ValidationListener;
-
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import org.mule.galaxy.web.client.validation.ValidationListener;
 
 /**
  * A UI validation listener updating a GWT's label with a failure message.
