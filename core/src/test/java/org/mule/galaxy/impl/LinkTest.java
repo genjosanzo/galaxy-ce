@@ -356,6 +356,12 @@ public class LinkTest extends AbstractGalaxyTest {
         results = registry.search(query);
         assertEquals(1, results.getTotal());
         
+        // test reciprocal like without version
+        query = new Query().add(OpRestriction.like(LinkExtension.CONFLICTS + ".reciprocal", "a2"));
+        
+        results = registry.search(query);
+        assertEquals(1, results.getTotal());
+        
         // test IN
         query = new Query(Entry.class).add(OpRestriction.in(LinkExtension.CONFLICTS, Arrays.asList("a2", "a1", "foo.xml")));
         results = registry.search(query);

@@ -377,6 +377,12 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
         SearchResults results = registry.search(q);
         
         items.addAll(results.getResults());
+        
+        if (like && version == null) {
+            q.setSelectTypes(EntryVersion.class, ArtifactVersion.class);
+            results = registry.search(q);
+            items.addAll(results.getResults());
+        }
     }
     
     public List<Link> getLinks(final String property, final boolean like, final Object path) {
