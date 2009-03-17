@@ -20,10 +20,7 @@ package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 public class EntryVersionInfo extends ItemInfo implements IsSerializable {
     private String versionLabel;

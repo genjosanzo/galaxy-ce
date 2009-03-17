@@ -1,11 +1,13 @@
 package org.mule.galaxy.web.client.property;
 
-import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.io.Serializable;
-import java.util.Collection;
 
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
@@ -126,6 +128,7 @@ public class EditPropertyPanel extends AbstractComposite {
     }
 
     protected void cancel() {
+        errorPanel.clearErrorMessage();
         initializeRenderer();
         showView();
     }
@@ -207,6 +210,7 @@ public class EditPropertyPanel extends AbstractComposite {
     
     protected void onSaveFailure(Throwable caught, AbstractCallback saveCallback) {
         saveCallback.onFailureDirect(caught);
+        setEnabled(true);
     }
 
     public WProperty getProperty() {

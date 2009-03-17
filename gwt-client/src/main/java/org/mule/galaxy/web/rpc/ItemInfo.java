@@ -10,6 +10,8 @@ public class ItemInfo implements IsSerializable {
     protected String id;
     protected List<WProperty> properties = new ArrayList<WProperty>();
     protected boolean local;
+    protected boolean modifiable;
+    protected boolean deletable;
     
     public boolean isLocal() {
         return local;
@@ -22,6 +24,19 @@ public class ItemInfo implements IsSerializable {
     }
     public void setId(String id) {
         this.id = id;
+    }
+    
+    public boolean isModifiable() {
+        return modifiable;
+    }
+    public void setModifiable(boolean modifiable) {
+        this.modifiable = modifiable;
+    }
+    public boolean isDeletable() {
+        return deletable;
+    }
+    public void setDeletable(boolean deletable) {
+        this.deletable = deletable;
     }
     public List<WProperty> getProperties() {
         return properties;

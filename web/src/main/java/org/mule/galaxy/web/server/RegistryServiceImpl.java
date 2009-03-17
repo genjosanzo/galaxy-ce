@@ -91,11 +91,11 @@ import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.TypeManager;
+import org.mule.galaxy.util.SecurityUtils;
 import org.mule.galaxy.util.UserUtils;
 import org.mule.galaxy.view.ArtifactViewManager;
 import org.mule.galaxy.view.View;
 import org.mule.galaxy.web.client.RPCException;
-import org.mule.galaxy.web.rpc.ResultGroup;
 import org.mule.galaxy.web.rpc.EntryInfo;
 import org.mule.galaxy.web.rpc.EntryVersionInfo;
 import org.mule.galaxy.web.rpc.ExtendedEntryInfo;
@@ -104,6 +104,7 @@ import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
 import org.mule.galaxy.web.rpc.LinkInfo;
 import org.mule.galaxy.web.rpc.RegistryService;
+import org.mule.galaxy.web.rpc.ResultGroup;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.WActivity;
 import org.mule.galaxy.web.rpc.WApprovalMessage;
@@ -1137,6 +1138,10 @@ public class RegistryServiceImpl implements RegistryService {
 
     private ExtendedEntryInfo getEntryGroup(Entry e) throws RegistryException {
         ExtendedEntryInfo info = new ExtendedEntryInfo();
+
+        Set<Permission> permissions = accessControlManager.getPermissions(SecurityUtils.getCurrentUser(), e);
+        info.setModifiable(permissions.contains(Permission.MODIFY_ARTIFACT));
+        info.setDeletable(permissions.contains(Permission.DELETE_ARTIFACT));
         
         ItemRenderer view;
         final String context = contextPathResolver.getContextPath();
@@ -1190,7 +1195,7 @@ public class RegistryServiceImpl implements RegistryService {
 
         List<EntryVersionInfo> versions = new ArrayList<EntryVersionInfo>();
         for (EntryVersion av : e.getVersions()) {
-            versions.add(toWeb(av, false));
+            versions.add(toWeb(av, false, permissions));
         }
         info.setVersions(versions);
 
@@ -1199,15 +1204,19 @@ public class RegistryServiceImpl implements RegistryService {
         return info;
     }
 
-    public ItemInfo getItemInfo(String entryVersionId, boolean showHidden) throws RPCException,
+    public ItemInfo getItemInfo(String itemId, boolean showHidden) throws RPCException,
                                                                                                            ItemNotFoundException {
         try {
-            Item item = registry.getItemById(decode(entryVersionId));
+            Item item = registry.getItemById(decode(itemId));
 
             ItemInfo itemInfo = new ItemInfo();
             itemInfo.setId(item.getId());
             itemInfo.setLocal(item.isLocal());
             populateProperties(item, itemInfo, showHidden);
+
+            Set<Permission> permissions = accessControlManager.getPermissions(SecurityUtils.getCurrentUser(), item);
+            itemInfo.setModifiable(permissions.contains(Permission.MODIFY_ARTIFACT));
+            itemInfo.setDeletable(permissions.contains(Permission.DELETE_ARTIFACT));
             
             return itemInfo;
         } catch (RegistryException e) {
@@ -1220,7 +1229,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    private EntryVersionInfo toWeb(EntryVersion av, boolean showHidden) {
+    private EntryVersionInfo toWeb(EntryVersion av, boolean showHidden, Set<Permission> permissions) {
         // remote workspaces don't support authors yet
         String authorName = UserUtils.getUsername(av.getAuthor());
         String authorUser = null;
@@ -1237,6 +1246,8 @@ public class RegistryServiceImpl implements RegistryService {
                                                    authorName,
                                                    authorUser,
                                                    av.isIndexedPropertiesStale());
+        vi.setModifiable(permissions.contains(Permission.MODIFY_ARTIFACT));
+        vi.setDeletable(permissions.contains(Permission.DELETE_ARTIFACT));
         
         if (av instanceof ArtifactVersion) {
             vi.setLink(getVersionLink((ArtifactVersion)av));

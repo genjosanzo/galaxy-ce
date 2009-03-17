@@ -252,46 +252,49 @@ public class EntryPanel extends AbstractComposite {
             token = "new-entry-version/" + info.getId();
         }
         
-        Image img = new Image("images/icon_copy.gif");
-        img.setStyleName("icon-baseline");
-        img.addClickListener(NavigationUtil.createNavigatingClickListener(token));
-        Hyperlink hl = new Hyperlink("New Version", token);
-        
-        if (info.isArtifact()) {
-            linkPanel.add(asToolbarItem(img, hl));
-        } else {
-            InlineFlowPanel p = asHorizontal(img, new Label(" "), hl);
-            p.setStyleName("artifactToolbarItemFirst");
-            linkPanel.add(p);
+        if (info.isModifiable()) {
+            Image img = new Image("images/icon_copy.gif");
+            img.setStyleName("icon-baseline");
+            img.addClickListener(NavigationUtil.createNavigatingClickListener(token));
+            Hyperlink hl = new Hyperlink("New Version", token);
+            
+            if (info.isArtifact()) {
+                linkPanel.add(asToolbarItem(img, hl));
+            } else {
+                InlineFlowPanel p = asHorizontal(img, new Label(" "), hl);
+                p.setStyleName("artifactToolbarItemFirst");
+                linkPanel.add(p);
+            }
         }
         
-        ClickListener cl = new ClickListener() {
-            public void onClick(Widget arg0) {
-                warnDelete();
-            }
-        };
-        
-        img = new Image("images/delete_config.gif");
-        img.setStyleName("icon-baseline");
-        img.addClickListener(cl);
-        hl = new Hyperlink("Delete", "artifact/" + info.getId());
-        hl.addClickListener(cl);
-        linkPanel.add(asToolbarItem(img, hl));
-        
+        if (info.isDeletable()) {
+            ClickListener cl = new ClickListener() {
+                public void onClick(Widget arg0) {
+                    warnDelete();
+                }
+            };
+            Image img = new Image("images/delete_config.gif");
+            img.setStyleName("icon-baseline");
+            img.addClickListener(cl);
+            Hyperlink hl = new Hyperlink("Delete", "artifact/" + info.getId());
+            hl.addClickListener(cl);
+            linkPanel.add(asToolbarItem(img, hl));
+        }
 
-        cl = new ClickListener() {
+        ClickListener cl = new ClickListener() {
 
             public void onClick(Widget sender) {
                 Window.open(info.getArtifactFeedLink(), null, "scrollbars=yes");
             }
         };
-        img = new Image("images/feed-icon.png");
+        
+        Image img = new Image("images/feed-icon.png");
 //        img.setStyleName("feed-icon");
         img.setTitle("Versions Atom Feed");
         img.addClickListener(cl);
         img.setStyleName("icon-baseline");
         
-        hl = new Hyperlink("Version Feed", "artifact-versions/" + info.getId());
+        Hyperlink hl = new Hyperlink("Version Feed", "artifact-versions/" + info.getId());
         hl.addClickListener(cl);
         linkPanel.add(asToolbarItem(img, hl));
         

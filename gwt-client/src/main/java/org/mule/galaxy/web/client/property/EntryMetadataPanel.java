@@ -33,7 +33,6 @@ import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.EntryVersionInfo;
 import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WProperty;
@@ -65,24 +64,8 @@ public class EntryMetadataPanel extends AbstractComposite {
         metadata.setStyleName("metadata-panel");
         
         table = createColumnTable();
+
         
-        Hyperlink addMetadata = new Hyperlink("Add", galaxy.getCurrentToken());
-        final EntryMetadataPanel amPanel = this;
-        addMetadata.addClickListener(new ClickListener() {
-
-            public void onClick(Widget arg0) {
-                NewPropertyPanel edit = new NewPropertyPanel(galaxy,
-                                                             errorPanel,
-                                                             galaxy.getRegistryService(),
-                                                             item.getId(),
-                                                             metadata,
-                                                             amPanel,
-                                                             table);
-                metadata.insert(edit, 1);   
-            }
-            
-        });
-
         showAll = new Hyperlink("Show All", galaxy.getCurrentToken());
         showAll.addClickListener(new ClickListener() {
 
@@ -93,8 +76,29 @@ public class EntryMetadataPanel extends AbstractComposite {
             }
         });
         
-        InlineFlowPanel metadataTitle = createTitleWithLink(title, asHorizontal(showAll, new Label(" "), addMetadata));
-        metadata.add(metadataTitle);
+        
+        if (item.isModifiable()) {
+            Hyperlink addMetadata = new Hyperlink("Add", galaxy.getCurrentToken());
+            final EntryMetadataPanel amPanel = this;
+            addMetadata.addClickListener(new ClickListener() {
+    
+                public void onClick(Widget arg0) {
+                    NewPropertyPanel edit = new NewPropertyPanel(galaxy,
+                                                                 errorPanel,
+                                                                 galaxy.getRegistryService(),
+                                                                 item.getId(),
+                                                                 metadata,
+                                                                 amPanel,
+                                                                 table);
+                    metadata.insert(edit, 1);   
+                }
+                
+            });
+            InlineFlowPanel metadataTitle = createTitleWithLink(title, asHorizontal(showAll, new Label(" "), addMetadata));
+            metadata.add(metadataTitle);
+        } else {
+            metadata.add(createTitleWithLink(title, showAll));
+        }
 
         initializeProperties(item.getProperties());
         
