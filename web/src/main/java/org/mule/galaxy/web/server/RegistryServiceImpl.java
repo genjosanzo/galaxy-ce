@@ -1617,7 +1617,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
     private void deleteProperty(Item item, String propertyName, ApplyTo applyTo, List<Item> items)
-        throws PropertyException, PolicyException, RegistryException {
+        throws PropertyException, PolicyException, RegistryException, AccessException {
         switch (applyTo) {
         case ENTRY:
             item.setProperty(propertyName, null);

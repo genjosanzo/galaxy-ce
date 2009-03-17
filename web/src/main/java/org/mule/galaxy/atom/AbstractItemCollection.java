@@ -536,7 +536,7 @@ public abstract class AbstractItemCollection
         }
     }
     
-    private void updateMetadata(Item av, Element e) throws ResponseContextException, PolicyException {
+    private void updateMetadata(Item av, Element e) throws ResponseContextException, PolicyException, AccessException {
         for (Element propEl : e.getElements()) {
             QName q = propEl.getQName();
             

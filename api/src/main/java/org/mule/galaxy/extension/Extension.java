@@ -7,6 +7,7 @@ import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.type.PropertyDescriptor;
 
 /**
@@ -28,8 +29,9 @@ public interface Extension extends Identifiable {
      * @param entry
      * @param properties
      * @throws PropertyException 
+     * @throws AccessException 
      */
-    void store(Item entry, PropertyDescriptor pd, Object value) throws PolicyException, PropertyException;
+    void store(Item entry, PropertyDescriptor pd, Object value) throws PolicyException, PropertyException, AccessException;
     
     /**
      * Get the value of a property.

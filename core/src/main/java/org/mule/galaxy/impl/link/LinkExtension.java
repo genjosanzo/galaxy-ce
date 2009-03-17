@@ -87,7 +87,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
     }
 
     @Override
-    public void store(Item item, PropertyDescriptor pd, Object value) throws PolicyException {
+    public void store(Item item, PropertyDescriptor pd, Object value) throws PolicyException, AccessException {
         eventManager.fireEvent(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item, name, value));
 
         try {
@@ -124,6 +124,8 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
                 throw new RuntimeException(e);
             } catch (PolicyException e) {
                 throw new RuntimeException(e);
+            } catch (AccessException e) {
+                // we're trying to correct some data here, so don't blow up
             }
             return null;
         }
@@ -174,7 +176,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
             this.item = item;
         }
 
-        public void addLinks(Link l) {
+        public void addLinks(Link l) throws AccessException {
             if (!l.getItem().equals(item)) {
                 throw new IllegalStateException("Item specified must be the item associated with this Links instance.");
             }

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.xml.namespace.QName;
-import javax.xml.transform.TransformerException;
 
 import net.sf.saxon.javax.xml.xquery.XQConnection;
 import net.sf.saxon.javax.xml.xquery.XQDataSource;
@@ -23,6 +22,7 @@ import org.mule.galaxy.XmlContentHandler;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexException;
 import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.Message;
@@ -106,7 +106,9 @@ public class XQueryIndexer extends AbstractIndexer {
             throw new IndexException(e);
         } catch (PolicyException e) {
             throw new IndexException(e);
-	}
+	} catch (AccessException e) {
+            throw new IndexException(e);
+        }
     }
 
 }

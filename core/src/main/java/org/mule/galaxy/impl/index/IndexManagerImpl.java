@@ -47,6 +47,7 @@ import org.mule.galaxy.index.Indexer;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.QueryException;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.util.SecurityUtils;
@@ -174,19 +175,25 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
 
     public void delete(final String id, final boolean removeArtifactMetadata) {
-        execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Index idx = doGet(id, session);
-                
-                doDelete(id, removeArtifactMetadata, session);
-                
-                if (idx.getPropertyDescriptors() != null) {
-                    for (PropertyDescriptor pd : idx.getPropertyDescriptors()) {
-                        typeManager.deletePropertyDescriptor(pd.getId());
+
+        SecurityUtils.doPriveleged(new Runnable() {
+
+            public void run() {
+                execute(new JcrCallback() {
+                    public Object doInJcr(Session session) throws IOException, RepositoryException {
+                        Index idx = doGet(id, session);
+
+                        doDelete(id, removeArtifactMetadata, session);
+                        
+                        if (idx.getPropertyDescriptors() != null) {
+                            for (PropertyDescriptor pd : idx.getPropertyDescriptors()) {
+                                typeManager.deletePropertyDescriptor(pd.getId());
+                            }
+                        }
+                        session.save();
+                        return null;
                     }
-                }
-                session.save();
-                return null;
+                });
             }
         });
     }
@@ -217,7 +224,10 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                     throw new RuntimeException(e);
                 } catch (PolicyException e) {
 		    handleIndexingException(idx, e);
-		}
+		} catch (AccessException e) {
+		    // this should never happen since we're running in priveleged mode
+		    throw new RuntimeException(e);
+                }
             }
             session.save();
         }

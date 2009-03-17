@@ -1,7 +1,6 @@
 package org.mule.galaxy.impl.index;
 
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import org.mule.galaxy.index.IndexException;
 import org.mule.galaxy.index.Indexer;

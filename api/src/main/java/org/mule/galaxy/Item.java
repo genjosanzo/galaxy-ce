@@ -2,7 +2,6 @@ package org.mule.galaxy;
 
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
@@ -35,7 +34,7 @@ public interface Item {
      * @throws PropertyException
      * @throws PolicyException Thrown if this is not a valid value.
      */
-    void setProperty(String name, Object value) throws PropertyException, PolicyException;
+    void setProperty(String name, Object value) throws PropertyException, PolicyException, AccessException;;
 
     /**
      * Set the property value direct - skipping any extensions. Extension.validate() is still called.
@@ -44,7 +43,7 @@ public interface Item {
      * @throws PropertyException
      * @throws PolicyException
      */
-    void setInternalProperty(String name, Object value) throws PropertyException, PolicyException;
+    void setInternalProperty(String name, Object value) throws PropertyException, PolicyException, AccessException;;
     
     Object getProperty(String name);
 

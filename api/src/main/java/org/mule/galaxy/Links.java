@@ -2,6 +2,8 @@ package org.mule.galaxy;
 
 import java.util.Collection;
 
+import org.mule.galaxy.security.AccessException;
+
 /**
  * An interface to query for links. Many different link relationships
  * can be created. To do this create a new PropertyDescriptor with the LinkExtension.
@@ -17,7 +19,7 @@ public interface Links {
 
     Collection<Link> getLinks();
     
-    void addLinks(Link link);
+    void addLinks(Link link) throws AccessException;
 
     void removeLinks(Link... links);
     

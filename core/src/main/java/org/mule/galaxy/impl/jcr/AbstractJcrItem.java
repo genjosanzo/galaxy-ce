@@ -27,6 +27,7 @@ import org.mule.galaxy.event.PropertyChangedEvent;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.DateUtil;
@@ -136,7 +137,7 @@ public abstract class AbstractJcrItem implements Item {
         }
     }
     
-    public void setProperty(String name, Object value) throws PropertyException, PolicyException {
+    public void setProperty(String name, Object value) throws PropertyException, PolicyException, AccessException {
         if (name.contains(" ")) {
                 throw new PropertyException(new Message("SPACE_NOT_ALLOWED", getBundle()));
         }
@@ -152,15 +153,16 @@ public abstract class AbstractJcrItem implements Item {
 	}    
     }
 
-    public void setInternalProperty(String name, Object value) throws PropertyException, PolicyException {
+    public void setInternalProperty(String name, Object value) throws PropertyException, PolicyException, AccessException {
         setInternalProperty(name, value, true);
     }
     
-    private void setInternalProperty(String name, Object value, boolean log) throws PropertyException, PolicyException {
+    private void setInternalProperty(String name, Object value, boolean log) throws PropertyException, PolicyException, AccessException {
         try {
             if (name.contains(" ")) {
                 throw new PropertyException(new Message("SPACE_NOT_ALLOWED", getBundle()));
             }
+            manager.getAccessControlManager().assertAccess(Permission.MODIFY_ARTIFACT, this);
             
             JcrUtil.setProperty(name, value, node);
             

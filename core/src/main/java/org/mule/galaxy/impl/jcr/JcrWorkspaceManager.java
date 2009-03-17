@@ -442,6 +442,8 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                     throw new RuntimeException(e);
                 } catch (PolicyException e) {
                     throw new RuntimeException(e);
+                } catch (AccessException e) {
+                    throw new RuntimeException(e);
                 }
             }
         });
@@ -457,6 +459,8 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                 } catch (PropertyException e) {
                     throw new RuntimeException(e);
                 } catch (PolicyException e) {
+                    throw new RuntimeException(e);
+                } catch (AccessException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -677,6 +681,8 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                     throw new RuntimeException(e);
                 } catch (PolicyException e) {
                     // won't happen
+                    throw new RuntimeException(e);
+                } catch (AccessException e) {
                     throw new RuntimeException(e);
                 }
             }

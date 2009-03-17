@@ -139,6 +139,17 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
             fail("Bad security!");
         } catch (AccessException e) {
         }
+        
+
+        login("admin", "admin");
+        Artifact artifact = importHelloWsdl();
+        
+        login("guest", "guest");
+        try {
+            artifact.setProperty("test", "test");
+            fail("Bad security!");
+        } catch (AccessException e) {
+        }
     }
     
     

@@ -30,6 +30,7 @@ import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.util.Constants;
 import org.mule.galaxy.util.SecurityUtils;
@@ -64,7 +65,7 @@ public class LifecycleExtension extends AbstractExtension implements AtomExtensi
     }
 
     public void store(Item item, PropertyDescriptor pd, Object value)
-            throws PolicyException, PropertyException {
+            throws PolicyException, PropertyException, AccessException {
         Phase phase = (Phase) value;
 
         Object valueToStore;
@@ -138,6 +139,8 @@ public class LifecycleExtension extends AbstractExtension implements AtomExtensi
             throw createArtifactPolicyExceptionResponse(e1);
         } catch (PropertyException e1) {
             throw newErrorMessage(e1.getMessage(), e1.getMessage(), 500);
+        } catch (AccessException e1) {
+            throw newErrorMessage("Unauthorized", "You have insufficient permissions to modify property " + property, 401);
         }
     }
 

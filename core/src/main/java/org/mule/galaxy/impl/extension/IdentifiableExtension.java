@@ -12,6 +12,7 @@ import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.type.PropertyDescriptor;
 
 /**
@@ -53,7 +54,7 @@ public class IdentifiableExtension<T extends Identifiable> extends AbstractExten
     }
 
     public void store(Item entry, PropertyDescriptor pd, Object value) throws PolicyException,
-        PropertyException {
+        PropertyException, AccessException {
         Object storeValue;
         if (value instanceof Collection) {
             ArrayList<String> ids = new ArrayList<String>();
