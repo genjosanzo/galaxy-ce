@@ -118,7 +118,7 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
                 }
             }
         } catch (NotFoundException e) {
-            throw new RuntimeException(e);
+            // this was deleted before we could tie together links... forget about it
         } catch (RegistryException e) {
             throw new RuntimeException(e);
         } catch (AccessException e) {
