@@ -1,6 +1,5 @@
 package org.mule.galaxy.policy;
 
-import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.Phase;
 
 public class PolicyInfo {

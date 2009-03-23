@@ -163,6 +163,7 @@ public abstract class AbstractJcrItem implements Item {
                 throw new PropertyException(new Message("SPACE_NOT_ALLOWED", getBundle()));
             }
             manager.getAccessControlManager().assertAccess(Permission.MODIFY_ARTIFACT, this);
+            Object oldValue = JcrUtil.getProperty(name, node);
             
             JcrUtil.setProperty(name, value, node);
             
@@ -170,6 +171,24 @@ public abstract class AbstractJcrItem implements Item {
                 deleteProperty(name);
             } else {
                 ensureProperty(name);
+            }
+
+            // Check that this is OK with the policies!
+            try {
+                manager.getPolicyManager().approve(this);
+            } catch (PolicyException e) {
+                // Rollback... Don't worry, it wasn't ever really committed as this is all in a transaction
+                JcrUtil.setProperty(name, oldValue, node);
+                
+                if (oldValue == null) {
+                    deleteProperty(name);
+                } else {
+                    ensureProperty(name);
+                }
+                
+                throw e;
+            } catch (RegistryException e) {
+                throw new RuntimeException(e);
             }
             
             if (log) {

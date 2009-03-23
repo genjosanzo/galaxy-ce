@@ -247,6 +247,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
         // Create another version
         InputStream stream = version.getStream();
         assertNotNull(stream);
+        stream.close();
         
         InputStream helloWsdl2 = getResourceAsStream("/wsdl/hello.wsdl");
         
@@ -267,6 +268,8 @@ public class ArtifactTest extends AbstractGalaxyTest {
         stream = newVersion.getStream();
         assertNotNull(stream);
         assertTrue(stream.available() > 0);
+        stream.close();
+        
         assertNotNull(newVersion.getAuthor());
         
         newVersion.setProperty("foo2", "bar");

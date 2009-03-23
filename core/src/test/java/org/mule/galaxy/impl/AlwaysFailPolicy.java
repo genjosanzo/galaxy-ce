@@ -8,7 +8,8 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.Policy;
 
-public class AlwaysFailArtifactPolicy implements Policy {
+public class AlwaysFailPolicy implements Policy {
+
     public String getDescription() {
         return "Faux policy description";
     }

@@ -2,26 +2,28 @@ package org.mule.galaxy.impl;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.EntryResult;
+import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.policy.Policy;
-import org.mule.galaxy.policy.PolicyInfo;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class PolicyManagerTest extends AbstractGalaxyTest {
 
     public void testPolicyEnablementFailureOnWorkspace() throws Exception {
-        AlwaysFailArtifactPolicy failPolicy = new AlwaysFailArtifactPolicy();
+        AlwaysFailPolicy failPolicy = new AlwaysFailPolicy();
         policyManager.addPolicy(failPolicy);
         
         // try lifecycle policies
@@ -211,4 +213,68 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         assertEquals(0, active.size());
     }
 
+    public void testPoliciesAndEntries() throws Exception {
+        AlwaysFailPolicy p = new AlwaysFailPolicy();
+        policyManager.addPolicy(p);
+        Lifecycle lifecycle = lifecycleManager.getDefaultLifecycle();
+        policyManager.setActivePolicies(lifecycle, p);
+        
+        Workspace root = registry.getWorkspaces().iterator().next();
+
+        assertEquals(0, root.getItems().size());
+        
+        try {
+            root.newEntry("MyService", "1.0");
+            fail("There should be a policy exception");
+        } catch (PolicyException e) {
+            Map<Item, List<ApprovalMessage>> failures = e.getPolicyFailures();
+            assertEquals(1, failures.size());
+        }
+        
+        assertEquals(0, root.getItems().size());
+        
+        policyManager.setActivePolicies(lifecycle);
+
+        p = new AlwaysFailPolicy() {
+
+            @Override
+            public Collection<ApprovalMessage> isApproved(Item item) {
+                if (item.getName().contains("2.0")) {
+                    return Arrays.asList(new ApprovalMessage("failed!"));
+                }
+                return Collections.emptyList();
+            }
+            
+        };
+        policyManager.addPolicy(p);
+
+        EntryResult r = root.newEntry("MyService2", "1.0");
+        
+        policyManager.setActivePolicies(lifecycle, p);
+
+        try {
+            r.getEntry().newVersion("2.0");
+            fail("There should be a policy exception");
+        } catch (PolicyException e) {
+            Map<Item, List<ApprovalMessage>> failures = e.getPolicyFailures();
+            assertEquals(1, failures.size());
+        }
+        policyManager.setActivePolicies(lifecycle);
+
+        EntryVersion v = r.getEntryVersion();
+
+        Phase developed = lifecycle.getPhase("Developed");
+
+        p = new AlwaysFailPolicy();
+        policyManager.addPolicy(p);
+        policyManager.setActivePolicies(Arrays.asList(developed), p);
+
+        try {
+            v.setProperty(Registry.PRIMARY_LIFECYCLE, developed);
+            fail("There should be a policy exception");
+        } catch (PolicyException e) {
+            Map<Item, List<ApprovalMessage>> failures = e.getPolicyFailures();
+            assertEquals(1, failures.size());
+        }
+    }
 }

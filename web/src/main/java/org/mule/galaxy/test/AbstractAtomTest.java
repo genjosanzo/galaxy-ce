@@ -49,6 +49,7 @@ import org.apache.abdera.protocol.server.Provider;
 import org.apache.abdera.writer.Writer;
 import org.apache.abdera.writer.WriterFactory;
 import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.core.fs.local.FileUtil;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.mule.galaxy.Registry;
@@ -73,6 +74,10 @@ public abstract class AbstractAtomTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         System.setProperty("galaxy.data", "./target/galaxy-data");
+        deleteIfExists(new File("target/galaxy-data/repository"));
+        deleteIfExists(new File("target/galaxy-data/version"));
+        deleteIfExists(new File("target/galaxy-data/workspaces"));
+        
         super.setUp();
         initializeJetty();
         
@@ -80,6 +85,12 @@ public abstract class AbstractAtomTest extends TestCase {
         sessionFactory = (SessionFactory) getApplicationContext().getBean("sessionFactory");
     }
 
+    private void deleteIfExists(File file) throws IOException {
+        if (file.exists()) {
+            FileUtil.delete(file);
+        }
+    }
+    
     protected InputStream getResourceAsStream(String name) {
 	return getClass().getResourceAsStream(name);
     }

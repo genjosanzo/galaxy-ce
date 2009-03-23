@@ -38,6 +38,7 @@ import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.ArtifactTypeDao;
+import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.AttachedWorkspace;
 import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.DuplicateItemException;
@@ -426,7 +427,7 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                     
                     copyProperties(previousNode, versionNode);
 
-                    EntryResult result = approve(session, artifact, previousLatest, next, user);
+                    EntryResult result = approve(session, artifact, next, user);
 
                     // fire the event
                     final EntryVersion entryVersion = result.getEntryVersion();
@@ -665,7 +666,7 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                         log.debug("Created artifact " + artifact.getId());
                     }
 
-                    EntryResult result = approve(session, artifact, null, jcrVersion, user);
+                    EntryResult result = approve(session, artifact, jcrVersion, user);
 
                     // fire the event
                     EntryCreatedEvent event = new EntryCreatedEvent(result.getEntry());
@@ -834,26 +835,29 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                     log.debug("Created artifact " + entry.getId());
                 }
 
-                Map<Item, List<ApprovalMessage>> approvals = approve(version);
+                try {
+                    Map<Item, List<ApprovalMessage>> approvals = approve(version);
+                    
+                    session.save();
 
-                // save this so the indexer will work
-                session.save();
+                    // fire the event
+                    EntryResult result = new EntryResult(entry, version, approvals);
+                    EntryCreatedEvent event = new EntryCreatedEvent(result.getEntry());
+                    event.setUser(SecurityUtils.getCurrentUser());
+                    eventManager.fireEvent(event);
 
-                // fire the event
-                EntryResult result = new EntryResult(entry, version, approvals);
-                EntryCreatedEvent event = new EntryCreatedEvent(result.getEntry());
-                event.setUser(SecurityUtils.getCurrentUser());
-                eventManager.fireEvent(event);
-
-                return result;
+                    return result;
+                } catch (RuntimeException e) {
+                    entryNode.remove();
+                    throw e;
+                }
             }
         });
     }
 
     private EntryResult approve(Session session, 
                                 Artifact artifact, 
-                                JcrVersion previous, 
-                                JcrVersion next,
+                                JcrEntryVersion next, 
                                 User user)
         throws RegistryException, RepositoryException {
         Map<Item, List<ApprovalMessage>> approvals = approve(next);
@@ -862,7 +866,9 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
         session.save();
         
         // index in a separate thread
-        indexManager.index(next);
+        if (next instanceof ArtifactVersion) {
+            indexManager.index((ArtifactVersion)next);
+        }
         
         // save the "we're indexing" flag
         session.save();

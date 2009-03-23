@@ -1,16 +1,13 @@
 package org.mule.galaxy.test;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
 
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
 
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
@@ -19,6 +16,7 @@ import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.apache.jackrabbit.core.fs.local.FileUtil;
 import org.mule.galaxy.Artifact;
 import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.EntryResult;
@@ -46,6 +44,7 @@ import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.view.ArtifactViewManager;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
@@ -183,28 +182,6 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     protected Phase getPhase(Item item) {
         return (Phase) item.getProperty(Registry.PRIMARY_LIFECYCLE);
     }
-    
-    private void clearJcrRepository() {
-        try {
-            Session session = repository.login(new SimpleCredentials("username", "password".toCharArray()));
-
-            Node node = session.getRootNode();
-//            JcrUtil.dump(node);
-//            JcrUtil.dump(node.getNode("links"));
-            for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
-                Node child = itr.nextNode();
-                if (!child.getName().startsWith("jcr:")) {
-                    child.remove();
-                }
-            }
-            session.save();
-            session.logout();
-        } catch (PathNotFoundException t) {
-            // ignore
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
-    }
 
     @Override
     protected String[] getConfigLocations() {
@@ -215,6 +192,20 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
             "classpath*:/META-INF/galaxy-applicationContext.xml",
             "/META-INF/applicationContext-test.xml"
         };
+    }
+
+    @Override
+    protected ConfigurableApplicationContext loadContext(Object key) throws Exception {
+        deleteIfExists(new File("target/galaxy-data/repository"));
+        deleteIfExists(new File("target/galaxy-data/version"));
+        deleteIfExists(new File("target/galaxy-data/workspaces"));
+        return super.loadContext(key);
+    }
+
+    private void deleteIfExists(File file) throws IOException {
+        if (file.exists()) {
+            FileUtil.delete(file);
+        }
     }
 
     @Override  
@@ -246,7 +237,6 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         ((IndexManagerImpl) applicationContext.getBean("indexManagerTarget")).destroy();
 
         if (repository != null) {
-            clearJcrRepository();
             setDirty();
         }
 

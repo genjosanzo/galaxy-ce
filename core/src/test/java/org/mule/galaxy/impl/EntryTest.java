@@ -87,4 +87,5 @@ public class EntryTest extends AbstractGalaxyTest {
         
         assertNotNull(entry);
     }
+
 }

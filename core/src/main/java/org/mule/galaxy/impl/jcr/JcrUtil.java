@@ -334,9 +334,9 @@ public class JcrUtil {
         try {
             String typeProp = name + TYPE_SUFFIX;
             String type = getStringOrNull(node, typeProp);
+            Property property = node.getProperty(name);
             
-            if (type == null) {
-                Property property = node.getProperty(name);
+            if (type == null && !property.getDefinition().isMultiple()) {
                 
                 Value val = property.getValue();
                 if (val == null) {
@@ -357,7 +357,7 @@ public class JcrUtil {
                 default:
                     return null;
                 }
-            } else if (type.equals(Map.class.getName())) {
+            } else if (Map.class.getName().equals(type)) {
                 Property keys = node.getProperty(name + ".keys");
                 Property values = node.getProperty(name + ".values");
                 
@@ -374,7 +374,7 @@ public class JcrUtil {
             }
             
             Collection<Object> values = null;
-            if (type.equals(Set.class.getName())) {
+            if (Set.class.getName().equals(type)) {
                 values = new HashSet<Object>();
             } else {
                 values = new ArrayList<Object>();
@@ -386,14 +386,11 @@ public class JcrUtil {
                 componentCls = JcrUtil.class.getClassLoader().loadClass(component);
             }
            
-            Property prop = node.getProperty(name);
-            for (Value val : prop.getValues()) {
+            for (Value val : property.getValues()) {
                 switch (val.getType()) {
                 case PropertyType.STRING:
-                    if (componentCls != null) {
-                        if (componentCls.equals(QName.class)) {
-                            values.add(QName.valueOf(val.getString()));
-                        }
+                    if (componentCls != null && componentCls.equals(QName.class)) {
+                        values.add(QName.valueOf(val.getString()));
                     } else {
                         values.add(val.getString());
                     }
