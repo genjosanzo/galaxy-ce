@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-parent</artifactId>
-    <version>1.5.2</version>
+    <version>1.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-web-standalone</artifactId>
-  <version>1.5.2</version>
+  <version>1.6-SNAPSHOT</version>
   <name>Galaxy Web Application Standalone</name>
 
   <dependencies>
