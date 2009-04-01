@@ -334,9 +334,12 @@ public class JcrUtil {
         try {
             String typeProp = name + TYPE_SUFFIX;
             String type = getStringOrNull(node, typeProp);
-            Property property = node.getProperty(name);
             
-            if (type == null && !property.getDefinition().isMultiple()) {
+            if (type == null) {
+                Property property = node.getProperty(name);
+                if (property == null || property.getDefinition().isMultiple()) {
+                    return null;
+                }
                 
                 Value val = property.getValue();
                 if (val == null) {
@@ -371,6 +374,11 @@ public class JcrUtil {
                 }
                 
                 return map;
+            }
+
+            Property property = node.getProperty(name);
+            if (property == null) {
+                return null;
             }
             
             Collection<Object> values = null;
