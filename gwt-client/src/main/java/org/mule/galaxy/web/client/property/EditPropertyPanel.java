@@ -12,11 +12,13 @@ import java.io.Serializable;
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.admin.PolicyPanel;
 import org.mule.galaxy.web.client.util.ConfirmDialog;
 import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WPolicyException;
 import org.mule.galaxy.web.rpc.WProperty;
 
 /**
@@ -36,13 +38,14 @@ public class EditPropertyPanel extends AbstractComposite {
     protected ClickListener deleteListener;
     protected ClickListener cancelListener;
 
-    public EditPropertyPanel(AbstractPropertyRenderer renderer) {
+    public EditPropertyPanel(AbstractPropertyRenderer renderer, ErrorPanel errorPanel) {
         super();
         
         this.panel = new InlineFlowPanel();
 
         initWidget(panel);
         this.renderer = renderer;
+        this.errorPanel = errorPanel;
     }
 
     public void initialize() {
@@ -180,7 +183,13 @@ public class EditPropertyPanel extends AbstractComposite {
         AbstractCallback saveCallback = new AbstractCallback(errorPanel) {
 
             public void onFailure(Throwable caught) {
-                onSaveFailure(caught, this);
+                if (caught instanceof WPolicyException) {
+                    WPolicyException pe = (WPolicyException) caught;
+
+                    PolicyPanel.handlePolicyFailure(galaxy, pe);
+                } else {
+                    onSaveFailure(caught, this);
+                }
             }
 
             public void onSuccess(Object response) {

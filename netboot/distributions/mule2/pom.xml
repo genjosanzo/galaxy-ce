@@ -7,6 +7,7 @@
         <version>1.5.2</version>
     </parent>
     <artifactId>mule2-netboot-distribution</artifactId>
+  <version>1.5.2</version>
     <packaging>pom</packaging>
     <name>Mule 2 NetBoot Distribution</name>
 
@@ -95,13 +96,13 @@
         <dependency>
             <groupId>org.mule.galaxy.netboot</groupId>
             <artifactId>mule-netboot-support</artifactId>
-            <version>${version}</version>
+            <version>1.5.2</version>
         </dependency>
 
         <dependency>
             <groupId>org.mule.galaxy.netboot</groupId>
             <artifactId>mule-netboot-launcher</artifactId>
-            <version>${version}</version>
+            <version>1.5.2</version>
         </dependency>
 
         <dependency>

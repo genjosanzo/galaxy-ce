@@ -28,7 +28,7 @@
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-web</artifactId>
-      <version>${version}</version>
+      <version>1.5.2</version>
       <optional>true</optional>
     </dependency>
 

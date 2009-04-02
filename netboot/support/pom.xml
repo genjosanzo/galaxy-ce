@@ -109,14 +109,14 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-web</artifactId>
-            <version>${version}</version>
+            <version>1.5.2</version>
             <scope>test</scope>
         </dependency>
         
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-web</artifactId>
-            <version>${version}</version>
+            <version>1.5.2</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>

@@ -15,22 +15,22 @@
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-integration-cxf</artifactId>
-      <version>${version}</version>
+      <version>1.5.2</version>
     </dependency>
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-client-mule1</artifactId>
-      <version>${version}</version>
+      <version>1.5.2</version>
     </dependency>
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-client-mule2</artifactId>
-      <version>${version}</version>
+      <version>1.5.2</version>
     </dependency>
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-integration-spring</artifactId>
-      <version>${version}</version>
+      <version>1.5.2</version>
     </dependency>
   </dependencies>
   

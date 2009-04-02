@@ -1461,7 +1461,7 @@ public class RegistryServiceImpl implements RegistryService {
     public void setProperty(String query,
                             String propertyName, 
                             Serializable propertyValue, ApplyTo applyTo)
-        throws RPCException, ItemNotFoundException {
+        throws RPCException, ItemNotFoundException, WPolicyException {
         try {
             PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName);
             Extension ext = pd != null ? pd.getExtension() : null;
@@ -1488,7 +1488,7 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
         } catch (PolicyException e) {
-            throw new RPCException(e.getMessage());
+            throw toWeb(e);
         }
     }
 
@@ -1496,7 +1496,7 @@ public class RegistryServiceImpl implements RegistryService {
                             String propertyName, 
                             Serializable propertyValue, 
                             ApplyTo applyTo)
-        throws RPCException, ItemNotFoundException {
+        throws RPCException, ItemNotFoundException, WPolicyException {
         try {
             PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName);
             Extension ext = pd != null ? pd.getExtension() : null;
@@ -1523,7 +1523,7 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
         } catch (PolicyException e) {
-            throw new RPCException(e.getMessage());
+            throw toWeb(e);
         }
     }
     
