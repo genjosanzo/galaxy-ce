@@ -133,7 +133,7 @@ public class NewPropertyPanel extends Composite {
         AbstractPropertyRenderer renderer = 
             galaxy.getPropertyPanelFactory().createRenderer(pd.getExtension(), pd.isMultiValued());
         
-        EditPropertyPanel render = new EditPropertyPanel(renderer);
+        EditPropertyPanel render = new EditPropertyPanel(renderer, errorPanel);
         property = new WProperty(pd.getName(), pd.getDescription(), null, pd.getExtension(), false);
         property.setMultiValued(pd.isMultiValued());
         render.setProperty(property);
