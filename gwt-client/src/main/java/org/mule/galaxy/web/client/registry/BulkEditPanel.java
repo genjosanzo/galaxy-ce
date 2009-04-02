@@ -43,11 +43,13 @@ import java.util.Map;
 
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.admin.PolicyPanel;
 import org.mule.galaxy.web.client.property.AbstractPropertyRenderer;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.SecurityService;
 import org.mule.galaxy.web.rpc.WPermission;
+import org.mule.galaxy.web.rpc.WPolicyException;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 import org.mule.galaxy.web.rpc.RegistryService.ApplyTo;
 
@@ -449,7 +451,14 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
             @Override
             public void onFailure(Throwable caught) {
                 setEnabled(true);
-                super.onFailure(caught);
+                
+                if (caught instanceof WPolicyException) {
+                    WPolicyException pe = (WPolicyException) caught;
+
+                    PolicyPanel.handlePolicyFailure(galaxy, pe);
+                } else {
+                    super.onFailure(caught);
+                }
             }
 
             public void onSuccess(Object arg0) {
@@ -497,7 +506,14 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
         AbstractCallback callback = new AbstractCallback(this) {
             public void onFailure(Throwable caught) {
                 setEnabled(true);
-                super.onFailure(caught);
+
+                if (caught instanceof WPolicyException) {
+                    WPolicyException pe = (WPolicyException) caught;
+
+                    PolicyPanel.handlePolicyFailure(galaxy, pe);
+                } else {
+                    super.onFailure(caught);
+                }
             }
 
             public void onSuccess(Object arg0) {
