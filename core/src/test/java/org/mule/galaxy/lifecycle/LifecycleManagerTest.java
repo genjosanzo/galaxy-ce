@@ -10,8 +10,8 @@ import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.Workspace;
 import org.mule.galaxy.event.DefaultEvents;
-import org.mule.galaxy.event.LifecycleTransitionEvent;
 import org.mule.galaxy.event.EventManager;
+import org.mule.galaxy.event.LifecycleTransitionEvent;
 import org.mule.galaxy.event.annotation.BindToEvent;
 import org.mule.galaxy.event.annotation.OnEvent;
 import org.mule.galaxy.policy.PolicyException;
@@ -126,6 +126,29 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         l.addPhase(p);
         
         lifecycleManager.save(l);
+    }
+
+    public void testWeirdNames() throws Exception {    
+        Lifecycle l = new Lifecycle();
+        l.setName("Foo Bar");
+        
+        Phase p = new Phase(l);
+        p.setName("test");
+        
+        l.setInitialPhase(p);
+        l.addPhase(p);
+        
+        lifecycleManager.save(l);
+        
+        l = lifecycleManager.getLifecycleById(l.getId());
+        assertEquals("Foo Bar", l.getName());
+
+        l.setName("asdf!@#$%^&*()");
+        lifecycleManager.save(l);
+        
+        l = lifecycleManager.getLifecycle(l.getName());
+        assertEquals("asdf!@#$%^&*()", l.getName());
+        
     }
     
     public void testSave() throws Exception {    

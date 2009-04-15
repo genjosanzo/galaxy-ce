@@ -82,7 +82,7 @@ public class RegistryInitializer {
         } else {
             String versionStr = JcrUtil.getStringOrNull(workspaces, REPOSITORY_LAYOUT_VERSION);
             final int version = Integer.parseInt(versionStr);
-            if (version < 5) {
+            if (version < 6) {
                 SecurityUtils.doPriveleged(new Runnable() {
 
                     public void run() {
@@ -97,7 +97,7 @@ public class RegistryInitializer {
                     
                 });
             }
-            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "5");
+            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "6");
         }
         
         session.save();

@@ -1947,8 +1947,13 @@ public class RegistryServiceImpl implements RegistryService {
             Item i = entry.getKey();
             List<ApprovalMessage> approvals = entry.getValue();
 
-            Artifact a = (Artifact) i.getParent();
-            ItemRenderer view = rendererManager.getRenderer(a.getDocumentType());
+            Entry a = (Entry) i.getParent();
+            ItemRenderer view = null;
+            
+            if (a instanceof Artifact) {
+                view = rendererManager.getRenderer(((Artifact) a).getDocumentType());
+            }
+            
             if (view == null) {
                 view = rendererManager.getDefaultRenderer();
             }
@@ -1962,8 +1967,7 @@ public class RegistryServiceImpl implements RegistryService {
 
             failures.put(info, wapprovals);
         }
-        WPolicyException e2 = new WPolicyException(failures);
-        return e2;
+        return new WPolicyException(failures);
     }
 
     private List<Policy> getArtifactPolicies(Collection ids) {

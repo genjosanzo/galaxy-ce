@@ -304,7 +304,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
     public Lifecycle build(Node node, Session session) throws RepositoryException {
         Lifecycle l = new Lifecycle();
         l.setId(node.getUUID());
-        l.setName(node.getName());
+        l.setName(ISO9075.decode(node.getName()));
         l.setPhases(new HashMap<String, Phase>());
 
         for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
@@ -369,7 +369,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
 
     @Override
     protected String generateNodeName(Lifecycle t) {
-        return t.getName();
+        return ISO9075.encode(t.getName());
     }
 
     @Override

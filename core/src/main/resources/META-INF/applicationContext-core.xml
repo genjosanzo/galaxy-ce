@@ -185,6 +185,9 @@
                 <property name="sessionFactory" ref="sessionFactory"/>
                 <property name="registry" ref="registry"/>
             </bean>
+            <bean class="org.mule.galaxy.impl.upgrade.V153Upgrader">
+                <property name="sessionFactory" ref="sessionFactory"/>
+            </bean>
         </list>
     </property>
   </bean>
