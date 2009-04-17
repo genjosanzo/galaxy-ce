@@ -214,6 +214,36 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         
     }
     
+    public void testDeleteAndFallback() throws Exception {    
+        Lifecycle newLc = new Lifecycle();
+        newLc.setName("another");
+        
+        Phase phase = new Phase(newLc);
+        phase.setName("p1");
+        newLc.setInitialPhase(phase);
+        newLc.addPhase(phase);
+        
+        lifecycleManager.save(newLc);
+
+        Collection<Lifecycle> lcs = lifecycleManager.getLifecycles();
+        assertEquals(2, lcs.size());
+        
+        Artifact a = importHelloWsdl();
+        a.setProperty(Registry.PRIMARY_LIFECYCLE, phase);
+        registry.save(a);
+        
+        lifecycleManager.delete(newLc.getId(), lifecycleManager.getDefaultLifecycle().getId());
+        
+        a = (Artifact) registry.getItemById(a.getId());
+        
+        Phase fallback = getPhase(a.getDefaultOrLastVersion());
+        assertEquals(lifecycleManager.getDefaultLifecycle().getInitialPhase().getId(), fallback.getId());
+        
+        fallback = getPhase(a);
+        assertEquals(lifecycleManager.getDefaultLifecycle().getInitialPhase().getId(), fallback.getId());
+        
+    }
+    
     public void testWorkspaceInteraction() throws Exception {
         Lifecycle newLc = new Lifecycle();
         newLc.setName("another");

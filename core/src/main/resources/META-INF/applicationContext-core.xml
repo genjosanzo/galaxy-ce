@@ -73,7 +73,7 @@
         class="org.mule.galaxy.impl.lifecycle.LifecycleManagerImpl" 
         init-method="initialize">
     <property name="sessionFactory" ref="sessionFactory" />
-
+    <property name="typeManager" ref="typeManager" />
     <property name="eventManager" ref="eventManager" />
   </bean>
         

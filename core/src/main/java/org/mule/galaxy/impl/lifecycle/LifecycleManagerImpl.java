@@ -36,6 +36,8 @@ import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.type.PropertyDescriptor;
+import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.Message;
 import org.springframework.beans.BeansException;
@@ -55,7 +57,8 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
     private PolicyManager policyManager;
     private ApplicationContext context;
     private EventManager eventManager;
-
+    private TypeManager typeManager;
+    
     public LifecycleManagerImpl() throws Exception {
         super(Lifecycle.class, "lifecycles", false);
     }
@@ -144,22 +147,25 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
                 Phase p = fallbackLifecycle.getInitialPhase();
 
                 // update all the artifacts using this lifecycle
-                NodeIterator nodes = getEntryVersionsInLifecycle(lifecycle.getId(), session);
-
-                while (nodes.hasNext()) {
-                    Node n = nodes.nextNode();
-
-                    n.setProperty(JcrVersion.LIFECYCLE, fallbackLifecycle.getId());
-                    n.setProperty(JcrVersion.PHASE, p.getId());
-                }
-
-                // switch the default lifecycle for workspaces
-                nodes = getWorkspacesInLifecycle(lifecycleId, session);
-
-                while (nodes.hasNext()) {
-                    Node n = nodes.nextNode();
-
-                    n.setProperty(JcrVersion.LIFECYCLE, fallbackLifecycle.getId());
+                for (PropertyDescriptor pd : typeManager.getPropertyDescriptorsForExtension("lifecycleExtension")) {
+                    NodeIterator nodes = getItemsInLifecycle(lifecycle.getId(), 
+                                                             pd.getProperty(),
+                                                             session);
+    
+                    while (nodes.hasNext()) {
+                        Node n = nodes.nextNode();
+    System.out.println("seting fallback to " + p.getName());
+                        n.setProperty(pd.getProperty(), new String[] { fallbackLifecycle.getId(), p.getId()});
+                    }
+    
+                    // switch the default lifecycle for workspaces
+                    nodes = getWorkspacesInLifecycle(lifecycleId, session);
+    
+                    while (nodes.hasNext()) {
+                        Node n = nodes.nextNode();
+    
+                        n.setProperty(JcrVersion.LIFECYCLE, fallbackLifecycle.getId());
+                    }
                 }
 
                 // technically we should clean up the policy manager too
@@ -473,17 +479,16 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
         this.context = applicationContext;
     }
 
-    private NodeIterator getEntryVersionsInLifecycle(final String lifecycleId, Session session)
+    private NodeIterator getItemsInLifecycle(final String lifecycleId, final String property, Session session)
             throws RepositoryException, InvalidQueryException {
         QueryManager qm = getQueryManager(session);
         javax.jcr.query.Query query =
-                qm.createQuery("//element(*, galaxy:artifactVersion)[@lifecycle = '" + lifecycleId + "']",
+                qm.createQuery("/jcr:root/workspaces//*[@" + property + " = '" + lifecycleId + "']",
                                javax.jcr.query.Query.XPATH);
 
         QueryResult qr = query.execute();
 
-        NodeIterator nodes = qr.getNodes();
-        return nodes;
+        return qr.getNodes();
     }
 
 
@@ -525,4 +530,9 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
     public EventManager getEventManager() {
         return eventManager;
     }
+
+    public void setTypeManager(TypeManager typeManager) {
+        this.typeManager = typeManager;
+    }
+    
 }
