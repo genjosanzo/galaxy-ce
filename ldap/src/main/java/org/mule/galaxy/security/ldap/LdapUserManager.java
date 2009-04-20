@@ -44,6 +44,7 @@ public class LdapUserManager
     private LdapTemplate ldapTemplate;
     private InitialDirContextFactory initialDirContextFactory;
     private PersisterManager persisterManager;
+    private boolean manageable;
     
     public void initialize() throws Exception {
         persisterManager.getPersisters().put(User.class.getName(), new DaoPersister(this));
@@ -164,6 +165,14 @@ public class LdapUserManager
 
     public void setUserMapper(LdapEntryMapper userMapper) {
         this.userMapper = userMapper;
+    }
+
+    public boolean isManageable() {
+        return manageable;
+    }
+
+    public void setManageable(boolean manageable) {
+        this.manageable = manageable;
     }
 
 }

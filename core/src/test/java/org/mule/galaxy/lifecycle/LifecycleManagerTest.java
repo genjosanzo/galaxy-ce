@@ -210,8 +210,6 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         } catch (DuplicateItemException e) {
             // this is expected
         }
-        
-        
     }
     
     public void testDeleteAndFallback() throws Exception {    

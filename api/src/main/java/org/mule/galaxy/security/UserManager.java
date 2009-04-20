@@ -14,4 +14,10 @@ public interface UserManager extends Dao<User> {
     void setPassword(User user, String password);
 
     User getByUsername(String string) throws NotFoundException;
+    
+    /**
+     * Whether or not this UserManager can be managed from the user interface.
+     * @return
+     */
+    boolean isManageable();
 }

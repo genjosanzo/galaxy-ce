@@ -378,6 +378,7 @@ public class SecurityServiceImpl implements SecurityService {
             if (permissionType == SecurityService.GLOBAL_PERMISSIONS
                 || (permissionType == SecurityService.ARTIFACT_PERMISSIONS && SecurityUtils.appliesTo(p, Artifact.class))
                 || (permissionType == SecurityService.WORKSPACE_PERMISSIONS && SecurityUtils.appliesTo(p, Workspace.class))) {
+
                 wperms.add(new WPermission(p.toString(), p.getDescription()));
             }
         }

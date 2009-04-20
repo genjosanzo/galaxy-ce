@@ -2222,7 +2222,10 @@ public class RegistryServiceImpl implements RegistryService {
         List<String> perms = new ArrayList<String>();
 
         for (Permission p : accessControlManager.getGrantedPermissions(user)) {
-            perms.add(p.toString());
+            if ((p.equals(Permission.MANAGE_USERS) && userManager.isManageable())
+                || !p.equals(Permission.MANAGE_USERS)) {
+                perms.add(p.toString());
+            }
         }
         w.setPermissions(perms);
 
