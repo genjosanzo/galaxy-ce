@@ -4,10 +4,10 @@
     <parent>
         <groupId>org.mule.galaxy.netboot</groupId>
         <artifactId>netboot-distributions</artifactId>
-        <version>1.5.3</version>
+        <version>1.6-SNAPSHOT</version>
     </parent>
     <artifactId>mule2-netboot-distribution</artifactId>
-  <version>1.5.3</version>
+  <version>1.6-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Mule 2 NetBoot Distribution</name>
 
@@ -96,13 +96,13 @@
         <dependency>
             <groupId>org.mule.galaxy.netboot</groupId>
             <artifactId>mule-netboot-support</artifactId>
-            <version>1.5.3</version>
+            <version>1.6-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.mule.galaxy.netboot</groupId>
             <artifactId>mule-netboot-launcher</artifactId>
-            <version>1.5.3</version>
+            <version>1.6-SNAPSHOT</version>
         </dependency>
 
         <dependency>

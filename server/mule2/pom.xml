@@ -2,12 +2,12 @@
     <parent>
         <groupId>org.mule.galaxy</groupId>
         <artifactId>galaxy-parent</artifactId>
-        <version>1.5.3</version>
+        <version>1.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-server-mule2</artifactId>
-  <version>1.5.3</version>
+  <version>1.6-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Galaxy Server Mule 2 Support</name>
 
