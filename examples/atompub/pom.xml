@@ -2,12 +2,12 @@
     <parent>
         <groupId>org.mule.galaxy</groupId>
         <artifactId>galaxy-examples-parent</artifactId>
-        <version>1.6-SNAPSHOT</version>
+        <version>1.5.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-example-atompub</artifactId>
-    <version>1.6-SNAPSHOT</version>
+    <version>1.5.3</version>
     <name>Example: AtomPub</name>
     <description>
       Example AtomPub requests to send to the server.
