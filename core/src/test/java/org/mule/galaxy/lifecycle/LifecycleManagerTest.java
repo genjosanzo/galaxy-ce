@@ -3,14 +3,11 @@ package org.mule.galaxy.lifecycle;
 import java.util.Collection;
 import java.util.Set;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
-import org.mule.galaxy.Workspace;
 import org.mule.galaxy.event.DefaultEvents;
-import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.event.LifecycleTransitionEvent;
 import org.mule.galaxy.event.annotation.BindToEvent;
 import org.mule.galaxy.event.annotation.OnEvent;
@@ -51,8 +48,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         Phase created = l.getInitialPhase();
         Phase dev = created.getNextPhases().iterator().next();
         
-        Artifact artifact = importHelloWsdl();
-        ArtifactVersion version = (ArtifactVersion) artifact.getDefaultOrLastVersion();
+        Item version = importHelloWsdl();
         assertEquals(created, getPhase(version));
         
         assertFalse(lifecycleManager.isTransitionAllowed(version, Registry.PRIMARY_LIFECYCLE, created));
@@ -165,13 +161,13 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         Lifecycle l2 = lifecycleManager.getLifecycle("test");
         assertNotNull(l2);
         
-        Artifact a = importHelloWsdl();
+        Item a = importHelloWsdl();
         
         l.setName("test2");
         lifecycleManager.save(l);
         
-        a = (Artifact) registry.getItemById(a.getId());
-        assertEquals(l, getPhase(a.getDefaultOrLastVersion()).getLifecycle());
+        a = registry.getItemById(a.getId());
+        assertEquals(l, getPhase(a).getLifecycle());
         
         try {
             lifecycleManager.delete(l.getId(), null);
@@ -227,26 +223,26 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         
         assertNotNull(newLc.getId());
         
-        Workspace w = registry.getWorkspaces().iterator().next();
+        Item w = registry.getItems().iterator().next();
         w.setDefaultLifecycle(newLc);
         registry.save(w);
         
-        Workspace w2 = (Workspace) registry.getItemByPath(w.getPath());
+        Item w2 = (Item) registry.getItemByPath(w.getPath());
         assertEquals(newLc.getName(), w2.getDefaultLifecycle().getName());
     }
     
     public void testPhaseChanges() throws Exception {
         Lifecycle l = lifecycleManager.getDefaultLifecycle();
         
-        Artifact artifact = importHelloWsdl();
+        Item artifact = importHelloWsdl();
         
         Phase p1 = l.getInitialPhase();
         p1.setName("new name");
         
         lifecycleManager.save(l);
         
-        artifact = (Artifact) registry.getItemById(artifact.getId());
-        assertEquals(p1, getPhase(artifact.getDefaultOrLastVersion()));
+        artifact = registry.getItemById(artifact.getId());
+        assertEquals(p1, getPhase(artifact));
         
         Phase p2 = p1.getNextPhases().iterator().next();
         

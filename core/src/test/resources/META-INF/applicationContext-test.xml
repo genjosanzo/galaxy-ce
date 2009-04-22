@@ -22,7 +22,6 @@
     <bean id="indexManagerTarget" class="org.mule.galaxy.impl.index.IndexManagerImpl"
           init-method="initialize" destroy-method="destroy">
         <property name="activityManager" ref="activityManager"/>
-        <property name="contentService" ref="contentService"/>
         <property name="sessionFactory" ref="sessionFactory"/>
         <property name="typeManager" ref="typeManager"/>
         <property name="indexArtifactsAsynchronously" value="false"/>
@@ -33,6 +32,5 @@
     <bean id="dummyWorkspaceManagerFactory" class="org.mule.galaxy.impl.DummyWorkspaceManagerFactory"/>
 
     <bean id="quartzCleaner" class="org.mule.galaxy.impl.QuartzCleaner" destroy-method="clean">
-        <property name="scheduler" ref="scheduler"/>
     </bean>
 </beans>

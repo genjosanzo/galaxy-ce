@@ -11,7 +11,7 @@ import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.collab.Comment;
 import org.mule.galaxy.collab.CommentManager;
-import org.mule.galaxy.event.EntryCommentCreatedEvent;
+import org.mule.galaxy.event.CommentCreatedEvent;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.util.SecurityUtils;
@@ -74,7 +74,7 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
             parent = parent.getParent();
             item = parent.getItem();
         }
-        EntryCommentCreatedEvent event = new EntryCommentCreatedEvent(item, c);
+        CommentCreatedEvent event = new CommentCreatedEvent(item, c);
         event.setUser(SecurityUtils.getCurrentUser());
         eventManager.fireEvent(event);
     }

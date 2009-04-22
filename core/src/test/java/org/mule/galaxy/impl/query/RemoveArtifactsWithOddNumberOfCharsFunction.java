@@ -1,8 +1,5 @@
 package org.mule.galaxy.impl.query;
 
-import java.util.Iterator;
-import java.util.Set;
-
 import org.mule.galaxy.Item;
 import org.mule.galaxy.query.AbstractFunction;
 

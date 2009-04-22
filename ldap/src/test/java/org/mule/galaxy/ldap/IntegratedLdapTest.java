@@ -14,9 +14,7 @@ import org.acegisecurity.ldap.LdapCallback;
 import org.acegisecurity.ldap.LdapTemplate;
 import org.apache.directory.server.ldap.LdapService;
 import org.apache.xbean.spring.context.ClassPathXmlApplicationContext;
-import org.mule.galaxy.Artifact;
 import org.mule.galaxy.Item;
-import org.mule.galaxy.Workspace;
 import org.mule.galaxy.collab.Comment;
 import org.mule.galaxy.security.Group;
 import org.mule.galaxy.security.User;
@@ -54,10 +52,10 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
         assertNull(user.getEmail());
         assertEquals("system administrator", user.getName());
 
-        Artifact a = importHelloWsdl();
+        Item a = importHelloWsdl();
         
         // do our perms work?
-        Workspace w = registry.getWorkspaces().iterator().next();
+        Item w = registry.getItems().iterator().next();
         Collection<Item> artifacts = w.getItems();
         
         assertEquals(1, artifacts.size());

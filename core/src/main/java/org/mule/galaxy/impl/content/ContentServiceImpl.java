@@ -7,9 +7,9 @@ import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import javax.xml.namespace.QName;
 
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.ContentService;
-import org.mule.galaxy.XmlContentHandler;
+import org.mule.galaxy.artifact.ContentHandler;
+import org.mule.galaxy.artifact.ContentService;
+import org.mule.galaxy.artifact.XmlContentHandler;
 
 public class ContentServiceImpl implements ContentService {
     private Collection<ContentHandler> contentHandlers;

@@ -60,7 +60,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
     
     @Override
     public boolean isMultivalueSupported() {
-        return false;
+        return true;
     }
 
     private void add(String property, String name, String inverse) {
@@ -91,7 +91,10 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
         eventManager.fireEvent(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item, name, value));
 
         try {
-            if (value instanceof Collection) {
+            if (!pd.isMultivalued()) {
+                ((LinkDao) dao).deleteLinks(item, pd.getProperty());
+                new LinksImpl(pd, item).addLinks(new Link(item, (Item) value, null, false));
+            } else if (value instanceof Collection) {
                 for (Object o : (Collection) value) {
                     Link l = (Link) o;
                     new LinksImpl(pd, item).addLinks(l);
@@ -130,7 +133,15 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
             return null;
         }
         
-        return links;
+        if (pd.isMultivalued()) {
+            return links;
+        } else {
+            Collection<Link> links2 = links.getLinks();
+            if (links2.size() > 0) {
+                return links2.iterator().next().getItem();
+            }
+            return null;
+        }
     }
     
     @Override
@@ -157,8 +168,9 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
         return Collections.emptyList();
     }
 
-    public void updateItem(Item item, Factory factory, ExtensibleElement e) throws ResponseContextException {
+    public Object getValue(Item item, Factory factory, ExtensibleElement e) throws ResponseContextException {
         // not yet supported
+        return null;
     }
 
     public void setTypeManager(TypeManager typeManager) {

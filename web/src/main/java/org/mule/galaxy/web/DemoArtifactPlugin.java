@@ -18,14 +18,19 @@
 
 package org.mule.galaxy.web;
 
-import org.mule.galaxy.Workspace;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.mule.galaxy.Item;
+import org.mule.galaxy.NewItemResult;
 import org.mule.galaxy.impl.plugin.AbstractArtifactPlugin;
 import org.mule.galaxy.type.PropertyDescriptor;
+import org.mule.galaxy.type.TypeManager;
 
 public class DemoArtifactPlugin extends AbstractArtifactPlugin {
     @Override
     public void doInstall() throws Exception {
-        Workspace w = registry.getWorkspaces().iterator().next();
+        Item w = registry.getItems().iterator().next();
         
         add(w, "hello-config.xml", "/mule/hello-config.xml");
         add(w, "applicationContext.xml", "/spring/test-applicationContext.xml");
@@ -63,13 +68,14 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
         typeManager.savePropertyDescriptor(pd);
     }
 
-    private void add(Workspace w, String name, String resource) 
+    private void add(Item workspace, String name, String resource) 
         throws Exception {
+        NewItemResult result = workspace.newItem(name, typeManager.getType(TypeManager.ARTIFACT));
+        Item artifact = (Item) result.getItem();
 
-        w.createArtifact("application/xml", 
-                         name, 
-                         "0.1", 
-                         getClass().getResourceAsStream(resource));
+        Map<String, Object> props = new HashMap<String, Object>();
+        props.put("artifact", new Object[] { getClass().getResourceAsStream(resource), "application/xml" });
+        artifact.newItem("0.1", typeManager.getType(TypeManager.ARTIFACT_VERSION), props);
     }
     
     public int getVersion() {

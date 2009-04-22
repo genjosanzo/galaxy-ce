@@ -9,26 +9,20 @@
  */
 package org.mule.galaxy.plugins;
 
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+
 import org.mule.galaxy.Item;
-import org.mule.galaxy.Workspace;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 public abstract class AbstractPolicyTest extends AbstractGalaxyTest
 {
     public void doPolicyTest(InputStream stream, String policyId, boolean fail) throws Exception
     {
-        Collection<Workspace> workspaces = registry.getWorkspaces();
-        assertEquals(1, workspaces.size());
-        Workspace workspace = workspaces.iterator().next();
-
         Policy p = policyManager.getPolicy(policyId);
         assertNotNull(p);
 
@@ -36,8 +30,7 @@ public abstract class AbstractPolicyTest extends AbstractGalaxyTest
 
         try
         {
-            workspace.createArtifact("application/xml",
-                    "http-policy-test.xml", "0.1", stream);
+            importFile(stream, "http-policy-test.xml", "0.1", "application/xml");
             if (fail)
             {
                 fail("Expected ArtifactPolicyException");

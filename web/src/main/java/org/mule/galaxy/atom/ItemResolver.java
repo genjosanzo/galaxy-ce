@@ -21,43 +21,26 @@ package org.mule.galaxy.atom;
 import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.protocol.Request;
 import org.apache.abdera.protocol.Resolver;
-import org.apache.abdera.protocol.server.CollectionAdapter;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.Target;
 import org.apache.abdera.protocol.server.TargetType;
-import org.apache.abdera.protocol.server.context.EmptyResponseContext;
-import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.protocol.server.impl.DefaultWorkspaceManager;
 import org.apache.abdera.protocol.server.impl.SimpleTarget;
-import org.apache.commons.lang.StringUtils;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Entry;
-import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.query.OpRestriction;
-import org.mule.galaxy.query.Query;
-import org.mule.galaxy.query.QueryException;
-import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.type.TypeManager;
 
 public class ItemResolver implements Resolver<Target> {
 
-    private static final String WORKSPACES_CLASSIFIER = "workspaces";
-    public static final String WORKSPACE = "workspace";
     public static final String ITEM = "entry";
     public static final String COLLECTION_HREF = "collectionHref";
     
     private Registry registry;
-    private EntryHistoryCollection historyCollection;
-    private SearchableItemCollection searchableCollection;
-    private WorkspaceItemCollection workspaceItemCollection;
+    private ItemCollection itemCollection;
     private CommentCollectionProvider commentCollection;
-    private WorkspaceCollection workspaceCollection;
     
     public Target resolve(Request request) {
         RequestContext context = (RequestContext) request;
@@ -121,19 +104,8 @@ public class ItemResolver implements Resolver<Target> {
         
         // Somebody hit /api/registry
         if (path.length() == 0) {
-            if (WORKSPACES_CLASSIFIER.equals(classifier)) {
-                // the user is listing out the root workspaces
-                // the user is going to the searchable, main registry URL
-                context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, workspaceCollection);
-                return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
-            } else if (StringUtils.isEmpty(classifier)) {
-                // the user is going to the searchable, main registry URL
-                context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, searchableCollection);
-                return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
-            } else {
-                return returnUnknownLocation(context);
-            }
-           
+            context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, itemCollection);
+            return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
         }
 
         // somebody hit /api/registry/foo....
@@ -141,9 +113,8 @@ public class ItemResolver implements Resolver<Target> {
         
         try {
             Item item = registry.getItemByPath(path);
-            if ("workspaces".equals(classifier) || ("DELETE".equals(context.getMethod()) && item instanceof Workspace)) {
-                return resolveWorkspace((Workspace) item, classifier, context);
-            } else if (item != null) {
+            
+            if (item != null) {
                 return resolveItem(item, classifier, context);
             } else {
                 return returnUnknownLocation(context);
@@ -163,34 +134,31 @@ public class ItemResolver implements Resolver<Target> {
     }
 
     private Target resolveItem(Item item, String classifier, RequestContext context)
-        throws RegistryException {
-        context.setAttribute(WORKSPACE, item.getParent());
-        
-        item = selectVersion(item, context);
-        if (item == null) {
-            return returnUnknownLocation(context);
-        }
+        throws RegistryException, NotFoundException, AccessException {
+
         context.setAttribute(ITEM, item);
-        
         context.setAttribute(COLLECTION_HREF, getPathWithoutArtifact(context));
-        
-        CollectionAdapter collection = (context.getParameter("version") != null) ? historyCollection : searchableCollection;
+        context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, itemCollection);
+
         if ("atom".equals(classifier)) {
-            context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, collection);
             return new SimpleTarget(TargetType.TYPE_ENTRY, context);
         } else if ("categories".equals(classifier)) {
-            context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, collection);
             return new SimpleTarget(TargetType.TYPE_CATEGORIES, context);
         }  else if ("history".equals(classifier)) {
-            context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, historyCollection);
             return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
         } else if (classifier == null) {
-            context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, collection);
             String method = context.getMethod();
-            if (!"POST".equals(method)
-                && (item instanceof Artifact || item instanceof ArtifactVersion)) {
+            if (item.getType().inheritsFrom(TypeManager.ARTIFACT) && classifier == null && !"POST".equals(method)) {
+                item = selectVersion(item, context);
+                context.setAttribute(ITEM, item);
+                if (item == null) {
+                    return returnUnknownLocation(context);
+                }
+
                 return new SimpleTarget(TargetType.TYPE_MEDIA, context);
-            } else if ("HEAD".equals(method) || "OPTIONS".equals(method) || "PUT".equals(method) || "DELETE".equals(method)) {
+            }
+            
+            if ("HEAD".equals(method) || "OPTIONS".equals(method) || "PUT".equals(method) || "DELETE".equals(method)) {
                 return new SimpleTarget(TargetType.TYPE_ENTRY, context);
             }  else  {
                 return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
@@ -199,38 +167,33 @@ public class ItemResolver implements Resolver<Target> {
         return returnUnknownLocation(context);
     }
 
-    protected Item selectVersion(Item i, RequestContext context) throws RegistryException {
-        if (i instanceof Entry) {
-            String[] params = context.getParameterNames();
-            Query query = new Query(Artifact.class, Entry.class);
-            query.add(OpRestriction.eq("name", i.getName()));
-            query.fromPath(i.getParent().getPath());
-
-            for (int c = 0; c < params.length; c++) {
-                String param = params[c];
-
-                if (!"showHiddenProperties".equals(param) && !"version".equals(param)) {
-                    query.add(OpRestriction.eq(param, context.getParameter(param)));
-                }
-            }
-
-            if (query.getRestrictions().size() > 1) {
-                SearchResults results = registry.search(query);
-    
-                if (results.getTotal() == 0) {
-                    return null;
-                }
-    
-                i = results.getResults().iterator().next();
-            }
-        }
+    protected Item selectVersion(Item i, RequestContext context) 
+        throws RegistryException, NotFoundException, AccessException {
+//        String[] params = context.getParameterNames();
+//        Query query = new Query(OpRestriction.eq("name", i.getName()));
+//        query.fromPath(i.getParent().getPath());
+//
+//        for (int c = 0; c < params.length; c++) {
+//            String param = params[c];
+//
+//            if (!"showHiddenProperties".equals(param) && !"version".equals(param)) {
+//                query.add(OpRestriction.eq(param, context.getParameter(param)));
+//            }
+//        }
+//
+//        if (query.getRestrictions().size() > 1) {
+//            SearchResults results = registry.search(query);
+//
+//            if (results.getTotal() == 0) {
+//                return null;
+//            }
+//
+//            i = results.getResults().iterator().next();
+//        }
         
         String version = context.getParameter("version");
         if (version != null && !"".equals(version)) {
-            if (!(i instanceof Entry)) {
-                return null;
-            }
-            return ((Entry) i).getVersion(version);
+            return i.getItem(version);
         }
         return i;
     }
@@ -244,27 +207,6 @@ public class ItemResolver implements Resolver<Target> {
         return s;
     }
 
-    private Target resolveWorkspace(Workspace workspace, String classifier, RequestContext context) throws RegistryException,
-        NotFoundException, AccessException {
-        context.setAttribute(WORKSPACE, workspace);
-        
-        context.setAttribute(COLLECTION_HREF, context.getTargetPath());
-        if (WORKSPACES_CLASSIFIER.equals(classifier)) {
-            context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, workspaceCollection);
-        } else {
-            context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, workspaceItemCollection);
-        }
-         
-        if ("GET".equals(context.getMethod()) || "POST".equals(context.getMethod()) || "HEAD".equals(context.getMethod())) {
-            return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
-        } else {
-            // TODO: not sure if this is what we should be doing.
-            // maybe we should be deleting to /workspace;atom instead of just /workspace 
-            context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, workspaceCollection);
-            return new SimpleTarget(TargetType.TYPE_ENTRY, context);
-        }
-    }
-
     public Registry getRegistry() {
         return registry;
     }
@@ -272,25 +214,13 @@ public class ItemResolver implements Resolver<Target> {
     public void setRegistry(Registry registry) {
         this.registry = registry;
     }
-    
-    public void setHistoryCollection(EntryHistoryCollection historyCollection) {
-        this.historyCollection = historyCollection;
-    }
 
-    public void setSearchableCollection(SearchableItemCollection searchableCollection) {
-        this.searchableCollection = searchableCollection;
-    }
-
-    public void setWorkspaceItemCollection(WorkspaceItemCollection entryWorkspaceCollection) {
-        this.workspaceItemCollection = entryWorkspaceCollection;
+    public void setItemCollection(ItemCollection itemCollection) {
+        this.itemCollection = itemCollection;
     }
 
     public void setCommentCollection(CommentCollectionProvider commentCollection) {
         this.commentCollection = commentCollection;
-    }
-
-    public void setWorkspaceCollection(WorkspaceCollection workspaceCollection) {
-        this.workspaceCollection = workspaceCollection;
     }
 
 }

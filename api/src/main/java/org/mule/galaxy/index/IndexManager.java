@@ -2,9 +2,10 @@ package org.mule.galaxy.index;
 
 import java.util.Collection;
 
-import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.GalaxyException;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.artifact.Artifact;
 
 public interface IndexManager {
     
@@ -20,7 +21,7 @@ public interface IndexManager {
     
     Collection<Index> getIndexes();
     
-    Collection<Index> getIndexes(ArtifactVersion artifactVersion);
+    Collection<Index> getIndexes(Artifact artifact);
 
-    void index(ArtifactVersion version);
+    void index(Item version);
 }

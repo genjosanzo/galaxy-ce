@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -34,6 +35,8 @@ import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.xml.namespace.QName;
 
+import junit.framework.TestCase;
+
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.providers.AuthenticationProvider;
@@ -42,6 +45,7 @@ import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Base;
 import org.apache.abdera.model.Document;
+import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.ExtensibleElement;
 import org.apache.abdera.protocol.client.ClientResponse;
@@ -53,13 +57,11 @@ import org.apache.jackrabbit.core.fs.local.FileUtil;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.mule.galaxy.Registry;
-import org.mule.galaxy.atom.AbstractItemCollection;
+import org.mule.galaxy.atom.ItemCollection;
 import org.mule.galaxy.impl.index.IndexManagerImpl;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springmodules.jcr.SessionFactory;
-
-import junit.framework.TestCase;
 
 public abstract class AbstractAtomTest extends TestCase {
     
@@ -149,25 +151,29 @@ public abstract class AbstractAtomTest extends TestCase {
         return entryDoc.getRoot();
     }
 
-    protected ExtensibleElement getVersionedMetadata(Entry entry) {
-        return getMetadata(entry, "versioned");
-    }
-    
-    protected ExtensibleElement getGlobalMetadata(Entry entry) {
-        return getMetadata(entry, "global");
-    }
-
-    private ExtensibleElement getMetadata(Entry entry, String type) {
-        QName metadataQ = new QName(AbstractItemCollection.NAMESPACE, "metadata");
-        List<ExtensibleElement> extensions = entry.getExtensions(metadataQ);
-        ExtensibleElement metadata = null;
-        for (ExtensibleElement el : extensions) {
-            String id = el.getAttributeValue("id");
-            if (type.equals(id))
-                metadata = el;
-        }
+    protected Entry createEntry(String name, String type) {
+        // Create an Entry to represent a workspace
+        Entry entry = factory.newEntry();
+        entry.setTitle(name);
+        entry.setUpdated(new Date());
+        entry.addAuthor("Ignored");
+        entry.setId(factory.newUuidUri());
+        entry.setContent("");
         
-        return metadata;
+        Element wInfo = factory.newElement(new QName(ItemCollection.NAMESPACE, "item-info"));
+        wInfo.setAttributeValue("name", name);
+        wInfo.setAttributeValue("type", type);
+        entry.addExtension(wInfo);
+        return entry;
+    }    
+
+    protected ExtensibleElement getMetadata(Entry entry) {
+        QName metadataQ = new QName(ItemCollection.NAMESPACE, "metadata");
+        List<ExtensibleElement> extensions = entry.getExtensions(metadataQ);
+        for (ExtensibleElement el : extensions) {
+            return el;
+        }
+        return null;
     }
     
     protected void prettyPrint(Base doc) throws IOException {

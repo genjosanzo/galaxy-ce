@@ -1,7 +1,6 @@
 package org.mule.galaxy.impl;
 
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -9,25 +8,19 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.EntryResult;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.EntryVersion;
-import org.mule.galaxy.Workspace;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.impl.index.XPathIndexer;
 import org.mule.galaxy.impl.index.XQueryIndexer;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.util.Constants;
 
 public class IndexTest extends AbstractGalaxyTest {
 
     public void testXmlSchema() throws Exception {
-        Artifact a = importXmlSchema();
+        Item v = importXmlSchema();
         
-        EntryVersion v = a.getDefaultOrLastVersion();
         assertEquals("http://www.example.org/test/", 
                      v.getProperty("xmlschema.targetNamespace"));
         
@@ -53,7 +46,7 @@ public class IndexTest extends AbstractGalaxyTest {
     }
     
     public void xtestReindex() throws Exception {
-        Artifact artifact = importHelloWsdl();
+        Item artifact = importHelloWsdl();
         
         Index i = indexManager.getIndex("wsdl.targetNamespace");
         
@@ -63,13 +56,13 @@ public class IndexTest extends AbstractGalaxyTest {
         
         Thread.sleep(2000);
         
-        artifact = (Artifact) registry.getItemById(artifact.getId());
+        artifact = registry.getItemById(artifact.getId());
         Object value = artifact.getProperty("wsdl.targetNamespace");
         assertEquals("foobar", value);
     }
     
     public void testDelete() throws Exception {
-        Artifact artifact = importHelloWsdl();
+        Item artifact = importHelloWsdl();
         
         Collection<Index> indices = indexManager.getIndexes();
         assertNotNull(indices);
@@ -98,26 +91,23 @@ public class IndexTest extends AbstractGalaxyTest {
         
         indexManager.delete(tnsIdx.getId(), true);
         
-        artifact = (Artifact) registry.getItemById(artifact.getId());
-        EntryVersion v = artifact.getDefaultOrLastVersion();
-        Object value = v.getProperty("wsdl.targetNamespace");
+        artifact = registry.getItemById(artifact.getId());
+        Object value = artifact.getProperty("wsdl.targetNamespace");
         assertNull(value);
-        assertNull(v.getPropertyInfo("wsdl.targetNamespace"));
+        assertNull(artifact.getPropertyInfo("wsdl.targetNamespace"));
 
         indexManager.delete(ptIdx.getId(), false);
         
-        artifact = (Artifact) registry.getItemById(artifact.getId());
-        v = artifact.getDefaultOrLastVersion();
-        value = v.getProperty("wsdl.endpoint");
+        artifact = registry.getItemById(artifact.getId());
+        value = artifact.getProperty("wsdl.endpoint");
         assertNotNull(value);
         
         indexManager.delete(svcIdx.getId(), true);
         
-        artifact = (Artifact) registry.getItemById(artifact.getId());
-        v = artifact.getDefaultOrLastVersion();
-        value = v.getProperty("wsdl.service");
+        artifact = registry.getItemById(artifact.getId());
+        value = artifact.getProperty("wsdl.service");
         assertNull(value);
-        assertNull(v.getPropertyInfo("wsdl.service"));
+        assertNull(artifact.getPropertyInfo("wsdl.service"));
     }
     
     
@@ -157,9 +147,8 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(1, tnsIdx.getDocumentTypes().size());
         
         // Import a document which should now be indexed
-        Artifact artifact = importHelloWsdl();
+        Item version = importHelloWsdl();
 
-        EntryVersion version = artifact.getDefaultOrLastVersion();
         Object property = version.getProperty("wsdl.service");
         assertNotNull(property);
         assertTrue(property instanceof Collection);
@@ -188,47 +177,26 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(new QName("http://mule.org/hello_world", "HelloWorldBinding"), q);
         
         // Try out search!
-        Set results = registry.search("select artifact where wsdl.service = 'HelloWorldService'", 0, 100).getResults();
+        Set<Item> results = registry.search("select where wsdl.service = 'HelloWorldService'", 0, 100).getResults();
         assertEquals(1, results.size());
         
-        Artifact next = (Artifact) results.iterator().next();
-        assertEquals(1, next.getVersions().size());
-        
-        results = registry.search(new Query(OpRestriction.eq("wsdl.service", 
-                       new QName("HelloWorldService")), 
-                                                Artifact.class)).getResults();
-        
+        results = registry.search(new Query(OpRestriction.eq("wsdl.service", new QName("HelloWorldService")))).getResults();
         assertEquals(1, results.size());
         
-        next = (Artifact) results.iterator().next();
-        assertEquals(1, next.getVersions().size());
-        
-        results = registry.search(new Query(OpRestriction.eq("wsdl.service", 
-                       new QName("HelloWorldService")), 
-                                            ArtifactVersion.class)).getResults();
-    
+        results = registry.search(new Query(OpRestriction.eq("wsdl.service", new QName("HelloWorldService")))).getResults();
         assertEquals(1, results.size());
         
-        ArtifactVersion nextAV = (ArtifactVersion) results.iterator().next();
-        assertEquals("0.1", nextAV.getVersionLabel());
-        // assertNotNull(nextAV.getData());
-        // TODO test data
-        
-        results = registry.search(new Query(OpRestriction.eq("documentType", Constants.WSDL_DEFINITION_QNAME.toString()), 
-                                            Artifact.class)).getResults();
-    
-        assertEquals(1, results.size());
-        
-        results = registry.search(new Query(OpRestriction.eq("contentType", "application/xml"), 
-                                            Artifact.class)).getResults();
-    
-        assertEquals(1, results.size());
-        
-
-        results = registry.search(new Query(OpRestriction.in("contentType", Arrays.asList("application/xml")), 
-                                            Artifact.class)).getResults();
-    
-        assertEquals(1, results.size());
+        Item nextAV = (Item) results.iterator().next();
+        assertEquals("0.1", nextAV.getName());
+//        
+//        results = registry.search(new Query(OpRestriction.eq("file.documentType", Constants.WSDL_DEFINITION_QNAME.toString()))).getResults();
+//        assertEquals(1, results.size());
+//        
+//        results = registry.search(new Query(OpRestriction.eq("file.contentType", "application/xml"))).getResults();
+//        assertEquals(1, results.size());
+//
+//        results = registry.search(new Query(OpRestriction.in("file.contentType", Arrays.asList("application/xml")))).getResults();
+//        assertEquals(1, results.size());
     }
 
     @SuppressWarnings("unchecked")
@@ -238,18 +206,7 @@ public class IndexTest extends AbstractGalaxyTest {
 
         assertNotNull(stream);
 
-        Collection<Workspace> workspaces = registry.getWorkspaces();
-        assertEquals(1, workspaces.size());
-        Workspace workspace = workspaces.iterator().next();
-
-        EntryResult ar = workspace.createArtifact("application/java-archive",
-                                                     "test.jar",
-                                                     "1",
-                                                     stream);
-
-        Artifact artifact = (Artifact) ar.getEntry();
-
-        assertNotNull(artifact);
+        Item latest = importFile(stream, "test.jar", "1", "application/java-archive");
 
         Collection<Index> indexes = indexManager.getIndexes();
         Index idx = null;
@@ -265,8 +222,6 @@ public class IndexTest extends AbstractGalaxyTest {
         assertFalse(indexConfig.isEmpty());
         String scriptSource = indexConfig.get("scriptSource");
         assertEquals("Wrong configuration saved to the JCR repo", "JarIndex.groovy", scriptSource);
-
-        EntryVersion latest = artifact.getDefaultOrLastVersion();
 
         assertEquals(false, latest.getPropertyInfo("jar.entries").isVisible());
         // normal manifest property
@@ -285,7 +240,6 @@ public class IndexTest extends AbstractGalaxyTest {
         // check that wrong name isn't there, it should be jar.entries instead
         List e = (List) latest.getProperty("jar.manifest.entries");
         assertNull(e);
-
     }
 
     @SuppressWarnings("unchecked")
@@ -297,23 +251,10 @@ public class IndexTest extends AbstractGalaxyTest {
 
         assertNotNull(stream);
 
-        Collection<Workspace> workspaces = registry.getWorkspaces();
-        assertEquals(1, workspaces.size());
-        Workspace workspace = workspaces.iterator().next();
-
-        EntryResult ar = workspace.createArtifact("application/java-archive",
-                                                     "test.jar",
-                                                     "1",
-                                                     stream);
-
-        Artifact artifact = (Artifact) ar.getEntry();
-
-        assertNotNull(artifact);
-
-        EntryVersion latest = artifact.getDefaultOrLastVersion();
+        Item version = importFile(stream, "test.jar", "1", "application/java-archive");
 
         // class
-        List<String> annotations = (List<String>) latest.getProperty("java.annotations.level.class");
+        List<String> annotations = (List<String>) version.getProperty("java.annotations.level.class");
         assertNotNull(annotations);
         assertFalse(annotations.isEmpty());
         assertEquals("org.mule.galaxy.impl.index.annotations.Marker(value=ClassLevel)", annotations.get(0));
@@ -321,17 +262,17 @@ public class IndexTest extends AbstractGalaxyTest {
         // just check for property existance for other levels, annotation parsing is checked in AsmAnnotationsScannerTest
 
         // field
-        annotations = (List<String>) latest.getProperty("java.annotations.level.field");
+        annotations = (List<String>) version.getProperty("java.annotations.level.field");
         assertNotNull(annotations);
         assertFalse(annotations.isEmpty());
 
         // method
-        annotations = (List<String>) latest.getProperty("java.annotations.level.method");
+        annotations = (List<String>) version.getProperty("java.annotations.level.method");
         assertNotNull(annotations);
         assertFalse(annotations.isEmpty());
 
         // param
-        annotations = (List<String>) latest.getProperty("java.annotations.level.param");
+        annotations = (List<String>) version.getProperty("java.annotations.level.param");
         assertNotNull(annotations);
         assertFalse(annotations.isEmpty());
     }

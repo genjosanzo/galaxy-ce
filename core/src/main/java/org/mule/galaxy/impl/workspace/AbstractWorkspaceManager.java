@@ -1,7 +1,7 @@
 package org.mule.galaxy.impl.workspace;
 
-import org.mule.galaxy.ContentService;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.artifact.ContentService;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.workspace.WorkspaceManager;
 

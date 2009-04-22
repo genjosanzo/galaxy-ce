@@ -1,6 +1,6 @@
 package org.mule.galaxy.impl.content;
 
-import org.mule.galaxy.Workspace;
+import org.mule.galaxy.Item;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +18,7 @@ public class DefaultContentHandler extends AbstractContentHandler {
         return null;
     }
 
-    public Object read(InputStream stream, Workspace workspace) throws IOException {
+    public Object read(InputStream stream, Item workspace) throws IOException {
         return null;
     }
 

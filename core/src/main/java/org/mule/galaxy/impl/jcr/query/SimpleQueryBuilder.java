@@ -2,7 +2,6 @@ package org.mule.galaxy.impl.jcr.query;
 
 import java.util.Collection;
 
-import org.mule.galaxy.Item;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.OpRestriction.Operator;
 
@@ -84,9 +83,4 @@ public class SimpleQueryBuilder extends QueryBuilder {
     protected String getValueAsString(Object o, String property, Operator operator) throws QueryException {
         return o.toString();
     }
-
-    public void addAppliesTo(Class<? extends Item> t) {
-        appliesTo.add(t);
-    }
-
 }

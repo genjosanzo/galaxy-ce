@@ -18,9 +18,24 @@
 
 package org.mule.galaxy.web.client.registry;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.TooltipListener;
+import org.mule.galaxy.web.rpc.ItemInfo;
+import org.mule.galaxy.web.rpc.WSearchResults;
+
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -28,17 +43,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.ResultGroup;
-import org.mule.galaxy.web.rpc.WSearchResults;
 
 public class ArtifactListPanel extends AbstractComposite implements ClickListener {
 
@@ -59,8 +63,8 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
     private Hyperlink editSelected;
     private Hyperlink cancelLink;
     private Hyperlink editAll;
-    private List<ArtifactGroupListPanel> groupPanels;
-
+    private Map<CheckBox, String> CBCollection;
+    
     public ArtifactListPanel(AbstractBrowsePanel browsePanel, Galaxy galaxy) {
         super();
         this.galaxy = galaxy;
@@ -76,6 +80,8 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
         artifactPanel.setStyleName("artifact-panel");
         artifactPanelBase.add(artifactPanel);
 
+        CBCollection = new HashMap<CheckBox, String>();
+        
         initWidget(panel);
         //clear();
     }
@@ -91,32 +97,102 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
         createBulkEditPanel();
         createNavigationPanel();
 
-        groupPanels = new ArrayList<ArtifactGroupListPanel>();
+        SimplePanel listContainer = new SimplePanel();
+        listContainer.setStyleName("artifact-list-container");
+
+        artifactPanel.add(listContainer);
         
-        for (Iterator<ResultGroup> groups = o.getResults().iterator(); groups.hasNext();) {
-            ResultGroup group = groups.next();
+        FlexTable table = super.createRowTable();
+        listContainer.add(table);
+        
+        // each group contains one to many artifacts of the same type (ie, mule 1 configs)
+        // and each type will (probably) have a different number of data points
+        int numCols = o.getColumns().size();
 
-            ArtifactGroupListPanel list = new ArtifactGroupListPanel(group, isEditable());
-            groupPanels.add(list);
-            // get the list of artifacts from each item (artifact) in the group
-            // and set them locally -- it's much easier to manipulate them this way
+        // create the colum headers
+        // the first column is blank on purpose as it's reserved for the checkbox
+        Image clearPixel = new Image("images/clearpixel.gif");
+        table.setWidget(0, 0, clearPixel);
 
-            SimplePanel rightTitlePanel = new SimplePanel();
-            rightTitlePanel.setStyleName("right-title-panel");
-            artifactPanel.add(rightTitlePanel);
+        // first column is wider in edit mode to accomodate the checkbox
+        String firstColWidth = (this.editable) ? "20" : "1";
+        table.getFlexCellFormatter().setWidth(0, 0, firstColWidth);
+        table.getFlexCellFormatter().setWidth(0, 1, "180");
 
-            Label label = new Label(list.getTitle());
-            label.setStyleName("right-title");
-            rightTitlePanel.add(label);
-
-            SimplePanel listContainer = new SimplePanel();
-            listContainer.setStyleName("artifact-list-container");
-            listContainer.add(list);
-
-            artifactPanel.add(listContainer);
+        for (int i = 0; i < numCols; i++) {
+            int cPos = i + 1;
+            table.setText(0, cPos, o.getColumns().get(i));
+            // set each subsequent column to 100
+            if (i > 1) table.getFlexCellFormatter().setWidth(0, i, "125");
+        }
+        
+        int row = 0;
+        for (ItemInfo i : o.getRows()) {
+            renderItem(i, table, clearPixel, numCols, row);
+            row++;
         }
     }
 
+    private void renderItem(ItemInfo info, 
+                            FlexTable table, 
+                            Image clearPixel, 
+                            int numCols,
+                            int row) {
+        if (editable) {
+            CheckBox checkbox = new CheckBox();
+            checkbox.setName(info.getId());
+            table.setWidget(row + 1, 0, checkbox);
+            CBCollection.put(checkbox, info.getId());
+        } else {
+            // draw nothing, we are not in edit mode
+            table.setWidget(0, 0, clearPixel);
+        }
+
+        // draw the rest of the colums
+        for (int c = 0; c < numCols; c++) {
+            int cPos = c + 1;
+
+            // truncate to N characters and offer a tooltip of the full value
+            String value = info.getValue(c);
+            String Id = info.getId();
+            int truncateTo = 25;
+            
+            // use a label so we truncate and then attach a tooltip
+            Label lvalue = new Label(abbreviate(value, truncateTo));
+            // only attache if needed
+            if(value.length() > truncateTo ) {
+                lvalue.addMouseListener(new TooltipListener(value, 5000));
+            }
+
+            // the first column is the artifact name (value) and that's a link
+            if (c == 0) {
+                Hyperlink hl = new Hyperlink(value, "artifact/" + Id);
+                table.setWidget(row + 1, cPos, hl);
+            } else {
+                // each additional value is just regular ol' text
+                table.setWidget(row + 1, cPos, lvalue);
+            }
+            table.getRowFormatter().setStyleName(row + 1, "artifactTableEntry");
+        }
+    }
+
+    private String abbreviate(String s, int width) {
+        if (s.length() > width) {
+            s = s.substring(0, width) + "...";
+        }
+        return s;
+    }
+
+    private Collection<String> getSelectedArtifacts() {      
+        List<String> ids = new ArrayList<String>();
+        for (Map.Entry<CheckBox, String> e : CBCollection.entrySet()) {
+            if (e.getKey().isChecked()) {
+                ids.add(e.getValue());
+            }
+        }
+        return ids;
+    }
+    
     public void clear() {
         artifactPanel.clear();
     }
@@ -302,14 +378,6 @@ public class ArtifactListPanel extends AbstractComposite implements ClickListene
         }
     }
 
-    // get the artifactIds from the selected checkboxes
-    private Collection<String> getSelectedArtifacts() {
-        Collection<String> artifactIds = new ArrayList<String>();
-        for (ArtifactGroupListPanel list : groupPanels) {
-            artifactIds.addAll(list.getSelectedEntries());
-        }
-        return artifactIds;
-    }
 
 
     public int getResultStart() {

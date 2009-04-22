@@ -28,8 +28,8 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.easymock.classextension.EasyMock;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.atom.AbstractItemCollection;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.atom.ItemCollection;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.test.AbstractAtomTest;
 import org.springmodules.jcr.JcrCallback;
@@ -157,6 +157,7 @@ public class PublishMojoTest extends AbstractAtomTest {
         // Ensure the second version is there
         res = client.get(WORKSPACE_URL + "/pom.xml;history", defaultOpts);
         assertEquals(200, res.getStatus());
+        prettyPrint(res.getDocument());
         
         feedDoc = res.getDocument();
         feed = feedDoc.getRoot();
@@ -218,7 +219,7 @@ public class PublishMojoTest extends AbstractAtomTest {
         mojo.execute();
         
         AbderaClient client = getClient();
-        ClientResponse res = client.get(WORKSPACE_URL, defaultOpts);
+        ClientResponse res = client.get(WORKSPACE_URL + "/pom.xml;history", defaultOpts);
         assertEquals(200, res.getStatus());
         
         Document<Feed> feedDoc = res.getDocument();
@@ -228,9 +229,9 @@ public class PublishMojoTest extends AbstractAtomTest {
         
         Entry e = feed.getEntries().get(0);
         
-        Element versionEl = e.getExtension(new QName(AbstractItemCollection.NAMESPACE, "version"));
+        Element versionEl = e.getExtension(new QName(ItemCollection.NAMESPACE, "item-info"));
         assertNotNull(versionEl);
-        assertEquals("2.0", versionEl.getAttributeValue("label"));
+        assertEquals("2.0", versionEl.getAttributeValue("name"));
         
         res.release();
     }
@@ -302,11 +303,9 @@ public class PublishMojoTest extends AbstractAtomTest {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 try {
-                    Workspace workspace = registry.getWorkspaces().iterator().next();
+                    Item workspace = registry.getItems().iterator().next();
                     
-                    org.mule.galaxy.Artifact artifact = 
-                        (org.mule.galaxy.Artifact) registry.resolve(workspace, "test-mule-config.xml");
-                    assertEquals("application/xml", artifact.getContentType().toString());
+                    registry.resolve(workspace, "test-mule-config.xml");
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

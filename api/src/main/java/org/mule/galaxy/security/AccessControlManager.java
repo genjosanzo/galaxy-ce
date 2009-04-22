@@ -7,7 +7,6 @@ import java.util.Set;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.Workspace;
 
 public interface AccessControlManager {
 

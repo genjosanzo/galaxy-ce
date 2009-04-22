@@ -19,7 +19,6 @@
     </licenses>
 
     <modules>
-        <module>mule1</module>
         <module>mule2</module>
     </modules>
 

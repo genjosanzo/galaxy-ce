@@ -1,15 +1,14 @@
 package org.mule.galaxy.config.quartz;
 
-import org.quartz.impl.jdbcjobstore.CloudscapeDelegate;
-import org.quartz.impl.jdbcjobstore.StdJDBCDelegate;
-import org.apache.commons.logging.Log;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Blob;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.sql.Blob;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.apache.commons.logging.Log;
+import org.quartz.impl.jdbcjobstore.StdJDBCDelegate;
 
 /**
  * A driver delegate class to fix empty BLOB serialization bugs in Quartz persistence.

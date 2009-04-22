@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.mule.galaxy.Item;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.jcr.query.SimpleQueryBuilder;
 import org.mule.galaxy.type.PropertyDescriptor;
@@ -18,8 +17,6 @@ public abstract class ExtensionQueryBuilder extends SimpleQueryBuilder {
     
     public ExtensionQueryBuilder() {
         super();
-        
-        appliesTo.add(Item.class);
     }
     
     @Override

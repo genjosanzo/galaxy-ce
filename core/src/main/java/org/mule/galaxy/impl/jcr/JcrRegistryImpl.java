@@ -27,25 +27,21 @@ import javax.jcr.query.QueryResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.util.ISO9075;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.AttachedWorkspace;
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.ContentService;
+import org.mule.galaxy.AttachedItem;
 import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.Entry;
-import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
+import org.mule.galaxy.NewItemResult;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.event.EntryMovedEvent;
 import org.mule.galaxy.event.EventManager;
+import org.mule.galaxy.event.ItemMovedEvent;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.jcr.query.QueryBuilder;
 import org.mule.galaxy.impl.jcr.query.SimpleQueryBuilder;
 import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.AbstractFunction;
 import org.mule.galaxy.query.FunctionCall;
@@ -60,6 +56,7 @@ import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.type.PropertyDescriptor;
+import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.Message;
@@ -80,8 +77,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
     
     private String workspacesId;
     
-    private ContentService contentService;
-
     private FunctionRegistry functionRegistry;
     
     private LifecycleManager lifecycleManager;
@@ -110,28 +105,24 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
     
     public JcrRegistryImpl() {
         super();
-        
-        simpleQueryBuilder.addAppliesTo(Artifact.class);
-        simpleQueryBuilder.addAppliesTo(Entry.class);
     }
 
     public String getUUID() {
         return id;
     }
 
-    public Collection<Workspace> getWorkspaces() throws AccessException {
+    public Collection<Item> getItems() throws AccessException {
         return localWorkspaceManager.getWorkspaces();
     }
 
-    private Workspace buildWorkspace(Node node) throws RepositoryException {
-        return new JcrWorkspace(localWorkspaceManager, node);
+    public NewItemResult newItem(final String name, Type type) 
+        throws RegistryException, AccessException, DuplicateItemException, PolicyException, PropertyException {
+        return newItem(name, type, null);
     }
 
-    public Workspace newWorkspace(final String name) throws RegistryException, AccessException, DuplicateItemException {
-        // we should throw an error, but lets be defensive for now
-        final String escapedName = JcrUtil.escape(name);
-
-        return localWorkspaceManager.newWorkspace(escapedName);
+    public NewItemResult newItem(String name, Type type, Map<String,Object> initialProperties)
+    	throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException {
+        return localWorkspaceManager.newItem(null, name, type, null);
     }
     
     public Collection<WorkspaceManager> getWorkspaceManagers() {
@@ -139,19 +130,19 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
     }
 
     @SuppressWarnings("unchecked")
-    public Collection<AttachedWorkspace> getAttachedWorkspaces() {
-        return (Collection<AttachedWorkspace>) execute(new JcrCallback() {
+    public Collection<AttachedItem> getAttachedWorkspaces() {
+        return (Collection<AttachedItem>) execute(new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 QueryManager qm = getQueryManager(session);
                 
-                QueryResult result = qm.createQuery("//element(*, galaxy:attachedWorkspace)", Query.XPATH).execute();
+                QueryResult result = qm.createQuery("//element(*, galaxy:attachedItem)", Query.XPATH).execute();
                 
-                List<AttachedWorkspace> workspaces = new ArrayList<AttachedWorkspace>();
+                List<AttachedItem> workspaces = new ArrayList<AttachedItem>();
                 for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
                     Node node = nodes.nextNode();
                     
-                    workspaces.add(new JcrAttachedWorkspace(node, localWorkspaceManager));
+                    workspaces.add(new JcrAttachedItem(node, localWorkspaceManager));
                 }
                 
                 return workspaces;
@@ -160,38 +151,38 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         });
     }
 
-    public AttachedWorkspace attachWorkspace(final Workspace parent, 
+    public AttachedItem attachItem(final Item parent, 
                                              final String name,
                                              final String factory,
                                              final Map<String, String> configuration) throws RegistryException {
         
-        if (parent != null && !(parent instanceof JcrWorkspace)) {
+        if (parent != null && !(parent instanceof JcrItem)) {
             throw new RegistryException(new Message("LOCAL_ATTACH_ONLY", BundleUtils.getBundle(this.getClass())));
         }
         
-        return (AttachedWorkspace) execute(new JcrCallback() {
+        return (AttachedItem) execute(new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node parentNode;
                 if (parent != null) {
-                    JcrWorkspace w = (JcrWorkspace) parent;
+                    JcrItem w = (JcrItem) parent;
                     parentNode = w.getNode();
                 } else {
                     parentNode = getNodeByUUID(workspacesId);
                 }
                 
-                Node attachedNode = parentNode.addNode(name, JcrWorkspaceManager.ATTACHED_WORKSPACE_NODE_TYPE);
+                Node attachedNode = parentNode.addNode(name, JcrWorkspaceManager.ATTACHED_ITEM_NODE_TYPE);
                 attachedNode.addMixin("mix:referenceable");
                 Calendar now = Calendar.getInstance();
                 now.setTime(new Date());
-                attachedNode.setProperty(AbstractJcrItem.CREATED, now);
-                attachedNode.setProperty(AbstractJcrItem.UPDATED, now);
-                attachedNode.setProperty(AbstractJcrItem.NAME, name);
-                attachedNode.setProperty(JcrAttachedWorkspace.WORKSPACE_MANAGER_FACTORY, factory);
+                attachedNode.setProperty(JcrItem.CREATED, now);
+                attachedNode.setProperty(JcrItem.UPDATED, now);
+                attachedNode.setProperty(JcrItem.NAME, name);
+                attachedNode.setProperty(JcrAttachedItem.WORKSPACE_MANAGER_FACTORY, factory);
 
                 try {
                     
-                    JcrAttachedWorkspace attached = new JcrAttachedWorkspace(attachedNode, localWorkspaceManager);
+                    JcrAttachedItem attached = new JcrAttachedItem(attachedNode, localWorkspaceManager);
                     attached.setConfiguration(configuration);
                     createWorkspaceManager(attached);
                     
@@ -206,7 +197,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         });
     }
 
-    public WorkspaceManager getWorkspaceManager(AttachedWorkspace w) throws RegistryException {
+    public WorkspaceManager getWorkspaceManager(AttachedItem w) throws RegistryException {
         WorkspaceManager wm = idToWorkspaceManager.get(trimWorkspaceManagerId(w.getId()));
         
         if (wm == null) {
@@ -216,7 +207,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         return wm;
     }
 
-    private synchronized WorkspaceManager createWorkspaceManager(AttachedWorkspace w) throws RegistryException {
+    private synchronized WorkspaceManager createWorkspaceManager(AttachedItem w) throws RegistryException {
         WorkspaceManagerFactory wmf = (WorkspaceManagerFactory) context.getBean(w.getWorkspaceManagerFactory());
         if (wmf == null) {
             throw new RegistryException(new Message("INVALID_WORKSPACE_MANAGER", BundleUtils.getBundle(getClass())));
@@ -234,13 +225,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         getWorkspaceManagerByItemId(i.getId()).save(i);
     }
 
-    public void save(final Workspace w, final String _parentId) 
+    public void save(final Item w, final String _parentId) 
         throws RegistryException, NotFoundException, AccessException, DuplicateItemException {
-        accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, w);
+        accessControlManager.assertAccess(Permission.MODIFY_ITEM, w);
 
         executeWithNotFoundDuplicate(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                AbstractJcrItem jw = (AbstractJcrItem) w;
+                JcrItem jw = (JcrItem) w;
                 Node node = jw.getNode();
                 
                 String parentId = _parentId;
@@ -268,9 +259,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                         checked = checked.getParent();
                     }
                     
-                    JcrWorkspace toWkspc = new JcrWorkspace(localWorkspaceManager, parentNode);
+                    JcrItem toWkspc = new JcrItem(parentNode, localWorkspaceManager);
                     try {
-                        accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, toWkspc);
+                        accessControlManager.assertAccess(Permission.MODIFY_ITEM, toWkspc);
                     } catch (AccessException e) {
                         throw new RuntimeException(e);
                     }
@@ -293,14 +284,20 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
 
     public Item resolve(Item item, String location) throws RegistryException {
         if (location.length() == 0) return null;
-        
+        System.out.println("Resolving " + location + " in " + item.getPath());
+//        String query = null;
+//        int idx = location.indexOf('?');
+//        if (idx != -1) {
+//            query = location.substring(idx+1);
+//            location = location.substring(0, idx);
+//        }
         String[] paths = location.split("/");
         
-        while (!(item instanceof Workspace)) {
+        while (!(item instanceof Item)) {
             item = item.getParent();
         }
         
-        Workspace w = (Workspace) item;
+        Item w = (Item) item;
 
         try {
             for (int i = 0; i < paths.length - 1 && w != null; i++) {
@@ -308,12 +305,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 
                 // TODO: escaping?
                 if (p.equals("..")) {
-                    w = ((Workspace)w.getParent());
+                    w = ((Item)w.getParent());
                 } else if (!p.equals(".")) {
                     Item child = w.getItem(p);
                     
-                    if (child instanceof Workspace) {
-                        w = (Workspace) child;
+                    if (child instanceof Item) {
+                        w = (Item) child;
                     } else {
                         return null;
                     }
@@ -324,7 +321,24 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         	return null;
             }
             
-            return w.getItem(paths[paths.length-1]);
+            Item result = w.getItem(paths[paths.length-1]);
+            
+            /**
+             * Special support for versioned items inside the registry. If
+             * this is a versioned item, then retrieve the default or latest
+             * version. 
+             */ 
+            if (result.getType().inheritsFrom(TypeManager.VERSIONED)) {
+                // TODO add support for ?version=foo
+//                
+//                Object def = result.getProperty(TypeManager.DEFAULT_VERSION);
+//                if (def == null || !(def instanceof Item)) {
+//                    def = result.getLatestItem();
+//                }
+//                result = (Item) def;   
+            }
+            
+            return result;
         } catch (NotFoundException e) {
             return null;
         } catch (AccessException e) {
@@ -357,62 +371,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
     public Item getItemById(final String id) throws NotFoundException, RegistryException, AccessException {
         return getWorkspaceManagerByItemId(id).getItemById(id);
     }
-    
-    protected Item build(Node node, String type) throws RepositoryException, ItemNotFoundException,
-        AccessDeniedException, AccessException, RegistryException {
-        if (type.equals("galaxy:artifact")) {
-            Artifact a = buildArtifact(node);
-    
-            accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
-            
-            return a;
-        } else if (type.equals("galaxy:artifactVersion")) {
-            Artifact a = buildArtifact(node.getParent());
-    
-            accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
-            
-            return a.getVersion(node.getName());
-        } else if (type.equals("galaxy:entry")) {
-            Entry a = buildEntry(node);
-    
-            accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
-            
-            return a;
-        } else if (type.equals("galaxy:entryVersion")) {
-            Entry a = buildEntry(node.getParent());
-    
-            accessControlManager.assertAccess(Permission.READ_ARTIFACT, a);
-            
-            return a.getVersion(node.getName());
-        } else if (type.equals("galaxy:attachedWorkspace")) {
-            AttachedWorkspace w = new JcrAttachedWorkspace(node, localWorkspaceManager); 
-    
-            accessControlManager.assertAccess(Permission.READ_ARTIFACT, w);
-            
-            return w;
-        } else {
-             Workspace wkspc = buildWorkspace(node);
-             
-             accessControlManager.assertAccess(Permission.READ_WORKSPACE, wkspc);
-             
-             return wkspc;
-        }
-    }
-    
+        
     public Item getItemByPath(String path) throws RegistryException, NotFoundException, AccessException {
         return localWorkspaceManager.getItemByPath(path);
     }
     
-    protected void setupContentHandler(JcrArtifact artifact) {
-        ContentHandler ch = null;
-        if (artifact.getDocumentType() != null) {
-            ch = contentService.getContentHandler(artifact.getDocumentType());
-        } else {
-            ch = contentService.getContentHandler(artifact.getContentType());
-        }
-        artifact.setContentHandler(ch);
-    }
-
     private String trimWorkspaceManagerId(String id) {
         int idx = id.indexOf(WORKSPACE_MANAGER_SEPARATOR);
         if (idx == -1) {
@@ -457,40 +420,40 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         }
     }
     
-    public void move(final Entry entry, final String newWorkspacePath, final String newName) throws RegistryException, AccessException, NotFoundException {
+    public void move(final Item item, final String newWorkspacePath, final String newName) throws RegistryException, AccessException, NotFoundException {
         boolean wasRenamed = false;
         boolean wasMoved = false;
-        final String oldPath = entry.getPath();
+        final String oldPath = item.getPath();
 
         try {
             // handle artifact renaming
-            accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, entry);
+            accessControlManager.assertAccess(Permission.MODIFY_ITEM, item);
 
-            if (!entry.getName().equals(newName)) {
+            if (!item.getName().equals(newName)) {
                 // save only if name changed
-                entry.setName(newName);
-                save(entry);
+                item.setName(newName);
+                save(item);
                 wasRenamed = true;
             }
 
             // handle workspace move
-            final Workspace workspace = (Workspace) getItemByPath(newWorkspacePath);
-            accessControlManager.assertAccess(Permission.MODIFY_WORKSPACE, workspace);
+            final Item parent = (Item) getItemByPath(newWorkspacePath);
+            accessControlManager.assertAccess(Permission.MODIFY_ITEM, parent);
 
             // only if workspace changed
-            if (!entry.getParent().getId().equals(workspace.getId())) {
+            if (!item.getParent().getId().equals(parent.getId())) {
 
                 execute(new JcrCallback() {
                     public Object doInJcr(Session session) throws IOException, RepositoryException {
 
-                        Node aNode = ((JcrArtifact) entry).getNode();
-                        Node wNode = ((JcrWorkspace) workspace).getNode();
+                        Node childNode = ((JcrItem) item).getNode();
+                        Node parentNode = ((JcrItem) parent).getNode();
 
-                        final String newPath = wNode.getPath() + "/" + aNode.getName();
-                        session.move(aNode.getPath(), newPath);
+                        final String newPath = parentNode.getPath() + "/" + childNode.getName();
+                        session.move(childNode.getPath(), newPath);
 
                         session.save();
-                        ((JcrArtifact) entry).setWorkspace(workspace);
+                        ((JcrItem) item).setParent((JcrItem)parent);
                         return null;
                     }
                 });
@@ -500,7 +463,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         } finally {
             // fire an event only if there was an actual action taken, and guarantee it will be fired
             if (wasRenamed || wasMoved) {
-                EntryMovedEvent event = new EntryMovedEvent(entry, oldPath);
+                ItemMovedEvent event = new ItemMovedEvent(item, oldPath);
                 event.setUser(SecurityUtils.getCurrentUser());
                 eventManager.fireEvent(event);
             }
@@ -508,7 +471,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
     }
 
     
-    public SearchResults suggest(final String p, final int maxResults, final String excludePath, final Class... types)
+    public SearchResults suggest(final String p, final int maxResults, final String excludePath, final String... types)
         throws RegistryException, QueryException {
         return (SearchResults) executeWithQueryException(new JcrCallback() {
             
@@ -548,33 +511,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                     }
                 }
                 
-                qstr.append("[");
-                List<String> allowedTypes = new ArrayList<String>();
-                for (Class selectType : types) {
-                    if (selectType.equals(Entry.class)) {
-                        allowedTypes.add("galaxy:entry");
-                    } else if (selectType.equals(Artifact.class)) {
-                        allowedTypes.add("galaxy:artifact");
-                    } else if (selectType.equals(EntryVersion.class)) {
-                        allowedTypes.add("galaxy:entryVersion");
-                    } else if (selectType.equals(ArtifactVersion.class)) {
-                        allowedTypes.add("galaxy:artifactVersion");
-                    } else if (selectType.equals(Workspace.class)) {
-                        allowedTypes.add("galaxy:workspace");
-                    } else {
-                        throw new RuntimeException(new QueryException(new Message("INVALID_SELECT_TYPE", BundleUtils.getBundle(getClass()))));
-                    }
-                }
-                
-                for (int i = 0; i < allowedTypes.size(); i++) {
-                    if (i > 0) {
-                        qstr.append(" or ");
-                    }
-                    String type = allowedTypes.get(i);
-                    qstr.append("@jcr:primaryType='").append(type)
-                        .append("' or *//@jcr:primaryType='").append(type).append("'");
-                }
-                qstr.append("]");
+                qstr.append("[@jcr:primaryType='galaxy:item']");
 
                 QueryResult result = qm.createQuery(qstr.toString(), Query.XPATH).execute();
                 
@@ -583,7 +520,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                     Node node = nodes.nextNode();
 
                     try {
-                        addNodes(node, allowedTypes, results);
+                        addNodes(node, results);
                     } catch (RegistryException e) {
                         throw new RuntimeException(e);
                     }
@@ -596,21 +533,18 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 return new SearchResults(results.size(), results);
             }
 
-            private void addNodes(Node node, List<String> allowedTypes,
+            private void addNodes(Node node, 
                                   Set<Item> results) throws RepositoryException, ItemNotFoundException,
                 AccessDeniedException, RegistryException {
-                String type = node.getPrimaryNodeType().getName();
-                if (allowedTypes.contains(type)) {
-                    try {
-                        Item item = build(node, type);
-                        if (excludePath != null && item.getPath().startsWith(excludePath)) {
-                            return;
-                        }
-                        results.add(item);
-                    } catch (AccessException e) {
+        	
+                try {
+                    Item item = new JcrItem(node, localWorkspaceManager);
+                    accessControlManager.assertAccess(Permission.READ_ITEM, item);
+                    if (excludePath != null && item.getPath().startsWith(excludePath)) {
+                        return;
                     }
-                    
-                    
+                    results.add(item);
+                } catch (AccessException e) {
                 }
                 
                 if (results.size() == maxResults) {
@@ -618,7 +552,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 }
                 
                 for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
-                    addNodes(nodes.nextNode(), allowedTypes, results);
+                    addNodes(nodes.nextNode(), results);
                     
                     if (results.size() == maxResults) {
                         return;
@@ -690,7 +624,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                     
                     boolean filtered = false;
                     try {
-                        Item item = build(node, node.getPrimaryNodeType().getName());
+                        Item item = new JcrItem(node, localWorkspaceManager);
+                        accessControlManager.assertAccess(Permission.READ_ITEM, item);
                         
                         for (Map.Entry<FunctionCall, AbstractFunction> e : functions.entrySet()) {
                             if (e.getValue().filter(e.getKey().getArguments(), item)) {
@@ -709,8 +644,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                             break;
                         }
                     } catch (AccessException e1) {
-                    } catch (RegistryException e) {
-                        throw new RuntimeException(e);
                     }
                 }                                                   
 
@@ -722,68 +655,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         });
     }
 
-    protected JcrArtifact buildArtifact(Node node) throws RepositoryException, ItemNotFoundException,
-        AccessDeniedException {
-        JcrArtifact artifact = new JcrArtifact(
-                                        new JcrWorkspace(localWorkspaceManager, node.getParent()),
-                                        node, localWorkspaceManager);
-
-        setupContentHandler(artifact);
-        return artifact;
-    }
-
-    protected JcrEntry buildEntry(Node node) throws RepositoryException, ItemNotFoundException,
-        AccessDeniedException {
-        JcrEntry artifact = new JcrEntry(new JcrWorkspace(localWorkspaceManager, node.getParent()),
-                                         node, localWorkspaceManager);
-        return artifact;
-    }
-    
     protected String createQueryString(final org.mule.galaxy.query.Query query, 
                                        Map<FunctionCall, AbstractFunction> functions) throws QueryException {
         StringBuilder base = new StringBuilder();
-        
-        // Set up the type selection - artifact, entry, artifactVersion, etc
-        StringBuilder typeQuery = new StringBuilder("[");
-        String all = "@jcr:primaryType=\"galaxy:entry\" or @jcr:primaryType=\"galaxy:entryVersion\"" +
-            " or @jcr:primaryType=\"galaxy:artifact\" or @jcr:primaryType=\"galaxy:artifactVersion\"" +
-            " or @jcr:primaryType=\"galaxy:workspace\"";
-        
-        boolean searchEntries = false;
-        boolean searchVersions = false;
-        
-        for (Class<?> selectType : query.getSelectTypes()) {
-            if (typeQuery.length() > 1) {
-                typeQuery.append(" or ");
-            }
-            
-            if (selectType == Item.class) {
-                typeQuery.append(all);
-                break;
-            } else if (selectType.equals(Entry.class)) {
-                typeQuery.append("@jcr:primaryType=\"galaxy:entry\"");
-                searchEntries = true;
-            } else if (selectType.equals(Artifact.class)) {
-                typeQuery.append("@jcr:primaryType=\"galaxy:artifact\"");
-                searchEntries = true;
-            } else if (selectType.equals(EntryVersion.class)) {
-                typeQuery.append("@jcr:primaryType=\"galaxy:entryVersion\"");
-                searchVersions = true;
-            } else if (selectType.equals(ArtifactVersion.class)) {
-                typeQuery.append("@jcr:primaryType=\"galaxy:artifactVersion\"");
-                searchVersions = true;
-            } else if (selectType.equals(Workspace.class)) {
-                typeQuery.append("@jcr:primaryType=\"galaxy:workspace\"");
-            } else {
-                throw new QueryException(new Message("INVALID_SELECT_TYPE", BundleUtils.getBundle(getClass())));
-            }
-        }
-
-        if (typeQuery.length() == 1) {
-            typeQuery.append(all);
-        }
-        
-        typeQuery.append(']');
         
         // Search by workspace id, workspace path, or any workspace
         if (query.getFromId() != null) {
@@ -795,13 +669,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 base.append("//*");
             } else {
                 base.append("/*");
-
-                if (searchVersions) {
-                    base.append("/*");
-                }
             }
             
-            base.append(typeQuery);
         } else if (query.getFromPath() != null && !"".equals(query.getFromPath())) {
             String path = query.getFromPath();
 
@@ -821,50 +690,39 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 base.append("//*");
             } else {
                 base.append("/*");
-                
-                if (searchVersions) {
-                    base.append("/*");
-                }
             }
-
-            base.append(typeQuery);
         } else {
-            base.append("//*").append(typeQuery);
+            base.append("//*");
         }
         
-        StringBuilder artifactQuery = new StringBuilder();
+        StringBuilder itemQuery = new StringBuilder();
 
         for (Restriction r : query.getRestrictions()) {
             if (r instanceof OpRestriction) {
-                if (!handleOperator((OpRestriction) r, query, artifactQuery, true, searchEntries, searchVersions)) {
+                if (!handleOperator((OpRestriction) r, query, itemQuery, true)) {
                     return null;
                 }
             } else if (r instanceof FunctionCall) {
-                if (!handleFunction((FunctionCall) r, query, functions, artifactQuery, searchEntries, searchVersions)) {
+                if (!handleFunction((FunctionCall) r, query, functions, itemQuery)) {
                     return null;
                 }
             }
         }
         
-        if (artifactQuery.length() > 0) artifactQuery.append("]");
+        if (itemQuery.length() > 0) itemQuery.append("]");
 
-//        // Search the latest if we're searching for artifacts, otherwise
-//        // search all versions
-//        if (version) {
-//            avQuery.insert(0, "[@enabled='true']");
-//        }
         
-        base.append(artifactQuery);
-        
+        base.append(itemQuery);
+        base.append("[@jcr:primaryType='galaxy:item']");
+        System.out.println(base);
         return base.toString();
     }
 
     private boolean handleFunction(FunctionCall r, 
                                    org.mule.galaxy.query.Query query, 
-                                   Map<FunctionCall, AbstractFunction> functions, 
-                                   StringBuilder qstr,
-                                   boolean typeEntries,
-                                   boolean typeVersions) throws QueryException {
+                                   Map<FunctionCall, 
+                                   AbstractFunction> functions, 
+                                   StringBuilder qstr) throws QueryException {
         AbstractFunction fn = functionRegistry.getFunction(r.getModule(), r.getName());
         
         functions.put(r, fn);
@@ -874,7 +732,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         
         if (restrictions != null && restrictions.size() > 0) {
             for (OpRestriction opR : restrictions) {
-                if (!handleOperator(opR, query, qstr, true, typeEntries, typeVersions)) return false;
+                if (!handleOperator(opR, query, qstr, true)) return false;
             }
         }
         return true;
@@ -883,14 +741,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
     private boolean handleOperator(OpRestriction r, 
                                    org.mule.galaxy.query.Query query, 
                                    StringBuilder queryStr,
-                                   boolean prepend, 
-                                   boolean typeEntries, 
-                                   boolean typeVersions)
+                                   boolean prepend)
         throws QueryException {
-        
-        boolean not = false;
-        Operator operator = r.getOperator();
-
         if (prepend) {
             if (queryStr.length() == 0) {
                 queryStr.append("[");
@@ -899,77 +751,60 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
             }
         }
         
+        Operator operator = r.getOperator();
+
         // Do special stuff if this is an OR/AND operator
         if (operator.equals(Operator.OR)) {
-            return join(r, query, queryStr, "or", typeEntries, typeVersions);
+            return join(r, query, queryStr, "or");
         } else if (operator.equals(Operator.AND)) {
-            return join(r, query, queryStr, "and", typeEntries, typeVersions);
+            return join(r, query, queryStr, "and");
         }
         
         String property = (String) r.getLeft();
         QueryBuilder builder = getQueryBuilder(property);
         
         // Do special stuff if this is a NOT operator
+        boolean not = false;
+        
         if (operator.equals(Operator.NOT)) {
             not = true;
             r = (OpRestriction) r.getRight();
             operator = r.getOperator();
             property = r.getLeft().toString();
         }
-
-        boolean searchChild = false;
-        boolean searchParent = false;
         
-        if ((builder.appliesTo(Entry.class) || builder.appliesTo(Artifact.class))) {
-            if (typeVersions && !typeEntries) {
-                searchParent = true;
-                queryStr.append("(");
-            }
-        } 
-        
-        if (builder.appliesTo(EntryVersion.class) || builder.appliesTo(ArtifactVersion.class)) {
-            if (typeEntries && !typeVersions) {
-                searchChild = true;
-                queryStr.append("(");
-            }
-        } 
-        
-        if (builder.build(queryStr, property, "", r.getRight(), not, operator)) {
-            if (searchChild || searchParent) {
-                if (not) {
-                    queryStr.append(" and ");
-                } else {
-                    queryStr.append(" or ");
-                }
-                String predicate = searchChild ? "*/" : "../";
-                if (builder.build(queryStr, property, predicate, r.getRight(), not, operator)) {
-                    queryStr.append(")");
-                    return true;
-                }
-            } else {
-                return true;
+        String[] split = property.split(":");
+        String prefix = "";
+        for (int i = 0; i < split.length - 1; i++) {
+            if ("child".equals(split[0])) {
+                prefix += "*/";
+            } else if ("parent".equals(split[0])) {
+                prefix += "../";
+            } else if ("child*".equals(split[0])) {
+                prefix += "*//";
             }
         }
-        return false;
+        property = split[split.length - 1];
+
+
+        return builder.build(queryStr, property, prefix, r.getRight(), not, operator);
     }
 
     private boolean join(OpRestriction r, 
                          org.mule.galaxy.query.Query query, 
                          StringBuilder queryStr, 
-                         String opName,
-                         boolean typeEntries,
-                         boolean typeVersions) throws QueryException {
+                         String opName) throws QueryException {
         Restriction r1 = (Restriction) r.getLeft();
         Restriction r2 = (Restriction) r.getRight();
         queryStr.append("(");
-        if (!handleOperator((OpRestriction) r1, query, queryStr, false, typeEntries, typeVersions)) {
+        if (!handleOperator((OpRestriction) r1, query, queryStr, false)) {
             return false;
         }
         queryStr.append(" ")
              .append(opName)
              .append(" ");
         
-        if (!handleOperator((OpRestriction) r2, query, queryStr, false, typeEntries, typeVersions)) {
+        if (!handleOperator((OpRestriction) r2, query, queryStr, false)) {
             return false;
         }
         queryStr.append(")");
@@ -1060,10 +895,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         this.functionRegistry = functionRegistry;
     }
     
-    public void setContentService(ContentService contentService) {
-        this.contentService = contentService;
-    }
-
     public void setLifecycleManager(LifecycleManager lifecycleManager) {
         this.lifecycleManager = lifecycleManager;
     }

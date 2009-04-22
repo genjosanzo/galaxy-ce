@@ -18,40 +18,49 @@
 
 package org.mule.galaxy.web.rpc;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.util.Collection;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class WSearchResults implements IsSerializable {
     private long total;
-
-    private Collection<ResultGroup> results;
 
     private String query;
     
     private String feed;
     
+    private List<String> columns = new ArrayList<String>();
+    
+    private List<ItemInfo> rows = new ArrayList<ItemInfo>();
+
+    public List<String> getColumns() {
+        return columns;
+    }
+    public List<ItemInfo> getRows() {
+        return rows;
+    }
+    
     public long getTotal() {
         return total;
     }
+    
     public void setTotal(long total) {
         this.total = total;
     }
-    public Collection<ResultGroup> getResults() {
-        return results;
-    }
-    public void setResults(Collection<ResultGroup> results) {
-        this.results = results;
-    }
+    
     public String getQuery() {
         return query;
     }
+    
     public void setQuery(String query) {
         this.query = query;
     }
+    
     public String getFeed() {
         return feed;
     }
+    
     public void setFeed(String feed) {
         this.feed = feed;
     }

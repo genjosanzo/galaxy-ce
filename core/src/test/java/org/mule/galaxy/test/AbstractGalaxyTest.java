@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.acegisecurity.Authentication;
@@ -17,20 +18,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.core.fs.local.FileUtil;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.Item;
+import org.mule.galaxy.NewItemResult;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
-import org.mule.galaxy.Workspace;
 import org.mule.galaxy.activity.ActivityManager;
+import org.mule.galaxy.artifact.Artifact;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.impl.cache.ThreadLocalCacheProviderFacade;
 import org.mule.galaxy.impl.index.IndexManagerImpl;
-import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.impl.jcr.RegistryInitializer;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.lifecycle.LifecycleManager;
@@ -42,6 +41,7 @@ import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
+import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.view.ArtifactViewManager;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -115,70 +115,68 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
     
-    protected boolean waitForIndexing(ArtifactVersion av) {
+    protected boolean waitForIndexing(Artifact av) {
         int count = 0;
         while (count < 5000) {
-            if (av.isIndexedPropertiesStale()) {
+            if (!av.isIndexed()) {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                 }
                 count += 100;
-            } else {
-                try {
-                    ((JcrVersion) av).getNode().refresh(true);
-                } catch (RepositoryException e) {
-                    e.printStackTrace();
-                }
-                return true;
             }
         }
         return false;
     }
 
-    protected Artifact importHelloWsdl() 
-        throws Exception {
+    protected Item importHelloWsdl() throws Exception {
         InputStream helloWsdl = getResourceAsStream("/wsdl/hello.wsdl");
-        
-        Workspace workspace = getTestWorkspace();
-        
-        EntryResult ar = workspace.createArtifact("application/xml", 
-                                                     "hello_world.wsdl", 
-                                                     "0.1", 
-                                                     helloWsdl);
-        return (Artifact) ar.getEntry();
+
+        return importFile(helloWsdl, "hello_world.wsdl", "0.1", "application/xml");
     }
 
-    protected Workspace getTestWorkspace() throws RegistryException, AccessException {
-        Collection<Workspace> workspaces = registry.getWorkspaces();
+    protected Item getTestWorkspace() throws RegistryException, AccessException {
+        Collection<Item> workspaces = registry.getItems();
         assertEquals(1, workspaces.size());
         return workspaces.iterator().next();
     }
 
-    protected Artifact importXmlSchema() throws Exception {
+    protected Item importXmlSchema() throws Exception {
         InputStream xsd = getResourceAsStream("/schema/test.xsd");
+
+        String name = "test.xsd";
+        String version = "0.1";
+        String contentType = "application/xml";
         
-        Workspace workspace = getTestWorkspace();
-        
-        EntryResult ar = workspace.createArtifact("application/xml", 
-                                                     "test.xsd", 
-                                                     "0.1", 
-                                                     xsd);
-        
-        return (Artifact) ar.getEntry();
+        return importFile(xsd, name, version, contentType);
     }
 
-    protected Artifact importHelloMule() throws Exception {
+    protected Item importFile(InputStream stream, String name, String version, String contentType)
+        throws Exception {
+        
+        Item workspace = getTestWorkspace();
+        
+        NewItemResult result = workspace.newItem(name, typeManager.getType(TypeManager.ARTIFACT));
+        Item artifact = (Item) result.getItem();
+
+        Map<String, Object> props = new HashMap<String, Object>();
+        props.put("artifact", new Object[] { stream, contentType });
+        NewItemResult ar = artifact.newItem(version, typeManager.getType(TypeManager.ARTIFACT_VERSION), props);
+
+        return (Item) ar.getItem();
+    }
+
+    protected Item importHelloMule() throws Exception {
         InputStream helloWsdl = getResourceAsStream("/mule/hello-config.xml");
         
-        Workspace workspace = getTestWorkspace();
-        
-        EntryResult ar = workspace.createArtifact("application/xml", 
-                                                  "hello-config.xml", 
-                                                  "0.1", helloWsdl);
-        return (Artifact) ar.getEntry();
+        return importFile(helloWsdl, "hello-config.xml", "0.1", "application/xml");
     }
 
+    protected Type getSimpleType() throws NotFoundException {
+        Type simpleType = typeManager.getType("Base Type");
+        return simpleType;
+    }
+    
     protected Phase getPhase(Item item) {
         return (Phase) item.getProperty(Registry.PRIMARY_LIFECYCLE);
     }
@@ -211,7 +209,6 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     @Override  
     protected void onSetUp() throws Exception {
         super.onSetUp();
-        
         Session session;
         participate = false;
         if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
@@ -232,7 +229,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     @Override
     protected void onTearDown() throws Exception {
         logout();
-        
+
         ThreadLocalCacheProviderFacade.clearCache();
         ((IndexManagerImpl) applicationContext.getBean("indexManagerTarget")).destroy();
 

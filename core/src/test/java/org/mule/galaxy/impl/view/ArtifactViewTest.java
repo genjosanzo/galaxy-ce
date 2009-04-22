@@ -2,7 +2,6 @@ package org.mule.galaxy.impl.view;
 
 import java.util.List;
 
-import org.mule.galaxy.Artifact;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.SearchResults;
@@ -13,7 +12,7 @@ import org.mule.galaxy.view.View;
 public class ArtifactViewTest extends AbstractGalaxyTest {
     public void testView() throws Exception {
         View view = new View();
-        view.setQuery("select artifact from '/Default Workspace'");
+        view.setQuery("select item from '/Default Workspace'");
         view.setName("Default Workspace Selection");
         
         artifactViewManager.save(view);
@@ -30,7 +29,7 @@ public class ArtifactViewTest extends AbstractGalaxyTest {
         views = artifactViewManager.getArtifactViews(admin);
         assertEquals(1, views.size());
         
-        Query query = new Query(Artifact.class);
+        Query query = new Query();
         query.add(OpRestriction.like("wsdl.service", "Hello"));
         
         view.setQuery(query.toString());

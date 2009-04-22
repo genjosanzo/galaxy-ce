@@ -6,13 +6,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.mule.galaxy.Artifact;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.collab.Comment;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class CommentTest extends AbstractGalaxyTest {
     public void testComments() throws Exception {
-        Artifact artifact = importHelloWsdl();
+        Item artifact = importHelloWsdl();
         
         Comment c = new Comment();
         c.setItem(artifact);
@@ -61,7 +61,5 @@ public class CommentTest extends AbstractGalaxyTest {
         Set<Comment> comments2 = c4.getComments();
         assertNotNull(comments2);
         assertEquals(1, comments2.size());
-        
-        
     }
 }

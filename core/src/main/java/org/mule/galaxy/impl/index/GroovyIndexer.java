@@ -18,10 +18,8 @@
 
 package org.mule.galaxy.impl.index;
 
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.index.Index;
-import org.mule.galaxy.index.IndexException;
+import groovy.lang.Binding;
+import groovy.util.GroovyScriptEngine;
 
 import java.io.IOException;
 import java.net.URL;
@@ -29,10 +27,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import groovy.lang.Binding;
-import groovy.util.GroovyScriptEngine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.artifact.Artifact;
+import org.mule.galaxy.index.Index;
+import org.mule.galaxy.index.IndexException;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 
@@ -42,11 +43,15 @@ public class GroovyIndexer extends AbstractIndexer
 
     private final Log log = LogFactory.getLog(getClass());
 
-    public void index(final ArtifactVersion artifact, final ContentHandler contentHandler, final Index index) throws IOException, IndexException
-    {
-        Map<String, String> config = index.getConfiguration();
-
-        if (log.isDebugEnabled())
+    public void index(final Item item, final PropertyInfo property, final Index index) 
+    	throws IOException, IndexException {
+	Map<String, String> config = index.getConfiguration();
+	Artifact artifact = (Artifact) property.getValue();
+	if (artifact == null) {
+	    return;
+	}
+	
+	if (log.isDebugEnabled())
         {
             log.debug("Processing: " + index);
         }
@@ -60,9 +65,10 @@ public class GroovyIndexer extends AbstractIndexer
         }
 
         Binding b = new Binding();
+        b.setVariable("item", item);
         b.setVariable("artifact", artifact);
         b.setVariable("config", config);
-        b.setVariable("contentHandler", contentHandler);
+        b.setVariable("contentHandler", artifact.getContentHandler());
         b.setVariable("index", index);
         b.setVariable("log", LogFactory.getLog(getClass().getName()));
 

@@ -60,7 +60,7 @@ public class ViewPanel extends AbstractBrowsePanel {
     private boolean stale = true;
     
     public ViewPanel(Galaxy galaxy) {
-        super(galaxy, false);
+        super(galaxy);
     }
     
     protected RegistryMenuPanel createRegistryMenuPanel() {
@@ -224,7 +224,6 @@ public class ViewPanel extends AbstractBrowsePanel {
             galaxy.getRegistryService().getArtifacts(null, 
                                                      viewForm.getWorkspacePath(), 
                                                      viewForm.isWorkspaceSearchRecursive(),
-                                                     getAppliedArtifactTypeFilters(), 
                                                      viewForm.getPredicates(), 
                                                      viewForm.getFreeformQuery(), 
                                                      resultStart, maxResults, callback);

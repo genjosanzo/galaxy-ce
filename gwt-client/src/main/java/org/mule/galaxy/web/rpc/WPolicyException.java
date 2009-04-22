@@ -25,18 +25,18 @@ import java.util.Map;
 
 public class WPolicyException extends Exception implements IsSerializable {
     
-    private Map<EntryInfo, Collection<WApprovalMessage>> artifactToMessages;
+    private Map<ItemInfo, Collection<WApprovalMessage>> artifactToMessages;
 
     public WPolicyException() {
         super();
     }
 
-    public WPolicyException(Map<EntryInfo, Collection<WApprovalMessage>> artifactToMessages) {
+    public WPolicyException(Map<ItemInfo, Collection<WApprovalMessage>> artifactToMessages) {
         super();
         this.artifactToMessages = artifactToMessages;
     }
 
-    public Map<EntryInfo, Collection<WApprovalMessage>> getPolicyFailures() {
+    public Map<ItemInfo, Collection<WApprovalMessage>> getPolicyFailures() {
         return artifactToMessages;
     }
 }

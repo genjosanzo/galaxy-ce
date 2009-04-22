@@ -7,25 +7,18 @@ import java.io.InputStream;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.w3c.dom.Node;
-
-import org.apache.abdera.model.Document;
-import org.apache.abdera.model.Element;
 import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
 import org.apache.axiom.om.util.Base64;
-import org.apache.commons.io.IOUtils;
-import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.lifecycle.LifecycleManager;
-import org.mule.galaxy.policy.PolicyException;
-import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.policy.wsdl.BasicProfilePolicy;
 import org.mule.galaxy.test.AbstractAtomTest;
 import org.mule.galaxy.util.DOMUtils;
 import org.springmodules.jcr.JcrCallback;
+import org.w3c.dom.Node;
 
 public class PolicyTest extends AbstractAtomTest {
 
@@ -37,7 +30,7 @@ public class PolicyTest extends AbstractAtomTest {
 
                 try {
                     login("admin", "admin");
-                    org.mule.galaxy.Workspace workspace = registry.getWorkspaces().iterator().next();
+                    org.mule.galaxy.Item workspace = registry.getItems().iterator().next();
                     
                     PolicyManager policyManager = (PolicyManager) getApplicationContext().getBean("policyManager");
                     LifecycleManager lifecycleManager = workspace.getLifecycleManager();

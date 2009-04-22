@@ -1,17 +1,22 @@
 package org.mule.galaxy.event;
 
-import static org.mule.galaxy.event.DefaultEvents.PROPERTY_CHANGED;
-import static org.mule.galaxy.event.DefaultEvents.WORKSPACE_DELETED;
+import static org.mule.galaxy.event.DefaultEvents.*;
 
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import junit.framework.TestCase;
+
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
+import org.mule.galaxy.NewItemResult;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.annotation.BindToEvent;
 import org.mule.galaxy.event.annotation.BindToEvents;
@@ -19,10 +24,11 @@ import org.mule.galaxy.event.annotation.OnEvent;
 import org.mule.galaxy.impl.event.DefaultEventManager;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
+import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
+import org.mule.galaxy.type.Type;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
-import junit.framework.TestCase;
 
 public class DefaultEventManagerTest extends TestCase {
 
@@ -90,7 +96,7 @@ public class DefaultEventManagerTest extends TestCase {
         final InheritedBindingWithOnEvent listener = new InheritedBindingWithOnEvent();
         em.addListener(listener);
 
-        final PropertyChangedEvent event = new PropertyChangedEvent(new User(), new DummyWorkspace(), "testProperty", "newValue");
+        final PropertyChangedEvent event = new PropertyChangedEvent(new User(), new DummyItem(), "testProperty", "newValue");
         em.fireEvent(event);
 
         assertTrue(listener.called);
@@ -117,10 +123,10 @@ public class DefaultEventManagerTest extends TestCase {
         MultiEventListener listener = new MultiEventListener();
         em.addListener(listener);
         
-        final PropertyChangedEvent event1 = new PropertyChangedEvent(new User(), new DummyWorkspace(), "testProperty", "newValue");
+        final PropertyChangedEvent event1 = new PropertyChangedEvent(new User(), new DummyItem(), "testProperty", "newValue");
         em.fireEvent(event1);
 
-        final WorkspaceDeletedEvent event2 = new WorkspaceDeletedEvent(new DummyWorkspace());
+        final ItemDeletedEvent event2 = new ItemDeletedEvent(new DummyItem());
         em.fireEvent(event2);
 
         assertSame(event1, listener.puEvent);
@@ -170,11 +176,11 @@ public class DefaultEventManagerTest extends TestCase {
 
     }
 
-    @BindToEvents({WORKSPACE_DELETED, PROPERTY_CHANGED})
+    @BindToEvents({ITEM_DELETED, PROPERTY_CHANGED})
     public static class MultiEventListener {
 
         public PropertyChangedEvent puEvent;
-        public WorkspaceDeletedEvent wdEvent;
+        public ItemDeletedEvent wdEvent;
 
         @OnEvent
         public void callbackProperty(PropertyChangedEvent e) {
@@ -182,7 +188,7 @@ public class DefaultEventManagerTest extends TestCase {
         }
 
         @OnEvent
-        public void callbackWorkspace(WorkspaceDeletedEvent e) {
+        public void callbackWorkspace(ItemDeletedEvent e) {
             wdEvent = e;
         }
     }
@@ -195,18 +201,12 @@ public class DefaultEventManagerTest extends TestCase {
 
     }
     
-    public static class DummyWorkspace extends org.mule.galaxy.impl.workspace.AbstractWorkspace {
+    public static class DummyItem implements Item {
 
-        public DummyWorkspace() {
-            super(null, null);
+        public DummyItem() {
         }
 
-        public Workspace getWorkspace(String name) {
-            return null;
-        }
-
-        public Collection<Workspace> getWorkspaces() throws RegistryException {
-            return null;
+        public void delete() throws RegistryException, AccessException {
         }
 
         public CommentManager getCommentManager() {
@@ -221,11 +221,19 @@ public class DefaultEventManagerTest extends TestCase {
             return null;
         }
 
-        public List<Item> getItems() {
+        public String getId() {
             return null;
         }
 
-        public Item getItem(String name) throws RegistryException, NotFoundException {
+        public Object getInternalProperty(String name) {
+            return null;
+        }
+
+        public Item getItem(String name) throws RegistryException, NotFoundException, AccessException {
+            return null;
+        }
+
+        public List<Item> getItems() throws RegistryException {
             return null;
         }
 
@@ -237,7 +245,27 @@ public class DefaultEventManagerTest extends TestCase {
             return null;
         }
 
-        public Workspace getParent() {
+        public Item getParent() {
+            return null;
+        }
+
+        public String getPath() {
+            return null;
+        }
+
+        public Collection<PropertyInfo> getProperties() {
+            return null;
+        }
+
+        public Object getProperty(String name) {
+            return null;
+        }
+
+        public PropertyInfo getPropertyInfo(String name) {
+            return null;
+        }
+
+        public Type getType() {
             return null;
         }
 
@@ -245,13 +273,56 @@ public class DefaultEventManagerTest extends TestCase {
             return null;
         }
 
+        public boolean hasProperty(String name) {
+            return false;
+        }
+
+        public boolean isLocal() {
+            return false;
+        }
+
+        public NewItemResult newItem(String name, Type type, Map<String, Object> initialProperties)
+                throws DuplicateItemException, RegistryException, PolicyException, AccessException {
+            return null;
+        }
+
+        public NewItemResult newItem(String name, Type type) throws DuplicateItemException,
+                RegistryException, PolicyException, AccessException {
+            return null;
+        }
+
         public void setDefaultLifecycle(Lifecycle l) {
-            
+        }
+
+        public void setInternalProperty(String name, Object value) throws PropertyException, PolicyException,
+                AccessException {
+        }
+
+        public void setLocked(String name, boolean locked) {
         }
 
         public void setName(String name) {
         }
-        
+
+        public void setProperty(String name, Object value) throws PropertyException, PolicyException,
+                AccessException {
+
+        }
+
+        public void setType(Type type) {
+        }
+
+        public void setVisible(String property, boolean visible) {
+        }
+
+        public User getAuthor() {
+            return null;
+        }
+
+        public Item getLatestItem() throws RegistryException {
+            return null;
+        }
+
     }
 
 }

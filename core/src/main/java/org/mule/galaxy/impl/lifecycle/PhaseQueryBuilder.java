@@ -1,8 +1,5 @@
 package org.mule.galaxy.impl.lifecycle;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mule.galaxy.impl.extension.ExtensionQueryBuilder;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;

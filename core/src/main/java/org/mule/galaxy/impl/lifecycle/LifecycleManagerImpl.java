@@ -23,10 +23,8 @@ import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.Workspace;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.impl.jcr.JcrUtil;
-import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.impl.jcr.onm.AbstractDao;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
@@ -98,7 +96,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
         });
     }
 
-    public Lifecycle getLifecycle(Workspace workspace) {
+    public Lifecycle getLifecycle(Item workspace) {
         return getDefaultLifecycle();
     }
 
@@ -141,32 +139,32 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
         execute(new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                Phase p = fallbackLifecycle.getInitialPhase();
-
-                // update all the artifacts using this lifecycle
-                NodeIterator nodes = getEntryVersionsInLifecycle(lifecycle.getId(), session);
-
-                while (nodes.hasNext()) {
-                    Node n = nodes.nextNode();
-
-                    n.setProperty(JcrVersion.LIFECYCLE, fallbackLifecycle.getId());
-                    n.setProperty(JcrVersion.PHASE, p.getId());
-                }
-
-                // switch the default lifecycle for workspaces
-                nodes = getWorkspacesInLifecycle(lifecycleId, session);
-
-                while (nodes.hasNext()) {
-                    Node n = nodes.nextNode();
-
-                    n.setProperty(JcrVersion.LIFECYCLE, fallbackLifecycle.getId());
-                }
-
-                // technically we should clean up the policy manager too
-                // but we can do that lazily inside the LM :-)
-
-                // actually delete the lifecycle
-                doDelete(lifecycleId, session);
+//                Phase p = fallbackLifecycle.getInitialPhase();
+//
+//                // update all the artifacts using this lifecycle
+//                NodeIterator nodes = getItemsInLifecycle(lifecycle.getId(), session);
+//
+//                while (nodes.hasNext()) {
+//                    Node n = nodes.nextNode();
+//
+//                    n.setProperty(JcrVersion.LIFECYCLE, fallbackLifecycle.getId());
+//                    n.setProperty(JcrVersion.PHASE, p.getId());
+//                }
+//
+//                // switch the default lifecycle for workspaces
+//                nodes = getWorkspacesInLifecycle(lifecycleId, session);
+//
+//                while (nodes.hasNext()) {
+//                    Node n = nodes.nextNode();
+//
+//                    n.setProperty(JcrVersion.LIFECYCLE, fallbackLifecycle.getId());
+//                }
+//
+//                // technically we should clean up the policy manager too
+//                // but we can do that lazily inside the LM :-)
+//
+//                // actually delete the lifecycle
+//                doDelete(lifecycleId, session);
 
                 return false;
             }
@@ -405,7 +403,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
             Node node = nodes.nextNode();
 
             if (l.getPhaseById(node.getUUID()) == null) {
-                NodeIterator artifacts = getArtifactsInPhase(node.getUUID(), session);
+                NodeIterator artifacts = getItemsInPhase(node.getUUID(), session);
 
                 if (artifacts.getSize() > 0) {
                     // we should probably throw an exception here, but for now
@@ -414,7 +412,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
                     while (artifacts.hasNext()) {
                         Node artifactNode = artifacts.nextNode();
 
-                        artifactNode.setProperty(JcrVersion.PHASE, l.getInitialPhase().getId());
+//                        artifactNode.setProperty(JcrVersion.PHASE, l.getInitialPhase().getId());
                     }
                 }
 
@@ -473,38 +471,24 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
         this.context = applicationContext;
     }
 
-    private NodeIterator getEntryVersionsInLifecycle(final String lifecycleId, Session session)
+    private NodeIterator getItemsInLifecycle(final String lifecycleId, Session session)
             throws RepositoryException, InvalidQueryException {
         QueryManager qm = getQueryManager(session);
         javax.jcr.query.Query query =
-                qm.createQuery("//element(*, galaxy:artifactVersion)[@lifecycle = '" + lifecycleId + "']",
+                qm.createQuery("//element(*, galaxy:item)[@lifecycle = '" + lifecycleId + "']",
                                javax.jcr.query.Query.XPATH);
 
         QueryResult qr = query.execute();
 
-        NodeIterator nodes = qr.getNodes();
-        return nodes;
+        return qr.getNodes();
     }
 
 
-    private NodeIterator getArtifactsInPhase(final String phaseId, Session session)
+    private NodeIterator getItemsInPhase(final String phaseId, Session session)
             throws RepositoryException, InvalidQueryException {
         QueryManager qm = getQueryManager(session);
         javax.jcr.query.Query query =
                 qm.createQuery("//element(*, galaxy:artifact)[@phaseId = '" + phaseId + "']",
-                               javax.jcr.query.Query.XPATH);
-
-        QueryResult qr = query.execute();
-
-        NodeIterator nodes = qr.getNodes();
-        return nodes;
-    }
-
-    private NodeIterator getWorkspacesInLifecycle(final String lifecycleName, Session session)
-            throws RepositoryException, InvalidQueryException {
-        QueryManager qm = getQueryManager(session);
-        javax.jcr.query.Query query =
-                qm.createQuery("//element(*, galaxy:workspace)[@lifecycle = '" + lifecycleName + "']",
                                javax.jcr.query.Query.XPATH);
 
         QueryResult qr = query.execute();

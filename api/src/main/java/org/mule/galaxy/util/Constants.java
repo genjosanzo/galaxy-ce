@@ -9,7 +9,7 @@ public final class Constants {
         // never instantiate
     }
 
-    public static final String ATOM_NAMESPACE = "http://galaxy.mule.org/1.0";
+    public static final String ATOM_NAMESPACE = "http://galaxy.mule.org/2.0";
     
     public static final QName WSDL_DEFINITION_QNAME = new QName("http://schemas.xmlsoap.org/wsdl/",
                                       "definitions");
@@ -21,6 +21,8 @@ public final class Constants {
     public static final QName MULE2_1_QNAME = new QName("http://www.mulesource.org/schema/mule/core/2.1", "mule");
 
     public static final QName MULE2_2_QNAME = new QName("http://www.mulesource.org/schema/mule/core/2.2", "mule");
+
+    public static final QName MULE3_QNAME = new QName("http://www.mulesource.org/schema/mule/core", "mule");
     
     public static final QName SPRING_QNAME = new QName("http://www.springframework.org/schema/beans", "beans");
 

@@ -1,12 +1,11 @@
 package org.mule.galaxy.web.server;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.mule.galaxy.Artifact;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.web.rpc.SecurityService;
@@ -30,10 +29,6 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
         Collection<WUser> users = gwtSecurityService.getUsers();
         
         assertEquals(1, users.size());
-        
-        WUser admin = users.iterator().next();
-//        Collection groupIds = admin.getGroupIds();
-//        assertEquals(2, groupIds.size());
         
         WUser user = new WUser();
         user.setUsername("dandiep");
@@ -69,7 +64,7 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
     
 
     public void testItemPermissions() throws Exception {
-        Artifact artifact = importHelloWsdl();
+        Item artifact = importHelloWsdl();
         Map group2Perm = gwtSecurityService.getGroupPermissions(artifact.getId());
         
         assertEquals(2, group2Perm.size());
@@ -86,7 +81,7 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
         assertNotNull(g.getId());
         assertNotNull(g.getName());
         
-        assertEquals(3, permGrants.size());
+        assertEquals(4, permGrants.size());
         
         WPermissionGrant pg = (WPermissionGrant) permGrants.iterator().next();
         assertNotNull(pg.getPermission());
@@ -95,7 +90,7 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
         /* Revoke all the artifactpermissions and test things again.
          */
         ArrayList<Permission> toRevoke = new ArrayList<Permission>();
-        toRevoke.add(Permission.DELETE_ARTIFACT);
+        toRevoke.add(Permission.DELETE_ITEM);
         accessControlManager.revoke(accessControlManager.getGroup(g.getId()),
                                     toRevoke,
                                     artifact);
@@ -111,11 +106,11 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
         assertNotNull(g.getId());
         assertNotNull(g.getName());
         
-        assertEquals(3, permGrants.size());
+        assertEquals(4, permGrants.size());
         
         for (Object o : permGrants) {
             pg = (WPermissionGrant) o;
-            if (Permission.DELETE_ARTIFACT.equals(pg.getPermission())) {
+            if (Permission.DELETE_ITEM.equals(pg.getPermission())) {
                 assertEquals(WPermissionGrant.REVOKED, pg.getGrant());
             }
         }

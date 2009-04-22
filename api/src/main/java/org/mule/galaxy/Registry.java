@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.mule.galaxy.extension.Extension;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.security.AccessException;
-import org.mule.galaxy.workspace.WorkspaceManagerFactory;
+import org.mule.galaxy.type.Type;
 
 /**
  * The central place to access information in the registry.
@@ -27,11 +28,15 @@ public interface Registry {
      */
     String getUUID();
     
-    Collection<Workspace> getWorkspaces() throws RegistryException, AccessException;
-    
-    Workspace newWorkspace(String name) throws DuplicateItemException, RegistryException, AccessException;
+    Collection<Item> getItems() throws RegistryException, AccessException;
 
-    void save(Workspace w, String parentId)
+    NewItemResult newItem(String name, Type type)
+    	throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException;
+
+    NewItemResult newItem(String name, Type type, Map<String,Object> initialProperties)
+    	throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException;
+    
+    void save(Item w, String parentId)
         throws RegistryException, NotFoundException, AccessException, DuplicateItemException;
 
     void save(Item item) throws AccessException, RegistryException;
@@ -49,12 +54,12 @@ public interface Registry {
      * @return
      * @throws RegistryException
      */
-    AttachedWorkspace attachWorkspace(Workspace parent, 
-                            	      String name, 
-                            	      String workspaceFactory, 
-                            	      Map<String, String> configuration) throws RegistryException;
+    AttachedItem attachItem(Item parent, 
+                    	    String name, 
+                            String workspaceFactory, 
+                    	    Map<String, String> configuration) throws RegistryException;
     
-    Collection<AttachedWorkspace> getAttachedWorkspaces();
+    Collection<AttachedItem> getAttachedWorkspaces();
     
     Item getItemById(String id) throws NotFoundException, RegistryException, AccessException;
     
@@ -62,16 +67,15 @@ public interface Registry {
 
     Item resolve(Item w, String location) throws RegistryException;
     
-    void move(Entry item, String newWorkspacePath, final String newName) throws RegistryException, AccessException, NotFoundException;
+    void move(Item item, String path, final String newName) throws RegistryException, AccessException, NotFoundException;
 
-    
     /* Search functions */
 
     SearchResults search(String queryString, int start, int maxResults) throws RegistryException, QueryException;
 
     SearchResults search(Query query) throws RegistryException, QueryException;
     
-    SearchResults suggest(final String path, final int maxResults, final String excludePath, Class... types)
+    SearchResults suggest(final String path, final int maxResults, final String excludePath, String... types)
     	throws RegistryException, QueryException;
     
     /**

@@ -18,13 +18,10 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.mule.galaxy.Entry;
-import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.lifecycle.LifecycleExtension;
 import org.mule.galaxy.lifecycle.Lifecycle;
@@ -146,17 +143,10 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
 
         approve(item, item, failures, lifecycle, phases, policies);
         
-        if (item instanceof Workspace) {
-            for (Item i : ((Workspace) item).getItems()) {
+        if (item instanceof Item) {
+            for (Item i : ((Item) item).getItems()) {
                 approveItem(i, failures, lifecycle, phases, policies);
             }
-        } else if (item instanceof Entry) {
-            for (EntryVersion v : ((Entry) item).getVersions()) {
-                approveItem((EntryVersion)v, failures, lifecycle,phases, policies);
-            }
-        } else if (item instanceof EntryVersion) {
-            // if the parent entry has a lifecycle, try that too
-            approve(item, item.getParent(), failures, lifecycle, phases, policies);
         }
     }
 
@@ -186,17 +176,10 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                              Collection<PolicyInfo> activePolicies) throws RegistryException {
         approve(item, item, failures, activePolicies);
         
-        if (item instanceof Workspace) {
-            for (Item i : ((Workspace) item).getItems()) {
+        if (item instanceof Item) {
+            for (Item i : ((Item) item).getItems()) {
                 approveItem(i, failures, activePolicies);
             }
-        } else if (item instanceof Entry) {
-            for (EntryVersion v : ((Entry) item).getVersions()) {
-                approveItem((EntryVersion)v, failures, activePolicies);
-            }
-        } else if (item instanceof EntryVersion) {
-            // if the parent entry has a lifecycle, try that too
-            approve(item, item.getParent(), failures, activePolicies);
         }
     }
 
@@ -257,20 +240,20 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                 org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query();
                 q.add(OpRestriction.in(pd.getProperty() + ".phase", phases));
                 
-                approveArtifacts(q, null, phases, policies);
+                approveItems(q, null, phases, policies);
             }
         }
         
         activatePolicy(phasesNodeId, phases, policies);
     }
 
-    private void approveArtifacts(org.mule.galaxy.query.Query q, 
+    private void approveItems(org.mule.galaxy.query.Query q, 
                                   Lifecycle lifecycle,
                                   Collection<Phase> phases, 
                                   Policy... policies)
         throws RegistryException, PolicyException {
         try {
-            q.add(OpRestriction.eq("enabled", true));
+            q.add(OpRestriction.not(OpRestriction.eq("enabled", false)));
             SearchResults results = getRegistry().search(q);
             Map<Item, List<ApprovalMessage>> approvals = new HashMap<Item, List<ApprovalMessage>>();
             
@@ -298,7 +281,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                 org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query();
                 q.add(OpRestriction.eq(pd.getProperty() + ".id", lifecycle.getId()));
                 
-                approveArtifacts(q, lifecycle, null, policies);
+                approveItems(q, lifecycle, null, policies);
             }
         }
         
@@ -364,7 +347,8 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                 for (Policy policy : policies) {
                     getOrCreate(node, policy.getId());
                 }
-                
+
+                JcrUtil.dump(session.getRootNode());   
                 session.save();
                 return null;
             }

@@ -17,6 +17,33 @@
  */
 package org.mule.galaxy.web.client;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.mule.galaxy.web.client.activity.ActivityPanel;
+import org.mule.galaxy.web.client.admin.AdministrationPanel;
+import org.mule.galaxy.web.client.entry.ItemPanel;
+import org.mule.galaxy.web.client.property.PropertyPanelFactory;
+import org.mule.galaxy.web.client.registry.ArtifactForm;
+import org.mule.galaxy.web.client.registry.SearchPanel;
+import org.mule.galaxy.web.client.registry.ViewPanel;
+import org.mule.galaxy.web.client.util.ExternalHyperlink;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.AdminService;
+import org.mule.galaxy.web.rpc.AdminServiceAsync;
+import org.mule.galaxy.web.rpc.HeartbeatService;
+import org.mule.galaxy.web.rpc.HeartbeatServiceAsync;
+import org.mule.galaxy.web.rpc.RegistryService;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.SecurityService;
+import org.mule.galaxy.web.rpc.SecurityServiceAsync;
+import org.mule.galaxy.web.rpc.WExtensionInfo;
+import org.mule.galaxy.web.rpc.WUser;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
@@ -32,37 +59,6 @@ import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.mule.galaxy.web.client.activity.ActivityPanel;
-import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.client.entry.EntryPanel;
-import org.mule.galaxy.web.client.property.PropertyPanelFactory;
-import org.mule.galaxy.web.client.registry.ArtifactForm;
-import org.mule.galaxy.web.client.registry.BrowsePanel;
-import org.mule.galaxy.web.client.registry.EntryForm;
-import org.mule.galaxy.web.client.registry.SearchPanel;
-import org.mule.galaxy.web.client.registry.ViewPanel;
-import org.mule.galaxy.web.client.util.ExternalHyperlink;
-import org.mule.galaxy.web.client.workspace.ManageWorkspacePanel;
-import org.mule.galaxy.web.client.workspace.WorkspaceForm;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.AdminService;
-import org.mule.galaxy.web.rpc.AdminServiceAsync;
-import org.mule.galaxy.web.rpc.HeartbeatService;
-import org.mule.galaxy.web.rpc.HeartbeatServiceAsync;
-import org.mule.galaxy.web.rpc.RegistryService;
-import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.rpc.SecurityService;
-import org.mule.galaxy.web.rpc.SecurityServiceAsync;
-import org.mule.galaxy.web.rpc.WExtensionInfo;
-import org.mule.galaxy.web.rpc.WUser;
 
 
 /**
@@ -89,12 +85,12 @@ public class Galaxy implements EntryPoint, HistoryListener {
     private boolean suppressTabHistory;
     private Map<String, AbstractComposite> historyListeners = new HashMap<String, AbstractComposite>();
     private int adminTabIndex;
-    private BrowsePanel browsePanel;
+    private ItemPanel itemPanel;
     protected FlowPanel base;
     protected PropertyPanelFactory propertyPanelFactory = new PropertyPanelFactory();
     protected List extensions;
     private String currentToken;
-	protected Label footer;
+    protected Label footer;
 
     /**
      * This is the entry point method.
@@ -124,15 +120,6 @@ public class Galaxy implements EntryPoint, HistoryListener {
         this.adminService = (AdminServiceAsync) GWT.create(AdminService.class);
         target = (ServiceDefTarget) adminService;
         target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/admin.rpc");
-
-        // prefetch extensions
-        registryService.getExtensions(new AbstractCallback(browsePanel) {
-            @SuppressWarnings("unchecked")
-            public void onSuccess(Object o) {
-                extensions = (List) o;
-                Collections.sort(extensions);
-            }
-        });
 
         base = new FlowPanel();
         base.setStyleName("base");
@@ -187,12 +174,21 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
         initializeBody();
 
-        browsePanel = new BrowsePanel(this);
-        createPageInfo(DEFAULT_PAGE, browsePanel, 0);
-        registryPanel.add(browsePanel);
+        itemPanel = new ItemPanel(this);
+        createPageInfo(DEFAULT_PAGE, itemPanel, 0);
+        registryPanel.add(itemPanel);
+
+        // prefetch extensions
+        registryService.getExtensions(new AbstractCallback(itemPanel.getErrorPanel()) {
+            @SuppressWarnings("unchecked")
+            public void onSuccess(Object o) {
+                extensions = (List) o;
+                Collections.sort(extensions);
+            }
+        });
 
         final Galaxy galaxy = this;
-        registryService.getUserInfo(new AbstractCallback(browsePanel) {
+        registryService.getUserInfo(new AbstractCallback(itemPanel.getErrorPanel()) {
             public void onSuccess(Object o) {
                 user = (WUser) o;
                 rightPanel.add(new Label("Signed in as: " + user.getName()));
@@ -208,15 +204,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
         base.add(footer);
         RootPanel.get().add(base);
 
-        createPageInfo("artifact/" + WILDCARD, new EntryPanel(this), 0);
-        createPageInfo("entry/" + WILDCARD, new EntryPanel(this), 0);
-        createPageInfo("artifact-version/" + WILDCARD, new EntryPanel(this, true), 0);
-        createPageInfo("add-artifact", new ArtifactForm(this), 0);
-        createPageInfo("new-artifact-version/" + WILDCARD, new ArtifactForm(this), 0);
-        createPageInfo("add-entry", new EntryForm(this), 0);
-        createPageInfo("new-entry-version/" + WILDCARD, new EntryForm(this), 0);
-        createPageInfo("add-workspace", new WorkspaceForm(this), 0);
-        createPageInfo("manage-workspace", new ManageWorkspacePanel(this), 0);
+        createPageInfo("item/" + WILDCARD, new ItemPanel(this), 0);
+        createPageInfo("add-item", new ArtifactForm(this), 0);
         createPageInfo("search", new SearchPanel(this), 1);
         createPageInfo("view", new ViewPanel(this), 0);
 
@@ -290,7 +279,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         } else {
             tabPanel.selectTab(0);
             List<String> args = Collections.emptyList();
-            browsePanel.onShow(args);
+            itemPanel.onShow(args);
         }
     }
 

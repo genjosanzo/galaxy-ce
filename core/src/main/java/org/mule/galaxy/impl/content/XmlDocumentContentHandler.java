@@ -22,17 +22,14 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.XmlContentHandler;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.artifact.XmlContentHandler;
 import org.mule.galaxy.impl.MapNamespaceContext;
 import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.QNameUtil;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import org.xml.sax.SAXException;
 
 public class XmlDocumentContentHandler extends AbstractContentHandler implements XmlContentHandler {
@@ -74,7 +71,7 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
     }
 
     @Override
-    public Set<String> detectDependencies(Object o, Workspace w) {
+    public Set<String> detectDependencies(Object o, Item w) {
         HashSet<String> deps = new HashSet<String>();
         try {
             for (XPathExpression expr : imports) {
@@ -93,12 +90,6 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
         
         return deps;
     }
-    
-    @Override
-    public void addMetadata(ArtifactVersion v) {
-        super.addMetadata(v);
-    }
-
 
     public Document getDocument(Object o) {
         return (Document) o;
@@ -118,7 +109,7 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
         return QNameUtil.getName(doc.getDocumentElement());
     }
 
-    public Object read(InputStream stream, Workspace workspace) throws IOException {
+    public Object read(InputStream stream, Item workspace) throws IOException {
         try {
             return DOMUtils.readXml(stream);
         } catch (SAXException e) {
@@ -143,7 +134,7 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
     }
 
     // TODO maybe should go, neither used nor overridden anywhere
-    public Object read(Source source, Workspace workspace) throws Exception {
+    public Object read(Source source, Item workspace) throws Exception {
         throw new UnsupportedOperationException();
     }
 }

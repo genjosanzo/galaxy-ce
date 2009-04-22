@@ -1,6 +1,6 @@
 package org.mule.galaxy.impl.plugin;
 
-import org.mule.galaxy.ArtifactType;
+import org.mule.galaxy.artifact.ArtifactType;
 
 /**
  * Does some initialization for other artifact types.

@@ -1,39 +1,31 @@
 package org.mule.galaxy.security;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.Entry;
-import org.mule.galaxy.Item;
-import org.mule.galaxy.Workspace;
-
-@SuppressWarnings("unchecked")
 public enum Permission {
-    READ_ARTIFACT("Read Artifact/Entry", Entry.class, Artifact.class, Workspace.class),
-    MODIFY_ARTIFACT("Modify Artifact/Entry", Entry.class, Artifact.class, Workspace.class),
-    DELETE_ARTIFACT("Delete Artifact/Entry", Entry.class, Artifact.class, Workspace.class),
-    READ_WORKSPACE("Read Workspace", Workspace.class),
-    MODIFY_WORKSPACE("Modify Workspace", Workspace.class),
-    DELETE_WORKSPACE("Delete Workspace", Workspace.class),
-    VIEW_ACTIVITY("View Activity Log"),
-    MANAGE_USERS("Manage Users"),
-    MANAGE_INDEXES("Manage Indexes"),
-    MANAGE_GROUPS("Manage Groups"),
-    MANAGE_POLICIES("Manage Policies"),
-    MANAGE_PROPERTIES("Manage Properties"),
-    MANAGE_LIFECYCLES("Manage Lifecycles"),
-    MANAGE_ARTIFACT_TYPES("Manage Artifact Types"),
-    EXECUTE_ADMIN_SCRIPTS("Execute Admin Scripts");
+    READ_ITEM("Read Artifact/Entry", true),
+    MODIFY_ITEM("Modify Artifact/Entry", true),
+    DELETE_ITEM("Delete Artifact/Entry", true),
+    VIEW_ACTIVITY("View Activity Log", false),
+    MANAGE_USERS("Manage Users", false),
+    MANAGE_INDEXES("Manage Indexes", false),
+    MANAGE_GROUPS("Manage Groups", false),
+    MANAGE_POLICIES("Manage Policies", true),
+    MANAGE_PROPERTIES("Manage Properties", false),
+    MANAGE_LIFECYCLES("Manage Lifecycles", false),
+    MANAGE_ARTIFACT_TYPES("Manage Artifact Types", false),
+    EXECUTE_ADMIN_SCRIPTS("Execute Admin Scripts", false);
     
     private String description;
-    private Class<? extends Item>[] appliesTo;
+    private boolean itemPermission;
     
-    Permission(String description, Class<? extends Item>... appliesTo) {
+    Permission(String description, boolean itemPermission) {
         this.description = description;
-        this.appliesTo = appliesTo;
+        this.itemPermission = itemPermission;
     }
     public String getDescription() {
         return description;
     }
-    public Class<? extends Item>[] getAppliesTo() {
-        return appliesTo;
+    public boolean isItemPermission() {
+        return itemPermission;
     }
+    
 }

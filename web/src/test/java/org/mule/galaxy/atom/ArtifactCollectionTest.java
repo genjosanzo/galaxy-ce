@@ -33,8 +33,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         // Grab workspaces & collections
         ClientResponse res = client.get(base, defaultOpts);
         assertEquals(res.getStatusText(), 200, res.getStatus());
-//        prettyPrint(res.getDocument());
-        
+
         org.apache.abdera.model.Document<Service> svcDoc = res.getDocument();
         Service root = svcDoc.getRoot();
         
@@ -64,7 +63,6 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res = client.get(colUri.toString(), defaultOpts);
         System.out.println(res.getStatusText());
         assertEquals(200, res.getStatus());
-//        prettyPrint(res.getDocument());
         res.release();
         
         // Testing of entry creation
@@ -80,7 +78,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res = client.post(defaultWkspcCol, getWsdl(), opts);
         assertEquals(201, res.getStatus());
         
-        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl", 
+        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl/0.1", 
                      res.getLocation().toString());
         res.release();
         
@@ -88,11 +86,9 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         System.out.println("Grabbing the Feed Again");
         res = client.get(UrlEncoding.encode(defaultWkspcCol, Profile.PATH.filter()), defaultOpts);
         assertEquals(200, res.getStatus());
-//        prettyPrint(res.getDocument());
         
         org.apache.abdera.model.Document<Feed> feedDoc = res.getDocument();
         Feed feed = feedDoc.getRoot();
-        Thread.sleep(1000);
         List<Entry> entries = feed.getEntries();
         assertEquals(7, entries.size());
         
@@ -104,9 +100,6 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         }
         assertNotNull(e);
         assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl;atom", e.getEditLink().getHref().toString());
-        assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl", e.getContentSrc().toString());
-        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl", 
-                     e.getLink("edit-media").getHref().toString());
         res.release();
         
         // Grab the feed with a "/" at the end
@@ -131,7 +124,6 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         System.out.println("Getting entry " + e.getEditLinkResolvedHref().toString());
         res = client.get(e.getEditLinkResolvedHref().toString(), defaultOpts);
         org.apache.abdera.model.Document<Entry> entryDoc = res.getDocument();
-//        prettyPrint(entryDoc);
         Entry entry = entryDoc.getRoot();
         
         Collection versionCollection = null;
@@ -145,8 +137,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res.release();
         
         // try getting the version history
-        res = client.get(e.getContentSrc().toString() + ";history", defaultOpts);
-//        prettyPrint(res.getDocument());
+        res = client.get("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl;history", defaultOpts);
         feedDoc = res.getDocument();
         feed = feedDoc.getRoot();
         
@@ -154,12 +145,12 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals(1, entries.size());
         
         Entry historyEntry = entries.get(0);
-        assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl?version=0.1",
+        assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl/0.1",
                      historyEntry.getContentSrc().toString());
         res.release();
         
         // Get the raw content
-        res = client.get(e.getContentSrc().toString(), defaultOpts);
+        res = client.get(historyEntry.getContentSrc().toString(), defaultOpts);
         assertEquals(200, res.getStatus());
         
         InputStream is = res.getInputStream();
@@ -167,11 +158,11 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res.release();
         
         // HEAD the resource
-        res = client.head(e.getContentSrc().toString(), defaultOpts);
+        res = client.head(historyEntry.getContentSrc().toString(), defaultOpts);
         assertEquals(200, res.getStatus());
         res.release();
         
-        res = client.get(e.getContentSrc().toString() + "?version=0.1", defaultOpts);
+        res = client.get("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl?version=0.1", defaultOpts);
         assertEquals(200, res.getStatus());
         res.release();
         
@@ -189,139 +180,102 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         opts = new RequestOptions();
         opts.setContentType("application/xml; charset=utf-8");
         opts.setSlug("hello_world.wsdl");
-        opts.setHeader("X-Artifact-Version", "0.2");
+        opts.setHeader("Slug", "0.2");
         opts.setAuthorization(defaultOpts.getAuthorization());
-        
+
+        // ensure we can't put
         res = client.put(colUri.toString() + "/Default%20Workspace/hello_world.wsdl", getWsdl(), opts);
-        assertEquals(200, res.getStatus());
+        assertEquals(405, res.getStatus());
+        res.release();
+
+        // post is what should work instead
+        res = client.post(colUri.toString() + "/Default%20Workspace/hello_world.wsdl", getWsdl(), opts);
+        assertEquals(201, res.getStatus());
+        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl/0.2", res.getLocation().toString());
         res.release();
         
         // Get the entry
-        String v2Uri = colUri.toString() + "/Default%20Workspace/hello_world.wsdl;atom?version=0.2";
+        String v2Uri = colUri.toString() + "/Default%20Workspace/hello_world.wsdl/0.2;atom";
         System.out.println("Getting entry " + v2Uri);
         res = client.get(v2Uri, defaultOpts);
 
         e = assertAndGetEntry(res, 200);
-        
-        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl;atom?version=0.2", e.getEditLink().getHref().toString());
-        assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl?version=0.2", e.getContentSrc().toString());
-        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl?version=0.2", 
+        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl/0.2;atom", e.getEditLink().getHref().toString());
+        assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl/0.2", e.getContentSrc().toString());
+        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl/0.2", 
                      e.getLink("edit-media").getHref().toString());
-       
-        Element info = e.getExtension(new QName(AbstractItemCollection.NAMESPACE, "artifact-info"));
+        Element info = e.getExtension(new QName(ItemCollection.NAMESPACE, "item-info"));
         assertNotNull(info);
-        assertEquals("hello_world.wsdl", info.getAttributeValue("name"));
-        assertEquals("application/xml", info.getAttributeValue("mediaType"));
-        assertEquals("{http://schemas.xmlsoap.org/wsdl/}definitions", info.getAttributeValue("documentType"));
+        assertEquals("0.2", info.getAttributeValue("name"));
         assertNotNull(info.getAttributeValue("created"));
         
-        Element versionEl = e.getExtension(new QName(AbstractItemCollection.NAMESPACE, "version"));
-        assertNotNull(versionEl);
-        assertEquals("0.2", versionEl.getAttributeValue("label"));
-        assertEquals("true", versionEl.getAttributeValue("default"));
-        assertEquals("true", versionEl.getAttributeValue("enabled"));
-        assertNotNull(versionEl.getAttributeValue("created"));
-        
-        ExtensibleElement metadata = getVersionedMetadata(e);
-        ExtensibleElement global = getGlobalMetadata(e);
-        
+        ExtensibleElement metadata = getMetadata(e);
         assertNotNull(metadata);
-        assertNotNull(global);
 
-        Element lifecycleEl = metadata.getExtension(new QName(AbstractItemCollection.NAMESPACE, "lifecycle"));
+        Element lifecycleEl = metadata.getExtension(new QName(ItemCollection.NAMESPACE, "lifecycle"));
         assertNotNull(lifecycleEl);
         assertEquals("primary.lifecycle", lifecycleEl.getAttributeValue("property"));
         assertEquals("Default", lifecycleEl.getAttributeValue("name"));
         assertEquals("Created", lifecycleEl.getAttributeValue("phase"));
         
-        Element next = lifecycleEl.getFirstChild(new QName(AbstractItemCollection.NAMESPACE, "next-phases"));
+        Element next = lifecycleEl.getFirstChild(new QName(ItemCollection.NAMESPACE, "next-phases"));
         assertNotNull(next);
         
-        Element previous = lifecycleEl.getFirstChild(new QName(AbstractItemCollection.NAMESPACE, "previous-phases"));
+        Element previous = lifecycleEl.getFirstChild(new QName(ItemCollection.NAMESPACE, "previous-phases"));
         assertNotNull(previous);
+
+        Element artifactInfo = metadata.getExtension(new QName(ItemCollection.NAMESPACE, "artifact"));
+        assertNotNull(artifactInfo);
+        assertEquals("application/xml", artifactInfo.getAttributeValue("mediaType"));
+        assertEquals("{http://schemas.xmlsoap.org/wsdl/}definitions", artifactInfo.getAttributeValue("documentType"));
         
-        List<Element> properties = metadata.getExtensions(new QName(AbstractItemCollection.NAMESPACE, "property"));
+        List<Element> properties = metadata.getExtensions(new QName(ItemCollection.NAMESPACE, "property"));
         assertTrue(properties.size() > 0);
         int size = properties.size();
         
         res.release();
         
-        // update metadata/lifecycle/enabled/default
+        // update properties
         lifecycleEl.setAttributeValue("phase", "Developed");
         
         for (Element propEl : properties) {
             propEl.discard();
         }
         
-        Element prop = factory.newElement(new QName(AbstractItemCollection.NAMESPACE, "property"), metadata);
+        Element prop = factory.newElement(new QName(ItemCollection.NAMESPACE, "property"), metadata);
         prop.setAttributeValue("name", "test1");
         prop.setAttributeValue("value", "test1");
         
-        prop = factory.newElement(new QName(AbstractItemCollection.NAMESPACE, "property"), metadata);
+        prop = factory.newElement(new QName(ItemCollection.NAMESPACE, "property"), metadata);
         prop.setAttributeValue("name", "test2");
-        Element valueEl = factory.newElement(new QName(AbstractItemCollection.NAMESPACE, "value"), prop);
+        Element valueEl = factory.newElement(new QName(ItemCollection.NAMESPACE, "value"), prop);
         valueEl.setText("test2");
-        valueEl = factory.newElement(new QName(AbstractItemCollection.NAMESPACE, "value"), prop);
+        valueEl = factory.newElement(new QName(ItemCollection.NAMESPACE, "value"), prop);
         valueEl.setText("test2");
         
-        prop = factory.newElement(new QName(AbstractItemCollection.NAMESPACE, "property"), metadata);
+        prop = factory.newElement(new QName(ItemCollection.NAMESPACE, "property"), metadata);
         prop.setAttributeValue("name", "test3");
         prop.setAttributeValue("value", "test3");
         prop.setAttributeValue("visible", "false");
-        
-        prop = factory.newElement(new QName(AbstractItemCollection.NAMESPACE, "property"), global);
-        prop.setAttributeValue("name", "test-global");
-        prop.setAttributeValue("value", "test-global");
-        
-        versionEl.setAttributeValue("label", "3.0");
-        versionEl.setAttributeValue("enabled", "false");
-        
+
         res = client.put(v2Uri, e, defaultOpts);
         assertEquals(204, res.getStatus());
         res.release();
 
-        String asdf = colUri.toString() + "/Default%20Workspace/hello_world.wsdl;atom";
-        res = client.put(asdf, e, defaultOpts);
-        assertEquals(204, res.getStatus());
-        res.release();
-        
         // Try to show the hidden metadata
-        String v3Uri = colUri.toString() + "/Default%20Workspace/hello_world.wsdl;atom?version=3.0";
-        res = client.get(v3Uri + "&showHiddenProperties=true", defaultOpts);
+        res = client.get(v2Uri + "?showHiddenProperties=true", defaultOpts);
         e = assertAndGetEntry(res, 200);
-        prettyPrint(e);
         
-        metadata = getVersionedMetadata(e);
-        global = getGlobalMetadata(e);
+        metadata = getMetadata(e);
         
         // check versioned metadata
-        properties = metadata.getExtensions(new QName(AbstractItemCollection.NAMESPACE, "property"));
+        properties = metadata.getExtensions(new QName(ItemCollection.NAMESPACE, "property"));
         assertEquals(size + 3, properties.size());
-        
-        // check global metadata
-        properties = global.getExtensions(new QName(AbstractItemCollection.NAMESPACE, "property"));
-        assertEquals(1, properties.size());
-        
-        res.release();
-        
-        // check the metadata
-        System.out.println("Getting entry again " + v3Uri);
-        res = client.get(v3Uri, defaultOpts);
 
-        entryDoc = res.getDocument();
-//        prettyPrint(entryDoc);
-        e = entryDoc.getRoot();
-        
-        lifecycleEl = metadata.getExtension(new QName(AbstractItemCollection.NAMESPACE, "lifecycle"));
+        lifecycleEl = metadata.getExtension(new QName(ItemCollection.NAMESPACE, "lifecycle"));
         assertNotNull(lifecycleEl);
         assertEquals("Default", lifecycleEl.getAttributeValue("name"));
         assertEquals("Developed", lifecycleEl.getAttributeValue("phase"));
-        
-        versionEl = e.getExtension(new QName(AbstractItemCollection.NAMESPACE, "version"));
-        assertNotNull(lifecycleEl);
-        assertEquals("3.0", versionEl.getAttributeValue("label"));
-        
-        assertEquals("false", versionEl.getAttributeValue("enabled"));
         
         res.release();
         
@@ -349,15 +303,15 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         ClientResponse res = client.post(collection + "/Default%20Workspace", getWsdl(), opts);
         assertEquals(201, res.getStatus());
         
-        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl", 
+        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl/0.1", 
                      res.getLocation().toString());
         res.release();
         
-        res = client.delete(collection + "/Default%20Workspace/hello_world.wsdl;atom?version=0.1", defaultOpts);
+        res = client.delete(collection + "/Default%20Workspace/hello_world.wsdl/0.1;atom", defaultOpts);
         assertEquals(204, res.getStatus());
         res.release();
         
-        res = client.get(collection + "/Default%20Workspace/hello_world.wsdl;atom?version=0.1", defaultOpts);
+        res = client.get(collection + "/Default%20Workspace/hello_world.wsdl/0.1;atom", defaultOpts);
         assertEquals(404, res.getStatus());
         res.release();
         

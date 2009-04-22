@@ -46,30 +46,27 @@ import org.mule.galaxy.web.rpc.ItemNotFoundException;
 public class NameEditPanel extends Composite {
 
     private InlineFlowPanel panel;
-    private final String versionId;
+    private final String itemId;
     private String name;
     private final String workspacePath;
     private final Galaxy galaxy;
     private final ErrorPanel errorPanel;
 
-    private final EntryPanel callbackPanel;
+    private final ItemPanel callbackPanel;
     private final List<String> callbackParams;
-    private final String version;
 
     public NameEditPanel(Galaxy galaxy,
                          ErrorPanel errorPanel,
-                         String versionId,
+                         String itemId,
                          String name,
-                         String version,
                          String workspacePath, 
-                         final EntryPanel callbackPanel, 
+                         final ItemPanel callbackPanel, 
                          final List<String> callbackParams) {
         super();
         this.galaxy = galaxy;
         this.errorPanel = errorPanel;
-        this.versionId = versionId;
+        this.itemId = itemId;
         this.name = name;
-        this.version = version;
         this.workspacePath = workspacePath;
 
         panel = new InlineFlowPanel();
@@ -113,13 +110,6 @@ public class NameEditPanel extends Composite {
 
         row.add(nameTB);
         
-        row.add(new HTML("&nbsp;"));
-        final ValidatableTextBox versionTB = new ValidatableTextBox(new StringNotEmptyValidator());
-        versionTB.getTextBox().setText(version);
-        versionTB.getTextBox().setVisibleLength(5);
-        
-        row.add(versionTB);
-
         Button saveButton = new Button("Save");
         saveButton.addClickListener(new ClickListener() {
 
@@ -128,8 +118,7 @@ public class NameEditPanel extends Composite {
                     return;
                 }
                 save(workspaceSB.getText(), 
-                     nameTB.getText(),
-                     versionTB.getText());
+                     nameTB.getText());
             }
             
         });
@@ -150,12 +139,11 @@ public class NameEditPanel extends Composite {
         panel.add(row);
     }
 
-    protected void save(final String newWorkspacePath, final String newName, String newVersion) {
-        if (!newWorkspacePath.equals(this.workspacePath) 
-            || !newName.equals(this.name)
-            || !newVersion.equals(this.version)) {
+    protected void save(final String newParent, final String newName) {
+        if (!newParent.equals(this.workspacePath) 
+            || !newName.equals(this.name)) {
             // save only if name or workspace changed
-            galaxy.getRegistryService().move(versionId, newWorkspacePath, newName, newVersion, new AbstractCallback(errorPanel) {
+            galaxy.getRegistryService().move(itemId, newParent, newName, new AbstractCallback(errorPanel) {
 
                 @Override
                 public void onFailure(Throwable caught) {

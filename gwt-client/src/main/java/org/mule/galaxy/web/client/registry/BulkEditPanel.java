@@ -18,21 +18,6 @@
 
 package org.mule.galaxy.web.client.registry;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.RadioButton;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,7 +36,20 @@ import org.mule.galaxy.web.rpc.SecurityService;
 import org.mule.galaxy.web.rpc.WPermission;
 import org.mule.galaxy.web.rpc.WPolicyException;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
-import org.mule.galaxy.web.rpc.RegistryService.ApplyTo;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 
 public class BulkEditPanel extends AbstractErrorShowingComposite
@@ -88,18 +86,6 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
     private AbstractPropertyRenderer renderer;
 
     private WPropertyDescriptor propertyDescriptor;
-
-    private RadioButton applySetToEntry;
-
-    private RadioButton applySetToLatest;
-
-    private RadioButton applySetToAllVersions;
-
-    private RadioButton applyDelToEntry;
-
-    private RadioButton applyDelToLatest;
-
-    private RadioButton applyDelToAllVersions;
 
     private final long resultCount;
 
@@ -217,14 +203,8 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
 
         } else if (sender == setPropertyCB) {
             setPropertyLB.setEnabled(checked);
-            applySetToEntry.setEnabled(checked);
-            applySetToAllVersions.setEnabled(checked);
-            applySetToLatest.setEnabled(checked);
         } else if (sender == delPropertyCB) {
             delPropertyLB.setEnabled(checked);
-            applyDelToEntry.setEnabled(checked);
-            applyDelToAllVersions.setEnabled(checked);
-            applyDelToLatest.setEnabled(checked);
         }
     }
 
@@ -318,7 +298,7 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
 
     // RPC call to get list of available permissions
     private void fetchPermissions() {
-        galaxy.getSecurityService().getPermissions(SecurityService.ARTIFACT_PERMISSIONS, new AbstractCallback(this) {
+        galaxy.getSecurityService().getPermissions(SecurityService.ITEM_PERMISSIONS, new AbstractCallback(this) {
             public void onFailure(Throwable caught) {
                 super.onFailure(caught);
             }
@@ -380,41 +360,11 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
         table.setText(0, 1, "Set: ");
         table.setWidget(0, 2, setPropertyLB);
 
-        applySetToEntry = new RadioButton("set", "Apply to Artifact/Entry");
-        applySetToEntry.setChecked(true);
-        applySetToLatest = new RadioButton("set", "Apply to latest version");
-        applySetToAllVersions = new RadioButton("set", "Apply to all versions");
-        applySetToEntry.setEnabled(false);
-        applySetToLatest.setEnabled(false);
-        applySetToAllVersions.setEnabled(false);
-        
-        FlowPanel setPanel = new FlowPanel();
-        setPanel.add(asDiv(applySetToEntry));
-        setPanel.add(asDiv(applySetToLatest));
-        setPanel.add(asDiv(applySetToAllVersions));
-
-        table.setWidget(0, 3, setPanel);
-        table.setText(0, 4, "Value: ");
+        table.setText(0, 3, "Value: ");
 
         table.setWidget(1, 0, delPropertyCB);
         table.setText(1, 1, "Remove: ");
         table.setWidget(1, 2, delPropertyLB);
-        
-        applyDelToEntry = new RadioButton("del", "Apply to Artifact/Entry");
-        applyDelToEntry.setChecked(true);
-        applyDelToLatest = new RadioButton("del", "Apply to latest version");
-        applyDelToAllVersions = new RadioButton("del", "Apply to all versions");
-
-        applyDelToEntry.setEnabled(false);
-        applyDelToLatest.setEnabled(false);
-        applyDelToAllVersions.setEnabled(false);
-        
-        FlowPanel delPanel = new FlowPanel();
-        delPanel.add(asDiv(applyDelToEntry));
-        delPanel.add(asDiv(applyDelToLatest));
-        delPanel.add(asDiv(applyDelToAllVersions));
-        
-        table.setWidget(1, 3, delPanel);
         
         propertyPanel.add(table);
 
@@ -466,20 +416,11 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
             }
         };
         
-        ApplyTo applyTo;
-        if (applySetToLatest.isChecked()) {
-            applyTo = ApplyTo.DEFAULT_VERSION;
-        } else if (applySetToEntry.isChecked()) {
-            applyTo = ApplyTo.ENTRY;
-        } else {
-            applyTo = ApplyTo.ALL_VERSIONS;
-        }
-        
         RegistryServiceAsync svc = galaxy.getRegistryService();
         if (entryIds != null) {
-            svc.setProperty(entryIds, propertyDescriptor.getName(), (Serializable)value, applyTo, callback);
+            svc.setProperty(entryIds, propertyDescriptor.getName(), (Serializable)value, callback);
         } else {
-            svc.setProperty(query, propertyDescriptor.getName(), (Serializable)value, applyTo, callback);
+            svc.setPropertyForQuery(query, propertyDescriptor.getName(), (Serializable)value, callback);
         }
     }
 
@@ -494,15 +435,6 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
     }
     
     private void deleteProperty(String name) {
-        ApplyTo applyTo;
-        if (applyDelToLatest.isChecked()) {
-            applyTo = ApplyTo.DEFAULT_VERSION;
-        } else if (applyDelToEntry.isChecked()) {
-            applyTo = ApplyTo.ENTRY;
-        } else {
-            applyTo = ApplyTo.ALL_VERSIONS;
-        }
-        
         AbstractCallback callback = new AbstractCallback(this) {
             public void onFailure(Throwable caught) {
                 setEnabled(true);
@@ -522,9 +454,9 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
         };
         
         if (entryIds != null) {
-            service.deleteProperty(entryIds, name, applyTo, callback);
+            service.deleteProperty(entryIds, name, callback);
         } else {
-            service.deleteProperty(query, name, applyTo, callback);
+            service.deletePropertyForQuery(query, name, callback);
         }
     }
 

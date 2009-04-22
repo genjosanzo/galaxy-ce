@@ -14,11 +14,13 @@ import net.sf.saxon.javax.xml.xquery.XQItem;
 import net.sf.saxon.javax.xml.xquery.XQPreparedExpression;
 import net.sf.saxon.javax.xml.xquery.XQResultSequence;
 import net.sf.saxon.xqj.SaxonXQDataSource;
+
 import org.apache.commons.lang.BooleanUtils;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.XmlContentHandler;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.artifact.Artifact;
+import org.mule.galaxy.artifact.XmlContentHandler;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexException;
 import org.mule.galaxy.policy.PolicyException;
@@ -27,7 +29,6 @@ import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.QNameUtil;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -38,18 +39,16 @@ public class XQueryIndexer extends AbstractIndexer {
     private static final ResourceBundle BUNDLE = BundleUtils.getBundle(XQueryIndexer.class);
     
     private XQDataSource ds = new SaxonXQDataSource();
-    
-    public void index(ArtifactVersion artifact, 
-                      ContentHandler contentHandler, 
-                      Index index) throws IOException,
-        IndexException {
 
+    public void index(Item item, PropertyInfo property, Index index)
+    	throws IOException, IndexException {
+	Artifact artifact = (Artifact) property.getValue();
         try {
             XQConnection conn = ds.getConnection();
             
-            String property = getValue(index.getConfiguration(), PROPERTY_NAME, new Message("NO_PROPERTY", BUNDLE));
+            String propertyName = getValue(index.getConfiguration(), PROPERTY_NAME, new Message("NO_PROPERTY", BUNDLE));
             XQPreparedExpression ex = conn.prepareExpression(getValue(index.getConfiguration(), XQUERY_EXPRESSION, new Message("NO_XQUERY", BUNDLE)));
-            XmlContentHandler ch = (XmlContentHandler) contentHandler;
+            XmlContentHandler ch = (XmlContentHandler) artifact.getContentHandler();
             Document doc = ch.getDocument(artifact.getData());
             ex.bindNode(new QName("document"), doc, null);
             
@@ -60,9 +59,9 @@ public class XQueryIndexer extends AbstractIndexer {
             boolean visible = true;
             
             if (result.next()) {
-                XQItem item = result.getItem();
+                XQItem xqitem = result.getItem();
     
-                org.w3c.dom.Node values = item.getNode();
+                org.w3c.dom.Node values = xqitem.getNode();
 
                 // check locking & visibility
                 NamedNodeMap atts = values.getAttributes();
@@ -91,11 +90,11 @@ public class XQueryIndexer extends AbstractIndexer {
             }
             
             if (results.size() > 0) {
-                artifact.setProperty(property, results);
-                artifact.setLocked(property, true);
-                artifact.setVisible(property, visible);
+                item.setProperty(propertyName, results);
+                item.setLocked(propertyName, true);
+                item.setVisible(propertyName, visible);
             } else {
-                artifact.setProperty(property, null);
+        	item.setProperty(propertyName, null);
             }
             
             conn.close();

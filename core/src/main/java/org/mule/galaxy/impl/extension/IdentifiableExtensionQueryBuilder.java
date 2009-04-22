@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Identifiable;
-import org.mule.galaxy.Item;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.OpRestriction.Operator;
 
@@ -28,7 +27,6 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
     
     public IdentifiableExtensionQueryBuilder(IdentifiableExtension e) throws IntrospectionException {
 	super();
-	appliesTo.add(Item.class);
 	
 	this.extension = e;
 	

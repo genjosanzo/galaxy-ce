@@ -573,11 +573,9 @@
                     <!-- Enforce minimum maven version.
                     This must be done through the maven-enforcer-plugin as per
                     http://jira.codehaus.org/browse/MNG-2423 the prerequisites are not inherited.
-                    -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-enforcer-plugin</artifactId>
-                        <!-- MULE-2070: 1.0-alpha-3 is broke so enforce previous version  -->
                         <version>1.0-alpha-2</version>
                         <executions>
                             <execution>
@@ -588,11 +586,9 @@
                                 <configuration>
                                     <rules>
                                         <requireMavenVersion>
-                                            <!-- minimum version is 2.0.6, higher versions allowed -->
                                             <version>[2.0.8,)</version>
                                         </requireMavenVersion>
                                         <requireJavaVersion>
-                                            <!-- minimum version is Java 5, higher allowed -->
                                             <version>[1.5.0,)</version>
                                         </requireJavaVersion>
                                     </rules>
@@ -600,6 +596,7 @@
                             </execution>
                         </executions>
                     </plugin>
+                    -->
                 </plugins>
             </build>
         </profile>

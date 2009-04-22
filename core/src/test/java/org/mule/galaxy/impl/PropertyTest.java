@@ -15,7 +15,7 @@ public class PropertyTest extends AbstractGalaxyTest {
         
         assertNotNull(type);
         
-        assertEquals(1, type.getProperties().size());
+        assertEquals(0, type.getProperties().size());
     }
     
     public void testProperties2() throws Exception {

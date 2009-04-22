@@ -20,9 +20,9 @@ package org.mule.galaxy.impl.plugin;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.artifact.ArtifactType;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.plugin.DowngradeNotSupportedException;
 import org.mule.galaxy.plugin.Plugin;

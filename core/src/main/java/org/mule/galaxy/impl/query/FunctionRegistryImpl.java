@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.mule.galaxy.query.AbstractFunction;
 import org.mule.galaxy.query.FunctionRegistry;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 

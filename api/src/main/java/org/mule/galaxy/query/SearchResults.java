@@ -6,8 +6,9 @@ import org.mule.galaxy.Item;
 
 public class SearchResults {
     private long total;
-    private Set<? extends Item> results;
-    public SearchResults(long total, Set<? extends Item> results) {
+    private Set<Item> results;
+    
+    public SearchResults(long total, Set<Item> results) {
         super();
         this.total = total;
         this.results = results;
@@ -17,9 +18,7 @@ public class SearchResults {
         return total;
     }
     
-    public Set<? extends Item> getResults() {
+    public Set<Item> getResults() {
         return results;
     }
-    
-    
 }

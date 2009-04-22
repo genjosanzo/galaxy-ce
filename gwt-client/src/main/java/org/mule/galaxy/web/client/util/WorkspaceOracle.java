@@ -9,6 +9,7 @@ import java.util.List;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemInfo;
 
 public class WorkspaceOracle extends SuggestOracle {
 
@@ -29,27 +30,27 @@ public class WorkspaceOracle extends SuggestOracle {
 
     @Override
     public void requestSuggestions(final Request request, final Callback callback) {
-        galaxy.getRegistryService().suggestWorkspaces(request.getQuery(), exclude,
-            new AbstractCallback<Collection<String>>(errorPanel) {
+        galaxy.getRegistryService().suggestEntries(request.getQuery(), exclude, new String[0],
+            new AbstractCallback<Collection<ItemInfo>>(errorPanel) {
 
-            public void onSuccess(Collection<String> entries) {
+            public void onSuccess(Collection<ItemInfo> entries) {
                 updateSuggestions(entries, request, callback);
             }
             
         });
     }
 
-    protected void updateSuggestions(Collection<String> entries, Request request, Callback callback) {
+    protected void updateSuggestions(Collection<ItemInfo> entries, Request request, Callback callback) {
         Response response = new Response();
         List<Suggestion> suggestions = new ArrayList<Suggestion>();
-        for (final String e : entries) {
+        for (final ItemInfo e : entries) {
             suggestions.add(new Suggestion() {
                 public String getDisplayString() {
-                    return e;
+                    return e.getPath();
                 }
 
                 public String getReplacementString() {
-                    return e;
+                    return e.getPath();
                 }
             });
         }

@@ -4,16 +4,14 @@ import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Session;
 
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.onm.FieldDescriptor;
 import org.mule.galaxy.impl.jcr.onm.FieldPersister;
-import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * Provides logic to persist phases to JCR nodes and recreate them from 

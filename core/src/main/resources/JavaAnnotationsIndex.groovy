@@ -14,7 +14,7 @@ if (log.debugEnabled) {
 def temp = File.createTempFile('galaxy-index', 'tmp')
 temp.deleteOnExit()
 temp.withOutputStream {
-    it << artifact.stream
+    it << artifact.inputStream
 }
 
 def jarFile
@@ -53,8 +53,8 @@ try {
             // JCR doesn't save non-string objects by default, transform
             annotations = annotations.collect{ a -> a.toString() }
         }
-        artifact.setProperty encodedName, annotations
-        artifact.setLocked encodedName, true
+        item.setProperty encodedName, annotations
+        item.setLocked encodedName, true
     }
 
     saveAnnotations 'class', classAnnotations

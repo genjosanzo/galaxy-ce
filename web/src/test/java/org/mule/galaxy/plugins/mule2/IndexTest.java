@@ -1,24 +1,21 @@
 package org.mule.galaxy.plugins.mule2;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.EntryResult;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.PropertyInfo;
-import org.mule.galaxy.Workspace;
-import org.mule.galaxy.impl.index.XQueryIndexer;
-import org.mule.galaxy.impl.jcr.JcrVersion;
-import org.mule.galaxy.index.Index;
-import org.mule.galaxy.query.Query;
-import org.mule.galaxy.query.OpRestriction;
-import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.util.Constants;
-
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
+
+import org.mule.galaxy.Item;
+import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.artifact.Artifact;
+import org.mule.galaxy.impl.index.XQueryIndexer;
+import org.mule.galaxy.index.Index;
+import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.Query;
+import org.mule.galaxy.test.AbstractGalaxyTest;
+import org.mule.galaxy.util.Constants;
 
 public class IndexTest extends AbstractGalaxyTest {
 
@@ -58,19 +55,11 @@ public class IndexTest extends AbstractGalaxyTest {
         assertEquals(4, idx.getDocumentTypes().size());
 
         // Import a document which should now be indexed
-        
-        Collection<Workspace> workspaces = registry.getWorkspaces();
-        assertEquals(1, workspaces.size());
-        Workspace workspace = workspaces.iterator().next();
+        Item version = importFile(is, "hello-config.xml", "0.1", "application/xml");
 
-        EntryResult ar = workspace.createArtifact("application/xml",
-                                                    "hello-config.xml",
-                                                    "0.1", is);
-        Artifact artifact = (Artifact) ar.getEntry();
-
+        Artifact artifact = (Artifact) version.getProperty("artifact");
         assertEquals(muleQName, artifact.getDocumentType());
         
-        JcrVersion version = (JcrVersion) artifact.getDefaultOrLastVersion();
         Object property = version.getProperty("mule2.service");
         assertNotNull(property);
         assertTrue(property instanceof Collection);
@@ -83,21 +72,14 @@ public class IndexTest extends AbstractGalaxyTest {
         assertTrue(services.contains("GreeterUMO"));
 
         // Try out search!
-        Set results = registry.search(new Query(OpRestriction.eq("mule2.service", "GreeterUMO"),
-                                                Artifact.class)).getResults();
-
+        Set<Item> results = registry.search(new Query(OpRestriction.eq("mule2.service", "GreeterUMO"))).getResults();
         assertEquals(1, results.size());
 
-        Artifact next = (Artifact) results.iterator().next();
-        assertEquals(1, next.getVersions().size());
-
-        results = registry.search(new Query(OpRestriction.eq("mule2.service", "GreeterUMO"),
-                                            ArtifactVersion.class)).getResults();
-
+        results = registry.search(new Query(OpRestriction.eq("mule2.service", "GreeterUMO"))).getResults();
         assertEquals(1, results.size());
 
-        ArtifactVersion nextAV = (ArtifactVersion) results.iterator().next();
-        assertEquals("0.1", nextAV.getVersionLabel());
+        Item next = results.iterator().next();
+        assertEquals("0.1", next.getName());
         // assertNotNull(nextAV.getData());
         // TODO test data
     }

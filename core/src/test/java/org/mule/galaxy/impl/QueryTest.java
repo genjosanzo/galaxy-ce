@@ -7,74 +7,71 @@ import static org.mule.galaxy.query.OpRestriction.or;
 
 import java.util.Iterator;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.Entry;
-import org.mule.galaxy.EntryVersion;
+import junit.framework.TestCase;
+
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.query.OpRestriction.Operator;
 
-import junit.framework.TestCase;
-
 public class QueryTest extends TestCase {
     
     public void testToString() throws Exception {
-        Query q = new Query(Artifact.class)
+        Query q = new Query()
                 .add(eq("phase",  "Default:Created"));
         
-        assertEquals("select artifact where phase = 'Default:Created'",
+        assertEquals("select where phase = 'Default:Created'",
                      q.toString());
         
-        q = new Query(Artifact.class)
+        q = new Query()
             .add(not(eq("name",  "foo")));
     
-        assertEquals("select artifact where name != 'foo'",
+        assertEquals("select where name != 'foo'",
                  q.toString());
 
-        q = new Query(Artifact.class)
+        q = new Query()
             .add(like("name",  "foo"));
     
-        assertEquals("select artifact where name like 'foo'",
+        assertEquals("select where name like 'foo'",
                  q.toString());
 
-        q = new Query(Artifact.class)
+        q = new Query()
             .add(or(like("name", "foo"), eq("name", "bar")));
     
-        assertEquals("select artifact where (name like 'foo' or name = 'bar')",
+        assertEquals("select where (name like 'foo' or name = 'bar')",
                  q.toString());
         
-        q = new Query(Artifact.class)
+        q = new Query()
             .add(like("name", "foo"))
             .add(eq("phase", "bar"));
     
-        assertEquals("select artifact where name like 'foo' and phase = 'bar'",
+        assertEquals("select where name like 'foo' and phase = 'bar'",
                  q.toString());
         
-        q = new Query(Artifact.class)
+        q = new Query()
             .fromPath("/foo", false)
             .add(eq("phase", "bar"));
 
-        assertEquals("select artifact from '/foo' where phase = 'bar'",
+        assertEquals("select from '/foo' where phase = 'bar'",
              q.toString());
         
-        q = new Query(Artifact.class)
+        q = new Query()
             .fromPath("/foo", true)
             .add(eq("phase", "bar"));
 
-        assertEquals("select artifact from '/foo' recursive where phase = 'bar'",
+        assertEquals("select from '/foo' recursive where phase = 'bar'",
              q.toString());
         
-        q = new Query(Artifact.class)
+        q = new Query()
             .fromId("123", true)
             .add(eq("phase", "bar"));
 
-        assertEquals("select artifact from '@123' recursive where phase = 'bar'",
+        assertEquals("select from '@123' recursive where phase = 'bar'",
              q.toString());
     }
     
     public void testFromString() throws Exception {
-        Query q = Query.fromString("select artifact where name != 'foo'");
+        Query q = Query.fromString("select where name != 'foo'");
 
         assertEquals(1, q.getRestrictions().size());
         
@@ -82,38 +79,28 @@ public class QueryTest extends TestCase {
         
         assertEquals(Operator.NOT, opr.getOperator());
         
-        q = Query.fromString("select artifact from '/foo' recursive");
+        q = Query.fromString("select from '/foo' recursive");
         
         assertTrue(q.isFromRecursive());
         assertEquals("/foo", q.getFromPath());
         
-        q = Query.fromString("select artifact from '@123' recursive");
+        q = Query.fromString("select from '@123' recursive");
         
         assertTrue(q.isFromRecursive());
         assertEquals("123", q.getFromId());
         
-        q = Query.fromString("select entry where name = 'foo'");
-        assertTrue(q.getSelectTypes().contains(Entry.class));
-        
-        q = Query.fromString("select entryVersion where name = 'foo'");
-        assertTrue(q.getSelectTypes().contains(EntryVersion.class));
 
-        q = Query.fromString("select entry, entryVersion where name = 'foo'");
-        assertTrue(q.getSelectTypes().contains(Entry.class));
-        assertTrue(q.getSelectTypes().contains(EntryVersion.class));
-        
-
-        q = Query.fromString("select entry where (name = 'foo' or name = 'bar')");
+        q = Query.fromString("select where (name = 'foo' or name = 'bar')");
         opr = (OpRestriction) q.getRestrictions().iterator().next();
         
         assertEquals(Operator.OR, opr.getOperator());
 
-        q = Query.fromString("select entry where ((name = 'foo' or name = 'bar'))");
+        q = Query.fromString("select where ((name = 'foo' or name = 'bar'))");
         opr = (OpRestriction) q.getRestrictions().iterator().next();
         
         assertEquals(Operator.OR, opr.getOperator());
         
-        q = Query.fromString("select entry where ((name = 'foo' or name = 'bar') and (name = 'foo' or name = 'bar'))");
+        q = Query.fromString("select where ((name = 'foo' or name = 'bar') and (name = 'foo' or name = 'bar'))");
         Iterator<Restriction> iterator = q.getRestrictions().iterator();
         assertTrue(iterator.hasNext());
         opr = (OpRestriction) iterator.next();
@@ -128,7 +115,7 @@ public class QueryTest extends TestCase {
         OpRestriction opr2 = (OpRestriction)opr.getRight();
         assertEquals(Operator.EQUALS, opr2.getOperator());
         
-        q = Query.fromString("select entry where ( name = 'foo' or name = 'bar' )");
+        q = Query.fromString("select where ( name = 'foo' or name = 'bar' )");
         opr = (OpRestriction) q.getRestrictions().iterator().next();
         
         assertEquals(Operator.OR, opr.getOperator());

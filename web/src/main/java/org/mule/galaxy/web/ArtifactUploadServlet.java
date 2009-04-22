@@ -36,17 +36,14 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.BooleanUtils;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.ArtifactTypeDao;
-import org.mule.galaxy.ArtifactVersion;
 import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.Item;
+import org.mule.galaxy.NewItemResult;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
+import org.mule.galaxy.artifact.ArtifactType;
+import org.mule.galaxy.artifact.ArtifactTypeDao;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
@@ -117,14 +114,14 @@ public class ArtifactUploadServlet implements Controller {
                 return null;
             }
 
-            EntryResult result = null;
+            NewItemResult result = null;
             if (artifactId == null) {
                 if (wkspcPath == null) {
                     writer.write("No workspace was specified.");
                     return null;
                 }
 
-                Workspace wkspc = (Workspace) registry.getItemByPath(wkspcPath);
+                Item wkspc = (Item) registry.getItemByPath(wkspcPath);
                 if (wkspc == null) {
                     writer.write("The workspace that was specified is invalid.");
                     return null;
@@ -146,60 +143,60 @@ public class ArtifactUploadServlet implements Controller {
                     contentType = "application/octet-stream";
                 }
 
-                result = wkspc.createArtifact(contentType, name, versionLabel, uploadItem.getInputStream());
+//                result = wkspc.createArtifact(contentType, name, versionLabel, uploadItem.getInputStream());
             } else {
-                Artifact a = (Artifact) registry.getItemById(artifactId);
-
-                result = a.newVersion(uploadItem.getInputStream(), versionLabel);
-
-                if (disablePrevious) {
-                    ArtifactVersion previous = (ArtifactVersion) result.getEntryVersion().getPrevious();
-                    
-                    if (previous != null) {
-                        previous.setEnabled(false);
-                    }
-                }
+//                ArtifactImpl a = (ArtifactImpl) registry.getItemById(artifactId);
+//
+//                result = a.newVersion(uploadItem.getInputStream(), versionLabel);
+//
+//                if (disablePrevious) {
+//                    ArtifactVersion previous = (ArtifactVersion) result.getEntryVersion().getPrevious();
+//                    
+//                    if (previous != null) {
+//                        previous.setEnabled(false);
+//                    }
+//                }
             }
 
-            writer.write("OK " + result.getEntry().getId());
+            writer.write("OK " + result.getItem().getId());
         } catch (NotFoundException e) {
             writer.write("Workspace could not be found.");
         } catch (RegistryException e) {
             writer.write("No version label was specified.");
-        } catch (PolicyException e) {
-            writer.write("PolicyException\n");
-
-            for (Map.Entry<Item, List<ApprovalMessage>> entry : e.getPolicyFailures().entrySet()) {
-                List<ApprovalMessage> approvals = entry.getValue();
-
-                Collections.sort(approvals, new Comparator<ApprovalMessage>() {
-
-                    public int compare(ApprovalMessage o1, ApprovalMessage o2) {
-                        return o1.getMessage().compareTo(o2.getMessage());
-                    }
-
-                });
-                
-                for (ApprovalMessage a : approvals) {
-                    if (a.isWarning()) {
-                        writer.write("WARNING: ");
-                    } else {
-                        writer.write("FAILURE: ");
-                    }
-                    writer.write(a.getMessage());
-                    writer.write("\n");
-                }
-            }
-
-        } catch (MimeTypeParseException e) {
-            writer.write("Invalid mime type.");
-        } catch (DuplicateItemException e) {
-//            resp.setStatus(409);
-            if (artifactId == null) {
-                writer.write("An item with that name already exists.");
-            } else {
-                writer.write("A version with that label already exists.");
-            }
+//        } catch (PolicyException e) {
+//            writer.write("PolicyException\n");
+//
+//            for (Map.Entry<Item, List<ApprovalMessage>> entry : e.getPolicyFailures().entrySet()) {
+//                List<ApprovalMessage> approvals = entry.getValue();
+//
+//                Collections.sort(approvals, new Comparator<ApprovalMessage>() {
+//
+//                    public int compare(ApprovalMessage o1, ApprovalMessage o2) {
+//                        return o1.getMessage().compareTo(o2.getMessage());
+//                    }
+//
+//                });
+//                
+//                for (ApprovalMessage a : approvals) {
+//                    if (a.isWarning()) {
+//                        writer.write("WARNING: ");
+//                    } else {
+//                        writer.write("FAILURE: ");
+//                    }
+//                    writer.write(a.getMessage());
+//                    writer.write("\n");
+//                }
+//            }
+//
+//        } catch (MimeTypeParseException e) {
+//            writer.write("Invalid mime type.");
+//        } catch (DuplicateItemException e) {
+////            resp.setStatus(409);
+//            if (artifactId == null) {
+//                writer.write("An item with that name already exists.");
+//            } else {
+//                writer.write("A version with that label already exists.");
+//            }
         } catch (AccessException e) {
 //            resp.setStatus(401);
             writer.write("AccessException.");

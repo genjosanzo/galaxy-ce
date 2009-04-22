@@ -1,20 +1,20 @@
 package org.mule.galaxy;
 
-import java.util.logging.Logger;
+import java.util.ResourceBundle;
 
-import org.mule.galaxy.util.LogUtils;
+import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.Message;
 
 public class NotFoundException extends GalaxyException {
 
-    private static final Logger logger = LogUtils.getL7dLogger(NotFoundException.class);
+    private static final ResourceBundle BUNDLE = BundleUtils.getBundle(NotFoundException.class);
     
     public NotFoundException(Object key, Throwable t) {
-        super(new Message("NOT_FOUND", logger, key), t);
+        super(new Message("NOT_FOUND", BUNDLE, key), t);
     }
 
     public NotFoundException(Object key) {
-        super( new Message("NOT_FOUND", logger, key) );
+        super( new Message("NOT_FOUND", BUNDLE, key) );
     }
 
 }

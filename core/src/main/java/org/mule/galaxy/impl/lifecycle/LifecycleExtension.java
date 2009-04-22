@@ -1,8 +1,6 @@
 package org.mule.galaxy.impl.lifecycle;
 
 import static org.mule.galaxy.util.AbderaUtils.assertNotEmpty;
-import static org.mule.galaxy.util.AbderaUtils.createArtifactPolicyExceptionResponse;
-import static org.mule.galaxy.util.AbderaUtils.newErrorMessage;
 import static org.mule.galaxy.util.AbderaUtils.throwMalformed;
 
 import java.util.ArrayList;
@@ -21,7 +19,6 @@ import org.apache.abdera.model.ExtensibleElement;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.Workspace;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.event.LifecycleTransitionEvent;
 import org.mule.galaxy.extension.AtomExtension;
@@ -98,31 +95,14 @@ public class LifecycleExtension extends AbstractExtension implements AtomExtensi
 
     }
 
-    public void updateItem(Item item, Factory factory, ExtensibleElement e) throws ResponseContextException {
-        String property = e.getAttributeValue("property");
-        assertNotEmpty(property, "Lifecycle property attribute cannot be null.");
-
-        Object o = item.getProperty(property);
-        assertNotEmpty(o, "Lifecycle property " + property + " does not exist.");
-
-        if (!(o instanceof Phase)) {
-            throwMalformed("Property " + property + " is not a lifecycle phase.");
-        }
-
+    public Object getValue(Item item, Factory factory, ExtensibleElement e) throws ResponseContextException {
         String name = e.getAttributeValue("name");
         assertNotEmpty(name, "Lifecycle name attribute cannot be null.");
 
         String phaseName = e.getAttributeValue("phase");
         assertNotEmpty(phaseName, "Lifecycle phase attribute cannot be null.");
 
-        Phase current = (Phase) o;
-        if (name.equals(current.getLifecycle().getName())
-            && phaseName.equals(current.getName())) {
-            return;
-        }
-
-        Workspace w = (Workspace) item.getParent().getParent();
-        LifecycleManager lifecycleManager = w.getLifecycleManager();
+        LifecycleManager lifecycleManager = item.getLifecycleManager();
         Lifecycle lifecycle = lifecycleManager.getLifecycle(name);
 
         if (lifecycle == null)
@@ -133,15 +113,7 @@ public class LifecycleExtension extends AbstractExtension implements AtomExtensi
         if (phase == null)
             throwMalformed("Lifecycle phase \"" + phaseName + "\" does not exist.");
 
-        try {
-            item.setProperty(property, phase);
-        } catch (PolicyException e1) {
-            throw createArtifactPolicyExceptionResponse(e1);
-        } catch (PropertyException e1) {
-            throw newErrorMessage(e1.getMessage(), e1.getMessage(), 500);
-        } catch (AccessException e1) {
-            throw newErrorMessage("Unauthorized", "You have insufficient permissions to modify property " + property, 401);
-        }
+        return phase;
     }
 
     public Collection<QName> getUnderstoodElements() {

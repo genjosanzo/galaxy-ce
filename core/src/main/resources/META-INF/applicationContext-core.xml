@@ -18,7 +18,6 @@
     </bean>
 
     <import resource="datasource.xml"/>
-    <import resource="scheduler.xml"/>
     
     <!-- use Spring's RMI classes to retrieve the RMI registry
     <bean id="rmiRegistry" class="org.springframework.remoting.rmi.RmiRegistryFactoryBean"/>
@@ -42,10 +41,6 @@
      </bean>
     </property>
   </bean>
-
-  <bean class="org.mule.galaxy.policy.wsdl.BackwardCompatibilityPolicy"/>
-  <bean class="org.mule.galaxy.policy.wsdl.BasicProfilePolicy"/>
-
   <bean id="indexer.xpath" class="org.mule.galaxy.impl.index.XPathIndexer"/>
   <bean id="indexer.xquery" class="org.mule.galaxy.impl.index.XQueryIndexer"/>
   
@@ -82,13 +77,12 @@
     
   </bean>
   
-  <bean id="indexManagerTarget"  class="org.mule.galaxy.impl.index.IndexManagerImpl"
+  <bean id="indexManagerTarget"  
+        class="org.mule.galaxy.impl.index.IndexManagerImpl"
         init-method="initialize" destroy-method="destroy">
     <property name="activityManager" ref="activityManager" />
-    <property name="contentService" ref="contentService"/>
     <property name="typeManager" ref="typeManager" />
     <property name="sessionFactory" ref="sessionFactory" />
-
   </bean>
   
   <bean id="policyManager" parent="txProxyTemplate">
@@ -127,16 +121,10 @@
       <constructor-arg>
           <list>
               <!-- entry -->
-              <bean class="org.mule.galaxy.event.listener.activity.EntryCreatedEventListener" parent="abstractActivityLogger"/>
-              <bean class="org.mule.galaxy.event.listener.activity.EntryDeletedEventListener" parent="abstractActivityLogger"/>
-              <bean class="org.mule.galaxy.event.listener.activity.EntryMovedEventListener" parent="abstractActivityLogger"/>
-              <bean class="org.mule.galaxy.event.listener.activity.EntryCommentCreatedEventListener" parent="abstractActivityLogger"/>
-              <!-- entry version -->
-              <bean class="org.mule.galaxy.event.listener.activity.EntryVersionCreatedEventListener" parent="abstractActivityLogger"/>
-              <bean class="org.mule.galaxy.event.listener.activity.EntryVersionDeletedEventListener" parent="abstractActivityLogger"/>
-              <!-- workspace -->
-              <bean class="org.mule.galaxy.event.listener.activity.WorkspaceCreatedEventListener" parent="abstractActivityLogger"/>
-              <bean class="org.mule.galaxy.event.listener.activity.WorkspaceDeletedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.ItemCreatedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.ItemDeletedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.ItemMovedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.CommentCreatedEventListener" parent="abstractActivityLogger"/>
               <!-- properties -->
               <bean class="org.mule.galaxy.event.listener.activity.PropertyChangedEventListener" parent="abstractActivityLogger"/>
               <!-- misc -->
@@ -164,20 +152,16 @@
   
   <bean id="registryInitializer" class="org.mule.galaxy.impl.jcr.RegistryInitializer" 
     init-method="intialize" lazy-init="false">
+    <property name="artifactExtension" ref="artifactExtension" />
     <property name="contentService" ref="contentService" />
     <property name="lifecycleExtension" ref="lifecycleExtension" />
+    <property name="linkExtension" ref="linkExtension" />
     <property name="localWorkspaceManager" ref="localWorkspaceManager" />
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="policyManager" ref="policyManager" />
     <property name="settings" ref="settings" />
     <property name="upgraders">
         <list>
-            <bean class="org.mule.galaxy.impl.upgrade.V15Upgrader">
-                <property name="registry" ref="registry"/>
-                <property name="typeManager" ref="typeManager" />
-                <property name="localWorkspaceManager" ref="localWorkspaceManager"/>
-                <property name="lifecycleManager" ref="lifecycleManager" />
-            </bean>
             <bean class="org.mule.galaxy.impl.upgrade.V151Upgrader">
                 <property name="typeManager" ref="typeManager" />
             </bean>
@@ -200,7 +184,6 @@
   <bean id="registryTarget" class="org.mule.galaxy.impl.jcr.JcrRegistryImpl"
         init-method="initialize">
     <property name="accessControlManager" ref="accessControlManager" />
-    <property name="contentService" ref="contentService" />
     <property name="eventManager" ref="eventManager"/>
     <property name="functionRegistry" ref="functionRegistry" />
     <property name="sessionFactory" ref="sessionFactory" />
@@ -260,6 +243,16 @@
     <constructor-arg ref="linkExtension"/>
     <property name="typeManager" ref="typeManager"/>
   </bean>
+    
+  <bean id="artifactExtension" class="org.mule.galaxy.impl.artifact.ArtifactExtension" init-method="initialize">
+    <property name="artifactTypeDao" ref="artifactTypeDao"/>
+    <property name="contentService" ref="contentService"/>
+    <property name="id" value="artifactExtension"/>
+    <property name="name" value="Artifact"/>
+    <property name="multivalueSupported" value="false"/>
+    <property name="template" ref="jcrTemplate"/>
+    <property name="registry" ref="registry"/>
+  </bean>
   
   <bean id="userExtension" class="org.mule.galaxy.impl.extension.IdentifiableExtension">
     <property name="dao" ref="userManager"/>
@@ -302,8 +295,6 @@
     <property name="typeManager" ref="typeManager"/>
   </bean>
   
-  <bean class="org.mule.galaxy.impl.jcr.query.ArtifactPropertyQueryBuilder"/>
-        
   <bean id="commentManager" parent="txProxyTemplate">
     <property name="target" ref="commentManagerTarget"/>
   </bean>
@@ -322,43 +313,6 @@
   <bean id="activityManagerTarget" class="org.mule.galaxy.impl.jcr.ActivityManagerImpl"
         init-method="initialize">
     <property name="accessControlManager" ref="accessControlManager" />
-    <property name="sessionFactory" ref="sessionFactory" />
-
-  </bean>
-  
-  <bean id="scriptManager" parent="txProxyTemplate">
-    <property name="target" ref="scriptManagerTarget"/>
-  </bean>
-  
-  <bean id="scriptManagerTarget" class="org.mule.galaxy.impl.script.ScriptManagerImpl"
-        init-method="initialize">
-    <property name="activityManager" ref="activityManager" />
-    <property name="accessControlManager" ref="accessControlManager" />
-    <property name="sessionFactory" ref="sessionFactory" />
-
-    <property name="scriptVariables" ref="scriptVariables" />
-    <property name="scriptJobDao" ref="scriptJobDaoTarget"/>
-  </bean>
-  
-  <bean id="scriptVariables" class="java.util.HashMap">
-     <constructor-arg>
-         <map>
-             <entry key="registry" value-ref="registry"/>
-             <entry key="activityManager" value-ref="activityManager"/>
-             <entry key="eventManager" value-ref="eventManager"/>
-             <entry key="policyManager" value-ref="policyManager"/>
-             <entry key="lifecycleManager" value-ref="lifecycleManager"/>
-         </map>
-     </constructor-arg>
-  </bean>
-    
-  <bean id="scriptJobDao" parent="txProxyTemplate">
-    <property name="target" ref="scriptJobDaoTarget"/>
-  </bean>
-  
-  <bean id="scriptJobDaoTarget" class="org.mule.galaxy.impl.script.ScriptJobDaoImpl"
-        init-method="initialize">
-    <property name="scheduler" ref="scheduler" />
     <property name="sessionFactory" ref="sessionFactory" />
 
   </bean>
@@ -393,11 +347,8 @@
 
   </bean>
   
-  <bean id="typeDao" class="org.mule.galaxy.impl.jcr.onm.IdentifiableReflectionDao"
+  <bean id="typeDao" class="org.mule.galaxy.impl.jcr.TypeDaoImpl"
         init-method="initialize" >
-    <constructor-arg value="org.mule.galaxy.type.Type"/>
-    <constructor-arg value="types"/>
-    <constructor-arg value="true"/>
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
   

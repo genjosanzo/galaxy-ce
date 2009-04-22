@@ -19,11 +19,6 @@
     </dependency>
     <dependency>
       <groupId>org.mule.galaxy</groupId>
-      <artifactId>galaxy-client-mule1</artifactId>
-      <version>1.6-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-client-mule2</artifactId>
       <version>1.6-SNAPSHOT</version>
     </dependency>

@@ -14,7 +14,7 @@ import org.mule.galaxy.type.PropertyDescriptor;
 public interface AtomExtension {
     void annotateAtomEntry(Item item, PropertyDescriptor pd, Entry entry, ExtensibleElement metadata, Factory factory);
     
-    void updateItem(Item item, Factory factory, ExtensibleElement e) throws ResponseContextException;
+    Object getValue(Item item, Factory factory, ExtensibleElement e) throws ResponseContextException;
     
     Collection<QName> getUnderstoodElements();
 }

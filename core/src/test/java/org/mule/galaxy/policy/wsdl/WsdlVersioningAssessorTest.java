@@ -1,26 +1,31 @@
 package org.mule.galaxy.policy.wsdl;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.EntryResult;
-import org.mule.galaxy.ArtifactVersion;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.NewItemResult;
+import org.mule.galaxy.artifact.Artifact;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.test.AbstractGalaxyTest;
+import org.mule.galaxy.type.TypeManager;
 
 public class WsdlVersioningAssessorTest extends AbstractGalaxyTest {
     
     public void testVersioning() throws Exception {
-        Artifact a1 = importHelloWsdl();
-        ArtifactVersion prev = (ArtifactVersion) a1.getDefaultOrLastVersion();
+        Item a1 = importHelloWsdl();
         
-        assertNotNull(((ArtifactVersion) a1.getDefaultOrLastVersion()).getData());
         BackwardCompatibilityPolicy assessor = new BackwardCompatibilityPolicy();
 
-        EntryResult ar = a1.newVersion(getResourceAsStream("/wsdl/hello-noOperation.wsdl"), "0.2");
-        ArtifactVersion next = (ArtifactVersion) ar.getEntryVersion();
+        Map<String,Object> props = new HashMap<String, Object>();
+        props.put("artifact", new Object[] { getResourceAsStream("/wsdl/hello-noOperation.wsdl"), "application/xml" });
+        NewItemResult ar = a1.getParent().newItem("0.2", typeManager.getType(TypeManager.ARTIFACT_VERSION), props);
         
-        assertNotNull(next.getData());
+        Item next = ar.getItem();
+        Artifact artifact = (Artifact) next.getProperty("artifact");
+        
+        assertNotNull(artifact.getData());
         Collection<ApprovalMessage> approvals = assessor.isApproved(next);
         assertEquals(2, approvals.size());
         

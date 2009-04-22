@@ -41,7 +41,7 @@ import org.codehaus.plexus.util.DirectoryScanner;
  * @goal execute
  */
 public class PublishMojo extends AbstractMojo {
-    public static final String NAMESPACE = "http://galaxy.mule.org/1.0";
+    public static final String NAMESPACE = "http://galaxy.mule.org/2.0";
     /**
     * The maven project.
     *
@@ -364,7 +364,7 @@ public class PublishMojo extends AbstractMojo {
             // Once we support workspace descriptions, the description will go here
             entry.setContent("");
             
-            Element workspaceInfo = factory.newElement(new QName(NAMESPACE, "workspace-info"));
+            Element workspaceInfo = factory.newElement(new QName(NAMESPACE, "item-info"));
             workspaceInfo.setAttributeValue("name", wkspc);
             entry.addExtension(workspaceInfo);
             
@@ -413,7 +413,7 @@ public class PublishMojo extends AbstractMojo {
             getLog().info("Deleting " + e.getTitle());
             
             if (!showOnly) {
-                ClientResponse delRes = client.delete(e.getContentSrc().toString(), opts);
+                ClientResponse delRes = client.delete("http://localhost:9002" + e.getLink("edit").getHref().toString(), opts);
                 delRes.release();
             }
         }
@@ -490,7 +490,7 @@ public class PublishMojo extends AbstractMojo {
             } else {
                 // update the artifact
                 if (!showOnly) {
-                    res = client.put(artifactUrl, new FileInputStream(file), opts);
+                    res = client.post(artifactUrl, new FileInputStream(file), opts);
                     res.release();
                 }
                 getLog().info("Updated artifact " + name + " (version " + version + ")");

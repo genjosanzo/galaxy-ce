@@ -1,6 +1,6 @@
 package org.mule.galaxy.impl.content;
 
-import org.mule.galaxy.XmlContentHandler;
+import org.mule.galaxy.artifact.XmlContentHandler;
 import org.mule.galaxy.util.Constants;
 
 import java.io.IOException;

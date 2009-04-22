@@ -1,6 +1,6 @@
 package org.mule.galaxy.lifecycle;
 
-import org.mule.galaxy.Artifact;
+import org.mule.galaxy.Item;
 
 /**
  * Allows specific actions to be taken when moving to a new lifecycle phase.
@@ -8,6 +8,6 @@ import org.mule.galaxy.Artifact;
  */
 public interface LifecycleListener {
     
-    void nextLifecyclePhase(Artifact artifact, Phase phase);
+    void nextLifecyclePhase(Item item, Phase phase);
     
 }

@@ -2,7 +2,7 @@ package org.mule.galaxy.impl.query;
 
 import java.util.List;
 
-import org.mule.galaxy.Artifact;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.query.AbstractFunction;
 import org.mule.galaxy.query.FunctionCall;
 import org.mule.galaxy.query.Query;
@@ -20,11 +20,11 @@ public class FunctionQueryTest extends AbstractGalaxyTest {
         
         assertNotNull(fn);
         
-        Query query = new Query(Artifact.class);
+        Query query = new Query();
         
         query.add(new FunctionCall("test", "removeOddChars"));
         
-        Artifact a = importHelloMule();
+        Item a = importHelloMule();
         a.setName("odd1.wsdl");
         registry.save(a);
         
@@ -33,6 +33,7 @@ public class FunctionQueryTest extends AbstractGalaxyTest {
         
         SearchResults search = registry.search(query);
         
-        assertEquals(1, search.getTotal());
+        // Items named "odd1.wsd" and "0.1"
+        assertEquals(2, search.getTotal());
     }
 }

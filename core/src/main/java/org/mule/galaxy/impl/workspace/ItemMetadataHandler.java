@@ -1,7 +1,6 @@
 package org.mule.galaxy.impl.workspace;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;

@@ -52,7 +52,7 @@ public class PropertyInfoImpl implements PropertyInfo {
     }
 
     public boolean isLocked() {
-        Boolean b = JcrUtil.getBooleanOrNull(node, getName() + JcrVersion.LOCKED);
+        Boolean b = JcrUtil.getBooleanOrNull(node, getName() + JcrItem.LOCKED);
         if (b == null) {
             return false;
         }
@@ -60,7 +60,7 @@ public class PropertyInfoImpl implements PropertyInfo {
     }
 
     public boolean isVisible() {
-        Boolean vis = JcrUtil.getBooleanOrNull(node, getName() + JcrVersion.VISIBLE);
+        Boolean vis = JcrUtil.getBooleanOrNull(node, getName() + JcrItem.VISIBLE);
         if (vis == null) {
             return true;
         }

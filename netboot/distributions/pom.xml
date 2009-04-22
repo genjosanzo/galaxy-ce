@@ -12,7 +12,6 @@
     <name>Mule NetBoot Distributions</name>
 
     <modules>
-        <module>mule1</module>
         <module>mule2</module>
     </modules>
 

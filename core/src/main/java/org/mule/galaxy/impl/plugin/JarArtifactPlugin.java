@@ -12,12 +12,12 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mule.galaxy.ArtifactType;
-import org.mule.galaxy.ContentService;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.GalaxyException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.artifact.ArtifactType;
+import org.mule.galaxy.artifact.ContentService;
 import org.mule.galaxy.impl.content.JarContentHandler;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.index.Index;

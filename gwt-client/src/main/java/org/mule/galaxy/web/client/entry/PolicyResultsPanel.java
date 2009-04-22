@@ -30,16 +30,16 @@ import java.util.Map;
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
-import org.mule.galaxy.web.rpc.EntryInfo;
+import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.WApprovalMessage;
 
 public class PolicyResultsPanel extends AbstractErrorShowingComposite {
 
-    private final Map<EntryInfo, Collection<WApprovalMessage>> policyFailures;
+    private final Map<ItemInfo, Collection<WApprovalMessage>> policyFailures;
     private FlowPanel panel;
     private RegistryMenuPanel menuPanel;
 
-    public PolicyResultsPanel(Galaxy galaxy, Map<EntryInfo, Collection<WApprovalMessage>> policyFailures) {
+    public PolicyResultsPanel(Galaxy galaxy, Map<ItemInfo, Collection<WApprovalMessage>> policyFailures) {
         super();
         this.policyFailures = policyFailures;
         
@@ -66,7 +66,7 @@ public class PolicyResultsPanel extends AbstractErrorShowingComposite {
         
         for (Iterator itr = policyFailures.entrySet().iterator(); itr.hasNext();) {
             Map.Entry e = (Map.Entry) itr.next();
-            EntryInfo info = (EntryInfo) e.getKey();
+            ItemInfo info = (ItemInfo) e.getKey();
             List approvals = (List) e.getValue();
             
             FlowPanel artifactPanel = new FlowPanel();
@@ -77,7 +77,7 @@ public class PolicyResultsPanel extends AbstractErrorShowingComposite {
         }
     }
     
-    public void addArtifact(FlowPanel artifactPanel, EntryInfo info, List approvals) {
+    public void addArtifact(FlowPanel artifactPanel, ItemInfo info, List approvals) {
         FlowPanel warningPanel = new FlowPanel();
         FlowPanel failurePanel = new FlowPanel();
 

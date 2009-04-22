@@ -122,17 +122,40 @@ declare variable $document external;
             <view>
                 <column>
                     <name>Services</name>
-                    <expression>version.hasProperty("mule2.service") ? version.getProperty("mule2.service").size() : "0" ;</expression>
+                    <expression>item.hasProperty("mule2.service") ? item.getProperty("mule2.service").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Endpoints</name>
-                    <expression>version.hasProperty("mule2.endpoint") ? version.getProperty("mule2.endpoint").size() : "0" ;</expression>
+                    <expression>item.hasProperty("mule2.endpoint") ? item.getProperty("mule2.endpoint").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Models</name>
-                    <expression>version.hasProperty("mule.model2") ? version.getProperty("mule2.model").size() : "0" ;</expression>
+                    <expression>item.hasProperty("mule.model2") ? item.getProperty("mule2.model").size() : "0" ;</expression>
                 </column>
             </view>
         </views>
     </artifact-type>
+    
+    <policies>
+        <artifact-policy>
+            <name>Require SSL</name>
+            <class>org.mule.galaxy.mule2.policy.RequireSSLPolicy</class>
+            <description>Enforces the use of ssl on http and tcp endpoints</description>
+        </artifact-policy>
+        <artifact-policy>
+            <name>Require JMX</name>
+            <class>org.mule.galaxy.mule2.policy.RequireJMXPolicy</class>
+            <description>Enforces that JMX is configured.</description>
+        </artifact-policy>
+        <artifact-policy>
+            <name>Require JMX</name>
+            <class>org.mule.galaxy.mule2.policy.RequireNoClientRemotingPolicy</class>
+            <description>Requires that Client Remote Dispatcher support is not enabled.</description>
+        </artifact-policy>
+        <artifact-policy>
+            <name>Require Global Endpoints</name>
+            <class>org.mule.galaxy.mule2.policy.RequireGlobalEndpointsPolicy</class>
+            <description>Requires all All Endpoints are defined as top level Endpoints.</description>
+        </artifact-policy>
+    </policies>
  </galaxy>

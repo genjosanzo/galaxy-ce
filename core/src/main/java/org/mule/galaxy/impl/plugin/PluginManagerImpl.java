@@ -14,9 +14,9 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.artifact.ArtifactType;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.plugin.Plugin;

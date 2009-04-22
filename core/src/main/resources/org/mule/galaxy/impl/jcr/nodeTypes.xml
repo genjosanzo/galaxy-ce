@@ -11,7 +11,15 @@
     <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
     <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
   </nodeType>
-  
+    
+  <nodeType name="galaxy:item" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+  </nodeType>  
   <nodeType name="galaxy:workspace" 
     isMixin="false" 
     hasOrderableChildNodes="false"
@@ -21,34 +29,13 @@
     <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
   </nodeType>
   
-  <nodeType name="galaxy:attachedWorkspace" 
+  <nodeType name="galaxy:attachedItem" 
     isMixin="false" 
     hasOrderableChildNodes="false"
     primaryItemName="">
     <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
     <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
     <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
-  </nodeType>
-  
-  <nodeType name="galaxy:entry" 
-    isMixin="false" 
-    hasOrderableChildNodes="false"
-    primaryItemName="">
-    
-    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
-    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" multiple="true"/>
-    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
-    
-  </nodeType>
-  
-  <nodeType name="galaxy:entryVersion" 
-    isMixin="false" 
-    hasOrderableChildNodes="false"
-    primaryItemName="">
-    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
-    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" multiple="true"/>
-    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
-    
   </nodeType>
   
   <nodeType name="galaxy:artifact" 

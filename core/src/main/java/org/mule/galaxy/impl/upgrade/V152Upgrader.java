@@ -16,7 +16,7 @@ import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.impl.jcr.AbstractJcrItem;
+import org.mule.galaxy.impl.jcr.JcrItem;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.security.AccessException;
 import org.springmodules.jcr.JcrCallback;
@@ -93,7 +93,7 @@ public class V152Upgrader extends Upgrader {
         try {
             Node node = session.getNodeByUUID(itemId);
             JcrUtil.setProperty(property, true, node);
-            AbstractJcrItem.ensureProperty(node, property);
+            JcrItem.ensureProperty(node, property);
         } catch (ItemNotFoundException e) {
         }
     }

@@ -18,29 +18,23 @@
 
 package org.mule.galaxy.web.rpc;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import org.mule.galaxy.web.rpc.RegistryService.ApplyTo;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface RegistryServiceAsync {
-    void getWorkspaces(String parentId, AsyncCallback callback);
+    void getItems(String parentId, AsyncCallback callback);
     
-    void addWorkspace(String parentWorkspaceId, 
-                      String workspaceName,
-                      String lifecycleId,
-                      AsyncCallback callback);
-    
-    void updateWorkspace(String workspaceId, 
-                         String parentWorkspacePath, 
-                         String workspaceName,
-                         String lifecycleId,
-                         AsyncCallback callback);
+    void addItem(String parentId, 
+                 String workspaceName,
+                 String lifecycleId,
+                 String type,
+                 Map<String, Serializable> properties,
+                 AsyncCallback callback);
 
     void getArtifactType(String id, AsyncCallback c);
     
@@ -51,20 +45,17 @@ public interface RegistryServiceAsync {
     
     void deleteArtifactType(String id, 
                             AsyncCallback callback);
-    
-    void newEntry(String workspacePath, String name, String version, AsyncCallback callback);
 
-    void newEntryVersion(String entryId, String version, AsyncCallback callback);
-    
-    void getArtifacts(String workspace, String workspacePath, 
-                      boolean includeChildWkspcs, Set<String> artifactTypes, 
-                      Set<SearchPredicate> searchPredicates, String freeformQuery, 
-                      int start, int maxResults, 
+    void getArtifacts(String workspace, 
+                      String workspacePath, 
+                      boolean includeChildWkspcs,
+                      Set<SearchPredicate> searchPredicates, 
+                      String freeformQuery, 
+                      int start, 
+                      int maxResults, 
                       AsyncCallback callback);
     
-    void suggestEntries(String query, String exclude, AsyncCallback<Collection<EntryInfo>> callback);
-
-    void suggestWorkspaces(String query, String exclude, AsyncCallback<Collection<String>> callback);
+    void suggestEntries(String query, String exclude, String[] type, AsyncCallback<Collection<ItemInfo>> callback);
     
     void getIndexes(AsyncCallback callback);
 
@@ -75,16 +66,10 @@ public interface RegistryServiceAsync {
     void deleteIndex(String id, boolean removeArtifactMetadata, AsyncCallback callback);
     
     void getExtensions(AsyncCallback callback);
-    
-    
-    void itemExists(String path, AsyncCallback<Boolean> callback);
-    
 
-    void getEntry(String artifactId, AsyncCallback callback);
-    
-    void getArtifactByVersionId(String artifactVersionId, AsyncCallback callback);
-    
-    void getItemInfo(String entryVersionId, boolean showHidden, AsyncCallback<ItemInfo> callback);
+    void itemExists(String path, AsyncCallback<Boolean> callback);
+
+    void getItemInfo(String itemId, boolean showHidden, AsyncCallback<ItemInfo> callback);
     
     // item operations
     
@@ -102,28 +87,22 @@ public interface RegistryServiceAsync {
     void setProperty(Collection itemIds, 
                      String propertyName, 
                      Serializable propertyValue,
-                     ApplyTo applyTo,
                      AsyncCallback callback);
 
-    void setProperty(String query,
+    void setPropertyForQuery(String query,
                      String propertyName, 
                      Serializable propertyValue,
-                     ApplyTo applyTo,
                      AsyncCallback callback);
  
     void deleteProperty(Collection itemIds,
                         String propertyName,
-                        ApplyTo applyTo,
                         AsyncCallback callback);
  
-    void deleteProperty(String query,
-                        String propertyName,
-                        ApplyTo applyTo,
-                        AsyncCallback callback);
+    void deletePropertyForQuery(String query,
+                                String propertyName,
+                                AsyncCallback callback);
     
-    void addComment(String artifactId, String parentCommentId, String text, AsyncCallback callback);
-    
-    void setDescription(String artifactId, String description, AsyncCallback callback);
+    void addComment(String itemId, String parentCommentId, String text, AsyncCallback callback);
     
     void savePropertyDescriptor(WPropertyDescriptor property, AsyncCallback c);
     
@@ -133,16 +112,12 @@ public interface RegistryServiceAsync {
     
     void getQueryProperties(AsyncCallback<Map<String, String>> callback);
     
-    void transition(Collection artifactIds, String lifecycle, String phase, AsyncCallback c);
+    void transition(Collection itemIds, String lifecycle, String phase, AsyncCallback c);
 
-    void setDefault(String artifactVersionId, AsyncCallback c);
+    void move(String itemId, String parentPath, String name, AsyncCallback c);
     
-    void move(String artifactId, String parentPath, String name, String newVersion, AsyncCallback c);
-    
-    void delete(String artifactId, AsyncCallback c);
+    void delete(String itemId, AsyncCallback c);
 
-    void deleteArtifactVersion(String artifactId, AsyncCallback c);
-    
     void getPolicies(AsyncCallback c);
 
     void getLifecycle(String id, AsyncCallback c);
@@ -164,8 +139,6 @@ public interface RegistryServiceAsync {
 
     void deleteLifecycle(String id, AsyncCallback abstractCallback);
 
-    void setEnabled(String versionId, boolean enabled, AsyncCallback callback);
-
     void getPropertyDescriptor(String id, AsyncCallback fetchCallback);
 
     void getArtifactsForView(String viewId, int resultStart, int maxResults, AsyncCallback callback);
@@ -179,6 +152,4 @@ public interface RegistryServiceAsync {
     void deleteArtifactView(String id, AsyncCallback callback);
     
     void getRecentArtifactViews(AsyncCallback callback);
-
-    void getWorkspace(String workspaceId, AsyncCallback<WWorkspace> callback);
 }

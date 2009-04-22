@@ -6,14 +6,14 @@ def time = System.&currentTimeMillis // method ref
 def long start
 if (log.debugEnabled) {
     start = time()
-    log.debug "Indexing ${artifact.parent.name}"
+    log.debug "Indexing ${item.parent.name}"
 }
 
 // copy to a temp location, not happy :(
 def temp = File.createTempFile('galaxy-index', 'tmp')
 temp.deleteOnExit()
 temp.withOutputStream {
-    it << artifact.stream
+    it << artifact.inputStream
 }
 
 // just for a start, will populate with values from org.osgi.framework.Constants
@@ -38,9 +38,9 @@ try {
 
     def propertyName = "jar.entries"
     def encodedName = URLEncoder.encode(propertyName)
-    artifact.setProperty encodedName, entries
-    artifact.setLocked encodedName, true
-    artifact.setVisible encodedName, false
+    item.setProperty encodedName, entries
+    item.setLocked encodedName, true
+    item.setVisible encodedName, false
 
     // check if the jar has a manifest
     def manifest = jarFile.manifest
@@ -66,8 +66,8 @@ try {
         propertyName = "jar.manifest.${it.key}"
         encodedName = URLEncoder.encode(propertyName)
 
-        artifact.setProperty(encodedName, it.value)
-        artifact.setLocked(encodedName, true)
+        item.setProperty(encodedName, it.value)
+        item.setLocked(encodedName, true)
     }
 
     osgiAttrs.each {
@@ -78,8 +78,8 @@ try {
         encodedName = URLEncoder.encode(propertyName)
 
         def pkgs = exports.collect { it.keys[0] }
-        artifact.setProperty encodedName, pkgs
-        artifact.setLocked encodedName, true
+        item.setProperty encodedName, pkgs
+        item.setLocked encodedName, true
 
         /*
         exports.each {exp ->                                                          mani

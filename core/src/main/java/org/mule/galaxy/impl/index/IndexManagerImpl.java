@@ -23,21 +23,20 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.ContentService;
 import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.EntryVersion;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.activity.ActivityManager;
 import org.mule.galaxy.activity.ActivityManager.EventType;
-import org.mule.galaxy.impl.jcr.JcrArtifact;
+import org.mule.galaxy.artifact.Artifact;
+import org.mule.galaxy.impl.artifact.ArtifactExtension;
+import org.mule.galaxy.impl.artifact.ArtifactImpl;
+import org.mule.galaxy.impl.jcr.JcrItem;
 import org.mule.galaxy.impl.jcr.JcrUtil;
-import org.mule.galaxy.impl.jcr.JcrVersion;
 import org.mule.galaxy.impl.jcr.JcrWorkspaceManager;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.index.Index;
@@ -65,8 +64,6 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     implements IndexManager, ApplicationContextAware {
 
     private final Log log = LogFactory.getLog(getClass());
-
-    private ContentService contentService;
 
     private BlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>();
 
@@ -122,13 +119,12 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
 
     @SuppressWarnings("unchecked")
-    public Set<Index> getIndexes(final ArtifactVersion av) {
+    public Set<Index> getIndexes(final Artifact artifact) {
         return (Set<Index>) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 QueryManager qm = getQueryManager(session);
                 StringBuilder qstr = new StringBuilder("//element(*, galaxy:index)");
 
-                Artifact artifact = (Artifact) av.getParent();
                 QName dt = artifact.getDocumentType();
                 if (dt == null) {
                     qstr.append("[@mediaType=")
@@ -211,7 +207,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         doDelete(id, session);
         
         if (removeArtifactMetadata && propName != null) {
-            Query query = getQueryManager(session).createQuery("//element(*, galaxy:artifactVersion)[@" + propName + "]", Query.XPATH);
+            Query query = getQueryManager(session).createQuery("//element(*, galaxy:item)[@" + propName + "]", Query.XPATH);
             
             QueryResult result = query.execute();
             
@@ -219,7 +215,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 Node n = itr.nextNode();
                 
                 try {
-                    new JcrVersion(new JcrArtifact(null, n.getParent(), getWorkspaceManager()), n).setProperty(propName, null);
+                    new JcrItem(n, getWorkspaceManager()).setProperty(propName, null);
                 } catch (PropertyException e) {
                     throw new RuntimeException(e);
                 } catch (PolicyException e) {
@@ -277,8 +273,15 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         }
     }
 
-    private Runnable getIndexer(ArtifactVersion av) {
-        final String artifactVersionId = av.getId();
+    /**
+     * Returns a Runnable which can be queued or run immediately which indexes a particular artifact.
+     * @param item
+     * @param av
+     * @return
+     */
+    private Runnable getIndexer(Item item, final String property) {
+        final String id = item.getId();
+        
         Runnable runnable = new Runnable() {
 
             public void run() {
@@ -303,15 +306,14 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                         public void run() {
                             try {
                                 // lookup a version associated with this session
-                                final ArtifactVersion version = (ArtifactVersion) getRegistry().getItemById(artifactVersionId);
-                                
+                        	Item item = getRegistry().getItemById(id);
+
                                 try {
-                                    doIndex(version);
+                                    doIndex(item, property);
                                 } catch (Throwable t) {
                                     handleIndexingException(t);
                                 }
 
-                                ((JcrVersion) version).setIndexedPropertiesStale(false);
                                 session.save();
                             } catch (Throwable e) {
                                 handleIndexingException(e);
@@ -369,36 +371,39 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
     protected void findAndReindex(Session session, Index idx) throws RepositoryException
     {
-        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query(Artifact.class);
-
-        if (idx.getDocumentTypes() == null || idx.getDocumentTypes().isEmpty())
-        {
-            // TODO OpRestriction.in causes an NPE on reindexing?!
-            q.add(OpRestriction.eq("contentType", Arrays.asList(idx.getMediaType())));
+        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query();
+        
+        Collection<PropertyDescriptor> filePDs = typeManager.getPropertyDescriptorsForExtension(ArtifactExtension.ID);
+        for (PropertyDescriptor pd : filePDs) {
+            if (idx.getDocumentTypes() == null || idx.getDocumentTypes().isEmpty())
+            {
+                // TODO OpRestriction.in causes an NPE on reindexing?!
+                q.add(OpRestriction.eq(pd.getProperty() + ".contentType", Arrays.asList(idx.getMediaType())));
+            }
+            else
+            {
+                q.add(OpRestriction.in(pd.getProperty() + ".documentType", idx.getDocumentTypes()));
+            }
         }
-        else
-        {
-            q.add(OpRestriction.in("documentType", idx.getDocumentTypes()));
-        }
-
+        
         try
         {
-            Set results = getRegistry().search(q).getResults();
+            Set<Item> results = getRegistry().search(q).getResults();
 
-            logActivity("Reindexing the \"" + idx.getDescription() + "\" index for " + results.size() + " artifacts.");
+            logActivity("Reindexing the \"" + idx.getDescription() + "\" index for " + results.size() + " items.");
 
-            for (Object o : results) {
-                Artifact a = (Artifact) o;
-
-                for (EntryVersion v : a.getVersions()) {
-                    ContentHandler ch = contentService.getContentHandler(a.getContentType());
-
-                    try {
-                        getIndexer(idx.getIndexer()).index((ArtifactVersion)v, ch, idx);
-                    } catch (IndexException e) {
-                        handleIndexingException(idx, e);
-                    } catch (IOException e) {
-                        handleIndexingException(idx, e);
+            for (Item item : results) {
+        	// Reindex each file type
+                for (PropertyDescriptor pd : filePDs) {
+                    PropertyInfo pi = item.getPropertyInfo(pd.getProperty());
+                    if (pi != null) {
+                        try {
+                            getIndexer(idx.getIndexer()).index(item, pi, idx);
+                        } catch (IndexException e) {
+                            handleIndexingException(idx, e);
+                        } catch (IOException e) {
+                            handleIndexingException(idx, e);
+                        }
                     }
                 }
 
@@ -409,9 +414,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         } catch (RegistryException e) {
             logActivity("Could not reindex documents for index " + idx.getId(), e);
         }
-
     }
-
 
     private void logActivity(String activity, Exception e) {
         log.error(activity, e);
@@ -439,35 +442,43 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         log.error("Could not process index " + idx.getId(), t);
     }
     
-    public void index(final ArtifactVersion version) {
-        if (indexArtifactsAsynchronously) {
-            Runnable indexer = getIndexer(version);
-            
-            ((JcrVersion) version).setIndexedPropertiesStale(true);
-
-            addToQueue(indexer);
-        } else {
-            doIndex(version);
-        }
+    public void index(final Item item) {
+	for (PropertyDescriptor pd : typeManager.getPropertyDescriptorsForExtension(ArtifactExtension.ID)) {
+            if (indexArtifactsAsynchronously) {
+                Runnable indexer = getIndexer(item, pd.getProperty());
+                
+                addToQueue(indexer);
+            } else {
+                doIndex(item, pd.getProperty());
+            }
+	}
     }
 
-    private void doIndex(final ArtifactVersion version) {
-        final Collection<Index> indices = getIndexes(version);
+    private void doIndex(final Item item, String property) {
+	final PropertyInfo pi = item.getPropertyInfo(property);
+	if (pi == null) {
+	    return;
+	}
+	
+	Artifact a = (Artifact) pi.getValue();
+	if (a == null) {
+	    return;
+	}
+	
+        final Collection<Index> indices = getIndexes(a);
         
         SecurityUtils.doPriveleged(new Runnable() {
             public void run() {
                 for (Index idx : indices) {
-                    ContentHandler ch = ((Artifact)version.getParent()).getContentHandler();
-                    
                     try {
-                        getIndexer(idx.getIndexer()).index(version, ch, idx);
+                        getIndexer(idx.getIndexer()).index(item, pi, idx);
                     } catch (Throwable e) {
                         handleIndexingException(idx, e);
                     }
                 }
             }
         });
-       
+        ((ArtifactImpl) a).setIndexed(true);
     }
 
     public Indexer getIndexer(String id) {
@@ -482,10 +493,6 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         }
     }
     
-    public void setContentService(ContentService contentService) {
-        this.contentService = contentService;
-    }
-
     public void setTypeManager(TypeManager typeManager) {
         this.typeManager = typeManager;
     }

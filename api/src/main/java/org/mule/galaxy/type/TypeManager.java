@@ -4,10 +4,16 @@ import java.util.Collection;
 
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.security.AccessException;
 
 public interface TypeManager {
+
+    String VERSIONED = "Versioned";
+    String VERSION = "Version";
+    String DEFAULT_VERSION = "default.version";
+    String WORKSPACE = "Workspace";
+    String ARTIFACT_VERSION = "Artifact Version";
+    String ARTIFACT = "Artifact";
 
     Collection<Type> getTypes();
 

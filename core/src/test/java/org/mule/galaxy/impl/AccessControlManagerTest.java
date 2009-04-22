@@ -4,8 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.Workspace;
+import org.mule.galaxy.Item;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Group;
 import org.mule.galaxy.security.Permission;
@@ -71,7 +70,7 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
     }
     
     public void testItemGrants() throws Exception {
-        Artifact artifact = importHelloWsdl();
+        Item artifact = importHelloWsdl();
         
         List<Group> groups = accessControlManager.getGroups();
         assertEquals(2, groups.size());
@@ -79,12 +78,12 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
         Group group = getGroup("Administrators", groups);
         assertNotNull(group);
         
-        accessControlManager.revoke(group, Permission.DELETE_ARTIFACT, artifact);
+        accessControlManager.revoke(group, Permission.DELETE_ITEM, artifact);
         
         Set<PermissionGrant> pgs = accessControlManager.getPermissionGrants(group, artifact);
         
         for (PermissionGrant pg : pgs) {
-            if (pg.getPermission().equals(Permission.DELETE_ARTIFACT)) {
+            if (pg.getPermission().equals(Permission.DELETE_ITEM)) {
                 assertEquals(PermissionGrant.Grant.REVOKED, pg.getGrant());
             } else {
                 assertEquals("Permission for " + pg.getPermission() + " should be inherited.",
@@ -92,12 +91,12 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
             }
         }
         
-        accessControlManager.grant(group, Permission.DELETE_ARTIFACT, artifact);
+        accessControlManager.grant(group, Permission.DELETE_ITEM, artifact);
         
         pgs = accessControlManager.getPermissionGrants(group, artifact);
         
         for (PermissionGrant pg : pgs) {
-            if (pg.getPermission().equals(Permission.DELETE_ARTIFACT)) {
+            if (pg.getPermission().equals(Permission.DELETE_ITEM)) {
                 assertEquals(PermissionGrant.Grant.GRANTED, pg.getGrant());
             } else {
                 assertEquals("Permission for " + pg.getPermission() + " should be inherited.",
@@ -113,8 +112,7 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
 
         ro = accessControlManager.getGroupByName("ReadOnly");
         
-        accessControlManager.grant(ro, Permission.READ_ARTIFACT);
-        accessControlManager.grant(ro, Permission.READ_WORKSPACE);
+        accessControlManager.grant(ro, Permission.READ_ITEM);
         
         User user = new User();
         user.setUsername("guest");
@@ -135,14 +133,13 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
         
 
         try {
-            ((Workspace) registry.getItemByPath("Default Workspace")).newEntry("test", "1.0");
+            ((Item) registry.getItemByPath("Default Workspace")).newItem("test", getSimpleType());
             fail("Bad security!");
         } catch (AccessException e) {
         }
         
-
         login("admin", "admin");
-        Artifact artifact = importHelloWsdl();
+        Item artifact = importHelloWsdl();
         
         login("guest", "guest");
         try {
@@ -154,12 +151,12 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
     
     
     public void testAccess() throws Exception {
-        Artifact artifact = importHelloWsdl();
+        Item artifact = importHelloWsdl();
 
         logout();
         
         try {
-            accessControlManager.assertAccess(Permission.READ_ARTIFACT);
+            accessControlManager.assertAccess(Permission.READ_ITEM);
             fail("Expected Access Exception");
         } catch (AccessException e) {
             // expected
@@ -169,7 +166,7 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
 
             public void run() {
                 try {
-                    accessControlManager.assertAccess(Permission.READ_ARTIFACT);
+                    accessControlManager.assertAccess(Permission.READ_ITEM);
                 } catch (AccessException e) {
                     throw new RuntimeException(e);
                 }
@@ -179,19 +176,19 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
         
         login("admin", "admin");
         
-        accessControlManager.assertAccess(Permission.READ_ARTIFACT);
+        accessControlManager.assertAccess(Permission.READ_ITEM);
         accessControlManager.assertAccess(Permission.MANAGE_GROUPS);
-        accessControlManager.assertAccess(Permission.READ_ARTIFACT, artifact);
-        accessControlManager.assertAccess(Permission.MODIFY_ARTIFACT, artifact);
+        accessControlManager.assertAccess(Permission.READ_ITEM, artifact);
+        accessControlManager.assertAccess(Permission.MODIFY_ITEM, artifact);
 
         // try revoking permission to an artifact
         Group group = getGroup("Administrators", accessControlManager.getGroups());
         assertNotNull(group);
-        accessControlManager.revoke(group, Permission.READ_ARTIFACT, artifact);
+        accessControlManager.revoke(group, Permission.READ_ITEM, artifact);
 
-        accessControlManager.assertAccess(Permission.READ_ARTIFACT);
+        accessControlManager.assertAccess(Permission.READ_ITEM);
         try {
-            accessControlManager.assertAccess(Permission.READ_ARTIFACT, artifact);
+            accessControlManager.assertAccess(Permission.READ_ITEM, artifact);
             fail("Expected Access Exception");
         } catch (AccessException e) {
             // expected
@@ -199,7 +196,7 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
         
         // clear the revocation and any grants
         accessControlManager.clear(group, artifact);
-        accessControlManager.assertAccess(Permission.READ_ARTIFACT, artifact);
+        accessControlManager.assertAccess(Permission.READ_ITEM, artifact);
         
         User user = new User();
         user.setUsername("dan");
@@ -209,14 +206,14 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
         login("dan", "123");
 
         try {
-            accessControlManager.assertAccess(Permission.READ_ARTIFACT);
+            accessControlManager.assertAccess(Permission.READ_ITEM);
             fail("Expected Access Exception");
         } catch (AccessException e) {
             // expected
         }
 
         try {
-            accessControlManager.assertAccess(Permission.READ_ARTIFACT, artifact);
+            accessControlManager.assertAccess(Permission.READ_ITEM, artifact);
             fail("Expected Access Exception");
         } catch (AccessException e) {
             // expected

@@ -11,11 +11,9 @@ import java.util.Set;
 
 import javax.activation.MimeType;
 
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentHandler;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
-import org.mule.galaxy.Workspace;
+import org.mule.galaxy.artifact.ContentHandler;
 
 public abstract class AbstractContentHandler implements ContentHandler {
 
@@ -39,14 +37,6 @@ public abstract class AbstractContentHandler implements ContentHandler {
         return supportedFileExtensions;
     }
 
-    public void addMetadata(ArtifactVersion v) {
-
-    }
-
-    public String describeDifferences(ArtifactVersion prev, ArtifactVersion v) {
-        return "Version " + v.getVersionLabel();
-    }
-
     public InputStream read(Object data) throws IOException {
         final File temp = File.createTempFile("galaxyOut", "tmp");
         FileOutputStream fileOutputStream = new FileOutputStream(temp);
@@ -67,7 +57,7 @@ public abstract class AbstractContentHandler implements ContentHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public Set<String> detectDependencies(Object o, Workspace w) {
+    public Set<String> detectDependencies(Object o, Item w) {
         return Collections.EMPTY_SET;
     }
 

@@ -21,11 +21,11 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.GalaxyException;
 import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.impl.render.CustomEntryRenderer;
+import org.mule.galaxy.artifact.ArtifactType;
+import org.mule.galaxy.impl.render.CustomItemRenderer;
 import org.mule.galaxy.impl.render.MvelColumn;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.plugins.config.jaxb.ColumnType;
@@ -40,7 +40,6 @@ import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.util.TemplateParser;
 import org.springframework.util.ClassUtils;
-
 import org.w3c.dom.Node;
 
 /**
@@ -266,7 +265,7 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
 
         for (ViewType viewType : views)
         {
-            CustomEntryRenderer view = new CustomEntryRenderer();
+            CustomItemRenderer view = new CustomItemRenderer();
 
             List<ColumnType> columns = viewType.getColumn();
             for (final ColumnType column : columns)
@@ -293,8 +292,6 @@ public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
                         "Unabled to select Namespace for view, there is either none or more than one namespace set on the plugin");
             }
             rendererManager.addRenderer(view, pluginQNames);
-
-
         }
     }
 

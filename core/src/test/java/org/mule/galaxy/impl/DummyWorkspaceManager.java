@@ -19,31 +19,25 @@
 
 package org.mule.galaxy.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
-import javax.activation.MimeTypeParseException;
-
-import org.mule.galaxy.Artifact;
 import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.Entry;
-import org.mule.galaxy.EntryResult;
-import org.mule.galaxy.EntryVersion;
 import org.mule.galaxy.Item;
+import org.mule.galaxy.NewItemResult;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.workspace.AbstractWorkspaceManager;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.type.Type;
 import org.mule.galaxy.workspace.WorkspaceManager;
 
 public final class DummyWorkspaceManager extends AbstractWorkspaceManager implements WorkspaceManager {
     private String id = "test";
-    private Workspace attachedWorkspace;
+    private Item attachedWorkspace;
     
     public DummyWorkspaceManager() {
         super();
@@ -52,41 +46,26 @@ public final class DummyWorkspaceManager extends AbstractWorkspaceManager implem
     public void validate() throws RegistryException {
     }
 
-    public void attachTo(Workspace workspace) {
+    public void attachTo(Item workspace) {
         this.attachedWorkspace = workspace;
     }
 
-    public Workspace getAttachedToWorkspace() {
+    public Item getAttachedToWorkspace() {
         return attachedWorkspace;
     }
 
     public void save(Item item) throws RegistryException, AccessException {
     }
 
-    public EntryResult createArtifact(Workspace workspace, Object data, String versionLabel)
-        throws RegistryException, PolicyException, MimeTypeParseException, DuplicateItemException,
-        AccessException {
-        return null;
-    }
+    public NewItemResult newItem(Item parent, String name, Type type,
+			Map<String, Object> initialProperties)
+			throws DuplicateItemException, RegistryException, PolicyException,
+			AccessException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    public EntryResult createArtifact(Workspace workspace, String contentType, String name,
-                                      String versionLabel, InputStream inputStream)
-        throws RegistryException, PolicyException, IOException, MimeTypeParseException,
-        DuplicateItemException, AccessException {
-        return null;
-    }
-
-    public Workspace newWorkspace(Workspace parent, String name) throws DuplicateItemException,
-        RegistryException, AccessException {
-        return null;
-    }
-
-    public Workspace newWorkspace(String name) throws DuplicateItemException, RegistryException,
-        AccessException {
-        return null;
-    }
-
-    public void delete(Item item) throws RegistryException, AccessException {
+	public void delete(Item item) throws RegistryException, AccessException {
     }
 
     public String getId() {
@@ -101,48 +80,25 @@ public final class DummyWorkspaceManager extends AbstractWorkspaceManager implem
         return null;
     }
 
-    public List<Item> getItems(Workspace w) {
+    public List<Item> getItems(Item w) {
         return new ArrayList<Item>();
     }
 
-    public Item getItem(Workspace w, String name) throws RegistryException, NotFoundException {
+    public Item getItem(Item w, String name) throws RegistryException, NotFoundException {
         return null;
     }
 
-    public Workspace getWorkspace(String id) throws RegistryException, NotFoundException, AccessException {
+    public Item getWorkspace(String id) throws RegistryException, NotFoundException, AccessException {
         return null;
     }
 
-    public Collection<Workspace> getWorkspaces() throws AccessException {
+    public Collection<Item> getWorkspaces() throws AccessException {
         return null;
     }
 
-    public Collection<Workspace> getWorkspaces(Workspace workspace) {
+    public Collection<Item> getWorkspaces(Item workspace) {
         return null;
     }
 
-    public EntryResult newEntry(Workspace workspace, String name, String versionLabel)
-        throws DuplicateItemException, RegistryException, PolicyException, AccessException {
-        return null;
-    }
-
-    public EntryResult newVersion(Artifact artifact, InputStream inputStream, String versionLabel) throws RegistryException, PolicyException, IOException,
-        DuplicateItemException, AccessException {
-        return null;
-    }
-
-    public EntryResult newVersion(Artifact artifact, Object data, String versionLabel)
-        throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException {
-        return null;
-    }
-
-    public EntryResult newVersion(Entry jcrEntry, String versionLabel) throws DuplicateItemException,
-        RegistryException, PolicyException, AccessException {
-        return null;
-    }
-
-    public void setEnabled(EntryVersion version, boolean enabled) throws RegistryException,
-        PolicyException {    
-    }
     
 }

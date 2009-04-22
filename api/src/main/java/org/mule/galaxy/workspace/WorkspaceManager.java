@@ -1,24 +1,20 @@
 package org.mule.galaxy.workspace;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
-import javax.activation.MimeTypeParseException;
-
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ContentService;
 import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.Entry;
-import org.mule.galaxy.EntryResult;
 import org.mule.galaxy.Item;
+import org.mule.galaxy.NewItemResult;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.RegistryException;
-import org.mule.galaxy.Workspace;
+import org.mule.galaxy.artifact.ContentService;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.type.Type;
 
 /**
  * WorkspaceManagers perform the underlying operations on Items in the registry. This makes it 
@@ -32,56 +28,28 @@ public interface WorkspaceManager {
      */
     String getId();
     
-    Collection<Workspace> getWorkspaces() throws AccessException, RegistryException;
+    Collection<Item> getWorkspaces() throws AccessException, RegistryException;
 
-    Collection<Workspace> getWorkspaces(Workspace workspace) throws RegistryException;
+    Collection<Item> getWorkspaces(Item workspace) throws RegistryException;
 
-    Workspace newWorkspace(final String name) 
-    	throws DuplicateItemException, RegistryException, AccessException;
-    
-    Workspace newWorkspace(Workspace parent, String name) 
-    	throws DuplicateItemException, RegistryException, AccessException;
-                                     
     void delete(Item item) throws RegistryException, AccessException;
 
     void save(Item item) throws RegistryException, AccessException;
-    
-    EntryResult newVersion(Artifact artifact, 
-            Object data, 
-            String versionLabel)
-        throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException;
-    
-    EntryResult newVersion(final Artifact artifact, 
-            final InputStream inputStream, 
-            final String versionLabel) 
-        throws RegistryException, PolicyException, IOException, DuplicateItemException, AccessException;
-    
-    EntryResult createArtifact(Workspace workspace, Object data, String versionLabel) 
-        throws RegistryException, PolicyException, MimeTypeParseException, DuplicateItemException, AccessException;
-    
-    EntryResult createArtifact(Workspace workspace, 
-            String contentType, 
-            String name,
-            String versionLabel, 
-            InputStream inputStream) 
-        throws RegistryException, PolicyException, IOException, MimeTypeParseException, DuplicateItemException, AccessException;
-    
-    EntryResult newEntry(Workspace workspace, String name, String versionLabel)
-       throws DuplicateItemException, RegistryException, PolicyException, AccessException;
-    
-    EntryResult newVersion(Entry entry, String versionLabel)
-    	throws DuplicateItemException, RegistryException, PolicyException, AccessException;
 
-    List<Item> getItems(Workspace w) throws RegistryException;
+    NewItemResult newItem(Item parent, String name, Type type, Map<String,Object> initialProperties)
+    	throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException;
+    
+    List<Item> getItems(Item w) throws RegistryException;
     
     Item getItemById(final String id) throws NotFoundException, RegistryException, AccessException;
     
     Item getItemByPath(final String path) throws NotFoundException, RegistryException, AccessException;
+    
     /**
      * Attach this manager to the specified workspace.
      * @param workspace
      */
-    void attachTo(Workspace workspace);
+    void attachTo(Item workspace);
 
     ContentService getContentService();
 
@@ -89,5 +57,5 @@ public interface WorkspaceManager {
     
     void validate() throws RegistryException;
 
-    Item getItem(Workspace w, String name) throws RegistryException, NotFoundException, AccessException;
+    Item getItem(Item w, String name) throws RegistryException, NotFoundException, AccessException;
 }

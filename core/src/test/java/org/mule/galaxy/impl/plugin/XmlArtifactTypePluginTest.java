@@ -3,8 +3,8 @@ package org.mule.galaxy.impl.plugin;
 import java.util.Collection;
 import java.util.List;
 
-import org.mule.galaxy.ArtifactType;
 import org.mule.galaxy.Dao;
+import org.mule.galaxy.artifact.ArtifactType;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.plugins.config.jaxb.ConfigurationType;
 import org.mule.galaxy.plugins.config.jaxb.GalaxyArtifactType;
@@ -13,7 +13,6 @@ import org.mule.galaxy.plugins.config.jaxb.IndexesType;
 import org.mule.galaxy.plugins.config.jaxb.NamespaceType;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.DOMUtils;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

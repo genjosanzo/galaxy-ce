@@ -1,19 +1,10 @@
  package org.mule.galaxy.query;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import org.mule.galaxy.Artifact;
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.Entry;
-import org.mule.galaxy.EntryVersion;
-import org.mule.galaxy.Item;
-import org.mule.galaxy.Workspace;
 import org.mule.galaxy.query.OpRestriction.Operator;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.Message;
@@ -21,7 +12,6 @@ import org.mule.galaxy.util.Message;
 public class Query {
     List<Restriction> restrictions = new LinkedList<Restriction>();
     boolean searchLatestVersionOnly = true;
-    List<Class> selectTypes;
     private String groupBy;
     private String fromId;
     private boolean fomRecursive;
@@ -47,24 +37,12 @@ public class Query {
 
     public Query() {
 	super();
-        this.selectTypes = Collections.emptyList();
     }
     
     public Query(OpRestriction restriction) {
         restrictions.add(restriction);
-        this.selectTypes = Collections.emptyList();
     }
     
-    public Query(OpRestriction restriction, 
-	         Class... selectType) {
-	this.selectTypes = Arrays.asList(selectType);
-        restrictions.add(restriction);
-    }
-    
-    public Query(Class... selectType) {
-        this.selectTypes = Arrays.asList(selectType);
-    }
-
     public Query add(Restriction restriction) {
         restrictions.add(restriction);
         return this;
@@ -72,18 +50,6 @@ public class Query {
 
     public List<Restriction> getRestrictions() {
         return restrictions;
-    }
-
-    public List<Class> getSelectTypes() {
-        return selectTypes;
-    }
-
-    public void setSelectTypes(Class... selectType) {
-	this.selectTypes = Arrays.asList(selectType);
-    }
-    
-    public void setSelectTypes(List<Class> selectTypes) {
-	this.selectTypes = selectTypes;
     }
 
     public Query orderBy(String field) {
@@ -133,32 +99,6 @@ public class Query {
         StringBuilder sb = new StringBuilder();
         
         sb.append("select ");
-        
-        if (selectTypes != null && selectTypes.size() > 0) {
-            boolean first = true;
-            for (Class t : selectTypes) {
-                if (!first) {
-            		sb.append(", ");
-                }
-                
-                if (t.equals(Artifact.class)) {
-                    sb.append("artifact");
-                } else if (t.equals(ArtifactVersion.class)) {
-                    sb.append("artifactVersion");
-                } else if (t.equals(Entry.class)) {
-                    sb.append("entry");
-                } else if (t.equals(EntryVersion.class)) {
-                    sb.append("entryVersion");
-                } else {
-                    sb.append("item");
-                }
-                
-                first = false;
-            }
-            sb.append(" ");
-        } else {
-            sb.append("item ");
-        }
         
         if (fromId != null) {
             sb.append("from '@")
@@ -247,40 +187,13 @@ public class Query {
             throw new QueryException(new Message("EXPECTED_SELECT_TYPE", BundleUtils.getBundle(Query.class)));
         }
         
-        List<Class> selectTypes = new ArrayList<Class>();
-        String selectType;
-        do {
-            selectType = tokens.pop();
-            
-            if (selectType.equals("from") || selectType.equals("where")) {
-        	break;
-            }
-            
-            if (selectType.equals("artifact")) {
-        	selectTypes.add(Artifact.class);
-            } else if (selectType.equals("artifactVersion")) {
-        	selectTypes.add(ArtifactVersion.class);
-            } else if (selectType.equals("entry")) {
-        	selectTypes.add(Entry.class);
-            } else if (selectType.equals("entryVersion")) {
-        	selectTypes.add(EntryVersion.class);
-            } else if (selectType.equals("workspace")) {
-        	selectTypes.add(Workspace.class);
-            } else if (selectType.equals("*")) {
-        	selectTypes.add(Item.class);
-            } else {
-                throw new QueryException(new Message("UNKNOWN_SELECT_TYPE", BundleUtils.getBundle(Query.class), selectType));
-            }
-        } while (!tokens.isEmpty());
-        
         org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query();
-        q.setSelectTypes(selectTypes);
         
         if (tokens.isEmpty()){
             return q;
         }
         
-        String next = selectType;
+        String next = tokens.pop();
         if ("from".equals(next.toLowerCase())) {
             if (tokens.isEmpty()) throw new QueryException(new Message("EXPECTED_FROM", BundleUtils.getBundle(Query.class)));
             

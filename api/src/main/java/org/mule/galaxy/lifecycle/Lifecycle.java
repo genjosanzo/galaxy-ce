@@ -1,10 +1,7 @@
 package org.mule.galaxy.lifecycle;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import org.mule.galaxy.Identifiable;
 
@@ -43,9 +40,7 @@ public class Lifecycle implements Identifiable {
     }
 
     public Phase getPhaseById(String id) {
-        for (Iterator itr = phases.values().iterator(); itr.hasNext();) {
-            Phase p = (Phase)itr.next();
-            
+        for (Phase p : phases.values()) {
             if (id.equals(p.getId())) {
                 return p;
             }

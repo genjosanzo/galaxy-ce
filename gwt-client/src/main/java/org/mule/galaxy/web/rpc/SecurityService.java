@@ -11,9 +11,8 @@ import org.mule.galaxy.web.client.admin.PasswordChangeException;
 
 public interface SecurityService extends RemoteService {
     
-    int ARTIFACT_PERMISSIONS = 0;
-    int WORKSPACE_PERMISSIONS = 1;
-    int GLOBAL_PERMISSIONS = 2;
+    int ITEM_PERMISSIONS = 0;
+    int GLOBAL_PERMISSIONS = 1;
     
     WUser getUser(String id) throws RPCException;
 

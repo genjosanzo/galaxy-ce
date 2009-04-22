@@ -5,14 +5,12 @@ import java.io.ByteArrayOutputStream;
 
 import javax.activation.MimeType;
 
-import org.mule.galaxy.ContentHandler;
-import org.mule.galaxy.ContentService;
+import org.mule.galaxy.artifact.ContentHandler;
+import org.mule.galaxy.artifact.ContentService;
 import org.mule.galaxy.impl.content.DefaultContentHandler;
-import org.mule.galaxy.impl.content.WsdlContentHandler;
 import org.mule.galaxy.impl.content.XmlDocumentContentHandler;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.DOMUtils;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

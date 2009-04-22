@@ -245,21 +245,21 @@ declare variable $document external;
         </indexes>
         <views>
             <view>
-                <column column="3">
+                <column>
                     <name>Target Namespace</name>
-                    <expression>version.hasProperty("wsdl.targetNamespace") ? version.getProperty("wsdl.targetNamespace") : "";</expression>
+                    <expression>item.hasProperty("wsdl.targetNamespace") ? item.getProperty("wsdl.targetNamespace") : "";</expression>
                 </column>
                 <column>
                     <name>Services</name>
-                    <expression>version.hasProperty("wsdl.service") ? version.getProperty("wsdl.service").size() : "0" ;</expression>
+                    <expression>item.hasProperty("wsdl.service") ? item.getProperty("wsdl.service").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Bindings</name>
-                    <expression>version.hasProperty("wsdl.binding") ? version.getProperty("wsdl.binding").size() : "0" ;</expression>
+                    <expression>item.hasProperty("wsdl.binding") ? item.getProperty("wsdl.binding").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Port Types</name>
-                    <expression>version.hasProperty("wsdl.portType") ? version.getProperty("wsdl.portType").size() : "0" ;</expression>
+                    <expression>item.hasProperty("wsdl.portType") ? item.getProperty("wsdl.portType").size() : "0" ;</expression>
                 </column>
             </view>
         </views>
@@ -310,7 +310,7 @@ declare variable $document external;
             <view>
                 <column>
                     <name>Beans</name>
-                    <expression>version.hasProperty("spring.bean") ? version.getProperty("spring.bean").size() : "0" ;</expression>
+                    <expression>item.hasProperty("spring.bean") ? item.getProperty("spring.bean").size() : "0" ;</expression>
                 </column>
             </view>
         </views>

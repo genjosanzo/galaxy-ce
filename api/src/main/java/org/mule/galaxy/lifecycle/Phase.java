@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.mule.galaxy.Identifiable;
-import org.mule.galaxy.Workspace;
 import org.mule.galaxy.security.User;
 
 public class Phase implements Identifiable {

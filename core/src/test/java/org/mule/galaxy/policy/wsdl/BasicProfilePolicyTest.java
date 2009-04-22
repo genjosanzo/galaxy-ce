@@ -1,12 +1,10 @@
 package org.mule.galaxy.policy.wsdl;
 
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.mule.galaxy.Item;
-import org.mule.galaxy.Workspace;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.policy.PolicyException;
@@ -22,16 +20,12 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
         
         InputStream helloWsdl = getResourceAsStream("/wsdl/hello-invalid.wsdl");
 
-        Collection<Workspace> workspaces = registry.getWorkspaces();
-        assertEquals(1, workspaces.size());
-        Workspace workspace = workspaces.iterator().next();
-
         Policy p = policyManager.getPolicy(BasicProfilePolicy.WSI_BP_1_1_WSDL);
 
         policyManager.setActivePolicies(lifecycleManager.getDefaultLifecycle(), p);
 
         try {
-            workspace.createArtifact("application/xml", "hello-invalid.wsdl", "0.1", helloWsdl);
+            importFile(helloWsdl, "hello-invalid.wsdl", "1", "application/xml");
             fail("Expected ArtifactPolicyException");
         } catch (PolicyException e) {
             Map<Item, List<ApprovalMessage>> approvals = e.getPolicyFailures();
@@ -51,8 +45,10 @@ public class BasicProfilePolicyTest extends AbstractGalaxyTest {
         }
         
         try {
-            workspace.createArtifact("application/xml", "hello.wsdl", "0.1", 
-                                    getResourceAsStream("/wsdl/wsi/soapbinding/r2710.wsdl"));
+            importFile(getResourceAsStream("/wsdl/wsi/soapbinding/r2710.wsdl"), 
+                       "hello.wsdl", 
+                       "1", 
+                       "application/xml");
             fail("Expected ArtifactPolicyException");
         } catch (PolicyException e) {
             Map<Item, List<ApprovalMessage>> approvals = e.getPolicyFailures();

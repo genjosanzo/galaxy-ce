@@ -2,11 +2,10 @@ package org.mule.galaxy.index;
 
 import java.io.IOException;
 
-import org.mule.galaxy.ArtifactVersion;
-import org.mule.galaxy.ContentHandler;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.PropertyInfo;
 
 public interface Indexer {
-    void index(ArtifactVersion artifact, 
-               ContentHandler contentHandler, 
-               Index index) throws IOException, IndexException;
+    void index(Item item, PropertyInfo property, Index index)
+	    throws IOException, IndexException;
 }

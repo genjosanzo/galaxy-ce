@@ -17,11 +17,9 @@ import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
 
 import org.apache.jackrabbit.util.ISO9075;
-import org.mule.galaxy.Artifact;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.Workspace;
 import org.mule.galaxy.impl.jcr.onm.AbstractDao;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.AccessException;
@@ -74,10 +72,8 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
                 persist(userGroup, gNode, session);
     
                 List<Permission> toGrant = new ArrayList<Permission>();
-                toGrant.add(Permission.READ_ARTIFACT);
-                toGrant.add(Permission.MODIFY_ARTIFACT);
-                toGrant.add(Permission.READ_WORKSPACE);
-                toGrant.add(Permission.MODIFY_WORKSPACE);
+                toGrant.add(Permission.READ_ITEM);
+                toGrant.add(Permission.MODIFY_ITEM);
                 grant(userGroup, toGrant);
                 
                 
@@ -240,9 +236,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
             getGrants(itemNode, pgs, item);
         } catch (PathNotFoundException e) {
             for (Permission p : getPermissions()) {
-                if (SecurityUtils.appliesTo(p, item.getClass())) {
-                    pgs.add(new PermissionGrant(p, PermissionGrant.Grant.INHERITED));
-                }
+                pgs.add(new PermissionGrant(p, PermissionGrant.Grant.INHERITED));
             }
         }
     }
@@ -255,7 +249,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         
             for (Value v : property.getValues()) {
                 Permission p = Permission.valueOf(v.getString());
-                if (item == null || SecurityUtils.appliesTo(p, item.getClass())) {
+                if (item == null || p.isItemPermission()) {
                     permissions.remove(p);
                     pgs.add(new PermissionGrant(p, PermissionGrant.Grant.GRANTED));
                 }
@@ -268,7 +262,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
             
             for (Value v : property.getValues()) {
                 Permission p = Permission.valueOf(v.getString());
-                if (item == null || SecurityUtils.appliesTo(p, item.getClass())) {
+                if (item == null || p.isItemPermission()) {
                     permissions.remove(p);
                     pgs.add(new PermissionGrant(p, PermissionGrant.Grant.REVOKED));
                 }
@@ -277,7 +271,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         }
         
         for (Permission p : permissions) {
-            if (item == null || SecurityUtils.appliesTo(p, item.getClass())) {
+            if (item == null || p.isItemPermission()) {
                 if (item == null) {
                     // this is a root level permission, so it can't inherit.
                     pgs.add(new PermissionGrant(p, PermissionGrant.Grant.REVOKED));
@@ -555,11 +549,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
     
     public void clear(final Group group, final Item item) throws AccessException {
         assertAccess(Permission.MANAGE_GROUPS);
-        if (item instanceof Artifact) {
-            assertAccess(Permission.MODIFY_ARTIFACT, item);
-        } else if (item instanceof Workspace) {
-            assertAccess(Permission.MODIFY_ARTIFACT, item);
-        }
+        assertAccess(Permission.MODIFY_ITEM, item);
         
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {                
@@ -580,11 +570,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
 
     public void grant(final Group group, final Collection<Permission> perms, final Item item) throws AccessException {
         assertAccess(Permission.MANAGE_GROUPS);
-        if (item instanceof Artifact) {
-            assertAccess(Permission.MODIFY_ARTIFACT, item);
-        } else if (item instanceof Workspace) {
-            assertAccess(Permission.MODIFY_ARTIFACT, item);
-        }
+        assertAccess(Permission.MODIFY_ITEM, item);
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {                
                 modifyPermissions(group, perms, item, session, GRANTS, REVOCATIONS);
@@ -595,11 +581,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
 
     public void revoke(final Group group, final Collection<Permission> perms, final Item item) throws AccessException {
         assertAccess(Permission.MANAGE_GROUPS);
-        if (item instanceof Artifact) {
-            assertAccess(Permission.MODIFY_ARTIFACT, item);
-        } else if (item instanceof Workspace) {
-            assertAccess(Permission.MODIFY_ARTIFACT, item);
-        }
+        assertAccess(Permission.MODIFY_ITEM, item);
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {                
                 modifyPermissions(group, perms, item, session, REVOCATIONS, GRANTS);
