@@ -1,7 +1,6 @@
 package org.mule.galaxy.example.atompub;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.xml.namespace.QName;
 
@@ -35,7 +34,7 @@ public class AtomPubExampleTest extends AbstractAtomTest {
         entry.setContent("");
         
         // Create a <workspace-info> element
-        Element wInfo = factory.newElement(new QName("http://galaxy.mule.org/1.0", "workspace-info"));
+        Element wInfo = factory.newElement(new QName("http://galaxy.mule.org/2.0", "item-info"));
         wInfo.setAttributeValue("name", "Services");
         entry.addExtension(wInfo);
         
@@ -60,7 +59,7 @@ public class AtomPubExampleTest extends AbstractAtomTest {
         
         // START SNIPPET: getwsdl
         // Get the metadata for the WSDL
-        result = client.get("http://localhost:9002/api/registry/Services/hello.wsdl;atom", defaultOpts);
+        result = client.get("http://localhost:9002/api/registry/Services/hello.wsdl/1.0;atom", defaultOpts);
         // END SNIPPET: addwsdl
         
         prettyPrint(result.getDocument());
@@ -72,21 +71,15 @@ public class AtomPubExampleTest extends AbstractAtomTest {
         entry = entryDoc.getRoot();
         
         // Find the versioned metadata
-        String namespace = "http://galaxy.mule.org/1.0";
-        List<ExtensibleElement> extensions = entry.getExtensions(new QName(namespace, "metadata"));
-        ExtensibleElement metadata = null;
-        for (ExtensibleElement e : extensions) {
-            if ("versioned".equals(e.getAttributeValue("id"))) {
-                metadata = e;
-            }
-        }
+        String namespace = "http://galaxy.mule.org/2.0";
+        ExtensibleElement metadata = entry.getExtension(new QName(namespace, "metadata"));
         
         // Transition to the next phase
         ExtensibleElement lifecycle = metadata.getExtension(new QName(namespace, "lifecycle"));
         lifecycle.setAttributeValue("phase", "Developed");
         
         // Update the metadata
-        result = client.put("http://localhost:9002/api/registry/Services/hello.wsdl;atom", entry, defaultOpts);
+        result = client.put("http://localhost:9002/api/registry/Services/hello.wsdl/1.0;atom", entry, defaultOpts);
         // END SNIPPET: lifecycle
         assertEquals(204, result.getStatus());
         result.release();

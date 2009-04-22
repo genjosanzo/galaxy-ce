@@ -12,6 +12,7 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
             classpath:/META-INF/applicationContext-core.xml
+            classpath:/META-INF/applicationContext-core-extensions.xml
             classpath:/META-INF/applicationContext-cache.xml
             classpath:/META-INF/applicationContext-abdera.xml
             classpath:/META-INF/applicationContext-acegi-security.xml

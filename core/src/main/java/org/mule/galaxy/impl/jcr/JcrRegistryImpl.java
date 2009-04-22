@@ -284,7 +284,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
 
     public Item resolve(Item item, String location) throws RegistryException {
         if (location.length() == 0) return null;
-        System.out.println("Resolving " + location + " in " + item.getPath());
 //        String query = null;
 //        int idx = location.indexOf('?');
 //        if (idx != -1) {
@@ -714,7 +713,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         
         base.append(itemQuery);
         base.append("[@jcr:primaryType='galaxy:item']");
-        System.out.println(base);
         return base.toString();
     }
 
