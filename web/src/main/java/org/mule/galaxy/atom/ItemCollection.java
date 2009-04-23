@@ -215,7 +215,11 @@ public class ItemCollection
     public InputStream getMediaStream(Item item) throws ResponseContextException {
         Artifact a = getArtifact(item);
         
-        return a.getInputStream();
+        try {
+            return a.getInputStream();
+        } catch (IOException e) {
+            throw new ResponseContextException(500, e);
+        }
     }
     
     @Override
