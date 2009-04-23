@@ -18,9 +18,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.core.fs.local.FileUtil;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NewItemResult;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.Settings;
@@ -35,6 +37,7 @@ import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.plugin.PluginManager;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.FunctionRegistry;
 import org.mule.galaxy.security.AccessControlManager;
@@ -156,6 +159,12 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         
         Item workspace = getTestWorkspace();
         
+        return importFile(workspace, stream, name, version, contentType);
+    }
+
+    protected Item importFile(Item workspace, InputStream stream, String name, String version,
+                            String contentType) throws DuplicateItemException, RegistryException,
+            PolicyException, PropertyException, AccessException, NotFoundException {
         NewItemResult result = workspace.newItem(name, typeManager.getType(TypeManager.ARTIFACT));
         Item artifact = (Item) result.getItem();
 

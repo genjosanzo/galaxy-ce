@@ -1,13 +1,17 @@
 package org.mule.galaxy.impl.workspace;
 
-import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
+import org.mule.galaxy.NewItemResult;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.type.Type;
 import org.mule.galaxy.workspace.WorkspaceManager;
 
 public abstract class AbstractItem implements Item {
@@ -17,13 +21,56 @@ public abstract class AbstractItem implements Item {
     protected ItemMetadataHandler metadata;
 
     protected final WorkspaceManager manager;
+
+    private List<Item> items;
     
-    public AbstractItem(WorkspaceManager manager, ItemMetadataHandler metadata) {
+    public AbstractItem(WorkspaceManager manager) {
         super();
         this.manager = manager;
-        this.metadata = metadata;
     }
 
+    public NewItemResult newItem(String name, Type type, Map<String, Object> initialProperties)
+            throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException {
+        return manager.newItem(this, name, type, initialProperties);
+    }
+
+    public NewItemResult newItem(String name, Type type) throws DuplicateItemException, RegistryException,
+            PolicyException, AccessException, PropertyException {
+        return manager.newItem(this, name, type, null);
+    }
+    
+    public List<Item> getItems() throws RegistryException {
+        if (items == null) {
+            items = manager.getItems(this);
+        }
+        
+        return items;
+    }
+
+    public Item getItem(String name) throws RegistryException, NotFoundException, AccessException {
+        if (items != null) {
+            for (Item i : items) {
+                if (name.equals(i.getName())) {
+                    return i;
+                }
+            }
+            return null;
+        }
+        return manager.getItem(this, name);
+    }
+    
+    public Item getLatestItem() throws RegistryException {
+        Item latest = null;
+        for (Item i : getItems()) {
+            if (latest == null) {
+                latest = i;
+            } else if (i.getCreated().after(latest.getCreated())) {
+                latest = i;
+            }
+        }
+        return latest;
+    }
+    
     public String getPath() {
         return getParent().getPath() + getName();
     }
@@ -36,42 +83,6 @@ public abstract class AbstractItem implements Item {
         return false;
     }
 
-    public void setInternalProperty(String name, Object value) throws PropertyException, PolicyException {
-        
-    }
-
-    public Object getInternalProperty(String name) {
-        return metadata.getInternalProperty(name);
-    }
-
-    public Collection<PropertyInfo> getProperties() {
-        return metadata.getProperties(this);
-    }
-
-    public Object getProperty(String name) {
-        return metadata.getProperty(this, name);
-    }
-
-    public PropertyInfo getPropertyInfo(String name) {
-        return metadata.getPropertyInfo(this, name);
-    }
-
-    public boolean hasProperty(String name) {
-        return metadata.hasProperty(this, name);
-    }
-
-    public void setLocked(String name, boolean locked) {
-        metadata.setLocked(this, name, locked);
-    }
-
-    public void setProperty(String name, Object value) throws PropertyException {
-        metadata.setProperty(this, name, value);
-    }
-
-    public void setVisible(String name, boolean visible) {
-        metadata.setVisible(this, name, visible);
-    }
-    
     public void delete() throws RegistryException, AccessException {
         manager.delete((Item) this);
     }

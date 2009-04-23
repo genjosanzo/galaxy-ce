@@ -37,37 +37,42 @@ public class MenuPanel extends AbstractErrorShowingComposite {
     private FlowPanel centerPanel;
     
     public MenuPanel() {
-        super();
-        
+        this(true);
+    }
+    
+
+    public MenuPanel(boolean left) {
         panel = new DockPanel();
         panel.setSpacing(0);
 
-        leftMenu = new FlowPanel() {
-            protected void onLoad() {
-
-                Element br = DOM.createElement("br");
-                DOM.setElementAttribute(br, "class", "clearit");
-                DOM.appendChild(DOM.getParent(this.getElement()), br);
-            }
-        };
-        leftMenu.setStyleName("left-menu");
-        
-        panel.add(leftMenu, DockPanel.WEST);
-        
-        leftMenuContainer = new FlowPanel(){
-
-            protected void onLoad() {
-
-                Element br = DOM.createElement("br");
-                DOM.setElementAttribute(br, "class", "clearit");
-                DOM.appendChild(DOM.getParent(this.getElement()), br);
-            }
+        if (left) {
+            leftMenu = new FlowPanel() {
+                protected void onLoad() {
+    
+                    Element br = DOM.createElement("br");
+                    DOM.setElementAttribute(br, "class", "clearit");
+                    DOM.appendChild(DOM.getParent(this.getElement()), br);
+                }
+            };
+            leftMenu.setStyleName("left-menu");
             
-        };
-        leftMenuContainer.setStyleName("left-menu-container");
+            panel.add(leftMenu, DockPanel.WEST);
+            
+            leftMenuContainer = new FlowPanel(){
+    
+                protected void onLoad() {
+    
+                    Element br = DOM.createElement("br");
+                    DOM.setElementAttribute(br, "class", "clearit");
+                    DOM.appendChild(DOM.getParent(this.getElement()), br);
+                }
+                
+            };
+            leftMenuContainer.setStyleName("left-menu-container");
+            
+            leftMenu.add(leftMenuContainer);
+        }
         
-        leftMenu.add(leftMenuContainer);
-
         centerPanel = new FlowPanel();
         panel.add(centerPanel, DockPanel.CENTER);
         panel.setCellWidth(centerPanel, "100%");

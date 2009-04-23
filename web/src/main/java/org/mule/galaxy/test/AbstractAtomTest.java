@@ -24,8 +24,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -56,9 +59,18 @@ import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.core.fs.local.FileUtil;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.NewItemResult;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.atom.ItemCollection;
 import org.mule.galaxy.impl.index.IndexManagerImpl;
+import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.security.AccessException;
+import org.mule.galaxy.type.TypeManager;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springmodules.jcr.SessionFactory;
@@ -66,6 +78,7 @@ import org.springmodules.jcr.SessionFactory;
 public abstract class AbstractAtomTest extends TestCase {
     
     protected Registry registry;
+    protected TypeManager typeManager;
     protected Provider provider;
     protected Abdera abdera = new Abdera();
     protected Factory factory = abdera.getFactory();
@@ -84,6 +97,7 @@ public abstract class AbstractAtomTest extends TestCase {
         initializeJetty();
         
         registry = (Registry) getApplicationContext().getBean("registry");
+        typeManager = (TypeManager) getApplicationContext().getBean("typeManager");
         sessionFactory = (SessionFactory) getApplicationContext().getBean("sessionFactory");
     }
 
@@ -138,6 +152,33 @@ public abstract class AbstractAtomTest extends TestCase {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+    }
+
+    protected Item getTestWorkspace() throws RegistryException, AccessException {
+        Collection<Item> workspaces = registry.getItems();
+        assertEquals(1, workspaces.size());
+        return workspaces.iterator().next();
+    }
+    
+    protected Item importFile(InputStream stream, String name, String version, String contentType)
+        throws Exception {
+        
+        Item workspace = getTestWorkspace();
+        
+        return importFile(workspace, stream, name, version, contentType);
+    }
+
+    protected Item importFile(Item workspace, InputStream stream, String name, String version,
+                            String contentType) throws DuplicateItemException, RegistryException,
+            PolicyException, PropertyException, AccessException, NotFoundException {
+        NewItemResult result = workspace.newItem(name, typeManager.getType(TypeManager.ARTIFACT));
+        Item artifact = (Item) result.getItem();
+
+        Map<String, Object> props = new HashMap<String, Object>();
+        props.put("artifact", new Object[] { stream, contentType });
+        NewItemResult ar = artifact.newItem(version, typeManager.getType(TypeManager.ARTIFACT_VERSION), props);
+
+        return (Item) ar.getItem();
     }
 
     protected WebApplicationContext getApplicationContext() {

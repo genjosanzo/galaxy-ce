@@ -347,8 +347,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                 for (Policy policy : policies) {
                     getOrCreate(node, policy.getId());
                 }
-
-                JcrUtil.dump(session.getRootNode());   
+  
                 session.save();
                 return null;
             }

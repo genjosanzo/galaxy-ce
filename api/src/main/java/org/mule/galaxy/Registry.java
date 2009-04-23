@@ -59,7 +59,7 @@ public interface Registry {
                             String workspaceFactory, 
                     	    Map<String, String> configuration) throws RegistryException;
     
-    Collection<AttachedItem> getAttachedWorkspaces();
+    Collection<AttachedItem> getAttachedItems();
     
     Item getItemById(String id) throws NotFoundException, RegistryException, AccessException;
     

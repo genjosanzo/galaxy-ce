@@ -317,7 +317,7 @@ public class ItemCollection
     @Override
     public List<Person> getAuthors(Item entry, RequestContext request) throws ResponseContextException {
         Person author = request.getAbdera().getFactory().newAuthor();
-        author.setName("Mule Galaxy");
+        author.setName(entry.getAuthor().getName());
         return Arrays.asList(author);
     }
     

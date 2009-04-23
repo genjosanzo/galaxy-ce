@@ -38,7 +38,6 @@ import org.mule.galaxy.web.rpc.SecurityService;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
@@ -118,15 +117,7 @@ public class ItemPanel extends AbstractComposite {
         }
         
         if (itemId != null) {
-            AbstractCallback callback = new AbstractCallback(menuPanel) { 
-                public void onSuccess(Object o) {
-                    info = (ItemInfo) o;
-                    
-                    init();
-                }
-            };
-            
-            galaxy.getRegistryService().getItemInfo(itemId, true, callback);
+            fetchItem();
         }
 
         if (first) {
@@ -144,19 +135,26 @@ public class ItemPanel extends AbstractComposite {
         refreshWorkspaces();
     }
 
+    private void fetchItem() {
+        AbstractCallback callback = new AbstractCallback(menuPanel) { 
+            public void onSuccess(Object o) {
+                info = (ItemInfo) o;
+                
+                init();
+            }
+        };
+        
+        galaxy.getRegistryService().getItemInfo(itemId, true, callback);
+    }
+
     private void init() {
         panel.clear();
         tabs = new TabPanel();
         tabs.setStyleName("artifactTabPanel");
         tabs.getDeckPanel().setStyleName("artifactTabDeckPanel");
         
+        panel.add(getItemLinks());
         panel.add(tabs);
-
-        FlexTable titleTable = new FlexTable();
-        titleTable.setStyleName("artifact-title");
-        titleTable.setWidget(0, 0, getItemLinks());
-        
-        panel.insert(titleTable, 0);
         
         initTabs();
     }
@@ -177,6 +175,8 @@ public class ItemPanel extends AbstractComposite {
                 if (itemId == null) {
                     TreeItem child = treeItem.getChild(0);
                     workspaceTreeItem = child;
+                    itemId = (String) child.getUserObject();
+                    fetchItem();
                 }
 
                 cv.setRootItem(treeItem, workspaceTreeItem);

@@ -38,6 +38,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     @Override
     protected String[] getConfigLocations() {
         return new String[] { "/META-INF/applicationContext-core.xml", 
+                              "/META-INF/applicationContext-core-extensions.xml", 
                               "/META-INF/applicationContext-acegi-security.xml", 
                               "/META-INF/applicationContext-web.xml",
                               "/META-INF/applicationContext-test.xml" };
@@ -107,8 +108,12 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertNotNull(hiddenProp);
         
         // test links
-        String avId = artifact.getId();
-        ItemInfo av = gwtRegistry.getItemInfo(avId, true);
+        Collection<ItemInfo> items = gwtRegistry.getItems(wsdl.getId());
+        assertEquals(1, items.size());
+        ItemInfo av = items.iterator().next();
+        assertEquals("1.0", av.getName());
+        
+        av = gwtRegistry.getItemInfo(av.getId(), true);
         WProperty prop = av.getProperty("depends");
         assertNotNull(prop);
         
@@ -122,8 +127,8 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         linkInfo.setItemName("/Default Workspace/hello.xsd");
         links.getLinks().add(linkInfo);
         
-        gwtRegistry.setProperty(avId, "conflicts", links);
-        av = gwtRegistry.getItemInfo(avId, true);
+        gwtRegistry.setProperty(av.getId(), "conflicts", links);
+        av = gwtRegistry.getItemInfo(av.getId(), true);
         prop = av.getProperty("conflicts");
         assertNotNull(prop);
         
@@ -179,7 +184,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         ItemInfo w = workspaces.iterator().next();
         
-        String entryId = gwtRegistry.addItem(w.getPath(), "Foo", "Base Type", "1", new HashMap<String, Serializable>());
+        String entryId = gwtRegistry.addItem(w.getPath(), "Foo", null, "Base Type", new HashMap<String, Serializable>());
         
         ItemInfo entry = gwtRegistry.getItemInfo(entryId, false);
         assertEquals("Base Type", entry.getType());

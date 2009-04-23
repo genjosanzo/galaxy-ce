@@ -30,7 +30,7 @@ public interface Artifact {
      */
     public Object getData() throws IOException;
 
-    public InputStream getInputStream();
+    public InputStream getInputStream() throws IOException;
 
     public ArtifactType getArtifactType();
 

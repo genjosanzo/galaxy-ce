@@ -20,9 +20,7 @@ import javax.jcr.Session;
 import javax.jcr.Value;
 
 import org.apache.jackrabbit.value.StringValue;
-import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
-import org.mule.galaxy.NewItemResult;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
@@ -31,6 +29,7 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.PropertyChangedEvent;
 import org.mule.galaxy.extension.Extension;
+import org.mule.galaxy.impl.workspace.AbstractItem;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.PolicyException;
@@ -46,7 +45,7 @@ import org.mule.galaxy.util.SecurityUtils;
 import org.springmodules.jcr.JcrCallback;
 
 
-public class JcrItem implements Item {
+public class JcrItem extends AbstractItem {
 
     public static final String PROPERTIES = "properties";
     public static final String LOCKED = ".locked";
@@ -60,9 +59,7 @@ public class JcrItem implements Item {
     
     private static final ResourceBundle BUNDLE = BundleUtils.getBundle(JcrItem.class);
     
-    private Collection<Item> workspaces;
     private Lifecycle lifecycle;
-    private List<Item> items;
     protected Node node;
     protected final JcrWorkspaceManager manager;
     private JcrItem parent;
@@ -71,6 +68,7 @@ public class JcrItem implements Item {
     private boolean enablePolicyChecking = true;
     
     public JcrItem(Node node, JcrWorkspaceManager manager) throws RepositoryException {
+        super(manager);
         this.node = node;
         this.manager = manager;
     }
@@ -251,47 +249,6 @@ public class JcrItem implements Item {
         return JcrUtil.getCalendarOrNull(node, propName);
     }
     
-    public Collection<Item> getChildren() {
-        if (workspaces == null) {
-            workspaces = manager.getWorkspaces(this);
-        }
-        
-        return workspaces;
-    }
-
-    public List<Item> getItems() throws RegistryException {
-        if (items == null) {
-            items = manager.getItems(this);
-        }
-        
-        return items;
-    }
-
-    public Item getLatestItem() throws RegistryException {
-        Item latest = null;
-        for (Item i : getItems()) {
-            if (latest == null) {
-                latest = i;
-            } else if (i.getCreated().after(latest.getCreated())) {
-                latest = i;
-            }
-        }
-        return latest;
-    }
-
-    public Item getItem(String name) throws RegistryException, NotFoundException, AccessException {
-        if (items != null) {
-            for (Item i : items) {
-                if (name.equals(i.getName())) {
-                    return i;
-                }
-            }
-            return null;
-        }
-        return manager.getItem(this, name);
-    }
-
-    
     public Lifecycle getDefaultLifecycle() {
         if (lifecycle == null) {
             String id = (String) getStringOrNull(LIFECYCLE);
@@ -323,16 +280,6 @@ public class JcrItem implements Item {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public NewItemResult newItem(String name, Type type, Map<String, Object> initialProperties)
-            throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException {
-        return manager.newItem(this, name, type, initialProperties);
-    }
-
-    public NewItemResult newItem(String name, Type type) throws DuplicateItemException, RegistryException,
-            PolicyException, AccessException, PropertyException {
-        return manager.newItem(this, name, type, null);
     }
 
     public LifecycleManager getLifecycleManager() {

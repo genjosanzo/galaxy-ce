@@ -103,8 +103,11 @@ public class ItemInfoPanel extends AbstractComposite {
             panel.add(newSpacer());
             
             panel.add(new EntryMetadataPanel(galaxy, errorPanel, "Metadata", item, false));
+            panel.add(newSpacer());
             
             initComments();
+            panel.add(newSpacer());
+
         }
         initWidget(panel);
     }

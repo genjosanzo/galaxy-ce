@@ -17,7 +17,6 @@ import org.mule.galaxy.test.AbstractGalaxyTest;
 public class LifecycleManagerTest extends AbstractGalaxyTest {
 
     protected LifecycleManager lifecycleManager;
-    protected EventManager eventManager;
     
     public void testLifecycleInitialization() throws Exception {
         Collection<Lifecycle> lifecycles = lifecycleManager.getLifecycles();

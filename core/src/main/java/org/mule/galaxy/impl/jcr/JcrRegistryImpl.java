@@ -130,7 +130,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
     }
 
     @SuppressWarnings("unchecked")
-    public Collection<AttachedItem> getAttachedWorkspaces() {
+    public Collection<AttachedItem> getAttachedItems() {
         return (Collection<AttachedItem>) execute(new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {

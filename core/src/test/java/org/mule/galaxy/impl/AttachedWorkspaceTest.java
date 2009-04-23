@@ -51,7 +51,7 @@ public class AttachedWorkspaceTest extends AbstractGalaxyTest {
             assertEquals("/attached", attached.getPath());
         }
         
-        Collection<AttachedItem> wkspcs = registry.getAttachedWorkspaces();
+        Collection<AttachedItem> wkspcs = registry.getAttachedItems();
         assertEquals(1, wkspcs.size());
         
     }
