@@ -18,8 +18,6 @@ public abstract class AbstractItem implements Item {
 
     protected String id;
     
-    protected ItemMetadataHandler metadata;
-
     protected final WorkspaceManager manager;
 
     private List<Item> items;
@@ -70,11 +68,19 @@ public abstract class AbstractItem implements Item {
         }
         return latest;
     }
-    
+
     public String getPath() {
-        return getParent().getPath() + getName();
+        StringBuilder sb = new StringBuilder();
+        
+        Item w = this;
+        while (w != null) {
+            sb.insert(0, w.getName());
+            sb.insert(0, '/');
+            w = ((Item)w.getParent());
+        }
+        
+        return sb.toString();
     }
-    
     public String getId() {
         return id;
     }

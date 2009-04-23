@@ -108,9 +108,11 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertNotNull(hiddenProp);
         
         // test links
+        System.out.println(wsdl.getPath());
         Collection<ItemInfo> items = gwtRegistry.getItems(wsdl.getId());
         assertEquals(1, items.size());
         ItemInfo av = items.iterator().next();
+        System.out.println(av.getPath());
         assertEquals("1.0", av.getName());
         
         av = gwtRegistry.getItemInfo(av.getId(), true);
@@ -157,7 +159,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         WComment wc3 = comments.get(0);
         assertEquals(1, wc3.getComments().size());
 
-        assertEquals("/api/registry/Default Workspace/hello.wsdl", ext.getArtifactLink());
+        assertEquals("/api/registry/Default Workspace/hello.wsdl;history", ext.getArtifactFeedLink());
         assertEquals("/api/comments", ext.getCommentsFeedLink());
     }
     

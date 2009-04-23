@@ -40,7 +40,6 @@ public class ItemInfo implements IsSerializable {
     private String authorUsername;
     private List<WComment> comments = new ArrayList<WComment>();
     private String commentsFeedLink;
-    private String artifactLink;
     private String artifactFeedLink;
     private String type;
     private String defaultLifecycleId;
@@ -158,14 +157,6 @@ public class ItemInfo implements IsSerializable {
 
     public void setCommentsFeedLink(String commentsFeedLink) {
         this.commentsFeedLink = commentsFeedLink;
-    }
-
-    public String getArtifactLink() {
-        return artifactLink;
-    }
-
-    public void setArtifactLink(String artifactLink) {
-        this.artifactLink = artifactLink;
     }
 
     public String getArtifactFeedLink() {

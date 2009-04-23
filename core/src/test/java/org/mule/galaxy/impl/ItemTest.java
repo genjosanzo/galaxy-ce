@@ -32,6 +32,7 @@ public class ItemTest extends AbstractGalaxyTest {
     
         r = e.newItem("1.0", simpleType);
         assertNotNull(r);
+        assertEquals("/Default Workspace/MyService/1.0", r.getItem().getPath());
         
         e = registry.getItemByPath(r.getItem().getPath());
         assertNotNull(e);

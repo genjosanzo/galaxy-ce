@@ -151,19 +151,6 @@ public class JcrItem extends AbstractItem {
         return getCalendarOrNull(UPDATED);
     }
 
-    public String getPath() {
-        StringBuilder sb = new StringBuilder();
-        
-        Item w = this;
-        while (w != null) {
-            sb.insert(0, w.getName());
-            sb.insert(0, '/');
-            w = ((Item)w.getParent());
-        }
-        
-        return sb.toString();
-    }
-
     public Item getParent() {
         try {
             if (parent == null) {

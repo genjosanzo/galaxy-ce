@@ -33,6 +33,7 @@ import org.mule.galaxy.impl.workspace.AbstractWorkspaceManager;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.type.Type;
+import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.workspace.WorkspaceManager;
 
 public final class DummyWorkspaceManager extends AbstractWorkspaceManager implements WorkspaceManager {
@@ -100,5 +101,8 @@ public final class DummyWorkspaceManager extends AbstractWorkspaceManager implem
         return null;
     }
 
-    
+    public TypeManager getTypeManager() {
+        return null;
+    }
+
 }
