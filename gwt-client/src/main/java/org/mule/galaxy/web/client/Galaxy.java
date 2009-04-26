@@ -204,9 +204,9 @@ public class Galaxy implements EntryPoint, HistoryListener {
         base.add(footer);
         RootPanel.get().add(base);
 
+        createPageInfo("search", new SearchPanel(this), 1);
         createPageInfo("item/" + WILDCARD, new ItemPanel(this), 0);
         createPageInfo("add-item", new ArtifactForm(this), 0);
-        createPageInfo("search", new SearchPanel(this), 1);
         createPageInfo("view", new ViewPanel(this), 0);
 
         new HeartbeatTimer(Galaxy.this);

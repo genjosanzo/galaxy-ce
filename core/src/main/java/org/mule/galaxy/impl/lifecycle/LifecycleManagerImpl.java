@@ -22,18 +22,14 @@ import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.onm.AbstractDao;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.lifecycle.TransitionException;
 import org.mule.galaxy.policy.Policy;
-import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.Message;
 import org.springframework.beans.BeansException;
@@ -210,52 +206,11 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
         }
     }
 
-    public void transition(final Item item,
-                           final String property,
-                           final Phase p) throws TransitionException, PolicyException {
-        if (!isTransitionAllowed(item, property, p)) {
-            throw new TransitionException(p);
-        }
-
-        executeWithPolicyException(new JcrCallback() {
-
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                try {
-                    item.setProperty(property, p);
-                } catch (PropertyException e) {
-                    throw new RuntimeException(e);
-                } catch (PolicyException e) {
-                    throw new RuntimeException(e);
-                } catch (AccessException e) {
-                    throw new RuntimeException(e);
-                }
-
-                //final String previousPhase = previous.getPhase().getName();
-
-                session.save();
-
-                return null;
-            }
-
-        });
-    }
-
     protected PolicyManager getPolicyManager() {
         if (policyManager == null) {
             policyManager = (PolicyManager) context.getBean("policyManager");
         }
         return policyManager;
-    }
-
-    private void executeWithPolicyException(JcrCallback jcrCallback) throws PolicyException {
-        try {
-            execute(jcrCallback);
-        } catch (RuntimeException e) {
-            if (e.getCause() instanceof PolicyException) {
-                throw (PolicyException) e.getCause();
-            }
-            throw e;
-        }
     }
 
     public List<Policy> getPhaseApprovalListeners() {

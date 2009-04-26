@@ -28,6 +28,7 @@
       <bean class="org.mule.galaxy.atom.ItemResolver">
         <property name="registry" ref="registry"/>
         <property name="itemCollection" ref="itemCollection"/>
+        <property name="commentCollection" ref="commentCollection"/>
       </bean>
     </property>
     <property name="workspaceManager">

@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.galaxy.plugins;
+package org.mule.galaxy.plugins.mule2;
 
 import java.io.InputStream;
 import java.util.List;

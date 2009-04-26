@@ -65,12 +65,8 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         assertEquals(dev.getName(), current.getName());
         assertEquals(1, counter.getCounter());
         
-        try {
-            version.setProperty(Registry.PRIMARY_LIFECYCLE, dev);
-            fail("Expected Transition Exception");
-        } catch (PolicyException e) {
-            // expected
-        }
+        // we aren't transitioning, make sure that works though
+        version.setProperty(Registry.PRIMARY_LIFECYCLE, dev);
         
         Phase next = l.getPhase("Tested");
         version.setProperty(Registry.PRIMARY_LIFECYCLE, next);

@@ -236,7 +236,9 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
             getGrants(itemNode, pgs, item);
         } catch (PathNotFoundException e) {
             for (Permission p : getPermissions()) {
-                pgs.add(new PermissionGrant(p, PermissionGrant.Grant.INHERITED));
+            	if (p.isItemPermission()) {
+                    pgs.add(new PermissionGrant(p, PermissionGrant.Grant.INHERITED));
+                }
             }
         }
     }

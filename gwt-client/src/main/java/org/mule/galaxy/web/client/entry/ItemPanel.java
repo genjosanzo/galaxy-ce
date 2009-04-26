@@ -27,28 +27,17 @@ import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.admin.PolicyPanel;
 import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
 import org.mule.galaxy.web.client.util.ColumnView;
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.LightBox;
-import org.mule.galaxy.web.client.util.NavigationUtil;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.SecurityService;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -153,9 +142,8 @@ public class ItemPanel extends AbstractComposite {
         tabs.setStyleName("artifactTabPanel");
         tabs.getDeckPanel().setStyleName("artifactTabDeckPanel");
         
-        panel.add(getItemLinks());
         panel.add(tabs);
-        
+        menuPanel.setItem(info);
         initTabs();
     }
 
@@ -240,77 +228,4 @@ public class ItemPanel extends AbstractComposite {
         });
     }
 
-    private Panel getItemLinks() {
-        InlineFlowPanel linkPanel = new InlineFlowPanel();
-        linkPanel.setStyleName("artifactLinkPanel");
-
-        
-        if (info.isModifiable()) {
-            Image img = new Image("images/icon_copy.gif");
-            img.setStyleName("icon-baseline");
-            
-            String token = "new-item/" + info.getId();
-            img.addClickListener(NavigationUtil.createNavigatingClickListener(token));
-            Hyperlink hl = new Hyperlink("New", token);
-
-            linkPanel.add(asToolbarItem(img, hl));
-        }
-        
-        if (info.isDeletable()) {
-            ClickListener cl = new ClickListener() {
-                public void onClick(Widget arg0) {
-                    warnDelete();
-                }
-            };
-            Image img = new Image("images/delete_config.gif");
-            img.setStyleName("icon-baseline");
-            img.addClickListener(cl);
-            Hyperlink hl = new Hyperlink("Delete", "artifact/" + info.getId());
-            hl.addClickListener(cl);
-            linkPanel.add(asToolbarItem(img, hl));
-        }
-
-        ClickListener cl = new ClickListener() {
-
-            public void onClick(Widget sender) {
-                Window.open(info.getArtifactFeedLink(), null, "scrollbars=yes");
-            }
-        };
-        
-        Image img = new Image("images/feed-icon.png");
-//        img.setStyleName("feed-icon");
-        img.setTitle("Versions Atom Feed");
-        img.addClickListener(cl);
-        img.setStyleName("icon-baseline");
-        
-        Hyperlink hl = new Hyperlink("Feed", "artifact-versions/" + info.getId());
-        hl.addClickListener(cl);
-        linkPanel.add(asToolbarItem(img, hl));
-        
-        return linkPanel;
-    }
-    
-    private Widget asToolbarItem(Image img, Widget hl) {
-        InlineFlowPanel p = asHorizontal(img, new Label(" "), hl);
-        p.setStyleName("artifactToolbarItem");
-        
-        return p;
-    }
-
-    protected void warnDelete()
-    {
-        new LightBox(new ConfirmDialog(new ConfirmDialogAdapter()
-        {
-            public void onConfirm()
-            {
-                galaxy.getRegistryService().delete(info.getId(), new AbstractCallback(menuPanel)
-                {
-                    public void onSuccess(Object arg0)
-                    {
-                        galaxy.setMessageAndGoto("browse", "Artifact was deleted.");
-                    }
-                });
-            }
-        }, "Are you sure you want to delete this artifact?")).show();
-    }
 }

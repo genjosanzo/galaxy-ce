@@ -345,12 +345,15 @@ public class JcrWorkspaceManager extends AbstractWorkspaceManager implements Wor
                     throw new RuntimeException(e);
 		} catch (PolicyException e) {
                     itemNode.remove();
+                    session.save();
                     throw new RuntimeException(e);
 		} catch (PropertyException e) {
                     itemNode.remove();
+                    session.save();
                     throw new RuntimeException(e);
                 } catch (AccessException e) {
                     itemNode.remove();
+                    session.save();
                     throw new RuntimeException(e);
                 }
             }

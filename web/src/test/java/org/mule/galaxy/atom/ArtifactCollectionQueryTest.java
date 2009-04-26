@@ -30,7 +30,7 @@ public class ArtifactCollectionQueryTest extends AbstractAtomTest {
         
         opts = new RequestOptions();
         
-        String search = UrlEncoding.encode("select artifact where wsdl.service = 'HelloWorldService'");
+        String search = UrlEncoding.encode("select where wsdl.service = 'HelloWorldService'");
         url = url + "?q=" + search;
         
         RequestOptions opts2 = client.getDefaultRequestOptions();

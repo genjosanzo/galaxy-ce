@@ -31,7 +31,7 @@
     </bean -->
 
 
-    <bean id="sessionFactory" class="org.mule.galaxy.impl.jcr.JackrabbitSessionFactory">
+  <bean id="sessionFactory" class="org.mule.galaxy.impl.jcr.JackrabbitSessionFactory">
     <property name="repository" ref="repository"/>
     <property name="credentials">
      <bean class="javax.jcr.SimpleCredentials">
@@ -445,5 +445,6 @@
      </props>
    </property>
   </bean>
+  
 
 </beans>

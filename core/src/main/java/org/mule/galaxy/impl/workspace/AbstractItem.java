@@ -29,11 +29,13 @@ public abstract class AbstractItem implements Item {
 
     public NewItemResult newItem(String name, Type type, Map<String, Object> initialProperties)
             throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException {
+        items = null;
         return manager.newItem(this, name, type, initialProperties);
     }
 
     public NewItemResult newItem(String name, Type type) throws DuplicateItemException, RegistryException,
             PolicyException, AccessException, PropertyException {
+        items = null;
         return manager.newItem(this, name, type, null);
     }
     

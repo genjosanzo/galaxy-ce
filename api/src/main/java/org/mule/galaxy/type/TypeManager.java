@@ -14,6 +14,7 @@ public interface TypeManager {
     String WORKSPACE = "Workspace";
     String ARTIFACT_VERSION = "Artifact Version";
     String ARTIFACT = "Artifact";
+    String BASE_TYPE = "Base Type";
 
     Collection<Type> getTypes();
 

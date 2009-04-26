@@ -1,7 +1,6 @@
 package org.mule.galaxy.plugins.mule2;
 
 import org.mule.galaxy.mule2.policy.RequireJMXPolicy;
-import org.mule.galaxy.plugins.AbstractPolicyTest;
 
 public class MuleRequireJMXPolicyTest extends AbstractPolicyTest
 {

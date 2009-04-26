@@ -65,14 +65,18 @@ public class LifecycleExtension extends AbstractExtension implements AtomExtensi
             throws PolicyException, PropertyException, AccessException {
         Phase phase = (Phase) value;
 
-        Object valueToStore;
         if (value == null) {
-            valueToStore = null;
+            item.setInternalProperty(pd.getProperty(), null);
         } else {
+
+            Phase oldPhase = (Phase) item.getProperty(pd.getProperty());
+            if (oldPhase != null && oldPhase.equals(phase)) {
+                return;
+            }
+            
             if (!lifecycleManager.isTransitionAllowed(item, pd.getProperty(), phase)) {
                 throw new PolicyException(item, "Transition to phase " + phase + " is not allowed.");
             }
-            Phase oldPhase = (Phase) item.getProperty(pd.getProperty());
             LifecycleTransitionEvent event = new LifecycleTransitionEvent(SecurityUtils.getCurrentUser(),
                                             item,
                                             oldPhase != null ? oldPhase.getName() : null,
@@ -80,10 +84,10 @@ public class LifecycleExtension extends AbstractExtension implements AtomExtensi
                                             phase.getLifecycle().getName());
 
             eventManager.fireEvent(event);
-            valueToStore = Arrays.asList(phase.getLifecycle().getId(), phase.getId());
-        }
 
-        item.setInternalProperty(pd.getProperty(), valueToStore);
+            item.setInternalProperty(pd.getProperty(), 
+                                     Arrays.asList(phase.getLifecycle().getId(), phase.getId()));
+        }
     }
 
     public void validate(Item item, PropertyDescriptor pd, Object valueToStore) throws PolicyException {

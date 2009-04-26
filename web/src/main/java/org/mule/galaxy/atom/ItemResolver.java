@@ -144,7 +144,7 @@ public class ItemResolver implements Resolver<Target> {
             return new SimpleTarget(TargetType.TYPE_ENTRY, context);
         } else if ("categories".equals(classifier)) {
             return new SimpleTarget(TargetType.TYPE_CATEGORIES, context);
-        }  else if ("history".equals(classifier)) {
+        }  else if ("history".equals(classifier) || "items".equals(classifier)) {
             return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
         } else if (classifier == null) {
             String method = context.getMethod();

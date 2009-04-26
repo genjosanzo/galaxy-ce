@@ -18,9 +18,24 @@
 
 package org.mule.galaxy.web.client.registry;
 
+import java.util.Collection;
+import java.util.Iterator;
+
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.MenuPanel;
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
+import org.mule.galaxy.web.client.util.LightBox;
+import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemInfo;
+import org.mule.galaxy.web.rpc.WArtifactView;
+
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
@@ -28,16 +43,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.Collection;
-import java.util.Iterator;
-
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.MenuPanel;
-import org.mule.galaxy.web.client.util.NavigationUtil;
-import org.mule.galaxy.web.client.util.Toolbox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WArtifactView;
 
 /**
  * Forms the basis of any pages which do not list artifacts.
@@ -49,7 +54,9 @@ public class RegistryMenuPanel extends MenuPanel {
     private String selectedViewId;
     private boolean first = true;
     private FlowPanel recentViewsPanel;
-
+    private Toolbox menuLinks;
+    private ItemInfo info;
+    
     public RegistryMenuPanel(Galaxy galaxy) {
         super();
         this.galaxy = galaxy;
@@ -64,35 +71,8 @@ public class RegistryMenuPanel extends MenuPanel {
         if (!first) {
             return;
         }
-        Toolbox menuLinks = new Toolbox(false);
-
-        addTopLinks(menuLinks);
-
-        addBottomLinks(menuLinks);
-
-        // add a workspace
-        Image addWkspcImg = new Image("images/add-workspace.gif");
-        addWkspcImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-workspace"));
-
-        Hyperlink hl2 = new Hyperlink("Add Workspace", "add-workspace");
-        menuLinks.add(asHorizontal(addWkspcImg, new Label(" "), hl2));
-
-
-        // spacer to divide the actions
-        SimplePanel spacer = new SimplePanel();
-        spacer.addStyleName("hr");
-        menuLinks.add(spacer);
-
-        // Add artifact
-        Image addImg = new Image("images/add_obj.gif");
-        addImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-artifact"));
-        menuLinks.add(asHorizontal(addImg, new Label(" "), new Hyperlink("Add Artifact", "add-artifact")));
-
-        // add entry
-        addImg = new Image("images/add_obj.gif");
-        addImg.addClickListener(NavigationUtil.createNavigatingClickListener("add-entry"));
-        menuLinks.add(asHorizontal(addImg, new Label(" "), new Hyperlink("Add Entry", "add-entry")));
-
+        
+        menuLinks = new Toolbox(false);
         addMenuItem(menuLinks, 0);
 
         Toolbox viewToolbox = new Toolbox(false);
@@ -144,14 +124,12 @@ public class RegistryMenuPanel extends MenuPanel {
 
         });
 
-        /* 
+         
         galaxy.getRegistryService().getRecentArtifactViews(new AbstractCallback(this) {
-
-         public void onSuccess(Object views) {
-             initializeRecentViews((Collection) views);
-         }
-
-     });   */
+             public void onSuccess(Object views) {
+                 initializeRecentViews((Collection) views);
+             }
+         });   
     }
 
     protected void initializeRecentViews(Collection views) {
@@ -181,12 +159,79 @@ public class RegistryMenuPanel extends MenuPanel {
         }
     }
 
-    protected void addTopLinks(Toolbox topMenuLinks) {
+    public void setItem(final ItemInfo info) {
+        this.info = info;
+        
+        menuLinks.clear();
+        
+        // add item
 
+        if (info.isModifiable()) {
+            Image addImg = new Image("images/add_obj.gif");
+            addImg.addClickListener(new ClickListener() {
+                public void onClick(Widget w) {
+                    w.addStyleName("gwt-Hyperlink");
+                    
+                    History.newItem("add-item/" + info.getId());
+                }
+            });
+            
+            Hyperlink addLink = new Hyperlink("New", "add-item/" + info.getId());
+            menuLinks.add(asHorizontal(addImg, new Label(" "), addLink));
+        }
+        
+        if (info.isDeletable()) {
+            ClickListener cl = new ClickListener() {
+                public void onClick(Widget arg0) {
+                    warnDelete();
+                }
+            };
+            Image img = new Image("images/delete_config.gif");
+            img.setStyleName("icon-baseline");
+            img.addClickListener(cl);
+            Hyperlink hl = new Hyperlink("Delete", "artifact/" + info.getId());
+            hl.addClickListener(cl);
+            
+            menuLinks.add(asHorizontal(img, new Label(" "), hl));
+        }
+
+        ClickListener cl = new ClickListener() {
+
+            public void onClick(Widget sender) {
+                Window.open(info.getArtifactFeedLink(), null, "scrollbars=yes");
+            }
+        };
+        
+        Image img = new Image("images/feed-icon.png");
+//        img.setStyleName("feed-icon");
+        img.setTitle("Versions Atom Feed");
+        img.addClickListener(cl);
+        img.setStyleName("icon-baseline");
+        
+        Hyperlink hl = new Hyperlink("Feed", "artifact-versions/" + info.getId());
+        hl.addClickListener(cl);
+        menuLinks.add(asHorizontal(img, new Label(" "), hl));
+
+        // spacer to divide the actions
+        SimplePanel spacer = new SimplePanel();
+        spacer.addStyleName("hr");
+        menuLinks.add(spacer);
     }
 
-    protected void addBottomLinks(Toolbox topMenuLinks) {
-
+    protected void warnDelete()
+    {
+        new LightBox(new ConfirmDialog(new ConfirmDialogAdapter()
+        {
+            public void onConfirm()
+            {
+                galaxy.getRegistryService().delete(info.getId(), new AbstractCallback(RegistryMenuPanel.this)
+                {
+                    public void onSuccess(Object arg0)
+                    {
+                        galaxy.setMessageAndGoto("browse", "Item was deleted.");
+                    }
+                });
+            }
+        }, "Are you sure you want to delete this item?")).show();
     }
-
 }

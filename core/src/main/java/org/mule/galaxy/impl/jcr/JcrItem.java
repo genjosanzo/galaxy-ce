@@ -91,7 +91,7 @@ public class JcrItem extends AbstractItem {
             
             if (authId != null) {
                 try {
-                    author = parent.getManager().getUserManager().get(authId);
+                    author = getManager().getUserManager().get(authId);
                 } catch (NotFoundException e) {
                     // TODO
                 }

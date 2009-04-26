@@ -37,8 +37,7 @@ public class PolicyTest extends AbstractAtomTest {
                     
                     // activate all polices
                     
-                    policyManager.setActivePolicies(workspace, 
-                                                    lifecycleManager.getDefaultLifecycle(), 
+                    policyManager.setActivePolicies(lifecycleManager.getDefaultLifecycle(), 
                                                     policyManager.getPolicy(BasicProfilePolicy.WSI_BP_1_1_WSDL));
                 } catch (Exception e) {
                     throw new RuntimeException(e);

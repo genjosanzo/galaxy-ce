@@ -77,6 +77,7 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
                 } catch (ItemExistsException e) {
                     throw new RuntimeException(new DuplicateItemException(e));
                 }
+                
                 session.save();
                 
                 return null;

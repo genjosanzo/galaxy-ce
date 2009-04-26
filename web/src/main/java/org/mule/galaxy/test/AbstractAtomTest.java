@@ -156,7 +156,6 @@ public abstract class AbstractAtomTest extends TestCase {
 
     protected Item getTestWorkspace() throws RegistryException, AccessException {
         Collection<Item> workspaces = registry.getItems();
-        assertEquals(1, workspaces.size());
         return workspaces.iterator().next();
     }
     
