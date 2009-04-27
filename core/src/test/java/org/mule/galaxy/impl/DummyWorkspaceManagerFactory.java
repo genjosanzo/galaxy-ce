@@ -24,7 +24,7 @@ import java.util.Map;
 import org.mule.galaxy.workspace.WorkspaceManager;
 import org.mule.galaxy.workspace.WorkspaceManagerFactory;
 
-public final class DummyWorkspaceManagerFactory extends WorkspaceManagerFactory {
+public class DummyWorkspaceManagerFactory extends WorkspaceManagerFactory {
 
     @Override
     public WorkspaceManager createWorkspaceManager(Map<String, String> configuration) {

@@ -64,7 +64,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         Node items = getOrCreate(activations, "items");
         itemsLifecyclesNodeId = getOrCreate(items, "lifecycles").getUUID();
         itemsPhasesNodeId = getOrCreate(items, "phases").getUUID();
-        
+
         session.save();
     }
     

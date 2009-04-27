@@ -20,7 +20,6 @@ import org.mule.galaxy.type.PropertyDescriptor;
  */
 public class IdentifiableExtension<T extends Identifiable> extends AbstractExtension {
     protected Dao<T> dao;
-    protected EventManager eventManager;
     
     @SuppressWarnings("unchecked")
     public Object get(Item entry, PropertyDescriptor pd, boolean getWithNoData) {
@@ -94,10 +93,6 @@ public class IdentifiableExtension<T extends Identifiable> extends AbstractExten
 
     public void setDao(Dao<T> dao) {
         this.dao = dao;
-    }
-
-    public void setEventManager(EventManager eventManager) {
-        this.eventManager = eventManager;
     }
 
 }

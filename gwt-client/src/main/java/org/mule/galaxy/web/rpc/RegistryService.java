@@ -114,7 +114,7 @@ public interface RegistryService extends RemoteService {
     List<WExtensionInfo> getExtensions() throws RPCException;
     
     
-    void move(String entryId, String workspaceId, String name) throws RPCException, ItemNotFoundException;
+    void move(String entryId, String workspaceId, String name) throws RPCException, ItemNotFoundException, WPolicyException;
     
     void delete(String entryId) throws RPCException, ItemNotFoundException;
 

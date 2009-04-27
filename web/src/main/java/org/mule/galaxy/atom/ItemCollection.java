@@ -263,7 +263,7 @@ public class ItemCollection
             
             // If we're posting to an artifact, add it as a new version
             if (parent.getType().inheritsFrom(TypeManager.ARTIFACT)) {
-                String version = request.getParameter("X-Artifact-Version");
+                String version = request.getHeader("X-Artifact-Version");
                 if (version == null) {
                     version = slug;
                 }

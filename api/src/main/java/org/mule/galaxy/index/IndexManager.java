@@ -24,4 +24,6 @@ public interface IndexManager {
     Collection<Index> getIndexes(Artifact artifact);
 
     void index(Item version);
+    
+    void destroy() throws Exception;
 }

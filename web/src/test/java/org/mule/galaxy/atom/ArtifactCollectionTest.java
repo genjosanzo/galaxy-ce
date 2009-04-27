@@ -314,15 +314,19 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res = client.get(collection + "/Default%20Workspace/hello_world.wsdl/0.1;atom", defaultOpts);
         assertEquals(404, res.getStatus());
         res.release();
+
+        res = client.get(collection + "/Default%20Workspace/hello_world.wsdl/0.1", defaultOpts);
+        assertEquals(404, res.getStatus());
+        res.release();
         
         // create multiple versions and delete one
-        res = client.post(collection + "/Default%20Workspace", getWsdl(), opts);
+        res = client.post(collection + "/Default%20Workspace/hello_world.wsdl", getWsdl(), opts);
         assertEquals(201, res.getStatus());
         res.release();
 
         opts.setHeader("X-Artifact-Version", "0.2");
-        res = client.put(collection + "/Default%20Workspace/hello_world.wsdl", getWsdl(), opts);
-        assertEquals(200, res.getStatus());
+        res = client.post(collection + "/Default%20Workspace/hello_world.wsdl", getWsdl(), opts);
+        assertEquals(201, res.getStatus());
         res.release();
         
         res = client.delete(collection + "/Default%20Workspace/hello_world.wsdl;atom?version=0.2", defaultOpts);

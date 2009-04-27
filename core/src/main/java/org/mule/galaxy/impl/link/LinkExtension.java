@@ -23,6 +23,7 @@ import org.mule.galaxy.event.PropertyChangedEvent;
 import org.mule.galaxy.extension.AtomExtension;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.extension.IdentifiableExtension;
+import org.mule.galaxy.impl.jcr.JcrItem;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.type.PropertyDescriptor;
@@ -88,7 +89,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
 
     @Override
     public void store(Item item, PropertyDescriptor pd, Object value) throws PolicyException, AccessException {
-        eventManager.fireEvent(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item, name, value));
+        ((JcrItem) item).getSaveEvents().add(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item, name, value));
 
         try {
             if (!pd.isMultivalued()) {
@@ -207,7 +208,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
                 if (l.getLinkedTo() != null) {
                     l.getLinkedTo().setInternalProperty(pd.getProperty(), true);
                 }
-                eventManager.fireEvent(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item, pd.getProperty(), getLinks()));
+                ((JcrItem) item).getSaveEvents().add(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item, pd.getProperty(), getLinks()));
             } catch (DuplicateItemException e) {
                 throw new RuntimeException(e);
             } catch (NotFoundException e) {
@@ -239,7 +240,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
             }
             reciprocal = null;
             this.links = null;
-            eventManager.fireEvent(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item, pd.getProperty(), getLinks()));
+            ((JcrItem) item).getSaveEvents().add(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item, pd.getProperty(), getLinks()));
         }
     }
 }

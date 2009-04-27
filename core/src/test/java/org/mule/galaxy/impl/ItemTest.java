@@ -58,7 +58,7 @@ public class ItemTest extends AbstractGalaxyTest {
             fail("Expected property exception");
         } catch (PropertyException e) {
         }
-        
+
         Map<String,Object> props = new HashMap<String, Object>();
         props.put("URL", "http://test");
         root.newItem("MyService", type, props);

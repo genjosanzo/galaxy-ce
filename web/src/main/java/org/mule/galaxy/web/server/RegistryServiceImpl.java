@@ -1330,7 +1330,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     public void move(String itemId, String workspacePath, String name) 
-        throws RPCException, ItemNotFoundException {
+        throws RPCException, ItemNotFoundException, WPolicyException {
         try {
             Item i = registry.getItemById(itemId);
             
@@ -1344,6 +1344,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
+        } catch (PolicyException e) {
+            throw toWeb(e);
         }
     }
 

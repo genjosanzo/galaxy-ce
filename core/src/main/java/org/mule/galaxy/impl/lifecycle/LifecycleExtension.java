@@ -19,10 +19,10 @@ import org.apache.abdera.model.ExtensibleElement;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.event.LifecycleTransitionEvent;
 import org.mule.galaxy.extension.AtomExtension;
 import org.mule.galaxy.impl.extension.AbstractExtension;
+import org.mule.galaxy.impl.jcr.JcrItem;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
@@ -41,7 +41,6 @@ public class LifecycleExtension extends AbstractExtension implements AtomExtensi
     }
 
     private LifecycleManager lifecycleManager;
-    private EventManager eventManager;
 
     public LifecycleExtension() {
         name = "Lifecycle";
@@ -83,7 +82,7 @@ public class LifecycleExtension extends AbstractExtension implements AtomExtensi
                                             phase.getName(),
                                             phase.getLifecycle().getName());
 
-            eventManager.fireEvent(event);
+            ((JcrItem) item).getSaveEvents().add(event);
 
             item.setInternalProperty(pd.getProperty(), 
                                      Arrays.asList(phase.getLifecycle().getId(), phase.getId()));
@@ -162,11 +161,7 @@ public class LifecycleExtension extends AbstractExtension implements AtomExtensi
     public LifecycleManager getLifecycleManager() {
         return lifecycleManager;
     }
-
-    public void setEventManager(EventManager eventManager) {
-        this.eventManager = eventManager;
-    }
-
+    
     public void setLifecycleManager(LifecycleManager lifecycleManager) {
         this.lifecycleManager = lifecycleManager;
     }

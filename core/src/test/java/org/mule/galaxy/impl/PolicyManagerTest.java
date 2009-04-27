@@ -39,7 +39,6 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         policyManager.setActivePolicies(workspace, lifecycle, failPolicy);
         
         try {
-            System.out.println("IMPORTING");
             importHelloWsdl();
             fail("Expected policy failure.");
         } catch (PolicyException e) {
@@ -51,7 +50,17 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
             // deactivate
             policyManager.setActivePolicies(workspace, lifecycle);
         }
+
+    }
+    
+    public void testPolicyEnablementFailureOnWorkspace2() throws Exception {
+        AlwaysFailPolicy failPolicy = new AlwaysFailPolicy();
+        policyManager.addPolicy(failPolicy);
         
+        // try lifecycle policies
+        Lifecycle lifecycle = lifecycleManager.getDefaultLifecycle();
+        
+        Item workspace = getTestWorkspace();
         Item artifact = importHelloWsdl();
 
         try {
@@ -248,6 +257,7 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         try {
             root.newItem("MyService", getSimpleType());
             root.setProperty(Registry.PRIMARY_LIFECYCLE, lifecycle.getInitialPhase());
+            registry.save(root);
             fail("There should be a policy exception");
         } catch (PolicyException e) {
             Map<Item, List<ApprovalMessage>> failures = e.getPolicyFailures();

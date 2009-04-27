@@ -56,7 +56,9 @@ public class AbderaUtils {
             Item item = entry.getKey();
             
             s.append("<div class=\"item\">");
-            s.append("<span class=\"itemId\">").append(item.getId()).append("</span>");
+            if (item.getId() != null) {
+                s.append("<span class=\"itemId\">").append(item.getId()).append("</span>");
+            }
             s.append("<span class=\"path\">").append(item.getPath()).append("</span>");
             
             for (ApprovalMessage m : entry.getValue()) {

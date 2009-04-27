@@ -39,7 +39,7 @@ public interface Registry {
     void save(Item w, String parentId)
         throws RegistryException, NotFoundException, AccessException, DuplicateItemException;
 
-    void save(Item item) throws AccessException, RegistryException;
+    void save(Item item) throws AccessException, RegistryException, PolicyException;
     
     /**
      * Create a "virtual" workspace which is attached to a parent workspace. The name
@@ -67,7 +67,7 @@ public interface Registry {
 
     Item resolve(Item w, String location) throws RegistryException;
     
-    void move(Item item, String path, final String newName) throws RegistryException, AccessException, NotFoundException;
+    void move(Item item, String path, final String newName) throws RegistryException, AccessException, NotFoundException, PolicyException;
 
     /* Search functions */
 

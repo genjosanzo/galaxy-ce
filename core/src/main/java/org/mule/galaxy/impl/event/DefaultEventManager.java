@@ -17,6 +17,7 @@ import org.mule.galaxy.event.GalaxyEvent;
 import org.mule.galaxy.event.annotation.BindToEvent;
 import org.mule.galaxy.event.annotation.BindToEvents;
 import org.mule.galaxy.event.annotation.OnEvent;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springmodules.jcr.SessionFactory;
 
@@ -47,14 +48,20 @@ public class DefaultEventManager implements EventManager {
         }
     }
 
-    public void addListener(final Object listenerCandidate) {
+    public void addListener(Object listenerCandidate) {
         if (listenerCandidate == null) {
             throw new IllegalArgumentException("Listener can't be null");
         }
 
         // get event binding annotation
-        final Class<?> clazz = listenerCandidate.getClass();
+        final Class<?> clazz;
 
+        if (AopUtils.isAopProxy(listenerCandidate)) {
+            clazz = AopUtils.getTargetClass(listenerCandidate);
+        } else {
+            clazz = listenerCandidate.getClass();
+        }
+        
         final String[] eventNames;
         InternalGalaxyEventListener adapter = null;
 
@@ -62,17 +69,9 @@ public class DefaultEventManager implements EventManager {
         final Annotation annotation = findAnnotation(clazz, BindToEvent.class);
         if (annotation != null) {
             eventNames = new String[] {((BindToEvent) annotation).value()};
-            Method[] methods = clazz.getMethods();
-            for (final Method method : methods) {
-                if (method.isAnnotationPresent(OnEvent.class)) {
-                    // detect duplicate entry-points
-                    if (adapter != null) {
-                        throw new IllegalArgumentException("Multiple @OnEvent entry-points detected for " + clazz.getName());
-                    }
-                    adapter = new DelegatingSingleEventListener(annotation, listenerCandidate, method, executor, sessionFactory);
-                }
-            }
 
+            adapter = getListener(listenerCandidate, clazz, adapter, annotation);
+            
             // no OnEvent annotation found, fail
             if (adapter == null) {
                 throw new IllegalArgumentException(String.format("Listener %s is missing an @OnEvent entry point",
@@ -103,6 +102,23 @@ public class DefaultEventManager implements EventManager {
             //}
             //listeners.add(listener);
         //}
+    }
+
+    private InternalGalaxyEventListener getListener(Object listenerCandidate, 
+                                                    final Class<?> clazz,
+                                                    InternalGalaxyEventListener adapter,
+                                                    final Annotation annotation) {
+        Method[] methods = clazz.getMethods();
+        for (final Method method : methods) {
+            if (method.isAnnotationPresent(OnEvent.class)) {
+                // detect duplicate entry-points
+                if (adapter != null) {
+                    throw new IllegalArgumentException("Multiple @OnEvent entry-points detected for " + clazz.getName());
+                }
+                adapter = new DelegatingSingleEventListener(annotation, listenerCandidate, method, executor, sessionFactory);
+            }
+        }
+        return adapter;
     }
 
     /**

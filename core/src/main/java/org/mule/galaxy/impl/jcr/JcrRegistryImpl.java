@@ -111,7 +111,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         return id;
     }
 
-    public Collection<Item> getItems() throws AccessException {
+    public Collection<Item> getItems() throws AccessException, RegistryException {
         return localWorkspaceManager.getWorkspaces();
     }
 
@@ -171,7 +171,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                     parentNode = getNodeByUUID(workspacesId);
                 }
                 
-                Node attachedNode = parentNode.addNode(name, JcrWorkspaceManager.ATTACHED_ITEM_NODE_TYPE);
+                Node attachedNode = parentNode.addNode(name, JcrWorkspaceManagerImpl.ATTACHED_ITEM_NODE_TYPE);
                 attachedNode.addMixin("mix:referenceable");
                 Calendar now = Calendar.getInstance();
                 now.setTime(new Date());
@@ -221,7 +221,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         return wm;
     }
 
-    public void save(Item i) throws AccessException, RegistryException {
+    public void save(Item i) throws AccessException, RegistryException, PolicyException {
         getWorkspaceManagerByItemId(i.getId()).save(i);
     }
 
@@ -419,7 +419,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         }
     }
     
-    public void move(final Item item, final String newWorkspacePath, final String newName) throws RegistryException, AccessException, NotFoundException {
+    public void move(final Item item, final String newWorkspacePath, final String newName) throws RegistryException, AccessException, NotFoundException, PolicyException {
         boolean wasRenamed = false;
         boolean wasMoved = false;
         final String oldPath = item.getPath();

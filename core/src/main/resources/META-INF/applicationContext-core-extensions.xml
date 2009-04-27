@@ -12,24 +12,23 @@
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
     http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
 
-    <import resource="scheduler.xml"/>
+  <import resource="scheduler.xml"/>
     
-  <bean class="org.mule.galaxy.policy.wsdl.BackwardCompatibilityPolicy"/>
-  <bean class="org.mule.galaxy.policy.wsdl.BasicProfilePolicy"/>
- 
-  
-  <bean id="scriptManager" parent="txProxyTemplate">
-    <property name="target" ref="scriptManagerTarget"/>
+  <bean class="org.mule.galaxy.policy.wsdl.BackwardCompatibilityPolicy">
+    <property name="registry" ref="registry"/>
+  </bean>
+  <bean class="org.mule.galaxy.policy.wsdl.BasicProfilePolicy">
+    <property name="registry" ref="registry"/>
   </bean>
   
-  <bean id="scriptManagerTarget" class="org.mule.galaxy.impl.script.ScriptManagerImpl"
+  <bean id="scriptManager" class="org.mule.galaxy.impl.script.ScriptManagerImpl"
         init-method="initialize">
     <property name="activityManager" ref="activityManager" />
     <property name="accessControlManager" ref="accessControlManager" />
     <property name="sessionFactory" ref="sessionFactory" />
 
     <property name="scriptVariables" ref="scriptVariables" />
-    <property name="scriptJobDao" ref="scriptJobDaoTarget"/>
+    <property name="scriptJobDao" ref="scriptJobDao"/>
   </bean>
   
   <bean id="scriptVariables" class="java.util.HashMap">
@@ -44,11 +43,8 @@
      </constructor-arg>
   </bean>
     
-  <bean id="scriptJobDao" parent="txProxyTemplate">
-    <property name="target" ref="scriptJobDaoTarget"/>
-  </bean>
   
-  <bean id="scriptJobDaoTarget" class="org.mule.galaxy.impl.script.ScriptJobDaoImpl"
+  <bean id="scriptJobDao" class="org.mule.galaxy.impl.script.ScriptJobDaoImpl"
         init-method="initialize">
     <property name="scheduler" ref="scheduler" />
     <property name="sessionFactory" ref="sessionFactory" />

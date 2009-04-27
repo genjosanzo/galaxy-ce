@@ -27,6 +27,7 @@ import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.collab.CommentManager;
+import org.mule.galaxy.event.GalaxyEvent;
 import org.mule.galaxy.event.PropertyChangedEvent;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.workspace.AbstractItem;
@@ -65,12 +66,15 @@ public class JcrItem extends AbstractItem {
     private JcrItem parent;
     private Type type;
     private User author;
-    private boolean enablePolicyChecking = true;
+    private List<GalaxyEvent> saveEvents;
+    private String name;
     
     public JcrItem(Node node, JcrWorkspaceManager manager) throws RepositoryException {
         super(manager);
         this.node = node;
         this.manager = manager;
+        
+        this.name = node.getName();
     }
 
     public JcrWorkspaceManager getManager() {
@@ -79,9 +83,9 @@ public class JcrItem extends AbstractItem {
 
     public String getId() {
         try {
-            return JcrWorkspaceManager.ID + Registry.WORKSPACE_MANAGER_SEPARATOR + node.getUUID();
+            return JcrWorkspaceManagerImpl.ID + Registry.WORKSPACE_MANAGER_SEPARATOR + node.getUUID();
         } catch (RepositoryException e) {
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
@@ -107,7 +111,7 @@ public class JcrItem extends AbstractItem {
     }
 
     public String getName() {
-        return getStringOrNull(NAME);
+        return name;
     }
     
     public void setName(final String name) {
@@ -125,6 +129,7 @@ public class JcrItem extends AbstractItem {
                 });
             }
             node.setProperty(NAME, name);
+            this.name = name;
             update();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -300,8 +305,7 @@ public class JcrItem extends AbstractItem {
 	} else {
 	    setInternalProperty(name, value, false);
 
-	    manager.getEventManager().fireEvent(
-	        new PropertyChangedEvent(SecurityUtils.getCurrentUser(), this, name, value));
+            getSaveEvents().add(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), this, name, value));
 	}    
     }
 
@@ -315,7 +319,6 @@ public class JcrItem extends AbstractItem {
                 throw new PropertyException(new Message("SPACE_NOT_ALLOWED", getBundle()));
             }
             manager.getAccessControlManager().assertAccess(Permission.MODIFY_ITEM, this);
-            Object oldValue = JcrUtil.getProperty(name, node);
             
             JcrUtil.setProperty(name, value, node);
             
@@ -325,35 +328,22 @@ public class JcrItem extends AbstractItem {
                 ensureProperty(name);
             }
 
-            if (enablePolicyChecking) {
-                // Check that this is OK with the policies!
-                try {
-                    manager.getPolicyManager().approve(this);
-                } catch (PolicyException e) {
-                    // Rollback... Don't worry, it wasn't ever really committed as this is all in a transaction
-                    JcrUtil.setProperty(name, oldValue, node);
-                    
-                    if (oldValue == null) {
-                        deleteProperty(name);
-                    } else {
-                        ensureProperty(name);
-                    }
-                    
-                    throw e;
-                } catch (RegistryException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            
             if (log) {
                 // We need to re-extract the property value because we need to log the external value
-                manager.getEventManager().fireEvent(
+                getSaveEvents().add(
                     new PropertyChangedEvent(SecurityUtils.getCurrentUser(), this, name, getProperty(name)));
             }
             update();
         } catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public List<GalaxyEvent> getSaveEvents() {
+        if (saveEvents == null) {
+            saveEvents = new ArrayList<GalaxyEvent>();
+        }
+        return saveEvents;
     }
 
     public boolean hasProperty(String name) {
@@ -540,9 +530,9 @@ public class JcrItem extends AbstractItem {
             return false;
         return true;
     }
-
-    public void setEnablePolicyChecking(boolean enablePolicyChecking) {
-        this.enablePolicyChecking = enablePolicyChecking;
+    
+    public String toString() {
+        return "Item [" + getPath() + "]";
     }
     
 }

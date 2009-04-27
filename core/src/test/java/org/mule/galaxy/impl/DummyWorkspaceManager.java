@@ -36,7 +36,7 @@ import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.workspace.WorkspaceManager;
 
-public final class DummyWorkspaceManager extends AbstractWorkspaceManager implements WorkspaceManager {
+public class DummyWorkspaceManager extends AbstractWorkspaceManager implements WorkspaceManager {
     private String id = "test";
     private Item attachedWorkspace;
     

@@ -31,7 +31,6 @@ import org.mule.galaxy.artifact.Artifact;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.impl.cache.ThreadLocalCacheProviderFacade;
-import org.mule.galaxy.impl.index.IndexManagerImpl;
 import org.mule.galaxy.impl.jcr.RegistryInitializer;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.lifecycle.LifecycleManager;
@@ -195,7 +194,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         return new String[] {
             "/META-INF/applicationContext-core.xml",
             "/META-INF/applicationContext-acegi-security.xml",
-            "/META-INF/applicationContext-cache.xml",
+            "/META-INF/applicationContext-cache.xml",            
             "classpath*:/META-INF/galaxy-applicationContext.xml",
             "/META-INF/applicationContext-test.xml"
         };
@@ -218,7 +217,6 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     @Override  
     protected void onSetUp() throws Exception {
         super.onSetUp();
-        Session session;
         participate = false;
         if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
             // Do not modify the Session: just set the participate
@@ -240,7 +238,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         logout();
 
         ThreadLocalCacheProviderFacade.clearCache();
-        ((IndexManagerImpl) applicationContext.getBean("indexManagerTarget")).destroy();
+        indexManager.destroy();
 
         if (repository != null) {
             setDirty();

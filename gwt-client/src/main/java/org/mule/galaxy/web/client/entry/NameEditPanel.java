@@ -33,12 +33,14 @@ import java.util.List;
 
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.admin.PolicyPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.WorkspaceOracle;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
+import org.mule.galaxy.web.rpc.WPolicyException;
 
 /**
  * A panel for editing the name of a registry entry.
@@ -149,6 +151,8 @@ public class NameEditPanel extends Composite {
                 public void onFailure(Throwable caught) {
                     if (caught instanceof ItemNotFoundException) {
                         errorPanel.setMessage("No parent workspace exists with that name!");
+                    } else if (caught instanceof WPolicyException) {
+                        PolicyPanel.handlePolicyFailure(galaxy, (WPolicyException) caught);
                     } else {
                         super.onFailure(caught);
                     }

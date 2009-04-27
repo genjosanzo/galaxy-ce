@@ -8,6 +8,8 @@ import javax.wsdl.Definition;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.artifact.Artifact;
@@ -26,6 +28,7 @@ import org.w3c.dom.Document;
 
 public class BasicProfilePolicy extends AbstractXmlPolicy
 {
+    private final Log log = LogFactory.getLog(getClass());
 
     public static final String WSI_BP_1_1_WSDL = "WSI_BP_1_1_WSDL";
     private WSIRuleManager wsiManager;
@@ -58,22 +61,26 @@ public class BasicProfilePolicy extends AbstractXmlPolicy
         ArrayList<ApprovalMessage> messages = new ArrayList<ApprovalMessage>();
         Artifact v = (Artifact) item.getProperty("artifact");
         List<ValidationResult> results = new ArrayList<ValidationResult>();
-        for (WSIRule r : rules) {
-            if (r instanceof WsdlRule) {
-                WsdlRule wr = (WsdlRule) r;
-                
-                try {
-                    Document doc = (Document) v.getData();
-                    Definition def = wsdlReader.readWSDL(new RegistryLocator(registry, item.getParent().getParent()), 
-                                              doc.getDocumentElement());
+
+        try {
+            Document doc = (Document) v.getData();
+            Definition def = wsdlReader.readWSDL(new RegistryLocator(registry, item.getParent().getParent()), 
+                                      doc.getDocumentElement());
+    
+            for (WSIRule r : rules) {
+                if (r instanceof WsdlRule) {
+                    WsdlRule wr = (WsdlRule) r;
+                    
                     ValidationResult vr = wr.validate(doc, def);
                     results.add(vr);
-                } catch (Exception e) {
-                    // Ignore - its not parsable
                 }
-                
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e);
+            messages.add(new ApprovalMessage(e.getMessage(), false));
         }
+        
         
         for (ValidationResult vr : results) {
             for (AssertionResult ar : vr.getAssertionResults()) {

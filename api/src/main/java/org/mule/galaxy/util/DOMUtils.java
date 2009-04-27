@@ -289,6 +289,7 @@ public final class DOMUtils {
         dbf.setIgnoringComments(false);
         dbf.setIgnoringElementContentWhitespace(true);
         dbf.setNamespaceAware(true);
+        dbf.setFeature("http://apache.org/xml/features/allow-java-encodings", true);
         
         DocumentBuilder db = dbf.newDocumentBuilder();
         db.setEntityResolver(new NullResolver());

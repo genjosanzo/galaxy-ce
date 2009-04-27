@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.mule.galaxy.event.GalaxyEvent;
 import org.mule.galaxy.event.annotation.OnEvent;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springmodules.jcr.SessionFactory;
 
@@ -24,7 +25,14 @@ class DelegatingMultiEventListener extends AbstractDelegatingGalaxyEventListener
         super(listenerCandidate, executor, sessionFactory);
         delegate = listenerCandidate;
         // discover and initialize event-to-method mappings
-        Method[] methods = listenerCandidate.getClass().getMethods();
+        Class clazz;
+        if (AopUtils.isAopProxy(listenerCandidate)) {
+            clazz = AopUtils.getTargetClass(listenerCandidate);
+        } else {
+            clazz = listenerCandidate.getClass();
+        }
+
+        Method[] methods = clazz.getMethods();
         for (Method method : methods) {
             if (method.isAnnotationPresent(OnEvent.class)) {
                 validateMethodParams(method);

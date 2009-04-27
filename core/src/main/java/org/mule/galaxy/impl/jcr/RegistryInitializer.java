@@ -20,8 +20,6 @@ import org.mule.galaxy.impl.artifact.ArtifactExtension;
 import org.mule.galaxy.impl.lifecycle.LifecycleExtension;
 import org.mule.galaxy.impl.link.LinkExtension;
 import org.mule.galaxy.impl.upgrade.Upgrader;
-import org.mule.galaxy.policy.Policy;
-import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
@@ -35,7 +33,6 @@ public class RegistryInitializer {
     private SessionFactory sessionFactory;
     private ContentService contentService;
     private Collection<Upgrader> upgraders;
-    private PolicyManager policyManager;
     private Settings settings;
     private Extension linkExtension;
     private Extension lifecycleExtension;
@@ -88,10 +85,6 @@ public class RegistryInitializer {
 
         for (ContentHandler ch : contentService.getContentHandlers()) {
             ch.setRegistry(registry);
-        }
-
-        for (Policy a : policyManager.getPolicies()) {
-            a.setRegistry(registry);
         }
 
         session.logout();
@@ -190,10 +183,6 @@ public class RegistryInitializer {
 
     public void setContentService(ContentService contentService) {
         this.contentService = contentService;
-    }
-
-    public void setPolicyManager(PolicyManager policyManager) {
-        this.policyManager = policyManager;
     }
 
     public void setSettings(Settings settings) {

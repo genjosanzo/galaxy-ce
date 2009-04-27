@@ -12,6 +12,7 @@ import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.artifact.Artifact;
+import org.mule.galaxy.type.TypeManager;
 import org.xml.sax.InputSource;
 
 public class RegistryLocator implements WSDLLocator {
@@ -66,7 +67,11 @@ public class RegistryLocator implements WSDLLocator {
             if (importLoc.indexOf("://") == -1) {
                 Item item = registry.resolve(w, importLoc);
                 if (item != null) {
-                    Artifact a = (Artifact) item.getProperty("file");
+                    Item version = (Item) item.getProperty(TypeManager.DEFAULT_VERSION);
+                    if (version == null) {
+                        version = item.getLatestItem();
+                    }
+                    Artifact a = (Artifact) version.getProperty("artifact");
                     if (a != null) {
                         InputStream is = a.getInputStream();
                         InputSource source = new InputSource(is);

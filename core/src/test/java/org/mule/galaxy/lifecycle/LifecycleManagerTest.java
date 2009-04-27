@@ -60,6 +60,7 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         eventManager.addListener(counter);
         
         version.setProperty(Registry.PRIMARY_LIFECYCLE, dev);
+        registry.save(version);
         
         current = getPhase(version);
         assertEquals(dev.getName(), current.getName());
@@ -67,26 +68,34 @@ public class LifecycleManagerTest extends AbstractGalaxyTest {
         
         // we aren't transitioning, make sure that works though
         version.setProperty(Registry.PRIMARY_LIFECYCLE, dev);
+        registry.save(version);
         
         Phase next = l.getPhase("Tested");
         version.setProperty(Registry.PRIMARY_LIFECYCLE, next);
+        registry.save(version);
         
         next = l.getPhase("Staged");
         version.setProperty(Registry.PRIMARY_LIFECYCLE, next);
+        registry.save(version);
         
         next = l.getPhase("Production");
         version.setProperty(Registry.PRIMARY_LIFECYCLE, next);
+        registry.save(version);
         
         next = l.getPhase("Retired");
         version.setProperty(Registry.PRIMARY_LIFECYCLE, next);
+        registry.save(version);
         
         // try going back
         next = l.getPhase("Production");
         version.setProperty(Registry.PRIMARY_LIFECYCLE, next);
+        registry.save(version);
         
         // Try an invalid phase by setting the internal value
         try {
             version.setProperty(Registry.PRIMARY_LIFECYCLE, dev);
+            registry.save(version);
+            
             fail("Expected Transition Exception");
         } catch (PolicyException e) {
             // expected

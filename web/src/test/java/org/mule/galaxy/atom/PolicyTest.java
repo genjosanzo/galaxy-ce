@@ -22,8 +22,9 @@ import org.w3c.dom.Node;
 
 public class PolicyTest extends AbstractAtomTest {
 
-    public void testAddWsdl() throws Exception {
-        // activate policies so our entry addition will fail.
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
         JcrUtil.doInTransaction(sessionFactory, new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
@@ -47,7 +48,10 @@ public class PolicyTest extends AbstractAtomTest {
             }
             
         });
-        
+    }
+
+    public void testAddWsdl() throws Exception {
+        // activate policies so our entry addition will fail.
         
         AbderaClient client = new AbderaClient(abdera);
         RequestOptions defaultOpts = client.getDefaultRequestOptions();
@@ -89,6 +93,6 @@ public class PolicyTest extends AbstractAtomTest {
     }
     
     private InputStream getWsdl() {
-        return getClass().getResourceAsStream("/wsdl/wsi/imports/imports.wsdl");
+        return getClass().getResourceAsStream("/wsdl/wsi/soapbinding/r2701.wsdl");
     }
 }

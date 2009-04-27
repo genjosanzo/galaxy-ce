@@ -30,12 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Repository;
-import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
 import javax.xml.namespace.QName;
 
 import junit.framework.TestCase;
@@ -67,7 +61,7 @@ import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.atom.ItemCollection;
-import org.mule.galaxy.impl.index.IndexManagerImpl;
+import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.type.TypeManager;
@@ -119,9 +113,8 @@ public abstract class AbstractAtomTest extends TestCase {
     
     @Override
     protected void tearDown() throws Exception {
-        ((IndexManagerImpl) getApplicationContext().getBean("indexManagerTarget")).destroy();
+        ((IndexManager) getApplicationContext().getBean("indexManager")).destroy();
         
-        clearJcrRepository();
         try {
             server.stop();
         } catch (Throwable t) {
@@ -130,29 +123,6 @@ public abstract class AbstractAtomTest extends TestCase {
         
         super.tearDown();
     } 
-    
-    private void clearJcrRepository() {
-        try {
-            WebApplicationContext wac = getApplicationContext();
-            Repository repository = (Repository) wac.getBean("repository");
-            Session session = repository.login(new SimpleCredentials("username", "password".toCharArray()));
-
-            Node node = session.getRootNode();
-//            JcrUtil.dump(node.getNode("workspaces"));
-            for (NodeIterator itr = node.getNodes(); itr.hasNext();) {
-                Node child = itr.nextNode();
-                if (!child.getName().equals("jcr:system")) {
-                    child.remove();
-                }
-            }
-            session.save();
-            session.logout();
-        } catch (PathNotFoundException t) {
-            // ignore
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
-    }
 
     protected Item getTestWorkspace() throws RegistryException, AccessException {
         Collection<Item> workspaces = registry.getItems();

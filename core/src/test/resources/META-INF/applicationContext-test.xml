@@ -19,7 +19,7 @@
         <property name="homeDir" value="file:${galaxy.data}"/>
     </bean>
 
-    <bean id="indexManagerTarget" class="org.mule.galaxy.impl.index.IndexManagerImpl"
+    <bean id="indexManager" class="org.mule.galaxy.impl.index.IndexManagerImpl"
           init-method="initialize" destroy-method="destroy">
         <property name="activityManager" ref="activityManager"/>
         <property name="sessionFactory" ref="sessionFactory"/>

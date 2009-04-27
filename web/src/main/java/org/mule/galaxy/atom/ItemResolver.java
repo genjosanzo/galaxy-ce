@@ -136,6 +136,17 @@ public class ItemResolver implements Resolver<Target> {
     private Target resolveItem(Item item, String classifier, RequestContext context)
         throws RegistryException, NotFoundException, AccessException {
 
+        String method = context.getMethod();
+        boolean isArtifact = item.getType().inheritsFrom(TypeManager.ARTIFACT);
+        if (isArtifact && (classifier != null || !"POST".equals(method))) {
+            item = selectVersion(item, context);
+            
+            if (item == null) {
+                return returnUnknownLocation(context);
+            }
+
+        }
+        
         context.setAttribute(ITEM, item);
         context.setAttribute(COLLECTION_HREF, getPathWithoutArtifact(context));
         context.setAttribute(DefaultWorkspaceManager.COLLECTION_ADAPTER_ATTRIBUTE, itemCollection);
@@ -147,18 +158,9 @@ public class ItemResolver implements Resolver<Target> {
         }  else if ("history".equals(classifier) || "items".equals(classifier)) {
             return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
         } else if (classifier == null) {
-            String method = context.getMethod();
-            if (item.getType().inheritsFrom(TypeManager.ARTIFACT) && classifier == null && !"POST".equals(method)) {
-                item = selectVersion(item, context);
-                context.setAttribute(ITEM, item);
-                if (item == null) {
-                    return returnUnknownLocation(context);
-                }
-
+            if (!"POST".equals(method) && isArtifact) {
                 return new SimpleTarget(TargetType.TYPE_MEDIA, context);
-            }
-            
-            if ("HEAD".equals(method) || "OPTIONS".equals(method) || "PUT".equals(method) || "DELETE".equals(method)) {
+            } else if ("HEAD".equals(method) || "OPTIONS".equals(method) || "PUT".equals(method) || "DELETE".equals(method)) {
                 return new SimpleTarget(TargetType.TYPE_ENTRY, context);
             }  else  {
                 return new SimpleTarget(TargetType.TYPE_COLLECTION, context);
