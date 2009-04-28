@@ -50,7 +50,7 @@ public class SearchPanel extends AbstractBrowsePanel {
         searchForm.setPredicates(null);
         searchPanel.add(searchForm);
         currentTopPanel = searchPanel;
-        menuPanel.setTop(searchPanel);
+        setTop(searchPanel);
         
         searchForm.addSearchListener(new ClickListener() {
             public void onClick(Widget arg0) {

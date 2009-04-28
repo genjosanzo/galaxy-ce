@@ -11,20 +11,20 @@ import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemInfo;
 
-public class WorkspaceOracle extends SuggestOracle {
+public class ItemPathOracle extends SuggestOracle {
 
     private Galaxy galaxy;
     private ErrorPanel errorPanel;
     private final String exclude;
     
-    public WorkspaceOracle(Galaxy galaxy, ErrorPanel errorPanel, String exclude) {
+    public ItemPathOracle(Galaxy galaxy, ErrorPanel errorPanel, String exclude) {
         super();
         this.errorPanel = errorPanel;
         this.galaxy = galaxy;
         this.exclude = exclude;
     }
 
-    public WorkspaceOracle(Galaxy galaxy, ErrorPanel errorPanel) {
+    public ItemPathOracle(Galaxy galaxy, ErrorPanel errorPanel) {
         this(galaxy, errorPanel, "xxx");
     }
 

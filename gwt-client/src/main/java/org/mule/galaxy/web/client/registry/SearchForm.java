@@ -39,7 +39,7 @@ import java.util.Set;
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.WorkspaceOracle;
+import org.mule.galaxy.web.client.util.ItemPathOracle;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 
@@ -160,7 +160,7 @@ public class SearchForm extends AbstractErrorShowingComposite {
         int row = table.getRowCount();
         table.setText(row, 0, "Workspace:");
 
-        workspaceTB = new SuggestBox(new WorkspaceOracle(galaxy, this));
+        workspaceTB = new SuggestBox(new ItemPathOracle(galaxy, this));
         table.setWidget(row, 1, workspaceTB);
         includeChildWkspcCB = new CheckBox();
         table.setText(row, 2, " Include Child Workspaces: ");

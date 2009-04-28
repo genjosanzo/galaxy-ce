@@ -84,6 +84,7 @@ import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.type.PropertyDescriptor;
+import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.util.SecurityUtils;
 import org.mule.galaxy.util.UserUtils;
@@ -111,6 +112,7 @@ import org.mule.galaxy.web.rpc.WPolicyException;
 import org.mule.galaxy.web.rpc.WProperty;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 import org.mule.galaxy.web.rpc.WSearchResults;
+import org.mule.galaxy.web.rpc.WType;
 import org.mule.galaxy.web.rpc.WUser;
 
 public class RegistryServiceImpl implements RegistryService {
@@ -227,15 +229,23 @@ public class RegistryServiceImpl implements RegistryService {
         throws RPCException, ItemNotFoundException, ItemExistsException, WPolicyException {
         try {
             Item item;
+            Map<String, Object> localProperties = new HashMap<String, Object>();
+            for (Map.Entry<String, Serializable> e : properties.entrySet()) {
+                String name = e.getKey();
+                PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(name);
+                
+                localProperties.put(name, getLocalValue(pd, e.getValue(), null, null));
+            }
+            
             if (parentPath == null || "".equals(parentPath)) {
-                item = registry.newItem(workspaceName, typeManager.getType(type)).getItem();
+                item = registry.newItem(workspaceName, typeManager.getType(type), localProperties).getItem();
             } else {
                 Item parent = (Item) registry.getItemByPath(parentPath);
                 
                 if (parent == null) {
                     throw new RPCException("Could not find parent workspace: " + parentPath);
                 }
-                item = parent.newItem(workspaceName, typeManager.getType(type)).getItem();
+                item = parent.newItem(workspaceName, typeManager.getType(type), localProperties).getItem();
             }
             if (lifecycleId != null) {
                 item.setDefaultLifecycle(item.getLifecycleManager().getLifecycleById(lifecycleId));
@@ -1108,6 +1118,44 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
+    public Object getLocalValue(PropertyDescriptor pd, 
+                                Serializable s, 
+                                Item item,
+                                Object existingValue) 
+        throws NotFoundException, RegistryException, AccessException {
+        if (pd != null && pd.getExtension() != null) {
+            if (pd.getExtension() instanceof LinkExtension) {
+            Links links = (Links) existingValue;
+            WLinks wlinks = (WLinks) s;
+            
+            Collection<Link> linkList = new ArrayList<Link>();
+            linkList.addAll(links.getLinks());
+            for (Iterator<LinkInfo> itr = wlinks.getLinks().iterator(); itr.hasNext();) {
+                LinkInfo wl = itr.next();
+                Link l = getLink(linkList, wl);
+                
+                if (l != null) {
+                    linkList.remove(l);
+                } else {
+                    Item linkTo = registry.getItemByPath(wl.getItemName());
+                    
+                    Link link = new Link(item, linkTo, null, false);
+                    links.addLinks(link);
+                }
+            }
+            
+            if (links != null) {
+                for (Link l : linkList) {
+                    links.removeLinks(l);
+                }
+            }
+            
+            return linkList;
+            }
+        } 
+        return s;
+    }
+    
     private Link getLink(Collection<Link> linkList, LinkInfo l) {
         for (Link link : linkList) {
             String path = link.getLinkedToPath();
@@ -1325,10 +1373,33 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     
+    public List<WType> getTypes() throws RPCException {
+        ArrayList<WType> types = new ArrayList<WType>();
+        for (Type type : typeManager.getTypes()) {
+            types.add(toWeb(type));
+        }
+        return types;
+    }
+
+    private WType toWeb(Type type) {
+        WType wt = new WType();
+        wt.setId(type.getId());
+        wt.setName(type.getName());
+        ArrayList<WPropertyDescriptor> pds = new ArrayList<WPropertyDescriptor>();
+        if (type.getProperties() != null) {
+            for (PropertyDescriptor pd : type.getProperties()) {
+                pds.add(toWeb(pd));
+            }
+        }
+        wt.setProperties(pds);
+        
+        return wt;
+    }
+
     public Map<String, String> getQueryProperties() throws RPCException {
         return registry.getQueryProperties();
     }
-
+    
     public void move(String itemId, String workspacePath, String name) 
         throws RPCException, ItemNotFoundException, WPolicyException {
         try {

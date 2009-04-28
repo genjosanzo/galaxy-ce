@@ -51,6 +51,16 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         return importFile(helloWsdl, "hello-noOperation.wsdl", "0.1", "application/xml");
     }
 
+    public void testAddItem() throws Exception
+    {
+        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put("foo", "bar");
+        String id = gwtRegistry.addItem("/Default Workspace", "Test", null, "Base Type", props);
+        
+        ItemInfo info = gwtRegistry.getItemInfo(id, true);
+        assertEquals("bar", info.getProperty("foo").getValue());
+    }
+    
     public void testItemOperations() throws Exception
     {
         //importHelloTestWSDL();

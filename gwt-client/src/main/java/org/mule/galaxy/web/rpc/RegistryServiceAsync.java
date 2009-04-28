@@ -21,6 +21,7 @@ package org.mule.galaxy.web.rpc;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -109,6 +110,8 @@ public interface RegistryServiceAsync {
     void deletePropertyDescriptor(String id, AsyncCallback c);
 
     void getPropertyDescriptors(boolean includeIndexes, AsyncCallback abstractCallback);
+    
+    void getTypes(AsyncCallback<List<WType>> callback);
     
     void getQueryProperties(AsyncCallback<Map<String, String>> callback);
     

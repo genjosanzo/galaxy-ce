@@ -26,9 +26,9 @@ import java.util.Map;
 
 import org.mule.galaxy.web.client.activity.ActivityPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
+import org.mule.galaxy.web.client.entry.AddItemForm;
 import org.mule.galaxy.web.client.entry.ItemPanel;
 import org.mule.galaxy.web.client.property.PropertyPanelFactory;
-import org.mule.galaxy.web.client.registry.ArtifactForm;
 import org.mule.galaxy.web.client.registry.SearchPanel;
 import org.mule.galaxy.web.client.registry.ViewPanel;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
@@ -179,7 +179,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         registryPanel.add(itemPanel);
 
         // prefetch extensions
-        registryService.getExtensions(new AbstractCallback(itemPanel.getErrorPanel()) {
+        registryService.getExtensions(new AbstractCallback(itemPanel) {
             @SuppressWarnings("unchecked")
             public void onSuccess(Object o) {
                 extensions = (List) o;
@@ -188,7 +188,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         });
 
         final Galaxy galaxy = this;
-        registryService.getUserInfo(new AbstractCallback(itemPanel.getErrorPanel()) {
+        registryService.getUserInfo(new AbstractCallback(itemPanel) {
             public void onSuccess(Object o) {
                 user = (WUser) o;
                 rightPanel.add(new Label("Signed in as: " + user.getName()));
@@ -206,7 +206,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
         createPageInfo("search", new SearchPanel(this), 1);
         createPageInfo("item/" + WILDCARD, new ItemPanel(this), 0);
-        createPageInfo("add-item", new ArtifactForm(this), 0);
+        createPageInfo("add-item", new AddItemForm(this), 0);
         createPageInfo("view", new ViewPanel(this), 0);
 
         new HeartbeatTimer(Galaxy.this);

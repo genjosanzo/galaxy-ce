@@ -33,7 +33,11 @@ public interface RegistryService extends RemoteService {
 
     Collection<ItemInfo> getItems(String parentId) throws RPCException;
 
-    String addItem(String parentWorkspaceId, String workspaceName, String lifecycleId, String type, Map<String, Serializable> properties) 
+    String addItem(String parentPath, 
+                   String workspaceName,
+                   String lifecycleId, 
+                   String type, 
+                   Map<String, Serializable> properties) 
         throws RPCException, ItemNotFoundException, ItemExistsException, WPolicyException;
 
     WArtifactType getArtifactType(String id) throws RPCException;
@@ -113,6 +117,7 @@ public interface RegistryService extends RemoteService {
     
     List<WExtensionInfo> getExtensions() throws RPCException;
     
+    List<WType> getTypes() throws RPCException;
     
     void move(String entryId, String workspaceId, String name) throws RPCException, ItemNotFoundException, WPolicyException;
     

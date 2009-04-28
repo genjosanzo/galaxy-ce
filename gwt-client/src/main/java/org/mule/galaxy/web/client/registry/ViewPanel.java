@@ -63,16 +63,6 @@ public class ViewPanel extends AbstractBrowsePanel {
         super(galaxy);
     }
     
-    protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(galaxy) {
-
-            public void loadViews() {
-                loadViews(viewId, null);
-            }
-            
-        };
-    }
-    
     protected String getHistoryToken() {
         return "view/" + viewId;
     }
@@ -95,7 +85,7 @@ public class ViewPanel extends AbstractBrowsePanel {
             editMode = false;
         }
         
-        menuPanel.setTop(null);
+        setTop(null);
         FlowPanel browseToolbar = new FlowPanel();
         browseToolbar.setStyleName("toolbar");
         
@@ -159,7 +149,7 @@ public class ViewPanel extends AbstractBrowsePanel {
         {
             public void onConfirm()
             {
-                galaxy.getRegistryService().deleteArtifactView(viewId, new AbstractCallback(menuPanel)
+                galaxy.getRegistryService().deleteArtifactView(viewId, new AbstractCallback(ViewPanel.this)
                 {
                     public void onSuccess(Object arg0)
                     {
@@ -170,13 +160,10 @@ public class ViewPanel extends AbstractBrowsePanel {
         }, "Are you sure you want to delete this view?")).show();
     }
 
-
     public void refresh() {
         if (testSearch || (!NEW_VIEW_ID.equals(viewId) && stale)) {
             refreshArtifacts();
         }
-        
-        menuPanel.loadViews(viewId, null);
     }
     
     public void onHide() {
@@ -191,7 +178,7 @@ public class ViewPanel extends AbstractBrowsePanel {
         view.setWorkspaceSearchRecursive(viewForm.isWorkspaceSearchRecursive());
         view.setQueryString(viewForm.getFreeformQuery());
         
-        galaxy.getRegistryService().saveArtifactView(view, new AbstractCallback(menuPanel) {
+        galaxy.getRegistryService().saveArtifactView(view, new AbstractCallback(this) {
             public void onSuccess(Object id) {
                 view.setId((String)id);
                 History.newItem("view/" + id);
@@ -216,7 +203,7 @@ public class ViewPanel extends AbstractBrowsePanel {
         } else {
             currentTopPanel.add(headerPanel);
         }
-        menuPanel.setTop(currentTopPanel);
+        setTop(currentTopPanel);
     }
     
     protected void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback) {

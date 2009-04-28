@@ -35,7 +35,7 @@ import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.admin.PolicyPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.WorkspaceOracle;
+import org.mule.galaxy.web.client.util.ItemPathOracle;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -102,7 +102,7 @@ public class NameEditPanel extends Composite {
 
         final HorizontalPanel row = new HorizontalPanel();
 
-        final SuggestBox workspaceSB = new SuggestBox(new WorkspaceOracle(galaxy, errorPanel));
+        final SuggestBox workspaceSB = new SuggestBox(new ItemPathOracle(galaxy, errorPanel));
         workspaceSB.setText(workspacePath);
         row.add(workspaceSB);
         

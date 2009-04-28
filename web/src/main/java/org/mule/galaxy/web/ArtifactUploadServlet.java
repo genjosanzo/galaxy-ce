@@ -71,8 +71,9 @@ public class ArtifactUploadServlet implements Controller {
 
         try {
             FileItemFactory factory = new DiskFileItemFactory();
+            
             ServletFileUpload upload = new ServletFileUpload(factory);
-
+            
             try {
                 List items = upload.parseRequest(req);
                 Iterator it = items.iterator();

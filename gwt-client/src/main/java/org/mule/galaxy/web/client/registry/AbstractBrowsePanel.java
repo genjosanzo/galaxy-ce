@@ -20,7 +20,7 @@ package org.mule.galaxy.web.client.registry;
 
 import java.util.List;
 
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.AbstractWithTopComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -32,13 +32,11 @@ import com.google.gwt.user.client.ui.FlowPanel;
 /**
  * The basis for any form that lists out groups of artifacts.
  */
-public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite {
+public abstract class AbstractBrowsePanel extends AbstractWithTopComposite {
     protected Toolbox artifactTypesBox;
     protected RegistryServiceAsync service;
     protected ArtifactListPanel artifactListPanel;
-    protected FlowPanel currentTopPanel;
     protected final Galaxy galaxy;
-    protected RegistryMenuPanel menuPanel;
     private boolean first = true;
     protected int resultStart;
 
@@ -46,9 +44,9 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
         this.galaxy = galaxy;
         this.service = galaxy.getRegistryService();
 
-        menuPanel = createRegistryMenuPanel();
+        FlowPanel main = getMainPanel();
 
-        initWidget(menuPanel);
+        initWidget(main);
     }
 
 
@@ -84,14 +82,16 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
             first = false;
         }
 
-        menuPanel.onShow();
         refresh();
 
         if (currentTopPanel != null) {
-            menuPanel.setTop(currentTopPanel);
+            setTop(currentTopPanel);
         }
     }
-
+    
+    public void refresh() {
+    }
+    
     protected int getResultStartParameterIndex() {
         return 1;
     }
@@ -106,14 +106,9 @@ public abstract class AbstractBrowsePanel extends AbstractErrorShowingComposite 
 
     }
 
-    public void refresh() {
-//        refreshArtifactTypes();
-
-        menuPanel.loadViews();
-    }
 
     public void refreshArtifacts() {
-        menuPanel.setMain(artifactListPanel);
+        getMainPanel().add(artifactListPanel);
         refreshArtifacts(artifactListPanel.getResultStart(),
                          artifactListPanel.getMaxResults());
     }
