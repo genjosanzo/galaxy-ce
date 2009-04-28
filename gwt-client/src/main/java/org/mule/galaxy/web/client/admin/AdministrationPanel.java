@@ -80,6 +80,14 @@ public class AdministrationPanel extends MenuPanel {
                               new PropertyDescriptorForm(this));
         }
 
+        if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
+            createLinkWithAdd(manageBox, 
+                              "Types", 
+                              "types", 
+                              new TypeListPanel(this),
+                              new TypeForm(this));
+        }
+
         if (galaxy.hasPermission("MANAGE_USERS")) {
             createLinkWithAdd(manageBox, 
                               "Users", 

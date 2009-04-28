@@ -147,4 +147,8 @@ public interface RegistryService extends RemoteService {
                                         String eventType, int start, int results, boolean ascending) throws RPCException;
     
     WUser getUserInfo() throws RPCException;
+
+    void saveType(WType type) throws RPCException, ItemExistsException;
+    
+    WType getType(String id) throws RPCException;
 }

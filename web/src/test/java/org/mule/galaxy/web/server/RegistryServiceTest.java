@@ -30,6 +30,7 @@ import org.mule.galaxy.web.rpc.WLinks;
 import org.mule.galaxy.web.rpc.WProperty;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 import org.mule.galaxy.web.rpc.WSearchResults;
+import org.mule.galaxy.web.rpc.WType;
 import org.mule.galaxy.web.rpc.WUser;
 
 public class RegistryServiceTest extends AbstractGalaxyTest {
@@ -311,17 +312,25 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals("newname", wl.getName());
     }
     
-    public void testPDs() throws Exception {
+
+    public void testTypes() throws Exception {
         WPropertyDescriptor wpd = new WPropertyDescriptor();
-        
         wpd.setName("test");
         wpd.setDescription("test");
-        
         gwtRegistry.savePropertyDescriptor(wpd);
         
         PropertyDescriptor pd = typeManager.getPropertyDescriptor(wpd.getId());
-        
         assertNotNull(pd);
+        
+        WType type = new WType();
+        type.setName("TestType");
+        type.addProperty(wpd);
+        
+        gwtRegistry.saveType(type);
+        
+        WType type2 = gwtRegistry.getType(type.getId());
+        assertEquals(type.getName(), type2.getName());
+        assertEquals(1, type.getProperties().size());
     }
     
     /**

@@ -107,6 +107,10 @@ public interface RegistryServiceAsync {
     
     void savePropertyDescriptor(WPropertyDescriptor property, AsyncCallback c);
     
+    void saveType(WType type, AsyncCallback c);
+    
+    void getType(String id, AsyncCallback<WType> c);
+    
     void deletePropertyDescriptor(String id, AsyncCallback c);
 
     void getPropertyDescriptors(boolean includeIndexes, AsyncCallback abstractCallback);

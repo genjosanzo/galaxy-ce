@@ -37,7 +37,6 @@ import org.mule.galaxy.web.client.util.StringUtil;
 import org.mule.galaxy.web.client.util.TooltipListener;
 import org.mule.galaxy.web.client.util.WTypeComparator;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableFileUpload;
 import org.mule.galaxy.web.client.validation.ui.ValidatableSuggestBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemInfo;
@@ -67,7 +66,6 @@ public class AddItemForm extends AbstractErrorShowingComposite
 
     private FlexTable table;
     private FormPanel form;
-    private ValidatableFileUpload artifactUpload;
     private TextBox nameBox;
     private ValidatableSuggestBox parentSB;
     private final Galaxy galaxy;

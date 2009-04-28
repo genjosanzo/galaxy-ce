@@ -13,7 +13,6 @@ import org.mule.galaxy.mapping.OneToMany;
 public class Type implements Identifiable {
     private String id;
     private String name;
-    private boolean artifact;
     private List<PropertyDescriptor> properties;
     private List<Type> mixins;
     private List<Type> allowedChildren;
@@ -34,15 +33,7 @@ public class Type implements Identifiable {
     public void setName(String name) {
         this.name = name;
     }
-
-    public boolean isArtifact() {
-        return artifact;
-    }
-
-    public void setArtifact(boolean artifact) {
-        this.artifact = artifact;
-    }
-
+    
     @OneToMany(componentType = Type.class)
     public List<Type> getMixins() {
         return mixins;

@@ -42,7 +42,7 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
     private Button cancel;
     private String successToken;
     private final String successMessage;
-    private final ErrorPanel errorPanel;
+    protected final ErrorPanel errorPanel;
     private final String deleteMessage;
     private final String CANCEL_MESSAGE = "Action Canceled";
     private String existsMessage;

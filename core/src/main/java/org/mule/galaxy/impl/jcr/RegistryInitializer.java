@@ -145,6 +145,18 @@ public class RegistryInitializer {
         workspaceType.setAllowedChildren(Arrays.asList(baseType));
         workspaceType.setSystemType(true);
         
+
+
+        final PropertyDescriptor url = new PropertyDescriptor();
+        url.setProperty("jms.url");
+        url.setDescription("JMS URL");
+        
+        final Type jmsType = new Type();
+        jmsType.setName("JMS Resource");
+        jmsType.setProperties(Arrays.asList(url));
+        jmsType.setSystemType(true);
+        
+
         TypeManager tm = localWorkspaceManager.getTypeManager();
         tm.savePropertyDescriptor(lifecyclePD);
         tm.savePropertyDescriptor(filePD);
@@ -155,6 +167,9 @@ public class RegistryInitializer {
         tm.saveType(artifactVersion);
         tm.saveType(artifact);
         tm.saveType(workspaceType);
+        
+        tm.savePropertyDescriptor(url);
+        tm.saveType(jmsType);
 
         Node node = workspaces.addNode(settings.getDefaultWorkspaceName(), "galaxy:item");
         node.addMixin("mix:referenceable");

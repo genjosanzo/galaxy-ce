@@ -1381,6 +1381,64 @@ public class RegistryServiceImpl implements RegistryService {
         return types;
     }
 
+    public WType getType(String id) throws RPCException {
+        try {
+            return toWeb(typeManager.getType(id));
+        } catch (NotFoundException e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    public void saveType(WType wt) throws RPCException, ItemExistsException {
+        try {
+            Type type = fromWeb(wt);
+            
+            typeManager.saveType(type);
+            wt.setId(type.getId());
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        } catch (DuplicateItemException e) {
+            throw new ItemExistsException();
+        } catch (NotFoundException e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    private Type fromWeb(WType wt) throws NotFoundException {
+        Type type = new Type();
+        type.setId(wt.getId());
+        type.setName(wt.getName());
+        type.setAllowedChildren(fromWebToTypes(wt.getAllowedChildrenIds()));
+        type.setMixins(fromWebToTypes(wt.getMixinIds()));
+        
+        List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
+        for (WPropertyDescriptor pd : wt.getProperties()) {
+            properties.add(typeManager.getPropertyDescriptor(pd.getId()));
+        }
+        type.setProperties(properties);
+        
+        return type;
+    }
+
+    private List<Type> fromWebToTypes(List<String> allowedChildrenIds) 
+        throws NotFoundException {
+        List<Type> types = new ArrayList<Type>();
+        for (String id : allowedChildrenIds) {
+            types.add(typeManager.getType(id));
+        }
+        return types;
+    }
+    
+    private List<String> toWeb(List<Type> children) {
+        if (children == null) return Collections.emptyList();
+        
+        List<String> types = new ArrayList<String>();
+        for (Type t : children) {
+            types.add(t.getId());
+        }
+        return types;
+    }
+
     private WType toWeb(Type type) {
         WType wt = new WType();
         wt.setId(type.getId());
@@ -1392,6 +1450,10 @@ public class RegistryServiceImpl implements RegistryService {
             }
         }
         wt.setProperties(pds);
+        wt.setAllowedChildrenIds(toWeb(type.getAllowedChildren()));
+        wt.setMixinIds(toWeb(type.getMixins()));
+        wt.getMixinIds().remove(type.getId());
+        wt.setSystem(type.isSystemType());
         
         return wt;
     }
