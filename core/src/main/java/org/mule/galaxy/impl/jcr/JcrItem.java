@@ -217,7 +217,7 @@ public class JcrItem extends AbstractItem {
             for (PropertyDescriptor p : t.getProperties()) {
                 Object val = getProperty(p.getProperty());
                 if (val == null) {
-                    throw new PropertyException(new Message("MISSING_PROPERTY", BUNDLE, t.getName(), p.getProperty()));
+                    throw new PropertyException(new Message("MISSING_PROPERTY", BUNDLE, t.getName(), p.getDescription()));
                 }
             }
         }

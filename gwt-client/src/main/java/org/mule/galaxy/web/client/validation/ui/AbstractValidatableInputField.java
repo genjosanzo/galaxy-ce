@@ -32,8 +32,9 @@ public abstract class AbstractValidatableInputField extends AbstractValidatableW
 
     private Label validationLabel = new Label();
     private FlowPanel holderPanel = new FlowPanel();
-    private ValidationListener validationListener;
+    private FieldValidationListener validationListener;
     private Validator validator;
+    private Widget inputWidget;
 
     public AbstractValidatableInputField() {
     }
@@ -43,7 +44,7 @@ public abstract class AbstractValidatableInputField extends AbstractValidatableW
     }
     
     protected void init(Validator validator) {
-        Widget inputWidget = this.createInputWidget();
+        inputWidget = this.createInputWidget();
         validationListener = new FieldValidationListener(this.getValidationLabel());
         this.validator = new CallbackValidator(validator, validationListener, inputWidget);
         holderPanel.add(inputWidget);
@@ -54,7 +55,9 @@ public abstract class AbstractValidatableInputField extends AbstractValidatableW
         initWidget(holderPanel);
     }
 
-
+    public void clearError() {
+        validationListener.clearError(inputWidget);
+    }
     /**
      * @return top-most FlowPanel grouping every element
      */

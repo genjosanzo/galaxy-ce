@@ -190,7 +190,10 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
         }
 
         public void addLinks(Link l) throws AccessException {
-            if (!l.getItem().equals(item)) {
+            if (l.getItem() == null) {
+                // this is a hack for when we add items.
+                l.setItem(item);
+            } else if (!l.getItem().equals(item)) {
                 throw new IllegalStateException("Item specified must be the item associated with this Links instance.");
             }
             

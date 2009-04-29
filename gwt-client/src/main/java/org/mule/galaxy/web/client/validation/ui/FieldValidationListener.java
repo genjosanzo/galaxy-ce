@@ -43,6 +43,10 @@ public class FieldValidationListener implements ValidationListener {
 
     public void onSuccess(final ValidationEvent event) {
         Widget source = (Widget) event.source;
+        clearError(source);
+    }
+
+    public void clearError(Widget source) {
         source.removeStyleName("FailedValidation");
         validationLabel.setVisible(false);
         validationLabel.setText("");

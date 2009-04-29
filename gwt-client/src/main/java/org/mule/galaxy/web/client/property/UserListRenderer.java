@@ -1,22 +1,25 @@
 package org.mule.galaxy.web.client.property;
 
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.Widget;
-
 import java.util.Collection;
 import java.util.Iterator;
 
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.validation.Validator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableWidget;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WUser;
+
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Widget;
 
 public class UserListRenderer extends AbstractListRenderer {
 
     private Collection users;
     private ListBox userLB;
     private Button addButton;
+    private ValidatableWidget userValidator;
     
     protected void loadRemote() {
         userLB = new ListBox();
@@ -34,6 +37,19 @@ public class UserListRenderer extends AbstractListRenderer {
         } else {
             onFinishLoad();
         }
+        
+
+        Validator validator = new Validator() {
+            public String getFailureMessage() {
+                return "At least one user must be supplied.";
+            }
+
+            public boolean validate(Object value) {
+                return values.size() > 0;
+            }
+        };
+        
+        userValidator = new ValidatableWidget(userLB, validator);
     }
     
     protected void removeLabel(Object id) {
@@ -74,6 +90,8 @@ public class UserListRenderer extends AbstractListRenderer {
 
         editValuesPanel.add(createLabel(id));
         userLB.removeItem(idx);
+
+        userValidator.clearError();
     }
 
     @Override
@@ -100,7 +118,7 @@ public class UserListRenderer extends AbstractListRenderer {
     protected Widget getAddWidget() {
         InlineFlowPanel addPanel = new InlineFlowPanel();
         addPanel.setStyleName("renderer-add-panel");
-        addPanel.add(userLB);
+        addPanel.add(userValidator);
         
         addButton = new Button();
         addButton.setText("Add");
@@ -110,8 +128,14 @@ public class UserListRenderer extends AbstractListRenderer {
             }
         });
         addButton.setEnabled(false);
+
         addPanel.add(addButton);
         return addPanel;
+    }
+
+    @Override
+    public boolean validate() {
+        return userValidator.validate();
     }
 
 }

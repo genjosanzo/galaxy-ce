@@ -1,15 +1,5 @@
 package org.mule.galaxy.web.client.property;
 
-import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.Widget;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -17,18 +7,29 @@ import java.util.List;
 
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.EntrySuggestOracle;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.ItemPathOracle;
+import org.mule.galaxy.web.client.validation.Validator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableSuggestBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.LinkInfo;
 import org.mule.galaxy.web.rpc.WLinks;
+
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * NOTE: I apologize for the mess that is this class.
  */
 public class LinksRenderer extends AbstractListRenderer {
 
-    private SuggestBox suggest;
+    private ValidatableSuggestBox suggest;
     private Button addButton;
     private String reciprocalName;
     private Label verifyLabel;
@@ -89,7 +90,17 @@ public class LinksRenderer extends AbstractListRenderer {
         verifyLabel = new Label();
         addPanel.add(verifyLabel);
         
-        suggest = new SuggestBox(new EntrySuggestOracle(galaxy, errorPanel, "xxx"));
+        Validator validator = new Validator() {
+            public String getFailureMessage() {
+                return "At least one link must be supplied.";
+            }
+
+            public boolean validate(Object value) {
+                return getLinks().getLinks().size() > 0;
+            }
+        };
+        
+        suggest = new ValidatableSuggestBox(validator, new ItemPathOracle(galaxy, errorPanel, "xxx"));
         addPanel.add(suggest);
 
         addButton = new Button();
@@ -97,6 +108,7 @@ public class LinksRenderer extends AbstractListRenderer {
         addButton.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {
                 verifyLabel.setText("");
+                suggest.clearError();
                 String value = suggest.getText();
                 
                 verify(value);
@@ -242,6 +254,11 @@ public class LinksRenderer extends AbstractListRenderer {
         } else {
             return ((LinkInfo) value).getItemName();
         }
+    }
+
+    @Override
+    public boolean validate() {
+        return suggest.validate();
     }
     
 }

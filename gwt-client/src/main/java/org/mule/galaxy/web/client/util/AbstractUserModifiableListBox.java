@@ -18,6 +18,15 @@
 
 package org.mule.galaxy.web.client.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.validation.ListBoxNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.Validator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
+
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -25,22 +34,23 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
-import org.mule.galaxy.web.client.AbstractComposite;
-
 public abstract class AbstractUserModifiableListBox extends AbstractComposite {
 
     private ListBox listBox;
     private Button rmButton;
     private Button addButton;
+    private ValidatableTextBox textBox;
 
-    public AbstractUserModifiableListBox(Collection list) {
+    public AbstractUserModifiableListBox(Collection list, 
+                                         Validator validator) {
         super();
-        
+
         listBox = new ListBox();
+        
+        if (validator == null) {
+            validator = new ListBoxNotEmptyValidator(listBox);
+        }
+        
         listBox.setVisibleItemCount(5);
         if (list != null) {
             for (Iterator itr = list.iterator(); itr.hasNext();) {
@@ -63,14 +73,14 @@ public abstract class AbstractUserModifiableListBox extends AbstractComposite {
         table.add(asHorizontal(listBox, rmButton));
         
         InlineFlowPanel addPanel = new InlineFlowPanel();
-        final TextBox addDocTypeTB = new TextBox();
-        addDocTypeTB.setVisibleLength(60);
-        addPanel.add(addDocTypeTB);
+        textBox = new ValidatableTextBox(validator);
+        textBox.getTextBox().setVisibleLength(60);
+        addPanel.add(textBox);
         addButton = new Button("Add");
-        addButton.addClickListener(createValidator(addDocTypeTB));
+        addButton.addClickListener(createValidator(textBox.getTextBox()));
         addPanel.add(addButton);
         
-        InlineFlowPanel addRow = asHorizontal(addDocTypeTB, addButton);
+        InlineFlowPanel addRow = asHorizontal(textBox, addButton);
         addRow.setStyleName("qnameListBox-add-row");
         table.add(addRow);
         
@@ -98,10 +108,15 @@ public abstract class AbstractUserModifiableListBox extends AbstractComposite {
         }
         return items;
     }
+    
+    public boolean validate() {
+        return textBox.validate();
+    }
 
     public void setEnabled(boolean e) {
         addButton.setEnabled(e);
         rmButton.setEnabled(e);
     }
+
 
 }

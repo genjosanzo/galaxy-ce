@@ -29,8 +29,8 @@ public class CallbackValidator implements Validator {
     protected Object source;
 
     public CallbackValidator(final Validator validator, final ValidationListener listener, final Object source) {
-        delegateListener = listener;
         delegateValidator = validator;
+        delegateListener = listener;
         this.source = source;
     }
 

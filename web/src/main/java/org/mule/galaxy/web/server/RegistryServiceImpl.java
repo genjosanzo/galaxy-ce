@@ -1125,32 +1125,38 @@ public class RegistryServiceImpl implements RegistryService {
         throws NotFoundException, RegistryException, AccessException {
         if (pd != null && pd.getExtension() != null) {
             if (pd.getExtension() instanceof LinkExtension) {
-            Links links = (Links) existingValue;
-            WLinks wlinks = (WLinks) s;
-            
-            Collection<Link> linkList = new ArrayList<Link>();
-            linkList.addAll(links.getLinks());
-            for (Iterator<LinkInfo> itr = wlinks.getLinks().iterator(); itr.hasNext();) {
-                LinkInfo wl = itr.next();
-                Link l = getLink(linkList, wl);
+                Links links = (Links) existingValue;
+                WLinks wlinks = (WLinks) s;
                 
-                if (l != null) {
-                    linkList.remove(l);
-                } else {
-                    Item linkTo = registry.getItemByPath(wl.getItemName());
+                Collection<Link> linksToRemove = new ArrayList<Link>();
+                Collection<Link> linksToAdd = new ArrayList<Link>();
+                if (links != null) {
+                    linksToRemove.addAll(links.getLinks());
+                }
+                for (Iterator<LinkInfo> itr = wlinks.getLinks().iterator(); itr.hasNext();) {
+                    LinkInfo wl = itr.next();
+                    Link l = getLink(linksToRemove, wl);
                     
-                    Link link = new Link(item, linkTo, null, false);
-                    links.addLinks(link);
+                    if (l != null) {
+                        linksToRemove.remove(l);
+                    } else {
+                        Item linkTo = registry.getItemByPath(wl.getItemName());
+                        
+                        Link link = new Link(item, linkTo, null, false);
+                        linksToAdd.add(link);
+                    }
                 }
-            }
-            
-            if (links != null) {
-                for (Link l : linkList) {
-                    links.removeLinks(l);
+                
+                if (links != null) {
+                    for (Link l : linksToRemove) {
+                        links.removeLinks(l);
+                    }
+                    for (Link l : linksToAdd) {
+                        links.addLinks(l);
+                    }
                 }
-            }
-            
-            return linkList;
+                
+                return linksToAdd;
             }
         } 
         return s;

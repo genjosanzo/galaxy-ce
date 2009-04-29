@@ -25,7 +25,7 @@ import java.util.Collection;
 public class QNameListBox extends AbstractUserModifiableListBox {
 
     public QNameListBox(Collection list) {
-        super(list);
+        super(list, null);
     }
 
     protected boolean isValid(String text) {

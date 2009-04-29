@@ -193,5 +193,10 @@ public class LifecycleRenderer extends AbstractPropertyRenderer {
         return true;
     }
     
+
+    @Override
+    public boolean validate() {
+        return true;
+    }
     
 }

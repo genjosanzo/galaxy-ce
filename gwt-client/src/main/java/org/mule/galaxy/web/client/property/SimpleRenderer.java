@@ -5,14 +5,16 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 
 public class SimpleRenderer extends AbstractPropertyRenderer {
 
-    private TextBox valueTB;
+    private ValidatableTextBox valueTB;
 
     public Widget createEditForm() {
-        valueTB = new TextBox();
-        valueTB.setVisibleLength(50);
+        valueTB = new ValidatableTextBox(new StringNotEmptyValidator());
+        valueTB.getTextBox().setVisibleLength(50);
         valueTB.setText((String) value);
         return valueTB;
     }
@@ -57,6 +59,11 @@ public class SimpleRenderer extends AbstractPropertyRenderer {
         } else {
             return new Label(txt);
         }
+    }
+
+    @Override
+    public boolean validate() {
+        return valueTB.validate();
     }
     
 }

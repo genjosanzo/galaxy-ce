@@ -38,7 +38,9 @@ import org.mule.galaxy.web.client.util.TooltipListener;
 import org.mule.galaxy.web.client.util.WTypeComparator;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableSuggestBox;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 import org.mule.galaxy.web.rpc.WType;
@@ -66,7 +68,7 @@ public class AddItemForm extends AbstractErrorShowingComposite
 
     private FlexTable table;
     private FormPanel form;
-    private TextBox nameBox;
+    private ValidatableTextBox nameBox;
     private ValidatableSuggestBox parentSB;
     private final Galaxy galaxy;
     private String itemId;
@@ -131,8 +133,13 @@ public class AddItemForm extends AbstractErrorShowingComposite
 
     private void setupAddForm() {
 
+        typeChoice = new ListBox();
+        typeChoice.addItem("");
+        table.setWidget(0, 0, new Label("Type:"));
+        table.setWidget(0, 2, typeChoice);
+        
         // note how spacing uses a clear pixel on the second column
-        table.setWidget(0, 0, new Label("Parent:"));
+        table.setWidget(1, 0, new Label("Parent:"));
 
         parentSB = new ValidatableSuggestBox(new StringNotEmptyValidator(),
                                              new ItemPathOracle(galaxy, this));
@@ -140,21 +147,21 @@ public class AddItemForm extends AbstractErrorShowingComposite
         if (item != null) {
             parentSB.setText(item.getPath());
         }
-        table.setWidget(0, 2, parentSB);
+        table.setWidget(1, 2, parentSB);
 
-        table.setWidget(1, 0, new Label("Name:"));
+        table.setWidget(2, 0, new Label("Name:"));
 
         // to control formatting
         final Image spacerimg = new Image("images/clearpixel.gif");
         spacerimg.setWidth("16px");
-        table.setWidget(1, 1, spacerimg);
+        table.setWidget(2, 1, spacerimg);
 
-        nameBox = new TextBox();
-        nameBox.setName("name");
-        table.setWidget(1, 2, nameBox);
+        nameBox = new ValidatableTextBox(new StringNotEmptyValidator());
+        nameBox.getTextBox().setName("name");
+        table.setWidget(2, 2, nameBox);
 
         // warn user if the artifact name does not contain an extention.
-        nameBox.addFocusListener(new FocusListener() {
+        nameBox.getTextBox().addFocusListener(new FocusListener() {
             public void onLostFocus(final Widget sender) {
                 String s = ((TextBox) sender).getText();
                 if (s.length() > 0 && StringUtil.getFileExtension(s).length() == 0) {
@@ -165,9 +172,9 @@ public class AddItemForm extends AbstractErrorShowingComposite
                             "if you want retain the uploaded filename",
                                                                  10000));
 
-                    table.setWidget(1, 1, warnimg);
+                    table.setWidget(2, 1, warnimg);
                 } else {
-                    table.setWidget(1, 1, spacerimg);
+                    table.setWidget(2, 1, spacerimg);
                 }
             }
             public void onFocus(final Widget sender) {
@@ -175,11 +182,6 @@ public class AddItemForm extends AbstractErrorShowingComposite
 
         });
 
-        typeChoice = new ListBox();
-        typeChoice.addItem("");
-        table.setWidget(2, 0, new Label("Type:"));
-        table.setWidget(2, 2, typeChoice);
-        
         galaxy.getRegistryService().getTypes(new AbstractCallback<List<WType>>(this) {
             public void onSuccess(List<WType> wtypes) {
                 Collections.sort(wtypes, new WTypeComparator());
@@ -318,6 +320,19 @@ public class AddItemForm extends AbstractErrorShowingComposite
                 public void onSuccess(Object id) {
                      History.newItem("item/" + id);
                 }
+
+                @Override
+                public void onFailure(Throwable caught) {
+                    resetFormFields();
+                    
+                    if (caught instanceof ItemExistsException) {
+                        setMessage("An item with that name already exists.");
+                        return;
+                    }
+                    
+                    super.onFailure(caught);
+                }
+                
             };
             Map<String,Serializable> properties = new HashMap<String, Serializable>();
             for (String p : renderers.keySet()) {
@@ -402,12 +417,12 @@ public class AddItemForm extends AbstractErrorShowingComposite
         clearErrorMessage();
         boolean v = true;
 
-        if (add) {
-            //v &= nameBox.validate();
-            v &= parentSB.validate();
+        v &= parentSB.validate();
+        v &= nameBox.validate();
+        
+        for (AbstractPropertyRenderer r : renderers.values()) {
+            v &= r.validate();
         }
-
-        v &= nameBox.getText() != null;
         return v;
     }
 

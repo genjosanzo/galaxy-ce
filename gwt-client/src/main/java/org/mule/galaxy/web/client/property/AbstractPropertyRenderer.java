@@ -26,6 +26,8 @@ public abstract class AbstractPropertyRenderer {
     public abstract Widget createViewWidget();
     
     public abstract Object getValueToSave();
+    
+    public abstract boolean validate();
  
     public void save(String itemId, String name, Serializable valueToSave, AbstractCallback saveCallback) {
         galaxy.getRegistryService().setProperty(itemId, 

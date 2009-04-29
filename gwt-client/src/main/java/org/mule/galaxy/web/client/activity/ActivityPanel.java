@@ -18,6 +18,18 @@
 
 package org.mule.galaxy.web.client.activity;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.ItemPathOracle;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WActivity;
+import org.mule.galaxy.web.rpc.WUser;
+
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -34,18 +46,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.event.KeyDownEvent;
 import com.google.gwt.widgetideas.client.event.KeyDownHandler;
 import com.google.gwt.widgetideas.datepicker.client.DateBox;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.EntrySuggestOracle;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WActivity;
-import org.mule.galaxy.web.rpc.WUser;
 
 public class ActivityPanel extends AbstractErrorShowingComposite {
 
@@ -157,7 +157,7 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
         searchTable.setWidget(0, 5, textTB);
 
         searchTable.setWidget(1, 4, new Label("Relating to:"));
-        itemSB = new SuggestBox(new EntrySuggestOracle(galaxy, this));
+        itemSB = new SuggestBox(new ItemPathOracle(galaxy, this));
         itemSB.setText("[All Items]");
         searchTable.setWidget(1, 5, itemSB);
 

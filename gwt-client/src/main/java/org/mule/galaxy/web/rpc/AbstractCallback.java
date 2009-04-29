@@ -35,7 +35,7 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
         if (msg != null || !"".equals(msg)) {
             menuPanel.setMessage("Error communicating with server: " + caught.getMessage() + "");
         } else {
-            menuPanel.setMessage("There was an error communicating with the server. Please try again." + caught.getMessage());
+            menuPanel.setMessage("There was an error communicating with the server. Please try again." + caught.getClass().getName());
         }
     }
 

@@ -10,7 +10,6 @@ import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyException;
-import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.type.PropertyDescriptor;
@@ -58,9 +57,13 @@ public class IdentifiableExtension<T extends Identifiable> extends AbstractExten
         if (value instanceof Collection) {
             ArrayList<String> ids = new ArrayList<String>();
             for (Object o : (Collection)value) {
-                Identifiable i = (Identifiable)o;
-                ensureSaved(i);
-                ids.add(i.getId());
+                if (o instanceof String) {
+                    ids.add((String) o);
+                } else {
+                    Identifiable i = (Identifiable)o;
+                    ensureSaved(i);
+                    ids.add(i.getId());
+                }
             }
             storeValue = ids;
         } else if (value instanceof Identifiable) {

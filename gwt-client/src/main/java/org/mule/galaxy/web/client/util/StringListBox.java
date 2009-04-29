@@ -22,12 +22,18 @@ import com.google.gwt.user.client.Window;
 
 import java.util.Collection;
 
+import org.mule.galaxy.web.client.validation.Validator;
+
 public class StringListBox extends AbstractUserModifiableListBox {
 
     public StringListBox(Collection<String> list) {
-        super(list);
+        super(list, null);
     }
-
+    
+    public StringListBox(Collection<String> list, Validator v) {
+        super(list, v);
+    }
+    
     protected boolean isValid(String text) {
         if ("".equals(text)) {
             Window.alert("You must enter a value!");
@@ -35,5 +41,6 @@ public class StringListBox extends AbstractUserModifiableListBox {
         }
         return true;
     }
+
 
 }

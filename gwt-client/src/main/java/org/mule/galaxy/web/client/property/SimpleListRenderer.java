@@ -1,13 +1,13 @@
 package org.mule.galaxy.web.client.property;
 
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
-
 import java.util.Collection;
 
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.StringListBox;
+
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class SimpleListRenderer extends AbstractPropertyRenderer {
 
@@ -18,6 +18,7 @@ public class SimpleListRenderer extends AbstractPropertyRenderer {
     public Widget createEditForm() {
         listBoxPanel = new SimplePanel();
         listBox = new StringListBox((Collection<String>) value);
+        
         listBoxPanel.add(listBox);
         return listBoxPanel;
     }
@@ -45,6 +46,11 @@ public class SimpleListRenderer extends AbstractPropertyRenderer {
 
     public Object getValueToSave() {
         return listBox.getItems();
+    }
+
+    @Override
+    public boolean validate() {
+        return listBox.validate();
     }
 
 }

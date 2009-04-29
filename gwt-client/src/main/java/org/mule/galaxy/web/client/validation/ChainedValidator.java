@@ -43,19 +43,9 @@ public class ChainedValidator implements Validator {
         this.validatorChain.addAll(validatorChain);
     }
 
-    public ChainedValidator(final Validator v1) {
-        validatorChain.add(v1);
-    }
-
-    public ChainedValidator(final Validator v1, final Validator v2) {
-        validatorChain.add(v1);
-        validatorChain.add(v2);
-    }
-
-    public ChainedValidator(final Validator v1, final Validator v2, final Validator v3) {
-        validatorChain.add(v1);
-        validatorChain.add(v2);
-        validatorChain.add(v3);
+    public ChainedValidator(final Validator... validators) {
+        for (Validator v : validators)
+            validatorChain.add(v);
     }
 
 
