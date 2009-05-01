@@ -130,20 +130,17 @@ public class ItemCollection
             addMetadata(item, atomEntry, request);
         }
         
-        List<org.mule.galaxy.type.Type> allowed = item.getType().getAllowedChildren();
-        if (allowed != null && allowed.size() > 0) {
-            org.apache.abdera.model.Collection col = factory.newCollection();
-            col.setAttributeValue("id", "versions");
-            
-            String href = getRelativeLink(request, item).toString();
-            if (item.getType().inheritsFrom(TypeManager.ARTIFACT)) {
-                href += ";children";
-            }
-            
-            col.setHref(href);
-            col.setTitle("Child Items");
-            atomEntry.addExtension(col);
+        org.apache.abdera.model.Collection col = factory.newCollection();
+        col.setAttributeValue("id", "versions");
+        
+        String href = getRelativeLink(request, item).toString();
+        if (item.getType().inheritsFrom(TypeManager.ARTIFACT)) {
+            href += ";children";
         }
+        
+        col.setHref(href);
+        col.setTitle("Child Items");
+        atomEntry.addExtension(col);
         
         return link;
     }

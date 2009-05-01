@@ -23,7 +23,7 @@ public class WorkspaceTest extends AbstractAtomTest {
     }
     
     public void testWorkspaceManipulation() throws Exception {
-        testWorkspace("http://localhost:9002/api/registry/Default%20Workspace", "/api/registry/Default%20Workspace", 6);
+        testWorkspace("http://localhost:9002/api/registry/Default%20Workspace", "/api/registry/Default%20Workspace", 5);
     }
     
     private void testWorkspace(String dwBase, String relBase, int entries)
@@ -50,7 +50,7 @@ public class WorkspaceTest extends AbstractAtomTest {
         Document<Entry> entryDoc = res.getDocument();
         entry = entryDoc.getRoot();
         assertEquals("MyWorkspace", entry.getTitle());
-        
+        prettyPrint(entry);
         Collection itemsResponse = null;
         for (Element e : entry.getExtensions()) {
             if (e instanceof Collection) {

@@ -90,7 +90,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         org.apache.abdera.model.Document<Feed> feedDoc = res.getDocument();
         Feed feed = feedDoc.getRoot();
         List<Entry> entries = feed.getEntries();
-        assertEquals(7, entries.size());
+        assertEquals(6, entries.size());
         
         Entry e = null;
         for (Entry e2 : entries) {
@@ -109,7 +109,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         feed = feedDoc.getRoot();
         
         entries = feed.getEntries();
-        assertEquals(7, entries.size());
+        assertEquals(6, entries.size());
         
         // Grab the feed for the workspace
         res = client.get(UrlEncoding.encode(defaultWkspcCol, Profile.PATH.filter()), defaultOpts);
@@ -118,7 +118,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         feed = feedDoc.getRoot();
         
         entries = feed.getEntries();
-        assertEquals(7, entries.size());
+        assertEquals(6, entries.size());
         
         // get the individual entry
         System.out.println("Getting entry " + e.getEditLinkResolvedHref().toString());
