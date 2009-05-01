@@ -16,7 +16,7 @@ public class GalaxyConfigurationBuilderTest extends AbstractAtomTest
 
     public void testMuleConfig() throws Exception
     {
-        String configURL = "http://admin:admin@localhost:9002/api/registry?q=select artifact where mule2.model = 'helloSample'";
+        String configURL = "http://admin:admin@localhost:9002/api/registry?q=select where mule.model = 'helloSample'";
 
         GalaxyConfigurationBuilder builder = new GalaxyConfigurationBuilder(configURL);
         context = new DefaultMuleContextFactory().createMuleContext(builder);
@@ -47,7 +47,6 @@ public class GalaxyConfigurationBuilderTest extends AbstractAtomTest
         assertNotNull(context.getRegistry().lookupService("ChitChatUMO"));
 
     }
-
 
     @Override
     protected void tearDown() throws Exception

@@ -226,6 +226,38 @@ public class SearchTest extends AbstractGalaxyTest {
         property = properties.get("contacts.name");
         assertEquals("Contacts - Name", property);
     }
+    
+    public void testMapSearch() throws Exception {
+        PropertyDescriptor pd = new PropertyDescriptor();
+        pd.setDescription("Config Properties");
+        pd.setProperty("config.properties");
+        
+        Extension ext = registry.getExtension("mapExtension");
+        pd.setExtension(ext);
+        
+        typeManager.savePropertyDescriptor(pd);
+        
+        Item i = registry.newItem("test", getSimpleType()).getItem();
+        
+        Map<String,String> properties = new HashMap<String,String>();
+        properties.put("foo", "bar");
+        properties.put("qoo", "qar");
+        
+        i.setProperty(pd.getProperty(), properties);
+        registry.save(i);
+        
+        Set<Item> results = registry.search("select where config.properties.key = 'foo'", 0, 100).getResults();
+        assertEquals(1, results.size());
+        
+        results = registry.search("select where config.properties.key like 'oo'", 0, 100).getResults();
+        assertEquals(1, results.size());
+        
+        results = registry.search("select where config.properties.values = 'bar'", 0, 100).getResults();
+        assertEquals(1, results.size());
+        
+        results = registry.search("select where config.properties.key in ('foo')", 0, 100).getResults();
+        assertEquals(1, results.size());
+    }
 //    
 //    public void testExtensionQueries() throws Exception {
 //        Item root = registry.getItems().iterator().next();

@@ -215,6 +215,23 @@
     <property name="template" ref="jcrTemplate"/>
     <property name="registry" ref="registry"/>
   </bean>
+      
+  <bean id="mapExtension" class="org.mule.galaxy.impl.extension.SimpleExtension">
+    <property name="id" value="mapExtension"/>
+    <property name="name" value="Map"/>
+    <property name="multivalueSupported" value="false"/>
+    <property name="queryProperties">
+      <map>
+        <entry key="key" value="Key"/>
+        <entry key="value" value="Value"/>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="mapQueryBuilder" class="org.mule.galaxy.impl.extension.MapQueryBuilder">
+    <property name="typeManager" ref="typeManager"/>
+    <property name="extension" ref="mapExtension"/>
+  </bean>
   
   <bean id="userExtension" class="org.mule.galaxy.impl.extension.IdentifiableExtension">
     <property name="dao" ref="userManager"/>

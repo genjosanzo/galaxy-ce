@@ -13,7 +13,8 @@ public abstract class AbstractPropertyRenderer {
     protected ErrorPanel errorPanel;
     protected Object value;
     protected boolean bulkEdit;
-
+    protected boolean editSupported = true;
+    
     public void initialize(Galaxy galaxy, ErrorPanel errorPanel, Object value, boolean bulkEdit) {
         this.galaxy = galaxy;
         this.errorPanel = errorPanel;
@@ -34,6 +35,10 @@ public abstract class AbstractPropertyRenderer {
                                                 name, 
                                                 valueToSave, 
                                                 saveCallback);
+    }
+
+    public boolean isEditSupported() {
+        return editSupported;
     }
     
 }

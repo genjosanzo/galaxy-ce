@@ -145,6 +145,26 @@ public class ItemCollection
         return link;
     }
 
+    /**
+     * Media entries have a special content link with ?version syntax.
+     */
+    @Override
+    protected String addMediaContent(IRI feedIri, Entry entry, Item entryObj, RequestContext request)
+            throws ResponseContextException {
+        String name = getMediaName(entryObj);
+
+        String mediaLink = feedIri.toString() + "?version=" + name;
+        
+        Content content = factory.newContent();
+        content.setSrc(mediaLink);
+        content.setMimeType(getContentType(entryObj));
+        entry.setContentElement(content);
+        
+        entry.addLink(mediaLink, "edit-media");
+        
+        return mediaLink;
+    }
+
     protected void addMetadata(Item entryObj, Entry atomEntry, RequestContext request) {
         boolean showHidden = BooleanUtils.toBoolean(request.getParameter("showHiddenProperties"));
         
@@ -309,7 +329,17 @@ public class ItemCollection
         }
         return version;
     }
-
+    
+    @Override
+    public String getHref(RequestContext request) {
+        String href = (String) request.getAttribute(Scope.REQUEST, ItemResolver.COLLECTION_HREF);
+        if (href == null) {
+            // this is the url we use when pulling down the services document
+            href = request.getTargetBasePath() + "/registry";
+        }
+        return href;
+    }
+    
     @Override
     public boolean isMediaEntry(Item entry) {
         return entry.getType().inheritsFrom(TypeManager.ARTIFACT_VERSION);
@@ -326,17 +356,7 @@ public class ItemCollection
     public String getMediaName(Item item) {
         return UrlEncoding.encode(item.getName());
     }
-
-    @Override
-    public String getHref(RequestContext request) {
-        String href = (String) request.getAttribute(Scope.REQUEST, ItemResolver.COLLECTION_HREF);
-        if (href == null) {
-            // this is the url we use when pulling down the services document
-            href = request.getTargetBasePath() + "/registry";
-        }
-        return href;
-    }
-
+    
     public String getId(Item item) {
         return ID_PREFIX + item.getId();
     }

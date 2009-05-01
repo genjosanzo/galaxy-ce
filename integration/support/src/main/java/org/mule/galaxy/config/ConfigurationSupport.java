@@ -23,6 +23,8 @@ import org.apache.abdera.model.Feed;
 import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
+import org.apache.abdera.writer.Writer;
+import org.apache.abdera.writer.WriterFactory;
 import org.apache.axiom.om.util.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -99,6 +101,12 @@ public class ConfigurationSupport
     private Resource[] getResourcesFromFeed(ClientResponse res, String url, RequestOptions opts)
         throws IOException {
         Document<Feed> feedDoc = res.getDocument();
+        
+        WriterFactory writerFactory = Abdera.getInstance().getWriterFactory();
+        Writer writer = writerFactory.getWriter("prettyxml");
+        writer.writeTo(feedDoc, System.out);
+        System.out.println();
+        
         List<Entry> entries = feedDoc.getRoot().getEntries();
         if (entries.size() == 0)
         {
@@ -112,6 +120,7 @@ public class ConfigurationSupport
             Entry entry = entryIterator.next();
             // GET the actual artifact doc
             String artifactUrlLink = entry.getContentSrc().toString();
+            
             res = client.get(artifactUrlLink, opts);
             if (res.getStatus() == 200)
             {

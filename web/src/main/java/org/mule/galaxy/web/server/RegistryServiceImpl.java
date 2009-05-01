@@ -973,7 +973,8 @@ public class RegistryServiceImpl implements RegistryService {
             
             return toWeb(links, p.getPropertyDescriptor());
         } else if (ext instanceof ArtifactExtension) {
-            return item.getPath() + "?property=" + p.getName();
+            return getLink(contextPathResolver.getContextPath() + "/api/registry", item) 
+                + "?version=" + item.getName();
         } else {
             Object internalValue = p.getInternalValue();
             

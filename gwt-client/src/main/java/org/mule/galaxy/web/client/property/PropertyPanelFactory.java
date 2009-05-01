@@ -13,6 +13,10 @@ public class PropertyPanelFactory {
             return new LinksRenderer();
         } else if ("userExtension".equals(ext)) {
             return new UserListRenderer();
+        } else if ("mapExtension".equals(ext)) {
+            return new MapRenderer();
+        } else if ("artifactExtension".equals(ext)) {
+            return new ArtifactRenderer();
         } else if (multivalued) {
             return new SimpleListRenderer();
         } else {
