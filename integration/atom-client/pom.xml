@@ -13,6 +13,7 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-core</artifactId>
+            <version>${version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.servlet</groupId>
@@ -29,11 +30,13 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-web</artifactId>
+            <version>${version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-core</artifactId>
+            <version>${version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -41,6 +44,7 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-web</artifactId>
+            <version>${version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -48,6 +52,7 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-testutils</artifactId>
+            <version>${version}</version>
             <scope>test</scope>
         </dependency>
 
