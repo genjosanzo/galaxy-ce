@@ -7,17 +7,17 @@ public class RegistryIndexesLookupTest extends AbstractConfigLookupTest
 {
     public void testLookupByBeanId() throws Exception
     {
-        doLookup("select artifact where spring.bean = 'TestObject1'", 1);
+        doLookup("select where spring.bean = 'TestObject1'", 1);
     }
 
     public void testLookupByBeanName() throws Exception
     {
-        doLookup("select artifact where spring.bean = 'TestObject2'", 1);
+        doLookup("select where spring.bean = 'TestObject2'", 1);
     }
 
 
     public void testLookupByDescription() throws Exception
     {
-        doLookup("select artifact where spring.description = 'Test Spring Application Context'", 1);
+        doLookup("select where spring.description = 'Test Spring Application Context'", 1);
     }
 }

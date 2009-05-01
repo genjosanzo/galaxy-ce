@@ -23,7 +23,7 @@ public class GalaxyApplicationContextTest extends AbstractAtomTest
 
     public void testMuleConfig() throws Exception
     {
-        String configURL = "http://admin:admin@localhost:9002/api/registry?q=select artifact where spring.bean = 'TestObject1'";
+        String configURL = "http://admin:admin@localhost:9002/api/registry?q=select where spring.bean = 'TestObject1'";
 
         context = new GalaxyApplicationContext(new URL(configURL));
 
