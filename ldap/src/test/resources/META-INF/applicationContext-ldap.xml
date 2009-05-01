@@ -24,7 +24,7 @@
       <property name="searchSubtree" value="true"/>
     </bean>
     
-    <bean id="userManagerTarget"
+    <bean id="userManager"
           class="org.mule.galaxy.security.ldap.LdapUserManager"
           init-method="initialize">
       <property name="initialDirContextFactory" ref="initialDirContextFactory"/>
