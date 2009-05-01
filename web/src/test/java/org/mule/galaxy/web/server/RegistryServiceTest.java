@@ -121,10 +121,11 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         // test links
         System.out.println(wsdl.getPath());
         Collection<ItemInfo> items = gwtRegistry.getItems(wsdl.getId());
-        assertEquals(1, items.size());
         ItemInfo av = items.iterator().next();
-        System.out.println(av.getPath());
-        assertEquals("1.0", av.getName());
+        assertEquals(1, items.size());
+
+        av = av.getItem("hello.wsdl").getItem("0.1");
+        assertNotNull(av);
         
         av = gwtRegistry.getItemInfo(av.getId(), true);
         WProperty prop = av.getProperty("depends");

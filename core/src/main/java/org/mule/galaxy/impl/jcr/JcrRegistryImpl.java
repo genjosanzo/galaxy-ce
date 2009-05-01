@@ -221,7 +221,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         return wm;
     }
 
-    public void save(Item i) throws AccessException, RegistryException, PolicyException {
+    public void save(Item i) throws AccessException, RegistryException, PolicyException, PropertyException {
         getWorkspaceManagerByItemId(i.getId()).save(i);
     }
 
@@ -418,8 +418,28 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
             }
         }
     }
+
+    private Object executeMove(JcrCallback jcrCallback) 
+        throws RegistryException, AccessException, NotFoundException, PolicyException {
+        try {
+            return execute(jcrCallback);
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RegistryException) {
+                throw (RegistryException) cause;
+            } else if (cause instanceof NotFoundException) {
+                throw (NotFoundException) cause;
+            } else if (cause instanceof AccessException) {
+                throw (AccessException) cause;
+            } else if (cause instanceof PolicyException) {
+                throw (PolicyException) cause;
+            } else {
+                throw e;
+            }
+        }
+    }
     
-    public void move(final Item item, final String newWorkspacePath, final String newName) throws RegistryException, AccessException, NotFoundException, PolicyException {
+    public void move(final Item item, final String newWorkspacePath, final String newName) throws RegistryException, AccessException, NotFoundException, PolicyException, PropertyException {
         boolean wasRenamed = false;
         boolean wasMoved = false;
         final String oldPath = item.getPath();
@@ -442,12 +462,14 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
             // only if workspace changed
             if (!item.getParent().getId().equals(parent.getId())) {
 
-                execute(new JcrCallback() {
+                executeMove(new JcrCallback() {
                     public Object doInJcr(Session session) throws IOException, RepositoryException {
 
                         Node childNode = ((JcrItem) item).getNode();
                         Node parentNode = ((JcrItem) parent).getNode();
 
+                        JcrWorkspaceManagerImpl.approveChild(parent, item);
+                        
                         final String newPath = parentNode.getPath() + "/" + childNode.getName();
                         session.move(childNode.getPath(), newPath);
 
@@ -713,6 +735,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         
         base.append(itemQuery);
         base.append("[@jcr:primaryType='galaxy:item']");
+        
         return base.toString();
     }
 

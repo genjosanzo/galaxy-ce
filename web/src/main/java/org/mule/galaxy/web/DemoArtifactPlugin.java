@@ -32,9 +32,8 @@ public class DemoArtifactPlugin extends AbstractArtifactPlugin {
     public void doInstall() throws Exception {
         Item w = registry.getItems().iterator().next();
         
-        add(w, "hello-config.xml", "/mule/hello-config.xml");
         add(w, "applicationContext.xml", "/spring/test-applicationContext.xml");
-        add(w, "hello-config-mule2.xml", "/mule2/hello-config.xml");
+        add(w, "hello-config.xml", "/mule2/hello-config.xml");
         add(w, "hello.xsd", "/wsdl/imports/hello.xsd");
         add(w, "hello-portType.wsdl", "/wsdl/imports/hello-portType.wsdl");
         add(w, "hello.wsdl", "/wsdl/imports/hello.wsdl");   

@@ -202,6 +202,10 @@ public class JcrItem extends AbstractItem {
         }
     }
 
+    public void verifyConformance() throws PropertyException {
+        verifyConformance(getType());
+    }
+
     private void verifyConformance(Type t) throws PropertyException {
         Set<Type> verified = new HashSet<Type>();
         verifyConformance(t, verified);

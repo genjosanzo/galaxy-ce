@@ -59,6 +59,7 @@ import org.mule.galaxy.collab.Comment;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.extension.Extension;
+import org.mule.galaxy.impl.artifact.ArtifactExtension;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.impl.link.LinkExtension;
 import org.mule.galaxy.index.Index;
@@ -230,11 +231,13 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             Item item;
             Map<String, Object> localProperties = new HashMap<String, Object>();
-            for (Map.Entry<String, Serializable> e : properties.entrySet()) {
-                String name = e.getKey();
-                PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(name);
-                
-                localProperties.put(name, getLocalValue(pd, e.getValue(), null, null));
+            if (properties != null) {
+                for (Map.Entry<String, Serializable> e : properties.entrySet()) {
+                    String name = e.getKey();
+                    PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(name);
+                    
+                    localProperties.put(name, getLocalValue(pd, e.getValue(), null, null));
+                }
             }
             
             if (parentPath == null || "".equals(parentPath)) {
@@ -930,8 +933,8 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     @SuppressWarnings("unchecked")
-    private void populateProperties(Item av, ItemInfo vi, boolean showHidden) {
-        for (PropertyInfo p : av.getProperties()) {
+    private void populateProperties(Item item, ItemInfo vi, boolean showHidden) {
+        for (PropertyInfo p : item.getProperties()) {
             if (!showHidden && !p.isVisible()) {
                 continue;
             }
@@ -939,7 +942,7 @@ public class RegistryServiceImpl implements RegistryService {
             PropertyDescriptor pd = p.getPropertyDescriptor();
             Extension ext = pd != null ? pd.getExtension() : null;
             
-            Object val = toWeb(p, ext);
+            Object val = toWeb(item, p, ext);
 
             String desc = p.getDescription();
             if (desc == null) {
@@ -964,11 +967,13 @@ public class RegistryServiceImpl implements RegistryService {
         });
     }
 
-    private Object toWeb(PropertyInfo p, Extension ext) {
+    private Object toWeb(Item item, PropertyInfo p, Extension ext) {
         if (ext instanceof LinkExtension) {
             Links links = (Links) p.getValue();
             
             return toWeb(links, p.getPropertyDescriptor());
+        } else if (ext instanceof ArtifactExtension) {
+            return item.getPath() + "?property=" + p.getName();
         } else {
             Object internalValue = p.getInternalValue();
             
@@ -1485,6 +1490,8 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (PolicyException e) {
             throw toWeb(e);
+        } catch (PropertyException e) {
+            throw new RPCException(e.getMessage());
         }
     }
 

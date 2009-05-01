@@ -7,6 +7,7 @@ import java.util.Map;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NewItemResult;
 import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.SearchResults;
@@ -38,6 +39,31 @@ public class ItemTest extends AbstractGalaxyTest {
         assertNotNull(e);
 
         assertEquals("/Default Workspace/MyService/1.0", e.getPath());
+    }
+    
+    public void testAllowedChildren() throws Exception {
+        Item root = registry.getItems().iterator().next();
+        assertEquals("/Default Workspace", root.getPath());
+        
+        NewItemResult r = root.newItem("MyService", typeManager.getType(TypeManager.VERSIONED));
+        assertNotNull(r);
+    
+        Item svc = r.getItem();
+        assertNotNull(svc);
+    
+        Type simpleType = getSimpleType();
+        try {
+            svc.newItem("1.0", simpleType);
+            fail("this type is not allowed here");
+        } catch (PolicyException ex) {
+        }
+        
+        Item child = root.newItem("1.0", simpleType).getItem();
+        try {
+            registry.move(child, svc.getPath(), "1.0");
+            fail("this type is not allowed here");
+        } catch (PolicyException ex) {
+        }
     }
     
     public void testTypeRequirements() throws Exception {

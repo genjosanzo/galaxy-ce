@@ -12,7 +12,8 @@
       <property name="cacheProviderFacade" ref="threadLocalCacheProvider" />
       <property name="cachingModels">
         <props>
-          <prop key="org.mule.galaxy.type.TypeManager.get*"></prop>
+          <prop key="org.mule.galaxy.type.TypeManager.getProp*"/>
+          <prop key="org.mule.galaxy.type.TypeManager.getType*"/>
         </props>
       </property>
     </bean>

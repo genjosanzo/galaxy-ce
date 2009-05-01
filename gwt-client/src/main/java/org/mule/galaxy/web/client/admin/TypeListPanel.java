@@ -40,7 +40,7 @@ public class TypeListPanel
     public void onShow() {
         super.onShow();
         
-        final FlexTable table = createTitledRowTable(panel, "Properties");
+        final FlexTable table = createTitledRowTable(panel, "Types");
         
         table.setText(0, 0, "Name");
         table.setText(0, 1, "Mixins");

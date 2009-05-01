@@ -88,7 +88,7 @@ public class TypeManagerImpl implements TypeManager {
     public Type getType(String id) throws NotFoundException {
         return typeDao.get(id);
     }
-
+    
     public Type getDefaultType() {
         return typeDao.listAll().get(0);
     }

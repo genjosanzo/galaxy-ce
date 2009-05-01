@@ -190,6 +190,17 @@ public class ItemInfo implements IsSerializable {
     public void setItems(Collection<ItemInfo> items) {
         this.items = items;
     }
+
+    public ItemInfo getItem(String name) {
+        if (items == null) return null;
+        
+        for (ItemInfo i : items) {
+            if (name.equals(i.getName())) {
+                return i;
+            }
+        }
+        return null;
+    }
     
 }
 

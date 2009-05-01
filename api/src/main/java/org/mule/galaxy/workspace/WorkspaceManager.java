@@ -33,7 +33,7 @@ public interface WorkspaceManager {
 
     void delete(Item item) throws RegistryException, AccessException;
 
-    void save(Item item) throws RegistryException, AccessException, PolicyException;
+    void save(Item item) throws RegistryException, AccessException, PolicyException, PropertyException;
 
     NewItemResult newItem(Item parent, String name, Type type, Map<String,Object> initialProperties)
     	throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException;

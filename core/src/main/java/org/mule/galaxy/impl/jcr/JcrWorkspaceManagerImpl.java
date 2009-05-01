@@ -317,6 +317,8 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
                     initializeLifecycle(item);
                     
                     item.setType(type);
+
+                    approveChild(parent, item);
                     
                     Map<Item, List<ApprovalMessage>> approvals = policyManager.approve(item);
 
@@ -359,7 +361,27 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
                 }
             }
         });
-	}
+    }
+
+    public static void approveChild(final Item parent, Item child) {
+        // Ensure that this type is allowed here
+        if (parent == null) return;
+        
+        List<Type> allowedChildren = parent.getType().getAllowedChildren();
+        if (allowedChildren != null && allowedChildren.size() > 0) {
+            boolean found = false;
+            for (Type t : allowedChildren) {
+                if (child.getType().inheritsFrom(t.getName())) {
+                    found = true;
+                    break;
+                }
+            }
+            
+            if (!found) {
+                throw new RuntimeException(new PolicyException(child, "This type is not allowed as a child of " + parent.getType().getName()));
+            }
+        }
+    }
 
     protected void initializeLifecycle(Item item) {
         Lifecycle lifecycle = item.getDefaultLifecycle();
@@ -405,12 +427,13 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
         });
     }
     
-    public void save(Item i) throws AccessException, RegistryException, PolicyException {
+    public void save(Item i) throws AccessException, RegistryException, PolicyException, PropertyException {
         accessControlManager.assertAccess(Permission.MODIFY_ITEM, i);
         
         // Check that this is OK with the policies!
         getPolicyManager().approve(i);
-
+        ((JcrItem) i).verifyConformance();
+        
         template.execute(new JcrCallback() {
 
             public Object doInJcr(Session session) throws IOException, RepositoryException {
