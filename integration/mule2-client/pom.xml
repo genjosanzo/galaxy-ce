@@ -24,6 +24,12 @@
 
         <dependency>
             <groupId>org.mule.galaxy</groupId>
+            <artifactId>galaxy-api</artifactId>
+            <version>${version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-core</artifactId>
             <version>${version}</version>
             <scope>test</scope>
@@ -70,32 +76,6 @@
                 <exclusion>
                     <groupId>xml-apis</groupId>
                     <artifactId>xmlParserAPIs</artifactId>
-                </exclusion>
-                
-                <!-- We already have tehse on the classpath -->
-                <exclusion>
-                    <groupId>commons-lang</groupId>
-                    <artifactId>commons-lang.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-codec</groupId>
-                    <artifactId>commons-codec.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-collections</groupId>
-                    <artifactId>commons-collections.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-io</groupId>
-                    <artifactId>commons-io.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-httpclient</groupId>
-                    <artifactId>commons-httpclient.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.activation</groupId>
-                    <artifactId>activation</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
