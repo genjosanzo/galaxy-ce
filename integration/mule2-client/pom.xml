@@ -105,58 +105,6 @@
             <artifactId>mule-example-hello</artifactId>
             <version>${muleVersion}</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-jdk14</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>jcl104-over-slf4j</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>jetty</groupId>
-                    <artifactId>org.mortbay.jetty</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>xerces</groupId>
-                    <artifactId>xmlParserAPIs</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>xml-apis</groupId>
-                    <artifactId>xmlParserAPIs</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-                
-                <!-- We already have tehse on the classpath -->
-                <exclusion>
-                    <groupId>commons-lang</groupId>
-                    <artifactId>commons-lang.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-codec</groupId>
-                    <artifactId>commons-codec.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-collections</groupId>
-                    <artifactId>commons-collections.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-io</groupId>
-                    <artifactId>commons-io.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-httpclient</groupId>
-                    <artifactId>commons-httpclient.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.activation</groupId>
-                    <artifactId>activation</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -164,42 +112,6 @@
             <artifactId>mule-transport-vm</artifactId>
             <version>${muleVersion}</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-jdk14</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>jcl104-over-slf4j</artifactId>
-                </exclusion>
-                
-                <!-- We already have tehse on the classpath -->
-                <exclusion>
-                    <groupId>commons-lang</groupId>
-                    <artifactId>commons-lang.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-codec</groupId>
-                    <artifactId>commons-codec.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-collections</groupId>
-                    <artifactId>commons-collections.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-io</groupId>
-                    <artifactId>commons-io.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-httpclient</groupId>
-                    <artifactId>commons-httpclient.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.activation</groupId>
-                    <artifactId>activation</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -207,38 +119,6 @@
             <artifactId>mule-transport-stdio</artifactId>
             <version>${muleVersion}</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>jcl104-over-slf4j</artifactId>
-                </exclusion>
-                
-                <!-- We already have tehse on the classpath -->
-                <exclusion>
-                    <groupId>commons-lang</groupId>
-                    <artifactId>commons-lang.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-codec</groupId>
-                    <artifactId>commons-codec.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-collections</groupId>
-                    <artifactId>commons-collections.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-io</groupId>
-                    <artifactId>commons-io.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-httpclient</groupId>
-                    <artifactId>commons-httpclient.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.activation</groupId>
-                    <artifactId>activation</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -262,35 +142,84 @@
                     <groupId>xml-apis</groupId>
                     <artifactId>xmlParserAPIs</artifactId>
                 </exclusion>
-                
-                <!-- We already have tehse on the classpath -->
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-jms</artifactId>
+            <version>${muleVersion}</version>
+            <optional>true</optional>
+            <exclusions>
                 <exclusion>
-                    <groupId>commons-lang</groupId>
-                    <artifactId>commons-lang.osgi</artifactId>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>commons-codec</groupId>
-                    <artifactId>commons-codec.osgi</artifactId>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jcl104-over-slf4j</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>commons-collections</groupId>
-                    <artifactId>commons-collections.osgi</artifactId>
+                    <groupId>xerces</groupId>
+                    <artifactId>xmlParserAPIs</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>commons-io</groupId>
-                    <artifactId>commons-io.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-httpclient</groupId>
-                    <artifactId>commons-httpclient.osgi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.activation</groupId>
-                    <artifactId>activation</artifactId>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xmlParserAPIs</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-jdbc</artifactId>
+            <version>${muleVersion}</version>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jcl104-over-slf4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xmlParserAPIs</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xmlParserAPIs</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-functional</artifactId>
+            <version>${muleVersion}</version>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jcl104-over-slf4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xmlParserAPIs</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xmlParserAPIs</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-testutils</artifactId>

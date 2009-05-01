@@ -102,7 +102,7 @@ public class GalaxyConfigurationBuilder extends AbstractConfigurationBuilder
         }
     }
 
-	protected void applyLifecycle(LifecycleManager arg0) throws Exception {
-	}
+    protected void applyLifecycle(LifecycleManager arg0) throws Exception {
+    }
     
 }
