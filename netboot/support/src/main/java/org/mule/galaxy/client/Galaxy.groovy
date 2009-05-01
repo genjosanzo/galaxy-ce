@@ -40,7 +40,7 @@ class Galaxy {
     String username = 'admin'
     String password = 'admin'
 
-    boolean debug = true
+    boolean debug = false
 
     def methods = [
             get: { path ->
