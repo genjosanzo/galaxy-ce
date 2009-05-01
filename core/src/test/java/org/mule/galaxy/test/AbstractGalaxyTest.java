@@ -175,7 +175,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     }
 
     protected Item importHelloMule() throws Exception {
-        InputStream helloWsdl = getResourceAsStream("/mule/hello-config.xml");
+        InputStream helloWsdl = getResourceAsStream("/mule2/hello-config.xml");
         
         return importFile(helloWsdl, "hello-config.xml", "0.1", "application/xml");
     }

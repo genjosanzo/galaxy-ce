@@ -282,12 +282,12 @@ public class LinkTest extends AbstractGalaxyTest {
     
     public void testDelete() throws Exception{
 
-        Item a1 = importFile(getResourceAsStream("/mule/hello-config.xml"), 
+        Item a1 = importFile(getResourceAsStream("/mule2/hello-config.xml"), 
                                "a1.xml", 
                                "0.1",
                                "application/xml");
 
-        Item a2 = importFile(getResourceAsStream("/mule/hello-config.xml"), 
+        Item a2 = importFile(getResourceAsStream("/mule2/hello-config.xml"), 
                                "a2.xml", 
                                "0.1",
                                "application/xml");
