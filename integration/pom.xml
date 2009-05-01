@@ -19,6 +19,7 @@
     </licenses>
 
     <modules>
+        <module>atom-client</module>
         <module>support</module>
         <module>mule2-client</module>
         <module>cxf</module>
