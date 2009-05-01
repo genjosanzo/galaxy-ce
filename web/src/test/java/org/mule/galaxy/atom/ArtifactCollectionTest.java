@@ -78,7 +78,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         res = client.post(defaultWkspcCol, getWsdl(), opts);
         assertEquals(201, res.getStatus());
         
-        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl/0.1", 
+        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl?version=0.1", 
                      res.getLocation().toString());
         res.release();
         
@@ -145,7 +145,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals(1, entries.size());
         
         Entry historyEntry = entries.get(0);
-        assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl/0.1",
+        assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl?version=0.1",
                      historyEntry.getContentSrc().toString());
         res.release();
         
@@ -191,7 +191,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         // post is what should work instead
         res = client.post(colUri.toString() + "/Default%20Workspace/hello_world.wsdl", getWsdl(), opts);
         assertEquals(201, res.getStatus());
-        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl/0.2", res.getLocation().toString());
+        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl?version=0.2", res.getLocation().toString());
         res.release();
         
         // Get the entry
@@ -201,8 +201,8 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
 
         e = assertAndGetEntry(res, 200);
         assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl/0.2;atom", e.getEditLink().getHref().toString());
-        assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl/0.2", e.getContentSrc().toString());
-        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl/0.2", 
+        assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl?version=0.2", e.getContentSrc().toString());
+        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl?version=0.2", 
                      e.getLink("edit-media").getHref().toString());
         Element info = e.getExtension(new QName(ItemCollection.NAMESPACE, "item-info"));
         assertNotNull(info);
@@ -303,7 +303,7 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         ClientResponse res = client.post(collection + "/Default%20Workspace", getWsdl(), opts);
         assertEquals(201, res.getStatus());
         
-        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl/0.1", 
+        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl?version=0.1", 
                      res.getLocation().toString());
         res.release();
         

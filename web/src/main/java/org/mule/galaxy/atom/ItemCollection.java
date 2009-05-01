@@ -153,7 +153,13 @@ public class ItemCollection
             throws ResponseContextException {
         String name = getMediaName(entryObj);
 
-        String mediaLink = feedIri.toString() + "?version=" + name;
+        // Do this to get rid of the trailing slash
+        String feedIriStr = feedIri.toString();
+        if (feedIriStr.endsWith("/")) {
+            feedIriStr = feedIriStr.substring(0, feedIriStr.length()-1);
+        }
+        
+        String mediaLink = feedIriStr + "?version=" + name;
         
         Content content = factory.newContent();
         content.setSrc(mediaLink);
@@ -354,7 +360,7 @@ public class ItemCollection
     
     @Override
     public String getMediaName(Item item) {
-        return UrlEncoding.encode(item.getName());
+        return UrlEncoding.encode(item.getName(), Profile.PATH.filter());
     }
     
     public String getId(Item item) {
