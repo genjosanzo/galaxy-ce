@@ -139,12 +139,18 @@ public class ItemResolver implements Resolver<Target> {
         String method = context.getMethod();
         boolean isArtifact = item.getType().inheritsFrom(TypeManager.ARTIFACT);
         if (isArtifact && (classifier != null || !"POST".equals(method))) {
-            item = selectVersion(item, context);
+            Item child = selectVersion(item, context);
+            
+            // this is when we refer to an artifact without a ?version=foo
+            if (item == child && classifier == null) {
+                item = getLatestOrDefault(item);
+            } else {
+                item = child;
+            }
             
             if (item == null) {
                 return returnUnknownLocation(context);
             }
-
         }
         
         context.setAttribute(ITEM, item);
@@ -196,8 +202,16 @@ public class ItemResolver implements Resolver<Target> {
         String version = context.getParameter("version");
         if (version != null && !"".equals(version)) {
             return i.getItem(version);
-        }
+        } 
         return i;
+    }
+
+    private Item getLatestOrDefault(Item i) throws RegistryException {
+        Item def = (Item) i.getProperty(TypeManager.DEFAULT_VERSION);
+        if (def == null) {
+            return i.getLatestItem();
+        }
+        return def;
     }
     private String getPathWithoutArtifact(RequestContext context) {
         String s = context.getTargetPath();

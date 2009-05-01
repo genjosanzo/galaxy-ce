@@ -29,7 +29,7 @@ import org.springframework.core.io.Resource;
  * A Mule Configuration Builder used for configuring a Mule instance from a Galaxy Registry URL. The can include Login
  * credentials, the location of the server and a query string used to locate artifacts in the registry. For example -
  * <code>
- * http://admin:admin@localhost:9002/api/registry?q=select artifact where mule.service = 'GreeterUMO'"
+ * http://admin:admin@localhost:9002/api/registry?q=select where mule.service = 'GreeterUMO'"
  * </code>
  *
  * Note that if the query returns more than one artifact they all get loaded, so its important that the query only returns
@@ -44,11 +44,20 @@ public class GalaxyApplicationContext extends AbstractXmlApplicationContext
     protected transient final Log logger = LogFactory.getLog(GalaxyApplicationContext.class);
 
     private URL configURL;
+    private boolean resolveResources;
 
+    public GalaxyApplicationContext(ApplicationContext applicationContext)
+    {
+        super(applicationContext);
+        
+        this.resolveResources = false;
+    }
+    
     public GalaxyApplicationContext(URL configURL)
     {
         super();
         this.configURL = configURL;
+        this.resolveResources = true;
         refresh();
     }
 
@@ -56,12 +65,17 @@ public class GalaxyApplicationContext extends AbstractXmlApplicationContext
     {
         super(applicationContext);
         this.configURL = configURL;
+        this.resolveResources = true;
         refresh();
     }
 
     @Override
     protected Resource[] getConfigResources()
     {
+        if (!resolveResources) {
+            return new Resource[0];
+        }
+        
         try
         {
             ConfigurationSupport configSupport = new ConfigurationSupport();
@@ -116,4 +130,6 @@ public class GalaxyApplicationContext extends AbstractXmlApplicationContext
        }
        return total;
    }
+    
+    
 }

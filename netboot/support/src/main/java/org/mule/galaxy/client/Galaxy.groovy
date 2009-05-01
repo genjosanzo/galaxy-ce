@@ -40,7 +40,7 @@ class Galaxy {
     String username = 'admin'
     String password = 'admin'
 
-    boolean debug = false
+    boolean debug = true
 
     def methods = [
             get: { path ->
@@ -87,7 +87,7 @@ class Galaxy {
 
                 def workspace = parent ? "/$parent" : '' // workaround for GALAXY-97
 
-                def post = new PostMethod("http://$host:$port$apiUrl${workspace};workspaces")
+                def post = new PostMethod("http://$host:$port$apiUrl${workspace}")
                 post.addRequestHeader 'Content-Type', 'application/atom+xml;type=entry'
 
                 // not thread-safe, create a local instance
@@ -103,6 +103,7 @@ class Galaxy {
                       </author>
                       <id>urn:uuid:F2FEB15CD2E3B755911201905042360</id>
                       <content type="text"></content>
+                      <item-info name="$name" type="Workspace" xmlns="http://galaxy.mule.org/2.0"/>
                     </entry>
                 """
 
@@ -127,14 +128,14 @@ class Galaxy {
             },
 
             update: {path, contentType, newVersion, InputStream body ->
-                def put = new PutMethod("http://$host:$port$apiUrl/$path")
-                put.addRequestHeader 'Content-Type', contentType
-                put.addRequestHeader 'X-Artifact-Version', newVersion
+                def post = new PostMethod("http://$host:$port$apiUrl/$path")
+                post.addRequestHeader 'Content-Type', contentType
+                post.addRequestHeader 'X-Artifact-Version', newVersion
 
                 assert body != null
-                put.requestEntity = new InputStreamRequestEntity(body)
+                post.requestEntity = new InputStreamRequestEntity(body)
                 
-                remoteCall(put, {status, responseStream ->
+                remoteCall(post, {status, responseStream ->
                     assert status == 200
                     status
                 })

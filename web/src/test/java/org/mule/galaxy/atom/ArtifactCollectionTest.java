@@ -162,12 +162,25 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         assertEquals(200, res.getStatus());
         res.release();
         
+        // this should point to the latest version
+        res = client.head("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl", defaultOpts);
+        assertEquals(200, res.getStatus());
+        res.release();
+        
         res = client.get("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl?version=0.1", defaultOpts);
         assertEquals(200, res.getStatus());
         res.release();
         
         // Try the history entry
         res = client.get(historyEntry.getContentSrc().toString(), defaultOpts);
+        assertEquals(200, res.getStatus());
+        
+        is = res.getInputStream();
+        while (is.read() != -1);
+        res.release();
+        
+        // try the latest version shortcut
+        res = client.get("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl", defaultOpts);
         assertEquals(200, res.getStatus());
         
         is = res.getInputStream();

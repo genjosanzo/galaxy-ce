@@ -31,8 +31,9 @@ import com.google.gdata.util.httputil.FastURLEncoder
 
 class Workspace {
 
-    def QName infoQ = new QName("http://galaxy.mulesource.org/1.0", "artifact-info")
-     
+    def QName infoQ = new QName("http://galaxy.mulesource.org/2.0", "item-info")
+    def String artifactType = "Artifact"
+    
     def String parentWorkspace = ''
     def String name
     def String cacheDir
@@ -76,12 +77,15 @@ class Workspace {
                 def task = {
                     def jarName = node.title.text()
 
-                    def name = node."*:artifact-info"?.@name.text();
+                    def itemInfo = node."*:item-info";
+                    def type = itemInfo?.@type.text();
                     
                     // maybe someone put in an entry or another workspace
-                    if (name == null) {
+                    if (artifactType != type) {
                         return;
                     }
+                    
+                    def name = itemInfo?.@name.text();
                     
                     File localJar = new File(dir, name)
 
