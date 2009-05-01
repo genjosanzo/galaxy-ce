@@ -7,7 +7,7 @@
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-    <bean id="atomWorkspaceManagerFactory" class="org.mule.galaxy.ee.atom.client.AtomWorkspaceManagerFactory">
+    <bean id="atomWorkspaceManagerFactory" class="org.mule.galaxy.atom.client.AtomWorkspaceManagerFactory">
         <property name="contentService" ref="contentService"/>
         <property name="registry" ref="registry"/>
         <property name="typeManager" ref="typeManager"/>
