@@ -1,9 +1,11 @@
 package org.mule.galaxy.mule2.policy;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -22,12 +24,15 @@ public class RequireSSLPolicy extends AbstractMulePolicy
     public static final String ID = "RequireSSLPolicy";
 
     protected XPathFactory factory = XPathFactory.newInstance();
-    private XPathExpression xpath;
+    private List<XPathExpression> expressions = new ArrayList<XPathExpression>();
 
     public RequireSSLPolicy() throws XPathExpressionException {
         super();
 
-        xpath = factory.newXPath().compile("/mule-configuration//endpoint[starts-with(@address, 'http:') or starts-with(@address, 'tcp:')]");
+        expressions.add(factory.newXPath().compile("//*[local-name()='inbound-endpoint' and (starts-with(@address, 'http:') or starts-with(@address, 'tcp:'))]"));
+        expressions.add(factory.newXPath().compile("//*[local-name()='outbound-endpoint' and (starts-with(@address, 'http:') or starts-with(@address, 'tcp:'))]"));
+        expressions.add(factory.newXPath().compile("//*[namespace-uri()='http://www.mulesource.org/schema/mule/tcp' or namespace-uri()='http://www.mulesource.org/schema/mule/tcp/2.2']"));
+        expressions.add(factory.newXPath().compile("//*[namespace-uri()='http://www.mulesource.org/schema/mule/http' or namespace-uri()='http://www.mulesource.org/schema/mule/http/2.2']"));
     }
 
     public String getDescription() {
@@ -45,10 +50,14 @@ public class RequireSSLPolicy extends AbstractMulePolicy
     public Collection<ApprovalMessage> isApproved(Item item) {
         try {
             Artifact artifact = (Artifact) item.getProperty("artifact");
-            NodeList result = (NodeList) xpath.evaluate((Document) artifact.getData(), XPathConstants.NODESET);
+            Document data = (Document) artifact.getData();
+            
+            for (XPathExpression e : expressions) {
+                NodeList result = (NodeList) e.evaluate(data, XPathConstants.NODESET);
 
-            if (result.getLength() > 0) {
-                return Arrays.asList(new ApprovalMessage("The Mule configuration contains unsecured HTTP endpoints!", false));
+                if (result.getLength() > 0) {
+                    return Arrays.asList(new ApprovalMessage("The Mule configuration contains unsecured HTTP endpoints!", false));
+                }
             }
 
         } catch (XPathExpressionException e) {

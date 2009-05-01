@@ -15,6 +15,7 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.artifact.Artifact;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 public class RequireNoClientRemotingPolicy extends AbstractMulePolicy
 {
@@ -26,7 +27,7 @@ public class RequireNoClientRemotingPolicy extends AbstractMulePolicy
     public RequireNoClientRemotingPolicy() throws XPathExpressionException {
         super();
 
-        xpath = factory.newXPath().compile("/mule-configuration/mule-environment-properties/@serverUrl = ''");
+        xpath = factory.newXPath().compile("//*[local-name()='remote-dispatcher-agent']");
     }
 
     public String getDescription() {
@@ -45,11 +46,11 @@ public class RequireNoClientRemotingPolicy extends AbstractMulePolicy
         try {
             Artifact artifact = (Artifact) item.getProperty("artifact");
 
-            if(!(Boolean) xpath.evaluate((Document) artifact.getData(), XPathConstants.BOOLEAN))
-            {
+            NodeList result = (NodeList) xpath.evaluate((Document) artifact.getData(), XPathConstants.NODESET);
+
+            if (result.getLength() > 0) {
                 return Arrays.asList(new ApprovalMessage("The Mule configuration has the serverUrl set for client remoting. set /mule-configuration/mule-environment-properties/@serverUrl to \"\"", false));
             }
-
         } catch (XPathExpressionException e) {
             return Arrays.asList(new ApprovalMessage("Could not evaluate Mule configuration: " + e.getMessage(), false));
         } catch (IOException e) {

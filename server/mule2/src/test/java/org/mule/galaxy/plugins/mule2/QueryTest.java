@@ -7,7 +7,6 @@ import org.mule.galaxy.Item;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.test.AbstractGalaxyTest;
-import org.mule.galaxy.util.Constants;
 
 public class QueryTest extends AbstractGalaxyTest {
 
@@ -26,41 +25,24 @@ public class QueryTest extends AbstractGalaxyTest {
         assertEquals(2, results.size());
 
         results = registry.search(new Query()
-            .fromId(workspace.getId())
-                 .add(OpRestriction.eq("mule2.service", "GreeterUMO"))
-                 .add(OpRestriction.eq("documentType", Constants.MULE2_2_QNAME))).getResults();
+            .fromId(workspace.getId(), true)
+                 .add(OpRestriction.eq("mule.service", "GreeterUMO"))).getResults();
         assertEquals(1, results.size());
 
-        results = registry.search(new Query()
-            .fromPath(workspace.getPath())
-                 .add(OpRestriction.like("mule2.service", "Greeter"))).getResults();
+        results = registry.search("select where mule.service in ('GreeterUMO', 'FooUMO')", 0, 100).getResults();
         assertEquals(1, results.size());
 
-        results = registry.search("select artifact where mule2.service in ('GreeterUMO', 'FooUMO')", 0, 100).getResults();
+        results = registry.search("select where mule.service in ('GreeterUMO')", 0, 100).getResults();
         assertEquals(1, results.size());
 
-        results = registry.search("select artifact where mule2.service in ('GreeterUMO')", 0, 100).getResults();
-        assertEquals(1, results.size());
-
-        results = registry.search("select artifact where mule2.service in ('Bleh')", 0, 100).getResults();
+        results = registry.search("select where mule.service in ('Bleh')", 0, 100).getResults();
         assertEquals(0, results.size());
 
-        results = registry.search("select artifact from '/Default Workspace' where mule2.service in ('GreeterUMO', 'FooUMO')", 0, 100).getResults();
+        results = registry.search("select from '/Default Workspace' recursive where mule.service in ('GreeterUMO', 'FooUMO')", 0, 100).getResults();
         assertEquals(1, results.size());
 
-        results = registry.search("select artifact from '/Foo' where mule2.service in ('GreeterUMO', 'FooUMO')", 0, 100).getResults();
+        results = registry.search("select from '/Foo' recursive where mule.service in ('GreeterUMO', 'FooUMO')", 0, 100).getResults();
         assertEquals(0, results.size());
-
-
-        results = registry.search(new Query()
-            .fromId(workspace.getId())
-                 .add(OpRestriction.not(OpRestriction.eq("documentType", Constants.MULE2_2_QNAME)))).getResults();
-        assertEquals(1, results.size());
-
-        results = registry.search(new Query()
-            .fromId(workspace.getId())
-                 .add(OpRestriction.like("mule2.service", "Greeter"))).getResults();
-        assertEquals(1, results.size());
 
     }
 

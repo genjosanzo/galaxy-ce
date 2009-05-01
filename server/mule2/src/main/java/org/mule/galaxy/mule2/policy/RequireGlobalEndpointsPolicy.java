@@ -22,14 +22,15 @@ public class RequireGlobalEndpointsPolicy extends AbstractMulePolicy
     public static final String ID = "RequireGlobalEPPolicy";
 
     protected XPathFactory factory = XPathFactory.newInstance();
-    private XPathExpression xpath;
+    private XPathExpression inboundXPath;
+    private XPathExpression outboundXPath;
 
     public RequireGlobalEndpointsPolicy() throws XPathExpressionException {
         super();
 
-        xpath = factory.newXPath().compile("/mule-configuration/*/mule-descriptor/endpoint");
+        inboundXPath = factory.newXPath().compile("//*[local-name()='service']//*[local-name()='inbound-endpoint'][not(ref)]");
+        outboundXPath = factory.newXPath().compile("//*[local-name()='service']//*[local-name()='outbound-endpoint'][not(ref)]");
     }
-
 
     public String getDescription() {
         return "Requires all All Endpoints are defined as top level Endpoints";
@@ -46,12 +47,19 @@ public class RequireGlobalEndpointsPolicy extends AbstractMulePolicy
     public Collection<ApprovalMessage> isApproved(Item item) {
         try {
             Artifact artifact = (Artifact) item.getProperty("artifact");
-            NodeList result = (NodeList) xpath.evaluate((Document) artifact.getData(), XPathConstants.NODESET);
+            Document data = (Document) artifact.getData();
+
+            NodeList result = (NodeList) outboundXPath.evaluate(data, XPathConstants.NODESET);
 
             if (result.getLength() > 0) {
                 return Arrays.asList(new ApprovalMessage("The Mule configuration contains local endpoints!", false));
             }
 
+            result = (NodeList) inboundXPath.evaluate(data, XPathConstants.NODESET);
+
+            if (result.getLength() > 0) {
+                return Arrays.asList(new ApprovalMessage("The Mule configuration contains local endpoints!", false));
+            }
         } catch (XPathExpressionException e) {
             return Arrays.asList(new ApprovalMessage("Could not evaluate Mule configuration: " + e.getMessage(), false));
         } catch (IOException e) {

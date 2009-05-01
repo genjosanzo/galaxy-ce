@@ -30,7 +30,7 @@ public abstract class AbstractPolicyTest extends AbstractGalaxyTest
 
         try
         {
-            importFile(stream, "http-policy-test.xml", "0.1", "application/xml");
+            importFile(stream, "policy-test.xml", "0.1", "application/xml");
             if (fail)
             {
                 fail("Expected ArtifactPolicyException");

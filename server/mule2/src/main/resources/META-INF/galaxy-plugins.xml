@@ -33,12 +33,12 @@
                 <indexer>xpath</indexer>
                 <search-input-type>java.lang.String</search-input-type>
                 <configuration>
-                  <property>mule2.description</property>
+                  <property>mule.description</property>
                   <expression><![CDATA[/*[local-name()='${namespace.local-name}']/*[local-name()='description']]]></expression>
                 </configuration>
             </index>
             <!--<index>-->
-                <!--<property>mule2.model.description</property>-->
+                <!--<property>mule.model.description</property>-->
                 <!--<description>Mule 2 Model Description</description>-->
                 <!--<description>The description for a Mule Model in the configuration</description>-->
                 <!--<indexer>xpath</indexer>-->
@@ -47,7 +47,7 @@
                 <!--]]></expression>-->
             <!--</index>-->
             <!--<index>-->
-                <!--<property>mule2.service.description</property>-->
+                <!--<property>mule.service.description</property>-->
                 <!--<description>Mule 2 Service Description</description>-->
                 <!--<description>The description for a Mule Service in the configuration</description>-->
                 <!--<indexer>xpath</indexer>-->
@@ -60,7 +60,7 @@
                 <indexer>xpath</indexer>
                 <search-input-type>java.lang.String</search-input-type>
                 <configuration>
-                  <property>mule2.cluster.id</property>
+                  <property>mule.cluster.id</property>
                   <expression><![CDATA[/*/*[local-name()='configuration']/@clusterId]]></expression>
                 </configuration>
             </index>
@@ -69,7 +69,7 @@
                 <indexer>xpath</indexer>
                 <search-input-type>java.lang.String</search-input-type>
                 <configuration>
-                  <property>mule2.domain.id</property>
+                  <property>mule.domain.id</property>
                   <expression><![CDATA[/*/*[local-name()='configuration']/@domainId]]></expression>
                 </configuration>
             </index>
@@ -78,7 +78,7 @@
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
                 <configuration>
-                  <property>mule2.service</property>
+                  <property>mule.service</property>
                   <expression><![CDATA[
 declare variable $document external;
 <values> {
@@ -92,7 +92,7 @@ declare variable $document external;
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
                 <configuration>
-                  <property>mule2.endpoint</property>
+                  <property>mule.endpoint</property>
                   <expression><![CDATA[
 declare variable $document external;
 <values> {
@@ -107,7 +107,7 @@ declare variable $document external;
                 <indexer>xquery</indexer>
                 <search-input-type>java.lang.String</search-input-type>
                 <configuration>
-                  <property>mule2.model</property>
+                  <property>mule.model</property>
                   <expression><![CDATA[
 declare variable $document external;
 <values> {
@@ -122,15 +122,15 @@ declare variable $document external;
             <view>
                 <column>
                     <name>Services</name>
-                    <expression>item.hasProperty("mule2.service") ? item.getProperty("mule2.service").size() : "0" ;</expression>
+                    <expression>item.hasProperty("mule.service") ? item.getProperty("mule.service").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Endpoints</name>
-                    <expression>item.hasProperty("mule2.endpoint") ? item.getProperty("mule2.endpoint").size() : "0" ;</expression>
+                    <expression>item.hasProperty("mule.endpoint") ? item.getProperty("mule.endpoint").size() : "0" ;</expression>
                 </column>
                 <column>
                     <name>Models</name>
-                    <expression>item.hasProperty("mule.model2") ? item.getProperty("mule2.model").size() : "0" ;</expression>
+                    <expression>item.hasProperty("mule.model") ? item.getProperty("mule.model").size() : "0" ;</expression>
                 </column>
             </view>
         </views>
@@ -141,11 +141,6 @@ declare variable $document external;
             <name>Require SSL</name>
             <class>org.mule.galaxy.mule2.policy.RequireSSLPolicy</class>
             <description>Enforces the use of ssl on http and tcp endpoints</description>
-        </artifact-policy>
-        <artifact-policy>
-            <name>Require JMX</name>
-            <class>org.mule.galaxy.mule2.policy.RequireJMXPolicy</class>
-            <description>Enforces that JMX is configured.</description>
         </artifact-policy>
         <artifact-policy>
             <name>Require JMX</name>
