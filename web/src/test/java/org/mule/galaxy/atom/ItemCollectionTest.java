@@ -1,9 +1,12 @@
 package org.mule.galaxy.atom;
 
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.xml.namespace.QName;
 
 import org.apache.abdera.i18n.iri.IRI;
@@ -20,10 +23,71 @@ import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
 import org.apache.axiom.om.util.Base64;
+import org.mule.galaxy.extension.Extension;
+import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.test.AbstractAtomTest;
+import org.mule.galaxy.type.PropertyDescriptor;
+import org.mule.galaxy.type.TypeManager;
+import org.springmodules.jcr.JcrCallback;
 
-public class ArtifactCollectionTest extends AbstractAtomTest {
+public class ItemCollectionTest extends AbstractAtomTest {
 
+    public void testMap() throws Exception {
+        JcrUtil.doInTransaction(sessionFactory, new JcrCallback() {
+
+            public Object doInJcr(Session arg0) throws IOException, RepositoryException {
+                login("admin", "admin");
+                
+                PropertyDescriptor pd = new PropertyDescriptor();
+                pd.setProperty("map");
+                pd.setExtension((Extension)getApplicationContext().getBean("mapExtension"));
+                pd.setDescription("Map");
+                try {
+                    typeManager.savePropertyDescriptor(pd);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                return null;
+            }
+            
+        });
+        Entry entry = createEntry("Foo", TypeManager.BASE_TYPE);
+        
+        ExtensibleElement metadata = factory.newElement(new QName(ItemCollection.NAMESPACE, "metadata"), entry);
+        
+        ExtensibleElement prop = factory.newElement(new QName(ItemCollection.NAMESPACE, "map"), metadata);
+        prop.setAttributeValue("property", "map");
+        
+        ExtensibleElement mapEntry = factory.newElement(new QName(ItemCollection.NAMESPACE, "entry"), prop);
+        mapEntry.setAttributeValue("key", "key");
+        mapEntry.setAttributeValue("value", "value");
+        
+        AbderaClient client = new AbderaClient(abdera);
+        RequestOptions defaultOpts = client.getDefaultRequestOptions();
+        defaultOpts.setAuthorization("Basic " + Base64.encode("admin:admin".getBytes()));
+        
+        String base = "http://localhost:9002/api/registry/Default%20Workspace";
+        // create the entry
+        ClientResponse res = client.post(base, entry, defaultOpts);
+        assertAndGetEntry(res, 201);
+        res.release();
+        
+        // ensure the reponse is correct
+        res = client.get(base+ "/Foo;atom", defaultOpts);
+        entry = assertAndGetEntry(res, 200);
+        metadata = entry.getExtension(new QName(ItemCollection.NAMESPACE, "metadata"));
+        
+        ExtensibleElement mapEl = metadata.getExtension(new QName(ItemCollection.NAMESPACE, "map"));
+        assertNotNull(mapEl);
+        assertEquals("map", mapEl.getAttributeValue("property"));
+        
+        mapEntry = mapEl.getExtension(new QName(ItemCollection.NAMESPACE, "entry"));
+        assertEquals("key", mapEntry.getAttributeValue("key"));
+        assertEquals("value", mapEntry.getAttributeValue("value"));
+        
+        res.release();
+    }
+    
     public void testAddWsdl() throws Exception {
         AbderaClient client = new AbderaClient(abdera);
         RequestOptions defaultOpts = client.getDefaultRequestOptions();
@@ -271,6 +335,8 @@ public class ArtifactCollectionTest extends AbstractAtomTest {
         prop.setAttributeValue("value", "test3");
         prop.setAttributeValue("visible", "false");
 
+
+        
         res = client.put(v2Uri, e, defaultOpts);
         assertEquals(204, res.getStatus());
         res.release();

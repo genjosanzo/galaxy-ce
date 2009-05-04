@@ -169,7 +169,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
         return Collections.emptyList();
     }
 
-    public Object getValue(Item item, Factory factory, ExtensibleElement e) throws ResponseContextException {
+    public Object getValue(Item item, ExtensibleElement e, Factory factory) throws ResponseContextException {
         // not yet supported
         return null;
     }

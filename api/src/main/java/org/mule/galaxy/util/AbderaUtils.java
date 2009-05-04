@@ -43,6 +43,13 @@ public class AbderaUtils {
         }
     }
 
+
+    public static void assertNotNull(Object o, String message) throws ResponseContextException {
+        if (o == null) {
+            throwMalformed(message);
+        }
+    }
+
     public static void throwMalformed(final String message) throws ResponseContextException {
         throw newErrorMessage("Malformed Atom Entry", message, 400);
     }

@@ -98,7 +98,7 @@ public class LifecycleExtension extends AbstractExtension implements AtomExtensi
 
     }
 
-    public Object getValue(Item item, Factory factory, ExtensibleElement e) throws ResponseContextException {
+    public Object getValue(Item item, ExtensibleElement e, Factory factory) throws ResponseContextException {
         String name = e.getAttributeValue("name");
         assertNotEmpty(name, "Lifecycle name attribute cannot be null.");
 

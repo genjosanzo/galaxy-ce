@@ -216,7 +216,7 @@
     <property name="registry" ref="registry"/>
   </bean>
       
-  <bean id="mapExtension" class="org.mule.galaxy.impl.extension.SimpleExtension">
+  <bean id="mapExtension" class="org.mule.galaxy.impl.extension.MapExtension">
     <property name="id" value="mapExtension"/>
     <property name="name" value="Map"/>
     <property name="multivalueSupported" value="false"/>

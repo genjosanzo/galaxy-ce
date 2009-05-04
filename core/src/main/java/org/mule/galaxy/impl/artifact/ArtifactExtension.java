@@ -248,7 +248,7 @@ public class ArtifactExtension extends AbstractExtension implements AtomExtensio
         return UNDERSTOOD;
     }
 
-    public Object getValue(Item item, Factory factory, ExtensibleElement e) throws ResponseContextException {
+    public Object getValue(Item item, ExtensibleElement e, Factory factory) throws ResponseContextException {
         return null;
     }
 

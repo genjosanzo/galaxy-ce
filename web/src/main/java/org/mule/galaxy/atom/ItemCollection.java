@@ -516,9 +516,9 @@ public class ItemCollection
             AtomExtension atomExt = getExtension(q);
             if (atomExt != null) {
                 String property = propEl.getAttributeValue("property");
-                assertNotEmpty(property, "Lifecycle property attribute cannot be null.");
+                assertNotEmpty(property, "Property attribute cannot be null for " + q + ".");
 
-                Object value = atomExt.getValue(item, factory, (ExtensibleElement) propEl);
+                Object value = atomExt.getValue(item, (ExtensibleElement) propEl, factory);
                 if (value != null) {
                     properties.put(property, value);
                 }
