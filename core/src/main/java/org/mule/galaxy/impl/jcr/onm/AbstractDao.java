@@ -5,6 +5,7 @@ import static org.mule.galaxy.impl.jcr.JcrUtil.getOrCreate;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.jcr.ItemExistsException;
@@ -46,7 +47,6 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
         this.generateId = generateId;
         this.type = t;
     }
-
     
     public Class<T> getTypeClass() {
 	return type;
@@ -128,6 +128,28 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
             stmt += "@" + property + "='" + value + "']";
         }
        
+        return doQuery(stmt);
+    }
+    
+
+    
+    public List<T> find(final Map<String, Object> criteria) {
+        String stmt = "/*/" + rootNode + "/*[";
+        String join = "";
+        for (Map.Entry<String, Object> e : criteria.entrySet()) {
+            stmt += join;
+            join = " and ";
+            
+            Object value = e.getValue();
+            if (value == null) {
+                stmt += "not(@" + e.getKey() + ")";
+            } else if (value.toString().startsWith("%") || value.toString().endsWith("%")) {
+                stmt += "jcr:like(@" + e.getKey() + ", '" + value + "')";
+            } else {
+                stmt += "@" + e.getKey() + "='" + value + "'";
+            }
+        }
+        stmt += "]";
         return doQuery(stmt);
     }
     

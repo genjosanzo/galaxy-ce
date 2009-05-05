@@ -26,7 +26,19 @@ public interface TypeManager {
     
     Type getDefaultType();
     
-    Collection<PropertyDescriptor> getPropertyDescriptors(boolean includeIndex);
+    /**
+     * Get the global property descriptors, i.e. the ones not associated with a type.
+     * @param includeIndex
+     * @return
+     */
+    Collection<PropertyDescriptor> getGlobalPropertyDescriptors(boolean includeIndex);
+
+    /**
+     * Get the property descriptors associated with this type.
+     * @param includeIndex
+     * @return
+     */
+    Collection<PropertyDescriptor> getPropertyDescriptors(Type type);
 
     PropertyDescriptor getPropertyDescriptor(String propertyId) throws NotFoundException;
 
@@ -36,6 +48,6 @@ public interface TypeManager {
     
     Collection<PropertyDescriptor> getPropertyDescriptorsForExtension(String extensionId);
     
-    PropertyDescriptor getPropertyDescriptorByName(final String propertyName);
+    PropertyDescriptor getPropertyDescriptorByName(final String propertyName, Type type);
     
 }

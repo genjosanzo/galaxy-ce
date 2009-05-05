@@ -45,7 +45,7 @@ import org.w3c.dom.Node;
 /**
  * TODO
  */
-public class XmlArtifactTypePlugin extends AbstractArtifactPlugin
+public class XmlArtifactTypePlugin extends AbstractPlugin
 {
     /**
      * logger used by this class

@@ -29,7 +29,7 @@ import org.springmodules.jcr.JcrTemplate;
 /**
  * Java Archive (JAR) artifact plugin.
  */
-public class JarArtifactPlugin extends AbstractArtifactPlugin
+public class JarArtifactPlugin extends AbstractPlugin
 {
 
     private final Log log = LogFactory.getLog(getClass());

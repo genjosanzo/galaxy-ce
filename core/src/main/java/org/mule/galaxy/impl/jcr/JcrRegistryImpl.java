@@ -122,7 +122,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
 
     public NewItemResult newItem(String name, Type type, Map<String,Object> initialProperties)
     	throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException {
-        return localWorkspaceManager.newItem(null, name, type, null);
+        return localWorkspaceManager.newItem(null, name, type, initialProperties);
     }
     
     public Collection<WorkspaceManager> getWorkspaceManagers() {
@@ -877,7 +877,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
     public Map<String, String> getQueryProperties() {
         HashMap<String, String> props = new HashMap<String, String>();
         
-        for (PropertyDescriptor pd : typeManager.getPropertyDescriptors(true)) {
+        for (PropertyDescriptor pd : typeManager.getGlobalPropertyDescriptors(true)) {
             Extension ext = pd.getExtension();
             
             if (ext != null) {

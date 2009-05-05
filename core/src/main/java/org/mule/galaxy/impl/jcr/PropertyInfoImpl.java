@@ -69,14 +69,14 @@ public class PropertyInfoImpl implements PropertyInfo {
     }
 
     public String getDescription() {
-        loadPropertyOrIndex();
+        loadProperty();
         return description;
     }
 
-    private void loadPropertyOrIndex() {
+    private void loadProperty() {
         if (loadedDescriptor) return;
         
-        desc = tm.getPropertyDescriptorByName(getName());
+        desc = tm.getPropertyDescriptorByName(getName(), item.getType());
         
         if (desc != null) {
             description = desc.getDescription();
@@ -86,7 +86,7 @@ public class PropertyInfoImpl implements PropertyInfo {
     }
 
     public PropertyDescriptor getPropertyDescriptor() {
-        loadPropertyOrIndex();
+        loadProperty();
         if (!index) {
             return (PropertyDescriptor) desc;
         }
@@ -94,7 +94,7 @@ public class PropertyInfoImpl implements PropertyInfo {
     }
 
     public boolean isIndex() {
-        loadPropertyOrIndex();
+        loadProperty();
         return index;
     }
 

@@ -2,6 +2,7 @@ package org.mule.galaxy.impl.jcr;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ public class TypeManagerImpl implements TypeManager {
     private Dao<Type> typeDao;
     private JcrTemplate jcrTemplate;
     
-    public PropertyDescriptor getPropertyDescriptorByName(final String propertyName) {
+    public PropertyDescriptor getPropertyDescriptorByName(final String propertyName, Type type) {
         return find("property", propertyName);
     }
 
@@ -52,12 +53,17 @@ public class TypeManagerImpl implements TypeManager {
         return propertyDescriptorDao.get(id);
     }
     
-    public Collection<PropertyDescriptor> getPropertyDescriptors(boolean includeIndex) {
-        if (includeIndex) {
-            return propertyDescriptorDao.listAll();
-        } else {
-            return propertyDescriptorDao.find("index", "false");
+    public Collection<PropertyDescriptor> getGlobalPropertyDescriptors(boolean includeIndex) {
+        Map<String, Object> criteria = new HashMap<String,Object>();
+        criteria.put("type", null);
+        if (!includeIndex) {
+            criteria.put("index", false);
         }
+        return propertyDescriptorDao.find(criteria);
+    }
+
+    public Collection<PropertyDescriptor> getPropertyDescriptors(Type type) {
+        return propertyDescriptorDao.find("type", type.getId());
     }
 
     public void savePropertyDescriptor(PropertyDescriptor pd) throws AccessException, DuplicateItemException, NotFoundException {

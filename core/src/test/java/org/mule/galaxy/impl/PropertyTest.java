@@ -1,9 +1,14 @@
 package org.mule.galaxy.impl;
 
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.Type;
@@ -19,8 +24,8 @@ public class PropertyTest extends AbstractGalaxyTest {
     }
     
     public void testProperties2() throws Exception {
-        typeManager.getPropertyDescriptors(true);
-        typeManager.getPropertyDescriptors(true);
+        typeManager.getGlobalPropertyDescriptors(true);
+        typeManager.getGlobalPropertyDescriptors(true);
         
         PropertyDescriptor pd = new PropertyDescriptor("location", 
                                                        "Geographic Location",
@@ -48,13 +53,13 @@ public class PropertyTest extends AbstractGalaxyTest {
        assertNotNull(pd2);
        assertEquals(pd.getDescription(), pd2.getDescription());
        
-       Collection<PropertyDescriptor> pds = typeManager.getPropertyDescriptors(true);
+       Collection<PropertyDescriptor> pds = typeManager.getGlobalPropertyDescriptors(true);
        // 12 of these are index related
 //       assertEquals(23, pds.size());
        assertNotNull(pds);
        
-       pds = typeManager.getPropertyDescriptors(true);
-       PropertyDescriptor pd3 = typeManager.getPropertyDescriptorByName(pd.getProperty());
+       pds = typeManager.getGlobalPropertyDescriptors(true);
+       PropertyDescriptor pd3 = typeManager.getPropertyDescriptorByName(pd.getProperty(), null);
        assertNotNull(pd3);
        
        pd.setId(null);
@@ -65,4 +70,39 @@ public class PropertyTest extends AbstractGalaxyTest {
        }
     }
 
+    
+    public void testTypeProperties() throws Exception {
+       Type type = new Type();
+       type.setName("Test Type");
+       
+       // we have to save the type here so it can get an ID, so we can use that
+       // when creating a PropertyDescriptor.
+       typeManager.saveType(type);
+       
+       assertNotNull(type.getId());
+       
+       // This property is specific to this type
+       PropertyDescriptor pd = new PropertyDescriptor("test", "Test");
+       pd.setType(type);
+       type.setProperties(Arrays.asList(pd));
+       
+       typeManager.saveType(type);
+       typeManager.savePropertyDescriptor(pd);
+       
+       assertEquals(type.getId() + "#" + pd.getProperty(), pd.getId());
+       
+       Map<String,Object> props = new HashMap<String,Object>();
+       props.put(pd.getProperty(), "foo");
+       
+       Item item = registry.newItem("test", type, props).getItem();
+       
+       PropertyInfo info = item.getPropertyInfo("test");
+       assertEquals(pd.getId(), info.getPropertyDescriptor().getId());
+       
+       Collection<PropertyDescriptor> pds = typeManager.getPropertyDescriptors(type);
+       assertEquals(1, pds.size());
+       
+       pds = typeManager.getGlobalPropertyDescriptors(false);
+       assertFalse(pds.contains(pd));
+    }
 }

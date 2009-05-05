@@ -1,6 +1,7 @@
 package org.mule.galaxy;
 
 import java.util.List;
+import java.util.Map;
 
 public interface Dao<T extends Identifiable> {
     
@@ -13,6 +14,8 @@ public interface Dao<T extends Identifiable> {
     List<T> listAll();
     
     List<T> find(String property, String value);
+    
+    List<T> find(Map<String, Object> criteria);
 
     Class<T> getTypeClass();
 }

@@ -53,9 +53,10 @@ public class TypeForm extends AbstractAdministrationForm {
     
     protected void addFields(final FlexTable table) {
         table.setText(0, 0, "Name:");
-        table.setText(1, 0, "Properties:");
-        table.setText(2, 0, "Mixins:");
-        table.setText(3, 0, "Allowed Children:");
+        table.setText(1, 0, "Global Properties:");
+        table.setText(2, 0, "Properties:");
+        table.setText(3, 0, "Mixins:");
+        table.setText(4, 0, "Allowed Children:");
         
         nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
         nameTB.getTextBox().setText(type.getName());
@@ -70,12 +71,12 @@ public class TypeForm extends AbstractAdministrationForm {
         mixinsLB = new ListBox();
         mixinsLB.setVisibleItemCount(6);
         mixinsLB.setMultipleSelect(true);
-        table.setWidget(2, 1, mixinsLB);
+        table.setWidget(3, 1, mixinsLB);
 
         childrenLB = new ListBox();
         childrenLB.setVisibleItemCount(6);
         childrenLB.setMultipleSelect(true);
-        table.setWidget(3, 1, childrenLB);
+        table.setWidget(4, 1, childrenLB);
         
         styleHeaderColumn(table);
     }

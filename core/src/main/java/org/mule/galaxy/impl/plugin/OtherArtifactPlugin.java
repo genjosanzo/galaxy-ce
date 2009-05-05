@@ -5,7 +5,7 @@ import org.mule.galaxy.artifact.ArtifactType;
 /**
  * Does some initialization for other artifact types.
  */
-public class OtherArtifactPlugin extends AbstractArtifactPlugin
+public class OtherArtifactPlugin extends AbstractPlugin
 {
 
     @Override

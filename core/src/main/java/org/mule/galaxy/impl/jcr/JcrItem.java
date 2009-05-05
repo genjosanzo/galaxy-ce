@@ -303,7 +303,7 @@ public class JcrItem extends AbstractItem {
                 throw new PropertyException(new Message("SPACE_NOT_ALLOWED", getBundle()));
         }
         
-        PropertyDescriptor pd = getManager().getTypeManager().getPropertyDescriptorByName(name);
+        PropertyDescriptor pd = getManager().getTypeManager().getPropertyDescriptorByName(name, null);
         if (pd != null && pd.getExtension() != null) {
             pd.getExtension().store(this, pd, value);
 	} else {
@@ -414,7 +414,7 @@ public class JcrItem extends AbstractItem {
     }
 
     public Object getProperty(String name) {
-	PropertyDescriptor pd = manager.getTypeManager().getPropertyDescriptorByName(name);
+	PropertyDescriptor pd = manager.getTypeManager().getPropertyDescriptorByName(name, getType());
 	
 	if (pd != null && pd.getExtension() != null) {
             return pd.getExtension().get(this, pd, true);
@@ -441,7 +441,7 @@ public class JcrItem extends AbstractItem {
             } catch (PathNotFoundException e) {
             }
             
-            Collection<PropertyDescriptor> pds = manager.getTypeManager().getPropertyDescriptors(false);
+            Collection<PropertyDescriptor> pds = manager.getTypeManager().getGlobalPropertyDescriptors(false);
             
             for (PropertyDescriptor pd : pds) {
                 Extension ext = pd.getExtension();

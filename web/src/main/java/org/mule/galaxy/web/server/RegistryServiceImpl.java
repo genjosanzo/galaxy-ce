@@ -225,30 +225,31 @@ public class RegistryServiceImpl implements RegistryService {
     public String addItem(String parentPath, 
                           String workspaceName, 
                           String lifecycleId, 
-                          String type, 
+                          String typeName, 
                           Map<String, Serializable> properties) 
         throws RPCException, ItemNotFoundException, ItemExistsException, WPolicyException {
         try {
             Item item;
+            Type type = typeManager.getType(typeName);
             Map<String, Object> localProperties = new HashMap<String, Object>();
             if (properties != null) {
                 for (Map.Entry<String, Serializable> e : properties.entrySet()) {
                     String name = e.getKey();
-                    PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(name);
+                    PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(name, type);
                     
                     localProperties.put(name, getLocalValue(pd, e.getValue(), null, null));
                 }
             }
             
             if (parentPath == null || "".equals(parentPath)) {
-                item = registry.newItem(workspaceName, typeManager.getType(type), localProperties).getItem();
+                item = registry.newItem(workspaceName, type, localProperties).getItem();
             } else {
                 Item parent = (Item) registry.getItemByPath(parentPath);
                 
                 if (parent == null) {
                     throw new RPCException("Could not find parent workspace: " + parentPath);
                 }
-                item = parent.newItem(workspaceName, typeManager.getType(type), localProperties).getItem();
+                item = parent.newItem(workspaceName, type, localProperties).getItem();
             }
             if (lifecycleId != null) {
                 item.setDefaultLifecycle(item.getLifecycleManager().getLifecycleById(lifecycleId));
@@ -1071,7 +1072,7 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             Item item = registry.getItemById(itemId);
 
-            PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName);
+            PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName, item.getType());
             Extension ext = pd != null ? pd.getExtension() : null;
             
             setProperty(item, propertyName, propertyValue, ext);
@@ -1184,12 +1185,12 @@ public class RegistryServiceImpl implements RegistryService {
                                     Serializable propertyValue)
         throws RPCException, ItemNotFoundException, WPolicyException {
         try {
-            PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName);
-            Extension ext = pd != null ? pd.getExtension() : null;
-            
             SearchResults results = registry.search(query, 0, -1);
             List<Item> items = new ArrayList<Item>();
             for (Item item : results.getResults()) {
+                PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName, item.getType());
+                Extension ext = pd != null ? pd.getExtension() : null;
+                
                 setProperty(item, propertyName, propertyValue, ext, items);
             }
             
@@ -1218,12 +1219,13 @@ public class RegistryServiceImpl implements RegistryService {
                             Serializable propertyValue)
         throws RPCException, ItemNotFoundException, WPolicyException {
         try {
-            PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName);
-            Extension ext = pd != null ? pd.getExtension() : null;
-            
             List<Item> items = new ArrayList<Item>();
             for (String itemId : entryIds) {
                 Item item = registry.getItemById(itemId);
+
+                PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName, item.getType());
+                Extension ext = pd != null ? pd.getExtension() : null;
+                
                 setProperty(item, propertyName, propertyValue, ext, items);
             }
             
@@ -1344,7 +1346,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     public List<WPropertyDescriptor> getPropertyDescriptors(boolean includeIndex) throws RPCException {
         List<WPropertyDescriptor> pds = new ArrayList<WPropertyDescriptor>();
-        for (PropertyDescriptor pd : typeManager.getPropertyDescriptors(includeIndex)) {
+        for (PropertyDescriptor pd : typeManager.getGlobalPropertyDescriptors(includeIndex)) {
             pds.add(toWeb(pd));
         }
         return pds;

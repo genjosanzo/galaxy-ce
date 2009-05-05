@@ -10,11 +10,14 @@ public class AtomPropertyInfo implements PropertyInfo {
     private boolean locked;
     private boolean visible = true;
     private final TypeManager typeManager;
+    private final AtomItem item;
     
-    public AtomPropertyInfo(String name, 
+    public AtomPropertyInfo(AtomItem item,
+                            String name, 
                             Object value,
                             TypeManager typeManager) {
         super();
+        this.item = item;
         this.name = name;
         this.value = value;
         this.typeManager = typeManager;
@@ -31,7 +34,7 @@ public class AtomPropertyInfo implements PropertyInfo {
     }
 
     public PropertyDescriptor getPropertyDescriptor() {
-        return typeManager.getPropertyDescriptorByName(name);
+        return typeManager.getPropertyDescriptorByName(name, item.getType());
     }
 
     public String getName() {

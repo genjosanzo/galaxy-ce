@@ -18,7 +18,7 @@ import org.mule.galaxy.type.TypeManager;
 public class LinkTest extends AbstractGalaxyTest {
     
     public void testLinkTypes() throws Exception {
-        typeManager.getPropertyDescriptorByName(LinkExtension.DEPENDS);
+        typeManager.getPropertyDescriptorByName(LinkExtension.DEPENDS, null);
     }
     
     public void testSingleLink() throws Exception {

@@ -10,6 +10,10 @@ public class PropertyDescriptorDaoImpl extends AbstractReflectionDao<PropertyDes
     }
     
     protected String generateNodeName(PropertyDescriptor pd) {
+        if (pd.getType() != null) {
+            return pd.getType().getId() + "#" + pd.getProperty();
+        }
+        
         return pd.getProperty();
     }
 }

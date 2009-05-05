@@ -33,7 +33,7 @@ import org.mule.galaxy.type.TypeManager;
 /**
  * Makes it easy to add indexes and views for a new artifact type.
  */
-public abstract class AbstractArtifactPlugin implements Plugin {
+public abstract class AbstractPlugin implements Plugin {
 
     protected Registry registry;
     protected Dao<ArtifactType> artifactTypeDao;

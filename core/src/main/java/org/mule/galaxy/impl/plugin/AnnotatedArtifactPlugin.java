@@ -12,7 +12,7 @@ package org.mule.galaxy.impl.plugin;
 /**
  * TODO
  */
-public class AnnotatedArtifactPlugin extends AbstractArtifactPlugin
+public class AnnotatedArtifactPlugin extends AbstractPlugin
 {
     public AnnotatedArtifactPlugin()
     {

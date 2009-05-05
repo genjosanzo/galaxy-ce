@@ -23,11 +23,11 @@ import java.util.Map;
 
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NewItemResult;
-import org.mule.galaxy.impl.plugin.AbstractArtifactPlugin;
+import org.mule.galaxy.impl.plugin.AbstractPlugin;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.TypeManager;
 
-public class DemoArtifactPlugin extends AbstractArtifactPlugin {
+public class DemoArtifactPlugin extends AbstractPlugin {
     @Override
     public void doInstall() throws Exception {
         Item w = registry.getItems().iterator().next();
