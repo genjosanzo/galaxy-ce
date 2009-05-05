@@ -71,7 +71,8 @@ public class AtomItem extends AbstractItem {
                 } else {
                     continue;
                 }
-                AtomPropertyInfo pi = new AtomPropertyInfo(name,
+                AtomPropertyInfo pi = new AtomPropertyInfo(this,
+                                                           name,
                                                            value,
                                                            manager.getTypeManager());
                 properties.put(pi.getName(), pi);

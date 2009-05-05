@@ -119,6 +119,10 @@ public class LdapUserManager
         
     }
 
+    public List<User> find(Map<String, Object> criteria) {
+        throw new UnsupportedOperationException();
+    }
+
     public Class<User> getTypeClass() {
         return User.class;
     }
