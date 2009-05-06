@@ -25,20 +25,15 @@
     </dependency>
 
     <dependency>
-      <groupId>net.sf.gwt-widget</groupId>
-      <artifactId>gwt-widgets</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
       <scope>provided</scope>
     </dependency>
 
-      <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-incubator</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-incubator</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.mule.galaxy</groupId>
@@ -87,7 +82,7 @@
                             <compileTargets>
                                 <value>org.mule.galaxy.web.Galaxy</value>
                             </compileTargets>
-                            <extraJvmArgs>-Xmx256M</extraJvmArgs>
+                            <extraJvmArgs>-Xmx256M -Dgwt.nowarn.legacy.tools</extraJvmArgs>
                             <!--
                                 CRITICAL: This should be false so that filtered resources are used instead.
                                 Also required for better IDE support of GWT (avoid looped symlinks).

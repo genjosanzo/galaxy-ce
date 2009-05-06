@@ -106,20 +106,21 @@ public class Galaxy implements EntryPoint, HistoryListener {
         this.registryService = (RegistryServiceAsync) GWT.create(RegistryService.class);
 
         ServiceDefTarget target = (ServiceDefTarget) registryService;
-        target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/registry.rpc");
+        String baseUrl = GWT.getModuleBaseURL();
+        target.setServiceEntryPoint(baseUrl + "../handler/registry.rpc");
 
         this.securityService = (SecurityServiceAsync) GWT.create(SecurityService.class);
 
         target = (ServiceDefTarget) securityService;
-        target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/securityService.rpc");
+        target.setServiceEntryPoint(baseUrl + "../handler/securityService.rpc");
 
         this.heartbeatService = (HeartbeatServiceAsync) GWT.create(HeartbeatService.class);
         target = (ServiceDefTarget) heartbeatService;
-        target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/heartbeat.rpc");
+        target.setServiceEntryPoint(baseUrl + "../handler/heartbeat.rpc");
 
         this.adminService = (AdminServiceAsync) GWT.create(AdminService.class);
         target = (ServiceDefTarget) adminService;
-        target.setServiceEntryPoint(GWT.getModuleBaseURL() + "../handler/admin.rpc");
+        target.setServiceEntryPoint(baseUrl + "../handler/admin.rpc");
 
         base = new FlowPanel();
         base.setStyleName("base");
