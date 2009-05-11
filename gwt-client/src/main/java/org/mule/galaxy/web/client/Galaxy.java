@@ -17,13 +17,21 @@
  */
 package org.mule.galaxy.web.client;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.HistoryListener;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.TabPanel;
 import org.mule.galaxy.web.client.activity.ActivityPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.entry.AddItemForm;
@@ -44,21 +52,12 @@ import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WExtensionInfo;
 import org.mule.galaxy.web.rpc.WUser;
 
-import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.HistoryListener;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -142,8 +141,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
         final Image logo = new Image("images/galaxy_logo_main.gif");
         logo.setTitle("Home");
         logo.addStyleName("gwt-Hyperlink");
-        logo.addClickListener(new ClickListener() {
-            public void onClick(final Widget widget) {
+        logo.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent clickEvent) {
                 History.newItem("browse");
             }
         });
@@ -153,23 +152,19 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
         tabPanel.setStyleName("headerTabPanel");
         tabPanel.getDeckPanel().setStyleName("headerTabDeckPanel");
-        tabPanel.addTabListener(new TabListener() {
-
-            public boolean onBeforeTabSelected(SourcesTabEvents event, int newTab) {
-                return true;
-            }
-
-            public void onTabSelected(SourcesTabEvents tabPanel, int tab) {
+        tabPanel.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
+                final Integer newTab = event.getSelectedItem();
                 if (!suppressTabHistory) {
-                    if (tab == 0) {
+                    if (newTab == 0) {
                         History.newItem("browse");
-                    } else if (tab == 1) {
+                    } else if (newTab == 1) {
                         History.newItem("search");
                     } else {
-                        History.newItem("tab-" + tab);
+                        History.newItem("tab-" + newTab);
                     }
                 }
-                oldTab = tab;
+                oldTab = newTab;
             }
         });
 
