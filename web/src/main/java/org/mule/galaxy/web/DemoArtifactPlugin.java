@@ -69,12 +69,12 @@ public class DemoArtifactPlugin extends AbstractPlugin {
 
     private void add(Item workspace, String name, String resource) 
         throws Exception {
-        NewItemResult result = workspace.newItem(name, typeManager.getType(TypeManager.ARTIFACT));
+        NewItemResult result = workspace.newItem(name, typeManager.getTypeByName(TypeManager.ARTIFACT));
         Item artifact = (Item) result.getItem();
 
         Map<String, Object> props = new HashMap<String, Object>();
         props.put("artifact", new Object[] { getClass().getResourceAsStream(resource), "application/xml" });
-        artifact.newItem("0.1", typeManager.getType(TypeManager.ARTIFACT_VERSION), props);
+        artifact.newItem("0.1", typeManager.getTypeByName(TypeManager.ARTIFACT_VERSION), props);
     }
     
     public int getVersion() {

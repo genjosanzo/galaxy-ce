@@ -30,9 +30,9 @@ public abstract class AbstractAtomTest extends org.mule.galaxy.test.AbstractAtom
         
         login("admin", "admin");
         
-        registry.newItem("Test", typeManager.getType(TypeManager.WORKSPACE));
+        registry.newItem("Test", typeManager.getTypeByName(TypeManager.WORKSPACE));
         
-        Item parent = registry.newItem("parent", typeManager.getType(TypeManager.WORKSPACE)).getItem();
+        Item parent = registry.newItem("parent", typeManager.getTypeByName(TypeManager.WORKSPACE)).getItem();
         return registry.attachItem(parent, "atom", AtomWorkspaceManagerFactory.ID, config);
     }
 

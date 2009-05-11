@@ -108,6 +108,14 @@ public class TypeManagerImpl implements TypeManager {
         typeDao.save(t);
     }
 
+    public Type getTypeByName(String name) throws NotFoundException {
+        List<Type> results = typeDao.find("name", name);
+        if (results.size() > 0) {
+            return results.get(0);
+        }
+        throw new NotFoundException(name);
+    }
+
     public void setAccessControlManager(AccessControlManager accessControlManager) {
         this.accessControlManager = accessControlManager;
     }

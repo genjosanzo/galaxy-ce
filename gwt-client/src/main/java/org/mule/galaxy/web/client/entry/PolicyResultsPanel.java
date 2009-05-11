@@ -18,10 +18,6 @@
 
 package org.mule.galaxy.web.client.entry;
 
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Label;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -29,24 +25,22 @@ import java.util.Map;
 
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.registry.RegistryMenuPanel;
 import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.WApprovalMessage;
+
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Label;
 
 public class PolicyResultsPanel extends AbstractErrorShowingComposite {
 
     private final Map<ItemInfo, Collection<WApprovalMessage>> policyFailures;
     private FlowPanel panel;
-    private RegistryMenuPanel menuPanel;
 
     public PolicyResultsPanel(Galaxy galaxy, Map<ItemInfo, Collection<WApprovalMessage>> policyFailures) {
         super();
         this.policyFailures = policyFailures;
-        
-        menuPanel = new RegistryMenuPanel(galaxy);
-        
         FlowPanel base = getMainPanel();
-        menuPanel.setMain(base);
         
         base.setStyleName("policy-failure-panel-base");
 
@@ -54,11 +48,10 @@ public class PolicyResultsPanel extends AbstractErrorShowingComposite {
         panel.setStyleName("policy-failure-panel");
         base.add(panel);
         
-        initWidget(menuPanel);
+        initWidget(base);
     }
     
     public void onShow() {
-        menuPanel.onShow();
         panel.clear();
         
         panel.add(createTitle("Policy Failures"));

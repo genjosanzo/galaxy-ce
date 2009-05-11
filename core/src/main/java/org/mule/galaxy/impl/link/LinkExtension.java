@@ -93,7 +93,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
 
         try {
             if (!pd.isMultivalued()) {
-                ((LinkDao) dao).deleteLinks(item, pd.getProperty());
+                ((LinkDao) dao).deleteLinks(item, pd.getId());
                 new LinksImpl(pd, item).addLinks(new Link(item, (Item) value, null, false));
             } else if (value instanceof Collection) {
                 for (Object o : (Collection) value) {
@@ -101,7 +101,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
                     new LinksImpl(pd, item).addLinks(l);
                 }
             } else if (value == null) {
-                ((LinkDao) dao).deleteLinks(item, pd.getProperty());
+                ((LinkDao) dao).deleteLinks(item, pd.getId());
                 item.setInternalProperty(pd.getProperty(), null);
             } else {
                 throw new UnsupportedOperationException();
@@ -198,7 +198,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
             }
             
             try {
-                l.setProperty(pd.getProperty());
+                l.setProperty(pd.getId());
                 dao.save(l);
                 if (links != null) {
                     links.add(l);
@@ -211,7 +211,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
                 if (l.getLinkedTo() != null) {
                     l.getLinkedTo().setInternalProperty(pd.getProperty(), true);
                 }
-                ((JcrItem) item).getSaveEvents().add(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item, pd.getProperty(), getLinks()));
+                ((JcrItem) item).getSaveEvents().add(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item, pd.getId(), getLinks()));
             } catch (DuplicateItemException e) {
                 throw new RuntimeException(e);
             } catch (NotFoundException e) {
@@ -225,14 +225,14 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
 
         public Collection<Link> getLinks() {
             if (links == null) {
-                links = ((LinkDao) dao).getLinks(item, pd.getProperty());
+                links = ((LinkDao) dao).getLinks(item, pd.getId());
             }
             return links;
         }
 
         public Collection<Link> getReciprocalLinks() {
             if (reciprocal == null) {
-                reciprocal = ((LinkDao) dao).getReciprocalLinks(item, pd.getProperty());
+                reciprocal = ((LinkDao) dao).getReciprocalLinks(item, pd.getId());
             }
             return reciprocal;
         }
@@ -243,7 +243,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
             }
             reciprocal = null;
             this.links = null;
-            ((JcrItem) item).getSaveEvents().add(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item, pd.getProperty(), getLinks()));
+            ((JcrItem) item).getSaveEvents().add(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), item, pd.getId(), getLinks()));
         }
     }
 }

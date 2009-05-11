@@ -291,16 +291,16 @@ public class ItemCollection
                     version = slug;
                 }
                 
-                NewItemResult result = parent.newItem(version, typeManager.getType(TypeManager.ARTIFACT_VERSION), props);
+                NewItemResult result = parent.newItem(version, typeManager.getTypeByName(TypeManager.ARTIFACT_VERSION), props);
 
                 return result.getItem();
             } else {
                 // otherwise create a new artifact and version
                 String version = getVersion(request);
                 
-                NewItemResult result = parent.newItem(slug, typeManager.getType(TypeManager.ARTIFACT));
+                NewItemResult result = parent.newItem(slug, typeManager.getTypeByName(TypeManager.ARTIFACT));
                 
-                result = result.getItem().newItem(version, typeManager.getType(TypeManager.ARTIFACT_VERSION), props);
+                result = result.getItem().newItem(version, typeManager.getTypeByName(TypeManager.ARTIFACT_VERSION), props);
                 
                 return result.getItem();
             }
@@ -484,7 +484,7 @@ public class ItemCollection
         String typeName = e.getAttributeValue("type");
         if (typeName != null) {
             try {
-                Type type = typeManager.getType(typeName);
+                Type type = typeManager.getTypeByName(typeName);
                 if (!type.equals(item.getType())) {
                     item.setType(type);
                 }
@@ -673,7 +673,7 @@ public class ItemCollection
             
             Type type;
             if (typeName != null) {
-                type = typeManager.getType(typeName);
+                type = typeManager.getTypeByName(typeName);
             } else {
                 type = typeManager.getDefaultType();
             }

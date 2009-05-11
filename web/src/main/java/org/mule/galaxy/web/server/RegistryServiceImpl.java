@@ -230,7 +230,7 @@ public class RegistryServiceImpl implements RegistryService {
         throws RPCException, ItemNotFoundException, ItemExistsException, WPolicyException {
         try {
             Item item;
-            Type type = typeManager.getType(typeName);
+            Type type = typeManager.getTypeByName(typeName);
             Map<String, Object> localProperties = new HashMap<String, Object>();
             if (properties != null) {
                 for (Map.Entry<String, Serializable> e : properties.entrySet()) {
@@ -1355,7 +1355,11 @@ public class RegistryServiceImpl implements RegistryService {
     private WPropertyDescriptor toWeb(PropertyDescriptor pd) {
         String ext = pd.getExtension() != null ? pd.getExtension().getId() : null;
         
-        return new WPropertyDescriptor(pd.getId(), pd.getProperty(), pd.getDescription(), ext, pd.isMultivalued(), pd.getConfiguration());
+        WPropertyDescriptor wpd = new WPropertyDescriptor(pd.getId(), pd.getProperty(), pd.getDescription(), ext, pd.isMultivalued(), pd.getConfiguration());
+        if (pd.getType() != null) {
+            wpd.setTypeId(pd.getType().getId());
+        }
+        return wpd;
     }
 
     public void savePropertyDescriptor(WPropertyDescriptor wpd) throws RPCException, ItemNotFoundException, ItemExistsException {
@@ -1407,7 +1411,15 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             Type type = fromWeb(wt);
             
+            // have to do two phases of saving. First, get a type ID
+            // then use that type ID on any property that was created
+            List<PropertyDescriptor> props = type.getProperties();
+            type.setProperties(props);
+            
             typeManager.saveType(type);
+            
+            for (PropertyDescriptor pd : props) {
+            }
             wt.setId(type.getId());
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
@@ -1427,7 +1439,10 @@ public class RegistryServiceImpl implements RegistryService {
         
         List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
         for (WPropertyDescriptor pd : wt.getProperties()) {
-            properties.add(typeManager.getPropertyDescriptor(pd.getId()));
+            PropertyDescriptor propertyDescriptor = typeManager.getPropertyDescriptor(pd.getId());
+//            properties.add();
+//            
+//            pd.setName(name);
         }
         type.setProperties(properties);
         

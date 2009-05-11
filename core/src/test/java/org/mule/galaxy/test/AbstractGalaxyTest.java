@@ -164,12 +164,12 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     protected Item importFile(Item workspace, InputStream stream, String name, String version,
                             String contentType) throws DuplicateItemException, RegistryException,
             PolicyException, PropertyException, AccessException, NotFoundException {
-        NewItemResult result = workspace.newItem(name, typeManager.getType(TypeManager.ARTIFACT));
+        NewItemResult result = workspace.newItem(name, typeManager.getTypeByName(TypeManager.ARTIFACT));
         Item artifact = (Item) result.getItem();
 
         Map<String, Object> props = new HashMap<String, Object>();
         props.put("artifact", new Object[] { stream, contentType });
-        NewItemResult ar = artifact.newItem(version, typeManager.getType(TypeManager.ARTIFACT_VERSION), props);
+        NewItemResult ar = artifact.newItem(version, typeManager.getTypeByName(TypeManager.ARTIFACT_VERSION), props);
 
         return (Item) ar.getItem();
     }
@@ -181,7 +181,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     }
 
     protected Type getSimpleType() throws NotFoundException {
-        Type simpleType = typeManager.getType("Base Type");
+        Type simpleType = typeManager.getTypeByName("Base Type");
         return simpleType;
     }
     

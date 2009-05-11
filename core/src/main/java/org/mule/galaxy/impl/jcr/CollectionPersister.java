@@ -14,7 +14,6 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.impl.jcr.onm.ClassPersister;
 import org.mule.galaxy.impl.jcr.onm.FieldDescriptor;
@@ -50,7 +49,7 @@ public class CollectionPersister implements FieldPersister {
         
         String parentField = otm.mappedBy();
         if (!parentField.equals("")) {
-            String parentId = ISO9075.decode(n.getName());
+            String parentId = n.getUUID();
             String rootNode = fd.getClassPersister().getPath();
             
             QueryManager qm = session.getWorkspace().getQueryManager();

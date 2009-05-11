@@ -36,7 +36,7 @@ public class AtomWorkspaceManagerTest extends AbstractAtomTest {
         Map<String, Object> props = new HashMap<String, Object>();
         props.put("artifact", new Object[] { getClass().getResourceAsStream("/wsdl/hello.wsdl"), "application/xml" });
         NewItemResult result = artifactItem.newItem("2.0", 
-                                                    typeManager.getType(TypeManager.ARTIFACT_VERSION), 
+                                                    typeManager.getTypeByName(TypeManager.ARTIFACT_VERSION), 
                                                     props);
 
         assertNotNull(result);
@@ -44,7 +44,7 @@ public class AtomWorkspaceManagerTest extends AbstractAtomTest {
         
         try {
             result = artifactItem.newItem("2.0", 
-                                          typeManager.getType(TypeManager.ARTIFACT_VERSION), 
+                                          typeManager.getTypeByName(TypeManager.ARTIFACT_VERSION), 
                                           props);
             fail("Expected Duplicate item exception");
         } catch (DuplicateItemException e) {
@@ -54,7 +54,7 @@ public class AtomWorkspaceManagerTest extends AbstractAtomTest {
     public void testItemCreation() throws Exception {
         Item w = attatchTestWorkspace();
         
-        NewItemResult result = w.newItem("FooService", typeManager.getType(TypeManager.VERSION));
+        NewItemResult result = w.newItem("FooService", typeManager.getTypeByName(TypeManager.VERSION));
         assertNotNull(result);
         
         Item item = result.getItem();
@@ -62,7 +62,7 @@ public class AtomWorkspaceManagerTest extends AbstractAtomTest {
         assertNotNull(item);
         assertEquals("FooService", item.getName());
         
-        result = item.newItem("2.0", typeManager.getType(TypeManager.VERSIONED));
+        result = item.newItem("2.0", typeManager.getTypeByName(TypeManager.VERSIONED));
         assertNotNull(result);
         Item child = result.getItem();
         assertEquals("2.0", child.getName());
@@ -70,7 +70,7 @@ public class AtomWorkspaceManagerTest extends AbstractAtomTest {
         assertEquals(TypeManager.VERSIONED, child.getType().getName());
         
         try {
-            item.newItem("2.0", typeManager.getType(TypeManager.VERSIONED));
+            item.newItem("2.0", typeManager.getTypeByName(TypeManager.VERSIONED));
             fail("Expected Duplicate item exception");
         } catch (DuplicateItemException e) {
         }
@@ -80,8 +80,8 @@ public class AtomWorkspaceManagerTest extends AbstractAtomTest {
         Item w = attatchTestWorkspace();
         
         Item t1 = (Item) registry.getItemByPath("Test");
-        Item t2 = t1.newItem("Test2", typeManager.getType(TypeManager.WORKSPACE)).getItem();
-        t2.newItem("Test3", typeManager.getType(TypeManager.WORKSPACE)).getItem();
+        Item t2 = t1.newItem("Test2", typeManager.getTypeByName(TypeManager.WORKSPACE)).getItem();
+        t2.newItem("Test3", typeManager.getTypeByName(TypeManager.WORKSPACE)).getItem();
         
         // browse the workspaces we created locally
         List<Item> items = w.getItems();

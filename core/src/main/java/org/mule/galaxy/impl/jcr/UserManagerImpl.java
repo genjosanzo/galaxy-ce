@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
@@ -65,6 +66,18 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         return super.get(id);
     }
 
+    protected String getId(User t, Node node, Session session) throws RepositoryException {
+        return node.getName();
+    }
+    
+    protected Node findNode(String id, Session session) throws RepositoryException {
+        try {
+            return getObjectsNode(session).getNode(id);
+        } catch (PathNotFoundException e) {
+            return null;
+        }
+    }
+    
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException, DataAccessException {
         return (UserDetails) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
@@ -194,7 +207,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
                 }
                 Node users = getObjectsNode(session);
                 
-                String id = generateNodeName(null);
+                String id = UUID.randomUUID().toString();
                 Node node = users.addNode(id);
                 node.addMixin("mix:referenceable");
                 node.setProperty(PASSWORD, password);
@@ -286,7 +299,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
 			String name) throws ItemExistsException, PathNotFoundException,
 			VersionException, ConstraintViolationException, LockException,
 			RepositoryException, NoSuchNodeTypeException, ValueFormatException {
-		String id = generateNodeName(null);
+		String id = UUID.randomUUID().toString();
 		Node node = objects.addNode(id);
 		node.addMixin("mix:referenceable");
 		node.setProperty(PASSWORD, username);

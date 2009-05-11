@@ -47,10 +47,10 @@ public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob> {
     }
 
     @Override
-    protected void doSave(ScriptJob t, Node node, boolean isNew, Session session) throws RepositoryException {
+    protected void doSave(ScriptJob t, Node node, boolean isNew, boolean isMoved, Session session) throws RepositoryException {
         String origName = getJobName(t.getId(), JcrUtil.getStringOrNull(node, "name"));
         
-        super.doSave(t, node, isNew, session);
+        super.doSave(t, node, isNew, isMoved, session);
         
         try {
             scheduler.unscheduleJob(origName, null);

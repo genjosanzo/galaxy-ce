@@ -25,12 +25,12 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
         super(Comment.class, "comments", true);
     }
 
-    public List<Comment> getComments(final String artifactId) {
-        return getComments(artifactId, false);
+    public List<Comment> getComments(final String itemId) {
+        return getComments(itemId, false);
     }
 
     @SuppressWarnings("unchecked")
-    public List<Comment> getComments(final String artifactId, final boolean includeChildren) {
+    public List<Comment> getComments(final String itemId, final boolean includeChildren) {
         return (List<Comment>) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 StringBuilder qstr = new StringBuilder();
@@ -39,7 +39,7 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
                     qstr.append("not(@parent) and");
                 }
                 qstr.append("@item='")
-                        .append(artifactId)
+                        .append(itemId)
                         .append("'] order by @date ascending");
                 return query(qstr.toString(), session);
             }
@@ -76,9 +76,9 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
         }
         CommentCreatedEvent event = new CommentCreatedEvent(item, c);
         event.setUser(SecurityUtils.getCurrentUser());
-        eventManager.fireEvent(event);
+        eventManager.fireEvent(event);  
     }
-
+    
     public Comment getComment(String commentId) throws NotFoundException {
         return get(commentId);
     }
@@ -90,6 +90,4 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
     public void setEventManager(final EventManager eventManager) {
         this.eventManager = eventManager;
     }
-
-
 }

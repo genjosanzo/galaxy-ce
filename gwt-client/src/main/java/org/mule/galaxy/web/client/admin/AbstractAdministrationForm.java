@@ -18,12 +18,14 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.AbstractForm;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 
 public abstract class AbstractAdministrationForm extends AbstractForm {
 
     protected AdministrationPanel adminPanel;
+    protected Galaxy galaxy;
 
     public AbstractAdministrationForm(AdministrationPanel adminPanel, 
                                       String successToken,
@@ -32,6 +34,7 @@ public abstract class AbstractAdministrationForm extends AbstractForm {
         super(adminPanel, successToken, successMessage, deleteMessage, existsMessage);
         
         this.adminPanel = adminPanel;
+        this.galaxy = adminPanel.getGalaxy();
     }
     
     protected SecurityServiceAsync getSecurityService() {

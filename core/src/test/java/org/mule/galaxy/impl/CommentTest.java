@@ -12,23 +12,23 @@ import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class CommentTest extends AbstractGalaxyTest {
     public void testComments() throws Exception {
-        Item artifact = importHelloWsdl();
+        Item item = importHelloWsdl();
         
         Comment c = new Comment();
-        c.setItem(artifact);
+        c.setItem(item);
         
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
         c.setDate(cal);
         c.setUser(getAdmin());
         c.setText("Hello.");
-        c.setItem(artifact);
+        c.setItem(item);
         
         commentManager.addComment(c);
         
         assertNotNull(c.getId());
     
-        List<Comment> comments = commentManager.getComments(artifact.getId());
+        List<Comment> comments = commentManager.getComments(item.getId());
         assertEquals(1, comments.size());
         
         Comment c2 = new Comment();
@@ -53,11 +53,13 @@ public class CommentTest extends AbstractGalaxyTest {
         c3.setText("Hello.");
 
         commentManager.addComment(c3);
-        
-        comments = commentManager.getComments(artifact.getId());
+
+        comments = commentManager.getComments(item.getId());
         assertEquals(1, comments.size());
         
         Comment c4 = comments.get(0);
+        assertEquals(c.getId(), c4.getId());
+        
         Set<Comment> comments2 = c4.getComments();
         assertNotNull(comments2);
         assertEquals(1, comments2.size());

@@ -107,7 +107,7 @@ public class ClassPersister {
                     
                 }
             } catch (NotFoundException e) {
-                log.debug("While retreiving '" + n.getPath() + "': " + e.getMessage());
+                log.error("While retreiving '" + n.getPath() + "': " + e.getMessage());
             }
         }
         

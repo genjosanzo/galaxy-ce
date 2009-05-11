@@ -112,13 +112,6 @@ public class ItemInfoPanel extends AbstractComposite {
         initWidget(panel);
     }
 
-    private Widget newSpacer() {
-        FlowPanel p = new FlowPanel();
-//        p.setStyleName("spacer");
-        p.add(new Label(" "));
-        return p;
-    }
-
     private void initComments() {
         SimplePanel commentsBase = new SimplePanel();
         commentsBase.setStyleName("comments-base");

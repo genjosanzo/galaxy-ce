@@ -49,11 +49,6 @@ public abstract class AbstractBrowsePanel extends AbstractWithTopComposite {
         initWidget(main);
     }
 
-
-    protected RegistryMenuPanel createRegistryMenuPanel() {
-        return new RegistryMenuPanel(galaxy);
-    }
-
     public void onShow(List<String> params) {
         int resultStartParamIdx = getResultStartParameterIndex();
         

@@ -29,6 +29,7 @@ public class WPropertyDescriptor implements IsSerializable {
     private String description;
     private String extension;
     private Map<String, String> configuration;
+    private String typeId;
     
     public WPropertyDescriptor(String id, String name, String description, String extension, boolean multiValued, Map<String, String> configuration) {
         super();
@@ -77,6 +78,13 @@ public class WPropertyDescriptor implements IsSerializable {
     }
     public void setConfiguration(Map<String, String> configuration) {
         this.configuration = configuration;
+    }
+    
+    public String getTypeId() {
+        return typeId;
+    }
+    public void setTypeId(String typeId) {
+        this.typeId = typeId;
     }
     @Override
     public int hashCode() {

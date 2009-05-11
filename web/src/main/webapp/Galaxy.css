@@ -847,6 +847,22 @@ a:visited {
 
 
 /**
+ ** Sortable grid
+ **/
+ 
+ 
+.SortableGrid-header {
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+}
+ 
+.SortableGrid-selectedRow {
+    background-color: #ddd;
+    border: 1px solid #000;
+}
+
+
+/**
  **
  ** Other admin panel styles
  **

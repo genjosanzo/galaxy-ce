@@ -144,7 +144,7 @@ public class SearchTest extends AbstractGalaxyTest {
     }
     
     public void testParentHierarchySearch() throws Exception {
-        Type workspaceType = typeManager.getType(TypeManager.WORKSPACE);
+        Type workspaceType = typeManager.getTypeByName(TypeManager.WORKSPACE);
         Item w = registry.newItem("Test1", workspaceType).getItem();
         Item t2 = w.newItem("Test2", workspaceType).getItem();
         t2.newItem("Test3", workspaceType).getItem();
@@ -156,7 +156,7 @@ public class SearchTest extends AbstractGalaxyTest {
     }
     
     public void testWorkspaceSuggest() throws Exception {
-        Type workspaceType = typeManager.getType(TypeManager.WORKSPACE);
+        Type workspaceType = typeManager.getTypeByName(TypeManager.WORKSPACE);
         
         Item w = registry.newItem("Test1", workspaceType).getItem();
         Item t2 = w.newItem("Test2", workspaceType).getItem();

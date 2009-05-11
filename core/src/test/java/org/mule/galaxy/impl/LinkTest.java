@@ -87,7 +87,7 @@ public class LinkTest extends AbstractGalaxyTest {
         assertTrue(dep.isAutoDetected());
         
         // Move the hello port type and see if that works
-        registry.newItem("Test", typeManager.getType(TypeManager.WORKSPACE));
+        registry.newItem("Test", typeManager.getTypeByName(TypeManager.WORKSPACE));
         registry.move(portType.getParent(), "/Test", "hello-portType.wsdl");
         
         // Ensure that the service wsdl still has a link, but it's linked to item should be null

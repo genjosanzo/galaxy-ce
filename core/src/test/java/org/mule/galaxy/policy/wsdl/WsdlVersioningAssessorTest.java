@@ -20,7 +20,7 @@ public class WsdlVersioningAssessorTest extends AbstractGalaxyTest {
 
         Map<String,Object> props = new HashMap<String, Object>();
         props.put("artifact", new Object[] { getResourceAsStream("/wsdl/hello-noOperation.wsdl"), "application/xml" });
-        NewItemResult ar = a1.getParent().newItem("0.2", typeManager.getType(TypeManager.ARTIFACT_VERSION), props);
+        NewItemResult ar = a1.getParent().newItem("0.2", typeManager.getTypeByName(TypeManager.ARTIFACT_VERSION), props);
         
         Item next = ar.getItem();
         Artifact artifact = (Artifact) next.getProperty("artifact");

@@ -18,16 +18,16 @@
 
 package org.mule.galaxy.web.client;
 
+import java.util.List;
+
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.List;
-
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
 
 public abstract class AbstractComposite extends Composite {
 
@@ -39,6 +39,13 @@ public abstract class AbstractComposite extends Composite {
         
     }
 
+    public static Widget newSpacer() {
+        FlowPanel p = new FlowPanel();
+//        p.setStyleName("spacer");
+        p.add(new Label(" "));
+        return p;
+    }
+    
     public static Widget asDiv(Widget w) {
         FlowPanel p = new FlowPanel();
         p.add(w);

@@ -62,7 +62,6 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
     private FlowPanel propertyPanel;
 
     private Galaxy galaxy;
-    private RegistryMenuPanel menuPanel;
     private RegistryServiceAsync service;
 
     private CheckBox securityCB;
@@ -131,9 +130,7 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
         this.delPropertyLB = new ListBox();
         
         // main root panel
-        menuPanel = new RegistryMenuPanel(galaxy);
-        menuPanel.setMain(wrapperPanel);
-        initWidget(menuPanel);
+        initWidget(wrapperPanel);
     }
 
 
@@ -143,8 +140,7 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
      * @param params
      */
     public void onShow(List<String> params) {
-        menuPanel.clearErrorMessage();
-        menuPanel.onShow();
+        clearErrorMessage();
         this.onShow();
     }
 
@@ -177,8 +173,6 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
         save.addClickListener(this);
         cancel.addClickListener(this);
         wrapperPanel.add(asHorizontal(save, cancel));
-
-        menuPanel.setMain(wrapperPanel);
     }
 
 

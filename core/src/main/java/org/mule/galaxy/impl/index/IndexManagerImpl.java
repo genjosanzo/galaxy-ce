@@ -107,13 +107,6 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
 
     @Override
-    public Index build(Node node, Session session) throws Exception {
-        Index i = super.build(node, session);
-        i.setId(node.getName());
-        return i;
-    }
-
-    @Override
     protected String getNodeType() {
         return "galaxy:index";
     }

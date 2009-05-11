@@ -11,7 +11,6 @@ import java.util.UUID;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
@@ -273,6 +272,7 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
         String id = t.getId();
         Node node = null;
         boolean isNew = true;
+        boolean isMoved = false;
         
         if (id == null) {
             String genId = generateNodeName(t);
@@ -283,21 +283,34 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
         } else {
             node = findNode(id, session);
             
-            // the user supplied a new ID
+            // the user supplied a new ID, use it to create a node
             if (node == null && !generateId) {
-                node = getNodeForObject(getObjectsNode(session), t).addNode(ISO9075.encode(getObjectNodeName(t)), getNodeType());
+                node = getNodeForObject(getObjectsNode(session), t)
+                          .addNode(ISO9075.encode(getObjectNodeName(t)), getNodeType());
                 node.addMixin("mix:referenceable");
-            } else {
+            }  else {
                 isNew = false;
+
+                String newName = generateNodeName(t); 
+                if (!newName.equals(node.getName())) {
+                    move(session, node, newName);
+                    node = session.getNodeByUUID(node.getUUID());
+                    isMoved = true;
+                }
             }
+            
         }
         
         if (node == null) throw new NotFoundException(t.getId());
         
-        doSave(t, node, isNew, session);
+        doSave(t, node, isNew, isMoved, session);
     }
 
-    protected void doSave(T t, Node node, boolean isNew, Session session) throws RepositoryException {
+    protected void move(Session session, Node node, String newName) throws RepositoryException {
+        session.move(node.getPath(), node.getParent().getPath() + "/" + newName);
+    }
+
+    protected void doSave(T t, Node node, boolean isNew, boolean isMoved, Session session) throws RepositoryException {
         try {
             persist(t, node, session);
         } catch (Exception e) {
@@ -311,8 +324,11 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     }
 
     protected String generateNodeName(T t) {
-        UUID uuid = UUID.randomUUID();
-        return uuid.toString();
+        if (t.getId() != null) {
+            return t.getId();
+        }
+        
+        return UUID.randomUUID().toString();
     }
 
     protected String getNodeType() {
@@ -331,7 +347,7 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     }
 
     protected String getId(T t, Node node, Session session) throws RepositoryException {
-        return node.getName();
+        return node.getUUID();
     }
 
     protected String getObjectNodeName(T t) {
@@ -339,25 +355,7 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     }
 
     protected Node findNode(String id, Session session) throws RepositoryException {
-        if (isIdNodeName()) {
-            try {
-                return getObjectsNode(session).getNode(id);
-            } catch (PathNotFoundException e) {
-                return null;
-            }
-        } else {
-            QueryManager qm = getQueryManager(session);
-            Query q = qm.createQuery("/jcr:root/" + rootNode + "/*[@" + idAttributeName + "='" + id + "']", Query.XPATH);
-
-            QueryResult qr = q.execute();
-            
-            NodeIterator nodes = qr.getNodes();
-            if (!nodes.hasNext()) {
-                return null;
-            }
-            
-            return nodes.nextNode();
-        }
+        return session.getNodeByUUID(id);
     }
 
     public String getRootNodeName() {

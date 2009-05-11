@@ -20,6 +20,8 @@ public interface TypeManager {
 
     Type getType(String id) throws NotFoundException;
 
+    Type getTypeByName(String string) throws NotFoundException;
+
     void saveType(Type pd) throws AccessException, DuplicateItemException, NotFoundException;
     
     void deleteType(String id);

@@ -19,6 +19,7 @@ public class PropertyTest extends AbstractGalaxyTest {
         Type type = typeManager.getDefaultType();
         
         assertNotNull(type);
+        assertNotNull(type.getId());
         
         assertEquals(0, type.getProperties().size());
     }
@@ -34,8 +35,30 @@ public class PropertyTest extends AbstractGalaxyTest {
         
         typeManager.savePropertyDescriptor(pd);
         assertEquals("location", pd.getProperty());
+        assertNotSame("location", pd.getId());
         
         typeManager.deletePropertyDescriptor(pd.getId());
+    }
+
+    public void testRenameProperty() throws Exception {
+        PropertyDescriptor pd = new PropertyDescriptor("location", 
+                                                       "Geographic Location",
+                                                       false,
+                                                       false);
+        
+        typeManager.savePropertyDescriptor(pd);
+        assertEquals("location", pd.getProperty());
+        
+        Item item = registry.newItem("test", getSimpleType()).getItem();
+        item.setProperty("location", "Grand Rapids, MI");
+        registry.save(item);
+        
+        pd.setProperty("newLocation");
+        typeManager.savePropertyDescriptor(pd);
+        
+        item = registry.getItemById(item.getId());
+        assertNull(item.getProperty("location"));
+        assertEquals("Grand Rapids, MI", item.getProperty("newLocation"));
     }
     
     public void testProperties() throws Exception {
@@ -89,7 +112,14 @@ public class PropertyTest extends AbstractGalaxyTest {
        typeManager.saveType(type);
        typeManager.savePropertyDescriptor(pd);
        
-       assertEquals(type.getId() + "#" + pd.getProperty(), pd.getId());
+       PropertyDescriptor pd2 = new PropertyDescriptor("test", "Test");
+       pd2.setType(type);
+       try {
+           // ensure that our node names are being generated correct so we get duplicate exceptions
+           typeManager.savePropertyDescriptor(pd2);
+           fail("That was a duplicate!");
+       } catch (DuplicateItemException e) {
+       }
        
        Map<String,Object> props = new HashMap<String,Object>();
        props.put(pd.getProperty(), "foo");

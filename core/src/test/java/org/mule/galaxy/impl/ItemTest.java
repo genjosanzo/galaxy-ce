@@ -28,8 +28,9 @@ public class ItemTest extends AbstractGalaxyTest {
         Item e = r.getItem();
         assertNotNull(e);
     
+        PropertyDescriptor pd = new PropertyDescriptor("endpoint", "endpoint");
+        typeManager.savePropertyDescriptor(pd);
         e.setProperty("endpoint", "http://localhost:9000/foo");
-        e.setProperty("serviceType", "HTTP");
     
         r = e.newItem("1.0", simpleType);
         assertNotNull(r);
@@ -45,7 +46,7 @@ public class ItemTest extends AbstractGalaxyTest {
         Item root = registry.getItems().iterator().next();
         assertEquals("/Default Workspace", root.getPath());
         
-        NewItemResult r = root.newItem("MyService", typeManager.getType(TypeManager.VERSIONED));
+        NewItemResult r = root.newItem("MyService", typeManager.getTypeByName(TypeManager.VERSIONED));
         assertNotNull(r);
     
         Item svc = r.getItem();
@@ -93,7 +94,7 @@ public class ItemTest extends AbstractGalaxyTest {
     public void testVersionResolution() throws Exception {
         Item root = registry.getItems().iterator().next();
         
-        NewItemResult r = root.newItem("foo", typeManager.getType(TypeManager.VERSIONED));
+        NewItemResult r = root.newItem("foo", typeManager.getTypeByName(TypeManager.VERSIONED));
         assertNotNull(r);
     
         Item versioned = r.getItem();
@@ -102,10 +103,10 @@ public class ItemTest extends AbstractGalaxyTest {
         assertEquals(TypeManager.VERSIONED, versioned.getType().getName());
         assertNotNull(versioned.getType().getId());
         
-        r = versioned.newItem("1.0", typeManager.getType(TypeManager.VERSION));
+        r = versioned.newItem("1.0", typeManager.getTypeByName(TypeManager.VERSION));
 //        Item v1 = r.getItem();
         
-        r = versioned.newItem("2.0", typeManager.getType(TypeManager.VERSION));
+        r = versioned.newItem("2.0", typeManager.getTypeByName(TypeManager.VERSION));
 //        Item v2 = r.getItem();
 //        
 //        Item result = registry.resolve(root, "./foo?version=default");
@@ -127,7 +128,10 @@ public class ItemTest extends AbstractGalaxyTest {
     
         Item e = r.getItem();
         assertNotNull(e);
-    
+
+        PropertyDescriptor pd = new PropertyDescriptor("endpoint", "endpoint");
+        typeManager.savePropertyDescriptor(pd);
+        
         String address = "http://localhost:9000/foo";
         e.setProperty("endpoint", address);
         registry.save(e);

@@ -59,8 +59,6 @@ public interface Item {
 
     Object getInternalProperty(String name);
     
-    boolean hasProperty(String name);
-
     Collection<PropertyInfo> getProperties();
     
     PropertyInfo getPropertyInfo(String name);

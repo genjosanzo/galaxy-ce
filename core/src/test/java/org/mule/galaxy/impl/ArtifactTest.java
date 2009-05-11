@@ -20,7 +20,7 @@ public class ArtifactTest extends AbstractGalaxyTest {
     public void testMove() throws Exception {
         Item a = importHelloWsdl();
         
-        Item w = registry.newItem("test", typeManager.getType(TypeManager.WORKSPACE)).getItem();
+        Item w = registry.newItem("test", typeManager.getTypeByName(TypeManager.WORKSPACE)).getItem();
         
         registry.move(a, w.getPath(), a.getName());
         
