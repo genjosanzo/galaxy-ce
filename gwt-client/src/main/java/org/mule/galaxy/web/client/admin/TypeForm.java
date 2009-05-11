@@ -28,7 +28,6 @@ import org.mule.galaxy.web.client.util.ConfirmDialog;
 import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LightBox;
-import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.client.util.PropertyDescriptorComparator;
 import org.mule.galaxy.web.client.util.StylizedSortableGrid;
 import org.mule.galaxy.web.client.util.WTypeComparator;
@@ -408,7 +407,6 @@ public class TypeForm extends AbstractAdministrationForm {
         RegistryServiceAsync svc = adminPanel.getRegistryService();
 
         type.setName(nameTB.getTextBox().getText());
-        type.setProperties(new ArrayList<WPropertyDescriptor>());
         type.setAllowedChildrenIds(new ArrayList<String>());
         type.setMixinIds(new ArrayList<String>());
         

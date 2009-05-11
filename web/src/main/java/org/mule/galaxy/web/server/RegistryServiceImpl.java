@@ -1414,12 +1414,17 @@ public class RegistryServiceImpl implements RegistryService {
             // have to do two phases of saving. First, get a type ID
             // then use that type ID on any property that was created
             List<PropertyDescriptor> props = type.getProperties();
-            type.setProperties(props);
+            type.setProperties(null);
             
             typeManager.saveType(type);
             
             for (PropertyDescriptor pd : props) {
+                typeManager.savePropertyDescriptor(pd);
             }
+            
+            type.setProperties(props);
+            typeManager.saveType(type);
+            
             wt.setId(type.getId());
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
@@ -1438,11 +1443,21 @@ public class RegistryServiceImpl implements RegistryService {
         type.setMixins(fromWebToTypes(wt.getMixinIds()));
         
         List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
-        for (WPropertyDescriptor pd : wt.getProperties()) {
-            PropertyDescriptor propertyDescriptor = typeManager.getPropertyDescriptor(pd.getId());
-//            properties.add();
-//            
-//            pd.setName(name);
+        for (WPropertyDescriptor wpd : wt.getProperties()) {
+            PropertyDescriptor pd;
+            if (wpd.getId() != null  && !"new".equals(wpd.getId())) {
+                pd = typeManager.getPropertyDescriptor(wpd.getId());
+            } else {
+                pd = new PropertyDescriptor();
+                pd.setMultivalued(wpd.isMultiValued());
+                pd.setConfiguration(wpd.getConfiguration());
+                pd.setExtension(registry.getExtension(wpd.getExtension()));
+            }
+            
+            pd.setProperty(wpd.getName());
+            pd.setDescription(wpd.getDescription());
+            
+            properties.add(pd);
         }
         type.setProperties(properties);
         
