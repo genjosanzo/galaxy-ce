@@ -16,12 +16,12 @@ public class PolicyException extends Exception {
     }
 
     public PolicyException(Item item, String string) {
-	this.policyFailures = new HashMap<Item, List<ApprovalMessage>>();
-	
-	List<ApprovalMessage> msgs = new ArrayList<ApprovalMessage>();
-	msgs.add(new ApprovalMessage(string, false));
-	
-	policyFailures.put(item, msgs);
+    this.policyFailures = new HashMap<Item, List<ApprovalMessage>>();
+
+    List<ApprovalMessage> msgs = new ArrayList<ApprovalMessage>();
+    msgs.add(new ApprovalMessage(string, false));
+
+    policyFailures.put(item, msgs);
     }
 
     public Map<Item, List<ApprovalMessage>> getPolicyFailures() {

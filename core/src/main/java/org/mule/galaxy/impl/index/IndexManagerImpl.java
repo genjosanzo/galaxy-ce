@@ -212,10 +212,10 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 } catch (PropertyException e) {
                     throw new RuntimeException(e);
                 } catch (PolicyException e) {
-		    handleIndexingException(idx, e);
-		} catch (AccessException e) {
-		    // this should never happen since we're running in priveleged mode
-		    throw new RuntimeException(e);
+            handleIndexingException(idx, e);
+        } catch (AccessException e) {
+            // this should never happen since we're running in priveleged mode
+            throw new RuntimeException(e);
                 }
             }
             session.save();
@@ -299,7 +299,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                         public void run() {
                             try {
                                 // lookup a version associated with this session
-                        	Item item = getRegistry().getItemById(id);
+                            Item item = getRegistry().getItemById(id);
 
                                 try {
                                     doIndex(item, property);
@@ -386,7 +386,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
             logActivity("Reindexing the \"" + idx.getDescription() + "\" index for " + results.size() + " items.");
 
             for (Item item : results) {
-        	// Reindex each file type
+            // Reindex each file type
                 for (PropertyDescriptor pd : filePDs) {
                     PropertyInfo pi = item.getPropertyInfo(pd.getProperty());
                     if (pi != null) {
@@ -436,7 +436,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
     
     public void index(final Item item) {
-	for (PropertyDescriptor pd : typeManager.getPropertyDescriptorsForExtension(ArtifactExtension.ID)) {
+    for (PropertyDescriptor pd : typeManager.getPropertyDescriptorsForExtension(ArtifactExtension.ID)) {
             if (indexArtifactsAsynchronously) {
                 Runnable indexer = getIndexer(item, pd.getProperty());
                 
@@ -444,20 +444,20 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
             } else {
                 doIndex(item, pd.getProperty());
             }
-	}
+    }
     }
 
     private void doIndex(final Item item, String property) {
-	final PropertyInfo pi = item.getPropertyInfo(property);
-	if (pi == null) {
-	    return;
-	}
-	
-	Artifact a = (Artifact) pi.getValue();
-	if (a == null) {
-	    return;
-	}
-	
+    final PropertyInfo pi = item.getPropertyInfo(property);
+    if (pi == null) {
+        return;
+    }
+
+    Artifact a = (Artifact) pi.getValue();
+    if (a == null) {
+        return;
+    }
+
         final Collection<Index> indices = getIndexes(a);
         
         SecurityUtils.doPriveleged(new Runnable() {

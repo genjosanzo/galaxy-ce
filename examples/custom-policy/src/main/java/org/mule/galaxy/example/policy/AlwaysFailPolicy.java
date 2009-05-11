@@ -13,37 +13,37 @@ import org.mule.galaxy.policy.Policy;
  */
 public class AlwaysFailPolicy implements Policy {
 
-	public static final String ID = "ALWAYS_FAIL";
+    public static final String ID = "ALWAYS_FAIL";
 
-	public boolean applies(Item item) {
-		return true;
-	}
+    public boolean applies(Item item) {
+        return true;
+    }
 
-	public String getDescription() {
-		return "A policy which always fails";
-	}
+    public String getDescription() {
+        return "A policy which always fails";
+    }
 
-	/**
-	 * A unique, unchanging ID for this policy.
-	 */
-	public String getId() {
-		return ID;
-	}
+    /**
+     * A unique, unchanging ID for this policy.
+     */
+    public String getId() {
+        return ID;
+    }
 
-	/**
-	 * The display name in the UI.
-	 */
-	public String getName() {
-		return "Always fail policy";
-	}
+    /**
+     * The display name in the UI.
+     */
+    public String getName() {
+        return "Always fail policy";
+    }
 
-	public Collection<ApprovalMessage> isApproved(Item item) {
-		// Return an approval message which indicates that this policy failed
-		// and gives a reason why.
-		return Arrays.asList(new ApprovalMessage("The policy failed for this item!", false));
-	}
+    public Collection<ApprovalMessage> isApproved(Item item) {
+        // Return an approval message which indicates that this policy failed
+        // and gives a reason why.
+        return Arrays.asList(new ApprovalMessage("The policy failed for this item!", false));
+    }
 
-	public void setRegistry(Registry registry) {
-	}
+    public void setRegistry(Registry registry) {
+    }
 }
 // END SNIPPET: policy

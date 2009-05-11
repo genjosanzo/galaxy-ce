@@ -41,8 +41,8 @@ public class XQueryIndexer extends AbstractIndexer {
     private XQDataSource ds = new SaxonXQDataSource();
 
     public void index(Item item, PropertyInfo property, Index index)
-    	throws IOException, IndexException {
-	Artifact artifact = (Artifact) property.getValue();
+        throws IOException, IndexException {
+    Artifact artifact = (Artifact) property.getValue();
         try {
             XQConnection conn = ds.getConnection();
             
@@ -94,7 +94,7 @@ public class XQueryIndexer extends AbstractIndexer {
                 item.setLocked(propertyName, true);
                 item.setVisible(propertyName, visible);
             } else {
-        	item.setProperty(propertyName, null);
+            item.setProperty(propertyName, null);
             }
             
             conn.close();
@@ -105,7 +105,7 @@ public class XQueryIndexer extends AbstractIndexer {
             throw new IndexException(e);
         } catch (PolicyException e) {
             throw new IndexException(e);
-	} catch (AccessException e) {
+    } catch (AccessException e) {
             throw new IndexException(e);
         }
     }

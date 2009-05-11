@@ -10,9 +10,9 @@ public class ItemEvent extends GalaxyEvent {
     private String itemPath;
     
     public ItemEvent(Item item) {
-	super();
-	this.itemId = item.getId();
-	this.itemPath = item.getPath();
+    super();
+    this.itemId = item.getId();
+    this.itemPath = item.getPath();
     }
 
     public ItemEvent() {

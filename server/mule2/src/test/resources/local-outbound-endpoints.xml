@@ -12,15 +12,15 @@
                
     <endpoint name="in" address="vm://in"/>
     <model>
-	    <service name="foo">
-	        <inbound>
-	            <inbound-endpoint ref="in"/>
-	        </inbound>
-	        <outbound>
-	           <pass-through-router>
-	               <outbound-endpoint address="vm://out"/>
-	           </pass-through-router>
-	        </outbound>
-	    </service>
+        <service name="foo">
+            <inbound>
+                <inbound-endpoint ref="in"/>
+            </inbound>
+            <outbound>
+               <pass-through-router>
+                   <outbound-endpoint address="vm://out"/>
+               </pass-through-router>
+            </outbound>
+        </service>
     </model>
 </mule>

@@ -59,14 +59,14 @@ public class DummyWorkspaceManager extends AbstractWorkspaceManager implements W
     }
 
     public NewItemResult newItem(Item parent, String name, Type type,
-			Map<String, Object> initialProperties)
-			throws DuplicateItemException, RegistryException, PolicyException,
-			AccessException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+            Map<String, Object> initialProperties)
+            throws DuplicateItemException, RegistryException, PolicyException,
+            AccessException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public void delete(Item item) throws RegistryException, AccessException {
+    public void delete(Item item) throws RegistryException, AccessException {
     }
 
     public String getId() {

@@ -9,7 +9,7 @@ public class PropertyChangedEvent extends ItemEvent {
     private Object newValue;
 
     public PropertyChangedEvent(User user, Item item, String propertyName, Object newValue) {
-	super(item);
+    super(item);
         setUser(user);
         this.propertyName = propertyName;
         this.newValue = newValue;

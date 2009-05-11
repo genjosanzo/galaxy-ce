@@ -36,7 +36,7 @@ public interface WorkspaceManager {
     void save(Item item) throws RegistryException, AccessException, PolicyException, PropertyException;
 
     NewItemResult newItem(Item parent, String name, Type type, Map<String,Object> initialProperties)
-    	throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException;
+        throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException;
     
     List<Item> getItems(Item w) throws RegistryException;
     

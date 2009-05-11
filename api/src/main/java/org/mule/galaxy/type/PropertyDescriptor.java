@@ -24,7 +24,7 @@ public class PropertyDescriptor implements Identifiable {
         this.property = property;
         this.description = description;
         this.multivalued = multivalued;
-	this.index = index;
+    this.index = index;
     }
 
     public PropertyDescriptor() {
@@ -85,10 +85,10 @@ public class PropertyDescriptor implements Identifiable {
     }
     
     public void addAppliesTo(Class c) {
-	if (appliesTo == null) {
-	    appliesTo = new ArrayList<Class>();
-	}
-	appliesTo.add(c);
+    if (appliesTo == null) {
+        appliesTo = new ArrayList<Class>();
+    }
+    appliesTo.add(c);
     }
 
     public Map<String, String> getConfiguration() {

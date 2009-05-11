@@ -208,9 +208,9 @@ public class Galaxy implements EntryPoint, HistoryListener {
         new HeartbeatTimer(Galaxy.this);
     }
 
-	protected String getFooterText() {
-		return getProductName() + ", Copyright 2008 MuleSource, Inc.";
-	}
+    protected String getFooterText() {
+        return getProductName() + ", Copyright 2008 MuleSource, Inc.";
+    }
 
     protected void initializeBody() {
         base.add(tabPanel);

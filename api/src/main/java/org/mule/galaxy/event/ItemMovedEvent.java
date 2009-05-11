@@ -7,7 +7,7 @@ public class ItemMovedEvent extends ItemEvent {
     private String oldPath;
 
     public ItemMovedEvent(Item item, final String oldPath) {
-	super(item);
+    super(item);
         this.oldPath = oldPath;
     }
 

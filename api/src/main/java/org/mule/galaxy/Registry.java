@@ -31,10 +31,10 @@ public interface Registry {
     Collection<Item> getItems() throws RegistryException, AccessException;
 
     NewItemResult newItem(String name, Type type)
-    	throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException;
+        throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException;
 
     NewItemResult newItem(String name, Type type, Map<String,Object> initialProperties)
-    	throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException;
+        throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException;
     
     void save(Item w, String parentId)
         throws RegistryException, NotFoundException, AccessException, DuplicateItemException;
@@ -55,9 +55,9 @@ public interface Registry {
      * @throws RegistryException
      */
     AttachedItem attachItem(Item parent, 
-                    	    String name, 
+                            String name,
                             String workspaceFactory, 
-                    	    Map<String, String> configuration) throws RegistryException;
+                            Map<String, String> configuration) throws RegistryException;
     
     Collection<AttachedItem> getAttachedItems();
     
@@ -76,7 +76,7 @@ public interface Registry {
     SearchResults search(Query query) throws RegistryException, QueryException;
     
     SearchResults suggest(final String path, final int maxResults, final String excludePath, String... types)
-    	throws RegistryException, QueryException;
+        throws RegistryException, QueryException;
     
     /**
      * Get a Map of properties which can be used inside queries. The key will be the property

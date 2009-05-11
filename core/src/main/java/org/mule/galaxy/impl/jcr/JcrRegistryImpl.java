@@ -121,7 +121,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
     }
 
     public NewItemResult newItem(String name, Type type, Map<String,Object> initialProperties)
-    	throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException {
+        throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException {
         return localWorkspaceManager.newItem(null, name, type, initialProperties);
     }
     
@@ -317,7 +317,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
             }
             
             if (w == null) {
-        	return null;
+            return null;
             }
             
             Item result = w.getItem(paths[paths.length-1]);
@@ -557,7 +557,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
             private void addNodes(Node node, 
                                   Set<Item> results) throws RepositoryException, ItemNotFoundException,
                 AccessDeniedException, RegistryException {
-        	
+
                 try {
                     Item item = new JcrItem(node, localWorkspaceManager);
                     accessControlManager.assertAccess(Permission.READ_ITEM, item);

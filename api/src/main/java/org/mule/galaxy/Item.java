@@ -98,9 +98,9 @@ public interface Item {
     Item getItem(String name) throws RegistryException, NotFoundException, AccessException;
     
     NewItemResult newItem(String name, Type type)
-    	throws DuplicateItemException, RegistryException, PolicyException, PropertyException, AccessException;
+        throws DuplicateItemException, RegistryException, PolicyException, PropertyException, AccessException;
 
     NewItemResult newItem(String name, Type type, Map<String,Object> initialProperties)
-    	throws DuplicateItemException, RegistryException, PolicyException, PropertyException, AccessException;
+        throws DuplicateItemException, RegistryException, PolicyException, PropertyException, AccessException;
 
 }

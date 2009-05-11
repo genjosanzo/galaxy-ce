@@ -98,8 +98,8 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
 //
 //                User anon = userManager.getByUsername("anonymous");
 //                if (anon != null) {
-//                	anon.addGroup(anonGroup);
-//                	userManager.save(anon);
+//                    anon.addGroup(anonGroup);
+//                    userManager.save(anon);
 //                }
             }
             
@@ -236,7 +236,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
             getGrants(itemNode, pgs, item);
         } catch (PathNotFoundException e) {
             for (Permission p : getPermissions()) {
-            	if (p.isItemPermission()) {
+                if (p.isItemPermission()) {
                     pgs.add(new PermissionGrant(p, PermissionGrant.Grant.INHERITED));
                 }
             }

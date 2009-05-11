@@ -9,7 +9,7 @@ public class SimpleQueryBuilder extends QueryBuilder {
     
     
     public SimpleQueryBuilder() {
-	super();
+    super();
     }
 
     public SimpleQueryBuilder(String[] properties) {

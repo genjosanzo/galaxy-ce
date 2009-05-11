@@ -12,15 +12,15 @@ public class Link implements Identifiable {
     public Link(Item item, 
                 Item linkedTo, 
                 String linkedToPath,
-	        boolean isAutoDetected) {
-	super();
-	this.item = item;
-	this.linkedTo = linkedTo;
-	this.linkedToPath = linkedToPath;
-	this.isAutoDetected = isAutoDetected;
+            boolean isAutoDetected) {
+    super();
+    this.item = item;
+    this.linkedTo = linkedTo;
+    this.linkedToPath = linkedToPath;
+    this.isAutoDetected = isAutoDetected;
     }
     public Link() {
-	super();
+    super();
     }
     public String getId() {
         return id;
@@ -60,14 +60,14 @@ public class Link implements Identifiable {
     }
     
     public String toString() {
-	if (linkedToPath != null) {
-	    return linkedToPath;
-	}
-	
-	if (linkedTo != null) {
-	    return linkedTo.getPath();
-	}
-	
-	return super.toString();
+    if (linkedToPath != null) {
+        return linkedToPath;
+    }
+
+    if (linkedTo != null) {
+        return linkedTo.getPath();
+    }
+
+    return super.toString();
     }
 }

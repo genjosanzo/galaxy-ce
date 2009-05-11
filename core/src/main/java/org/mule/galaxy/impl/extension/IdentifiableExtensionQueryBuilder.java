@@ -26,22 +26,22 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
     private String root;
     
     public IdentifiableExtensionQueryBuilder(IdentifiableExtension e) throws IntrospectionException {
-	super();
-	
-	this.extension = e;
-	
-	dao = e.getDao();
-	Class<?> typeClass = dao.getTypeClass();
-	
-	initProperties(typeClass);
+    super();
+
+    this.extension = e;
+
+    dao = e.getDao();
+    Class<?> typeClass = dao.getTypeClass();
+
+    initProperties(typeClass);
     }
 
     private void initProperties(Class<?> type) throws IntrospectionException {
-	root = type.getSimpleName();
-	
-	root = root.substring(0, 1).toLowerCase() + root.substring(1);
-	
-	BeanInfo info = Introspector.getBeanInfo(type);
+    root = type.getSimpleName();
+
+    root = root.substring(0, 1).toLowerCase() + root.substring(1);
+
+    BeanInfo info = Introspector.getBeanInfo(type);
         for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
             suffixes.add(pd.getName());
         }
@@ -108,26 +108,26 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
     
     @SuppressWarnings("unchecked")
     protected List<String> getMatches(Object o, String property, Operator operator) throws QueryException {
-	property = property.substring(property.lastIndexOf('.') + 1);
-	if (Operator.LIKE == operator) {
-	    List results = dao.find(property, "%" + o.toString() + "%");
-	   
-	    return asIds((List<Identifiable>) results);
-	} else if (Operator.EQUALS == operator || Operator.IN == operator) {
+    property = property.substring(property.lastIndexOf('.') + 1);
+    if (Operator.LIKE == operator) {
+        List results = dao.find(property, "%" + o.toString() + "%");
+
+        return asIds((List<Identifiable>) results);
+    } else if (Operator.EQUALS == operator || Operator.IN == operator) {
             List results = dao.find(property, o.toString());
            
             return asIds((List<Identifiable>) results);
         } 
-	return Collections.emptyList();
+    return Collections.emptyList();
     }
 
     protected List<String> asIds(Collection<? extends Identifiable> results) {
-	ArrayList<String> ids = new ArrayList<String>();
-	for (Identifiable result : results) {
-	    ids.add(result.getId());
-	}
-	
-	return ids;
+    ArrayList<String> ids = new ArrayList<String>();
+    for (Identifiable result : results) {
+        ids.add(result.getId());
+    }
+
+    return ids;
     }
 
     public Dao getDao() {

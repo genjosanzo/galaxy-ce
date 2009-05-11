@@ -123,10 +123,10 @@ public class Index implements Identifiable {
     }
 
     public void addPropertyDescriptor(PropertyDescriptor pd) {
-	if (propertyDescriptors == null) {
-	    propertyDescriptors = new ArrayList<PropertyDescriptor>();
-	}
-	propertyDescriptors.add(pd);
+    if (propertyDescriptors == null) {
+        propertyDescriptors = new ArrayList<PropertyDescriptor>();
+    }
+    propertyDescriptors.add(pd);
     }
     public String toString()
     {

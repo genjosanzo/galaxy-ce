@@ -21,8 +21,8 @@
 
 
 <spring:beans xmlns:spring="http://xbean.apache.org/schemas/spring/1.0" 
-			  xmlns:s="http://www.springframework.org/schema/beans"
-			  xmlns="http://apacheds.org/config/1.0"
+              xmlns:s="http://www.springframework.org/schema/beans"
+              xmlns="http://apacheds.org/config/1.0"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd

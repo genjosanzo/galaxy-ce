@@ -10,11 +10,11 @@
                http://www.mulesource.org/schema/mule/cxf/2.2 http://www.mulesource.org/schema/mule/cxf/2.2/mule-cxf.xsd
                http://www.mulesource.org/schema/mule/http/2.2 http://www.mulesource.org/schema/mule/http/2.2/mule-http.xsd">
     <model>
-	    <service name="foo">
-	        <inbound>
-	            <inbound-endpoint address="vm://in"/>
-	        </inbound>
-	        <echo-component/>
-	    </service>
+        <service name="foo">
+            <inbound>
+                <inbound-endpoint address="vm://in"/>
+            </inbound>
+            <echo-component/>
+        </service>
     </model>
 </mule>

@@ -50,9 +50,9 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
     public void initialize() throws Exception {
         setName("Link");
         
-	configuration.add(RECIPROCAL_CONFIG_KEY);
-	
-	add(DEPENDS, "Depends On", "Depended On By");
+    configuration.add(RECIPROCAL_CONFIG_KEY);
+
+    add(DEPENDS, "Depends On", "Depended On By");
         add(DOCUMENTS, "Documents", "Documented By");
         add(SUPERCEDES, "Supercedes", "Superceded By");
         add(INCLUDES, "Includes", "Included By");

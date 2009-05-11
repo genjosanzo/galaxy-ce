@@ -161,7 +161,7 @@ public class JcrItem extends AbstractItem {
             if (parent == null) {
                 Node parentNode = node.getParent();
                 if ("galaxy:item".equals(parentNode.getPrimaryNodeType().getName())) {
-                	parent = new JcrItem(parentNode, manager);
+                    parent = new JcrItem(parentNode, manager);
                 }
             }
             return parent;
@@ -306,11 +306,11 @@ public class JcrItem extends AbstractItem {
         PropertyDescriptor pd = getManager().getTypeManager().getPropertyDescriptorByName(name, null);
         if (pd != null && pd.getExtension() != null) {
             pd.getExtension().store(this, pd, value);
-	} else {
-	    setInternalProperty(name, value, false);
+    } else {
+        setInternalProperty(name, value, false);
 
             getSaveEvents().add(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), this, name, value));
-	}    
+    }
     }
 
     public void setInternalProperty(String name, Object value) throws PropertyException, PolicyException, AccessException {
@@ -414,13 +414,13 @@ public class JcrItem extends AbstractItem {
     }
 
     public Object getProperty(String name) {
-	PropertyDescriptor pd = manager.getTypeManager().getPropertyDescriptorByName(name, getType());
-	
-	if (pd != null && pd.getExtension() != null) {
+    PropertyDescriptor pd = manager.getTypeManager().getPropertyDescriptorByName(name, getType());
+
+    if (pd != null && pd.getExtension() != null) {
             return pd.getExtension().get(this, pd, true);
         } else {
-	    return JcrUtil.getProperty(name, node);
-	}
+        return JcrUtil.getProperty(name, node);
+    }
     }
 
     public Object getInternalProperty(String name) {

@@ -102,7 +102,7 @@ public abstract class AbstractAtomTest extends TestCase {
     }
     
     protected InputStream getResourceAsStream(String name) {
-	return getClass().getResourceAsStream(name);
+    return getClass().getResourceAsStream(name);
     }
 
     protected void login(final String username, final String password) {

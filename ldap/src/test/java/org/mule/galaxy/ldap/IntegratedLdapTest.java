@@ -33,7 +33,7 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
     final String name = "cn=" + groupName + ",ou=groups,ou=system";
 
     public void testUserManager() throws Exception {
-	
+
         UserManager userManager = (UserManager) applicationContext.getBean("userManager");
 
         User user = SecurityUtils.getCurrentUser();
@@ -136,13 +136,13 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
     
     @Override
     protected ConfigurableApplicationContext createApplicationContext(
-	    String[] locations) {
-	if (System.getProperty("basedir") == null) {
-	    System.setProperty("basedir", "");
-	}
-	
-	// Apache DS uses XBean
-	return new ClassPathXmlApplicationContext(locations);
+        String[] locations) {
+    if (System.getProperty("basedir") == null) {
+        System.setProperty("basedir", "");
+    }
+
+    // Apache DS uses XBean
+    return new ClassPathXmlApplicationContext(locations);
     }
 
     @Override

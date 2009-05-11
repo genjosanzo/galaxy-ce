@@ -48,7 +48,7 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     }
     
     public Class<T> getTypeClass() {
-	return type;
+    return type;
     }
 
     @SuppressWarnings("unchecked")

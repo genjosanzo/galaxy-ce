@@ -31,8 +31,8 @@ public class XPathIndexer extends AbstractIndexer {
     private static final ResourceBundle BUNDLE = BundleUtils.getBundle(XPathIndexer.class);
 
     public void index(Item item, PropertyInfo property, Index index)
-    	throws IOException, IndexException {
-	Artifact artifact = (Artifact) property.getValue();
+        throws IOException, IndexException {
+    Artifact artifact = (Artifact) property.getValue();
         Document document = ((XmlContentHandler)artifact.getContentHandler()).getDocument(artifact.getData());
 
         XPath xpath = factory.newXPath();
@@ -52,7 +52,7 @@ public class XPathIndexer extends AbstractIndexer {
             throw new IndexException(e);
         } catch (PolicyException e) {
             throw new IndexException(e);
-	} catch (AccessException e) {
+    } catch (AccessException e) {
             throw new IndexException(e);
         }
     }

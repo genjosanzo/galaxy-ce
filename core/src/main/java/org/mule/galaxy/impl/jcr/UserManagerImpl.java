@@ -101,9 +101,9 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     }
 
     public User getByUsername(final String username) {
-	if (SecurityUtils.SYSTEM_USER.getUsername().equals(username)) {
-	    return SecurityUtils.SYSTEM_USER;
-	}
+    if (SecurityUtils.SYSTEM_USER.getUsername().equals(username)) {
+        return SecurityUtils.SYSTEM_USER;
+    }
         return (User) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node userNode = findUser(username, session);
@@ -295,26 +295,26 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         }
     }
 
-	private void addUser(Node objects, Node activeUsers, String username,
-			String name) throws ItemExistsException, PathNotFoundException,
-			VersionException, ConstraintViolationException, LockException,
-			RepositoryException, NoSuchNodeTypeException, ValueFormatException {
-		String id = UUID.randomUUID().toString();
-		Node node = objects.addNode(id);
-		node.addMixin("mix:referenceable");
-		node.setProperty(PASSWORD, username);
-		node.setProperty(ENABLED, true);
-		
-		JcrUtil.setProperty(USERNAME, username, node);
-		JcrUtil.setProperty(NAME, name, node);
-		JcrUtil.setProperty(EMAIL, "", node);
-		
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		JcrUtil.setProperty(CREATED, cal, node);
-		
-		activeUsers.addNode(username);
-	}
+    private void addUser(Node objects, Node activeUsers, String username,
+            String name) throws ItemExistsException, PathNotFoundException,
+            VersionException, ConstraintViolationException, LockException,
+            RepositoryException, NoSuchNodeTypeException, ValueFormatException {
+        String id = UUID.randomUUID().toString();
+        Node node = objects.addNode(id);
+        node.addMixin("mix:referenceable");
+        node.setProperty(PASSWORD, username);
+        node.setProperty(ENABLED, true);
+
+        JcrUtil.setProperty(USERNAME, username, node);
+        JcrUtil.setProperty(NAME, name, node);
+        JcrUtil.setProperty(EMAIL, "", node);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        JcrUtil.setProperty(CREATED, cal, node);
+
+        activeUsers.addNode(username);
+    }
 
     private AccessControlManager getAccessControlManager() {
         if (accessControlManager == null) {

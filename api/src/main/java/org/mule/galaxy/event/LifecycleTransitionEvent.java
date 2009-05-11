@@ -28,7 +28,7 @@ public class LifecycleTransitionEvent extends ItemEvent {
                                     final String oldPhaseName,
                                     final String newPhaseName,
                                     final String lifecycleName) {
-	    super(item);
+        super(item);
         setUser(user);
         this.oldPhaseName = oldPhaseName;
         this.newPhaseName = newPhaseName;

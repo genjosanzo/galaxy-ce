@@ -253,11 +253,11 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
     }
     
     public NewItemResult newItem(
-    		final Item parent, 
-    		final String name, 
-    		final Type type,
-		final Map<String, Object> initialProperties)
-		throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException {
+            final Item parent,
+            final String name,
+            final Type type,
+        final Map<String, Object> initialProperties)
+        throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException {
         if (parent != null) {
             accessControlManager.assertAccess(Permission.MODIFY_ITEM, parent);
         } else {
@@ -336,23 +336,23 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
                     // save the "we're indexing" flag
                     session.save();
                     
-	            // fire the event
-		    NewItemResult result = new NewItemResult(item, approvals);
-		    ItemCreatedEvent event = new ItemCreatedEvent(result.getItem());
-		    event.setUser(SecurityUtils.getCurrentUser());
-		    eventManager.fireEvent(event);
+                // fire the event
+            NewItemResult result = new NewItemResult(item, approvals);
+            ItemCreatedEvent event = new ItemCreatedEvent(result.getItem());
+            event.setUser(SecurityUtils.getCurrentUser());
+            eventManager.fireEvent(event);
 
-	            return result;
+                return result;
                 } catch (RuntimeException e) {
                     parentNode.refresh(false);
                     throw e;
                 } catch (RegistryException e) {
                     parentNode.refresh(false);
                     throw new RuntimeException(e);
-		} catch (PolicyException e) {
+        } catch (PolicyException e) {
                     parentNode.refresh(false);
                     throw new RuntimeException(e);
-		} catch (PropertyException e) {
+        } catch (PropertyException e) {
                     parentNode.refresh(false);
                     throw new RuntimeException(e);
                 } catch (AccessException e) {
@@ -406,11 +406,11 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
     }
 
     public void delete(final Item item) throws RegistryException, AccessException {
-	accessControlManager.assertAccess(Permission.DELETE_ITEM);
+    accessControlManager.assertAccess(Permission.DELETE_ITEM);
 
         executeWithRegistryException(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-        	ItemDeletedEvent evt = new ItemDeletedEvent(item);
+            ItemDeletedEvent evt = new ItemDeletedEvent(item);
 
                 Node node = ((JcrItem) item).getNode();
                 Node parent = node.getParent();
