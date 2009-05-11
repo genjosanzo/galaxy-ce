@@ -19,6 +19,8 @@ import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.type.PropertyDescriptor;
+import org.mule.galaxy.type.Type;
+import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.LinkInfo;
 import org.mule.galaxy.web.rpc.RegistryService;
@@ -56,7 +58,9 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     {
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
         props.put("foo", "bar");
-        String id = gwtRegistry.addItem("/Default Workspace", "Test", null, "Base Type", props);
+        
+        Type type = getSimpleType();
+        String id = gwtRegistry.addItem("/Default Workspace", "Test", null, type.getId(), props);
         
         ItemInfo info = gwtRegistry.getItemInfo(id, true);
         assertEquals("bar", info.getProperty("foo").getValue());
@@ -180,8 +184,9 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         
         ItemInfo w = workspaces.iterator().next();
-        
-        gwtRegistry.addItem(w.getPath(), "Foo", null, "Workspace", null);
+
+        Type type = typeManager.getTypeByName(TypeManager.WORKSPACE);
+        gwtRegistry.addItem(w.getPath(), "Foo", null, type.getId(), null);
         
         workspaces = gwtRegistry.getItems(w.getId());
         assertEquals(1, workspaces.size());
@@ -197,8 +202,9 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals(1, workspaces.size());
         
         ItemInfo w = workspaces.iterator().next();
-        
-        String entryId = gwtRegistry.addItem(w.getPath(), "Foo", null, "Base Type", new HashMap<String, Serializable>());
+
+        Type type = getSimpleType();
+        String entryId = gwtRegistry.addItem(w.getPath(), "Foo", null, type.getId(), new HashMap<String, Serializable>());
         
         ItemInfo entry = gwtRegistry.getItemInfo(entryId, false);
         assertEquals("Base Type", entry.getType());

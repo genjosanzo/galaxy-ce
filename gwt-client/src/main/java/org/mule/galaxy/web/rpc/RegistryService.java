@@ -36,7 +36,7 @@ public interface RegistryService extends RemoteService {
     String addItem(String parentPath, 
                    String workspaceName,
                    String lifecycleId, 
-                   String type, 
+                   String typeId, 
                    Map<String, Serializable> properties) 
         throws RPCException, ItemNotFoundException, ItemExistsException, WPolicyException;
 

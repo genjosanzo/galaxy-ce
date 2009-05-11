@@ -225,12 +225,12 @@ public class RegistryServiceImpl implements RegistryService {
     public String addItem(String parentPath, 
                           String workspaceName, 
                           String lifecycleId, 
-                          String typeName, 
+                          String typeId, 
                           Map<String, Serializable> properties) 
         throws RPCException, ItemNotFoundException, ItemExistsException, WPolicyException {
         try {
             Item item;
-            Type type = typeManager.getTypeByName(typeName);
+            Type type = typeManager.getType(typeId);
             Map<String, Object> localProperties = new HashMap<String, Object>();
             if (properties != null) {
                 for (Map.Entry<String, Serializable> e : properties.entrySet()) {
