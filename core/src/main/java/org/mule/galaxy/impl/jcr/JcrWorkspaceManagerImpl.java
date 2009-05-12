@@ -162,6 +162,8 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
             
             Node wNode = getWorkspacesNode();
             
+            path = ISO9075.encodePath(path);
+            
             try {
                 // have to have the catch because jackrabbit is lame...
                 if (!wNode.hasNode(path)) throw new NotFoundException(path);
@@ -186,7 +188,7 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
                 Node node = ((JcrItem) w).getNode();
                 
                 try {
-                    Node resolved = node.getNode(JcrUtil.escape(name));
+                    Node resolved = node.getNode(ISO9075.encode(name));
                     
                     return build(resolved, resolved.getPrimaryNodeType().getName());
                 } catch (PathNotFoundException e) {
@@ -286,7 +288,7 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
                 
                 Node itemNode;
                 try {
-                    itemNode = parentNode.addNode(name, ITEM_NODE_TYPE);
+                    itemNode = parentNode.addNode(ISO9075.encode(name), ITEM_NODE_TYPE);
                 } catch (javax.jcr.ItemExistsException e) {
                     throw new RuntimeException(new DuplicateItemException(name));
                 }

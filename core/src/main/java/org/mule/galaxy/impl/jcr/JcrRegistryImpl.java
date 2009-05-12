@@ -704,8 +704,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
             }
             
             base.append("//")
-            .append(ISO9075.encode(path))
-            .append("");
+                .append(ISO9075.encodePath(path))
+                .append("");
             
             if (query.isFromRecursive()) {
                 base.append("//*");

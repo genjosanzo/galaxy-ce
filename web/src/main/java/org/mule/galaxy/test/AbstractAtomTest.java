@@ -97,7 +97,20 @@ public abstract class AbstractAtomTest extends TestCase {
 
     private void deleteIfExists(File file) throws IOException {
         if (file.exists()) {
-            FileUtil.delete(file);
+            boolean deleted = false;
+            while (!deleted) {
+                // Give the other threads time to be shut down in case it's still running from the previous test
+                try {
+                    FileUtil.delete(file);
+                    deleted = true;
+                } catch (IOException e) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e1) {
+                    }
+                }
+            }
+            
         }
     }
     

@@ -35,11 +35,21 @@ public class ItemTest extends AbstractGalaxyTest {
         r = e.newItem("1.0", simpleType);
         assertNotNull(r);
         assertEquals("/Default Workspace/MyService/1.0", r.getItem().getPath());
+        assertEquals("1.0",  r.getItem().getName());
         
         e = registry.getItemByPath(r.getItem().getPath());
         assertNotNull(e);
 
         assertEquals("/Default Workspace/MyService/1.0", e.getPath());
+        
+        // test all the characters. [] is not allowed.
+        r = e.newItem("!@#$%^&*()_+`-=<>.,{}|\\", simpleType);
+        assertNotNull(r);
+        assertEquals("/Default Workspace/MyService/1.0/!@#$%^&*()_+`-=<>.,{}|\\", r.getItem().getPath());
+        assertEquals("!@#$%^&*()_+`-=<>.,{}|\\",  r.getItem().getName());
+     
+        Item item = root.getItem("MyService").getItem("1.0").getItem("!@#$%^&*()_+`-=<>.,{}|\\");
+        assertNotNull(item);
     }
     
     public void testAllowedChildren() throws Exception {

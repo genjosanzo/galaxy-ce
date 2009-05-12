@@ -172,13 +172,14 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                     public Object doInJcr(Session session) throws IOException, RepositoryException {
                         Index idx = doGet(id, session);
 
-                        doDelete(id, removeArtifactMetadata, session);
-                        
                         if (idx.getPropertyDescriptors() != null) {
                             for (PropertyDescriptor pd : idx.getPropertyDescriptors()) {
                                 typeManager.deletePropertyDescriptor(pd.getId());
                             }
                         }
+
+                        doDelete(id, removeArtifactMetadata, session);
+                        
                         session.save();
                         return null;
                     }

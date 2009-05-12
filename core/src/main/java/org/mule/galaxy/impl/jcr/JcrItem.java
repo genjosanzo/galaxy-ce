@@ -19,6 +19,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 
+import org.apache.jackrabbit.util.ISO9075;
 import org.apache.jackrabbit.value.StringValue;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
@@ -74,7 +75,7 @@ public class JcrItem extends AbstractItem {
         this.node = node;
         this.manager = manager;
         
-        this.name = node.getName();
+        this.name = ISO9075.decode(node.getName());
     }
 
     public JcrWorkspaceManager getManager() {
@@ -117,11 +118,12 @@ public class JcrItem extends AbstractItem {
     public void setName(final String name) {
         try {
             
-            if (!node.getName().equals(name)) {
+            String nodeName = ISO9075.decode(node.getName());
+            if (!nodeName.equals(name)) {
                 manager.getTemplate().execute(new JcrCallback() {
     
                     public Object doInJcr(Session session) throws IOException, RepositoryException {
-                        String dest = node.getParent().getPath() + "/" + name;
+                        String dest = node.getParent().getPath() + "/" + ISO9075.encode(name);
                         session.move(node.getPath(), dest);
                         return null;
                     }
