@@ -197,6 +197,9 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
                     throw new RuntimeException(e);
                 } catch (RegistryException e) {
                     throw new RuntimeException(e);
+                } catch (RepositoryException e) {
+                    // this can occurr if there is a ":" in the node name
+                    return null;
                 }
                 
             }
