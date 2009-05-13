@@ -22,10 +22,13 @@ public class ThreadLocalCacheFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
         throws ServletException, IOException {
         ThreadLocalCacheProviderFacade.enableCache();
-        
-        chain.doFilter(req, resp);
-        
-        ThreadLocalCacheProviderFacade.clearCache();
+
+        try {
+            chain.doFilter(req, resp);
+
+        } finally {
+            ThreadLocalCacheProviderFacade.clearCache();
+        }
     }
 
     public void init(FilterConfig arg0) throws ServletException {
