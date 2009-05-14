@@ -96,9 +96,13 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
                 ((LinkDao) dao).deleteLinks(item, pd.getId());
                 new LinksImpl(pd, item).addLinks(new Link(item, (Item) value, null, false));
             } else if (value instanceof Collection) {
+                LinksImpl links = new LinksImpl(pd, item);
                 for (Object o : (Collection) value) {
-                    Link l = (Link) o;
-                    new LinksImpl(pd, item).addLinks(l);
+                    if (o instanceof Link){
+                        links.addLinks((Link) o);
+                    } else if (o instanceof Item) {
+                        links.addLinks(new Link(item, (Item) o, null, false));
+                    }
                 }
             } else if (value == null) {
                 ((LinkDao) dao).deleteLinks(item, pd.getId());

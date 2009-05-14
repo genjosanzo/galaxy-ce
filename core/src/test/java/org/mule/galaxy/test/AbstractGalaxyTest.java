@@ -103,6 +103,12 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         return is;
     }
 
+    protected Map<String,Object> asMap(String key, Object val) {
+        Map<String, Object> map = new HashMap<String,Object>();
+        map.put(key, val);
+        return map;
+    }
+
     protected User getAdmin() {
         return userManager.authenticate("admin", getPassword());
     }
@@ -139,7 +145,6 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
 
     protected Item getTestWorkspace() throws RegistryException, AccessException {
         Collection<Item> workspaces = registry.getItems();
-        assertEquals(1, workspaces.size());
         return workspaces.iterator().next();
     }
 

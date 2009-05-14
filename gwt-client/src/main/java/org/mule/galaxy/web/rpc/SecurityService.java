@@ -46,5 +46,5 @@ public interface SecurityService extends RemoteService {
 
     void applyPermissions(String itemId, Map<WGroup, Collection<WPermissionGrant>> group2Permissions) throws RPCException;
 
-    Collection getGroups() throws RPCException;
+    Collection<WGroup> getGroups() throws RPCException;
 }

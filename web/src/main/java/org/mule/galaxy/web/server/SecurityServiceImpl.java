@@ -403,7 +403,7 @@ public class SecurityServiceImpl implements SecurityService {
         this.registry = registry;
     }
 
-    public Collection getGroups() throws RPCException {
+    public Collection<WGroup> getGroups() throws RPCException {
         ArrayList<WGroup> wgroups = new ArrayList<WGroup>();
         
         for (Group g : accessControlManager.getGroups()) {
