@@ -121,12 +121,11 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     
     public List<T> find(final String property, final String value) {
         String stmt = "/*/" + rootNode + "/*[";
-        if (value.startsWith("%") || value.endsWith("%")) {
-            stmt += "jcr:like(@" + property + ", '" + value + "')]";
-        } else {
-            stmt += "@" + property + "='" + value + "']";
-        }
+        
+        stmt = buildFindPredicate(stmt, property, value);
        
+        stmt += "]";
+        
         return doQuery(stmt);
     }
     
@@ -139,17 +138,21 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
             stmt += join;
             join = " and ";
             
-            Object value = e.getValue();
-            if (value == null) {
-                stmt += "not(@" + e.getKey() + ")";
-            } else if (value.toString().startsWith("%") || value.toString().endsWith("%")) {
-                stmt += "jcr:like(@" + e.getKey() + ", '" + value + "')";
-            } else {
-                stmt += "@" + e.getKey() + "='" + value + "'";
-            }
+            stmt = buildFindPredicate(stmt, e.getKey(), e.getValue());
         }
         stmt += "]";
         return doQuery(stmt);
+    }
+
+    private String buildFindPredicate(String stmt, String key, Object value) {
+        if (value == null) {
+            stmt += "not(@" + key + ")";
+        } else if (value.toString().startsWith("%") || value.toString().endsWith("%")) {
+            stmt += "jcr:like(@" + key + ", '" + value + "')";
+        } else {
+            stmt += "@" + key + "='" + value + "'";
+        }
+        return stmt;
     }
     
     @SuppressWarnings("unchecked")

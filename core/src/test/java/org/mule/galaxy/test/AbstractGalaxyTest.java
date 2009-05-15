@@ -32,6 +32,7 @@ import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.impl.cache.ThreadLocalCacheProviderFacade;
 import org.mule.galaxy.impl.jcr.RegistryInitializer;
+import org.mule.galaxy.impl.tree.TreeItemDao;
 import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
@@ -76,6 +77,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     protected TypeManager typeManager;
     protected EventManager eventManager;
     protected RegistryInitializer registryInitializer;
+    protected TreeItemDao treeItemDao;
     
     private boolean participate;
     
@@ -103,8 +105,8 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         return is;
     }
 
-    protected Map<String,Object> asMap(String key, Object val) {
-        Map<String, Object> map = new HashMap<String,Object>();
+    protected <K, T> Map<K,T> asMap(K key, T val) {
+        Map<K, T> map = new HashMap<K,T>();
         map.put(key, val);
         return map;
     }

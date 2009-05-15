@@ -38,8 +38,6 @@ public class CollectionPersister implements FieldPersister {
 
     @SuppressWarnings("unchecked")
     public Object build(Node n, FieldDescriptor fd, Session session) throws Exception {
-        Collection collection = (Collection) implementation.newInstance();
-        
         OneToMany otm = fd.getOneToMany();
         if (otm == null) {
             throw new UnsupportedOperationException("You must supply a @OneToMany annotation for " 
@@ -100,7 +98,12 @@ public class CollectionPersister implements FieldPersister {
                 
                 ClassPersister cp = persisterManager.getClassPersister(fd.getClassPersister().getType().getName());
                 for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
-                    Object obj = cp.build(nodes.nextNode(), session);
+                    Node next = nodes.nextNode();
+                    Identifiable obj = (Identifiable) cp.build(next, session);
+                    
+                    // Hack to get the ID set because we normally do it in AbstractDao
+                    obj.setId(next.getUUID());
+                    
                     c.add(obj);
                 }
             } catch (Exception e) {
@@ -109,7 +112,7 @@ public class CollectionPersister implements FieldPersister {
         } else {
            try {
                FieldPersister fp = persisterManager.getPersister(fd.getOneToMany().componentType());
-               Property property = n.getProperty(fd.getName() +"");
+               Property property = n.getProperty(fd.getName());
                
                for (Value v : property.getValues()) {
                    c.add(fp.build(v.getString(), fd, session));
@@ -130,10 +133,14 @@ public class CollectionPersister implements FieldPersister {
         private final CollectionPersister persister;
         private boolean initialized;
 
-        public LazySet(CollectionPersister persister,
-                       Node n, FieldDescriptor fd, Session session, String parentField) {
+        public LazySet(CollectionPersister persister, 
+                       Node n, 
+                       FieldDescriptor fd, 
+                       Session session,
+                       String parentField) {
             this.persister = persister;
-            this.n = n;            this.fd = fd;
+            this.n = n;
+            this.fd = fd;
             this.session = session;
             this.parentField = parentField;
         }
@@ -259,9 +266,13 @@ public class CollectionPersister implements FieldPersister {
         private boolean initialized;
 
         public LazyList(CollectionPersister persister,
-                        Node n, FieldDescriptor fd, Session session, String parentField) {
+                        Node n, 
+                        FieldDescriptor fd, 
+                        Session session, 
+                        String parentField) {
             this.persister = persister;
-            this.n = n;            this.fd = fd;
+            this.n = n;            
+            this.fd = fd;
             this.session = session;
             this.parentField = parentField;
         }

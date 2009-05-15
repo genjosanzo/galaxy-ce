@@ -63,5 +63,6 @@ public class CommentTest extends AbstractGalaxyTest {
         Set<Comment> comments2 = c4.getComments();
         assertNotNull(comments2);
         assertEquals(1, comments2.size());
+        assertTrue(comments2.iterator().next() instanceof Comment);
     }
 }

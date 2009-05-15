@@ -270,6 +270,29 @@
     <property name="typeManager" ref="typeManager"/>
   </bean>
   
+  <bean id="treeItemDao" class="org.mule.galaxy.impl.tree.TreeItemDaoImpl"
+        init-method="initialize">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <bean id="treeExtension" class="org.mule.galaxy.impl.extension.IdentifiableExtension">
+    <property name="dao" ref="treeItemDao"/>
+    <property name="id" value="treeExtension"/>
+    <property name="name" value="Tree of Items"/>
+    <property name="multivalueSupported" value="true"/>
+    <property name="queryProperties">
+      <map>
+        <entry key="" value="Name"/>
+      </map>
+    </property>
+  </bean>
+  
+  <bean class="org.mule.galaxy.impl.tree.TreeItemQueryBuilder">
+    <constructor-arg ref="treeExtension"/>
+    <property name="typeManager" ref="typeManager"/>
+  </bean>
+  
+  
   <bean id="commentManager" class="org.mule.galaxy.impl.jcr.CommentManagerImpl"
         init-method="initialize">
     <property name="sessionFactory" ref="sessionFactory" />

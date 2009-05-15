@@ -20,19 +20,33 @@ public class PropertyDescriptor implements Identifiable {
     private Type type;
     
     public PropertyDescriptor(String property, String description, boolean multivalued, boolean index) {
+        this(property, description, multivalued, index, null);
+    }
+
+    public PropertyDescriptor(String property, 
+                              String description,
+                              boolean multivalued, 
+                              boolean index,
+                              Extension extension) {
         super();
         this.property = property;
         this.description = description;
         this.multivalued = multivalued;
-    this.index = index;
+        this.index = index;
+        this.extension = extension;
     }
 
+    
     public PropertyDescriptor() {
         super();
     }
 
     public PropertyDescriptor(String property, String description) {
         this(property, description, false, false);
+    }
+
+    public PropertyDescriptor(String property, String description, Extension extension) {
+        this(property, description, false, false, extension);
     }
 
     public String getId() {

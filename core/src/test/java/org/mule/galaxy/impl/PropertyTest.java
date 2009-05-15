@@ -4,16 +4,23 @@ package org.mule.galaxy.impl;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.TreeItem;
+import org.mule.galaxy.impl.tree.TreeExtension;
+import org.mule.galaxy.impl.tree.TreeItemDao;
+import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.Type;
 
 public class PropertyTest extends AbstractGalaxyTest {
+    
+    protected TreeItemDao treeItemDao;
     
     public void testTypes() throws Exception {
         Type type = typeManager.getDefaultType();
@@ -134,5 +141,48 @@ public class PropertyTest extends AbstractGalaxyTest {
        
        pds = typeManager.getGlobalPropertyDescriptors(false);
        assertFalse(pds.contains(pd));
+    }
+    
+    public void testTreeProperties() throws Exception {
+        
+        TreeItem root = new TreeItem("Public Services");
+        treeItemDao.save(root);
+        
+        TreeItem child = root.addChild(new TreeItem("Logistics", root));
+        treeItemDao.save(child);
+        treeItemDao.save(root);
+
+        TreeItem root2 = treeItemDao.get(root.getId());
+        assertNotNull(root2.getChildren());
+        assertEquals(1, root2.getChildren().size());
+        assertTrue(root2.getChildren().iterator().next() instanceof TreeItem);
+        
+        // Create a property descriptor for this tree
+        PropertyDescriptor pd = new PropertyDescriptor("groups", "Groups", registry.getExtension("treeExtension"));
+        pd.setConfiguration(asMap(TreeExtension.ROOT_ITEM_KEY, root.getId()));
+        typeManager.savePropertyDescriptor(pd);
+        
+        List<TreeItem> items = treeItemDao.getRootTreeItems();
+        assertEquals(1, items.size());
+        
+        Item item = registry.newItem("test", getSimpleType()).getItem();
+        
+        item.setProperty(pd.getProperty(), Arrays.asList(child));
+        registry.save(item);
+        
+        item = registry.getItemById(item.getId());
+        
+        Collection<TreeItem> retreived = (Collection<TreeItem>) item.getProperty(pd.getProperty());
+        assertEquals(1, retreived.size());
+        TreeItem t = (TreeItem) retreived.iterator().next();
+        assertEquals(child.getName(), t.getName());
+        
+        SearchResults search = registry.search("select where groups = 'Public Services/Logistics'", 0, 100);
+        
+        assertEquals(1, search.getTotal());
+        
+        search = registry.search("select where groups.id = '" + child.getId() + "'", 0, 100);
+        
+        assertEquals(1, search.getTotal());
     }
 }
