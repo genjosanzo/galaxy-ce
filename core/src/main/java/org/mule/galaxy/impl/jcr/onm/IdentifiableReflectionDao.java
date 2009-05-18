@@ -6,15 +6,16 @@ public class IdentifiableReflectionDao extends AbstractReflectionDao<Identifiabl
 
     /**
      * This constructor is for CGLIB... argh.
+     * 
      * @throws Exception
      */
     public IdentifiableReflectionDao() throws Exception {
-    super(Identifiable.class, "objects", true);
+        super(Identifiable.class, "objects", true);
     }
-    
-    public IdentifiableReflectionDao(Class<Identifiable> t, String rootNode,
-        boolean generateId) throws Exception {
-    super(t, rootNode, generateId);
+
+    public IdentifiableReflectionDao(Class<Identifiable> t, String rootNode, boolean generateId)
+        throws Exception {
+        super(t, rootNode, generateId);
     }
 
 }

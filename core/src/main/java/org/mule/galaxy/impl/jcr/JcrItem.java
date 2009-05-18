@@ -41,7 +41,7 @@ import org.mule.galaxy.security.User;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.Type;
 import org.mule.galaxy.util.BundleUtils;
-import org.mule.galaxy.util.DateUtil;
+import org.mule.galaxy.util.GalaxyUtils;
 import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.SecurityUtils;
 import org.springmodules.jcr.JcrCallback;
@@ -503,7 +503,7 @@ public class JcrItem extends AbstractItem {
 
     protected void update() {
         try {
-            node.setProperty(UPDATED, DateUtil.getCalendarForNow());
+            node.setProperty(UPDATED, GalaxyUtils.getCalendarForNow());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

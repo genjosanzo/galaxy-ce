@@ -105,12 +105,6 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         return is;
     }
 
-    protected <K, T> Map<K,T> asMap(K key, T val) {
-        Map<K, T> map = new HashMap<K,T>();
-        map.put(key, val);
-        return map;
-    }
-
     protected User getAdmin() {
         return userManager.authenticate("admin", getPassword());
     }

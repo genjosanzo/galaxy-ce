@@ -39,7 +39,7 @@ import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.Constants;
-import org.mule.galaxy.util.DateUtil;
+import org.mule.galaxy.util.GalaxyUtils;
 import org.mule.galaxy.util.Message;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
@@ -193,7 +193,7 @@ public class ArtifactExtension extends AbstractExtension implements AtomExtensio
         Node resNode = versionNode.addNode("jcr:content", "nt:resource");
         resNode.setProperty("jcr:mimeType", contentType);
         // resNode.setProperty("jcr:encoding", "");
-        resNode.setProperty("jcr:lastModified", DateUtil.getCalendarForNow());
+        resNode.setProperty("jcr:lastModified", GalaxyUtils.getCalendarForNow());
 
         if (is != null) {
             resNode.setProperty("jcr:data", is);

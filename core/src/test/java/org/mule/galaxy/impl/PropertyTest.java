@@ -17,6 +17,7 @@ import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.Type;
+import org.mule.galaxy.util.GalaxyUtils;
 
 public class PropertyTest extends AbstractGalaxyTest {
     
@@ -159,7 +160,7 @@ public class PropertyTest extends AbstractGalaxyTest {
         
         // Create a property descriptor for this tree
         PropertyDescriptor pd = new PropertyDescriptor("groups", "Groups", registry.getExtension("treeExtension"));
-        pd.setConfiguration(asMap(TreeExtension.ROOT_ITEM_KEY, root.getId()));
+        pd.setConfiguration(GalaxyUtils.asMap(TreeExtension.ROOT_ITEM_KEY, root.getId()));
         typeManager.savePropertyDescriptor(pd);
         
         List<TreeItem> items = treeItemDao.getRootTreeItems();

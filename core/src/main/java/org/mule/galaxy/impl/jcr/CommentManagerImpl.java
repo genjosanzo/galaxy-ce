@@ -50,7 +50,7 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
     public List<Comment> getRecentComments(final int maxResults) {
         return (List<Comment>) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                return query("/jcr:root/comments/* order by @date descending", session, maxResults);
+                return query("/jcr:root/comments/* order by @date descending", session, 0, maxResults);
             }
         });
     }
