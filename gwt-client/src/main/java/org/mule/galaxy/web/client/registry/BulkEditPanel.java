@@ -230,7 +230,7 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
         propertyDescriptor = getPropertyDescriptor(txt);
 
         renderer = 
-            galaxy.getPropertyPanelFactory().createRenderer(propertyDescriptor.getExtension(), 
+            galaxy.getPropertyInterfaceManager().createRenderer(propertyDescriptor.getExtension(), 
                                                             propertyDescriptor.isMultiValued());
         renderer.initialize(galaxy, this, null, true);
         

@@ -137,7 +137,7 @@ public class EntryMetadataPanel extends AbstractComposite {
     public void addRow(WProperty property) {
 
         final AbstractPropertyRenderer renderer = 
-            galaxy.getPropertyPanelFactory().createRenderer(property.getExtension(), property.isMultiValued());
+            galaxy.getPropertyInterfaceManager().createRenderer(property.getExtension(), property.isMultiValued());
 
         EditPropertyPanel render = new EditPropertyPanel(renderer, errorPanel);
         render.setProperty(property);

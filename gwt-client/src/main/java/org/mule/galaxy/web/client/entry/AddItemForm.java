@@ -28,7 +28,7 @@ import java.util.Map;
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.property.AbstractPropertyRenderer;
-import org.mule.galaxy.web.client.property.PropertyPanelFactory;
+import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
 import org.mule.galaxy.web.client.registry.PolicyResultsPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.ItemPathOracle;
@@ -77,7 +77,7 @@ public class AddItemForm extends AbstractErrorShowingComposite
     private Button cancelButton;
     private ListBox typeChoice;
     protected Map<String,WType> types;
-    private PropertyPanelFactory factory = new PropertyPanelFactory();
+    private PropertyInterfaceManager factory = new PropertyInterfaceManager();
     private ItemInfo item;
     private Map<String, AbstractPropertyRenderer> renderers = new HashMap<String, AbstractPropertyRenderer>();
     

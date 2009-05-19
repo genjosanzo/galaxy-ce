@@ -507,12 +507,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 boolean startsWithExact = path.startsWith("/");
                 if (startsWithExact) path = path.substring(1);
                 
-                boolean endsWithExact = path.startsWith("/");
+                boolean endsWithExact = path.endsWith("/");
                 if (endsWithExact) path = path.substring(0, path.length());
                 
                 String[] paths = path.split("/");
                 
-                if (paths.length == 0) {
+                if (paths.length == 1 && "".equals(paths[0])) {
                     Set<Item> empty = Collections.emptySet();
                     return new SearchResults(0, empty);
                 }
@@ -522,13 +522,15 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                         startsWithExact = true;
                         continue;
                     }
-                        
+                     
+                    String value = paths[i].toLowerCase();
+                    value = JcrUtil.escape(value);
                     if (i == 0 && startsWithExact) {
-                        qstr.append("/*[jcr:like(fn:lower-case(@name), '").append(paths[i].toLowerCase()).append("%')]");
+                        qstr.append("/*[jcr:like(fn:lower-case(@name), '").append(value).append("%')]");
                     } else if (i == (paths.length - 1) && endsWithExact) {
-                        qstr.append("/*[jcr:like(fn:lower-case(@name), '%").append(paths[i].toLowerCase()).append("')]");
+                        qstr.append("/*[jcr:like(fn:lower-case(@name), '%").append(value).append("')]/*");
                     } else {
-                        qstr.append("/*[jcr:like(fn:lower-case(@name), '%").append(paths[i].toLowerCase()).append("%')]");
+                        qstr.append("/*[jcr:like(fn:lower-case(@name), '%").append(value).append("%')]");
                     }
                 }
                 

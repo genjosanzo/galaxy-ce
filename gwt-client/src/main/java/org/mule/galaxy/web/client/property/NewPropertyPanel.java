@@ -131,7 +131,7 @@ public class NewPropertyPanel extends Composite {
         WPropertyDescriptor pd = getPropertyDescriptor(txt);
 
         AbstractPropertyRenderer renderer = 
-            galaxy.getPropertyPanelFactory().createRenderer(pd.getExtension(), pd.isMultiValued());
+            galaxy.getPropertyInterfaceManager().createRenderer(pd.getExtension(), pd.isMultiValued());
         
         EditPropertyPanel render = new EditPropertyPanel(renderer, errorPanel);
         property = new WProperty(pd.getName(), pd.getDescription(), null, pd.getExtension(), false);

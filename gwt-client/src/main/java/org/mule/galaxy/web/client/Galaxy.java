@@ -36,7 +36,7 @@ import org.mule.galaxy.web.client.activity.ActivityPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.entry.AddItemForm;
 import org.mule.galaxy.web.client.entry.ItemPanel;
-import org.mule.galaxy.web.client.property.PropertyPanelFactory;
+import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
 import org.mule.galaxy.web.client.registry.SearchPanel;
 import org.mule.galaxy.web.client.registry.ViewPanel;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
@@ -86,7 +86,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
     private int adminTabIndex;
     private ItemPanel itemPanel;
     protected FlowPanel base;
-    protected PropertyPanelFactory propertyPanelFactory = new PropertyPanelFactory();
+    protected PropertyInterfaceManager propertyInterfaceManager = new PropertyInterfaceManager();
     protected List extensions;
     private String currentToken;
     protected Label footer;
@@ -368,8 +368,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
         ep.setMessage(message);
     }
 
-    public PropertyPanelFactory getPropertyPanelFactory() {
-        return propertyPanelFactory;
+    public PropertyInterfaceManager getPropertyInterfaceManager() {
+        return propertyInterfaceManager;
     }
 
     public List getExtensions() {

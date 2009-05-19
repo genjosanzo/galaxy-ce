@@ -174,6 +174,9 @@ public class SearchTest extends AbstractGalaxyTest {
         results = registry.suggest("1/Test2/T", 10, "/bar", TypeManager.WORKSPACE);
         assertEquals(1, results.getTotal());
 
+        results = registry.suggest("/Test1/Test2/", 10, "/bar", TypeManager.WORKSPACE);
+        assertEquals(1, results.getTotal());
+
         results = registry.suggest("/Test1/Test2/T", 10, "/bar", TypeManager.WORKSPACE);
         assertEquals(1, results.getTotal());
 

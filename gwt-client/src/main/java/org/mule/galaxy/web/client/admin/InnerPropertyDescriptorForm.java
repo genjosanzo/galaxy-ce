@@ -18,6 +18,12 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.ListBox;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -29,12 +35,6 @@ import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.WExtensionInfo;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
-
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.ListBox;
 
 /**
  * A reusable form builder to add a property.
@@ -96,11 +96,14 @@ public class InnerPropertyDescriptorForm {
         for (Iterator itr = extensions.iterator(); itr.hasNext();) {
             WExtensionInfo e = (WExtensionInfo) itr.next();
             
-            typeLB.addItem(e.getDescription(), e.getId());
-            
-            if (e.getId().equals(property.getExtension())) {
-                typeLB.setSelectedIndex(typeLB.getItemCount()-1);
-                showTypeConfiguration(table, e.getId());
+            // Only show properties which we have edit renderers for
+            if (galaxy.getPropertyInterfaceManager().isExtensionEditable(e.getId())) {
+                typeLB.addItem(e.getDescription(), e.getId());
+                
+                if (e.getId().equals(property.getExtension())) {
+                    typeLB.setSelectedIndex(typeLB.getItemCount()-1);
+                    showTypeConfiguration(table, e.getId());
+                }
             }
         }
         

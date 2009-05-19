@@ -27,6 +27,7 @@ import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.WArtifactType;
 import org.mule.galaxy.web.rpc.WComment;
+import org.mule.galaxy.web.rpc.WIndex;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WLinks;
 import org.mule.galaxy.web.rpc.WProperty;
@@ -265,40 +266,19 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
 //        }
 //    }
 //    
-//    public void testVersioningOperations() throws Exception {
-//        Set result = registry.search("select artifact where wsdl.service = 'HelloWorldService'", 0, 100).getResults();
-//        
-//        ArtifactImpl a = (ArtifactImpl) result.iterator().next();
-//        
-//        a.newVersion(getResourceAsStream("/wsdl/imports/hello.wsdl"), "0.2");
-//        
-//        ExtendedItemInfo ext = gwtRegistry.getItem(a.getId());
-//        
-//        Collection<EntryVersionInfo> versions = ext.getVersions();
-//        assertEquals(2, versions.size());
-//        
-//        EntryVersionInfo info = versions.iterator().next();
-//        assertEquals("0.2", info.getVersionLabel());
-//        assertNotNull(info.getLink());
-//        assertNotNull(info.getCreated());
-//        assertEquals("Administrator", info.getAuthorName());
-//        assertEquals("admin", info.getAuthorUsername());
-//        
-//        gwtRegistry.setDefault(info.getId());
-//    }
-//    
-//    public void testIndexes() throws Exception {
-//        Collection<WIndex> indexes = gwtRegistry.getIndexes();
-//        
-//        assertTrue(indexes.size() > 0);
-//        
-//        WIndex idx = gwtRegistry.getIndex(indexes.iterator().next().getId());
-//        assertNotNull(idx.getId());
-//        assertNotNull(idx.getResultType());
-//        assertNotNull(idx.getIndexer());
-//        gwtRegistry.saveIndex(idx);
-//    }
-//    
+    
+    public void testIndexes() throws Exception {
+        Collection<WIndex> indexes = gwtRegistry.getIndexes();
+        
+        assertTrue(indexes.size() > 0);
+        
+        WIndex idx = gwtRegistry.getIndex(indexes.iterator().next().getId());
+        assertNotNull(idx.getId());
+        assertNotNull(idx.getResultType());
+        assertNotNull(idx.getIndexer());
+        gwtRegistry.saveIndex(idx);
+    }
+    
     public void testLifecycles() throws Exception {
         Collection<WLifecycle> lifecycles = gwtRegistry.getLifecycles();
         
@@ -353,6 +333,14 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals(SearchPredicate.DOES_NOT_HAVE_VALUE, sp.getMatchType());
         assertEquals("name", sp.getProperty());
         assertEquals("foo", sp.getValue());
+    }
+    
+    public void testSuggestions() throws Exception {
+        // Just ensuring we can handle some bad input
+        gwtRegistry.suggestEntries("/", "xxx", new String[0]);
+        gwtRegistry.suggestEntries("/Default", "xxx", new String[0]);
+        gwtRegistry.suggestEntries("/D/", "xxx", new String[0]);
+        gwtRegistry.suggestEntries("!@#$%^&*(){}[]?'\"><", "xxx", new String[0]);
     }
     
     private final class FauxPolicy implements Policy {
