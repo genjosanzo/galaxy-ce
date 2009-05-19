@@ -36,7 +36,12 @@ public class AdministrationPanel extends MenuPanel {
     public AdministrationPanel(Galaxy galaxy) {
         super();
         this.galaxy = galaxy;
-
+    }
+    
+    @Override
+    protected void onFirstShow() {
+        super.onFirstShow();
+        
         Toolbox manageBox = new Toolbox(false);
         manageBox.setTitle("Manage");
         addMenuItem(manageBox);
@@ -46,7 +51,6 @@ public class AdministrationPanel extends MenuPanel {
         utilityBox.setTitle("Utilities");
         addMenuItem(utilityBox);
         createUtilityMenuItems(this.galaxy, utilityBox);
-
     }
 
     protected void createMenuItems(Galaxy galaxy, Toolbox manageBox) {

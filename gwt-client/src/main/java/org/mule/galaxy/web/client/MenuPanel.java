@@ -35,16 +35,34 @@ public class MenuPanel extends AbstractErrorShowingComposite {
     private Widget topWidget;
     private FlowPanel leftMenu;
     private FlowPanel centerPanel;
+    private boolean firstShow = true;
+    private boolean left;
     
     public MenuPanel() {
         this(true);
     }
-    
 
     public MenuPanel(boolean left) {
         panel = new DockPanel();
         panel.setSpacing(0);
 
+        this.left = left;
+        
+        initWidget(panel);
+    }
+    
+    public void onShow(List<String> params) {
+        if (firstShow) {
+            firstShow = false;
+            onFirstShow();
+        }
+        
+        if (mainWidget instanceof AbstractComposite) {
+            ((AbstractComposite) mainWidget).onShow(params);
+        }
+    }
+
+    protected void onFirstShow() {
         if (left) {
             leftMenu = new FlowPanel() {
                 protected void onLoad() {
@@ -81,16 +99,8 @@ public class MenuPanel extends AbstractErrorShowingComposite {
         
         topPanel = new FlowPanel();
         topPanel.setStyleName("top-panel");
-        
-        initWidget(panel);
     }
     
-    public void onShow(List<String> params) {
-        if (mainWidget instanceof AbstractComposite) {
-            ((AbstractComposite) mainWidget).onShow(params);
-        }
-    }
-
     public void addMenuItem(Widget widget) {
         leftMenuContainer.add(widget);
     }
