@@ -23,8 +23,9 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -32,6 +33,14 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TabPanel;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.mule.galaxy.web.client.activity.ActivityPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.entry.AddItemForm;
@@ -52,25 +61,14 @@ import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WExtensionInfo;
 import org.mule.galaxy.web.rpc.WUser;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class Galaxy implements EntryPoint, HistoryListener {
+public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
     public static final String WILDCARD = "*";
     private static final String DEFAULT_PAGE = "browse";
-    private SimplePanel registryPanel;
-    private SimplePanel activityPanel;
-    private SimplePanel adminPanel;
-    private SimplePanel searchPanel;
     private RegistryServiceAsync registryService;
     private SecurityServiceAsync securityService;
     private HeartbeatServiceAsync heartbeatService;
@@ -79,11 +77,11 @@ public class Galaxy implements EntryPoint, HistoryListener {
     private PageInfo curInfo;
     private Map<String, PageInfo> history = new HashMap<String, PageInfo>();
     protected TabPanel tabPanel;
-    private WUser user;
+    protected WUser user;
     protected int oldTab;
     private boolean suppressTabHistory;
     private Map<String, AbstractComposite> historyListeners = new HashMap<String, AbstractComposite>();
-    private int adminTabIndex;
+    protected int adminTabIndex;
     private ItemPanel itemPanel;
     protected FlowPanel base;
     protected PropertyInterfaceManager propertyInterfaceManager = new PropertyInterfaceManager();
@@ -91,6 +89,8 @@ public class Galaxy implements EntryPoint, HistoryListener {
     private String currentToken;
     protected Label footer;
 
+    protected List<String> tabNames = new ArrayList<String>();
+    
     /**
      * This is the entry point method.
      */
@@ -100,7 +100,7 @@ public class Galaxy implements EntryPoint, HistoryListener {
         // when the server is already down and cannot serve it.
         Image.prefetch("images/lightbox.png");
 
-        History.addHistoryListener(this);
+        History.addValueChangeHandler(this);
 
         this.registryService = (RegistryServiceAsync) GWT.create(RegistryService.class);
 
@@ -125,11 +125,6 @@ public class Galaxy implements EntryPoint, HistoryListener {
         base.setStyleName("base");
         base.setWidth("100%");
 
-        registryPanel = new SimplePanel();
-        activityPanel = new SimplePanel();
-        adminPanel = new SimplePanel();
-        searchPanel = new SimplePanel();
-
         tabPanel = new TabPanel();
 
         rightPanel = new FlowPanel();
@@ -152,17 +147,15 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
         tabPanel.setStyleName("headerTabPanel");
         tabPanel.getDeckPanel().setStyleName("headerTabDeckPanel");
+        
+        tabNames.add("browse");
+        tabNames.add("search");
+        
         tabPanel.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
                 final Integer newTab = event.getSelectedItem();
                 if (!suppressTabHistory) {
-                    if (newTab == 0) {
-                        History.newItem("browse");
-                    } else if (newTab == 1) {
-                        History.newItem("search");
-                    } else {
-                        History.newItem("tab-" + newTab);
-                    }
+                    History.newItem(tabNames.get(newTab));
                 }
                 oldTab = newTab;
             }
@@ -172,7 +165,6 @@ public class Galaxy implements EntryPoint, HistoryListener {
 
         itemPanel = new ItemPanel(this);
         createPageInfo(DEFAULT_PAGE, itemPanel, 0);
-        registryPanel.add(itemPanel);
 
         // prefetch extensions
         registryService.getExtensions(new AbstractCallback(itemPanel) {
@@ -200,7 +192,6 @@ public class Galaxy implements EntryPoint, HistoryListener {
         base.add(footer);
         RootPanel.get().add(base);
 
-        createPageInfo("search", new SearchPanel(this), 1);
         createPageInfo("item/" + WILDCARD, new ItemPanel(this), 0);
         createPageInfo("add-item", new AddItemForm(this), 0);
         createPageInfo("view", new ViewPanel(this), 0);
@@ -233,20 +224,24 @@ public class Galaxy implements EntryPoint, HistoryListener {
     }
 
     protected void loadTabs(final Galaxy galaxy) {
-        tabPanel.insert(registryPanel, "Registry", 0);
+        tabPanel.insert(new SimplePanel(), "Registry", 0);
 
-        // search all workspaces tab
-        tabPanel.insert(searchPanel, "Search", tabPanel.getWidgetCount());
+        int searchIdx = tabPanel.getWidgetCount();
+        createPageInfo("search", new SearchPanel(this), searchIdx);
+        tabPanel.insert(new SimplePanel(), "Search", searchIdx);
 
         if (hasPermission("VIEW_ACTIVITY")) {
-            createPageInfo("tab-2", new ActivityPanel(this), 2);
-            tabPanel.insert(activityPanel, "Activity", tabPanel.getWidgetCount());
+            int activityIdx = tabPanel.getWidgetCount();
+            tabNames.add(activityIdx, "activity");
+            createPageInfo("activity", new ActivityPanel(this), activityIdx);
+            tabPanel.add(new SimplePanel(), "Activity");
         }
 
         if (showAdminTab(user)) {
             adminTabIndex = tabPanel.getWidgetCount();
-            createPageInfo("tab-" + adminTabIndex, createAdministrationPanel(), adminTabIndex);
-            tabPanel.add(adminPanel, "Administration");
+            tabNames.add(adminTabIndex, "admin");
+            createPageInfo("admin", createAdministrationPanel(), adminTabIndex);
+            tabPanel.add(new SimplePanel(), "Administration");
         }
 
         showFirstPage();
@@ -289,6 +284,10 @@ public class Galaxy implements EntryPoint, HistoryListener {
         p.clear();
 
         p.add(page.getInstance());
+    }
+
+    public void onValueChange(ValueChangeEvent<String> event) {
+        onHistoryChanged(event.getValue());
     }
 
     public void onHistoryChanged(String token) {
