@@ -18,21 +18,21 @@
 
 package org.mule.galaxy.web.client.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.validation.ListBoxNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.Validator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 public abstract class AbstractUserModifiableListBox extends AbstractComposite {
 
@@ -41,29 +41,29 @@ public abstract class AbstractUserModifiableListBox extends AbstractComposite {
     private Button addButton;
     private ValidatableTextBox textBox;
 
-    public AbstractUserModifiableListBox(Collection list, 
+    public AbstractUserModifiableListBox(Collection list,
                                          Validator validator) {
         super();
 
         listBox = new ListBox();
-        
+
         if (validator == null) {
             validator = new ListBoxNotEmptyValidator(listBox);
         }
-        
+
         listBox.setVisibleItemCount(5);
         if (list != null) {
             for (Iterator itr = list.iterator(); itr.hasNext();) {
-                String q = (String)itr.next();
-                
+                String q = (String) itr.next();
+
                 listBox.addItem(q);
             }
         }
         FlowPanel table = new FlowPanel();
-        
+
         rmButton = new Button("Remove");
-        rmButton.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        rmButton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
                 int idx = listBox.getSelectedIndex();
                 if (idx != -1) {
                     listBox.removeItem(idx);
@@ -71,25 +71,25 @@ public abstract class AbstractUserModifiableListBox extends AbstractComposite {
             }
         });
         table.add(asHorizontal(listBox, rmButton));
-        
+
         InlineFlowPanel addPanel = new InlineFlowPanel();
         textBox = new ValidatableTextBox(validator);
         textBox.getTextBox().setVisibleLength(60);
         addPanel.add(textBox);
         addButton = new Button("Add");
-        addButton.addClickListener(createValidator(textBox.getTextBox()));
+        addButton.addClickHandler(createValidator(textBox.getTextBox()));
         addPanel.add(addButton);
-        
+
         InlineFlowPanel addRow = asHorizontal(textBox, addButton);
         addRow.setStyleName("qnameListBox-add-row");
         table.add(addRow);
-        
+
         initWidget(table);
     }
 
-    private ClickListener createValidator(final TextBox addDocTypeTB) {
-        return new ClickListener() {
-            public void onClick(Widget sender) {
+    private ClickHandler createValidator(final TextBox addDocTypeTB) {
+        return new ClickHandler() {
+            public void onClick(ClickEvent event) {
                 String text = addDocTypeTB.getText();
                 if (isValid(text)) {
                     listBox.addItem(text);
@@ -100,7 +100,7 @@ public abstract class AbstractUserModifiableListBox extends AbstractComposite {
     }
 
     protected abstract boolean isValid(String text);
-    
+
     public Collection<String> getItems() {
         ArrayList<String> items = new ArrayList<String>();
         for (int i = 0; i < listBox.getItemCount(); i++) {
@@ -108,7 +108,7 @@ public abstract class AbstractUserModifiableListBox extends AbstractComposite {
         }
         return items;
     }
-    
+
     public boolean validate() {
         return textBox.validate();
     }

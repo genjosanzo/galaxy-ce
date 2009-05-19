@@ -18,10 +18,6 @@
 
 package org.mule.galaxy.web.client.activity;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-
 import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
@@ -30,9 +26,10 @@ import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WActivity;
 import org.mule.galaxy.web.rpc.WUser;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -42,10 +39,13 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.event.KeyDownEvent;
 import com.google.gwt.widgetideas.client.event.KeyDownHandler;
 import com.google.gwt.widgetideas.datepicker.client.DateBox;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 
 public class ActivityPanel extends AbstractErrorShowingComposite {
 
@@ -72,7 +72,7 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
         mainPanel.setStyleName("main-panel");
         initWidget(mainPanel);
     }
-    
+
     public void initialize() {
         FlowPanel base = new FlowPanel();
         base.setStyleName("activity-base-panel");
@@ -93,7 +93,7 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
         FlexTable searchTable = new FlexTable();
         searchTable.setCellSpacing(3);
         searchPanel.add(searchTable);
-        
+
         startDate = new DateBox();
         endDate = new DateBox();
 
@@ -130,14 +130,14 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
 
         searchTable.setWidget(1, 0, new Label("To:"));
         searchTable.setWidget(1, 1, endDate);
-        
+
         userLB = new ListBox();
         userLB.addItem("All");
         userLB.addItem("System", "system");
         searchPanel.add(userLB);
         galaxy.getSecurityService().getUsers(new AbstractCallback(this) {
             public void onSuccess(Object result) {
-                initUsers((Collection)result);
+                initUsers((Collection) result);
             }
         });
 
@@ -151,7 +151,7 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
         eventLB.addItem("Error");
         eventLB.addItem("Warning");
         searchTable.setWidget(1, 3, eventLB);
-        
+
         searchTable.setWidget(0, 4, new Label("Text Contains:"));
         textTB = new TextBox();
         searchTable.setWidget(0, 5, textTB);
@@ -172,18 +172,18 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
         searchTable.setWidget(0, 7, resultsLB);
 
         Button search = new Button("Search");
-        search.addClickListener(new ClickListener() {
+        search.addClickHandler(new ClickHandler() {
 
-            public void onClick(Widget sender) {
+            public void onClick(ClickEvent event) {
                 onShow();
             }
 
         });
 
         Button reset = new Button("Reset");
-        reset.addClickListener(new ClickListener() {
+        reset.addClickHandler(new ClickHandler() {
 
-            public void onClick(Widget sender) {
+            public void onClick(ClickEvent event) {
                 reset();
                 onShow();
             }
@@ -194,7 +194,7 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
         btnPanel.add(search);
         btnPanel.add(reset);
         searchContainer.add(btnPanel);
-        
+
         resultsPanel = new FlowPanel();
         panel.add(resultsPanel);
 
@@ -204,7 +204,7 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
 
     protected void initUsers(Collection result) {
         for (Iterator itr = result.iterator(); itr.hasNext();) {
-            WUser user = (WUser)itr.next();
+            WUser user = (WUser) itr.next();
 
             userLB.addItem(user.getName() + " (" + user.getUsername() + ")", user.getId());
         }
@@ -227,7 +227,7 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
         AbstractCallback callback = new AbstractCallback(this) {
 
             public void onSuccess(Object o) {
-                loadResults((Collection)o);
+                loadResults((Collection) o);
             }
 
         };
@@ -241,8 +241,8 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
                 setMessage("\"From\" date is invalid. It must be in the form of YYYY-MM-DD.");
                 return;
             }
-        } 
-        
+        }
+
         Date toDate = null;
         if (toStr != null && !"".equals(toStr)) {
             try {
@@ -252,27 +252,27 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
                 return;
             }
         }
-        galaxy.getRegistryService().getActivities(fromDate, toDate, user, 
-                                                  itemSB.getText(),
-                                                  textTB.getText(),
-                                                  eventType, resultStart, maxResults,
-                                                  ascending, callback);
+        galaxy.getRegistryService().getActivities(fromDate, toDate, user,
+                itemSB.getText(),
+                textTB.getText(),
+                eventType, resultStart, maxResults,
+                ascending, callback);
     }
 
     private Date parseDate(String s) throws DateParseException {
         if (s.length() != 10 || s.charAt(4) != '-' || s.charAt(7) != '-') {
             throw new DateParseException();
         }
-        
+
         String yearStr = s.substring(0, 4);
         String monthStr = s.substring(5, 7);
         String dayStr = s.substring(8, 10);
-        
+
         try {
             int year = new Integer(yearStr).intValue();
             int month = new Integer(monthStr).intValue();
             int day = new Integer(dayStr).intValue();
-            return new Date(year-1900, month-1, day);
+            return new Date(year - 1900, month - 1, day);
         } catch (NumberFormatException e) {
             throw new DateParseException();
         }
@@ -285,44 +285,44 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
             FlowPanel activityNavPanel = new FlowPanel();
             activityNavPanel.setStyleName("activity-nav-panel");
             Hyperlink hl = null;
-            
+
             if (o.size() == maxResults) {
                 hl = new Hyperlink("Next", "next");
                 hl.setStyleName("activity-nav-next");
-                hl.addClickListener(new ClickListener() {
-    
-                    public void onClick(Widget arg0) {
+                hl.addClickHandler(new ClickHandler() {
+
+                    public void onClick(ClickEvent event) {
                         resultStart += maxResults;
-                        
+
                         onShow();
                     }
-                    
+
                 });
                 activityNavPanel.add(hl);
             }
-            
+
             if (resultStart > 0) {
                 hl = new Hyperlink("Previous", "previous");
                 hl.setStyleName("activity-nav-previous");
-                hl.addClickListener(new ClickListener() {
-    
-                    public void onClick(Widget arg0) {
+                hl.addClickHandler(new ClickHandler() {
+
+                    public void onClick(ClickEvent event) {
                         resultStart = resultStart - maxResults;
                         if (resultStart < 0) resultStart = 0;
-                        
+
                         onShow();
                     }
-                    
+
                 });
                 activityNavPanel.add(hl);
             }
             SimplePanel spacer = new SimplePanel();
             spacer.add(new HTML("&nbsp;"));
             activityNavPanel.add(spacer);
-            
+
             resultsPanel.insert(activityNavPanel, 0);
         }
-        
+
         table = createRowTable();
         resultsPanel.add(table);
 
@@ -333,7 +333,7 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
 
         int i = 1;
         for (Iterator itr = o.iterator(); itr.hasNext();) {
-            WActivity act = (WActivity)itr.next();
+            WActivity act = (WActivity) itr.next();
 
             table.setText(i, 0, act.getDate());
             table.getCellFormatter().setStyleName(i, 0, "activityTableDate");

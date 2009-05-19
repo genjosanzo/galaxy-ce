@@ -18,22 +18,23 @@
 
 package org.mule.galaxy.web.client.util;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Widget;
-
-import java.util.List;
-
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 
-public abstract class AbstractForm extends AbstractComposite implements ClickListener {
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Widget;
+
+import java.util.List;
+
+public abstract class AbstractForm extends AbstractComposite implements ClickHandler {
 
     protected FlowPanel panel;
     protected boolean newItem;
@@ -86,13 +87,13 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
         panel.add(createPrimaryTitle(getTitle()));
 
         save = new Button("Save");
-        save.addClickListener(this);
+        save.addClickHandler(this);
 
         delete = new Button("Delete");
-        delete.addClickListener(this);
+        delete.addClickHandler(this);
 
         cancel = new Button("Cancel");
-        cancel.addClickListener(this);
+        cancel.addClickHandler(this);
 
         FlexTable table = createFormTable();
         addFields(table);
@@ -111,9 +112,10 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
      * This will allow a single listener to distinguish between multiple event publishers.
      * Also,those anonymous inner classes will eventually make your eyes bug out.
      *
-     * @param sender
+     * @param event
      */
-    public void onClick(Widget sender) {
+    public void onClick(ClickEvent event) {
+        Widget sender = (Widget) event.getSource();
         if (sender == save) {
             save();
         } else if (sender == delete) {
@@ -184,7 +186,7 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
         setEnabled(false);
         cancel.setText("Canceling...");
         ((AdministrationPanel) errorPanel).getGalaxy().setMessageAndGoto(successToken,
-                                                                         CANCEL_MESSAGE);
+                CANCEL_MESSAGE);
     }
 
 
@@ -200,7 +202,7 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
             public void onSuccess(Object arg0) {
                 setEnabled(false);
                 ((AdministrationPanel) errorPanel).getGalaxy().setMessageAndGoto(successToken,
-                                                                                 successMessage);
+                        successMessage);
             }
 
         };
@@ -227,7 +229,7 @@ public abstract class AbstractForm extends AbstractComposite implements ClickLis
             public void onSuccess(Object arg0) {
                 setEnabled(false);
                 ((AdministrationPanel) errorPanel).getGalaxy().setMessageAndGoto(successToken,
-                                                                                 deleteMessage);
+                        deleteMessage);
             }
 
         };

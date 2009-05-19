@@ -1,6 +1,11 @@
 package org.mule.galaxy.web.client.property;
 
-import com.google.gwt.user.client.ui.ClickListener;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -9,10 +14,6 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.mule.galaxy.web.client.ErrorPanel;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
 
 /**
  * Encapsulate a list of properties that is always editable.
@@ -30,9 +31,9 @@ public abstract class AbstractListRenderer extends AbstractPropertyRenderer {
         editPanel.add(editValuesPanel);
 
         loadRemote();
-        
+
         editPanel.add(getAddWidget());
-        
+
         return editPanel;
     }
 
@@ -42,15 +43,15 @@ public abstract class AbstractListRenderer extends AbstractPropertyRenderer {
         viewValuesPanel.add(valueLabel);
 
         loadRemote();
-        
+
         return viewValuesPanel;
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public void initialize(Galaxy galaxy, ErrorPanel errorPanel, Object value, boolean bulkEdit) {
         super.initialize(galaxy, errorPanel, value, bulkEdit);
-        
+
         values = new ArrayList<Object>();
         if (value != null) {
             values.addAll((List<Object>) value);
@@ -68,7 +69,7 @@ public abstract class AbstractListRenderer extends AbstractPropertyRenderer {
         if (editValuesPanel != null) {
             redrawEditPanel();
         }
-        
+
         if (valueLabel != null) {
             redrawViewPanel();
         }
@@ -121,9 +122,9 @@ public abstract class AbstractListRenderer extends AbstractPropertyRenderer {
             }
         });
         */
-        del.addClickListener(new ClickListener() {
+        del.addClickHandler(new ClickHandler() {
 
-            public void onClick(Widget arg0) {
+            public void onClick(ClickEvent event) {
                 editValuesPanel.remove(container);
                 removeLabel(value);
             }

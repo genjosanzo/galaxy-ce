@@ -18,8 +18,17 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.AbstractFlowComposite;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WGroup;
+import org.mule.galaxy.web.rpc.WPermission;
+import org.mule.galaxy.web.rpc.WPermissionGrant;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -33,14 +42,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.mule.galaxy.web.client.AbstractFlowComposite;
-import org.mule.galaxy.web.client.ErrorPanel;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WGroup;
-import org.mule.galaxy.web.rpc.WPermission;
-import org.mule.galaxy.web.rpc.WPermissionGrant;
 
 public abstract class AbstractGroupPanel extends AbstractFlowComposite {
 
@@ -140,15 +141,15 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
         table.getFlexCellFormatter().setColSpan(rows.size() + 1, 0, col);
 
         applyButton = new Button("Save");
-        applyButton.addClickListener(new ClickListener() {
-            public void onClick(Widget arg0) {
+        applyButton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
                 beginApply();
             }
         });
 
         resetButton = new Button("Cancel");
-        resetButton.addClickListener(new ClickListener() {
-            public void onClick(Widget arg0) {
+        resetButton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
                 // Go back to the previously saved state.
                 errorPanel.clearErrorMessage();
                 onShow();

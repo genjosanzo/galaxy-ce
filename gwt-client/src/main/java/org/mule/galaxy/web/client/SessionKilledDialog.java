@@ -18,20 +18,20 @@
 
 package org.mule.galaxy.web.client;
 
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
 
-public class SessionKilledDialog extends DialogBox
-{
+public class SessionKilledDialog extends DialogBox {
     protected Galaxy galaxy;
 
     // used for UI updates only
@@ -42,8 +42,7 @@ public class SessionKilledDialog extends DialogBox
 
     private HeartbeatTimer heartbeatTimer;
 
-    public SessionKilledDialog(final Galaxy galaxy, final HeartbeatTimer timer)
-    {
+    public SessionKilledDialog(final Galaxy galaxy, final HeartbeatTimer timer) {
         heartbeatTimer = timer;
 
         setText("Connection Terminated by Server");
@@ -52,10 +51,8 @@ public class SessionKilledDialog extends DialogBox
         loginNowBtn = new Button("Login Now");
         //loginNowBtn.setTitle("Ignore and try to login now (will not work if the server is down)");
         loginNowBtn.setEnabled(heartbeatTimer.isServerUp());
-        loginNowBtn.addClickListener(new ClickListener()
-        {
-            public void onClick(final Widget widget)
-            {
+        loginNowBtn.addClickHandler(new ClickHandler() {
+            public void onClick(final ClickEvent event) {
                 close();
                 // just pointing to root doesn't always work, use the logout trick
                 Window.open(GWT.getHostPageBaseURL() + "j_logout", "_self", null);
@@ -63,10 +60,8 @@ public class SessionKilledDialog extends DialogBox
         });
 
         final Button closeBtn = new Button("Close");
-        closeBtn.addClickListener(new ClickListener()
-        {
-            public void onClick(Widget sender)
-            {
+        closeBtn.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
                 close();
             }
         });
@@ -83,9 +78,9 @@ public class SessionKilledDialog extends DialogBox
         final InlineFlowPanel mainMessage = new InlineFlowPanel();
         mainMessage.addStyleName("padding");
         final HTML text = new HTML("This client connection has been terminated by the server. This could happen due to either:" +
-                                   "<ul><li>Server having crashed<li>Client session forcefully killed on the server</ul>" +
-                                   "This error is <strong>unrecoverable</strong> and you'll need to re-login. Next " +
-                                   "connection attempt will be made in ");
+                "<ul><li>Server having crashed<li>Client session forcefully killed on the server</ul>" +
+                "This error is <strong>unrecoverable</strong> and you'll need to re-login. Next " +
+                "connection attempt will be made in ");
         timerLabel = new Label("" + heartbeatTimer.getIntervalSeconds());
         trailingText = new HTML("&nbsp;seconds.");
         mainMessage.add(text);
@@ -96,20 +91,19 @@ public class SessionKilledDialog extends DialogBox
 
         setWidget(main);
 
-        reconnectTimerUI = new Timer()
-        {
-            public void run()
-            {
+        reconnectTimerUI = new Timer() {
+            public void run() {
                 final int update = Integer.parseInt(timerLabel.getText()) - 1;
                 // some language formatting
-                switch (update)
-                {
+                switch (update) {
                     case 1:
                         trailingText.setHTML("&nbsp;second.");
-                        timerLabel.setText("" + update); break;
+                        timerLabel.setText("" + update);
+                        break;
                     case 0:
                         trailingText.setHTML("&nbsp;seconds.");
-                        timerLabel.setText("" + update); break;
+                        timerLabel.setText("" + update);
+                        break;
                     case -1:
                         // time to ping
                         // start heartbeat timer again
@@ -117,7 +111,8 @@ public class SessionKilledDialog extends DialogBox
                         timerLabel.setText("" + heartbeatTimer.getIntervalSeconds());
                         break;
                     default:
-                        timerLabel.setText("" + update); break;
+                        timerLabel.setText("" + update);
+                        break;
                 }
             }
         };
@@ -127,20 +122,17 @@ public class SessionKilledDialog extends DialogBox
     /**
      * Close, cleanup and send all signals.
      */
-    protected void close()
-    {
+    protected void close() {
         reconnectTimerUI.cancel();
         heartbeatTimer.onDialogDismissed();
         hide();
     }
 
-    public void onServerUp()
-    {
+    public void onServerUp() {
         loginNowBtn.setEnabled(true);
     }
 
-    public void onServerDown()
-    {
+    public void onServerDown() {
         loginNowBtn.setEnabled(false);
     }
 }
