@@ -43,8 +43,8 @@ import java.util.Map;
 
 import org.mule.galaxy.web.client.activity.ActivityPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.client.entry.AddItemForm;
-import org.mule.galaxy.web.client.entry.ItemPanel;
+import org.mule.galaxy.web.client.item.AddItemForm;
+import org.mule.galaxy.web.client.item.ItemPanel;
 import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
 import org.mule.galaxy.web.client.registry.SearchPanel;
 import org.mule.galaxy.web.client.registry.ViewPanel;
