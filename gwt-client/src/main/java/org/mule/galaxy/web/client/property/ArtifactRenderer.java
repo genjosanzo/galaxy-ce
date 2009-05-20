@@ -8,6 +8,7 @@ import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 public class ArtifactRenderer extends AbstractPropertyRenderer {
 
     private ValidatableTextBox valueTB;
+    private FileUpload upload;
 
     public ArtifactRenderer() {
         super();
@@ -15,7 +16,7 @@ public class ArtifactRenderer extends AbstractPropertyRenderer {
     }
 
     public Widget createEditForm() {
-        FileUpload upload = new FileUpload();
+        upload = new FileUpload();
         upload.setName("file");
         return upload;
     }
@@ -36,7 +37,7 @@ public class ArtifactRenderer extends AbstractPropertyRenderer {
 
     @Override
     public boolean validate() {
-        return valueTB.validate();
+        return upload.getFilename() != null;
     }
     
 }

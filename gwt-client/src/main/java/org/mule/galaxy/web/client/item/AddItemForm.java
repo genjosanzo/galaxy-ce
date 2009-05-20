@@ -27,6 +27,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
@@ -76,8 +77,7 @@ import org.mule.galaxy.web.rpc.WType;
  * we follow a three step process:
  * 1. Submit a form which uploads the file. This will get stored in the UploadService
  * on the server side.
- * 2. Create the Artifact Item
- * 3. Create the Artifact Version Item.
+ * 2. Create both the artifact and artifact version via RegistryService.addVersionedItem
  * 
  * @author Dan
  *
@@ -105,6 +105,8 @@ public class AddItemForm extends AbstractErrorShowingComposite
     private boolean fileUpload;
     private String fileId;
     private WType avType;
+    private CheckBox addVersionCB;
+    private boolean fileUploadForVersion;
     
     public AddItemForm(final Galaxy galaxy) {
         this.galaxy = galaxy;
@@ -211,8 +213,27 @@ public class AddItemForm extends AbstractErrorShowingComposite
      * ArtifactVersion all in one go. This will set up a second piece of the form 
      * to deal with that.
      */
-    private void setupArtifact() {
+    private void setupVersionItemForm(boolean addCheckbox) {
         int row = table.getRowCount();
+
+        if (addCheckbox) {
+            // blank row for spacing
+            table.setWidget(row, 2, newSpacer());
+            
+            row ++;
+            table.setWidget(row, 0, new Label("Add Version:"));
+            addVersionCB = new CheckBox();
+            addVersionCB.setValue(true);
+    
+            final int versionRowStart = row + 1;
+            addVersionCB.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent arg0) {
+                    showOrHideVersion(versionRowStart, addVersionCB.getValue());
+                }
+            });
+            table.setWidget(row, 2, addVersionCB);
+            row++;
+        }
         
         table.setWidget(row, 0, new Label("Version:"));
 
@@ -239,7 +260,18 @@ public class AddItemForm extends AbstractErrorShowingComposite
         });
 
         avType = getTypeByName("Artifact Version");
-        addRenderers(avType.getProperties(), versionRenderers);
+        addRenderers(avType.getProperties(), versionRenderers, true);
+    }
+
+    protected void showOrHideVersion(int versionRowStart, Boolean showVersion) {
+        for (int i = table.getRowCount()-1; i >= versionRowStart; i--) 
+            table.removeRow(i);
+        
+        if (showVersion) {
+            setupVersionItemForm(false);
+        }
+        
+        setupTableBottom(true);
     }
 
     protected WType getType() {
@@ -262,11 +294,11 @@ public class AddItemForm extends AbstractErrorShowingComposite
         versionRenderers.clear();
         
         // setup the custom fields for the Type
-        addRenderers(props, renderers);
+        addRenderers(props, renderers, false);
         
         if (isArtifact(type)) {
             addVersionedItem = true;
-            setupArtifact();
+            setupVersionItemForm(true);
         } else {
             addVersionedItem = false;
         }
@@ -275,7 +307,8 @@ public class AddItemForm extends AbstractErrorShowingComposite
     }
 
     private void addRenderers(List<WPropertyDescriptor> props,
-                              Map<String, AbstractPropertyRenderer> typeRenderers) {
+                              Map<String, AbstractPropertyRenderer> typeRenderers,
+                              boolean version) {
         int row = table.getRowCount();
         for (WPropertyDescriptor pd : props) {
             table.setText(row, 0, pd.getDescription());
@@ -285,7 +318,11 @@ public class AddItemForm extends AbstractErrorShowingComposite
             table.setWidget(row, 2, renderer.createEditForm());
             
             if (renderer instanceof ArtifactRenderer) {
-                fileUpload = true;
+                if (version) {
+                    fileUploadForVersion = true;
+                } else {
+                    fileUpload = true;
+                }
             }
             row++;
         }
@@ -320,7 +357,8 @@ public class AddItemForm extends AbstractErrorShowingComposite
     }
 
     private void setupTableBottom(boolean showAdd) {
-
+        table.setWidget(table.getRowCount(), 2, newSpacer());
+        
         InlineFlowPanel buttons = new InlineFlowPanel();
         if (showAdd) {
             addButton = new Button("Add");
@@ -399,8 +437,6 @@ public class AddItemForm extends AbstractErrorShowingComposite
                 nameBox.setText(name);
             }
         }
-
-        //            form.submit();
         
         doSubmit();
     }
@@ -410,7 +446,7 @@ public class AddItemForm extends AbstractErrorShowingComposite
      * or once that is done, move on to adding new items. 
      */
     private void doSubmit() {
-        if (fileUpload) {
+        if (fileUpload || (fileUploadForVersion && isUserSubmittingVersion())) {
             form.submit();
         } else {
             addItem();
@@ -424,7 +460,7 @@ public class AddItemForm extends AbstractErrorShowingComposite
         String parent = parentSB.getText();
         Map<String, Serializable> properties = getProperties(renderers);
         
-        if (addVersionedItem) {
+        if (isUserSubmittingVersion()) {
             galaxy.getRegistryService().addVersionedItem(parent, 
                                                          name,
                                                          versionNameBox.getText(),
@@ -545,7 +581,7 @@ public class AddItemForm extends AbstractErrorShowingComposite
             v &= r.validate();
         }
         
-        if (addVersionedItem) {
+        if (isUserSubmittingVersion()) {
             for (AbstractPropertyRenderer r : versionRenderers.values()) {
                 v &= r.validate();
             }
@@ -553,6 +589,14 @@ public class AddItemForm extends AbstractErrorShowingComposite
         return v;
     }
 
+    /**
+     * Whether or not there is a versioned item to submit and the "Add Version" checkbox
+     * is checked. 
+     * @return
+     */
+    private boolean isUserSubmittingVersion() {
+        return addVersionedItem && addVersionCB.getValue();
+    }
 
     private void resetFormFields() {
         addButton.setText("Add");
