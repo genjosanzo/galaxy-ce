@@ -119,22 +119,8 @@ public class AdministrationPanel extends MenuPanel {
 
     }
 
-    protected void createLinkWithAdd(Toolbox manageBox,
-                                   String title, 
-                                   String tokenBase,
-                                   AbstractComposite list,
-                                   AbstractComposite form) {
-
-        Hyperlink link = new Hyperlink(title, tokenBase);
-        Hyperlink addLink = new Hyperlink("Add", tokenBase + "/new");
-
-        createDivWithAdd(manageBox, link, addLink);
-        createPageInfo(tokenBase, list);
-        createPageInfo(tokenBase + "/" + Galaxy.WILDCARD, form);
-    }
-
     protected void createPageInfo(String token, final AbstractComposite composite) {
-        final AdministrationPanel adminPanel = this;
+        final AdministrationPanel aPanel = this;
         PageInfo page = new PageInfo(token, getGalaxy().getAdminTab()) {
 
             public AbstractComposite createInstance() {
@@ -142,24 +128,15 @@ public class AdministrationPanel extends MenuPanel {
             }
 
             public AbstractComposite getInstance() {
-                adminPanel.setMain(composite);
-                return adminPanel;
+                aPanel.setMain(composite);
+                return aPanel;
             }
-            
+
         };
         getGalaxy().addPage(page);
     }
 
-    protected void createDivWithAdd(Toolbox manageBox, Hyperlink link, Hyperlink add) {
-        InlineFlowPanel item = new InlineFlowPanel();
-        item.add(link);
-        item.add(new Label(" ["));
-        item.add(add);
-        item.add(new Label("]"));
-   
-        manageBox.add(item);
-    }
-    
+
     public Galaxy getGalaxy() {
         return galaxy;
     }

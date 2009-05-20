@@ -18,15 +18,20 @@
 
 package org.mule.galaxy.web.client;
 
+import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Label;
 
 import java.util.List;
 
-public class MenuPanel extends AbstractErrorShowingComposite {
+public abstract class MenuPanel extends AbstractErrorShowingComposite {
 
     private DockPanel panel;
     private FlowPanel leftMenuContainer;
@@ -147,4 +152,32 @@ public class MenuPanel extends AbstractErrorShowingComposite {
     public Widget getMain() {
         return mainWidget;
     };
+
+    protected void createLinkWithAdd(Toolbox manageBox,
+                                   String title, 
+                                   String tokenBase,
+                                   AbstractComposite list,
+                                   AbstractComposite form) {
+
+        Hyperlink link = new Hyperlink(title, tokenBase);
+        Hyperlink addLink = new Hyperlink("Add", tokenBase + "/new");
+
+        createDivWithAdd(manageBox, link, addLink);
+        createPageInfo(tokenBase, list);
+        createPageInfo(tokenBase + "/" + Galaxy.WILDCARD, form);
+    }
+
+    protected abstract void createPageInfo(String token, final AbstractComposite composite);
+
+    protected void createDivWithAdd(Toolbox manageBox, Hyperlink link, Hyperlink add) {
+        InlineFlowPanel item = new InlineFlowPanel();
+        item.add(link);
+        item.add(new Label(" ["));
+        item.add(add);
+        item.add(new Label("]"));
+
+        manageBox.add(item);
+    }
+
+
 }
