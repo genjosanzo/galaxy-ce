@@ -1,9 +1,15 @@
 package org.mule.galaxy.web.rpc;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.mule.galaxy.web.client.util.PropertyDescriptorComparator;
 
 public class WType  implements IsSerializable {
     private String id;
@@ -67,6 +73,76 @@ public class WType  implements IsSerializable {
             properties = new ArrayList<WPropertyDescriptor>();
         }
         properties.add(id2);
+    }
+
+    /**
+     * Does this type inherit from the specified candidiate?
+     * @param candidate
+     * @param types
+     * @return
+     */
+    public boolean inherits(WType candidate, Map<String,WType> types) {
+        if (candidate.getId().equals(getId())) {
+            return true;
+        }
+        
+        List<String> checked = new ArrayList<String>();
+
+        return inherits(candidate, this, checked, types);
+    }
+
+    private boolean inherits(WType candidate, WType type, List<String> checked, Map<String,WType> types) {
+        if (checked.contains(type.getId())) {
+            return false;
+        }
+        checked.add(type.getId());
+        
+        List<String> mixinIds = type.getMixinIds();
+        if (mixinIds != null) {
+            for (String mixin : mixinIds) {
+                if (mixin.equals(candidate.getId())) {
+                    return true;
+                }
+                
+                if (inherits(candidate, types.get(mixin), checked, types)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public List<WPropertyDescriptor> getAllProperties(Map<String, WType> types) {
+        Set<WPropertyDescriptor> props = new HashSet<WPropertyDescriptor>();
+        
+        List<String> checked = new ArrayList<String>();
+
+        collectProperties(this, props, checked, types);
+        
+        ArrayList list = new ArrayList(props);
+        Collections.sort(list, new PropertyDescriptorComparator());
+        return list;
+    }
+
+
+    private void collectProperties(WType type, Set<WPropertyDescriptor> props, List<String> checked, Map<String,WType> types) {
+        if (checked.contains(type.getId())) {
+            return;
+        }
+        checked.add(type.getId());
+        
+        if (type.getProperties() != null) {
+            props.addAll(type.getProperties());
+        }
+        
+        List<String> mixinIds = type.getMixinIds();
+        if (mixinIds != null) {
+            for (String mixin : mixinIds) {
+                WType child = types.get(mixin);
+                
+                collectProperties(child, props, checked, types);
+            }
+        }
     }
 
 }

@@ -55,7 +55,6 @@ import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
 import org.mule.galaxy.web.client.registry.PolicyResultsPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.ItemPathOracle;
-import org.mule.galaxy.web.client.util.PropertyDescriptorComparator;
 import org.mule.galaxy.web.client.util.StringUtil;
 import org.mule.galaxy.web.client.util.TooltipListener;
 import org.mule.galaxy.web.client.util.WTypeComparator;
@@ -104,9 +103,10 @@ public class AddItemForm extends AbstractErrorShowingComposite
     private boolean addVersionedItem;
     private boolean fileUpload;
     private String fileId;
-    private WType avType;
     private CheckBox addVersionCB;
     private boolean fileUploadForVersion;
+    private ListBox versionTypes;
+    private WType selectedVersion;
     
     public AddItemForm(final Galaxy galaxy) {
         this.galaxy = galaxy;
@@ -213,10 +213,10 @@ public class AddItemForm extends AbstractErrorShowingComposite
      * ArtifactVersion all in one go. This will set up a second piece of the form 
      * to deal with that.
      */
-    private void setupVersionItemForm(boolean addCheckbox) {
+    private void setupVersionItemForm(boolean redrawAddVersionCB) {
         int row = table.getRowCount();
 
-        if (addCheckbox) {
+        if (redrawAddVersionCB) {
             // blank row for spacing
             table.setWidget(row, 2, newSpacer());
             
@@ -234,9 +234,36 @@ public class AddItemForm extends AbstractErrorShowingComposite
             table.setWidget(row, 2, addVersionCB);
             row++;
         }
-        
-        table.setWidget(row, 0, new Label("Version:"));
 
+        table.setWidget(row, 0, new Label("Version Type:"));
+        versionTypes = new ListBox();
+        WType avType = getTypeByName("Version");
+        WType versionedType = getType();
+        for (WType type : types.values()) {
+            if (type.inherits(avType, types)) {
+                versionTypes.addItem(type.getName(), type.getId());
+                if (selectedVersion == null) {
+                    selectedVersion = type;
+                } else if (type.getId().equals(selectedVersion.getId())) {
+                    versionTypes.setSelectedIndex(versionTypes.getItemCount()-1);
+                }
+            }
+        }
+        
+        // Update the applicable fields if someone selects a new version type
+        final int versionRowStart = row;
+        versionTypes.addChangeHandler(new ChangeHandler() {
+            public void onChange(ChangeEvent event) {
+                selectedVersion = getVersionType();
+                removeVersionFields(versionRowStart);
+                setupVersionItemForm(false);
+                setupTableBottom(true);
+            }
+        });
+        table.setWidget(row, 2, versionTypes);
+        
+        row++;
+        table.setWidget(row, 0, new Label("Version:"));
         versionNameBox = new ValidatableTextBox(new StringNotEmptyValidator());
         table.setWidget(row, 2, versionNameBox);
         
@@ -259,19 +286,22 @@ public class AddItemForm extends AbstractErrorShowingComposite
             }
         });
 
-        avType = getTypeByName("Artifact Version");
-        addRenderers(avType.getProperties(), versionRenderers, true);
+        addRenderers(selectedVersion.getAllProperties(types), versionRenderers, true);
     }
 
     protected void showOrHideVersion(int versionRowStart, Boolean showVersion) {
-        for (int i = table.getRowCount()-1; i >= versionRowStart; i--) 
-            table.removeRow(i);
+        removeVersionFields(versionRowStart);
         
         if (showVersion) {
             setupVersionItemForm(false);
         }
         
         setupTableBottom(true);
+    }
+
+    private void removeVersionFields(int versionRowStart) {
+        for (int i = table.getRowCount()-1; i >= versionRowStart; i--) 
+            table.removeRow(i);
     }
 
     protected WType getType() {
@@ -282,9 +312,16 @@ public class AddItemForm extends AbstractErrorShowingComposite
         return null;
     }
 
+    protected WType getVersionType() {
+        String val = versionTypes.getValue(versionTypes.getSelectedIndex());
+        if (!"".equals(val)) {
+            return types.get(val);
+        }
+        return null;
+    }
+
     protected void selectType(WType type) {
-        List<WPropertyDescriptor> props = type.getProperties();
-        Collections.sort(props, new PropertyDescriptorComparator());
+        List<WPropertyDescriptor> props = type.getAllProperties(types);
         
         for (int i = table.getRowCount()-1; i >= 3; i--) 
             table.removeRow(i);
@@ -296,7 +333,7 @@ public class AddItemForm extends AbstractErrorShowingComposite
         // setup the custom fields for the Type
         addRenderers(props, renderers, false);
         
-        if (isArtifact(type)) {
+        if (isVersioned(type)) {
             addVersionedItem = true;
             setupVersionItemForm(true);
         } else {
@@ -331,19 +368,19 @@ public class AddItemForm extends AbstractErrorShowingComposite
     /**
      * Does this type inherit from the artifact type?
      */
-    private boolean isArtifact(WType selectedType) {
-        WType artifact = getTypeByName("Artifact");
+    private boolean isVersioned(WType selectedType) {
+        WType versionedType = getTypeByName("Versioned");
         
-        if (artifact == null) {
+        if (versionedType == null) {
             return false;
         }
         
-        if (selectedType.getId().equals(artifact.getId())) {
+        if (selectedType.getId().equals(versionedType.getId())) {
             return true;
         }
 
         
-        return false;
+        return selectedType.inherits(versionedType, types);
     }
 
     private WType getTypeByName(String name) {
@@ -466,7 +503,7 @@ public class AddItemForm extends AbstractErrorShowingComposite
                                                          versionNameBox.getText(),
                                                          null, 
                                                          getType().getId(), 
-                                                         avType.getId(),
+                                                         getVersionType().getId(),
                                                          properties, 
                                                          getProperties(versionRenderers),
                                                          callback);
