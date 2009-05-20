@@ -18,6 +18,7 @@
 
 package org.mule.galaxy.web.server;
 
+import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,7 +61,9 @@ import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.artifact.ArtifactExtension;
+import org.mule.galaxy.impl.artifact.UploadService;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
+import org.mule.galaxy.impl.lifecycle.LifecycleExtension;
 import org.mule.galaxy.impl.link.LinkExtension;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexManager;
@@ -141,6 +144,8 @@ public class RegistryServiceImpl implements RegistryService {
 
     private EventManager eventManager;
 
+    private UploadService uploadService;
+    
     public List<WExtensionInfo> getExtensions() throws RPCException {
         ArrayList<WExtensionInfo> exts = new ArrayList<WExtensionInfo>();
         for (Extension e : registry.getExtensions()) {
@@ -222,12 +227,35 @@ public class RegistryServiceImpl implements RegistryService {
         return ii;
     }
 
+    public String addVersionedItem(String parentPath, 
+                                   String name, 
+                                   String versionName, 
+                                   String lifecycleId,
+                                   String typeId, 
+                                   String versionTypeId, 
+                                   Map<String, Serializable> properties,
+                                   Map<String, Serializable> versionProperties) throws RPCException,
+        ItemNotFoundException, ItemExistsException, WPolicyException {
+        addItem(parentPath, name, lifecycleId, typeId, properties);
+        
+        if (!parentPath.endsWith("/")) {
+            parentPath += "/";
+        }
+        parentPath += name;
+        
+        return addItem(parentPath, versionName, lifecycleId, versionTypeId, versionProperties);
+    }
+
     public String addItem(String parentPath, 
                           String workspaceName, 
                           String lifecycleId, 
                           String typeId, 
                           Map<String, Serializable> properties) 
         throws RPCException, ItemNotFoundException, ItemExistsException, WPolicyException {
+        
+        // If we uploaded files, lets track them so we can delete them
+        ArrayList<String> filesToDelete = new ArrayList<String>();
+        
         try {
             Item item;
             Type type = typeManager.getType(typeId);
@@ -237,11 +265,15 @@ public class RegistryServiceImpl implements RegistryService {
                     String name = e.getKey();
                     PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(name, type);
                     
-                    localProperties.put(name, getLocalValue(pd, e.getValue(), null, null));
+                    localProperties.put(name, getLocalValue(pd, e.getValue(), null));
+                    
+                    if (pd != null && pd.getExtension() instanceof ArtifactExtension) {
+                        filesToDelete.add((String)e.getValue());
+                    }
                 }
             }
             
-            if (parentPath == null || "".equals(parentPath)) {
+            if (parentPath == null || "".equals(parentPath) || "/".equals(parentPath)) {
                 item = registry.newItem(workspaceName, type, localProperties).getItem();
             } else {
                 Item parent = (Item) registry.getItemByPath(parentPath);
@@ -255,6 +287,7 @@ public class RegistryServiceImpl implements RegistryService {
                 item.setDefaultLifecycle(item.getLifecycleManager().getLifecycleById(lifecycleId));
                 registry.save(item);
             }
+            
             return item.getId();
         } catch (DuplicateItemException e) {
             throw new ItemExistsException();
@@ -270,6 +303,10 @@ public class RegistryServiceImpl implements RegistryService {
             throw toWeb(e);
         } catch (PropertyException e) {
             throw new RPCException(e.getMessage());
+        } finally {
+            for (String s : filesToDelete) {
+                uploadService.delete(s);
+            }
         }
     }
 
@@ -974,7 +1011,7 @@ public class RegistryServiceImpl implements RegistryService {
             
             return toWeb(links, p.getPropertyDescriptor());
         } else if (ext instanceof ArtifactExtension) {
-            return getLink(contextPathResolver.getContextPath() + "/api/registry", item) 
+            return getLink(contextPathResolver.getContextPath() + "/api/registry", item.getParent()) 
                 + "?version=" + item.getName();
         } else {
             Object internalValue = p.getInternalValue();
@@ -1073,10 +1110,11 @@ public class RegistryServiceImpl implements RegistryService {
             Item item = registry.getItemById(itemId);
 
             PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName, item.getType());
-            Extension ext = pd != null ? pd.getExtension() : null;
             
-            setProperty(item, propertyName, propertyValue, ext);
-
+            Object value = getLocalValue(pd, propertyValue, item);
+            
+            item.setProperty(pd.getProperty(), value);
+            
             registry.save(item);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
@@ -1094,45 +1132,14 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    private void setProperty(Item item, String propertyName, 
-                             Serializable propertyValue, Extension ext)
-        throws PropertyException, PolicyException, NotFoundException, RegistryException, AccessException {
-        if (ext instanceof LinkExtension) {
-            Links links = (Links) item.getProperty(propertyName);
-            WLinks wlinks = (WLinks) propertyValue;
-            
-            Collection<Link> linkList = new ArrayList<Link>();
-            linkList.addAll(links.getLinks());
-            for (Iterator<LinkInfo> itr = wlinks.getLinks().iterator(); itr.hasNext();) {
-                LinkInfo wl = itr.next();
-                Link l = getLink(linkList, wl);
-                
-                if (l != null) {
-                    linkList.remove(l);
-                } else {
-                    Item linkTo = registry.getItemByPath(wl.getItemName());
-                    
-                    Link link = new Link(item, linkTo, null, false);
-                    links.addLinks(link);
-                }
-            }
-            
-            for (Link l : linkList) {
-                links.removeLinks(l);
-            }
-        } else {
-            item.setInternalProperty(propertyName, propertyValue);
-        }
-    }
-
     public Object getLocalValue(PropertyDescriptor pd, 
                                 Serializable s, 
-                                Item item,
-                                Object existingValue) 
-        throws NotFoundException, RegistryException, AccessException {
+                                Item item) 
+        throws NotFoundException, RegistryException, AccessException, RPCException {
         if (pd != null && pd.getExtension() != null) {
-            if (pd.getExtension() instanceof LinkExtension) {
-                Links links = (Links) existingValue;
+            Extension ext = pd.getExtension();
+            if (ext instanceof LinkExtension) {
+                Links links = (Links) item.getProperty(pd.getProperty());
                 WLinks wlinks = (WLinks) s;
                 
                 Collection<Link> linksToRemove = new ArrayList<Link>();
@@ -1164,6 +1171,28 @@ public class RegistryServiceImpl implements RegistryService {
                 }
                 
                 return linksToAdd;
+            } else if (ext instanceof ArtifactExtension) {
+                try {
+                    return new Object[] { uploadService.getFile(s.toString()),
+                                          "application/octet-stream" };
+                } catch (FileNotFoundException e) {
+                    throw new RPCException("An error occurred processing the file upload. Please try again.");
+                }
+            } else if (ext instanceof LifecycleExtension) {
+                List ids = (List) s;
+                
+                if (ids.size() != 2) {
+                    throw new RPCException("Lifecycle metadata is wrong length!");
+                }
+                
+                LifecycleManager lifecycleManager;
+                if (item != null) {
+                    lifecycleManager = item.getLifecycleManager();
+                } else {
+                    lifecycleManager = localLifecycleManager;
+                }
+                
+                return (Phase) lifecycleManager.getPhaseById((String)ids.get(1));
             }
         } 
         return s;
@@ -1191,7 +1220,7 @@ public class RegistryServiceImpl implements RegistryService {
                 PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName, item.getType());
                 Extension ext = pd != null ? pd.getExtension() : null;
                 
-                setProperty(item, propertyName, propertyValue, ext, items);
+                setProperty(item, pd, propertyValue, ext, items);
             }
             
             // don't save until we actually manage to set everything
@@ -1226,7 +1255,7 @@ public class RegistryServiceImpl implements RegistryService {
                 PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName, item.getType());
                 Extension ext = pd != null ? pd.getExtension() : null;
                 
-                setProperty(item, propertyName, propertyValue, ext, items);
+                setProperty(item, pd, propertyValue, ext, items);
             }
             
             // don't save until we actually manage to set everything
@@ -1249,11 +1278,15 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    private void setProperty(Item item, String propertyName, Serializable propertyValue, Extension ext,
+    private void setProperty(Item item, 
+                             PropertyDescriptor pd, 
+                             Serializable propertyValue, 
+                             Extension ext,
                              List<Item> items) throws PropertyException, PolicyException, NotFoundException,
-        RegistryException, AccessException {
-        setProperty(item, propertyName, propertyValue, ext);
+        RegistryException, AccessException, RPCException {
+        Object value = getLocalValue(pd, propertyValue, item);
         
+        item.setProperty(pd.getProperty(), value);
         items.add(item);
     }
 
@@ -1997,5 +2030,9 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void setEventManager(final EventManager eventManager) {
         this.eventManager = eventManager;
+    }
+
+    public void setUploadService(UploadService uploadService) {
+        this.uploadService = uploadService;
     }
 }

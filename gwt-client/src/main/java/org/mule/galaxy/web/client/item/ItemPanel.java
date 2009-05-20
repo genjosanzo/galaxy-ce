@@ -294,7 +294,7 @@ public class ItemPanel extends AbstractWithTopComposite {
         img.addClickListener(cl);
         img.setStyleName("icon-baseline");
         
-        Hyperlink hl = new Hyperlink("Feed", "artifact-versions/" + info.getId());
+        Hyperlink hl = new Hyperlink("Feed", "feed/" + info.getId());
         hl.addClickListener(cl);
         
         InlineFlowPanel p = asHorizontal(img, new Label(" "), hl);

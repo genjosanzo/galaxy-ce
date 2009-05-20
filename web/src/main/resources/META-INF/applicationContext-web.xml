@@ -20,6 +20,7 @@
       <property name="artifactViewManager" ref="artifactViewManager"/>
       <property name="accessControlManager" ref="accessControlManager"/>
       <property name="typeManager" ref="typeManager"/>
+      <property name="uploadService" ref="uploadService"/>
       <property name="userManager" ref="userManager"/>
       <property name="contextPathResolver">
           <bean class="org.mule.galaxy.web.server.ContextPathResolver"/>

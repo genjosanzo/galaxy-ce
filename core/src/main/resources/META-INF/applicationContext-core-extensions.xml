@@ -14,6 +14,11 @@
 
   <import resource="scheduler.xml"/>
     
+  <bean id="uploadService" class="org.mule.galaxy.impl.artifact.UploadServiceImpl" init-method="initialize">
+      <property name="jcrTemplate" ref="jcrTemplate"/>
+      <property name="scheduler" ref="scheduler"/>
+  </bean>
+  
   <bean class="org.mule.galaxy.policy.wsdl.BackwardCompatibilityPolicy">
     <property name="registry" ref="registry"/>
   </bean>

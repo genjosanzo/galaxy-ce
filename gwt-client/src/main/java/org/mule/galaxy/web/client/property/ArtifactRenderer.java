@@ -1,9 +1,9 @@
 package org.mule.galaxy.web.client.property;
 
+import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.Widget;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
-
-import com.google.gwt.user.client.ui.Widget;
 
 public class ArtifactRenderer extends AbstractPropertyRenderer {
 
@@ -15,7 +15,9 @@ public class ArtifactRenderer extends AbstractPropertyRenderer {
     }
 
     public Widget createEditForm() {
-        throw new UnsupportedOperationException();
+        FileUpload upload = new FileUpload();
+        upload.setName("file");
+        return upload;
     }
 
     public Object getValueToSave() {

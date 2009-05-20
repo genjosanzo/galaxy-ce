@@ -1,7 +1,6 @@
 package org.mule.galaxy.web.client.property;
 
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
@@ -24,7 +23,7 @@ public class SimpleRenderer extends AbstractPropertyRenderer {
     }
 
     public Widget createViewWidget() {
-        String txt = (String) value;
+        String txt = value.toString();
         
         return createWidget(txt);
     }

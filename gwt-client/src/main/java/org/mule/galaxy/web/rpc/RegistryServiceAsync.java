@@ -37,6 +37,16 @@ public interface RegistryServiceAsync {
                  Map<String, Serializable> properties,
                  AsyncCallback callback);
 
+    void addVersionedItem(String parentPath, 
+                          String name, 
+                          String versionName, 
+                          String lifecycleId,
+                          String typeId, 
+                          String versionTypeId, 
+                          Map<String, Serializable> properties,
+                          Map<String, Serializable> versionProperties,
+                          AsyncCallback callback); 
+    
     void getArtifactType(String id, AsyncCallback c);
     
     void getArtifactTypes(AsyncCallback callback);

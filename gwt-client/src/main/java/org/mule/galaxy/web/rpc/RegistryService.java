@@ -40,6 +40,16 @@ public interface RegistryService extends RemoteService {
                    Map<String, Serializable> properties) 
         throws RPCException, ItemNotFoundException, ItemExistsException, WPolicyException;
 
+    String addVersionedItem(String parentPath, 
+                            String name,
+                            String versionName,
+                            String lifecycleId, 
+                            String typeId, 
+                            String versionTypeId, 
+                            Map<String, Serializable> properties, 
+                            Map<String, Serializable> versionProperties) 
+        throws RPCException, ItemNotFoundException, ItemExistsException, WPolicyException;
+
     WArtifactType getArtifactType(String id) throws RPCException;
     
 

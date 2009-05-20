@@ -14,6 +14,9 @@ import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
+import org.mule.galaxy.artifact.Artifact;
+import org.mule.galaxy.impl.artifact.UploadService;
+import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.query.Query;
@@ -25,11 +28,13 @@ import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.LinkInfo;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
+import org.mule.galaxy.web.rpc.WApprovalMessage;
 import org.mule.galaxy.web.rpc.WArtifactType;
 import org.mule.galaxy.web.rpc.WComment;
 import org.mule.galaxy.web.rpc.WIndex;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WLinks;
+import org.mule.galaxy.web.rpc.WPolicyException;
 import org.mule.galaxy.web.rpc.WProperty;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 import org.mule.galaxy.web.rpc.WSearchResults;
@@ -38,6 +43,7 @@ import org.mule.galaxy.web.rpc.WUser;
 
 public class RegistryServiceTest extends AbstractGalaxyTest {
     protected RegistryService gwtRegistry;
+    protected UploadService uploadService;
 
     @Override
     protected String[] getConfigLocations() {
@@ -66,6 +72,26 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         ItemInfo info = gwtRegistry.getItemInfo(id, true);
         assertEquals("bar", info.getProperty("foo").getValue());
     }
+
+    public void testAddArtifact() throws Exception
+    {
+        Type aType = typeManager.getTypeByName(TypeManager.ARTIFACT);
+        Type avType = typeManager.getTypeByName(TypeManager.ARTIFACT_VERSION);
+        
+        String id = gwtRegistry.addItem("/Default Workspace", "test.wsdl", null, aType.getId(), null);
+        
+        String artifactId = uploadService.upload(getResourceAsStream("/wsdl/hello.wsdl"));
+        
+        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put("artifact", artifactId);
+        
+        id = gwtRegistry.addItem("/Default Workspace/test.wsdl", "1.0", null, avType.getId(), props);
+        
+        Item item = registry.getItemById(id);
+        Artifact artifact = (Artifact) item.getProperty("artifact");
+        assertNotNull(artifact);
+    }
+    
     
     public void testItemOperations() throws Exception
     {
@@ -194,6 +220,10 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         w = workspaces.iterator().next();
         assertNotNull(w.getPath());
+        
+        // try adding an item to the top level
+        gwtRegistry.addItem("", "Foo", null, type.getId(), null);
+        gwtRegistry.addItem("/", "Foo2", null, type.getId(), null);
     }
     
     public void testEntries() throws Exception
@@ -224,48 +254,48 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         assertTrue(permissions.contains("MANAGE_USERS"));
     }
-//    
-//    public void testGovernanceOperations() throws Exception {
-//        Collection<ResultGroup> artifacts = gwtRegistry.getArtifacts(null, null, true, null, new HashSet<SearchPredicate>(), null, 0, 20).getResults();
-//        ResultGroup g1 = artifacts.iterator().next();
-//        
-//        ItemInfo a = g1.getRows().get(0);
-//        ExtendedItemInfo ext = gwtRegistry.getItem(a.getId());
-//        
-//        Collection<EntryVersionInfo> versions = ext.getVersions();
-//        EntryVersionInfo v = versions.iterator().next();
-//     
-//        Phase created = lifecycleManager.getLifecycle("Default").getPhase("Created");
-//        
-//        WProperty property = v.getProperty(Registry.PRIMARY_LIFECYCLE);
-//        assertNotNull(property);
-//        assertNotNull(property.getListValue());
-//        
-//        List<String> ids = property.getListValue();
-//        assertEquals(created.getId(), ids.get(1));
-//        
-//        Phase developed = created.getNextPhases().iterator().next();
-//        gwtRegistry.setProperty(a.getId(), Registry.PRIMARY_LIFECYCLE, (Serializable) Arrays.asList(developed.getLifecycle().getId(), developed.getId()));
-//        
-//        // activate a policy which will make transitioning fail
-//        FauxPolicy policy = new FauxPolicy();
-//        policyManager.addPolicy(policy);
-//
-//        // Try transitioning
-//        Phase tested = created.getNextPhases().iterator().next();
-//        try {
-//            gwtRegistry.setProperty(a.getId(), Registry.PRIMARY_LIFECYCLE, (Serializable) Arrays.asList(tested.getLifecycle().getId(), tested.getId()));
-//        } catch (WPolicyException e) {
-//            assertEquals(1, e.getPolicyFailures().size());
-//            
-//            List messages = (List) e.getPolicyFailures().values().iterator().next();
-//            
-//            WApprovalMessage msg = (WApprovalMessage) messages.iterator().next();
-//            assertEquals("Not approved", msg.getMessage());
-//            assertFalse(msg.isWarning());
-//        }
-//    }
-//    
+    
+    public void testGovernanceOperations() throws Exception {
+        Type type = getSimpleType();
+        String id = gwtRegistry.addItem("/Default Workspace", "Test", null, type.getId(), null);
+        
+        ItemInfo info = gwtRegistry.getItemInfo(id, true);
+     
+        Item item = registry.getItemById(info.getId());
+        Phase created = lifecycleManager.getLifecycle("Default").getPhase("Created");
+        item.setProperty(Registry.PRIMARY_LIFECYCLE, created);
+        registry.save(item);
+        // get the item with the lifecycle info
+        info = gwtRegistry.getItemInfo(id, true);
+        WProperty property = info.getProperty(Registry.PRIMARY_LIFECYCLE);
+        assertNotNull(property);
+        assertNotNull(property.getListValue());
+        
+        List<String> ids = property.getListValue();
+        assertEquals(created.getId(), ids.get(1));
+        
+        Phase developed = created.getNextPhases().iterator().next();
+        gwtRegistry.setProperty(info.getId(), Registry.PRIMARY_LIFECYCLE, (Serializable) Arrays.asList(developed.getLifecycle().getId(), developed.getId()));
+        
+        // activate a policy which will make transitioning fail
+        FauxPolicy policy = new FauxPolicy();
+        policyManager.addPolicy(policy);
+
+        // Try transitioning
+        Phase tested = created.getNextPhases().iterator().next();
+        try {
+            gwtRegistry.setProperty(info.getId(), Registry.PRIMARY_LIFECYCLE, (Serializable) Arrays.asList(tested.getLifecycle().getId(), tested.getId()));
+        } catch (WPolicyException e) {
+            assertEquals(1, e.getPolicyFailures().size());
+            
+            List messages = (List) e.getPolicyFailures().values().iterator().next();
+            
+            WApprovalMessage msg = (WApprovalMessage) messages.iterator().next();
+            assertEquals("Not approved", msg.getMessage());
+            assertFalse(msg.isWarning());
+        }
+    }
+    
     
     public void testIndexes() throws Exception {
         Collection<WIndex> indexes = gwtRegistry.getIndexes();
