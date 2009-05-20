@@ -238,7 +238,6 @@ public class AddItemForm extends AbstractErrorShowingComposite
         table.setWidget(row, 0, new Label("Version Type:"));
         versionTypes = new ListBox();
         WType avType = getTypeByName("Version");
-        WType versionedType = getType();
         for (WType type : types.values()) {
             if (type.inherits(avType, types)) {
                 versionTypes.addItem(type.getName(), type.getId());
