@@ -27,6 +27,33 @@ import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
 public class UploadServiceImpl implements UploadService {
+    private final class CleanCallback implements JcrCallback {
+        public Object doInJcr(Session session) throws IOException, RepositoryException {
+            try {
+                Calendar now = GalaxyUtils.getCalendarForNow();
+                now.add(Calendar.SECOND, -storagePeriod);
+                
+                ValueFactory factory = session.getValueFactory();
+                Value dateValue = factory.createValue(now);
+
+                String dateString = dateValue.getString();
+                 
+                QueryManager qm = session.getWorkspace().getQueryManager();
+                QueryResult result = qm.createQuery("/jcr:root/uploads/*[@" +
+                		DATE + " < xs:dateTime('" + dateString + "')]", Query.XPATH).execute();
+                
+                for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
+                    nodes.nextNode().remove();
+                }
+                
+                session.save();
+            } catch (PathNotFoundException e) {
+            } catch (ItemNotFoundException e) {
+            }
+            return null;
+        }
+    }
+
     protected static final String DATA = "data";
     protected static final String DATE = "date";
     
@@ -53,17 +80,15 @@ public class UploadServiceImpl implements UploadService {
         
         String jobName = "UploadService-cleaner";
         
-        // Unschedule in case we have a previous instance registered.
-        // Prevents errors down below...
-        scheduler.unscheduleJob(jobName, null);
-        
-        JobDetail job = new JobDetail(jobName, null, UploadServiceCleaner.class);
-        job.setDurability(true);
-        
-        CronTrigger trigger = new CronTrigger(jobName, null, "0 0 * * * ?");
-        trigger.setJobName(jobName);
-        
-        scheduler.scheduleJob(job, trigger);
+        if (scheduler.getJobDetail(jobName, null) == null) {
+            JobDetail job = new JobDetail(jobName, null, UploadServiceCleaner.class);
+            job.setDurability(true);
+            
+            CronTrigger trigger = new CronTrigger(jobName, null, "0 0 * * * ?");
+            trigger.setJobName(jobName);
+            
+            scheduler.scheduleJob(job, trigger);
+        }
     }
     
     public String upload(final InputStream inputStream) {
@@ -118,33 +143,15 @@ public class UploadServiceImpl implements UploadService {
     }
 
     public void clean() {
-        jcrTemplate.execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                try {
-                    Calendar now = GalaxyUtils.getCalendarForNow();
-                    now.add(Calendar.SECOND, -storagePeriod);
-                    
-                    ValueFactory factory = session.getValueFactory();
-                    Value dateValue = factory.createValue(now);
-
-                    String dateString = dateValue.getString();
-                     
-                    QueryManager qm = session.getWorkspace().getQueryManager();
-                    QueryResult result = qm.createQuery("/jcr:root/uploads/*[@" +
-                    		DATE + " < xs:dateTime('" + dateString + "')]", Query.XPATH).execute();
-                    
-                    for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
-                        nodes.nextNode().remove();
-                    }
-                    
-                    session.save();
-                } catch (PathNotFoundException e) {
-                } catch (ItemNotFoundException e) {
-                }
-                return null;
-            }
-        });
+        try {
+            JcrUtil.doInTransaction(jcrTemplate.getSessionFactory(), new CleanCallback());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
     }
+    
     public void setJcrTemplate(JcrTemplate jcrTemplate) {
         this.jcrTemplate = jcrTemplate;
     }
