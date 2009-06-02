@@ -92,6 +92,8 @@ public interface RegistryService extends RemoteService {
     
     ItemInfo getItemInfo(String itemId, boolean showHidden) throws RPCException, ItemNotFoundException;
 
+    ItemInfo getItemByPath(String path) throws RPCException, ItemNotFoundException;
+
     Collection<ItemInfo> suggestEntries(String query, String exclude, String[] types) throws RPCException;
     
     void setPropertyForQuery(String query,

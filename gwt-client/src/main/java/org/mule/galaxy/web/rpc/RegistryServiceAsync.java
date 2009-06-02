@@ -80,6 +80,8 @@ public interface RegistryServiceAsync {
 
     void itemExists(String path, AsyncCallback<Boolean> callback);
 
+    void getItemByPath(String path, AsyncCallback<ItemInfo> callback);
+
     void getItemInfo(String itemId, boolean showHidden, AsyncCallback<ItemInfo> callback);
     
     // item operations

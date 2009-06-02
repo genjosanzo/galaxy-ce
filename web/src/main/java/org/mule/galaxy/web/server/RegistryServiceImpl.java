@@ -970,6 +970,20 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
+    public ItemInfo getItemByPath(String path) throws RPCException, ItemNotFoundException {
+        try {
+            Item item = registry.getItemByPath(path);
+            return toWeb(item);
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private void populateProperties(Item item, ItemInfo vi, boolean showHidden) {
         for (PropertyInfo p : item.getProperties()) {
