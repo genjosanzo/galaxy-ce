@@ -74,7 +74,7 @@
         <dependency>
             <groupId>net.sf.gwt-sl</groupId>
             <artifactId>gwt-sl</artifactId>
-            <version>0.1.4</version>
+            <version>0.1.5b</version>
         </dependency>
 
         <dependency>

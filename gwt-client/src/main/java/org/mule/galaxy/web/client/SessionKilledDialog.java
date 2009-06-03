@@ -78,7 +78,7 @@ public class SessionKilledDialog extends DialogBox {
         final InlineFlowPanel mainMessage = new InlineFlowPanel();
         mainMessage.addStyleName("padding");
         final HTML text = new HTML("This client connection has been terminated by the server. This could happen due to either:" +
-                "<ul><li>Server having crashed<li>Client session forcefully killed on the server</ul>" +
+                "<ul><li>Server having crashed</li><li>Client session forcefully killed on the server</li></ul>" +
                 "This error is <strong>unrecoverable</strong> and you'll need to re-login. Next " +
                 "connection attempt will be made in ");
         timerLabel = new Label("" + heartbeatTimer.getIntervalSeconds());
