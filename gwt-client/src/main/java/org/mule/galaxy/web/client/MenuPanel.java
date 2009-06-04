@@ -18,18 +18,18 @@
 
 package org.mule.galaxy.web.client;
 
-import org.mule.galaxy.web.client.util.Toolbox;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
+
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.Toolbox;
 
 public abstract class MenuPanel extends AbstractErrorShowingComposite {
 
@@ -41,7 +41,6 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
     private FlowPanel leftMenu;
     private FlowPanel centerPanel;
     private boolean firstShow = true;
-    private boolean left;
     
     public MenuPanel() {
         this(true);
@@ -50,24 +49,7 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
     public MenuPanel(boolean left) {
         panel = new DockPanel();
         panel.setSpacing(0);
-
-        this.left = left;
         
-        initWidget(panel);
-    }
-    
-    public void onShow(List<String> params) {
-        if (firstShow) {
-            firstShow = false;
-            onFirstShow();
-        }
-        
-        if (mainWidget instanceof AbstractComposite) {
-            ((AbstractComposite) mainWidget).onShow(params);
-        }
-    }
-
-    protected void onFirstShow() {
         if (left) {
             leftMenu = new FlowPanel() {
                 protected void onLoad() {
@@ -95,6 +77,23 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
             
             leftMenu.add(leftMenuContainer);
         }
+        
+        initWidget(panel);
+    }
+    
+    public void onShow(List<String> params) {
+        if (firstShow) {
+            firstShow = false;
+            onFirstShow();
+        }
+        
+        if (mainWidget instanceof AbstractComposite) {
+            ((AbstractComposite) mainWidget).onShow(params);
+        }
+    }
+
+    protected void onFirstShow() {
+
         
         centerPanel = new FlowPanel();
         panel.add(centerPanel, DockPanel.CENTER);
