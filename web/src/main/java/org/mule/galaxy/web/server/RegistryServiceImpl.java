@@ -189,6 +189,24 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
+    public Collection<ItemInfo> getItemsInPath(String parentPath) throws RPCException {
+        try {
+            if (parentPath == null || "".equals(parentPath) || "/".equals(parentPath)) {
+                return toWeb(registry.getItems());
+            } else {
+                return toWeb(registry.getItemByPath(parentPath).getItems());
+            }
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    
     private Collection<ItemInfo> toWeb(Collection<Item> workspaces) {
         if (workspaces == null) {
             return null;

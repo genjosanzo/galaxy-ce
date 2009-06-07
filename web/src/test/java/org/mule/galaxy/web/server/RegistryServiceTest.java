@@ -209,6 +209,9 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     public void testWorkspaces() throws Exception {
         Collection<ItemInfo> workspaces = gwtRegistry.getItems(null);
         assertEquals(1, workspaces.size());
+
+        workspaces = gwtRegistry.getItemsInPath(null);
+        assertEquals(1, workspaces.size());
         
         ItemInfo w = workspaces.iterator().next();
 
@@ -217,6 +220,8 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         workspaces = gwtRegistry.getItems(w.getId());
         assertEquals(1, workspaces.size());
+        
+        workspaces = gwtRegistry.getItemsInPath(w.getPath());
         
         w = workspaces.iterator().next();
         assertNotNull(w.getPath());

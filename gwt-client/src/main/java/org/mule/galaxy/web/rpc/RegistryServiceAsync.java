@@ -29,6 +29,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface RegistryServiceAsync {
     void getItems(String parentId, AsyncCallback callback);
+
+    void getItemsInPath(String parentPath, AsyncCallback callback);
     
     void addItem(String parentId, 
                  String workspaceName,

@@ -492,7 +492,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
     }
 
     
-    public SearchResults suggest(final String p, final int maxResults, final String excludePath, final String... types)
+    public SearchResults suggest(final String p, final int maxResults, final String excludePath, final String... typeNames)
         throws RegistryException, QueryException {
         return (SearchResults) executeWithQueryException(new JcrCallback() {
             
@@ -531,6 +531,32 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                         qstr.append("/*[jcr:like(fn:lower-case(@name), '%").append(value).append("')]/*");
                     } else {
                         qstr.append("/*[jcr:like(fn:lower-case(@name), '%").append(value).append("%')]");
+                    }
+                }
+                
+                if (typeNames != null) {
+                    List<Type> types = new ArrayList<Type>();
+                    for (String typeName : typeNames) {
+                        try {
+                            types.add(typeManager.getTypeByName(typeName));
+                        } catch (NotFoundException e) {
+                            // Ignore 
+                        }
+                    }
+                    
+                    StringBuilder typeQ = new StringBuilder();
+                    for (Type type : types) {
+                        if (typeQ.length() == 0) {
+                            typeQ.append("[");
+                        } else {
+                            typeQ.append(" or ");
+                        }
+                        
+                        typeQ.append("type='").append(type.getId()).append("'");
+                    }
+                    
+                    if (typeQ.length() > 0) {
+                        qstr.append(typeQ).append("]");
                     }
                 }
                 

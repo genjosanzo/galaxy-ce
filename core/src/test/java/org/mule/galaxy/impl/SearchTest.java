@@ -161,6 +161,7 @@ public class SearchTest extends AbstractGalaxyTest {
         Item w = registry.newItem("Test1", workspaceType).getItem();
         Item t2 = w.newItem("Test2", workspaceType).getItem();
         t2.newItem("Test3", workspaceType).getItem();
+        w.newItem("NotAWorkspace", typeManager.getTypeByName(TypeManager.BASE_TYPE));
         
         SearchResults results = registry.suggest("Work", 10, "/bar", TypeManager.WORKSPACE);
         assertEquals(1, results.getTotal());

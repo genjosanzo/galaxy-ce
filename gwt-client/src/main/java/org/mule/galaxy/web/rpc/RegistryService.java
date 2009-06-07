@@ -33,6 +33,8 @@ public interface RegistryService extends RemoteService {
 
     Collection<ItemInfo> getItems(String parentId) throws RPCException;
 
+    Collection<ItemInfo> getItemsInPath(String parentPath) throws RPCException;
+
     String addItem(String parentPath, 
                    String workspaceName,
                    String lifecycleId, 
