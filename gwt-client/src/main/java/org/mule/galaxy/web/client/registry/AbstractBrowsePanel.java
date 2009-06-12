@@ -18,6 +18,8 @@
 
 package org.mule.galaxy.web.client.registry;
 
+import com.google.gwt.user.client.ui.Widget;
+
 import java.util.List;
 
 import org.mule.galaxy.web.client.AbstractWithTopComposite;
@@ -26,8 +28,6 @@ import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WSearchResults;
-
-import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  * The basis for any form that lists out groups of artifacts.
@@ -44,7 +44,7 @@ public abstract class AbstractBrowsePanel extends AbstractWithTopComposite {
         this.galaxy = galaxy;
         this.service = galaxy.getRegistryService();
 
-        FlowPanel main = getMainPanel();
+        Widget main = getMainPanel();
 
         initWidget(main);
     }

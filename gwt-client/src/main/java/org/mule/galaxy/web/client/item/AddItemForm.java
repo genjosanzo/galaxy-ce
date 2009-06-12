@@ -18,6 +18,7 @@
 
 package org.mule.galaxy.web.client.item;
 
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;

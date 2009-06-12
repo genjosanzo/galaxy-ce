@@ -165,6 +165,14 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
         createPageInfo(tokenBase, list);
         createPageInfo(tokenBase + "/" + Galaxy.WILDCARD, form);
     }
+    
+    protected void createLinkWithAdd(String tokenBase,
+                                     AbstractComposite list,
+                                     AbstractComposite form) {
+
+          createPageInfo(tokenBase, list);
+          createPageInfo(tokenBase + "/" + Galaxy.WILDCARD, form);
+      }
 
     protected abstract void createPageInfo(String token, final AbstractComposite composite);
 

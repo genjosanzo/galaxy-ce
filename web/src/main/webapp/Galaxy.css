@@ -355,6 +355,11 @@ a:visited {
     background-color: white;
 }
 
+.padded-panel {
+    margin: 5px;
+}
+
+
 .error-panel {
     background: white;
     padding: 10px;

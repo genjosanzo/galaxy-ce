@@ -22,7 +22,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.event.TabPanelEvent;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
-import com.extjs.gxt.ui.client.widget.layout.FitLayout;
+import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -166,7 +166,6 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
         initializeBody();
 
-
         // prefetch extensions
         registryService.getExtensions(new AbstractCallback(itemPanel) {
             @SuppressWarnings("unchecked")
@@ -193,14 +192,15 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         base.add(footer);
         RootPanel.get().add(base);
 
+        new HeartbeatTimer(Galaxy.this);
+    }
 
+    protected void createRepositoryPanels() {
         itemPanel = new ItemPanel(this);
         createPageInfo(DEFAULT_PAGE, itemPanel, getRepositoryTab());
         createPageInfo("item/" + WILDCARD, new ItemPanel(this), getRepositoryTab());
         createPageInfo("add-item", new AddItemForm(this), getRepositoryTab());
         createPageInfo("view", new ViewPanel(this), getRepositoryTab());
-
-        new HeartbeatTimer(Galaxy.this);
     }
 
     private int getRepositoryTab() {
@@ -233,6 +233,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
     protected void loadTabs(final Galaxy galaxy) {
         tabPanel.add(createEmptyTab("Registry"));
+        createRepositoryPanels();
         
         int searchIdx = tabPanel.getItemCount();
         createPageInfo("search", new SearchPanel(this), searchIdx);
@@ -251,7 +252,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     protected TabItem createEmptyTab(String name) {
         TabItem tab = new TabItem();
         tab.setText(name);
-        tab.setLayout(new FitLayout());
+        tab.setLayout(new FlowLayout());
         return tab;
     }
 
@@ -276,7 +277,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         if (initToken.length() > 0) {
             onHistoryChanged(initToken);
         } else {
-            onHistoryChanged("browse");
+            show("browse");
         }
     }
 
@@ -284,14 +285,26 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         history.put(info.getName(), info);
     }
 
-    private void show(PageInfo page) {
+    /**
+     * Shows a page, but does not trigger a history event.
+     * @param token
+     */
+    public void show(String token) {
+        show(getPageInfo(token), new ArrayList<String>());
+    }
+    
+    protected void show(PageInfo page, List<String> params) {
         TabItem p = (TabItem) tabPanel.getWidget(page.getTabIndex());
         
         p.removeAll();
-        p.add(page.getInstance());
+        
+        AbstractComposite instance = page.getInstance();
+        p.add(instance);
         p.clearState();
         
         p.layout();
+
+        instance.onShow(params);
     }
 
     public void onValueChange(ValueChangeEvent<String> event) {
@@ -349,8 +362,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
             if (idx >= 0 && idx < tabPanel.getItemCount()) {
                 tabPanel.setSelection(tabPanel.getItem(page.getTabIndex()));
             }
-            show(page);
-            page.getInstance().onShow(params);
+            show(page, params);
         }
 
         suppressTabHistory = false;
