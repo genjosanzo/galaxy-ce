@@ -19,12 +19,11 @@
 package org.mule.galaxy.web.client.admin;
 
 import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Label;
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.MenuPanel;
 import org.mule.galaxy.web.client.PageInfo;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.activity.ActivityPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
@@ -105,11 +104,17 @@ public class AdministrationPanel extends MenuPanel {
     }
 
     protected void createUtilityMenuItems(Galaxy galaxy, Toolbox utilityBox) {
-
+        if (galaxy.hasPermission("VIEW_ACTIVITY")) {
+            Hyperlink activityLink = new Hyperlink("Activity", "activity");
+            createPageInfo(activityLink.getTargetHistoryToken(), new ActivityPanel(this, galaxy));
+            utilityBox.add(activityLink);
+        }
+        
         Hyperlink adminLink = new Hyperlink("Admin Shell", "adminShell");
         createPageInfo(adminLink.getTargetHistoryToken(), new AdminShellPanel(this));
         utilityBox.add(adminLink);
 
+        
         // Scheduler
         createLinkWithAdd(utilityBox,
                           "Scheduler",

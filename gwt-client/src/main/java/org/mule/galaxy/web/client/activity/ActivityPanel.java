@@ -18,14 +18,6 @@
 
 package org.mule.galaxy.web.client.activity;
 
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.ItemPathOracle;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WActivity;
-import org.mule.galaxy.web.rpc.WUser;
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -47,9 +39,17 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
-public class ActivityPanel extends AbstractErrorShowingComposite {
+import org.mule.galaxy.web.client.AbstractFlowComposite;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.ItemPathOracle;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WActivity;
+import org.mule.galaxy.web.rpc.WUser;
 
-    private FlowPanel panel;
+public class ActivityPanel extends AbstractFlowComposite {
+
     private ListBox userLB;
     private ListBox eventLB;
     private ListBox resultsLB;
@@ -58,29 +58,19 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
     private FlowPanel resultsPanel;
     private FlexTable table;
     private int maxResults;
-    private FlowPanel mainPanel;
     private SuggestBox itemSB;
     private TextBox textTB;
     private DateBox startDate;
     private DateBox endDate;
+    private final ErrorPanel errorPanel;
 
-    public ActivityPanel(final Galaxy galaxy) {
+    public ActivityPanel(ErrorPanel errorPanel, final Galaxy galaxy) {
         super();
+        this.errorPanel = errorPanel;
         this.galaxy = galaxy;
-
-        mainPanel = getMainPanel();
-        mainPanel.setStyleName("main-panel");
-        initWidget(mainPanel);
     }
 
     public void initialize() {
-        FlowPanel base = new FlowPanel();
-        base.setStyleName("activity-base-panel");
-        mainPanel.add(base);
-
-        panel = new FlowPanel();
-        panel.setStyleName("activity-panel");
-        base.add(panel);
 
         FlowPanel searchContainer = new FlowPanel();
         searchContainer.setStyleName("activity-search-panel-container");
@@ -135,7 +125,7 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
         userLB.addItem("All");
         userLB.addItem("System", "system");
         searchPanel.add(userLB);
-        galaxy.getSecurityService().getUsers(new AbstractCallback(this) {
+        galaxy.getSecurityService().getUsers(new AbstractCallback(errorPanel) {
             public void onSuccess(Object result) {
                 initUsers((Collection) result);
             }
@@ -157,7 +147,7 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
         searchTable.setWidget(0, 5, textTB);
 
         searchTable.setWidget(1, 4, new Label("Relating to:"));
-        itemSB = new SuggestBox(new ItemPathOracle(galaxy, this));
+        itemSB = new SuggestBox(new ItemPathOracle(galaxy, errorPanel));
         itemSB.setText("[All Items]");
         searchTable.setWidget(1, 5, itemSB);
 
@@ -209,12 +199,13 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
             userLB.addItem(user.getName() + " (" + user.getUsername() + ")", user.getId());
         }
     }
+    
 
     public void onShow() {
-        if (mainPanel.getWidgetCount() == 0) {
+        if (panel.getWidgetCount() == 0) {
             initialize();
         }
-        clearErrorMessage();
+        errorPanel.clearErrorMessage();
 
         resultsPanel.clear();
         resultsPanel.add(new Label("Loading..."));
@@ -224,7 +215,7 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
         maxResults = new Integer(resultsLB.getItemText(resultsLB.getSelectedIndex())).intValue();
 
         boolean ascending = false;
-        AbstractCallback callback = new AbstractCallback(this) {
+        AbstractCallback callback = new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object o) {
                 loadResults((Collection) o);
@@ -238,7 +229,7 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
             try {
                 fromDate = parseDate(fromStr);
             } catch (DateParseException e) {
-                setMessage("\"From\" date is invalid. It must be in the form of YYYY-MM-DD.");
+                errorPanel.setMessage("\"From\" date is invalid. It must be in the form of YYYY-MM-DD.");
                 return;
             }
         }
@@ -248,7 +239,7 @@ public class ActivityPanel extends AbstractErrorShowingComposite {
             try {
                 toDate = parseDate(toStr);
             } catch (DateParseException e) {
-                setMessage("\"From\" date is invalid. It must be in the form of YYYY-MM-DD.");
+                errorPanel.setMessage("\"From\" date is invalid. It must be in the form of YYYY-MM-DD.");
                 return;
             }
         }
