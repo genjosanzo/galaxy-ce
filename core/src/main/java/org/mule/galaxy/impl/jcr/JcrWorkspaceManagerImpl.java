@@ -341,23 +341,23 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
                     // save the "we're indexing" flag
                     session.save();
                     
-                // fire the event
-            NewItemResult result = new NewItemResult(item, approvals);
-            ItemCreatedEvent event = new ItemCreatedEvent(result.getItem());
-            event.setUser(SecurityUtils.getCurrentUser());
-            eventManager.fireEvent(event);
+                    // fire the event
+                    NewItemResult result = new NewItemResult(item, approvals);
+                    ItemCreatedEvent event = new ItemCreatedEvent(result.getItem());
+                    event.setUser(SecurityUtils.getCurrentUser());
+                    eventManager.fireEvent(event);
 
-                return result;
+                    return result;
                 } catch (RuntimeException e) {
                     parentNode.refresh(false);
                     throw e;
                 } catch (RegistryException e) {
                     parentNode.refresh(false);
                     throw new RuntimeException(e);
-        } catch (PolicyException e) {
+                } catch (PolicyException e) {
                     parentNode.refresh(false);
                     throw new RuntimeException(e);
-        } catch (PropertyException e) {
+                } catch (PropertyException e) {
                     parentNode.refresh(false);
                     throw new RuntimeException(e);
                 } catch (AccessException e) {
