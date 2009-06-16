@@ -70,4 +70,27 @@ public class TreeItem implements Identifiable {
         }
         return null;
     }
+
+    
+    public String getFullPath() {
+        return getFullPath(true);
+    }
+    
+    public String getFullPath(boolean includeRoot) {
+        StringBuffer sb = new StringBuffer();
+        TreeItem i = this;
+        while (i != null) {
+            if (sb.length() > 0) {
+                sb.insert(0, '/');
+            }
+            sb.insert(0, i.getName());
+            i = i.getParent();
+            
+            if (!includeRoot && i.getParent() == null) {
+                break;
+            }
+        }
+        
+        return sb.toString();
+    }
 }

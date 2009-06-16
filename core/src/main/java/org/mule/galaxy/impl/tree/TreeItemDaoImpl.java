@@ -4,7 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.jcr.Node;
+import javax.jcr.Session;
+
 import org.mule.galaxy.TreeItem;
+import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 
 public class TreeItemDaoImpl extends AbstractReflectionDao<TreeItem> implements TreeItemDao {
@@ -15,6 +19,18 @@ public class TreeItemDaoImpl extends AbstractReflectionDao<TreeItem> implements 
 
     public List<TreeItem> getRootTreeItems() {
         return find("parent", null);
+    }
+
+    @Override
+    public TreeItem build(Node node, Session session) throws Exception {
+        TreeItem ti = super.build(node, session);
+        
+        String parentId = JcrUtil.getStringOrNull(node, "parent");
+        
+        if (parentId != null) {
+            ti.setParent(build(session.getNodeByUUID(parentId), session));
+        }
+        return ti;
     }
 
     public TreeItem getTreeItem(String path) {

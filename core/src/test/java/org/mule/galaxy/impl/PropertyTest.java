@@ -177,6 +177,7 @@ public class PropertyTest extends AbstractGalaxyTest {
         assertEquals(1, retreived.size());
         TreeItem t = (TreeItem) retreived.iterator().next();
         assertEquals(child.getName(), t.getName());
+        assertEquals("Public Services/Logistics", t.getFullPath());
         
         SearchResults search = registry.search("select where groups = 'Public Services/Logistics'", 0, 100);
         
