@@ -88,7 +88,7 @@
                             <compileTargets>
                                 <value>org.mule.galaxy.web.Galaxy</value>
                             </compileTargets>
-                            <extraJvmArgs>-Xss512k -Xmx512m -Dgwt.nowarn.legacy.tools</extraJvmArgs>
+                            <extraJvmArgs>-Xss1024k -Xmx512m -Dgwt.nowarn.legacy.tools</extraJvmArgs>
                             <!--
                                 CRITICAL: This should be false so that filtered resources are used instead.
                                 Also required for better IDE support of GWT (avoid looped symlinks).
