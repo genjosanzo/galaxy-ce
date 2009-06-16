@@ -126,18 +126,9 @@ html,body {
   padding: 1px;
 }
 
-.x-btn-text-icon .ux-taskbutton-center .x-btn-text {
-  background-position: 0 6px;
-  background-repeat: no-repeat;
-  padding: 7px 0px 7px 20px;
-}
-
-.x-btn-text-icon .ux-startbutton-center .x-btn-text {
-  background-position: 0 4px;
-  background-repeat: no-repeat;
+.ux-startbutton-center .x-btn-text {
   color: #000000 !important;
   font-weight: bold;
-  padding: 7px 0px 7px 28px;
 }
 
 .ux-taskbutton-left,.ux-taskbutton-right {
