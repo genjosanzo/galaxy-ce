@@ -18,28 +18,26 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
-import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.extjs.gxt.ui.client.widget.form.TextArea;
-import com.extjs.gxt.ui.client.widget.tips.ToolTipConfig;
-
-import java.util.List;
-
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.LightBox;
-import org.mule.galaxy.web.client.util.TooltipListener;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableListBox;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextArea;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.AdminServiceAsync;
 import org.mule.galaxy.web.rpc.WScript;
 import org.mule.galaxy.web.rpc.WScriptJob;
+
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.TextArea;
+import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.tips.ToolTipConfig;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
+
+import java.util.List;
 
 
 public class ScheduleForm extends AbstractAdministrationForm {
@@ -52,7 +50,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
 
     public ScheduleForm(AdministrationPanel administrationPanel) {
         super(administrationPanel, "schedules", "Scheduled item was saved.", "Scheduled item was deleted.",
-              "A Scheduled item with that name already exists");
+                "A Scheduled item with that name already exists");
     }
 
     protected void fetchItem(String id) {
@@ -126,7 +124,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
             lb.addItem(s.getName(), s.getId());
 
             if (s.getId().equals(job.getScript())) {
-                lb.setSelectedIndex(lb.getItemCount()-1);
+                lb.setSelectedIndex(lb.getItemCount() - 1);
             }
         }
     }
@@ -198,14 +196,19 @@ public class ScheduleForm extends AbstractAdministrationForm {
     }
 
     protected void delete() {
-        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter() {
-            public void onConfirm() {
-                ScheduleForm.super.delete();
-                AdminServiceAsync svc = adminPanel.getGalaxy().getAdminService();
-                svc.deleteScriptJob(job.getId(), getDeleteCallback());
+        final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
+            public void handleEvent(MessageBoxEvent ce) {
+                Button btn = ce.getButtonClicked();
+
+                if (Dialog.YES.equals(btn.getItemId())) {
+                    ScheduleForm.super.delete();
+                    AdminServiceAsync svc = adminPanel.getGalaxy().getAdminService();
+                    svc.deleteScriptJob(job.getId(), getDeleteCallback());
+                }
             }
-        }, "Are you sure you want to delete schedule " + job.getName() + "?");
-        new LightBox(dialog).show();
+        };
+
+        MessageBox.confirm("Confirm", "Are you sure you want to delete schedule " + job.getName() + "?", l);
     }
 
     protected boolean validate() {

@@ -18,11 +18,13 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.rpc.WGroup;
 
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.user.client.ui.FlexTable;
 
@@ -58,7 +60,7 @@ public class GroupForm extends AbstractAdministrationForm {
             return "Add Group";
         } else {
             return "Edit Group: " + group.getName();
-        }                   
+        }
     }
 
     protected void initializeItem(Object o) {
@@ -77,13 +79,19 @@ public class GroupForm extends AbstractAdministrationForm {
     }
 
     protected void delete() {
-        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter() {
-            public void onConfirm() {
+
+        final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
+          public void handleEvent(MessageBoxEvent ce) {
+            Button btn = ce.getButtonClicked();
+
+            if (Dialog.YES.equals(btn.getItemId())) {
                 GroupForm.super.delete();
                 getSecurityService().deleteGroup(group.getId(), getDeleteCallback());
             }
-        }, "Are you sure you want to delete group " + group.getName() + "?");
-        new LightBox(dialog).show();
+          }
+        };
+
+        MessageBox.confirm("Confirm", "Are you sure you want to delete group " + group.getName() + "?", l);
     }
 
 }

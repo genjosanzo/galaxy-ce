@@ -18,6 +18,12 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.rpc.WExtensionInfo;
+import org.mule.galaxy.web.rpc.WPropertyDescriptor;
+
+import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -29,24 +35,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
-import org.mule.galaxy.web.rpc.WExtensionInfo;
-import org.mule.galaxy.web.rpc.WPropertyDescriptor;
-
 /**
  * A reusable form builder to add a property.
  */
 public class InnerPropertyDescriptorForm {
 
     private WPropertyDescriptor property;
-    private ValidatableTextBox nameTB;
-    private ValidatableTextBox descriptionTB;
+    private TextField<String> nameTB;
+    private TextField<String> descriptionTB;
     private CheckBox multivalue;
     private ListBox typeLB;
-    private HashMap<String, ValidatableTextBox> fields;
+    private HashMap<String, TextField<String>> fields;
     private Galaxy galaxy;
 
     public void initialize(Galaxy galaxy,
@@ -55,19 +54,21 @@ public class InnerPropertyDescriptorForm {
         this.property = pd;
         this.galaxy = galaxy;
         table.setText(0, 0, "Name:");
-        
+
         table.setText(1, 0, "Description:");
         table.setText(2, 0, "Type:");
-        
-        nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
-        nameTB.getTextBox().setText(property.getName());
+
+        nameTB = new TextField<String>();
+        nameTB.setAllowBlank(false);
+        nameTB.setValue(property.getName());
 
         table.setWidget(0, 1, nameTB);
-        
-        descriptionTB = new ValidatableTextBox(new StringNotEmptyValidator());
-        descriptionTB.setText(property.getDescription());
+
+        descriptionTB = new TextField<String>();
+        descriptionTB.setAllowBlank(false);
+        descriptionTB.setValue(property.getDescription());
         table.setWidget(1, 1, descriptionTB);
-        
+
         if (property.getId() == null) {
             addTypeSelector(table);
 
@@ -83,30 +84,30 @@ public class InnerPropertyDescriptorForm {
             }
 
             showTypeConfiguration(table, id);
-        } 
+        }
         AbstractComposite.styleHeaderColumn(table);
     }
-    
+
     private void addTypeSelector(final FlexTable table) {
         typeLB = new ListBox();
         typeLB.addItem("String", "");
-        
+
         List extensions = galaxy.getExtensions();
-        
+
         for (Iterator itr = extensions.iterator(); itr.hasNext();) {
             WExtensionInfo e = (WExtensionInfo) itr.next();
-            
+
             // Only show properties which we have edit renderers for
             if (galaxy.getPropertyInterfaceManager().isExtensionEditable(e.getId())) {
                 typeLB.addItem(e.getDescription(), e.getId());
-                
+
                 if (e.getId().equals(property.getExtension())) {
                     typeLB.setSelectedIndex(typeLB.getItemCount()-1);
                     showTypeConfiguration(table, e.getId());
                 }
             }
         }
-        
+
         typeLB.addChangeHandler(new ChangeHandler() {
             public void onChange(ChangeEvent arg0) {
                 int idx = typeLB.getSelectedIndex();
@@ -118,7 +119,7 @@ public class InnerPropertyDescriptorForm {
                 }
                 showTypeConfiguration(table, id);
             }
-            
+
         });
         table.setWidget(2, 1, typeLB);
     }
@@ -129,37 +130,38 @@ public class InnerPropertyDescriptorForm {
             table.removeRow(i);
         }
 
-        fields = new HashMap<String, ValidatableTextBox>();
-        
+        fields = new HashMap<String, TextField<String>>();
+
         if ("".equals(id)) {
             initializeMultivalue(table);
             AbstractComposite.styleHeaderColumn(table);
             return;
         }
-        
+
         WExtensionInfo ei = galaxy.getExtension(id);
         
         if (ei.getConfigurationKeys() == null) return;
-        
+
         if (ei.isMultivalueSupported()) {
             initializeMultivalue(table);
         }
-        
+
         Map<String, String> config = property.getConfiguration();
         for (Iterator itr = ei.getConfigurationKeys().iterator(); itr.hasNext();) {
             int row = table.getRowCount();
             String key = (String) itr.next();
-            
+
             table.setText(row, 0, key + ":");
-            
-            ValidatableTextBox field = new ValidatableTextBox(new StringNotEmptyValidator());
+
+            TextField<String> field = new TextField<String>();
+            field.setAllowBlank(false);
             if (config != null) {
-                field.getTextBox().setText(config.get(key));
+                field.setValue(config.get(key));
             }
             fields.put(key, field);
             table.setWidget(row, 1, field);
         }
-        
+
         AbstractComposite.styleHeaderColumn(table);
     }
 
@@ -177,9 +179,9 @@ public class InnerPropertyDescriptorForm {
     }
 
     public WPropertyDescriptor getPropertyDescriptor() {
-        property.setDescription(descriptionTB.getText());
-        property.setName(nameTB.getTextBox().getText());
-        
+        property.setDescription(descriptionTB.getValue());
+        property.setName(nameTB.getValue());
+
         if (typeLB != null) {
             int idx = typeLB.getSelectedIndex();
             if (idx == 0) {
@@ -188,20 +190,20 @@ public class InnerPropertyDescriptorForm {
                 property.setExtension(typeLB.getValue(idx));
             }
         }
-        
+
         if (multivalue != null) {
             property.setMultiValued(multivalue.isChecked());
         }
-        
+
         HashMap<String, String> config = new HashMap<String, String>();
         property.setConfiguration(config);
-        for (Map.Entry<String, ValidatableTextBox> e : fields.entrySet()) {
-            
-            ValidatableTextBox tb = e.getValue();
-            
-            config.put(e.getKey(), tb.getTextBox().getText());
+        for (Map.Entry<String, TextField<String>> e : fields.entrySet()) {
+
+            TextField<String> tb = e.getValue();
+
+            config.put(e.getKey(), tb.getValue());
         }
-        
+
         return property;
     }
 
@@ -210,10 +212,10 @@ public class InnerPropertyDescriptorForm {
 
         isOk &= nameTB.validate();
         isOk &= descriptionTB.validate();
-        
-        for (Iterator<ValidatableTextBox> itr = fields.values().iterator(); itr.hasNext();) {
-            ValidatableTextBox tb = itr.next();
-            
+
+        for (Iterator<TextField<String>> itr = fields.values().iterator(); itr.hasNext();) {
+            TextField tb = itr.next();
+
             isOk &= tb.validate();
         }
         return isOk;

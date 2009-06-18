@@ -18,7 +18,6 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import com.google.gwt.user.client.ui.Hyperlink;
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.MenuPanel;
@@ -28,6 +27,8 @@ import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 
+import com.google.gwt.user.client.ui.Hyperlink;
+
 public class AdministrationPanel extends MenuPanel {
 
     private final Galaxy galaxy;
@@ -36,11 +37,11 @@ public class AdministrationPanel extends MenuPanel {
         super();
         this.galaxy = galaxy;
     }
-    
+
     @Override
     protected void onFirstShow() {
         super.onFirstShow();
-        
+
         Toolbox manageBox = new Toolbox(false);
         manageBox.setTitle("Manage");
         addMenuItem(manageBox);
@@ -54,21 +55,21 @@ public class AdministrationPanel extends MenuPanel {
 
     protected void createMenuItems(Galaxy galaxy, Toolbox manageBox) {
         if (galaxy.hasPermission("MANAGE_GROUPS")) {
-            createLinkWithAdd(manageBox, 
-                              "Groups", 
-                              "groups", 
+            createLinkWithAdd(manageBox,
+                              "Groups",
+                              "groups",
                               new GroupListPanel(this),
                               new GroupForm(this));
         }
-        
+
         if (galaxy.hasPermission("MANAGE_LIFECYCLES")) {
-            createLinkWithAdd(manageBox, 
-                              "Lifecycles", 
-                              "lifecycles", 
+            createLinkWithAdd(manageBox,
+                              "Lifecycles",
+                              "lifecycles",
                               new LifecycleListPanel(this),
                               new LifecycleForm(this));
         }
-        
+
         if (galaxy.hasPermission("MANAGE_POLICIES")) {
             Hyperlink link = new Hyperlink("Policies", "policies");
             createPageInfo(link.getTargetHistoryToken(), new PolicyPanel(this, galaxy));
@@ -76,25 +77,25 @@ public class AdministrationPanel extends MenuPanel {
         }
 
         if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
-            createLinkWithAdd(manageBox, 
-                              "Properties", 
-                              "properties", 
+            createLinkWithAdd(manageBox,
+                              "Properties",
+                              "properties",
                               new PropertyDescriptorListPanel(this),
                               new PropertyDescriptorForm(this));
         }
 
         if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
-            createLinkWithAdd(manageBox, 
-                              "Types", 
-                              "types", 
+            createLinkWithAdd(manageBox,
+                              "Types",
+                              "types",
                               new TypeListPanel(this),
                               new TypeForm(this));
         }
 
         if (galaxy.hasPermission("MANAGE_USERS")) {
-            createLinkWithAdd(manageBox, 
-                              "Users", 
-                              "users", 
+            createLinkWithAdd(manageBox,
+                              "Users",
+                              "users",
                               new UserListPanel(this),
                               new UserForm(this));
         }
@@ -109,12 +110,12 @@ public class AdministrationPanel extends MenuPanel {
             createPageInfo(activityLink.getTargetHistoryToken(), new ActivityPanel(this, galaxy));
             utilityBox.add(activityLink);
         }
-        
+
         Hyperlink adminLink = new Hyperlink("Admin Shell", "adminShell");
         createPageInfo(adminLink.getTargetHistoryToken(), new AdminShellPanel(this));
         utilityBox.add(adminLink);
 
-        
+
         // Scheduler
         createLinkWithAdd(utilityBox,
                           "Scheduler",
@@ -145,7 +146,7 @@ public class AdministrationPanel extends MenuPanel {
     public Galaxy getGalaxy() {
         return galaxy;
     }
-    
+
     public RegistryServiceAsync getRegistryService() {
         return getGalaxy().getRegistryService();
     }

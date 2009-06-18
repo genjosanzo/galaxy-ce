@@ -18,15 +18,15 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.Widget;
-
-import java.util.Map;
-
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SecurityService;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WPermissionGrant;
+
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.Widget;
+
+import java.util.Map;
 
 public class GroupListPanel extends AbstractGroupPanel {
 
@@ -36,17 +36,17 @@ public class GroupListPanel extends AbstractGroupPanel {
         super(a.getGalaxy(), a);
         this.adminPanel = a;
     }
-    
+
     protected void setGrant(int row, int col, WPermissionGrant pg) {
         CheckBox cb = (CheckBox) table.getWidget(row + 1, col);
-        
+
         if (cb.getValue().booleanValue() == true) {
             pg.setGrant(WPermissionGrant.GRANTED);
         } else {
             pg.setGrant(WPermissionGrant.REVOKED);
         }
     }
-    
+
     protected Widget createGrantWidget(WPermissionGrant pg, boolean isUberGroup) {
         CheckBox cb = new CheckBox();
         if (pg.getGrant() == WPermissionGrant.GRANTED) {
@@ -55,7 +55,7 @@ public class GroupListPanel extends AbstractGroupPanel {
         cb.setEnabled(!isUberGroup);
         return cb;
     }
-    
+
     protected void getPermissions(AbstractCallback callback) {
         getSecurityService().getPermissions(SecurityService.GLOBAL_PERMISSIONS, callback);
     }

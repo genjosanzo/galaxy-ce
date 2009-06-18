@@ -18,26 +18,26 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WScriptJob;
+
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Hyperlink;
 
 import java.util.List;
 
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WScriptJob;
-
 /**
  *  Show all scheduled items
  */
 public class ScheduleListPanel extends AbstractAdministrationComposite {
-    
+
     public ScheduleListPanel(AdministrationPanel a) {
         super(a);
     }
 
     public void onShow() {
         super.onShow();
-        
+
         final FlexTable table = createTitledRowTable(panel, "Scheduled Jobs");
 
         table.setText(0, 0, "Name");

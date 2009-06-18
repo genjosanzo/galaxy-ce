@@ -18,15 +18,15 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.mule.galaxy.web.client.util.WTypeComparator;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WType;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Hyperlink;
+
+import java.util.Collections;
+import java.util.List;
 
 public class TypeListPanel
     extends AbstractAdministrationComposite
@@ -36,37 +36,37 @@ public class TypeListPanel
     public TypeListPanel(AdministrationPanel a) {
         super(a);
     }
-    
+
     public void onShow() {
         super.onShow();
-        
+
         final FlexTable table = createTitledRowTable(panel, "Types");
-        
+
         table.setText(0, 0, "Name");
         table.setText(0, 1, "Mixins");
-        
+
         adminPanel.getRegistryService().getTypes(new AbstractCallback<List<WType>>(adminPanel) {
 
             public void onSuccess(List<WType> o) {
                 Collections.sort(o, new WTypeComparator());
                 TypeListPanel.this.types = o;
-                
+
                 int i = 1;
                 for (WType type : types) {
                     String propName = type.getName();
                     if (propName == null || propName.trim().length() == 0) {
                         propName = "<empty>";
                     }
-                    
+
                     if (type.isSystem()) {
                         table.setText(i, 0, type.getName() + " (Read Only)");
                     } else {
                         Hyperlink hyperlink = new Hyperlink(propName,
                                                             "types/" + type.getId());
-                        
+
                         table.setWidget(i, 0, hyperlink);
                     }
-                    
+
                     StringBuilder mixins = new StringBuilder();
                     if (type.getMixinIds() != null) {
                         boolean first = true;
@@ -76,21 +76,21 @@ public class TypeListPanel
                             } else {
                                 mixins.append(", ");
                             }
-                            
+
                             mixins.append(getType(id).getName());
                         }
-                        
+
                     }
                     table.setText(i, 1, mixins.toString());
-                    
+
                     table.getRowFormatter().setStyleName(i, "artifactTableEntry");
                     i++;
                 }
             }
-            
+
         });
     }
-    
+
     protected WType getType(String id) {
         for (WType t : types) {
             if (id.equals(t.getId())) return t;

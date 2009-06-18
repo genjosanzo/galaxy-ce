@@ -1,5 +1,18 @@
 package org.mule.galaxy.web.client.property;
 
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.admin.PolicyPanel;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WPolicyException;
+import org.mule.galaxy.web.rpc.WProperty;
+
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -8,18 +21,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.io.Serializable;
-
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.ErrorPanel;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.admin.PolicyPanel;
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.LightBox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WPolicyException;
-import org.mule.galaxy.web.rpc.WProperty;
 
 /**
  * Encapsulates the rendering and editing of a property value.
@@ -40,7 +41,7 @@ public class EditPropertyPanel extends AbstractComposite {
 
     public EditPropertyPanel(AbstractPropertyRenderer renderer, ErrorPanel errorPanel) {
         super();
-        
+
         this.panel = new InlineFlowPanel();
 
         initWidget(panel);
@@ -51,7 +52,7 @@ public class EditPropertyPanel extends AbstractComposite {
     public void initialize() {
         initializeRenderer();
     }
-    
+
     public InlineFlowPanel createViewPanel() {
         Image editImg = new Image("images/page_edit.gif");
         editImg.setStyleName("icon-baseline");
@@ -95,7 +96,7 @@ public class EditPropertyPanel extends AbstractComposite {
 
         Widget editForm = renderer.createEditForm();
         editPanel.add(editForm);
-        
+
         FlowPanel buttonPanel = new FlowPanel();
         cancel = new Button("Cancel");
         cancel.addClickListener(new ClickListener() {
@@ -103,30 +104,30 @@ public class EditPropertyPanel extends AbstractComposite {
             public void onClick(Widget arg0) {
                 cancel();
             }
-            
+
         });
-        
+
         if (cancelListener != null) {
             cancel.addClickListener(cancelListener);
         }
-        
+
         save = new Button("Save");
         save.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
                 cancel.setEnabled(false);
                 save.setEnabled(false);
-                
+
                 save();
             }
-            
+
         });
-        
+
         buttonPanel.add(save);
         buttonPanel.add(cancel);
 
         editPanel.add(buttonPanel);
-        
+
         return editPanel;
     }
 
@@ -135,48 +136,54 @@ public class EditPropertyPanel extends AbstractComposite {
         initializeRenderer();
         showView();
     }
-    
+
     public void showView() {
         panel.clear();
         panel.add(createViewPanel());
     }
-    
+
     protected void delete() {
-        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter() {
-            public void onConfirm() {
-                doDelete();
+
+        final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
+            public void handleEvent(MessageBoxEvent ce) {
+                com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
+
+                if (Dialog.YES.equals(btn.getItemId())) {
+                    doDelete();
+                }
             }
-        }, "Are you sure you want to delete this property?");
-        
-        new LightBox(dialog).show();
+        };
+
+        MessageBox.confirm("Confirm", "Are you sure you want to delete this property?", l);
+
     }
-    
+
     protected void doDelete() {
         galaxy.getRegistryService().deleteProperty(itemId, property.getName(), new AbstractCallback(errorPanel) {
 
             public void onSuccess(Object arg0) {
                 deleteListener.onClick(null);
             }
-            
+
         });
     }
-    
+
     public void showEdit() {
         panel.clear();
 
         FlowPanel editPanel = createEditPanel();
         panel.add(editPanel);
-    }   
+    }
 
     protected void save() {
         final Serializable value = (Serializable) renderer.getValueToSave();
-        
+
         AbstractCallback saveCallback = getSaveCallback(value);
-        
+
         setEnabled(false);
-        
+
         renderer.save(itemId, property.getName(), value, saveCallback);
-            
+
     }
 
     protected AbstractCallback getSaveCallback(final Serializable value) {
@@ -195,7 +202,7 @@ public class EditPropertyPanel extends AbstractComposite {
             public void onSuccess(Object response) {
                 onSave(value, response);
             }
-            
+
         };
         return saveCallback;
     }
@@ -205,9 +212,9 @@ public class EditPropertyPanel extends AbstractComposite {
         property.setValue(value);
 
         initializeRenderer();
-        
+
         showView();
-        
+
         if (saveListener != null) {
             saveListener.onClick(save);
         }
@@ -216,7 +223,7 @@ public class EditPropertyPanel extends AbstractComposite {
     private void initializeRenderer() {
         renderer.initialize(galaxy, errorPanel, property.getValue(), false);
     }
-    
+
     protected void onSaveFailure(Throwable caught, AbstractCallback saveCallback) {
         saveCallback.onFailureDirect(caught);
         setEnabled(true);
@@ -229,7 +236,7 @@ public class EditPropertyPanel extends AbstractComposite {
     public void setProperty(WProperty property) {
         this.property = property;
     }
-    
+
     public void setGalaxy(Galaxy galaxy) {
         this.galaxy = galaxy;
     }
@@ -258,6 +265,7 @@ public class EditPropertyPanel extends AbstractComposite {
     public void setDeleteListener(ClickListener deleteListener) {
         this.deleteListener = deleteListener;
     }
+
     public void setCancelListener(ClickListener cancelListener) {
         this.cancelListener = cancelListener;
     }

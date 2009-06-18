@@ -18,8 +18,6 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.client.util.SelectionPanel;
@@ -29,6 +27,10 @@ import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WUser;
 
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -278,15 +280,19 @@ public class UserForm extends AbstractAdministrationForm {
     }
 
     protected void delete() {
-        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter() {
-            public void onConfirm() {
-                UserForm.super.delete();
-                getSecurityService().deleteUser(user.getId(), getDeleteCallback());
+
+        final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
+            public void handleEvent(MessageBoxEvent ce) {
+                com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
+
+                if (Dialog.YES.equals(btn.getItemId())) {
+                    UserForm.super.delete();
+                    getSecurityService().deleteUser(user.getId(), getDeleteCallback());
+                }
             }
+        };
 
-        }, "Are you sure you want to delete user " + user.getName() + " (" + user.getUsername() + ")?");
-
-        new LightBox(dialog).show();
+        MessageBox.confirm("Confirm", "Are you sure you want to delete user " + user.getName() + " (" + user.getUsername() + ")?", l);
     }
 
     private class ResetPasswordDialog extends DialogBox {

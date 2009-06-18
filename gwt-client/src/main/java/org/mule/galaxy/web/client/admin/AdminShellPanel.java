@@ -18,6 +18,15 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WScript;
+
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -34,14 +43,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
-
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.LightBox;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WScript;
 
 public class AdminShellPanel extends AbstractAdministrationComposite
         implements ClickListener, KeyboardListener {
@@ -105,7 +106,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         super.onShow();
 
         initLocalWidgets();
-        
+
         scriptArea.setText(null);
 
         // text area to paste script into
@@ -202,13 +203,17 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         }
 
         if (sender == deleteBtn) {
-            final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter() {
-                public void onConfirm() {
-                    delete();
-                }
+            final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
+                public void handleEvent(MessageBoxEvent ce) {
+                    com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
 
-            }, "Are you sure you want to delete this script?");
-            new LightBox(dialog).show();
+                    if (Dialog.YES.equals(btn.getItemId())) {
+                        delete();
+                    }
+                }
+            };
+
+            MessageBox.confirm("Confirm", "Are you sure you want to delete this script?", l);
         }
 
         if (sender == saveAsCB) {
@@ -242,8 +247,6 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         }
 
     }
-
-
 
 
     private void save() {

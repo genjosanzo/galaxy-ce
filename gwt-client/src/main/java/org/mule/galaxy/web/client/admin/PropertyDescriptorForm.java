@@ -18,24 +18,26 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 
 public class PropertyDescriptorForm extends AbstractAdministrationForm {
 
     private WPropertyDescriptor property;
     private InnerPropertyDescriptorForm innerForm;
-    
+
     public PropertyDescriptorForm(AdministrationPanel adminPanel){
-        super(adminPanel, "properties", "Property was saved.", "Property was deleted.", 
+        super(adminPanel, "properties", "Property was saved.", "Property was deleted.",
               "A property with that name already exists.");
     }
-    
+
     protected void addFields(final FlexTable table) {
         this.innerForm = new InnerPropertyDescriptorForm();
         innerForm.initialize(galaxy, property, table);
@@ -63,33 +65,34 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
 
     protected void save() {
 
-        /*
         if (!validate()) {
             return;
         }
-        */
 
         property = innerForm.getPropertyDescriptor();
-         
+
         galaxy.getRegistryService().savePropertyDescriptor(property, getSaveCallback());
     }
 
     protected void delete() {
-        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter() {
-            public void onConfirm() {
-                PropertyDescriptorForm.super.delete();
-                RegistryServiceAsync svc = adminPanel.getRegistryService();
-                svc.deletePropertyDescriptor(property.getId(), getDeleteCallback());
+
+        final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
+          public void handleEvent(MessageBoxEvent ce) {
+            Button btn = ce.getButtonClicked();
+
+            if (Dialog.YES.equals(btn.getItemId())) {
+              PropertyDescriptorForm.super.delete();
+              RegistryServiceAsync svc = adminPanel.getRegistryService();
+              svc.deletePropertyDescriptor(property.getId(), getDeleteCallback());
             }
-        }, "Are you sure you want to delete property " + property.getName() + "?");
-        new LightBox(dialog).show();
+          }
+        };
+
+        MessageBox.confirm("Confirm", "Are you sure you want to delete property " + property.getName() + "?", l);
     }
 
-    /*
-    @Override
     protected boolean validate() {
         return innerForm.validate();
     }
-    */
 
 }

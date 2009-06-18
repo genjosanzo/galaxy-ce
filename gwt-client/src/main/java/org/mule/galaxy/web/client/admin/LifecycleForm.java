@@ -18,6 +18,21 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.util.LightBox;
+import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
+import org.mule.galaxy.web.rpc.WLifecycle;
+import org.mule.galaxy.web.rpc.WPhase;
+
+import com.extjs.gxt.ui.client.event.ComponentEvent;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -29,22 +44,9 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.event.ComponentEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import org.mule.galaxy.web.client.ErrorPanel;
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.LightBox;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
-import org.mule.galaxy.web.rpc.WLifecycle;
-import org.mule.galaxy.web.rpc.WPhase;
 
 
 public class LifecycleForm extends AbstractAdministrationForm {
@@ -63,19 +65,19 @@ public class LifecycleForm extends AbstractAdministrationForm {
     private static Button cancel;
 
     public LifecycleForm(AdministrationPanel adminPanel) {
-        super(adminPanel, "lifecycles", "Lifecycle was saved.", "Lifecycle was deleted.", 
-              "A lifecycle with that name already exists");
+        super(adminPanel, "lifecycles", "Lifecycle was saved.", "Lifecycle was deleted.",
+                "A lifecycle with that name already exists");
 
         panel.setStyleName("lifecycle-form-base");
     }
-    
+
     protected void fetchItem(String id) {
         adminPanel.getRegistryService().getLifecycle(id, getFetchCallback());
     }
 
     protected void initializeItem(Object o) {
         lifecycle = (WLifecycle) o;
-        
+
         initialPhase = lifecycle.getInitialPhase();
     }
 
@@ -83,17 +85,17 @@ public class LifecycleForm extends AbstractAdministrationForm {
         lifecycle = new WLifecycle();
         initialPhase = null;
     }
-    
+
     protected FlexTable createFormTable() {
         FlexTable table = new FlexTable();
-        
+
         table.setCellSpacing(5);
         table.getFlexCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP);
         table.getFlexCellFormatter().setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_TOP);
-        
+
         return table;
     }
-    
+
     protected void addFields(FlexTable table) {
         FlexTable nameAndPhases = createColumnTable();
 
@@ -175,8 +177,7 @@ public class LifecycleForm extends AbstractAdministrationForm {
     }
 
 
-    protected void addPhase()
-    {
+    protected void addPhase() {
         new LightBox(new AddDialog(this)).show();
     }
 
@@ -187,7 +188,7 @@ public class LifecycleForm extends AbstractAdministrationForm {
         lifecycle.getPhases().add(p);
         phases.addItem(name);
 
-        phases.setSelectedIndex(phases.getItemCount()-1);
+        phases.setSelectedIndex(phases.getItemCount() - 1);
         showNextPhases();
     }
 
@@ -238,14 +239,14 @@ public class LifecycleForm extends AbstractAdministrationForm {
                 int idx = findPhaseInList(phases, phase.getName());
                 phases.setItemText(idx, newName);
                 phases.setValue(idx, newName);
-                
+
                 // update next phases list with new name
                 idx = findPhaseInList(nextPhases, phase.getName());
                 if (idx != -1) {
                     nextPhases.setItemText(idx, newName);
                     nextPhases.setValue(idx, newName);
                 }
-                
+
                 // update actual phase object
                 phase.setName(newName);
             }
@@ -308,7 +309,7 @@ public class LifecycleForm extends AbstractAdministrationForm {
         for (int i = 0; i < nextPhases.getItemCount(); i++) {
             if (nextPhases.isItemSelected(i)) {
                 String pName = nextPhases.getItemText(i);
-                
+
                 phase.getNextPhases().add(lifecycle.getPhase(pName));
             }
         }
@@ -343,13 +344,18 @@ public class LifecycleForm extends AbstractAdministrationForm {
     }
 
     protected void delete() {
-        final ConfirmDialog dialog = new ConfirmDialog(new ConfirmDialogAdapter() {
-            public void onConfirm() {
-                LifecycleForm.super.delete();
-                adminPanel.getRegistryService().deleteLifecycle(lifecycle.getId(), getDeleteCallback());
+        final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
+            public void handleEvent(MessageBoxEvent ce) {
+                Button btn = ce.getButtonClicked();
+
+                if (Dialog.YES.equals(btn.getItemId())) {
+                    LifecycleForm.super.delete();
+                    adminPanel.getRegistryService().deleteLifecycle(lifecycle.getId(), getDeleteCallback());
+                }
             }
-        }, "Are you sure you want to delete lifecycle " + lifecycle.getName() + "?");
-        new LightBox(dialog).show();
+        };
+
+        MessageBox.confirm("Confirm", "Are you sure you want to delete lifecycle " + lifecycle.getName() + "?", l);
     }
 
     protected void setEnabled(boolean enabled) {
@@ -395,7 +401,7 @@ public class LifecycleForm extends AbstractAdministrationForm {
 
 
             cancel = new Button("Cancel", listener);
-            ok = new Button("OK",listener);
+            ok = new Button("OK", listener);
 
             // allow keyboard shortcuts
             tb.getTextBox().addKeyboardListener(new KeyboardListenerAdapter() {
@@ -430,18 +436,18 @@ public class LifecycleForm extends AbstractAdministrationForm {
             errorPanel.addMessage("You must set one phase as the initial phase before the lifecycle can be saved.");
             isOk = false;
         }
-        
+
         if (phases.getItemCount() == 0) {
             errorPanel.addMessage("Lifecycle must have at least one phase");
             isOk = false;
         }
-        
+
         isOk &= nameTB.validate();
-        
+
         if (phaseNameTB != null) {
             isOk &= phaseNameTB.validate();
         }
-        
+
         return isOk;
     }
 }

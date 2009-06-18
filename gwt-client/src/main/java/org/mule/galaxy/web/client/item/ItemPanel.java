@@ -18,6 +18,20 @@
 
 package org.mule.galaxy.web.client.item;
 
+import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.AbstractWithTopComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.admin.PolicyPanel;
+import org.mule.galaxy.web.client.util.ColumnView;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemInfo;
+import org.mule.galaxy.web.rpc.SecurityService;
+
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -36,19 +50,6 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Collection;
 import java.util.List;
 
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.AbstractWithTopComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.admin.PolicyPanel;
-import org.mule.galaxy.web.client.util.ColumnView;
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.LightBox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ItemInfo;
-import org.mule.galaxy.web.rpc.SecurityService;
-
 
 /**
  * Contains:
@@ -57,7 +58,7 @@ import org.mule.galaxy.web.rpc.SecurityService;
  * - Depends on...
  * - Comments
  * - Governance tab
- *   (with history)
+ * (with history)
  * - View Artiact
  */
 public class ItemPanel extends AbstractWithTopComposite {
@@ -74,7 +75,7 @@ public class ItemPanel extends AbstractWithTopComposite {
     private ColumnView cv;
     private TreeItem workspaceTreeItem;
     private Collection<ItemInfo> items;
-    
+
 
     // this is the first time we're showing this workspace
     // so we'll also need to load the children
@@ -84,20 +85,20 @@ public class ItemPanel extends AbstractWithTopComposite {
 
     public ItemPanel(Galaxy galaxy) {
         this.galaxy = galaxy;
-        
+
         FlowPanel main = getMainPanel();
         panel = new VerticalPanel();
         panel.setWidth("100%");
         main.add(panel);
         initWidget(main);
     }
-    
+
     public void onShow(List<String> params) {
         this.params = params;
         clearErrorMessage();
         panel.clear();
         panel.add(new Label("Loading..."));
-        
+
         if (params.size() > 0) {
             itemId = params.get(0);
         }
@@ -107,43 +108,43 @@ public class ItemPanel extends AbstractWithTopComposite {
         } else {
             selectedTab = 0;
         }
-        
+
         if (itemId != null) {
             fetchItem();
         }
 
         if (first) {
-            
+
             FlowPanel top = new FlowPanel();
-            
+
 
             browsePanel = new FlowPanel();
             browseToolbar = new InlineFlowPanel();
             browseToolbar.setStyleName("artifactLinkPanel");
             browsePanel.add(browseToolbar);
-            
+
             FlowPanel cvPanel = new FlowPanel();
             cv = new ColumnView();
             cvPanel.add(cv);
-            
+
             top.add(browseToolbar);
             top.add(cvPanel);
             setTop(top);
             first = false;
         }
-        
+
         refreshWorkspaces();
     }
 
     private void fetchItem() {
-        AbstractCallback callback = new AbstractCallback(this) { 
+        AbstractCallback callback = new AbstractCallback(this) {
             public void onSuccess(Object o) {
                 info = (ItemInfo) o;
-                
+
                 init();
             }
         };
-        
+
         galaxy.getRegistryService().getItemInfo(itemId, true, callback);
     }
 
@@ -152,7 +153,7 @@ public class ItemPanel extends AbstractWithTopComposite {
         tabs = new TabPanel();
         tabs.setStyleName("artifactTabPanel");
         tabs.getDeckPanel().setStyleName("artifactTabDeckPanel");
-        
+
         panel.add(tabs);
         initLinks();
         initTabs();
@@ -205,18 +206,18 @@ public class ItemPanel extends AbstractWithTopComposite {
             }
         }
     }
-    
+
     private void initTabs() {
         tabs.add(new ItemInfoPanel(galaxy, this, info, this, params), "Info");
-        
+
         if (galaxy.hasPermission("MANAGE_POLICIES") && info.isLocal()) {
             tabs.add(new PolicyPanel(this, galaxy, itemId), "Policies");
         }
-        
+
         if (galaxy.hasPermission("MANAGE_GROUPS") && info.isLocal()) {
             tabs.add(new ItemGroupPermissionPanel(galaxy, this, info.getId(), SecurityService.ITEM_PERMISSIONS), "Security");
         }
-        
+
         if (selectedTab > -1) {
             tabs.selectTab(selectedTab);
         } else {
@@ -232,37 +233,37 @@ public class ItemPanel extends AbstractWithTopComposite {
             public void onTabSelected(SourcesTabEvents events, int tab) {
                 ItemPanel.this.clearErrorMessage();
                 AbstractComposite composite = (AbstractComposite) tabs.getWidget(tab);
-                
+
                 composite.onShow();
             }
-            
+
         });
     }
-    
+
     public void initLinks() {
         browseToolbar.clear();
-        
+
         // add item
 
         String style = "artifactToolbarItemFirst";
-        
+
         if (info.isModifiable()) {
             Image addImg = new Image("images/add_obj.gif");
             addImg.addClickListener(new ClickListener() {
                 public void onClick(Widget w) {
                     w.addStyleName("gwt-Hyperlink");
-                    
+
                     History.newItem("add-item/" + info.getId());
                 }
             });
-            
+
             Hyperlink addLink = new Hyperlink("New", "add-item/" + info.getId());
             InlineFlowPanel p = asHorizontal(addImg, new Label(" "), addLink);
             p.setStyleName(style);
             style = "artifactToolbarItem";
             browseToolbar.add(p);
         }
-        
+
         if (info.isDeletable()) {
             ClickListener cl = new ClickListener() {
                 public void onClick(Widget arg0) {
@@ -274,7 +275,7 @@ public class ItemPanel extends AbstractWithTopComposite {
             img.addClickListener(cl);
             Hyperlink hl = new Hyperlink("Delete", "artifact/" + info.getId());
             hl.addClickListener(cl);
-            
+
             InlineFlowPanel p = asHorizontal(img, new Label(" "), hl);
             p.setStyleName(style);
             style = "artifactToolbarItem";
@@ -287,16 +288,16 @@ public class ItemPanel extends AbstractWithTopComposite {
                 Window.open(info.getArtifactFeedLink(), null, "scrollbars=yes");
             }
         };
-        
+
         Image img = new Image("images/feed-icon.png");
 //        img.setStyleName("feed-icon");
         img.setTitle("Versions Atom Feed");
         img.addClickListener(cl);
         img.setStyleName("icon-baseline");
-        
+
         Hyperlink hl = new Hyperlink("Feed", "feed/" + info.getId());
         hl.addClickListener(cl);
-        
+
         InlineFlowPanel p = asHorizontal(img, new Label(" "), hl);
         p.setStyleName(style);
         style = "artifactToolbarItem";
@@ -308,21 +309,23 @@ public class ItemPanel extends AbstractWithTopComposite {
         browseToolbar.add(spacer);
     }
 
-    protected void warnDelete()
-    {
-        new LightBox(new ConfirmDialog(new ConfirmDialogAdapter()
-        {
-            public void onConfirm()
-            {
-                galaxy.getRegistryService().delete(info.getId(), new AbstractCallback(ItemPanel.this)
-                {
-                    public void onSuccess(Object arg0)
-                    {
-                        galaxy.setMessageAndGoto("browse", "Item was deleted.");
-                    }
-                });
+    protected void warnDelete() {
+
+        final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
+            public void handleEvent(MessageBoxEvent ce) {
+                com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
+
+                if (Dialog.YES.equals(btn.getItemId())) {
+                    galaxy.getRegistryService().delete(info.getId(), new AbstractCallback(ItemPanel.this) {
+                        public void onSuccess(Object arg0) {
+                            galaxy.setMessageAndGoto("browse", "Item was deleted.");
+                        }
+                    });
+                }
             }
-        }, "Are you sure you want to delete this item?")).show();
+        };
+
+        MessageBox.confirm("Confirm", "Are you sure you want to delete this item?", l);
     }
 
 }

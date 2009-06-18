@@ -18,14 +18,14 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WPropertyDescriptor;
+
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Hyperlink;
 
 import java.util.Collection;
 import java.util.Iterator;
-
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 
 public class PropertyDescriptorListPanel
     extends AbstractAdministrationComposite
@@ -33,20 +33,20 @@ public class PropertyDescriptorListPanel
     public PropertyDescriptorListPanel(AdministrationPanel a) {
         super(a);
     }
-    
+
     public void onShow() {
         super.onShow();
-        
+
         final FlexTable table = createTitledRowTable(panel, "Properties");
-        
+
         table.setText(0, 0, "Property");
         table.setText(0, 1, "Description");
-        
+
         adminPanel.getRegistryService().getPropertyDescriptors(false, new AbstractCallback(adminPanel) {
 
             public void onSuccess(Object result) {
                 Collection props = (Collection) result;
-                
+
                 int i = 1;
                 for (Iterator itr = props.iterator(); itr.hasNext();) {
                     final WPropertyDescriptor prop = (WPropertyDescriptor) itr.next();
@@ -57,15 +57,15 @@ public class PropertyDescriptorListPanel
                     }
                     Hyperlink hyperlink = new Hyperlink(propName,
                                                         "properties/" + prop.getId());
-                    
+
                     table.setWidget(i, 0, hyperlink);
                     table.setText(i, 1, prop.getDescription());
-                    
+
                     table.getRowFormatter().setStyleName(i, "artifactTableEntry");
                     i++;
                 }
             }
-            
+
         });
     }
 }

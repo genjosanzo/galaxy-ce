@@ -18,6 +18,15 @@
 
 package org.mule.galaxy.web.client.registry;
 
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WArtifactView;
+
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -27,17 +36,9 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
 
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.LightBox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WArtifactView;
-
 
 /**
- * Shows/Edits an ArtifactView. 
+ * Shows/Edits an ArtifactView.
  */
 public class ViewPanel extends AbstractBrowsePanel {
 
@@ -45,24 +46,24 @@ public class ViewPanel extends AbstractBrowsePanel {
      * This is the id new views have before being persisted.
      */
     protected static final String NEW_VIEW_ID = "new";
-    
+
     private String viewId;
     private ViewSearchForm viewForm;
     private WArtifactView view;
     private FlowPanel headerPanel;
     private boolean editMode;
     private Hyperlink editLink;
-    
+
     // Is this a test search we're executing.
     protected boolean testSearch;
-    
+
     // do we need to update the artifact list?
     private boolean stale = true;
-    
+
     public ViewPanel(Galaxy galaxy) {
         super(galaxy);
     }
-    
+
     protected String getHistoryToken() {
         return "view/" + viewId;
     }
@@ -78,17 +79,17 @@ public class ViewPanel extends AbstractBrowsePanel {
             }
             viewId = newId;
         }
-        
+
         if (params.size() > 1) {
             editMode = "edit".equals(params.get(1));
         } else {
             editMode = false;
         }
-        
+
         setTop(null);
         FlowPanel browseToolbar = new FlowPanel();
         browseToolbar.setStyleName("toolbar");
-        
+
         viewForm = new ViewSearchForm(this, galaxy, "Save");
         viewForm.addSearchListener(new ClickListener() {
             public void onClick(Widget arg0) {
@@ -98,7 +99,7 @@ public class ViewPanel extends AbstractBrowsePanel {
                 save();
             }
         });
-        
+
         if (NEW_VIEW_ID.equals(viewId)) {
             view = new WArtifactView();
             viewForm.setPredicates(view.getPredicates());
@@ -106,9 +107,9 @@ public class ViewPanel extends AbstractBrowsePanel {
         }
 
         loadView();
-        
+
         super.onShow(params);
-        
+
         if (NEW_VIEW_ID.equals(viewId)) {
             if (artifactListPanel != null) {
                 artifactListPanel.clear();
@@ -127,37 +128,38 @@ public class ViewPanel extends AbstractBrowsePanel {
                 headerPanel = new InlineFlowPanel();
                 headerPanel.add(createPrimaryTitle(view.getName()));
                 headerPanel.add(new Label(" "));
-                
+
                 editLink = new Hyperlink("Edit", "view/" + viewId + "/edit");
                 headerPanel.add(editLink);
                 viewForm.setPredicates(view.getPredicates());
                 viewForm.setWorkspace(view.getWorkspace());
                 viewForm.setWorkspaceSearchRecursive(view.isWorkspaceSearchRecursive());
-                
+
                 if (view.getQueryString() != null && !"".equals(view.getQueryString())) {
                     viewForm.setFreeformQuery(view.getQueryString());
-                    
+
                 }
                 showViewForm(editMode);
             }
         });
     }
-    
-    protected void delete()
-    {
-        new LightBox(new ConfirmDialog(new ConfirmDialogAdapter()
-        {
-            public void onConfirm()
-            {
-                galaxy.getRegistryService().deleteArtifactView(viewId, new AbstractCallback(ViewPanel.this)
-                {
-                    public void onSuccess(Object arg0)
-                    {
-                       galaxy.setMessageAndGoto("browse", "View was deleted.");
-                    }
-                });
+
+    protected void delete() {
+
+        final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
+            public void handleEvent(MessageBoxEvent ce) {
+                com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
+
+                if (Dialog.YES.equals(btn.getItemId())) {
+                    galaxy.getRegistryService().deleteArtifactView(viewId, new AbstractCallback(ViewPanel.this) {
+                        public void onSuccess(Object arg0) {
+                            galaxy.setMessageAndGoto("browse", "View was deleted.");
+                        }
+                    });
+                }
             }
-        }, "Are you sure you want to delete this view?")).show();
+        };
+        MessageBox.confirm("Confirm", "Are you sure you want to delete this view?", l);
     }
 
     public void refresh() {
@@ -165,10 +167,10 @@ public class ViewPanel extends AbstractBrowsePanel {
             refreshArtifacts();
         }
     }
-    
+
     public void onHide() {
     }
-    
+
     protected void save() {
         stale = true;
         view.setName(viewForm.getNameTB().getText());
@@ -177,14 +179,14 @@ public class ViewPanel extends AbstractBrowsePanel {
         view.setWorkspace(viewForm.getWorkspacePath());
         view.setWorkspaceSearchRecursive(viewForm.isWorkspaceSearchRecursive());
         view.setQueryString(viewForm.getFreeformQuery());
-        
+
         galaxy.getRegistryService().saveArtifactView(view, new AbstractCallback(this) {
             public void onSuccess(Object id) {
-                view.setId((String)id);
+                view.setId((String) id);
                 History.newItem("view/" + id);
             }
         });
-        
+
         showViewForm(false);
     }
 
@@ -205,15 +207,15 @@ public class ViewPanel extends AbstractBrowsePanel {
         }
         setTop(currentTopPanel);
     }
-    
+
     protected void fetchArtifacts(int resultStart, int maxResults, AbstractCallback callback) {
         if (testSearch) {
-            galaxy.getRegistryService().getArtifacts(null, 
-                                                     viewForm.getWorkspacePath(), 
-                                                     viewForm.isWorkspaceSearchRecursive(),
-                                                     viewForm.getPredicates(), 
-                                                     viewForm.getFreeformQuery(), 
-                                                     resultStart, maxResults, callback);
+            galaxy.getRegistryService().getArtifacts(null,
+                    viewForm.getWorkspacePath(),
+                    viewForm.isWorkspaceSearchRecursive(),
+                    viewForm.getPredicates(),
+                    viewForm.getFreeformQuery(),
+                    resultStart, maxResults, callback);
             testSearch = false;
         } else {
             if (NEW_VIEW_ID.equals(viewId)) {
