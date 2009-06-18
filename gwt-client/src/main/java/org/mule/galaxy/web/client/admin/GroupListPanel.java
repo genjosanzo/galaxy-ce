@@ -40,7 +40,7 @@ public class GroupListPanel extends AbstractGroupPanel {
     protected void setGrant(int row, int col, WPermissionGrant pg) {
         CheckBox cb = (CheckBox) table.getWidget(row + 1, col);
         
-        if (cb.isChecked()) {
+        if (cb.getValue().booleanValue() == true) {
             pg.setGrant(WPermissionGrant.GRANTED);
         } else {
             pg.setGrant(WPermissionGrant.REVOKED);
@@ -50,7 +50,7 @@ public class GroupListPanel extends AbstractGroupPanel {
     protected Widget createGrantWidget(WPermissionGrant pg, boolean isUberGroup) {
         CheckBox cb = new CheckBox();
         if (pg.getGrant() == WPermissionGrant.GRANTED) {
-            cb.setChecked(true);
+            cb.setValue(true);
         }
         cb.setEnabled(!isUberGroup);
         return cb;

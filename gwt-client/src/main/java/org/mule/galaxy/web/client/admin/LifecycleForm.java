@@ -18,7 +18,6 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -30,6 +29,10 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -47,7 +50,7 @@ import org.mule.galaxy.web.rpc.WPhase;
 public class LifecycleForm extends AbstractAdministrationForm {
 
     private WLifecycle lifecycle;
-    private ValidatableTextBox nameTB;
+    private TextField<String> nameTB;
     private FlexTable nextPhasesPanel;
     private ListBox phases;
     private ListBox nextPhases;
@@ -56,6 +59,8 @@ public class LifecycleForm extends AbstractAdministrationForm {
     private Button addBtn;
     private WPhase initialPhase;
     private CheckBox defaultLifecycleCB;
+    private static Button ok;
+    private static Button cancel;
 
     public LifecycleForm(AdministrationPanel adminPanel) {
         super(adminPanel, "lifecycles", "Lifecycle was saved.", "Lifecycle was deleted.", 
@@ -92,9 +97,9 @@ public class LifecycleForm extends AbstractAdministrationForm {
     protected void addFields(FlexTable table) {
         FlexTable nameAndPhases = createColumnTable();
 
-        nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
-        nameTB.getTextBox().setText(lifecycle.getName());
-        nameTB.getTextBox().setFocus(true);
+        nameTB = new TextField<String>();
+        nameTB.setAllowBlank(false);
+        nameTB.setValue(lifecycle.getName());
         nameAndPhases.setText(0, 0, "Lifecycle Name:");
         nameAndPhases.setWidget(0, 1, nameTB);
 
@@ -117,20 +122,22 @@ public class LifecycleForm extends AbstractAdministrationForm {
             }
         }
 
-        addBtn = new Button("Add");
-        addBtn.addClickListener(new ClickListener() {
-            public void onClick(Widget arg0) {
-                addPhase();
-            }
-        });
+        SelectionListener listener = new SelectionListener<ComponentEvent>() {
+            public void componentSelected(ComponentEvent ce) {
+                Button btn = (Button) ce.getComponent();
 
-        deletePhase = new Button("Delete");
-        deletePhase.addClickListener(new ClickListener() {
-            public void onClick(Widget arg0) {
-                deletePhase();
-            }
-        });
+                if (btn == addBtn) {
+                    addPhase();
+                }
+                if (btn == deletePhase) {
+                    deletePhase();
+                }
 
+            }
+        };
+
+        addBtn = new Button("Add", listener);
+        deletePhase = new Button("Delete", listener);
 
         FlowPanel addDelPhase = new FlowPanel();
         addDelPhase.add(asDiv(phases));
@@ -329,7 +336,7 @@ public class LifecycleForm extends AbstractAdministrationForm {
         if (defaultLifecycleCB.isChecked()) {
             lifecycle.setDefaultLifecycle(true);
         }
-        lifecycle.setName(nameTB.getTextBox().getText());
+        lifecycle.setName(nameTB.getValue());
         lifecycle.setInitialPhase(initialPhase);
 
         adminPanel.getRegistryService().saveLifecycle(lifecycle, getSaveCallback());
@@ -346,7 +353,7 @@ public class LifecycleForm extends AbstractAdministrationForm {
     }
 
     protected void setEnabled(boolean enabled) {
-        nameTB.getTextBox().setEnabled(enabled);
+        nameTB.setEnabled(enabled);
         phases.setEnabled(enabled);
 
         if (nextPhases != null) {
@@ -367,22 +374,28 @@ public class LifecycleForm extends AbstractAdministrationForm {
 
             final ValidatableTextBox tb = new ValidatableTextBox(new StringNotEmptyValidator());
 
-            Button cancel = new Button("Cancel");
-            cancel.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
-                    AddDialog.this.hide();
-                }
-            });
-            Button ok = new Button("OK");
-            ok.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
-                    if (!tb.validate()) {
-                        return;
+
+            SelectionListener listener = new SelectionListener<ComponentEvent>() {
+                public void componentSelected(ComponentEvent ce) {
+                    Button btn = (Button) ce.getComponent();
+
+                    if (btn == cancel) {
+                        AddDialog.this.hide();
                     }
-                    AddDialog.this.hide();
-                    panel.addPhase(tb.getTextBox().getText());
+                    if (btn == ok) {
+                        if (!tb.validate()) {
+                            return;
+                        }
+                        AddDialog.this.hide();
+                        panel.addPhase(tb.getTextBox().getText());
+                    }
+
                 }
-            });
+            };
+
+
+            cancel = new Button("Cancel", listener);
+            ok = new Button("OK",listener);
 
             // allow keyboard shortcuts
             tb.getTextBox().addKeyboardListener(new KeyboardListenerAdapter() {

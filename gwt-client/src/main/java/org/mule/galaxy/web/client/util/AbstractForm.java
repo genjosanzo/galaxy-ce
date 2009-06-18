@@ -24,17 +24,17 @@ import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.button.ButtonBar;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
 
-public abstract class AbstractForm extends AbstractComposite implements ClickHandler {
+public abstract class AbstractForm extends AbstractComposite {
 
     protected FlowPanel panel;
     protected boolean newItem;
@@ -86,43 +86,40 @@ public abstract class AbstractForm extends AbstractComposite implements ClickHan
         panel.clear();
         panel.add(createPrimaryTitle(getTitle()));
 
-        save = new Button("Save");
-        save.addClickHandler(this);
+        SelectionListener listener = new SelectionListener<ComponentEvent>() {
+            public void componentSelected(ComponentEvent ce) {
+                Button btn = (Button) ce.getComponent();
 
-        delete = new Button("Delete");
-        delete.addClickHandler(this);
+                if (btn == save) {
+                    save();
+                } else if (btn == delete) {
+                    delete();
+                } else if (btn == cancel) {
+                    cancel();
+                }
 
-        cancel = new Button("Cancel");
-        cancel.addClickHandler(this);
+            }
+        };
+
+        save = new Button("Save", listener);
+        delete = new Button("Delete", listener);
+        cancel = new Button("Cancel", listener);
 
         FlexTable table = createFormTable();
         addFields(table);
 
         panel.add(table);
 
-        if (newItem) {
-            panel.add(asHorizontal(save, cancel));
-        } else {
-            panel.add(asHorizontal(save, delete, cancel));
-        }
-    }
+        ButtonBar bb = new ButtonBar();
+        bb.add(save);
 
-    /**
-     * Too many anonymous inner classes will create a listener object overhead.
-     * This will allow a single listener to distinguish between multiple event publishers.
-     * Also,those anonymous inner classes will eventually make your eyes bug out.
-     *
-     * @param event
-     */
-    public void onClick(ClickEvent event) {
-        Widget sender = (Widget) event.getSource();
-        if (sender == save) {
-            save();
-        } else if (sender == delete) {
-            delete();
-        } else if (sender == cancel) {
-            cancel();
+        if (newItem) {
+            bb.add(cancel);
+        } else {
+            bb.add(delete);
+            bb.add(cancel);
         }
+        panel.add(bb);
     }
 
     protected abstract void fetchItem(String id);
@@ -174,12 +171,6 @@ public abstract class AbstractForm extends AbstractComposite implements ClickHan
         save.setText("Saving...");
     }
 
-    /**
-     * @return list of validation receipts TODO class name
-     */
-    protected boolean validate() {
-        return true;
-    }
 
     /* Use the successToken page as the cancel redirect page */
     protected void cancel() {

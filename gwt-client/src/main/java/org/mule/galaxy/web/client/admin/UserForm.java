@@ -18,6 +18,18 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.util.ConfirmDialog;
+import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.LightBox;
+import org.mule.galaxy.web.client.util.SelectionPanel;
+import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.SecurityServiceAsync;
+import org.mule.galaxy.web.rpc.WGroup;
+import org.mule.galaxy.web.rpc.WUser;
+
+import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -30,30 +42,14 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.LightBox;
-import org.mule.galaxy.web.client.util.SelectionPanel;
-import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
-import org.mule.galaxy.web.client.validation.EmailValidator;
-import org.mule.galaxy.web.client.validation.MinLengthValidator;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatablePasswordTextBox;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.SecurityServiceAsync;
-import org.mule.galaxy.web.rpc.WGroup;
-import org.mule.galaxy.web.rpc.WUser;
-
 public class UserForm extends AbstractAdministrationForm {
 
     private WUser user;
-    private ValidatablePasswordTextBox passTB;
-    private ValidatablePasswordTextBox confirmTB;
-    private ValidatableTextBox nameTB;
-    private ValidatableTextBox emailTB;
-    private ValidatableTextBox usernameTB;
+    private TextField<String> passTB;
+    private TextField<String> confirmTB;
+    private TextField<String> nameTB;
+    private TextField<String> emailTB;
+    private TextField<String> usernameTB;
     private SelectionPanel groupPanel;
     private CheckBox resetPassword;
     private static final int PASSWORD_MIN_LENGTH = 5;
@@ -63,7 +59,7 @@ public class UserForm extends AbstractAdministrationForm {
 
     public UserForm(AdministrationPanel adminPanel) {
         super(adminPanel, "users", "User was saved.", "User was deleted.",
-              "A user with that username already exists.");
+                "A user with that username already exists.");
     }
 
     protected void addFields(final FlexTable table) {
@@ -84,7 +80,8 @@ public class UserForm extends AbstractAdministrationForm {
         row = 0;
 
         if (newItem) {
-            usernameTB = new ValidatableTextBox(new StringNotEmptyValidator());
+            usernameTB = new TextField<String>();
+            usernameTB.setAllowBlank(false);
             table.setWidget(row, 1, usernameTB);
         } else {
             table.setText(row, 1, user.getUsername());
@@ -96,8 +93,9 @@ public class UserForm extends AbstractAdministrationForm {
         }
 
         row++;
-        nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
-        nameTB.getTextBox().setText(user.getName());
+        nameTB = new TextField<String>();
+        nameTB.setAllowBlank(false);
+        nameTB.setValue(user.getName());
         table.setWidget(row, 1, nameTB);
         // add an extender in the table to align the validation label
         // otherwise groups cell stretches and deforms the cell
@@ -105,17 +103,28 @@ public class UserForm extends AbstractAdministrationForm {
         table.getCellFormatter().setWidth(row, 2, "100%");
 
         row++;
-        emailTB = new ValidatableTextBox(new EmailValidator());
-        emailTB.getTextBox().setText(user.getEmail());
+        emailTB = new TextField<String>();
+        emailTB.setAllowBlank(false);
+        emailTB.setValue(user.getEmail());
         table.setWidget(row, 1, emailTB);
 
         if (newItem) {
             row++;
-            passTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
+            //passTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
+            passTB = new TextField<String>();
+            passTB.setAllowBlank(false);
+            passTB.setPassword(true);
+            passTB.setToolTip("Must be at least " + PASSWORD_MIN_LENGTH + " characters in length");
+            passTB.setMinLength(PASSWORD_MIN_LENGTH);
             table.setWidget(row, 1, passTB);
 
             row++;
-            confirmTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
+            //confirmTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
+            confirmTB = new TextField<String>();
+            confirmTB.setAllowBlank(false);
+            confirmTB.setPassword(true);
+            confirmTB.setMinLength(PASSWORD_MIN_LENGTH);
+            confirmTB.setToolTip("Must be at least " + PASSWORD_MIN_LENGTH + " characters in length");
             table.setWidget(row, 1, confirmTB);
         } else {
             row++;
@@ -177,8 +186,8 @@ public class UserForm extends AbstractAdministrationForm {
             }
         };
         groupPanel = new SelectionPanel(groups, itemInfo,
-                                        user.getGroupIds(), 6,
-                                        "Available Groups", "Joined Groups");
+                user.getGroupIds(), 6,
+                "Available Groups", "Joined Groups");
         table.setWidget(currentRow, 1, groupPanel);
         FlexTable.FlexCellFormatter cellFormatter = (FlexTable.FlexCellFormatter) table.getCellFormatter();
         cellFormatter.setColSpan(currentRow, 1, 2);
@@ -192,15 +201,15 @@ public class UserForm extends AbstractAdministrationForm {
         super.save();
 
         if (usernameTB != null) {
-            user.setUsername(usernameTB.getTextBox().getText());
+            user.setUsername(usernameTB.getValue());
         }
 
-        user.setEmail(emailTB.getTextBox().getText());
-        user.setName(nameTB.getTextBox().getText());
+        user.setEmail(emailTB.getValue());
+        user.setName(nameTB.getValue());
         user.setGroupIds(groupPanel.getSelectedValues());
 
-        String p = passTB != null ? passTB.getTextBox().getText() : null;
-        String c = confirmTB != null ? confirmTB.getTextBox().getText() : null;
+        String p = passTB != null ? passTB.getValue() : null;
+        String c = confirmTB != null ? confirmTB.getValue() : null;
 
         SecurityServiceAsync svc = getSecurityService();
         if (newItem) {
@@ -224,7 +233,7 @@ public class UserForm extends AbstractAdministrationForm {
             isOk &= passTB.validate();
             isOk &= confirmTB.validate();
             // passwords must match
-            if (!passTB.getTextBox().getText().equals(confirmTB.getTextBox().getText())) {
+            if (!passTB.getValue().equals(confirmTB.getValue())) {
                 getErrorPanel().addMessage("Passwords must match");
                 isOk = false;
             }
@@ -286,8 +295,8 @@ public class UserForm extends AbstractAdministrationForm {
             setText("Reset Password");
 
             VerticalPanel main = new VerticalPanel();
-            passTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
-            confirmTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
+            //passTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
+            //confirmTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
             InlineFlowPanel row = new InlineFlowPanel();
             Label label = new Label("New Password:");
             label.addStyleName("form-label");
@@ -320,8 +329,8 @@ public class UserForm extends AbstractAdministrationForm {
             cancelButton.addClickListener(new ClickListener() {
                 public void onClick(final Widget widget) {
                     ResetPasswordDialog.this.hide();
-                    passTB.getTextBox().setText(null);
-                    confirmTB.getTextBox().setText(null);
+                    passTB.setValue(null);
+                    confirmTB.setValue(null);
                     resetPassword.setChecked(false);
                 }
             });

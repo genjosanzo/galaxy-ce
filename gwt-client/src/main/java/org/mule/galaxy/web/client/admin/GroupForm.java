@@ -18,31 +18,32 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import com.google.gwt.user.client.ui.FlexTable;
 import org.mule.galaxy.web.client.util.ConfirmDialog;
 import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
 import org.mule.galaxy.web.client.util.LightBox;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.WGroup;
+
+import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.google.gwt.user.client.ui.FlexTable;
 
 
 public class GroupForm extends AbstractAdministrationForm {
 
     private WGroup group;
-    private ValidatableTextBox nameTB;
+    private TextField<String> nameTB;
 
     public GroupForm(AdministrationPanel adminPanel) {
-        super(adminPanel, "groups", "Group was saved.", "Group was deleted.", 
-              "A group with that name already exists.");
+        super(adminPanel, "groups", "Group was saved.", "Group was deleted.",
+                "A group with that name already exists.");
     }
 
     protected void addFields(FlexTable table) {
         table.setText(0, 0, "Name:");
 
-        nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
-        nameTB.getTextBox().setText(group.getName());
-        nameTB.getTextBox().setFocus(true);
+        nameTB = new TextField<String>();
+        nameTB.setAllowBlank(false);
+        nameTB.setValue(group.getName());
+
         table.setWidget(0, 1, nameTB);
 
         styleHeaderColumn(table);
@@ -57,7 +58,7 @@ public class GroupForm extends AbstractAdministrationForm {
             return "Add Group";
         } else {
             return "Edit Group: " + group.getName();
-        }
+        }                   
     }
 
     protected void initializeItem(Object o) {
@@ -69,11 +70,9 @@ public class GroupForm extends AbstractAdministrationForm {
     }
 
     protected void save() {
-        if (!validate()) {
-            return;
-        }
+
         super.save();
-        group.setName(nameTB.getTextBox().getText());
+        group.setName(nameTB.getValue());
         getSecurityService().save(group, getSaveCallback());
     }
 
@@ -85,11 +84,6 @@ public class GroupForm extends AbstractAdministrationForm {
             }
         }, "Are you sure you want to delete group " + group.getName() + "?");
         new LightBox(dialog).show();
-    }
-
-    protected boolean validate() {
-        getErrorPanel().clearErrorMessage();
-        return nameTB.validate();
     }
 
 }

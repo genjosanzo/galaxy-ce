@@ -22,6 +22,9 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.form.TextArea;
+import com.extjs.gxt.ui.client.widget.tips.ToolTipConfig;
 
 import java.util.List;
 
@@ -42,9 +45,9 @@ import org.mule.galaxy.web.rpc.WScriptJob;
 public class ScheduleForm extends AbstractAdministrationForm {
 
     private ValidatableListBox scriptLB;
-    private ValidatableTextBox nameTB;
-    private ValidatableTextBox cronTB;
-    private ValidatableTextArea descriptionTA;
+    private TextField<String> nameTB;
+    private TextField<String> cronTB;
+    private TextArea descriptionTA;
     private WScriptJob job;
 
     public ScheduleForm(AdministrationPanel administrationPanel) {
@@ -79,27 +82,31 @@ public class ScheduleForm extends AbstractAdministrationForm {
         loadScripts();
 
         row++;
-        nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
+        nameTB = new TextField<String>();
+        nameTB.setAllowBlank(false);
         table.setWidget(row, 1, nameTB);
         table.setWidget(row, 2, new Label(" "));
-        nameTB.setText(job.getName());
-        
-        row++;
-        descriptionTA = new ValidatableTextArea(new StringNotEmptyValidator());
-        descriptionTA.getTextArea().setCharacterWidth(18);
-        descriptionTA.getTextArea().setVisibleLines(4);
-        table.setWidget(row, 1, descriptionTA);
-        descriptionTA.setText(job.getDescription());
-        
-        row++;
-        cronTB = new ValidatableTextBox(new StringNotEmptyValidator());
-        cronTB.setText(job.getExpression());
-        table.setWidget(row, 1, cronTB);
-        Image help = new Image("images/help_16x16.gif");
-        help.addMouseListener(new TooltipListener(getCronHelpString(),
-                                                  10000));
-        table.setWidget(row, 2, help);
+        nameTB.setValue(job.getName());
 
+        row++;
+        descriptionTA = new TextArea();
+        descriptionTA.setAllowBlank(false);
+        descriptionTA.setWidth(150);
+        descriptionTA.setHeight(50);
+        table.setWidget(row, 1, descriptionTA);
+        descriptionTA.setValue(job.getDescription());
+
+        row++;
+        cronTB = new TextField<String>();
+        cronTB.setAllowBlank(false);
+        cronTB.setValue(job.getExpression());
+
+        ToolTipConfig ttcfg = new ToolTipConfig("Cron Help:", getCronHelpString());
+        ttcfg.setTrackMouse(true);
+        ttcfg.setAutoHide(false);
+        cronTB.setToolTip(ttcfg);
+
+        table.setWidget(row, 1, cronTB);
         styleHeaderColumn(table);
     }
 
@@ -109,7 +116,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
             public void onSuccess(List<WScript> scripts) {
                 finishLoadScripts(scripts);
             }
-            
+
         });
     }
 
@@ -117,7 +124,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
         ListBox lb = scriptLB.getListBox();
         for (WScript s : scripts) {
             lb.addItem(s.getName(), s.getId());
-            
+
             if (s.getId().equals(job.getScript())) {
                 lb.setSelectedIndex(lb.getItemCount()-1);
             }
@@ -178,10 +185,10 @@ public class ScheduleForm extends AbstractAdministrationForm {
             return;
         }
         super.save();
-        
-        job.setName(nameTB.getText());
-        job.setDescription(descriptionTA.getText());
-        job.setExpression(cronTB.getText());
+
+        job.setName(nameTB.getValue());
+        job.setDescription(descriptionTA.getValue());
+        job.setExpression(cronTB.getValue());
         ListBox lb = scriptLB.getListBox();
         int selectedIndex = lb.getSelectedIndex();
         if (selectedIndex != -1) {

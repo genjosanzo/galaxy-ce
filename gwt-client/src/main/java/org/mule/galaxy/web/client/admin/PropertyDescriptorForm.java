@@ -63,9 +63,11 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
 
     protected void save() {
 
+        /*
         if (!validate()) {
             return;
         }
+        */
 
         property = innerForm.getPropertyDescriptor();
          
@@ -83,9 +85,11 @@ public class PropertyDescriptorForm extends AbstractAdministrationForm {
         new LightBox(dialog).show();
     }
 
+    /*
     @Override
     protected boolean validate() {
         return innerForm.validate();
     }
+    */
 
 }

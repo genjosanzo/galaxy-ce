@@ -18,8 +18,6 @@
 
 package org.mule.galaxy.web.client;
 
-import java.util.List;
-
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 
 import com.google.gwt.user.client.ui.Composite;
@@ -29,14 +27,16 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.List;
+
 public abstract class AbstractComposite extends Composite {
 
     public void onShow() {
-        
+
     }
-    
+
     public void onHide() {
-        
+
     }
 
     public static Widget newSpacer() {
@@ -45,18 +45,19 @@ public abstract class AbstractComposite extends Composite {
         p.add(new Label(" "));
         return p;
     }
-    
+
     public static Widget asDiv(Widget w) {
         FlowPanel p = new FlowPanel();
         p.add(w);
         return p;
     }
-    
+
     public static Label newLabel(String name, String style) {
         Label label = new Label(name);
         label.setStyleName(style);
         return label;
     }
+
     public static InlineFlowPanel asHorizontal(Widget w1, Widget w2) {
         InlineFlowPanel p = new InlineFlowPanel();
         p.add(w1);
@@ -71,7 +72,7 @@ public abstract class AbstractComposite extends Composite {
         p.add(w3);
         return p;
     }
-    
+
     public static FlexTable createTitledRowTable(Panel panel, String title) {
         panel.add(createPrimaryTitle(title));
         FlexTable table = createRowTable();
@@ -85,7 +86,7 @@ public abstract class AbstractComposite extends Composite {
         panel.add(table);
         return table;
     }
-    
+
     public static FlexTable createRowTable() {
         FlexTable table = new FlexTable();
         table.getRowFormatter().setStyleName(0, "artifactTableHeader");
@@ -93,7 +94,7 @@ public abstract class AbstractComposite extends Composite {
         table.setWidth("100%");
         table.setCellSpacing(0);
         table.setCellPadding(0);
-        
+
         return table;
     }
 
@@ -109,10 +110,10 @@ public abstract class AbstractComposite extends Composite {
         table.setStyleName("columnTable");
         table.setCellSpacing(0);
         table.setCellPadding(0);
-        
+
         return table;
     }
-    
+
     public static FlexTable createTable() {
         FlexTable table = new FlexTable();
         table.setStyleName("artifactTable");
@@ -126,11 +127,11 @@ public abstract class AbstractComposite extends Composite {
         label.setStyleName("title");
         return label;
     }
-    
+
     public static InlineFlowPanel createTitle(String title) {
         InlineFlowPanel titlePanel = new InlineFlowPanel();
         titlePanel.setStyleName("rightlinked-title-panel");
-        
+
         Label label = new Label(title);
         label.setStyleName("rightlinked-title");
         titlePanel.add(label);
@@ -150,11 +151,11 @@ public abstract class AbstractComposite extends Composite {
         commentTitlePanel.setStyleName("rightlinked-title-panel");
 
         commentTitlePanel.add(rightWidget);
-        
+
         Label label = new Label(name);
         label.setStyleName("rightlinked-title");
         commentTitlePanel.add(label);
-        
+
         rightWidget.setStyleName("rightlinked-title-link");
         return commentTitlePanel;
     }
