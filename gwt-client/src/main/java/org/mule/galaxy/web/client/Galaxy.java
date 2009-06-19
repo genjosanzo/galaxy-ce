@@ -103,6 +103,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
 
         GXT.setDefaultTheme(Theme.GRAY, true);
+        GXT.BLANK_IMAGE_URL = "extjsresources/images/default/s.gif";
 
         // prefetch the image, so that e.g. SessionKilled dialog can be properly displayed for the first time
         // when the server is already down and cannot serve it.
