@@ -23,6 +23,9 @@ import com.extjs.gxt.ui.client.event.TabPanelEvent;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
+import com.extjs.gxt.ui.client.util.ThemeManager;
+import com.extjs.gxt.ui.client.util.Theme;
+import com.extjs.gxt.ui.client.GXT;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -97,6 +100,9 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
      * This is the entry point method.
      */
     public void onModuleLoad() {
+
+
+        GXT.setDefaultTheme(Theme.GRAY, true);
 
         // prefetch the image, so that e.g. SessionKilled dialog can be properly displayed for the first time
         // when the server is already down and cannot serve it.

@@ -73,6 +73,11 @@ public class GroupForm extends AbstractAdministrationForm {
 
     protected void save() {
 
+        if(!nameTB.validate()) {
+            return;
+        }                       
+
+
         super.save();
         group.setName(nameTB.getValue());
         getSecurityService().save(group, getSaveCallback());

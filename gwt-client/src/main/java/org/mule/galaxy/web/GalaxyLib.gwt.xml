@@ -9,6 +9,7 @@
     <inherits name='com.google.gwt.user.User'/>
     <inherits name='com.google.gwt.widgetideas.DatePicker' />
     <inherits name='com.extjs.gxt.ui.GXT'/>
+    <inherits name='com.extjs.gxt.themes.Themes' />
 
     <source path="rpc"/>
     <source path="client"/>
