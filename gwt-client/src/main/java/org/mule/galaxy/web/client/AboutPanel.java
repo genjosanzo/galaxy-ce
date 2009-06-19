@@ -18,12 +18,55 @@
 
 package org.mule.galaxy.web.client;
 
-import com.google.gwt.user.client.ui.CellPanel;
+import com.extjs.gxt.ui.client.Style;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.Html;
+import com.extjs.gxt.ui.client.widget.layout.CenterLayout;
 
 
 /**
- *  Used to display version and license information
+ * Used to display version and license information
  */
-public class AboutPanel extends CellPanel {
+public class AboutPanel extends LayoutContainer {
+
+    public AboutPanel() {
+        final Dialog simple = new Dialog();
+        simple.setHeading("About...");
+        simple.setButtons(Dialog.OK);
+        simple.setBodyStyleName("pad-text");
+        simple.add(getAboutText());
+        simple.setScrollMode(Style.Scroll.AUTO);
+        simple.setHideOnButtonClick(true);
+        simple.setWidth(500);
+        simple.show();
+    }
+
+    // FIXME:
+    // we need version info, license info, support info, etc...
+    public Html getAboutText() {
+        Html html = new Html();
+        html.setHtml("<b>Sed ut perspiciatis unde</b>" +
+                "<br><br> " +
+                "omnis iste natus error " +
+                "sit voluptatem accusantium doloremque laudantium, totam " +
+                "rem aperiam, eaque ipsa quae ab illo inventore veritatis" +
+                " et quasi architecto beatae vitae dicta sunt explicabo. " +
+                "Nemo enim ipsam voluptatem quia voluptas sit aspernatur " +
+                "<br><br>" +
+                "aut odit aut fugit, sed quia consequuntur magni dolores eos " +
+                "qui ratione voluptatem sequi nesciunt. Neque porro quisquam " +
+                "est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci " +
+                "velit, sed quia non numquam eius modi tempora incidunt ut labore " +
+                "<br><br>" +
+                "et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima " +
+                "veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, " +
+                "nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure " +
+                "reprehenderit qui in ea voluptate velit esse quam nihil molestiae" +
+                " consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?");
+
+        return html;
+    }
 
 }
