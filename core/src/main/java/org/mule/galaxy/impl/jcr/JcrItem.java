@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import javax.jcr.InvalidItemStateException;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
@@ -85,8 +86,12 @@ public class JcrItem extends AbstractItem {
     public String getId() {
         try {
             return JcrWorkspaceManagerImpl.ID + Registry.WORKSPACE_MANAGER_SEPARATOR + node.getUUID();
-        } catch (RepositoryException e) {
+        } catch (InvalidItemStateException e) {
+            // this occurs if this item has been deleted. In which case we want to 
+            // fail gracefully sometimes
             return null;
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
         }
     }
 
