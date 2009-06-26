@@ -1,5 +1,5 @@
 /*
- * Ext GWT Library 2.0-m3
+ * Ext GWT Library 2.0-rc1
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -95,7 +95,7 @@ html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,bloc
     filter: alpha(opacity=60);
 }
 .x-item-disabled * {
-    cursor: default !important;
+	cursor: default;
 }
 .x-splitbar-proxy {
     position: absolute;
@@ -860,7 +860,7 @@ ul.x-tab-strip li.x-tab-edge {
     padding:2px;
 }
 .x-form-field{
-    margin: 0 0 0 0;
+    margin: 0;
 }
 .x-form-text, textarea.x-form-field{
     padding:1px 3px;
@@ -877,12 +877,15 @@ textarea.x-form-field {
 }
 
 .ext-ie6 .x-form-text, .ext-ie7 .x-form-text {
+    margin: -1px 0;
     height:22px; /* ie quirks */
     line-height:18px;
 }
-
-.ext-strict .x-form-text {
-    height:18px;
+.ext-ie8-compatibility .x-form-text {
+	margin: 0;
+}
+.x-form-field-wrap .x-form-text {
+	position: relative;
 }
 .ext-strict .x-form-text {
     height:18px;
@@ -1020,7 +1023,6 @@ textarea {
 .x-form-item {
     display:block;
     margin-bottom:4px;
-    zoom:1;
 }
 .x-form-item label {
     display:block;
@@ -1034,7 +1036,6 @@ textarea {
 }
 .x-form-element {
     padding-left:105px;
-    position:relative;
 }
 .x-form-invalid-msg {
     padding:2px;
@@ -1327,9 +1328,13 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
  * FileUploadField component styles
  */
 .x-form-file-wrap {
-  position: relative;
   height: 22px;
 }
+
+.ext-ie .x-form-file-wrap {
+  height: 20px;
+}
+
 
 .x-form-file-wrap .x-form-file {
   position: absolute;
@@ -1732,9 +1737,11 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 	-moz-opacity:.6;
 	filter:alpha(opacity=60);
 }
-.x-toolbar .x-item-disabled * {
+
+.x-toolbar .x-item-disabled *{
 	cursor:default;
 }
+
 .x-toolbar .x-toolbar-cell {
     vertical-align:middle;
 }
@@ -2003,7 +2010,7 @@ div.x-toolbar-no-items {
   -webkit-user-select: ignore;
 }
 
-.x-grid3-row td,.x-grid3-summary-row td {
+.x-grid3-row td.x-grid3-cell,.x-grid3-summary-row td.x-grid3-cell {
   line-height: 13px;
   vertical-align: top;
   padding-left: 1px;
@@ -2501,20 +2508,18 @@ a.x-grid3-hd-btn:hover {
   background-repeat: no-repeat;
 }
 
-.ext-ie .x-row-editor .x-form-field-wrap .x-form-text {
-  margin-top: -1px !important;
-}
-
 .x-row-editor-header {
   height: 2px;
   overflow: hidden;
 }
-
 .x-row-editor-footer {
   height: 2px;
   overflow: hidden;
 }
 
+.ext-ie8 .x-row-editor .x-form-field-wrap .x-form-text, .ext-ie8-compatibility .x-row-editor .x-form-field-wrap .x-form-text {
+  margin: -1px 0;
+}
 .ext-ie .x-row-editor-footer {
   margin-top: -1px;
 }
@@ -2871,6 +2876,10 @@ a.x-grid3-hd-btn:hover {
   background-color: #eee;
 }
 
+.x-ftree2-node-drop {
+  background-color: #defadc; 
+}
+
 .x-ftree2-joint,.x-ftree2-icon {
   border: 0 none;
   height: 18px;
@@ -2978,6 +2987,7 @@ a.x-grid3-hd-btn:hover {
 .x-tree3-el {
   white-space: nowrap;
   height:21px;
+  position: relative;
 }
 
 .x-tree3-node-text {
@@ -2992,7 +3002,17 @@ a.x-grid3-hd-btn:hover {
 
 .x-tree3-node-ct {
   display: none;
-}.x-date-picker {
+}
+
+.x-tree3-node-text-widget {
+  position: static !important;
+  padding: 0px !important;
+}
+
+.x-tree-drop-ok-append .x-dd-drop-icon{background-image:url(../images/default/tree/drop-add.gif);}
+.x-tree-drop-ok-above .x-dd-drop-icon{background-image:url(../images/default/tree/drop-over.gif);}
+.x-tree-drop-ok-below .x-dd-drop-icon{background-image:url(../images/default/tree/drop-under.gif);}
+.x-tree-drop-ok-between .x-dd-drop-icon{background-image:url(../images/default/tree/drop-between.gif);}.x-date-picker {
     border: 1px solid;
     border-top:0 none;
 	position:relative;
@@ -5770,7 +5790,7 @@ ul.x-tab-strip-bottom{
 .x-form-grow-sizer {
 	font:normal 12px tahoma, arial, helvetica, sans-serif;
 }
-.x-form-item {
+.x-form-item label {
     font:normal 12px tahoma, arial, helvetica, sans-serif;
 }
 .x-form-invalid-msg {
@@ -5977,7 +5997,7 @@ ul.x-tab-strip-bottom{
 .x-grid-panel .x-panel-mc .x-panel-body {
     border-color:#99bbe8;
 }
-.x-grid3-hd-row .x-grid3-hd, .x-grid3-row td, .x-grid3-summary-row td{
+.x-grid3-hd-row .x-grid3-hd, .x-grid3-row .x-grid3-cell, .x-grid3-summary-row .x-grid3-cell{
 	font:normal 11px arial, tahoma, helvetica, sans-serif;
 }
 .x-grid3-hd-row .x-grid3-hd {
@@ -6052,6 +6072,7 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 	background-image:url(../images/default/grid/col-move-bottom.gif);
 }
 .x-grid3-row-selected {
+    background-image: none !important;
 	background-color: #dfe8f6 !important;
 	border-color:#a3bae9;
 }
