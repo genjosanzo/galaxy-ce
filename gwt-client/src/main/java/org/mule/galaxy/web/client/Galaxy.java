@@ -179,7 +179,11 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
                 rightHeaderPanel.add(new Label("Signed in as: " + user.getName()));
                 ExternalHyperlink logout = new ExternalHyperlink(" Sign out", GWT.getHostPageBaseURL() + "j_logout");
                 rightHeaderPanel.add(logout);
+                
+                suppressTabHistory = true;
                 loadTabs(galaxy);
+                suppressTabHistory = false;
+                showFirstPage();
             }
         });
 
@@ -301,8 +305,6 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
             createPageInfo("admin", createAdministrationPanel(), adminTabIndex);
             tabPanel.add(createEmptyTab("Administration"));
         }
-
-        showFirstPage();
     }
 
     protected TabItem createEmptyTab(String name) {
@@ -353,6 +355,10 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     protected void show(PageInfo page, List<String> params) {
         TabItem p = (TabItem) tabPanel.getWidget(page.getTabIndex());
 
+        if (!tabPanel.getSelectedItem().equals(p)){
+            tabPanel.setSelection(p);
+        }
+        
         p.removeAll();
 
         AbstractComposite instance = page.getInstance();
