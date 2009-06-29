@@ -18,28 +18,49 @@
 
 package org.mule.galaxy.web.client.item;
 
-import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.property.AbstractPropertyRenderer;
+import org.mule.galaxy.web.client.property.ArtifactRenderer;
+import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
+import org.mule.galaxy.web.client.registry.PolicyResultsPanel;
+import org.mule.galaxy.web.client.util.ItemPathOracle;
+import org.mule.galaxy.web.client.util.StringUtil;
+import org.mule.galaxy.web.client.util.TooltipListener;
+import org.mule.galaxy.web.client.util.WTypeComparator;
+import org.mule.galaxy.web.client.util.AddItemHelper;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemExistsException;
+import org.mule.galaxy.web.rpc.ItemInfo;
+import org.mule.galaxy.web.rpc.WPropertyDescriptor;
+import org.mule.galaxy.web.rpc.WType;
+
+import com.extjs.gxt.ui.client.event.BaseEvent;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.button.ButtonBar;
+import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.form.AdapterField;
+import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -48,59 +69,38 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.property.AbstractPropertyRenderer;
-import org.mule.galaxy.web.client.property.ArtifactRenderer;
-import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
-import org.mule.galaxy.web.client.registry.PolicyResultsPanel;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.ItemPathOracle;
-import org.mule.galaxy.web.client.util.StringUtil;
-import org.mule.galaxy.web.client.util.TooltipListener;
-import org.mule.galaxy.web.client.util.WTypeComparator;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ItemExistsException;
-import org.mule.galaxy.web.rpc.ItemInfo;
-import org.mule.galaxy.web.rpc.WPropertyDescriptor;
-import org.mule.galaxy.web.rpc.WType;
-
 /**
  * This form is definitely complex and ugly, so here's a run down of how it works.
  * If you select a normal Type (i.e. not an Artifact), it will create editable
- * fields for all those properties using the property renderers. 
- * 
+ * fields for all those properties using the property renderers.
+ * <p/>
  * Where it gets tricky is when someone selects an artifact. Then we also allow
  * the user the option of submitting an initial version as well. In this case,
  * we follow a three step process:
  * 1. Submit a form which uploads the file. This will get stored in the UploadService
  * on the server side.
  * 2. Create both the artifact and artifact version via RegistryService.addVersionedItem
- * 
- * @author Dan
  *
+ * @author Dan
  */
-public class AddItemForm extends AbstractErrorShowingComposite
-        implements ClickHandler, SubmitCompleteHandler {
+public class AddItemForm extends AbstractErrorShowingComposite  implements SubmitCompleteHandler
+         {
 
     private FlexTable table;
-    private FormPanel form;
-    private ValidatableTextBox nameBox;
+    private TextField<String> nameBox;
     private SuggestBox parentSB;
     private final Galaxy galaxy;
     private String itemId;
     private Button addButton;
     private Button cancelButton;
     private ListBox typeChoice;
-    protected Map<String,WType> types;
+    protected Map<String, WType> types;
     private PropertyInterfaceManager factory = new PropertyInterfaceManager();
     private ItemInfo item;
     private Map<String, AbstractPropertyRenderer> renderers = new HashMap<String, AbstractPropertyRenderer>();
     private Map<String, AbstractPropertyRenderer> versionRenderers = new HashMap<String, AbstractPropertyRenderer>();
     private Image spacerimg;
-    private ValidatableTextBox versionNameBox;
+    private TextField<String> versionNameBox;
     private boolean addVersionedItem;
     private boolean fileUpload;
     private String fileId;
@@ -108,12 +108,14 @@ public class AddItemForm extends AbstractErrorShowingComposite
     private boolean fileUploadForVersion;
     private ListBox versionTypes;
     private WType selectedVersion;
-    
+    private AddItemHelper form;
+
     public AddItemForm(final Galaxy galaxy) {
         this.galaxy = galaxy;
 
         FlowPanel main = getMainPanel();
-        form = new FormPanel();
+
+        form = new AddItemHelper(GWT.getModuleBaseURL() + "../artifactUpload.form");
         form.addSubmitCompleteHandler(this);
 
         main.add(form);
@@ -138,12 +140,8 @@ public class AddItemForm extends AbstractErrorShowingComposite
             finishShow();
         }
     }
-    
-    protected void finishShow() {
-        form.setAction(GWT.getModuleBaseURL() + "../artifactUpload.form");
-        form.setEncoding(FormPanel.ENCODING_MULTIPART);
-        form.setMethod(FormPanel.METHOD_POST);
 
+    protected void finishShow() {
         FlowPanel panel = new FlowPanel();
         form.add(panel);
 
@@ -153,7 +151,6 @@ public class AddItemForm extends AbstractErrorShowingComposite
         panel.add(table);
 
         setupAddForm();
-        
         this.onShow();
     }
 
@@ -164,11 +161,13 @@ public class AddItemForm extends AbstractErrorShowingComposite
         typeChoice.addItem("");
         table.setWidget(0, 0, new Label("Type:"));
         table.setWidget(0, 2, typeChoice);
-        
+
         // note how spacing uses a clear pixel on the second column
         table.setWidget(1, 0, new Label("Parent:"));
 
         parentSB = new SuggestBox(new ItemPathOracle(galaxy, this));
+        parentSB.setStyleName("x-form-text");
+
         parentSB.getTextBox().setName("workspacePath");
         if (item != null) {
             parentSB.setText(item.getPath());
@@ -182,21 +181,22 @@ public class AddItemForm extends AbstractErrorShowingComposite
         spacerimg.setWidth("16px");
         table.setWidget(2, 1, spacerimg);
 
-        nameBox = new ValidatableTextBox(new StringNotEmptyValidator());
-        nameBox.getTextBox().setName("name");
+        nameBox = new TextField<String>();
+        nameBox.setAllowBlank(false);
+        nameBox.setName("name");
         table.setWidget(2, 2, nameBox);
 
         galaxy.getRegistryService().getTypes(new AbstractCallback<List<WType>>(this) {
             public void onSuccess(List<WType> wtypes) {
                 Collections.sort(wtypes, new WTypeComparator());
-                AddItemForm.this.types = new HashMap<String,WType>();
+                AddItemForm.this.types = new HashMap<String, WType>();
                 for (WType type : wtypes) {
                     types.put(type.getId(), type);
                     typeChoice.addItem(type.getName(), type.getId());
                 }
             }
         });
-        
+
         typeChoice.addChangeHandler(new ChangeHandler() {
             public void onChange(ChangeEvent event) {
                 WType type = getType();
@@ -205,13 +205,13 @@ public class AddItemForm extends AbstractErrorShowingComposite
                 }
             }
         });
-        
+
         setupTableBottom(false);
     }
 
     /**
      * When a user selects an artifact, we also want to let them add the child type
-     * ArtifactVersion all in one go. This will set up a second piece of the form 
+     * ArtifactVersion all in one go. This will set up a second piece of the form
      * to deal with that.
      */
     private void setupVersionItemForm(boolean redrawAddVersionCB) {
@@ -220,12 +220,12 @@ public class AddItemForm extends AbstractErrorShowingComposite
         if (redrawAddVersionCB) {
             // blank row for spacing
             table.setWidget(row, 2, newSpacer());
-            
-            row ++;
+
+            row++;
             table.setWidget(row, 0, new Label("Add Version:"));
             addVersionCB = new CheckBox();
             addVersionCB.setValue(true);
-    
+
             final int versionRowStart = row + 1;
             addVersionCB.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent arg0) {
@@ -245,11 +245,11 @@ public class AddItemForm extends AbstractErrorShowingComposite
                 if (selectedVersion == null) {
                     selectedVersion = type;
                 } else if (type.getId().equals(selectedVersion.getId())) {
-                    versionTypes.setSelectedIndex(versionTypes.getItemCount()-1);
+                    versionTypes.setSelectedIndex(versionTypes.getItemCount() - 1);
                 }
             }
         }
-        
+
         // Update the applicable fields if someone selects a new version type
         final int versionRowStart = row;
         versionTypes.addChangeHandler(new ChangeHandler() {
@@ -261,46 +261,51 @@ public class AddItemForm extends AbstractErrorShowingComposite
             }
         });
         table.setWidget(row, 2, versionTypes);
-        
+
         row++;
         table.setWidget(row, 0, new Label("Version:"));
-        versionNameBox = new ValidatableTextBox(new StringNotEmptyValidator());
+        versionNameBox = new TextField<String>();
+        versionNameBox.setAllowBlank(false);
         table.setWidget(row, 2, versionNameBox);
-        
-        // warn user if the artifact name does not contain an extention.
-        nameBox.getTextBox().addBlurHandler(new BlurHandler() {
-            public void onBlur(BlurEvent event) {
-                String s = ((TextBox) event.getSource()).getText();
+
+        nameBox.addListener(Events.Blur, new Listener<BaseEvent>() {
+            public void handleEvent(BaseEvent be) {
+
+                String s = nameBox.getValue();
                 if (s.length() > 0 && StringUtil.getFileExtension(s).length() == 0) {
                     // warn icon and tooltip
-                    Image warnimg = new Image("images/icon_alert.gif");
-                    warnimg.addMouseListener(new TooltipListener(" Warning: Artifact name does not contain a valid file extension. " +
+                    Image warning = new Image("images/icon_alert.gif");
+                    nameBox.setToolTip("Warning: Artifact name does not contain a valid file extension. \" +\n" +
+                            "                            \"Galaxy will not be able to reliably detect the artifact type. You may leave this field empty\" +\n" +
+                            "                            \"if you want retain the uploaded filename");
+
+                    warning.addMouseListener(new TooltipListener(" Warning: Artifact name does not contain a valid file extension. " +
                             "Galaxy will not be able to reliably detect the artifact type. You may leave this field empty" +
                             "if you want retain the uploaded filename",
-                                                                 10000));
+                            10000));
 
-                    table.setWidget(2, 1, warnimg);
+                    table.setWidget(2, 1, warning);
                 } else {
                     table.setWidget(2, 1, spacerimg);
                 }
+
             }
         });
-
         addRenderers(selectedVersion.getAllProperties(types), versionRenderers, true);
     }
 
     protected void showOrHideVersion(int versionRowStart, Boolean showVersion) {
         removeVersionFields(versionRowStart);
-        
+
         if (showVersion) {
             setupVersionItemForm(false);
         }
-        
+
         setupTableBottom(true);
     }
 
     private void removeVersionFields(int versionRowStart) {
-        for (int i = table.getRowCount()-1; i >= versionRowStart; i--) 
+        for (int i = table.getRowCount() - 1; i >= versionRowStart; i--)
             table.removeRow(i);
     }
 
@@ -322,24 +327,24 @@ public class AddItemForm extends AbstractErrorShowingComposite
 
     protected void selectType(WType type) {
         List<WPropertyDescriptor> props = type.getAllProperties(types);
-        
-        for (int i = table.getRowCount()-1; i >= 3; i--) 
+
+        for (int i = table.getRowCount() - 1; i >= 3; i--)
             table.removeRow(i);
-        
+
         fileUpload = false;
         renderers.clear();
         versionRenderers.clear();
-        
+
         // setup the custom fields for the Type
         addRenderers(props, renderers, false);
-        
+
         if (isVersioned(type)) {
             addVersionedItem = true;
             setupVersionItemForm(true);
         } else {
             addVersionedItem = false;
         }
-        
+
         setupTableBottom(true);
     }
 
@@ -353,7 +358,7 @@ public class AddItemForm extends AbstractErrorShowingComposite
             renderer.initialize(galaxy, this, null, false);
             typeRenderers.put(pd.getName(), renderer);
             table.setWidget(row, 2, renderer.createEditForm());
-            
+
             if (renderer instanceof ArtifactRenderer) {
                 if (version) {
                     fileUploadForVersion = true;
@@ -370,24 +375,24 @@ public class AddItemForm extends AbstractErrorShowingComposite
      */
     private boolean isVersioned(WType selectedType) {
         WType versionedType = getTypeByName("Versioned");
-        
+
         if (versionedType == null) {
             return false;
         }
-        
+
         if (selectedType.getId().equals(versionedType.getId())) {
             return true;
         }
 
-        
+
         return selectedType.inherits(versionedType, types);
     }
 
     private WType getTypeByName(String name) {
         WType artifact = null;
-        for (WType type: types.values()) {
+        for (WType type : types.values()) {
             if (name.equals(type.getName())) {
-                artifact = type; 
+                artifact = type;
             }
         }
         return artifact;
@@ -395,23 +400,29 @@ public class AddItemForm extends AbstractErrorShowingComposite
 
     private void setupTableBottom(boolean showAdd) {
         table.setWidget(table.getRowCount(), 2, newSpacer());
-        
-        InlineFlowPanel buttons = new InlineFlowPanel();
+
+        ToolBar buttonBar = new ButtonBar();
+        // Button actions
+        SelectionListener btnListener = new SelectionListener<ComponentEvent>() {
+            public void componentSelected(ComponentEvent ce) {
+                Button btn = (Button) ce.getComponent();
+                if (btn == addButton) {
+                    add();
+                } else if (btn == cancelButton) {
+                    cancel();
+                }
+            }
+        };
+
         if (showAdd) {
-            addButton = new Button("Add");
-            addButton.addClickHandler(this);
-            buttons.add(addButton);
+            addButton = new Button("Add", btnListener);
+            buttonBar.add(addButton);
         }
-        
-        cancelButton = new Button("Cancel");
-        cancelButton.addClickHandler(this);
+        cancelButton = new Button("Cancel", btnListener);
+        buttonBar.add(cancelButton);
 
-        buttons.add(cancelButton);
-
-        table.setWidget(table.getRowCount(), 2, buttons);
-
+        table.setWidget(table.getRowCount(), 2, buttonBar);
         setTitle("Add Item");
-        
         styleHeaderColumn(table);
     }
 
@@ -426,7 +437,7 @@ public class AddItemForm extends AbstractErrorShowingComposite
         // eg:  OK 9c495a52-4a07-4697-ba73-f94f95cd3020
         if (msg.startsWith("OK ")) {
             fileId = msg.substring(3);
-            
+
             // Once we've uploaded the artifact, continue with the normal RPC
             // submission process.
             addItem();
@@ -436,17 +447,6 @@ public class AddItemForm extends AbstractErrorShowingComposite
         }
     }
 
-
-    public void onClick(ClickEvent event) {
-        Widget sender = (Widget) event.getSource();
-        if (sender == addButton) {
-            add();
-        }
-
-        if (sender == cancelButton) {
-            cancel();
-        }
-    }
 
     private void cancel() {
         String token = "browse";
@@ -469,18 +469,18 @@ public class AddItemForm extends AbstractErrorShowingComposite
         // whitespace will throw an invalid path exception
         // on the server -- so trim this optional value
         if (nameBox != null) {
-            String name = nameBox.getText().trim();
+            String name = nameBox.getValue().trim();
             if (name != null || !"".equals(name)) {
-                nameBox.setText(name);
+                nameBox.setValue(name);
             }
         }
-        
+
         doSubmit();
     }
 
     /**
      * Check to see if we need to do a form submission to upload files. If not,
-     * or once that is done, move on to adding new items. 
+     * or once that is done, move on to adding new items.
      */
     private void doSubmit() {
         if (fileUpload || (fileUploadForVersion && isUserSubmittingVersion())) {
@@ -492,40 +492,40 @@ public class AddItemForm extends AbstractErrorShowingComposite
 
     private void addItem() {
         AbstractCallback callback = geAddItemCallback();
-        
-        String name = nameBox. getText();
+
+        String name = nameBox.getValue();
         String parent = parentSB.getText();
         Map<String, Serializable> properties = getProperties(renderers);
-        
+
         if (isUserSubmittingVersion()) {
-            galaxy.getRegistryService().addVersionedItem(parent, 
-                                                         name,
-                                                         versionNameBox.getText(),
-                                                         null, 
-                                                         getType().getId(), 
-                                                         getVersionType().getId(),
-                                                         properties, 
-                                                         getProperties(versionRenderers),
-                                                         callback);
+            galaxy.getRegistryService().addVersionedItem(parent,
+                    name,
+                    versionNameBox.getValue(),
+                    null,
+                    getType().getId(),
+                    getVersionType().getId(),
+                    properties,
+                    getProperties(versionRenderers),
+                    callback);
         } else {
-            galaxy.getRegistryService().addItem(parent, 
-                                                name,
-                                                null, 
-                                                getType().getId(), 
-                                                properties, 
-                                                callback);
+            galaxy.getRegistryService().addItem(parent,
+                    name,
+                    null,
+                    getType().getId(),
+                    properties,
+                    callback);
         }
-        
+
     }
 
     private Map<String, Serializable> getProperties(Map<String, AbstractPropertyRenderer> typeRenderers) {
-        Map<String,Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
         for (String p : typeRenderers.keySet()) {
             AbstractPropertyRenderer r = typeRenderers.get(p);
             if (r instanceof ArtifactRenderer) {
                 properties.put(p, fileId);
             } else {
-                properties.put(p, (Serializable)r.getValueToSave());
+                properties.put(p, (Serializable) r.getValueToSave());
             }
         }
         return properties;
@@ -534,21 +534,21 @@ public class AddItemForm extends AbstractErrorShowingComposite
     private AbstractCallback geAddItemCallback() {
         AbstractCallback callback = new AbstractCallback(this) {
             public void onSuccess(Object id) {
-                 History.newItem("item/" + id);
+                History.newItem("item/" + id);
             }
 
             @Override
             public void onFailure(Throwable caught) {
                 resetFormFields();
-                
+
                 if (caught instanceof ItemExistsException) {
                     setMessage("An item with that name already exists.");
                     return;
                 }
-                
+
                 super.onFailure(caught);
             }
-            
+
         };
         return callback;
     }
@@ -613,11 +613,11 @@ public class AddItemForm extends AbstractErrorShowingComposite
         boolean v = true;
 
         v &= nameBox.validate();
-        
+
         for (AbstractPropertyRenderer r : renderers.values()) {
             v &= r.validate();
         }
-        
+
         if (isUserSubmittingVersion()) {
             for (AbstractPropertyRenderer r : versionRenderers.values()) {
                 v &= r.validate();
@@ -628,7 +628,8 @@ public class AddItemForm extends AbstractErrorShowingComposite
 
     /**
      * Whether or not there is a versioned item to submit and the "Add Version" checkbox
-     * is checked. 
+     * is checked.
+     *
      * @return
      */
     private boolean isUserSubmittingVersion() {
