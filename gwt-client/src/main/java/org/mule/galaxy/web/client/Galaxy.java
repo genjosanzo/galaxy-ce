@@ -380,9 +380,10 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
         PageInfo page = getPageInfo(token);
         List<String> params = new ArrayList<String>();
-        if (page == null) {
-            String[] split = token.split("/");
+        String[] split = token.split("/");
 
+        if (page == null) {
+            
             // hack to match "foo/*" style tokens
             int slashIdx = token.indexOf("/");
             if (slashIdx != -1) {
@@ -392,14 +393,14 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
             if (page == null) {
                 page = getPageInfo(split[0]);
             }
-
-            if (split.length > 1) {
-                for (int i = 1; i < split.length; i++) {
-                    params.add(split[i]);
-                }
-            }
         }
 
+        if (split.length > 1) {
+            for (int i = 1; i < split.length; i++) {
+                params.add(split[i]);
+            }
+        }
+        
         // hide the previous page
         if (curInfo != null) {
             curInfo.getInstance().onHide();
