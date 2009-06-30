@@ -24,11 +24,11 @@ import org.mule.galaxy.web.client.property.AbstractPropertyRenderer;
 import org.mule.galaxy.web.client.property.ArtifactRenderer;
 import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
 import org.mule.galaxy.web.client.registry.PolicyResultsPanel;
+import org.mule.galaxy.web.client.util.AddItemHelper;
 import org.mule.galaxy.web.client.util.ItemPathOracle;
 import org.mule.galaxy.web.client.util.StringUtil;
 import org.mule.galaxy.web.client.util.TooltipListener;
 import org.mule.galaxy.web.client.util.WTypeComparator;
-import org.mule.galaxy.web.client.util.AddItemHelper;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.ItemInfo;
@@ -43,7 +43,6 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ButtonBar;
 import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -54,7 +53,6 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.Image;
@@ -83,8 +81,7 @@ import java.util.Map;
  *
  * @author Dan
  */
-public class AddItemForm extends AbstractErrorShowingComposite  implements SubmitCompleteHandler
-         {
+public class AddItemForm extends AbstractErrorShowingComposite implements SubmitCompleteHandler {
 
     private FlexTable table;
     private TextField<String> nameBox;
@@ -115,7 +112,8 @@ public class AddItemForm extends AbstractErrorShowingComposite  implements Submi
 
         FlowPanel main = getMainPanel();
 
-        form = new AddItemHelper(GWT.getModuleBaseURL() + "../artifactUpload.form");
+        form = new AddItemHelper(galaxy);
+        form.setAction(GWT.getModuleBaseURL() + "../artifactUpload.form");
         form.addSubmitCompleteHandler(this);
 
         main.add(form);
