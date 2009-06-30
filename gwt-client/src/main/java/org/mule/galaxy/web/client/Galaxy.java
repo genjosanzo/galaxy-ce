@@ -388,19 +388,6 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         List<String> params = new ArrayList<String>();
         String[] split = token.split("/");
 
-        if (page == null) {
-            
-            // hack to match "foo/*" style tokens
-            int slashIdx = token.indexOf("/");
-            if (slashIdx != -1) {
-                page = getPageInfo(token.substring(0, slashIdx) + "/" + WILDCARD);
-            }
-
-            if (page == null) {
-                page = getPageInfo(split[0]);
-            }
-        }
-
         if (split.length > 1) {
             for (int i = 1; i < split.length; i++) {
                 params.add(split[i]);
@@ -436,6 +423,20 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
     public PageInfo getPageInfo(String token) {
         PageInfo page = history.get(token);
+        
+        if (page == null) {
+            
+            // hack to match "foo/*" style tokens
+            int slashIdx = token.indexOf("/");
+            if (slashIdx != -1) {
+                page = getPageInfo(token.substring(0, slashIdx) + "/" + WILDCARD);
+            }
+
+            if (page == null) {
+                page = history.get(token.substring(0, slashIdx-1));
+            }
+        }
+        
         return page;
     }
 
