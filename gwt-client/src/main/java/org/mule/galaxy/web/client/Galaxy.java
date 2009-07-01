@@ -429,11 +429,11 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
             // hack to match "foo/*" style tokens
             int slashIdx = token.indexOf("/");
             if (slashIdx != -1) {
-                page = getPageInfo(token.substring(0, slashIdx) + "/" + WILDCARD);
+                page = history.get(token.substring(0, slashIdx) + "/" + WILDCARD);
             }
 
             if (page == null) {
-                page = history.get(token.substring(0, slashIdx-1));
+                page = history.get(token.substring(0, slashIdx));
             }
         }
         
