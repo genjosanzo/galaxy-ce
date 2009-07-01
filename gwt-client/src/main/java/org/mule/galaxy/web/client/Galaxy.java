@@ -307,11 +307,20 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         }
     }
 
-    protected TabItem createEmptyTab(String name) {
+    protected TabItem createEmptyTab(String name, String toolTip) {
         TabItem tab = new TabItem();
-        tab.setText(name);
+        TabItem.HeaderItem header = tab.getHeader();
+        header.setText(name);
+
+        if(toolTip != null ) {
+            header.setToolTip(toolTip);
+        }
         tab.setLayout(new FlowLayout());
         return tab;
+    }
+
+    protected TabItem createEmptyTab(String name) {
+        return createEmptyTab(name, null);
     }
 
     protected AdministrationPanel createAdministrationPanel() {
