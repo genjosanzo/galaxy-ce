@@ -99,7 +99,7 @@ public class SecurityServiceImpl implements SecurityService {
         }
     }
 
-    private WUser toWeb(User user) {
+    public static WUser toWeb(User user) {
         WUser w = createWUser(user);
         
         ArrayList<String> groupIds = new ArrayList<String>();
