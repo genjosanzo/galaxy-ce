@@ -1,5 +1,5 @@
 /*
- * Ext GWT Library 2.0-rc1
+ * Ext GWT Library 2.0-rc2
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -414,18 +414,6 @@ html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,bloc
 
 .x-date-picker,.x-date-picker a {
   font-size: 11px;
-}
-
-.x-date-right-icon {
-  background-image: url(../images/default/shared/right-btn.gif);
-  margin-right: 2px;
-  text-decoration: none !important;
-}
-
-.x-date-left-icon {
-  background-image: url(../images/default/shared/left-btn.gif);
-  margin-right: 2px;
-  text-decoration: none !important;
 }
 
 .x-date-days {
@@ -1385,6 +1373,9 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 * html .ext-ie .x-btn button {
     width:1px;
 }
+.ext-ie .x-item-disabled .x-btn-mc img {
+	filter: alpha(opacity=60);
+}
 .ext-gecko .x-btn button {
     padding-left:0;
     padding-right:0;
@@ -2054,6 +2045,7 @@ div.x-toolbar-no-items {
 
 .x-grid3-row-body {
   white-space: normal;
+  font-size: 12px;
 }
 
 .x-grid3-body-cell {
@@ -3230,7 +3222,7 @@ td.x-date-mp-sep {
 
 .x-date-left-icon {
   background-image: url(../images/default/shared/left-btn.gif);
-  margin-right: 2px;
+  margin-left: 4px;
   text-decoration: none !important;
 }
 
