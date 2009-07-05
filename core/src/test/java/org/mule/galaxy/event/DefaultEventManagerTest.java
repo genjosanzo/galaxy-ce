@@ -241,6 +241,10 @@ public class DefaultEventManagerTest extends TestCase {
             return null;
         }
 
+        public Item getPrevious() throws RegistryException {
+            return null;
+        }
+
         public String getName() {
             return null;
         }
