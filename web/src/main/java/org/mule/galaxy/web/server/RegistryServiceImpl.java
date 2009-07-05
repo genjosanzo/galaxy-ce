@@ -281,7 +281,7 @@ public class RegistryServiceImpl implements RegistryService {
             if (properties != null) {
                 for (Map.Entry<String, Serializable> e : properties.entrySet()) {
                     String name = e.getKey();
-                    PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(name, type);
+                    PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(name);
                     
                     localProperties.put(name, getLocalValue(pd, e.getValue(), null));
                     
@@ -1141,7 +1141,7 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             Item item = registry.getItemById(itemId);
 
-            PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName, item.getType());
+            PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName);
             
             Object value = getLocalValue(pd, propertyValue, item);
             
@@ -1249,7 +1249,7 @@ public class RegistryServiceImpl implements RegistryService {
             SearchResults results = registry.search(query, 0, -1);
             List<Item> items = new ArrayList<Item>();
             for (Item item : results.getResults()) {
-                PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName, item.getType());
+                PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName);
                 Extension ext = pd != null ? pd.getExtension() : null;
                 
                 setProperty(item, pd, propertyValue, ext, items);
@@ -1284,7 +1284,7 @@ public class RegistryServiceImpl implements RegistryService {
             for (String itemId : entryIds) {
                 Item item = registry.getItemById(itemId);
 
-                PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName, item.getType());
+                PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(propertyName);
                 Extension ext = pd != null ? pd.getExtension() : null;
                 
                 setProperty(item, pd, propertyValue, ext, items);

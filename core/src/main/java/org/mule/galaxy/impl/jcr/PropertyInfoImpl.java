@@ -76,7 +76,7 @@ public class PropertyInfoImpl implements PropertyInfo {
     private void loadProperty() {
         if (loadedDescriptor) return;
         
-        desc = tm.getPropertyDescriptorByName(getName(), item.getType());
+        desc = tm.getPropertyDescriptorByName(getName());
         
         if (desc != null) {
             description = desc.getDescription();

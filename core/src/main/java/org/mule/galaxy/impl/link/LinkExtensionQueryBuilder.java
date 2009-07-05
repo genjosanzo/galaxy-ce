@@ -3,6 +3,7 @@ package org.mule.galaxy.impl.link;
 import java.beans.IntrospectionException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.mule.galaxy.Item;
@@ -11,6 +12,7 @@ import org.mule.galaxy.impl.extension.IdentifiableExtension;
 import org.mule.galaxy.impl.extension.IdentifiableExtensionQueryBuilder;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.OpRestriction.Operator;
+import org.mule.galaxy.type.PropertyDescriptor;
 
 public class LinkExtensionQueryBuilder extends IdentifiableExtensionQueryBuilder {
 
@@ -25,9 +27,20 @@ public class LinkExtensionQueryBuilder extends IdentifiableExtensionQueryBuilder
     protected List<String> getMatches(Object o, String property, Operator operator) throws QueryException {
         LinkDao linkDao = (LinkDao) getDao();
         
+        boolean reciprocal = false;
         if (property.endsWith(".reciprocal")) {
             property = property.substring(0, property.lastIndexOf('.'));
-            Collection<Item> items = linkDao.getReciprocalItems(property, operator == Operator.LIKE, o);
+            reciprocal = true;
+        }
+        
+        PropertyDescriptor pd = typeManager.getPropertyDescriptorByName(property);
+        
+        if (pd == null) {
+            return Collections.emptyList();
+        }
+        
+        if (reciprocal) {
+            Collection<Item> items = linkDao.getReciprocalItems(pd.getId(), operator == Operator.LIKE, o);
             ArrayList<String> ids = new ArrayList<String>();
             for (Item result : items) {
                 String id = result.getId();
@@ -37,7 +50,7 @@ public class LinkExtensionQueryBuilder extends IdentifiableExtensionQueryBuilder
             
             return ids;
         } else {
-            Collection<Link> links = linkDao.getLinks(property, operator == Operator.LIKE, o);
+            Collection<Link> links = linkDao.getLinks(pd.getId(), operator == Operator.LIKE, o);
             ArrayList<String> ids = new ArrayList<String>();
             for (Link result : links) {
                 String id = result.getItem().getId();

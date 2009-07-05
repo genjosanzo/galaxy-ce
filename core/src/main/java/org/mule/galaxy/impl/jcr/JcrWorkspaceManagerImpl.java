@@ -20,7 +20,7 @@ import javax.jcr.Session;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jackrabbit.util.ISO9075;
+import org.apache.jackrabbit.util.Text;
 import org.mule.galaxy.AttachedItem;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
@@ -160,18 +160,20 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
                 path = path.substring(0, path.length()-1);
             }
             
-            Node wNode = getWorkspacesNode();
-            
-            path = ISO9075.encodePath(path);
-            
-            try {
-                // have to have the catch because jackrabbit is lame...
-                if (!wNode.hasNode(path)) throw new NotFoundException(path);
-            } catch (RepositoryException e) {
-                throw new NotFoundException(path);
+            Node node = getWorkspacesNode();
+            String[] split = path.split("/");
+            for (int i = 0; i < split.length; i++) {
+                String escapedPath = Text.escapeIllegalJcrChars(split[i]);
+                try {
+                    // have to have the catch because jackrabbit is lame...
+                    if (!node.hasNode(escapedPath)) throw new NotFoundException(escapedPath);
+                } catch (RepositoryException e) {
+                    throw new NotFoundException(split[i]);
+                }
+                
+                node = node.getNode(escapedPath);
             }
             
-            Node node = wNode.getNode(path);
             String type = node.getPrimaryNodeType().getName();
             
             return build(node, type);
@@ -188,7 +190,7 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
                 Node node = ((JcrItem) w).getNode();
                 
                 try {
-                    Node resolved = node.getNode(ISO9075.encode(name));
+                    Node resolved = node.getNode(Text.escapeIllegalJcrChars(name));
                     
                     return build(resolved, resolved.getPrimaryNodeType().getName());
                 } catch (PathNotFoundException e) {
@@ -291,7 +293,7 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
                 
                 Node itemNode;
                 try {
-                    itemNode = parentNode.addNode(ISO9075.encode(name), ITEM_NODE_TYPE);
+                    itemNode = parentNode.addNode(Text.escapeIllegalJcrChars(name), ITEM_NODE_TYPE);
                 } catch (javax.jcr.ItemExistsException e) {
                     throw new RuntimeException(new DuplicateItemException(name));
                 }
@@ -407,7 +409,7 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
     }
 
     protected String escapeNodeName(String right) {
-        return ISO9075.encode(right);
+        return Text.escapeIllegalJcrChars(right);
     }
 
     public void delete(final Item item) throws RegistryException, AccessException {
@@ -415,7 +417,7 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
 
         executeWithRegistryException(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-            ItemDeletedEvent evt = new ItemDeletedEvent(item);
+                ItemDeletedEvent evt = new ItemDeletedEvent(item);
 
                 Node node = ((JcrItem) item).getNode();
                 Node parent = node.getParent();

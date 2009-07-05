@@ -50,6 +50,7 @@ public class ItemTest extends AbstractGalaxyTest {
      
         Item item = root.getItem("MyService").getItem("1.0").getItem("!@#$%^&*()_+`-=<>.,{}|\\");
         assertNotNull(item);
+         
     }
     
     public void testAllowedChildren() throws Exception {

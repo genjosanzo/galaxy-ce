@@ -20,7 +20,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 
-import org.apache.jackrabbit.util.ISO9075;
+import org.apache.jackrabbit.util.Text;
 import org.apache.jackrabbit.value.StringValue;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
@@ -76,7 +76,7 @@ public class JcrItem extends AbstractItem {
         this.node = node;
         this.manager = manager;
         
-        this.name = ISO9075.decode(node.getName());
+        this.name = Text.unescapeIllegalJcrChars(node.getName());
     }
 
     public JcrWorkspaceManager getManager() {
@@ -123,12 +123,12 @@ public class JcrItem extends AbstractItem {
     public void setName(final String name) {
         try {
             
-            String nodeName = ISO9075.decode(node.getName());
+            String nodeName = Text.unescapeIllegalJcrChars(node.getName());
             if (!nodeName.equals(name)) {
                 manager.getTemplate().execute(new JcrCallback() {
     
                     public Object doInJcr(Session session) throws IOException, RepositoryException {
-                        String dest = node.getParent().getPath() + "/" + ISO9075.encode(name);
+                        String dest = node.getParent().getPath() + "/" + Text.escapeIllegalJcrChars(name);
                         session.move(node.getPath(), dest);
                         return null;
                     }
@@ -310,7 +310,7 @@ public class JcrItem extends AbstractItem {
                 throw new PropertyException(new Message("SPACE_NOT_ALLOWED", getBundle()));
         }
         
-        PropertyDescriptor pd = getManager().getTypeManager().getPropertyDescriptorByName(name, null);
+        PropertyDescriptor pd = getManager().getTypeManager().getPropertyDescriptorByName(name);
         if (pd != null && pd.getExtension() != null) {
             pd.getExtension().store(this, pd, value);
     } else {
@@ -421,7 +421,7 @@ public class JcrItem extends AbstractItem {
     }
 
     public Object getProperty(String name) {
-    PropertyDescriptor pd = manager.getTypeManager().getPropertyDescriptorByName(name, getType());
+    PropertyDescriptor pd = manager.getTypeManager().getPropertyDescriptorByName(name);
 
     if (pd != null && pd.getExtension() != null) {
             return pd.getExtension().get(this, pd, true);

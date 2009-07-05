@@ -34,7 +34,7 @@ public class AtomPropertyInfo implements PropertyInfo {
     }
 
     public PropertyDescriptor getPropertyDescriptor() {
-        return typeManager.getPropertyDescriptorByName(name, item.getType());
+        return typeManager.getPropertyDescriptorByName(name);
     }
 
     public String getName() {

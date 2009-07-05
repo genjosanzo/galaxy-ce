@@ -28,7 +28,7 @@ public class TypeManagerImpl implements TypeManager {
     private Dao<Type> typeDao;
     private JcrTemplate jcrTemplate;
     
-    public PropertyDescriptor getPropertyDescriptorByName(final String propertyName, Type type) {
+    public PropertyDescriptor getPropertyDescriptorByName(final String propertyName) {
         return find("property", propertyName);
     }
 

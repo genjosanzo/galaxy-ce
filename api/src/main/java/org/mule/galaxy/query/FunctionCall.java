@@ -1,6 +1,5 @@
 package org.mule.galaxy.query;
 
-import java.util.List;
 
 public class FunctionCall extends Restriction {
     private String module;
@@ -28,8 +27,7 @@ public class FunctionCall extends Restriction {
 
     @Override
     public void toString(StringBuilder sb) {
-        // TODO Auto-generated method stub
-        
+        sb.append(name).append("()");
     }
     
 }

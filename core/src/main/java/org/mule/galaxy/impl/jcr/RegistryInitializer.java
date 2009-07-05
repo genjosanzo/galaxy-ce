@@ -11,7 +11,7 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Session;
 
-import org.apache.jackrabbit.util.ISO9075;
+import org.apache.jackrabbit.util.Text;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.Settings;
 import org.mule.galaxy.artifact.ContentHandler;
@@ -156,7 +156,7 @@ public class RegistryInitializer {
         tm.saveType(artifact);
         tm.saveType(workspaceType);
         
-        Node node = workspaces.addNode(ISO9075.encode(settings.getDefaultWorkspaceName()), "galaxy:item");
+        Node node = workspaces.addNode(Text.escapeIllegalJcrChars(settings.getDefaultWorkspaceName()), "galaxy:item");
         node.addMixin("mix:referenceable");
         Calendar now = Calendar.getInstance();
         now.setTime(new Date());

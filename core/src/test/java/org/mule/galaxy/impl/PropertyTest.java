@@ -90,7 +90,7 @@ public class PropertyTest extends AbstractGalaxyTest {
        assertNotNull(pds);
        
        pds = typeManager.getGlobalPropertyDescriptors(true);
-       PropertyDescriptor pd3 = typeManager.getPropertyDescriptorByName(pd.getProperty(), null);
+       PropertyDescriptor pd3 = typeManager.getPropertyDescriptorByName(pd.getProperty());
        assertNotNull(pd3);
        
        pd.setId(null);

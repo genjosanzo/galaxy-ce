@@ -50,6 +50,6 @@ public interface TypeManager {
     
     Collection<PropertyDescriptor> getPropertyDescriptorsForExtension(String extensionId);
     
-    PropertyDescriptor getPropertyDescriptorByName(final String propertyName, Type type);
+    PropertyDescriptor getPropertyDescriptorByName(final String propertyName);
     
 }

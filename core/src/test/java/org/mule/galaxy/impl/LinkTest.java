@@ -11,6 +11,9 @@ import org.mule.galaxy.Link;
 import org.mule.galaxy.Links;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.link.LinkExtension;
+import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.Query;
+import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.TypeManager;
@@ -18,7 +21,7 @@ import org.mule.galaxy.type.TypeManager;
 public class LinkTest extends AbstractGalaxyTest {
     
     public void testLinkTypes() throws Exception {
-        typeManager.getPropertyDescriptorByName(LinkExtension.DEPENDS, null);
+        typeManager.getPropertyDescriptorByName(LinkExtension.DEPENDS);
     }
     
     public void testSingleLink() throws Exception {
@@ -305,40 +308,39 @@ public class LinkTest extends AbstractGalaxyTest {
         deps = ptLinks.getReciprocalLinks();
         assertEquals(0, deps.size());
     }
-//    
-//    public void testQuery() throws Exception{
-//        Collection<Item> workspaces = registry.getItems();
-//        assertEquals(1, workspaces.size());
-//        Item workspace = workspaces.iterator().next();
-//        
-//        NewItemResult r1 = workspace.newEntry("a1", "0.1");
-//        Entry a1 = r1.getItem();
-//
-//        NewItemResult r2 = workspace.newEntry("a2", "0.1");
-//        EntryVersion v2 = r2.getEntryVersion();
-//        
-//        v2.setProperty(LinkExtension.CONFLICTS, Arrays.asList(new Link(v2, a1, null, false)));
-//        
-//        // test forward link
-//        Query query = new Query(Entry.class).add(OpRestriction.eq(LinkExtension.CONFLICTS, "a1"));
-//        
-//        SearchResults results = registry.search(query);
-//        assertEquals(1, results.getTotal());
-//
-//        // test full path
-//        query = new Query().add(OpRestriction.eq(LinkExtension.CONFLICTS, r1.getItem().getPath()));
-//        
-//        results = registry.search(query);
-//        assertEquals(1, results.getTotal());
-//       
-//        // test reciprocal
-//        query = new Query().add(OpRestriction.eq(LinkExtension.CONFLICTS + ".reciprocal", v2.getPath()));
-//        
-//        results = registry.search(query);
-//        assertEquals(1, results.getTotal());
-//
+    
+    public void testQuery() throws Exception{
+        
+        Item workspace = registry.newItem("Test W", typeManager.getTypeByName(TypeManager.WORKSPACE)).getItem();
+        Item a1 = workspace.newItem("a1", getSimpleType()).getItem();
+        Item v1 = a1.newItem("0.1", getSimpleType()).getItem();
+        
+        Item a2 = workspace.newItem("a2", getSimpleType()).getItem();
+        Item v2 = a2.newItem("0.1", getSimpleType()).getItem();
+        
+        v2.setProperty(LinkExtension.CONFLICTS, Arrays.asList(new Link(v2, v1, null, false)));
+        registry.save(v2);
+        
+        // test full path
+        Query query = new Query().fromPath("/Test W/a1", true);
+//        query.add(OpRestriction.eq("name", "0.1"));
+        
+        SearchResults results = registry.search(query);
+        assertEquals(1, results.getTotal());
+        
+        query = new Query().add(OpRestriction.eq(LinkExtension.CONFLICTS, v1.getPath()));
+        
+        results = registry.search(query);
+        assertEquals(1, results.getTotal());
+       
+        // test reciprocal
+        query = new Query().add(OpRestriction.eq(LinkExtension.CONFLICTS + ".reciprocal", v2.getPath()));
+        
+        results = registry.search(query);
+        assertEquals(1, results.getTotal());
+
 //        // test reciprocal like
-//        query = new Query().add(OpRestriction.like(LinkExtension.CONFLICTS + ".reciprocal", "a2?version=0.1"));
+//        query = new Query().add(OpRestriction.like(LinkExtension.CONFLICTS + ".reciprocal", "a2"));
 //        
 //        results = registry.search(query);
 //        assertEquals(1, results.getTotal());
@@ -350,7 +352,7 @@ public class LinkTest extends AbstractGalaxyTest {
 //        assertEquals(1, results.getTotal());
 //        
 //        // test IN
-//        query = new Query(Entry.class).add(OpRestriction.in(LinkExtension.CONFLICTS, Arrays.asList("a2", "a1", "foo.xml")));
+//        query = new Query().add(OpRestriction.in(LinkExtension.CONFLICTS, Arrays.asList("a2", "a1", "foo.xml")));
 //        results = registry.search(query);
 //        assertEquals(1, results.getTotal());
 //
@@ -358,5 +360,5 @@ public class LinkTest extends AbstractGalaxyTest {
 //        query = new Query().add(OpRestriction.in(LinkExtension.CONFLICTS + ".reciprocal", Arrays.asList("a2?version=0.1", "a1", "foo.xml")));
 //        results = registry.search(query);
 //        assertEquals(1, results.getTotal());
-//    }
+    }
 }
