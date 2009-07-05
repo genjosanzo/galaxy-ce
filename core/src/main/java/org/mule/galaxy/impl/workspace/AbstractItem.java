@@ -20,7 +20,7 @@ public abstract class AbstractItem implements Item {
     
     protected final WorkspaceManager manager;
 
-    private List<Item> items;
+    protected List<Item> items;
     
     public AbstractItem(WorkspaceManager manager) {
         super();
@@ -45,6 +45,20 @@ public abstract class AbstractItem implements Item {
         }
         
         return items;
+    }
+    
+    public Item getPrevious() throws RegistryException {
+        List<Item> parentItems = getParent().getItems();
+
+        Item prev = null;
+        for (Item i : parentItems) {
+            if ((prev != null && i.getCreated().after(prev.getCreated()) && i.getCreated().before(getCreated()))
+                || (prev == null && i.getCreated().before(getCreated()))) {
+                prev = i;
+            }
+        }
+        
+        return prev;
     }
 
     public Item getItem(String name) throws RegistryException, NotFoundException, AccessException {

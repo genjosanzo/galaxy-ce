@@ -103,4 +103,6 @@ public interface Item {
     NewItemResult newItem(String name, Type type, Map<String,Object> initialProperties)
         throws DuplicateItemException, RegistryException, PolicyException, PropertyException, AccessException;
 
+    Item getPrevious() throws RegistryException;
+
 }

@@ -42,6 +42,16 @@ public class ItemTest extends AbstractGalaxyTest {
 
         assertEquals("/Default Workspace/MyService/1.0", e.getPath());
         
+        Item v2 = e.getParent().newItem("2.0", simpleType).getItem();
+        Item prev = v2.getPrevious();
+        assertNotNull(prev);
+        assertEquals("1.0", prev.getName());
+        
+        Item v3 = e.getParent().newItem("3.0", simpleType).getItem();
+        prev = v3.getPrevious();
+        assertNotNull(prev);
+        assertEquals("2.0", prev.getName());
+        
         // test all the characters. [] is not allowed.
         r = e.newItem("!@#$%^&*()_+`-=<>.,{}|\\", simpleType);
         assertNotNull(r);
