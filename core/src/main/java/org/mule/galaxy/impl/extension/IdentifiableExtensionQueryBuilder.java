@@ -49,7 +49,6 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
     @Override
     public boolean build(StringBuilder query, String property, String propPrefix, Object right, boolean not,
                          Operator operator) throws QueryException {
-
         List<String> matches = getMatches(right, property, operator);
 
         if (matches.size() == 0) {
@@ -62,8 +61,8 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
 
         String searchProp = getProperty(property);
         if (matches.size() > 1) {
-            Collection<?> rightCol = (Collection<?>)right;
-            if (rightCol.size() > 0) {
+//            Collection<?> rightCol = (Collection<?>)right;
+//            if (rightCol.size() > 0) {
                 boolean first = true;
                 for (String value : matches) {
                     if (value == null) {
@@ -81,9 +80,9 @@ public class IdentifiableExtensionQueryBuilder extends ExtensionQueryBuilder {
                         .append("'");
                 }
                 query.append(")");
-            } else {
-                return false;
-            }
+//            } else {
+//                return false;
+//            }
         } else if (matches.size() == 1) {
             query.append(propPrefix).append("@").append(searchProp).append("='").append(matches.get(0))
                 .append("'");
