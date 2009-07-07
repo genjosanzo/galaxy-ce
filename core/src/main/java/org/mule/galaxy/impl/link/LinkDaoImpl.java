@@ -319,7 +319,7 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
             q.add(OpRestriction.like("name", path));
         }
         
-        SearchResults results = registry.search(q);
+        SearchResults results = getRegistry().search(q);
         
         items.addAll(results.getResults());
         
