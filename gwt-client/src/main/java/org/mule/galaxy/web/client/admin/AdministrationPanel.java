@@ -22,6 +22,7 @@ import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.MenuPanel;
 import org.mule.galaxy.web.client.PageInfo;
+import org.mule.galaxy.web.client.ApplicationPanel;
 import org.mule.galaxy.web.client.activity.ActivityPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
@@ -29,7 +30,7 @@ import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 
 import com.google.gwt.user.client.ui.Hyperlink;
 
-public class AdministrationPanel extends MenuPanel {
+public class AdministrationPanel extends ApplicationPanel {
 
     private final Galaxy galaxy;
 
@@ -56,18 +57,18 @@ public class AdministrationPanel extends MenuPanel {
     protected void createMenuItems(Galaxy galaxy, Toolbox manageBox) {
         if (galaxy.hasPermission("MANAGE_GROUPS")) {
             createLinkWithAdd(manageBox,
-                              "Groups",
-                              "groups",
-                              new GroupListPanel(this),
-                              new GroupForm(this));
+                    "Groups",
+                    "groups",
+                    new GroupListPanel(this),
+                    new GroupForm(this));
         }
 
         if (galaxy.hasPermission("MANAGE_LIFECYCLES")) {
             createLinkWithAdd(manageBox,
-                              "Lifecycles",
-                              "lifecycles",
-                              new LifecycleListPanel(this),
-                              new LifecycleForm(this));
+                    "Lifecycles",
+                    "lifecycles",
+                    new LifecycleListPanel(this),
+                    new LifecycleForm(this));
         }
 
         if (galaxy.hasPermission("MANAGE_POLICIES")) {
@@ -78,28 +79,27 @@ public class AdministrationPanel extends MenuPanel {
 
         if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
             createLinkWithAdd(manageBox,
-                              "Properties",
-                              "properties",
-                              new PropertyDescriptorListPanel(this),
-                              new PropertyDescriptorForm(this));
+                    "Properties",
+                    "properties",
+                    new PropertyDescriptorListPanel(this),
+                    new PropertyDescriptorForm(this));
         }
 
         if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
             createLinkWithAdd(manageBox,
-                              "Types",
-                              "types",
-                              new TypeListPanel(this),
-                              new TypeForm(this));
+                    "Types",
+                    "types",
+                    new TypeListPanel(this),
+                    new TypeForm(this));
         }
 
         if (galaxy.hasPermission("MANAGE_USERS")) {
             createLinkWithAdd(manageBox,
-                              "Users",
-                              "users",
-                              new UserListPanel(this),
-                              new UserForm(this));
+                    "Users",
+                    "users",
+                    new UserListPanel(this),
+                    new UserForm(this));
         }
-
 
 
     }
@@ -118,10 +118,10 @@ public class AdministrationPanel extends MenuPanel {
 
         // Scheduler
         createLinkWithAdd(utilityBox,
-                          "Scheduler",
-                          "schedules",
-                          new ScheduleListPanel(this),
-                          new ScheduleForm(this));
+                "Scheduler",
+                "schedules",
+                new ScheduleListPanel(this),
+                new ScheduleForm(this));
 
     }
 
