@@ -173,7 +173,7 @@ public class PropertyTest extends AbstractGalaxyTest {
         
         item = registry.getItemById(item.getId());
         
-        Collection<TreeItem> retreived = (Collection<TreeItem>) item.getProperty(pd.getProperty());
+        Collection<TreeItem> retreived = item.getProperty(pd.getProperty());
         assertEquals(1, retreived.size());
         TreeItem t = (TreeItem) retreived.iterator().next();
         assertEquals(child.getName(), t.getName());

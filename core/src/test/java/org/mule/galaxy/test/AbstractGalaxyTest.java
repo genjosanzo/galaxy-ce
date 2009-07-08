@@ -187,7 +187,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     }
     
     protected Phase getPhase(Item item) {
-        return (Phase) item.getProperty(Registry.PRIMARY_LIFECYCLE);
+        return item.getProperty(Registry.PRIMARY_LIFECYCLE);
     }
 
     @Override

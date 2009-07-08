@@ -31,7 +31,7 @@ public abstract class AbstractWsdlVersioningPolicy implements Policy
     private Registry registry;
     
     public boolean applies(Item item) {
-        return item.getType().inheritsFrom(TypeManager.ARTIFACT_VERSION) && 
+        return item.getType().inheritsFrom(TypeManager.ARTIFACT_VERSION) &&
             Constants.WSDL_DEFINITION_QNAME.equals(((Artifact)item.getProperty("artifact")).getDocumentType());
     }
 
@@ -40,7 +40,7 @@ public abstract class AbstractWsdlVersioningPolicy implements Policy
         final Collection<ApprovalMessage> messages = new ArrayList<ApprovalMessage>();
         
         try {
-            Artifact next = (Artifact) item.getProperty("artifact");
+            Artifact next = item.getProperty("artifact");
             Item previousItem = null;
             for (Item i : item.getParent().getItems()) {
                 if (previousItem == null && i != item) {
@@ -52,7 +52,7 @@ public abstract class AbstractWsdlVersioningPolicy implements Policy
                 }
             }
             
-            Artifact previous = (Artifact) previousItem.getProperty("artifact");
+            Artifact previous = previousItem.getProperty("artifact");
             if (previous == null) {
                 return messages;
             }

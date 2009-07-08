@@ -26,7 +26,7 @@ public class RendererManagerImpl implements RendererManager {
         ItemRenderer view = null;
         
         if (item.getType().inheritsFrom(TypeManager.ARTIFACT_VERSION)) {
-            Artifact a = (Artifact) item.getProperty("artifact");
+            Artifact a = item.getProperty("artifact");
             QName docType = a.getDocumentType();
             if (docType != null) {
                 view = docViews.get(docType);

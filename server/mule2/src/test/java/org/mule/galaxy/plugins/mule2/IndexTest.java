@@ -57,7 +57,7 @@ public class IndexTest extends AbstractGalaxyTest {
         // Import a document which should now be indexed
         Item version = importFile(is, "hello-config.xml", "0.1", "application/xml");
 
-        Artifact artifact = (Artifact) version.getProperty("artifact");
+        Artifact artifact = version.getProperty("artifact");
         assertEquals(muleQName, artifact.getDocumentType());
         
         Object property = version.getProperty("mule2.service");

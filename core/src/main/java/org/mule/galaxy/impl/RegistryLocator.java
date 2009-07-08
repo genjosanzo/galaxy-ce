@@ -67,11 +67,11 @@ public class RegistryLocator implements WSDLLocator {
             if (importLoc.indexOf("://") == -1) {
                 Item item = registry.resolve(w, importLoc);
                 if (item != null) {
-                    Item version = (Item) item.getProperty(TypeManager.DEFAULT_VERSION);
+                    Item version = item.getProperty(TypeManager.DEFAULT_VERSION);
                     if (version == null) {
                         version = item.getLatestItem();
                     }
-                    Artifact a = (Artifact) version.getProperty("artifact");
+                    Artifact a = version.getProperty("artifact");
                     if (a != null) {
                         InputStream is = a.getInputStream();
                         InputSource source = new InputSource(is);

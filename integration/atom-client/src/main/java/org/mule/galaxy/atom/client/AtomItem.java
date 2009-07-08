@@ -90,11 +90,12 @@ public class AtomItem extends AbstractItem {
         return properties.values();
     }
 
-    public Object getProperty(String name) {
+    @SuppressWarnings("unchecked")
+    public <T> T getProperty(String name) {
         initializeProperties();
         PropertyInfo pi = getPropertyInfo(name);
         
-        return pi == null ? null : pi.getValue();
+        return pi == null ? null : (T) pi.getValue();
     }
 
     public PropertyInfo getPropertyInfo(String name) {

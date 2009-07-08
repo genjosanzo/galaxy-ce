@@ -19,7 +19,7 @@ public abstract class AbstractXmlPolicy implements Policy {
     
     public boolean applies(Item item) {
         return item.getType().inheritsFrom(TypeManager.ARTIFACT_VERSION) && 
-            applies(item, (Artifact)item.getProperty("artifact"));
+            applies(item, (Artifact) item.getProperty("artifact"));
     }
 
     public boolean applies(Item item, Artifact artifact) {

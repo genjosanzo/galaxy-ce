@@ -55,7 +55,7 @@ public interface Item {
      */
     void setInternalProperty(String name, Object value) throws PropertyException, PolicyException, AccessException;;
     
-    Object getProperty(String name);
+    <T> T getProperty(String name);
 
     Object getInternalProperty(String name);
     

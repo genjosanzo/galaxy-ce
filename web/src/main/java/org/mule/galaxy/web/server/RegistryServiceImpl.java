@@ -871,7 +871,7 @@ public class RegistryServiceImpl implements RegistryService {
     public WLinks getLinks(String itemId, String property) throws RPCException {
         try {
             Item item = registry.getItemById(itemId);
-            Links links = (Links) item.getProperty(property);
+            Links links = item.getProperty(property);
             PropertyDescriptor pd = typeManager.getPropertyDescriptor(property);
             
             return toWeb(links, pd);
@@ -1171,7 +1171,7 @@ public class RegistryServiceImpl implements RegistryService {
         if (pd != null && pd.getExtension() != null) {
             Extension ext = pd.getExtension();
             if (ext instanceof LinkExtension) {
-                Links links = (Links) item.getProperty(pd.getProperty());
+                Links links = item.getProperty(pd.getProperty());
                 WLinks wlinks = (WLinks) s;
                 
                 Collection<Link> linksToRemove = new ArrayList<Link>();

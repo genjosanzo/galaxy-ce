@@ -233,7 +233,7 @@ public class ArtifactExtension extends AbstractExtension implements AtomExtensio
                                   Entry entry, 
                                   ExtensibleElement metadata,
                                   Factory factory) {
-        Artifact artifact = (Artifact) item.getProperty(pd.getProperty());
+        Artifact artifact = item.getProperty(pd.getProperty());
         
         ExtensibleElement el = factory.newElement(ARTIFACT_QNAME, metadata);
         el.setAttributeValue("property", pd.getProperty());

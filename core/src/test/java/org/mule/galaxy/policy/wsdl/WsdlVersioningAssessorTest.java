@@ -23,7 +23,7 @@ public class WsdlVersioningAssessorTest extends AbstractGalaxyTest {
         NewItemResult ar = a1.getParent().newItem("0.2", typeManager.getTypeByName(TypeManager.ARTIFACT_VERSION), props);
         
         Item next = ar.getItem();
-        Artifact artifact = (Artifact) next.getProperty("artifact");
+        Artifact artifact = next.getProperty("artifact");
         
         assertNotNull(artifact.getData());
         Collection<ApprovalMessage> approvals = assessor.isApproved(next);

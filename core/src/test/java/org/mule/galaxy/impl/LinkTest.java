@@ -40,7 +40,7 @@ public class LinkTest extends AbstractGalaxyTest {
         
         wsdl.setProperty(pd.getProperty(), mule);
         
-        Item link = (Item) wsdl.getProperty(pd.getProperty());
+        Item link = wsdl.getProperty(pd.getProperty());
         assertNotNull(link);
     }
     
@@ -48,7 +48,7 @@ public class LinkTest extends AbstractGalaxyTest {
         Item schema = importFile(getResourceAsStream("/wsdl/imports/hello.xsd"), "hello.xsd", "0.1",
                 "application/xml");
          
-        Links links = (Links) schema.getProperty(LinkExtension.DEPENDS);
+        Links links = schema.getProperty(LinkExtension.DEPENDS);
         Collection<Link> deps = links.getLinks();
         assertEquals(0, deps.size());
         
@@ -56,7 +56,7 @@ public class LinkTest extends AbstractGalaxyTest {
                                     "hello-portType.wsdl", 
                                     "0.1",
                                     "application/wsdl+xml");
-        links = (Links) portType.getProperty(LinkExtension.DEPENDS);
+        links = portType.getProperty(LinkExtension.DEPENDS);
         deps = links.getLinks();
         assertEquals(1, deps.size());
         
@@ -69,7 +69,7 @@ public class LinkTest extends AbstractGalaxyTest {
 
         // figure out if the we can figure out which things link *to* the schema. 
         // We should find the portType
-        links = (Links) schemaEntry.getProperty(LinkExtension.DEPENDS);
+        links = schemaEntry.getProperty(LinkExtension.DEPENDS);
         Collection<Link> reciprocal = links.getReciprocalLinks();
         assertEquals(1, reciprocal.size());
         Link l = reciprocal.iterator().next();
@@ -81,7 +81,7 @@ public class LinkTest extends AbstractGalaxyTest {
                                                       "hello.wsdl", 
                                                       "0.1", 
                                                       "application/wsdl+xml");
-        links = (Links) svcWsdl.getProperty(LinkExtension.DEPENDS);
+        links = svcWsdl.getProperty(LinkExtension.DEPENDS);
         deps = links.getLinks();
         assertEquals(1, deps.size());
         
@@ -94,7 +94,7 @@ public class LinkTest extends AbstractGalaxyTest {
         registry.move(portType.getParent(), "/Test", "hello-portType.wsdl");
         
         // Ensure that the service wsdl still has a link, but it's linked to item should be null
-        links = (Links) svcWsdl.getProperty(LinkExtension.DEPENDS);
+        links = svcWsdl.getProperty(LinkExtension.DEPENDS);
         deps = links.getLinks();
         assertEquals(1, deps.size());
         
@@ -103,7 +103,7 @@ public class LinkTest extends AbstractGalaxyTest {
         assertEquals("hello-portType.wsdl", dep.getLinkedToPath());
         assertTrue(dep.isAutoDetected());
         
-        links = (Links) portType.getProperty(LinkExtension.DEPENDS);
+        links = portType.getProperty(LinkExtension.DEPENDS);
         deps = links.getLinks();
         assertEquals(1, deps.size());
         dep = deps.iterator().next();
@@ -145,7 +145,7 @@ public class LinkTest extends AbstractGalaxyTest {
                                                      "0.1",
                                                      "application/xml");
         
-        Links links = (Links) schema.getProperty(LinkExtension.DEPENDS);
+        Links links = schema.getProperty(LinkExtension.DEPENDS);
         Collection<Link> deps = links.getLinks();
         assertNotNull(deps);
         assertEquals(0, deps.size());
@@ -158,7 +158,7 @@ public class LinkTest extends AbstractGalaxyTest {
         // reload so the cache is fresh
         schema2 = registry.getItemById(schema2.getId());
         
-        links = (Links) schema2.getProperty(LinkExtension.DEPENDS);
+        links = schema2.getProperty(LinkExtension.DEPENDS);
         deps = links.getLinks();
         assertEquals(1, deps.size());
         Link dep = deps.iterator().next();
@@ -174,7 +174,7 @@ public class LinkTest extends AbstractGalaxyTest {
         // reload so the cache is fresh
         schema3 = registry.getItemById(schema3.getId());
         
-        links = (Links) schema3.getProperty(LinkExtension.DEPENDS);
+        links = schema3.getProperty(LinkExtension.DEPENDS);
         deps = links.getLinks();
         assertEquals(1, deps.size());
         dep = deps.iterator().next();
@@ -189,7 +189,7 @@ public class LinkTest extends AbstractGalaxyTest {
                                                      "0.1",
                                                      "application/xml");
 
-        Links links = (Links) schema.getProperty(LinkExtension.DEPENDS);
+        Links links = schema.getProperty(LinkExtension.DEPENDS);
         Collection<Link> deps = links.getLinks();
         assertNotNull(deps);
         assertEquals(2, deps.size());
@@ -204,7 +204,7 @@ public class LinkTest extends AbstractGalaxyTest {
                                                    "hello.wsdl", 
                                                    "0.1",
                                                    "application/xml");
-        Links links = (Links) wsdl.getProperty(LinkExtension.DEPENDS);
+        Links links = wsdl.getProperty(LinkExtension.DEPENDS);
         Collection<Link> deps = links.getLinks();
         assertEquals(1, deps.size());
         
@@ -299,7 +299,7 @@ public class LinkTest extends AbstractGalaxyTest {
         
         a1.delete();
         
-        Links ptLinks = (Links) a2.getProperty(LinkExtension.CONFLICTS);
+        Links ptLinks = a2.getProperty(LinkExtension.CONFLICTS);
         assertNotNull(ptLinks);
         
         Collection<Link> deps = ptLinks.getLinks();

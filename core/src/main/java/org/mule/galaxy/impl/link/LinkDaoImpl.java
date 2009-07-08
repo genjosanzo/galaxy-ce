@@ -59,7 +59,6 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
      * Checks for 1) Links which were not resolved and see if this new entry matches them 
      * 2) Links which are associated with this ID and tries to resolve them
      * 
-     * @param id
      * @param session
      * @throws IOException
      * @throws RepositoryException
@@ -191,7 +190,7 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
         q.append("') and property = '").append(property);
         q.append("']");
         
-        return (List<Link>) doQuery(q.toString());
+        return doQuery(q.toString());
     }
 
     public List<Link> getLinks(final Item item, final String property) {
@@ -203,7 +202,7 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
          .append(property)
          .append("']");
         
-        return (List<Link>) doQuery(q.toString());
+        return doQuery(q.toString());
     }
     
     public void deleteLinks(final Item item, final String property) {

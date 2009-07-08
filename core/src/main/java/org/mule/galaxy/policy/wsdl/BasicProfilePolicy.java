@@ -59,7 +59,7 @@ public class BasicProfilePolicy extends AbstractXmlPolicy
 
     public Collection<ApprovalMessage> isApproved(Item item) {
         ArrayList<ApprovalMessage> messages = new ArrayList<ApprovalMessage>();
-        Artifact v = (Artifact) item.getProperty("artifact");
+        Artifact v = item.getProperty("artifact");
         List<ValidationResult> results = new ArrayList<ValidationResult>();
 
         try {

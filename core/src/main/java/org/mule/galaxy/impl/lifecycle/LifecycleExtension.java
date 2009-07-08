@@ -68,7 +68,7 @@ public class LifecycleExtension extends AbstractExtension implements AtomExtensi
             item.setInternalProperty(pd.getProperty(), null);
         } else {
 
-            Phase oldPhase = (Phase) item.getProperty(pd.getProperty());
+            Phase oldPhase = item.getProperty(pd.getProperty());
             if (oldPhase != null && oldPhase.equals(phase)) {
                 return;
             }
@@ -127,7 +127,7 @@ public class LifecycleExtension extends AbstractExtension implements AtomExtensi
         ExtensibleElement lifecycle = factory.newElement(LIFECYCLE_QNAME);
         lifecycle.setAttributeValue("property", pd.getProperty());
 
-        Phase phase = (Phase) item.getProperty(pd.getProperty());
+        Phase phase = item.getProperty(pd.getProperty());
         lifecycle.setAttributeValue("name", phase.getLifecycle().getName());
         lifecycle.setAttributeValue("phase", phase.getName());
 

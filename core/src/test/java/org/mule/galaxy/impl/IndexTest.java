@@ -166,12 +166,12 @@ public class IndexTest extends AbstractGalaxyTest {
         Collection endpoints = (Collection) property;
         assertTrue(endpoints.contains("SoapPort"));
 
-        Collection ptDeps = (Collection) version.getProperty("wsdl.portType.dependencies");
+        Collection ptDeps = version.getProperty("wsdl.portType.dependencies");
         assertNotNull(ptDeps);
         QName q = (QName) ptDeps.iterator().next();
         assertEquals(new QName("http://mule.org/hello_world", "HelloWorld"), q);
         
-        Collection bDeps = (Collection) version.getProperty("wsdl.binding.dependencies");
+        Collection bDeps = version.getProperty("wsdl.binding.dependencies");
         assertNotNull(bDeps);
         q = (QName) bDeps.iterator().next();
         assertEquals(new QName("http://mule.org/hello_world", "HelloWorldBinding"), q);
@@ -227,7 +227,7 @@ public class IndexTest extends AbstractGalaxyTest {
         // normal manifest property
         assertEquals("andrew", latest.getProperty("jar.manifest.Built-By"));
         // OSGi property
-        final List<String> pkgs = (List<String>) latest.getProperty("jar.osgi.Export-Package.packages");
+        final List<String> pkgs = latest.getProperty("jar.osgi.Export-Package.packages");
         assertNotNull(pkgs);
         assertFalse(pkgs.isEmpty());
         assertTrue(pkgs.contains("org.mule.api"));
@@ -238,7 +238,7 @@ public class IndexTest extends AbstractGalaxyTest {
         assertTrue(entries.contains("org.mule.api.MuleContext"));
 
         // check that wrong name isn't there, it should be jar.entries instead
-        List e = (List) latest.getProperty("jar.manifest.entries");
+        List e = latest.getProperty("jar.manifest.entries");
         assertNull(e);
     }
 
@@ -254,7 +254,7 @@ public class IndexTest extends AbstractGalaxyTest {
         Item version = importFile(stream, "test.jar", "1", "application/java-archive");
 
         // class
-        List<String> annotations = (List<String>) version.getProperty("java.annotations.level.class");
+        List<String> annotations = version.getProperty("java.annotations.level.class");
         assertNotNull(annotations);
         assertFalse(annotations.isEmpty());
         assertEquals("org.mule.galaxy.impl.index.annotations.Marker(value=ClassLevel)", annotations.get(0));
@@ -262,17 +262,17 @@ public class IndexTest extends AbstractGalaxyTest {
         // just check for property existance for other levels, annotation parsing is checked in AsmAnnotationsScannerTest
 
         // field
-        annotations = (List<String>) version.getProperty("java.annotations.level.field");
+        annotations = version.getProperty("java.annotations.level.field");
         assertNotNull(annotations);
         assertFalse(annotations.isEmpty());
 
         // method
-        annotations = (List<String>) version.getProperty("java.annotations.level.method");
+        annotations = version.getProperty("java.annotations.level.method");
         assertNotNull(annotations);
         assertFalse(annotations.isEmpty());
 
         // param
-        annotations = (List<String>) version.getProperty("java.annotations.level.param");
+        annotations = version.getProperty("java.annotations.level.param");
         assertNotNull(annotations);
         assertFalse(annotations.isEmpty());
     }

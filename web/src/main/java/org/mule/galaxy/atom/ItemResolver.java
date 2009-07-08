@@ -207,7 +207,7 @@ public class ItemResolver implements Resolver<Target> {
     }
 
     private Item getLatestOrDefault(Item i) throws RegistryException {
-        Item def = (Item) i.getProperty(TypeManager.DEFAULT_VERSION);
+        Item def = i.getProperty(TypeManager.DEFAULT_VERSION);
         if (def == null) {
             return i.getLatestItem();
         }

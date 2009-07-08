@@ -88,7 +88,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         id = gwtRegistry.addItem("/Default Workspace/test.wsdl", "1.0", null, avType.getId(), props);
         
         Item item = registry.getItemById(id);
-        Artifact artifact = (Artifact) item.getProperty("artifact");
+        Artifact artifact = item.getProperty("artifact");
         assertNotNull(artifact);
     }
     

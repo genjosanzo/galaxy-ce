@@ -33,7 +33,7 @@ public class MapExtension extends SimpleExtension implements AtomExtension {
                                   Entry entry,
                                   ExtensibleElement metadata,
                                   Factory factory) {
-        Map<String,String> map = (Map<String,String>) item.getProperty(pd.getProperty());
+        Map<String,String> map = item.getProperty(pd.getProperty());
         
         if (map == null) {
             return;

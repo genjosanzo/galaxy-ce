@@ -46,7 +46,7 @@ public class RequireGlobalEndpointsPolicy extends AbstractMulePolicy
 
     public Collection<ApprovalMessage> isApproved(Item item) {
         try {
-            Artifact artifact = (Artifact) item.getProperty("artifact");
+            Artifact artifact = item.getProperty("artifact");
             Document data = (Document) artifact.getData();
 
             NodeList result = (NodeList) outboundXPath.evaluate(data, XPathConstants.NODESET);

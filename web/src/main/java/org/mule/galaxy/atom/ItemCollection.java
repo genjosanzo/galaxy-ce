@@ -101,7 +101,7 @@ public class ItemCollection
     public Content getContent(Item doc, RequestContext request) {
         Content content = request.getAbdera().getFactory().newContent();
 
-        String description = (String) doc.getProperty("description");
+        String description = doc.getProperty("description");
         if (description != null) {
             content.setText(description);
         } else {
@@ -214,9 +214,9 @@ public class ItemCollection
 
     @Override
     public Text getSummary(Item item, RequestContext request) {
-        Artifact artifact = getArtifact(item);
+        Artifact artifact = item.getProperty("artifact");
         if (artifact != null) {
-            String description = (String)item.getProperty("description");
+            String description = item.getProperty("description");
             if (description == null) {
                 description = "";
             }
@@ -236,7 +236,7 @@ public class ItemCollection
     }
     
     public InputStream getMediaStream(Item item) throws ResponseContextException {
-        Artifact a = getArtifact(item);
+        Artifact a = item.getProperty("artifact");
         
         try {
             return a.getInputStream();
@@ -247,15 +247,11 @@ public class ItemCollection
     
     @Override
     public String getContentType(Item item) {
-        Artifact artifact = getArtifact(item);
+        Artifact artifact = item.getProperty("artifact");
         if (artifact != null) {
             return artifact.getContentType().toString();
         }
         throw new UnsupportedOperationException();
-    }
-
-    private Artifact getArtifact(Item item) {
-        return (Artifact) item.getProperty("artifact");
     }
 
     public String getAuthor(RequestContext request) {

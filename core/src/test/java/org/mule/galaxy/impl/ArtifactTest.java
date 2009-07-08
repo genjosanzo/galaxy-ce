@@ -159,13 +159,13 @@ public class ArtifactTest extends AbstractGalaxyTest {
         Item av = importHelloWsdl();
         assertNotNull(av.getId());
 
-        Phase p = (Phase) av.getProperty(Registry.PRIMARY_LIFECYCLE);
+        Phase p = av.getProperty(Registry.PRIMARY_LIFECYCLE);
         assertNotNull(p);
         
-        p = (Phase) av.getParent().getProperty(Registry.PRIMARY_LIFECYCLE);
+        p = av.getParent().getProperty(Registry.PRIMARY_LIFECYCLE);
         assertNull(p);
         
-        Artifact artifact = (Artifact) av.getProperty("artifact");
+        Artifact artifact = av.getProperty("artifact");
         assertNotNull(artifact);
         assertEquals("application/xml", artifact.getContentType().toString());
         assertNotNull(artifact.getDocumentType());

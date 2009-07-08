@@ -23,10 +23,10 @@ public class AtomWorkspaceManagerTest extends AbstractAtomTest {
         assertEquals("1.0", version.getName());
         assertEquals("hello.wsdl", artifactItem.getName());
         
-        Artifact artifact = (Artifact) version.getProperty("artifact");
+        Artifact artifact = version.getProperty("artifact");
         assertNotNull(artifact);
         assertEquals("application/xml", artifact.getContentType().toString());
-        assertEquals("definitions", artifact.getDocumentType().getLocalPart().toString());
+        assertEquals("definitions", artifact.getDocumentType().getLocalPart());
         InputStream is = artifact.getInputStream();
         assertNotNull(is);
         is.close();

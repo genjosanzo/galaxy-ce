@@ -418,13 +418,14 @@ public class JcrItem extends AbstractItem {
         }
     }
 
-    public Object getProperty(String name) {
+    @SuppressWarnings("unchecked")
+    public <T> T getProperty(String name) {
         PropertyDescriptor pd = manager.getTypeManager().getPropertyDescriptorByName(name);
 
         if (pd != null && pd.getExtension() != null) {
-            return pd.getExtension().get(this, pd, true);
+            return (T) pd.getExtension().get(this, pd, true);
         } else {
-            return JcrUtil.getProperty(name, node);
+            return (T) JcrUtil.getProperty(name, node);
         }
     }
 

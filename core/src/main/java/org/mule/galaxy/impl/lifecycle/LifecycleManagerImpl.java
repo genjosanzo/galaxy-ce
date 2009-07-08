@@ -194,7 +194,7 @@ public class LifecycleManagerImpl extends AbstractDao<Lifecycle>
     }
 
     public boolean isTransitionAllowed(Item item, String property, Phase p2) {
-        Phase p = (Phase) item.getProperty(property);
+        Phase p = item.getProperty(property);
         Lifecycle l = p2.getLifecycle();
 
         if (p == null || !l.equals(p.getLifecycle())) {
