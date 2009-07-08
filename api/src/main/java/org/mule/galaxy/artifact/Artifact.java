@@ -28,7 +28,7 @@ public interface Artifact {
      * @return
      * @throws IOException
      */
-    public Object getData() throws IOException;
+    public <T> T getData() throws IOException;
 
     public InputStream getInputStream() throws IOException;
 

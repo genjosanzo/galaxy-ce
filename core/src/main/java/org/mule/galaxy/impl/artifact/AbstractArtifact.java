@@ -42,11 +42,12 @@ public abstract class AbstractArtifact implements Artifact {
      * @return
      * @throws IOException 
      */
-    public Object getData() throws IOException {
+    @SuppressWarnings("unchecked")
+    public <T> T getData() throws IOException {
         if (data == null) {
              data = getContentHandler().read(getInputStream(), item.getParent());
         }
-        return data;
+        return (T) data;
     }
 
     public ArtifactType getArtifactType() {

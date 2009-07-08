@@ -63,7 +63,7 @@ public class BasicProfilePolicy extends AbstractXmlPolicy
         List<ValidationResult> results = new ArrayList<ValidationResult>();
 
         try {
-            Document doc = (Document) v.getData();
+            Document doc = v.getData();
             Definition def = wsdlReader.readWSDL(new RegistryLocator(registry, item.getParent().getParent()), 
                                       doc.getDocumentElement());
     

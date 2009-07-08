@@ -11,10 +11,6 @@ import org.w3c.dom.Document;
 
 public interface XmlContentHandler extends ContentHandler {
 
-    Object read(Source source, Item workspace) throws Exception;
-
-    Document getDocument(Object o) throws IOException;
-    
     /**
      * Get the name of the root XML element
      * @param o

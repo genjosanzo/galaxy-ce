@@ -13,7 +13,6 @@ import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.PropertyInfo;
 import org.mule.galaxy.artifact.Artifact;
-import org.mule.galaxy.artifact.XmlContentHandler;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexException;
 import org.mule.galaxy.policy.PolicyException;
@@ -34,8 +33,8 @@ public class XPathIndexer extends AbstractIndexer {
         throws IOException, IndexException {
 
         Artifact artifact = property.getValue();
-        Document document = ((XmlContentHandler)artifact.getContentHandler()).getDocument(artifact.getData());
-
+        Document document = artifact.getData();
+        
         XPath xpath = factory.newXPath();
         try {
             String propertyName = getValue(index.getConfiguration(), PROPERTY_NAME, new Message("NO_PROPERTY", BUNDLE));

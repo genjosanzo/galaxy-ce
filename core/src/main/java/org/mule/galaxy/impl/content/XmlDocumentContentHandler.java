@@ -14,7 +14,6 @@ import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -91,10 +90,6 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
         return deps;
     }
 
-    public Document getDocument(Object o) {
-        return (Document) o;
-    }
-
     public String getName(Object o) {
         return null;
     }
@@ -109,7 +104,7 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
         return QNameUtil.getName(doc.getDocumentElement());
     }
 
-    public Object read(InputStream stream, Item workspace) throws IOException {
+    public Document read(InputStream stream, Item workspace) throws IOException {
         try {
             return DOMUtils.readXml(stream);
         } catch (SAXException e) {
@@ -133,8 +128,4 @@ public class XmlDocumentContentHandler extends AbstractContentHandler implements
         }
     }
 
-    // TODO maybe should go, neither used nor overridden anywhere
-    public Object read(Source source, Item workspace) throws Exception {
-        throw new UnsupportedOperationException();
-    }
 }

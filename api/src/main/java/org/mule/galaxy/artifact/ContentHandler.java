@@ -20,7 +20,7 @@ public interface ContentHandler {
     
     MimeType getContentType(Object o);
     
-    Object read(InputStream stream, Item workspace) throws IOException;
+    <T> T read(InputStream stream, Item workspace) throws IOException;
 
     InputStream read(Object data) throws IOException;
     

@@ -18,7 +18,7 @@ public class DefaultContentHandler extends AbstractContentHandler {
         return null;
     }
 
-    public Object read(InputStream stream, Item workspace) throws IOException {
+    public <T> T read(InputStream stream, Item workspace) throws IOException {
         return null;
     }
 
