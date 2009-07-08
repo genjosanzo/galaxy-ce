@@ -415,19 +415,17 @@ public class JcrItem extends AbstractItem {
             Value[] values = new Value[1];
             values[0] = new StringValue(name);
             node.setProperty(PROPERTIES, values);
-            
-            return;
         }
     }
 
     public Object getProperty(String name) {
-    PropertyDescriptor pd = manager.getTypeManager().getPropertyDescriptorByName(name);
+        PropertyDescriptor pd = manager.getTypeManager().getPropertyDescriptorByName(name);
 
-    if (pd != null && pd.getExtension() != null) {
+        if (pd != null && pd.getExtension() != null) {
             return pd.getExtension().get(this, pd, true);
         } else {
-        return JcrUtil.getProperty(name, node);
-    }
+            return JcrUtil.getProperty(name, node);
+        }
     }
 
     public Object getInternalProperty(String name) {
