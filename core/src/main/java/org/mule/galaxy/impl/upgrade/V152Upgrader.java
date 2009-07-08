@@ -61,18 +61,19 @@ public class V152Upgrader extends Upgrader {
         for (NodeIterator itr = q.execute().getNodes(); itr.hasNext();) {
             Node l = itr.nextNode();
 
-            String itemId = (String) JcrUtil.getProperty("item", l);
-            String property = (String) JcrUtil.getProperty("property", l);
+            String itemId = JcrUtil.getProperty("item", l);
+            String property = JcrUtil.getProperty("property", l);
             
             updateItem(itemId, property, session);
             
-            String linkedTo = (String) JcrUtil.getProperty("linkedTo", l);
+            String linkedTo = JcrUtil.getProperty("linkedTo", l);
             if (linkedTo != null) {
                 updateItem(linkedTo, property, session);
             } else {
                 try {
                     Item item = registry.getItemById(itemId);
-                    Item resolve = registry.resolve(item, (String) JcrUtil.getProperty("linkedToPath", l));
+                    final String linkedToPath = JcrUtil.getProperty("linkedToPath", l);
+                    Item resolve = registry.resolve(item, linkedToPath);
                     if (resolve != null) {
                         l.setProperty("linkedTo", resolve.getId());
                     }

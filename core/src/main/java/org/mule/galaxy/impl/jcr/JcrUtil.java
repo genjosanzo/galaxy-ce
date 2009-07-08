@@ -328,7 +328,8 @@ public class JcrUtil {
         return itr.next().getClass().getName();
     }
 
-    public static Object getProperty(String name, Node node) {
+    @SuppressWarnings("unchecked")
+    public static <T> T getProperty(String name, Node node) {
         name = escape(name);
         
         try {
@@ -348,15 +349,15 @@ public class JcrUtil {
 
                 switch (val.getType()) {
                 case PropertyType.STRING:
-                    return val.getString();
+                    return (T) val.getString();
                 case PropertyType.BOOLEAN:
-                    return val.getBoolean();
+                    return (T) Boolean.valueOf(val.getBoolean());
                 case PropertyType.DATE:
-                    return val.getDate();
+                    return (T) val.getDate();
                 case PropertyType.DOUBLE:
-                    return val.getDouble();
+                    return (T) Double.valueOf(val.getDouble());
                 case PropertyType.LONG:
-                    return val.getLong();
+                    return (T) Long.valueOf(val.getLong());
                 default:
                     return null;
                 }
@@ -373,7 +374,7 @@ public class JcrUtil {
                     map.put(keyV[i].getString(), valuesV[i].getString());
                 }
                 
-                return map;
+                return (T) map;
             }
 
             Property property = node.getProperty(name);
@@ -419,7 +420,7 @@ public class JcrUtil {
                     return null;
                 }
             }
-            return values;
+            return (T) values;
         } catch (PathNotFoundException e) {
             return null;
         } catch (RepositoryException e) {

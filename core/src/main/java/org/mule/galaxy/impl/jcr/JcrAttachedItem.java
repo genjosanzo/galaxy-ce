@@ -98,7 +98,7 @@ public class JcrAttachedItem extends JcrItem implements AttachedItem {
     @SuppressWarnings("unchecked")
     public Map<String, String> getConfiguration() {
         if (configuration == null) {
-            configuration = (Map<String, String>) JcrUtil.getProperty(CONFIGURATION, node);
+            configuration = JcrUtil.getProperty(CONFIGURATION, node);
         }
         return configuration;
     }

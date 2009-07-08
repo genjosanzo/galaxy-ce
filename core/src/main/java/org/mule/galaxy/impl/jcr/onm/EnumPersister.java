@@ -8,7 +8,7 @@ import org.mule.galaxy.impl.jcr.JcrUtil;
 public class EnumPersister implements FieldPersister {
 
     public Object build(Node node, FieldDescriptor fd, Session session) throws Exception {
-        String value = (String) JcrUtil.getProperty(fd.getName(), node);
+        String value = JcrUtil.getProperty(fd.getName(), node);
         
         if (value == null) {
             return null;
