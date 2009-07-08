@@ -30,7 +30,7 @@ import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 
 import com.google.gwt.user.client.ui.Hyperlink;
 
-public class AdministrationPanel extends ApplicationPanel {
+public class AdministrationPanel extends MenuPanel {
 
     private final Galaxy galaxy;
 
