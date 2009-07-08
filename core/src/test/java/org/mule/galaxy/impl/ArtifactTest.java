@@ -206,7 +206,8 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals("bar", av.getProperty("foo"));
         
         // Test the version history
-        assertTrue(artifact.getData() instanceof Document);
+        final Object data = artifact.getData();
+        assertTrue(data instanceof Document);
         assertNotNull(av.getAuthor());
         assertEquals("Created", getPhase(av).getName());
         
