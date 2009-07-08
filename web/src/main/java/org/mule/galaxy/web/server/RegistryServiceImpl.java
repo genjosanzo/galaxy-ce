@@ -1039,7 +1039,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     private Object toWeb(Item item, PropertyInfo p, Extension ext) {
         if (ext instanceof LinkExtension) {
-            Links links = (Links) p.getValue();
+            Links links = p.getValue();
             
             return toWeb(links, p.getPropertyDescriptor());
         } else if (ext instanceof ArtifactExtension) {

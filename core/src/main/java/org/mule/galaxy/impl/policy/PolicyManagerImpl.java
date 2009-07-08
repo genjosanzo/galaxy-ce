@@ -158,7 +158,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         for (PropertyInfo pi : itemWithLifecycle.getProperties()) {
             PropertyDescriptor pd = pi.getPropertyDescriptor();
             if (pd != null && pd.getExtension() instanceof LifecycleExtension) {
-                Phase p = (Phase) pi.getValue();
+                Phase p = pi.getValue();
 
                 if (phases != null && phases.contains(p) || lifecycle != null && lifecycle.equals(p.getLifecycle())) {
                     List<ApprovalMessage> messages = approve(itemToApprove, policies);
@@ -190,7 +190,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         for (PropertyInfo pi : itemWithLifecycle.getProperties()) {
             PropertyDescriptor pd = pi.getPropertyDescriptor();
             if (pd != null && pd.getExtension() instanceof LifecycleExtension) {
-                Phase p = (Phase) pi.getValue();
+                Phase p = pi.getValue();
 
                 for (PolicyInfo policyInfo : pis) {
                     if (policyInfo.appliesTo(p)) {
@@ -439,7 +439,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                 for (PropertyInfo pi : item.getProperties()) {
                     PropertyDescriptor pd = pi.getPropertyDescriptor();
                     if (pd != null && pd.getExtension() instanceof LifecycleExtension) {
-                        Phase phase = (Phase) pi.getValue();
+                        Phase phase = pi.getValue();
                         Lifecycle lifecycle = phase.getLifecycle();
                         
                         // Add policies which apply to the lifecycle

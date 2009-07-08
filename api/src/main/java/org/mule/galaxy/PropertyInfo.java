@@ -7,9 +7,9 @@ public interface PropertyInfo {
 
     String getDescription();
     
-    Object getValue();
+    <T> T getValue();
     
-    Object getInternalValue();
+    <T> T getInternalValue();
     
     PropertyDescriptor getPropertyDescriptor();
     

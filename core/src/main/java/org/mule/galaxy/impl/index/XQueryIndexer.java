@@ -42,7 +42,8 @@ public class XQueryIndexer extends AbstractIndexer {
 
     public void index(Item item, PropertyInfo property, Index index)
         throws IOException, IndexException {
-    Artifact artifact = (Artifact) property.getValue();
+
+        Artifact artifact = property.getValue();
         try {
             XQConnection conn = ds.getConnection();
             

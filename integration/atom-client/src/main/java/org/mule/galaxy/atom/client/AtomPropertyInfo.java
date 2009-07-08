@@ -29,8 +29,9 @@ public class AtomPropertyInfo implements PropertyInfo {
         return pd != null ? pd.getDescription() : null;
     }
 
-    public Object getInternalValue() {
-        return getValue();
+    @SuppressWarnings("unchecked")
+    public <T> T getInternalValue() {
+        return (T) getValue();
     }
 
     public PropertyDescriptor getPropertyDescriptor() {
@@ -40,8 +41,10 @@ public class AtomPropertyInfo implements PropertyInfo {
     public String getName() {
         return name;
     }
-    public Object getValue() {
-        return value;
+
+    @SuppressWarnings("unchecked")
+    public <T> T getValue() {
+        return (T) value;
     }
     public void setValue(Object value) {
         this.value = value;

@@ -46,7 +46,7 @@ public class GroovyIndexer extends AbstractIndexer
     public void index(final Item item, final PropertyInfo property, final Index index) 
         throws IOException, IndexException {
     Map<String, String> config = index.getConfiguration();
-    Artifact artifact = (Artifact) property.getValue();
+    Artifact artifact = property.getValue();
     if (artifact == null) {
         return;
     }

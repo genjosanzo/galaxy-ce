@@ -270,7 +270,6 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     /**
      * Returns a Runnable which can be queued or run immediately which indexes a particular artifact.
      * @param item
-     * @param av
      * @return
      */
     private Runnable getIndexer(Item item, final String property) {
@@ -454,7 +453,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
         return;
     }
 
-    Artifact a = (Artifact) pi.getValue();
+    Artifact a = pi.getValue();
     if (a == null) {
         return;
     }

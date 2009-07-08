@@ -39,16 +39,18 @@ public class PropertyInfoImpl implements PropertyInfo {
         return name;
     }
 
-    public Object getValue() {
+    @SuppressWarnings("unchecked")
+    public <T> T getValue() {
         if (value != null) {
-            return value;
+            return (T) value;
         } else {
-            return item.getProperty(getName());
+            return (T) item.getProperty(getName());
         }
     }
 
-    public Object getInternalValue() {
-        return item.getInternalProperty(getName());
+    @SuppressWarnings("unchecked")
+    public <T> T getInternalValue() {
+        return (T) item.getInternalProperty(getName());
     }
 
     public boolean isLocked() {

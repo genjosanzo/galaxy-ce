@@ -32,7 +32,8 @@ public class XPathIndexer extends AbstractIndexer {
 
     public void index(Item item, PropertyInfo property, Index index)
         throws IOException, IndexException {
-    Artifact artifact = (Artifact) property.getValue();
+
+        Artifact artifact = property.getValue();
         Document document = ((XmlContentHandler)artifact.getContentHandler()).getDocument(artifact.getData());
 
         XPath xpath = factory.newXPath();
