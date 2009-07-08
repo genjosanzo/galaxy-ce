@@ -66,6 +66,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         itemsPhasesNodeId = getOrCreate(items, "phases").getUUID();
 
         session.save();
+        session.logout();
     }
     
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {

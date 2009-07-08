@@ -16,6 +16,7 @@ import javax.jcr.InvalidItemStateException;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
+import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
@@ -32,6 +33,7 @@ import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.GalaxyEvent;
 import org.mule.galaxy.event.PropertyChangedEvent;
 import org.mule.galaxy.extension.Extension;
+import org.mule.galaxy.impl.jcr.onm.Reference;
 import org.mule.galaxy.impl.workspace.AbstractItem;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
@@ -201,7 +203,7 @@ public class JcrItem extends AbstractItem {
     public void setType(Type t) throws PropertyException {
         try {
             verifyConformance(t);
-            node.setProperty(TYPE, t.getId()/*, PropertyType.REFERENCE */);
+            node.setProperty(TYPE, t.getId(), PropertyType.REFERENCE);
             update();
             this.type = t;
         } catch (Exception e) {
@@ -305,19 +307,20 @@ public class JcrItem extends AbstractItem {
         }
     }
     
-    public void setProperty(String name, Object value) throws PropertyException, PolicyException, AccessException {
+    public void setProperty(String name, Object value) throws PropertyException, PolicyException,
+        AccessException {
         if (name.contains(" ")) {
-                throw new PropertyException(new Message("SPACE_NOT_ALLOWED", getBundle()));
+            throw new PropertyException(new Message("SPACE_NOT_ALLOWED", getBundle()));
         }
-        
+
         PropertyDescriptor pd = getManager().getTypeManager().getPropertyDescriptorByName(name);
         if (pd != null && pd.getExtension() != null) {
             pd.getExtension().store(this, pd, value);
-    } else {
-        setInternalProperty(name, value, false);
+        } else {
+            setInternalProperty(name, value, false);
 
             getSaveEvents().add(new PropertyChangedEvent(SecurityUtils.getCurrentUser(), this, name, value));
-    }
+        }
     }
 
     public void setInternalProperty(String name, Object value) throws PropertyException, PolicyException, AccessException {
@@ -331,7 +334,11 @@ public class JcrItem extends AbstractItem {
             }
             manager.getAccessControlManager().assertAccess(Permission.MODIFY_ITEM, this);
             
-            JcrUtil.setProperty(name, value, node);
+            if (value instanceof Reference) {
+                node.setProperty(name, ((Reference)value).getId(), PropertyType.REFERENCE);
+            } else {
+                JcrUtil.setProperty(name, value, node);
+            }
             
             if (value == null) {
                 deleteProperty(name);

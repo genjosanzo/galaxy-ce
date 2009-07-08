@@ -9,6 +9,7 @@ import java.util.Set;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.link.LinkExtension;
+import org.mule.galaxy.query.JcrRestriction;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.SearchResults;
@@ -262,6 +263,15 @@ public class SearchTest extends AbstractGalaxyTest {
         results = registry.search("select where config.properties.key in ('foo')", 0, 100).getResults();
         assertEquals(1, results.size());
     }
+    
+    public void testJcrRestriction() throws Exception {
+        registry.newItem("test", getSimpleType()).getItem();
+        
+        Set<Item> results = registry.search(new Query().add(new JcrRestriction("jcr:deref(@type, '*')/@name = 'Base Type' and @name = 'test'"))).getResults();
+        
+        assertEquals(1, results.size());
+    }
+    
 //    
 //    public void testExtensionQueries() throws Exception {
 //        Item root = registry.getItems().iterator().next();

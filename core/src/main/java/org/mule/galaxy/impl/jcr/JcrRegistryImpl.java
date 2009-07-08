@@ -46,6 +46,7 @@ import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.AbstractFunction;
 import org.mule.galaxy.query.FunctionCall;
 import org.mule.galaxy.query.FunctionRegistry;
+import org.mule.galaxy.query.JcrRestriction;
 import org.mule.galaxy.query.OpRestriction;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
@@ -651,7 +652,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 if (log.isDebugEnabled()) {
                     log.debug("Query: " + qstr.toString());
                 }
-                
+               
                 Query jcrQuery = qm.createQuery(qstr, Query.XPATH);
                 
                 QueryResult result = jcrQuery.execute();
@@ -755,6 +756,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 if (!handleFunction((FunctionCall) r, query, functions, itemQuery)) {
                     return null;
                 }
+            } else if (r instanceof JcrRestriction) {
+                if (itemQuery.length() == 0) {
+                    itemQuery.append("[");
+                } else {
+                    itemQuery.append(" and ");
+                }
+                itemQuery.append(((JcrRestriction) r).getPredicateRestriction());
             }
         }
         

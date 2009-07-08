@@ -229,6 +229,10 @@ public class DefaultEventManager implements EventManager {
         }
     }
 
+    public void destroy() {
+        executor.shutdown();
+    }
+    
     public ThreadPoolTaskExecutor getExecutor() {
         return executor;
     }
