@@ -1,5 +1,5 @@
 /*
- * Ext GWT Library 2.0-rc2
+ * Ext GWT Library 2.0
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -1024,6 +1024,7 @@ textarea {
 }
 .x-form-element {
     padding-left:105px;
+    position: relative;
 }
 .x-form-invalid-msg {
     padding:2px;
@@ -1376,7 +1377,7 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 .ext-ie .x-item-disabled .x-btn-mc img {
 	filter: alpha(opacity=60);
 }
-.ext-gecko .x-btn button {
+.ext-gecko .x-btn button,.ext-webkit .x-btn button {
     padding-left:0;
     padding-right:0;
 }
@@ -2045,7 +2046,7 @@ div.x-toolbar-no-items {
 
 .x-grid3-row-body {
   white-space: normal;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .x-grid3-body-cell {
@@ -5580,7 +5581,7 @@ body.ext-ie6.x-body-masked .x-window select {
     background-image:url(../images/default/box/tb-blue.gif);
 }
 .ext-el-mask-msg div {
-    background-color: #eee;
+    background-color: white;
     border-color:#a3bad9;
     color:#222;
     font:normal 11px tahoma, arial, helvetica, sans-serif;

@@ -1,5 +1,5 @@
 /*
- * Ext GWT Library 2.0-rc2
+ * Ext GWT Library 2.0
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -455,6 +455,10 @@ body.x-body-masked .x-window-mc, body.x-body-masked .x-window-plain .x-window-mc
 
 .my-list {
   border: 1px solid #D0D0D0;
+}
+
+.x-view {
+  border:1px solid #D0D0D0;
 }.my-info {
   background: url(../images/gray/info/info-bg.gif) no-repeat;
 }.x-date-right-icon {
