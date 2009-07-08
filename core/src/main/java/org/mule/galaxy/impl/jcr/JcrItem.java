@@ -429,13 +429,14 @@ public class JcrItem extends AbstractItem {
         }
     }
 
-    public Object getInternalProperty(String name) {
-        return JcrUtil.getProperty(name, node);
+    @SuppressWarnings("unchecked")
+    public <T> T getInternalProperty(String name) {
+        return (T) JcrUtil.getProperty(name, node);
     }
 
     public Collection<PropertyInfo> getProperties() {
         try {
-            Property p = null;
+            Property p;
             final Map<String, PropertyInfo> properties = new HashMap<String, PropertyInfo>();
             try {
                 p = node.getProperty(PROPERTIES);

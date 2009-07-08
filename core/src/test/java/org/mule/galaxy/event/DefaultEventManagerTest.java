@@ -225,7 +225,7 @@ public class DefaultEventManagerTest extends TestCase {
             return null;
         }
 
-        public Object getInternalProperty(String name) {
+        public <T> T getInternalProperty(String name) {
             return null;
         }
 

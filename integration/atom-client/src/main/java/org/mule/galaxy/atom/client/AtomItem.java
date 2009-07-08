@@ -80,7 +80,7 @@ public class AtomItem extends AbstractItem {
         }
     }
     
-    public Object getInternalProperty(String name) {
+    public <T> T getInternalProperty(String name) {
         initializeProperties();
         return null;
     }

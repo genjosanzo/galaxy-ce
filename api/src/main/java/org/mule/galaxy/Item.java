@@ -57,7 +57,7 @@ public interface Item {
     
     <T> T getProperty(String name);
 
-    Object getInternalProperty(String name);
+    <T> T getInternalProperty(String name);
     
     Collection<PropertyInfo> getProperties();
     

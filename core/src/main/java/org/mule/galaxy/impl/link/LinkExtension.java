@@ -117,7 +117,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
 
     @Override
     public Object get(final Item item, final PropertyDescriptor pd, boolean getWithNoData) {
-        Boolean hasLinks = (Boolean) item.getInternalProperty(pd.getProperty());
+        Boolean hasLinks = item.getInternalProperty(pd.getProperty());
         
         if (!getWithNoData && (hasLinks == null || !hasLinks)) {
             return null;
