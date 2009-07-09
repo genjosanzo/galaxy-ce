@@ -22,11 +22,14 @@ import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
 
 import com.extjs.gxt.ui.client.Style;
+import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Viewport;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -45,11 +48,12 @@ public abstract class ApplicationPanel extends AbstractErrorShowingComposite {
     private FlowPanel leftMenu;
     private boolean firstShow = true;
 
-    private Viewport base;
+    private LayoutContainer base;
     private ContentPanel centerPanel;
     private ContentPanel westPanel;
     private BorderLayoutData centerData;
     private BorderLayoutData westData;
+    private BorderLayout layout;
 
     public ApplicationPanel() {
         this(true);
@@ -58,8 +62,12 @@ public abstract class ApplicationPanel extends AbstractErrorShowingComposite {
     public ApplicationPanel(boolean left) {
 
         // wrapper for the left nav (optional) and the main app body
-        base = new Viewport();
-        base.setLayout(new BorderLayout());
+        layout = new BorderLayout();
+
+        base = new LayoutContainer();
+        base.setSize("100%", "100%");
+        base.setLayout(layout);
+
 
         // main app body - scrolling okay
         // TODO: at some point we are going to have to split this
@@ -67,20 +75,27 @@ public abstract class ApplicationPanel extends AbstractErrorShowingComposite {
         centerPanel = new ContentPanel();
         centerPanel.setScrollMode(Style.Scroll.AUTO);
         centerPanel.setHeaderVisible(false);
+        centerPanel.add(getMainPanel());
+        centerPanel.setLayout(new FitLayout());
+        centerPanel.layout();
+
+        centerData = new BorderLayoutData(LayoutRegion.CENTER);
+        centerData.setMargins(new Margins());
+
+        base.add(centerPanel, centerData);
 
         // left side nav - no scroll
         westPanel = new ContentPanel();
+        westPanel.setLayout(new FitLayout());
         westPanel.setHeaderVisible(false);
         westPanel.setScrollMode(Style.Scroll.NONE);
+        westPanel.layout();
 
         // left side is spit and collapsible
-        westData = new BorderLayoutData(Style.LayoutRegion.WEST, 200);
+        westData = new BorderLayoutData(LayoutRegion.WEST, 200);
         westData.setSplit(true);
         westData.setCollapsible(true);
         westData.setMargins(new Margins());
-
-        centerData = new BorderLayoutData(Style.LayoutRegion.CENTER);
-        centerData.setMargins(new Margins());
 
         if (left) {
             leftMenu = new FlowPanel() {
@@ -109,9 +124,12 @@ public abstract class ApplicationPanel extends AbstractErrorShowingComposite {
             // add menus to the gxt containers
             westPanel.add(leftMenu);
             base.add(westPanel, westData);
-        }
 
+        }
         initWidget(base);
+
+        base.layout();
+
     }
 
 
@@ -123,16 +141,17 @@ public abstract class ApplicationPanel extends AbstractErrorShowingComposite {
         if (mainWidget instanceof AbstractComposite) {
             ((AbstractComposite) mainWidget).onShow(params);
         }
+
+        base.layout();
+        centerPanel.layout();
+        westPanel.layout();
+
     }
 
     protected void onFirstShow() {
 
-        centerPanel.add(getMainPanel());
-
         topPanel = new FlowPanel();
         topPanel.setStyleName("top-panel");
-
-        base.add(centerPanel, centerData);
     }
 
 
@@ -219,11 +238,11 @@ public abstract class ApplicationPanel extends AbstractErrorShowingComposite {
     }
 
 
-    public Viewport getBase() {
+    public LayoutContainer getBase() {
         return base;
     }
 
-    public void setBase(Viewport base) {
+    public void setBase(LayoutContainer base) {
         this.base = base;
     }
 

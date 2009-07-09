@@ -25,6 +25,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.VerticalSplitPanel;
+import com.google.gwt.user.client.ui.HorizontalSplitPanel;
 
 import java.util.List;
 
@@ -33,7 +35,7 @@ import org.mule.galaxy.web.client.util.Toolbox;
 
 public abstract class MenuPanel extends AbstractErrorShowingComposite {
 
-    private DockPanel panel;
+    private HorizontalSplitPanel panel;
     private FlowPanel leftMenuContainer;
     private Widget mainWidget;
     private FlowPanel topPanel;
@@ -47,9 +49,9 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
     }
 
     public MenuPanel(boolean left) {
-        panel = new DockPanel();
-        panel.setSpacing(0);
-        
+        panel = new HorizontalSplitPanel();
+        panel.setSplitPosition("220px");
+
         if (left) {
             leftMenu = new FlowPanel() {
                 protected void onLoad() {
@@ -61,7 +63,7 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
             };
             leftMenu.setStyleName("left-menu");
             
-            panel.add(leftMenu, DockPanel.WEST);
+            panel.setLeftWidget(leftMenu);
             
             leftMenuContainer = new FlowPanel(){
     
@@ -93,11 +95,8 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
     }
 
     protected void onFirstShow() {
-
-        
         centerPanel = new FlowPanel();
-        panel.add(centerPanel, DockPanel.CENTER);
-        panel.setCellWidth(centerPanel, "100%");
+        panel.setRightWidget(centerPanel);
         
         centerPanel.add(getMainPanel());
         
