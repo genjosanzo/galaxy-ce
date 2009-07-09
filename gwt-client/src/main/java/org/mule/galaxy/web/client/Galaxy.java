@@ -249,7 +249,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         ContentPanel centerPanel = new ContentPanel();
         centerPanel.setBorders(false);
         centerPanel.setHeaderVisible(false);
-        centerPanel.setScrollMode(Scroll.AUTO);
+        centerPanel.setScrollMode(Scroll.NONE);
         centerPanel.setLayout(new FlowLayout());
         centerPanel.add(tabPanel);
         
