@@ -59,6 +59,8 @@ import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
 import org.mule.galaxy.web.client.registry.SearchPanel;
 import org.mule.galaxy.web.client.registry.ViewPanel;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
+import org.mule.galaxy.web.client.ui.BaseConstants;
+import org.mule.galaxy.web.client.ui.BaseMessages;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.AdminService;
 import org.mule.galaxy.web.rpc.AdminServiceAsync;
@@ -101,6 +103,8 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
     protected List<String> tabNames = new ArrayList<String>();
     protected int repositoryTabIndex;
+    private BaseConstants baseConstants;
+    private BaseMessages baseMessages;
 
     /**
      * This is the entry point method.
@@ -135,6 +139,10 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         this.adminService = (AdminServiceAsync) GWT.create(AdminService.class);
         target = (ServiceDefTarget) adminService;
         target.setServiceEntryPoint(baseUrl + "../handler/admin.rpc");
+
+        this.baseConstants = (BaseConstants) GWT.create(BaseConstants.class);
+        this.baseMessages = (BaseMessages) GWT.create(BaseMessages.class);
+
 
         base = new Viewport();
         base.setLayout(new BorderLayout());
@@ -487,6 +495,14 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         return tabPanel;
     }
 
+    public BaseConstants getBaseConstants() {
+        return baseConstants;
+    }
+
+    public BaseMessages getBaseMessages() {
+        return baseMessages;
+    }
+    
     public boolean hasPermission(String perm) {
         for (Iterator<String> itr = user.getPermissions().iterator(); itr.hasNext();) {
             String s = itr.next();
