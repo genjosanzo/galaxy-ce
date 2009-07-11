@@ -13,21 +13,37 @@ body {
 }
 
 .header {
-    background-image: url("images/header_bg.jpg");
-    color: white;
-    padding-top: 1px;
-    padding-left: 6px;
+    margin: 0 20px 30px;
+    padding: 0 0 10px 15px;
+    background-color: white;
+    /* background-image: url("images/header_bg.jpg"); */
+    color: black;
+    border-top: 1px solid #e9e9e9;
+    border-right: 1px solid #e9e9e9;
+    border-left: 1px solid #e9e9e9; 
 }
 
 .header-right {
     float: right;
-    padding: 8px;
+    padding-right: 10px;
     font-size: 9pt;
     text-align: right;
+    background-image: url("images/header_bg.jpg");
+    width: 300px;
+    height: 62px;
+}
+
+#header-right li {
+  display: inline;
 }
 
 .header-right a, .header-right a:visited {
-    color: white;
+    color: #016c96;
+    text-decoration: none;
+}
+
+.header-right a:hover {
+    text-decoration: underline;
 }
 
 .headerTabPanel {
@@ -94,7 +110,7 @@ a:visited {
  **/
 
 .left-menu {
-    /*border-right: 1px #aaa solid;*/
+    border-right: 1px #aaa solid;
     width: 205px;
 }
 
@@ -1213,17 +1229,16 @@ a:visited {
 }
 
 .gwt-HorizontalSplitPanel {
-  /*border: 1px solid #C3D9FF;*/
+  border: 8px solid #C3D9FF;
 }
 
 .gwt-HorizontalSplitPanel .hsplitter {
   background-color: #C3D9FF;
   cursor: move;
-  padding: 0px;
 }
 
 .gwt-HorizontalSplitPanel .left {
-  /*background-color: #E8EEF7;*/
+  background-color: #E8EEF7;
 }
 
 .gwt-VerticalSplitPanel {

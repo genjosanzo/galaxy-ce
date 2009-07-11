@@ -1,5 +1,5 @@
 /*
- * Ext GWT Library 2.0
+ * Ext GWT Library 2.0-rc2
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -333,8 +333,9 @@ html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,bloc
   margin-right: 4px;
 }
 
+/* Grid & Tree boders */
 .x-border {
-  border: 1px solid #99BBE8;
+  /* border: 1px solid green; */
 }
 
 .x-border-top {
@@ -562,9 +563,10 @@ html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,bloc
     overflow:hidden;
     zoom:1;
 }
+/* Line below tabs */
 .x-tab-panel-header {
-	border: 1px solid;
-	padding-bottom: 2px;
+	/* border: 1px solid;
+	padding-bottom: 2px; */
 }
 .x-tab-panel-footer {
 	border: 1px solid;
@@ -578,13 +580,14 @@ html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,bloc
 }
 ul.x-tab-strip {
 	display:block;
-    /*width:5000px;*/
+    width:5000px;
     zoom:1;
 }
+/* Around Tabs */
 ul.x-tab-strip-top{
-	padding-top: 1px;
+	/* padding-top: 1px; */
 	background: repeat-x bottom;
-	border-bottom: 1px solid;
+	/* border-bottom: 1px solid; */
 }
 ul.x-tab-strip-bottom{
 	padding-bottom: 1px;
@@ -603,7 +606,7 @@ ul.x-tab-strip-bottom{
 }
 .x-tab-panel-header-plain .x-tab-strip-spacer,
 .x-tab-panel-footer-plain .x-tab-strip-spacer {
-    border:1px solid;
+    border:10px solid;
     height:2px;
     font-size:1px;
     line-height:1px;
@@ -627,9 +630,10 @@ ul.x-tab-strip-bottom{
 .ext-border-box .x-tab-panel-footer-plain .x-tab-strip-spacer {
     height:3px;
 }
+/* Tab Spacing */
 ul.x-tab-strip li {
     float:left;
-    margin-left:2px;
+    margin-left:0;
 }
 ul.x-tab-strip li.x-tab-edge {
     float:left;
@@ -656,10 +660,11 @@ ul.x-tab-strip li.x-tab-edge {
     overflow:hidden;
 	text-overflow: ellipsis;
 }
+/* Tab Size */
 .x-tab-strip span.x-tab-strip-text {
 	white-space: nowrap;
 	cursor:pointer;
-    padding:4px 0;
+    padding:7px 12px;
 }
 .x-tab-strip-top .x-tab-with-icon .x-tab-right {
     padding-left:6px;
@@ -1024,7 +1029,6 @@ textarea {
 }
 .x-form-element {
     padding-left:105px;
-    position: relative;
 }
 .x-form-invalid-msg {
     padding:2px;
@@ -1377,7 +1381,7 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 .ext-ie .x-item-disabled .x-btn-mc img {
 	filter: alpha(opacity=60);
 }
-.ext-gecko .x-btn button,.ext-webkit .x-btn button {
+.ext-gecko .x-btn button {
     padding-left:0;
     padding-right:0;
 }
@@ -2010,11 +2014,14 @@ div.x-toolbar-no-items {
   -moz-outline: none;
 }
 
+/* Grid Column titles */
 .x-grid3-hd-row .x-grid3-hd {
   line-height: 15px;
   vertical-align: middle;
   border-left: 1px solid;
   border-right: 1px solid;
+  color: #016c96;
+  font-weight: bold;
 }
 
 .x-grid3-hd-row .x-grid3-marker-hd {
@@ -2046,7 +2053,7 @@ div.x-toolbar-no-items {
 
 .x-grid3-row-body {
   white-space: normal;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .x-grid3-body-cell {
@@ -3715,6 +3722,18 @@ a.x-menu-item {
     border-top:1px solid;
     border-bottom:0 none;
 }
+
+/* Tree Buttons positioning */
+.x-panel-bbar {
+    position:relative;
+    top:-300px;
+}
+/* Tree items positioning */
+.x-panel-mc{
+    position:relative;
+    top:40px;
+}
+
 .x-panel {
     border-style: solid;
     border-width:0;
@@ -3774,7 +3793,8 @@ a.x-menu-item {
 }
 .x-panel-tc {
 	background: transparent repeat-x 0 0;
-	overflow:hidden;
+	/* overflow:hidden; */
+    zoom:1;
 }
 .ext-strict .ext-ie7 .x-panel-tc {
     overflow: visible;
@@ -3783,7 +3803,7 @@ a.x-menu-item {
 	background: transparent no-repeat 0 0;
 	padding-left:6px;
     zoom:1;
-    border-bottom:1px solid;
+    /* border-bottom:1px solid; */
 }
 .x-panel-tr {
 	background: transparent no-repeat right 0;
@@ -4276,7 +4296,15 @@ body.ext-ie6.x-body-masked .x-window select {
 
 .x-html-editor-tb .x-toolbar {
     position:static !important;
-}.x-panel-noborder .x-panel-body-noborder {
+}
+
+/* Grid border */
+.x-panel-noborder {
+    border-width: 1px;
+    margin-top:4px;
+}
+
+.x-panel-noborder .x-panel-body-noborder {
     border-width:0;
 }
 .x-panel-noborder .x-panel-header-noborder {
@@ -5581,7 +5609,7 @@ body.ext-ie6.x-body-masked .x-window select {
     background-image:url(../images/default/box/tb-blue.gif);
 }
 .ext-el-mask-msg div {
-    background-color: white;
+    background-color: #eee;
     border-color:#a3bad9;
     color:#222;
     font:normal 11px tahoma, arial, helvetica, sans-serif;
@@ -5639,12 +5667,16 @@ body.ext-ie6.x-body-masked .x-window select {
     overflow:hidden;
     zoom:1;
 }
+/* Border around tabs section */
 .x-tab-panel-header, .x-tab-panel-footer {
-	border-color:#8db2e3;
+	/* border-top-color:#99bccf;
+    border-bottom-color:#fff; */
+    border-width: 0;    
 }
+/* Nav background */
 ul.x-tab-strip-top{
-    background-color:#cedff5;
-	background-image: url(../images/default/tabs/tab-strip-bg.gif);
+    background-color:#016c96;
+	background-image: url(../images/default/tabs/tab-strip-bg_blue.gif);
 	border-bottom-color:#8db2e3;
 }
 ul.x-tab-strip-bottom{
@@ -5657,19 +5689,26 @@ ul.x-tab-strip-bottom{
     border-color:#8db2e3;
     background-color: #deecfd;
 }
+/* Inactive tab */
 .x-tab-strip span.x-tab-strip-text {
 	font:normal 11px tahoma,arial,helvetica;
-	color:#416aa3;
-}
-.x-tab-strip-over span.x-tab-strip-text {
-	color:#15428b;
-}
-.x-tab-strip-active span.x-tab-strip-text {
-	color:#15428b;
+	color:#fff;
     font-weight:bold;
 }
+
+/* Hover Tab */
+.x-tab-strip-over span.x-tab-strip-text {
+	color:#ddd;
+    font-weight:bold;
+}
+/* Active Tab */
+.x-tab-strip-active span.x-tab-strip-text {
+	color:#333;
+    font-weight:bold;
+    margin-bottom: 2px; /* removes blue bottom on tab in Firefox */
+}
 .x-tab-strip-disabled .x-tabs-text {
-	color:#aaaaaa;
+	color:#aaa;
 }
 .x-tab-strip-top .x-tab-right, .x-tab-strip-top .x-tab-left, .x-tab-strip-top .x-tab-strip-inner{
 	background-image: url(../images/default/tabs/tabs-sprite.gif);
@@ -5692,9 +5731,12 @@ ul.x-tab-strip-bottom{
 .x-tab-strip .x-tab-strip-closable a.x-tab-strip-close:hover{
 	background-image:url(../images/default/tabs/tab-close.gif);
 }
+
+/* Background of main content below header */
 .x-tab-panel-body {
-    border-color:#8db2e3;
+    border-color:yellow;
     background-color:#fff;
+    height: 100%;
 }
 .x-tab-panel-body-top {
     border-top: 0 none;
@@ -6010,8 +6052,9 @@ ul.x-tab-strip-bottom{
 }
 .x-grid3-row-over {
 	border-color:#ddd;
-    background-color:#efefef;
-    background-image:url(../images/default/grid/row-over.gif);
+    background-color:#ddf1fc;
+    /* background-image:url(../images/default/grid/row-over.gif); */
+    font-weight: bold;
 }
 .x-grid3-resize-proxy {
     background-color:#777;
@@ -6019,9 +6062,11 @@ ul.x-tab-strip-bottom{
 .x-grid3-resize-marker {
     background-color:#777;
 }
+/* Grid header inactive background */
 .x-grid3-header{
     background-color:#f9f9f9;
-	background-image:url(../images/default/grid/grid3-hrow.gif);
+	background-image:url(../images/default/grid/grid3-hrow2.gif);
+    font-weight: bold;
 }
 .x-grid3-header-pop {
     border-left-color:#d0d0d0;
@@ -6034,9 +6079,12 @@ td.x-grid3-hd-over, td.sort-desc, td.sort-asc, td.x-grid3-hd-menu-open {
     border-left-color:#aaccf6;
     border-right-color:#aaccf6;
 }
+/* Grid header active & hover background */
 td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-asc .x-grid3-hd-inner, td.x-grid3-hd-menu-open .x-grid3-hd-inner {
     background-color:#ebf3fd;
-    background-image:url(../images/default/grid/grid3-hrow-over.gif);
+    background-image:url(../images/default/grid/grid3-hrow-over2.gif);
+    color: #333;
+    font-weight: bold;
 }
 .sort-asc .x-grid3-sort-icon {
 	background-image: url(../images/default/grid/sort_asc.gif);
@@ -6055,7 +6103,7 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 }
 .x-dd-drag-proxy .x-grid3-hd-inner{
     background-color:#ebf3fd;
-	background-image:url(../images/default/grid/grid3-hrow-over.gif);
+	background-image:url(../images/default/grid/grid3-hrow-over2.gif);
 	border-color:#aaccf6;
 }
 .col-move-top{
@@ -6493,30 +6541,40 @@ a.x-menu-item {
 .x-combo-list-small {
     font:normal 11px tahoma, arial, helvetica, sans-serif;
 }
+/* Borders around tree, grid, and instructions */
 .x-panel {
-    border-color: #99bbe8;
+    border-color: #c4c4c4;
 }
+
+/* Main grid title */
 .x-panel-header {
-    color:#15428b;
+    color:#000;
 	font:bold 11px tahoma,arial,verdana,sans-serif;
-    border-color:#99bbe8;
-    background-image: url(../images/default/panel/white-top-bottom.gif);
+    border-color:#c4c4c4 #c4c4c4 #d7d7d7;
+    border-width: 0;
+    /* background-image: url(../images/default/panel/white-top-bottom.gif); */
+    background-image: url(../images/default/panel/grid-header.gif);
 }
+
+/* Borders around footer, header, instruction box */
 .x-panel-body {
     border-color:#99bbe8;
     background-color:#fff;
 }
+/* around new group bottom of tree */
 .x-panel-bbar .x-toolbar, .x-panel-tbar .x-toolbar {
-    border-color:#99bbe8;
+    border-color:#fff;
 }
 .x-panel-tbar-noheader .x-toolbar, .x-panel-mc .x-panel-tbar .x-toolbar {
     border-top-color:#99bbe8;
 }
+/* Frame around header, main, footer */
 .x-panel-body-noheader, .x-panel-mc .x-panel-body {
-    border-top-color:#99bbe8;
+    /* border-top-color:#99bbe8; */
+    border-width: 0;
 }
 .x-panel-tl .x-panel-header {
-    color:#15428b;
+    /* color:#15428b; */
 	font:bold 11px tahoma,arial,verdana,sans-serif;
 }
 .x-panel-tc {
@@ -6524,14 +6582,14 @@ a.x-menu-item {
 }
 .x-panel-tl, .x-panel-tr, .x-panel-bl,  .x-panel-br{
 	background-image: url(../images/default/panel/corners-sprite.gif);
-    border-bottom-color:#99bbe8;
+    border-color:#000;
 }
 .x-panel-bc {
 	background-image: url(../images/default/panel/top-bottom.gif);
 }
 .x-panel-mc {
     font: normal 11px tahoma,arial,helvetica,sans-serif;
-    background-color:#dfe8f6;
+    /* background-color:#dfe8f6; */
 }
 .x-panel-ml {
 	background-color: #fff;
@@ -6800,3 +6858,4 @@ body.x-body-masked .x-window-plain .x-window-mc {
 .x-window-dlg .ext-mb-error {
     background-image:url(../images/default/window/icon-error.gif);
 }
+
