@@ -25,6 +25,6 @@
         <exclude name="META-INF/**"/> 
     </public>
 
-    <stylesheet src="Galaxy.css"/>
+    <stylesheet src="application.css"/>
 
 </module>

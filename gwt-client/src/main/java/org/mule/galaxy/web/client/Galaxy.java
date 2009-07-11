@@ -17,6 +17,27 @@
  */
 package org.mule.galaxy.web.client;
 
+import org.mule.galaxy.web.client.admin.AdministrationPanel;
+import org.mule.galaxy.web.client.item.AddItemForm;
+import org.mule.galaxy.web.client.item.ItemPanel;
+import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
+import org.mule.galaxy.web.client.registry.SearchPanel;
+import org.mule.galaxy.web.client.registry.ViewPanel;
+import org.mule.galaxy.web.client.ui.BaseConstants;
+import org.mule.galaxy.web.client.ui.BaseMessages;
+import org.mule.galaxy.web.client.util.ExternalHyperlink;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.AdminService;
+import org.mule.galaxy.web.rpc.AdminServiceAsync;
+import org.mule.galaxy.web.rpc.HeartbeatService;
+import org.mule.galaxy.web.rpc.HeartbeatServiceAsync;
+import org.mule.galaxy.web.rpc.RegistryService;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.SecurityService;
+import org.mule.galaxy.web.rpc.SecurityServiceAsync;
+import org.mule.galaxy.web.rpc.WExtensionInfo;
+import org.mule.galaxy.web.rpc.WUser;
+
 import com.extjs.gxt.ui.client.GXT;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -51,27 +72,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.client.item.AddItemForm;
-import org.mule.galaxy.web.client.item.ItemPanel;
-import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
-import org.mule.galaxy.web.client.registry.SearchPanel;
-import org.mule.galaxy.web.client.registry.ViewPanel;
-import org.mule.galaxy.web.client.util.ExternalHyperlink;
-import org.mule.galaxy.web.client.ui.BaseConstants;
-import org.mule.galaxy.web.client.ui.BaseMessages;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.AdminService;
-import org.mule.galaxy.web.rpc.AdminServiceAsync;
-import org.mule.galaxy.web.rpc.HeartbeatService;
-import org.mule.galaxy.web.rpc.HeartbeatServiceAsync;
-import org.mule.galaxy.web.rpc.RegistryService;
-import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.rpc.SecurityService;
-import org.mule.galaxy.web.rpc.SecurityServiceAsync;
-import org.mule.galaxy.web.rpc.WExtensionInfo;
-import org.mule.galaxy.web.rpc.WUser;
 
 
 /**
@@ -147,11 +147,11 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         base = new Viewport();
         base.setLayout(new BorderLayout());
 
-        createHeader();
+        createHeader(new Image("images/galaxy_logo_main_trans.gif"));
 
         tabPanel = new TabPanel();
         tabPanel.setAutoHeight(true);
-        
+
         tabNames.add("browse");
         tabNames.add("search");
 
@@ -187,7 +187,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
                 rightHeaderPanel.add(new Label("Signed in as: " + user.getName()));
                 ExternalHyperlink logout = new ExternalHyperlink(" Sign out", GWT.getHostPageBaseURL() + "j_logout");
                 rightHeaderPanel.add(logout);
-                
+
                 suppressTabHistory = true;
                 loadTabs(galaxy);
                 suppressTabHistory = false;
@@ -199,7 +199,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
         RootPanel.get().add(base);
         base.layout(true);
-        
+
         new HeartbeatTimer(Galaxy.this);
     }
 
@@ -210,7 +210,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
         BorderLayoutData data = new BorderLayoutData(LayoutRegion.SOUTH, 33);
         data.setMargins(new Margins());
-        
+
         footer = new Label(getFooterText());
         footer.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent arg0) {
@@ -224,7 +224,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         base.add(southPanel, data);
     }
 
-    protected void createHeader() {
+    protected void createHeader(Image logo) {
         ContentPanel northPanel = new ContentPanel();
         northPanel.setBorders(false);
         northPanel.setHeaderVisible(false);
@@ -232,14 +232,13 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         BorderLayoutData data = new BorderLayoutData(LayoutRegion.NORTH, 33);
         data.setMargins(new Margins());
         data.setSize(50);
-        
+
         rightHeaderPanel = new FlowPanel();
         rightHeaderPanel.setStyleName("header-right");
-        
+
         FlowPanel header = new FlowPanel();
         header.setStyleName("header");
         header.add(rightHeaderPanel);
-        final Image logo = new Image("images/galaxy_logo_main.gif");
         logo.setTitle("Home");
         logo.addStyleName("gwt-Hyperlink");
         logo.addClickHandler(new ClickHandler() {
@@ -260,10 +259,10 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         centerPanel.setScrollMode(Scroll.NONE);
         centerPanel.setLayout(new FlowLayout());
         centerPanel.add(tabPanel);
-        
+
         BorderLayoutData data = new BorderLayoutData(LayoutRegion.CENTER);
         data.setMargins(new Margins());
-        
+
         base.add(centerPanel, data);
     }
 
@@ -320,7 +319,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         TabItem.HeaderItem header = tab.getHeader();
         header.setText(name);
 
-        if(toolTip != null ) {
+        if (toolTip != null) {
             header.setToolTip(toolTip);
         }
         tab.setLayout(new FlowLayout());
@@ -372,16 +371,16 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     protected void show(PageInfo page, List<String> params) {
         TabItem p = (TabItem) tabPanel.getWidget(page.getTabIndex());
 
-        if (!tabPanel.getSelectedItem().equals(p)){
+        if (!tabPanel.getSelectedItem().equals(p)) {
             tabPanel.setSelection(p);
         }
-        
+
         p.removeAll();
 
         AbstractComposite instance = page.getInstance();
         p.add(instance);
         p.layout();
-        
+
         instance.onShow(params);
     }
 
@@ -410,7 +409,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
                 params.add(split[i]);
             }
         }
-        
+
         // hide the previous page
         if (curInfo != null) {
             curInfo.getInstance().onHide();
@@ -440,9 +439,9 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
     public PageInfo getPageInfo(String token) {
         PageInfo page = history.get(token);
-        
+
         if (page == null) {
-            
+
             // hack to match "foo/*" style tokens
             int slashIdx = token.indexOf("/");
             if (slashIdx != -1) {
@@ -453,7 +452,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
                 page = history.get(token.substring(0, slashIdx));
             }
         }
-        
+
         return page;
     }
 
@@ -502,7 +501,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     public BaseMessages getBaseMessages() {
         return baseMessages;
     }
-    
+
     public boolean hasPermission(String perm) {
         for (Iterator<String> itr = user.getPermissions().iterator(); itr.hasNext();) {
             String s = itr.next();
