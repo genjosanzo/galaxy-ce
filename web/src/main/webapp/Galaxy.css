@@ -110,7 +110,7 @@ a:visited {
  **/
 
 .left-menu {
-    border-right: 1px #aaa solid;
+    /*border-right: 1px #aaa solid;*/
     width: 205px;
 }
 
@@ -1229,11 +1229,11 @@ a:visited {
 }
 
 .gwt-HorizontalSplitPanel {
-  border: 8px solid #C3D9FF;
+  /*border: 8px solid #C3D9FF;*/
 }
 
 .gwt-HorizontalSplitPanel .hsplitter {
-  background-color: #C3D9FF;
+  border-left: 2px solid #EDEDED;
   cursor: move;
 }
 
