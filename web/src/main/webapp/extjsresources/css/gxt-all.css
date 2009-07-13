@@ -5736,7 +5736,6 @@ ul.x-tab-strip-bottom{
 .x-tab-panel-body {
     border-color:yellow;
     background-color:#fff;
-    height: 100%;
 }
 .x-tab-panel-body-top {
     border-top: 0 none;
