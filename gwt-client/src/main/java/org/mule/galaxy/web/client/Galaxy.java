@@ -26,6 +26,7 @@ import org.mule.galaxy.web.client.registry.ViewPanel;
 import org.mule.galaxy.web.client.ui.BaseConstants;
 import org.mule.galaxy.web.client.ui.BaseMessages;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.AdminService;
 import org.mule.galaxy.web.rpc.AdminServiceAsync;
@@ -65,6 +66,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -85,7 +87,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     private SecurityServiceAsync securityService;
     private HeartbeatServiceAsync heartbeatService;
     private AdminServiceAsync adminService;
-    private FlowPanel rightHeaderPanel;
+    private InlineFlowPanel rightHeaderPanel;
     private PageInfo curInfo;
     private Map<String, PageInfo> history = new HashMap<String, PageInfo>();
     protected TabPanel tabPanel;
@@ -184,10 +186,18 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         registryService.getUserInfo(new AbstractCallback(itemPanel) {
             public void onSuccess(Object o) {
                 user = (WUser) o;
-                rightHeaderPanel.add(new Label("Signed in as: " + user.getName()));
-                ExternalHyperlink logout = new ExternalHyperlink(" Sign out", GWT.getHostPageBaseURL() + "j_logout");
-                rightHeaderPanel.add(logout);
 
+                ExternalHyperlink logout = new ExternalHyperlink(" Sign out", GWT.getHostPageBaseURL() + "j_logout");
+
+                rightHeaderPanel.add(new Label("Signed in as: " + user.getName()));
+                /*
+                rightHeaderPanel.add(new Label(" | "));
+                rightHeaderPanel.add(new Hyperlink("Help",null));
+                rightHeaderPanel.add(new Label(" | "));
+                rightHeaderPanel.add(new Hyperlink("Preferences",null));
+                */
+                rightHeaderPanel.add(new Label(" | "));
+                rightHeaderPanel.add(logout);
                 suppressTabHistory = true;
                 loadTabs(galaxy);
                 suppressTabHistory = false;
@@ -202,6 +212,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
         new HeartbeatTimer(Galaxy.this);
     }
+
 
     private void createFooter() {
         ContentPanel southPanel = new ContentPanel();
@@ -233,7 +244,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         data.setMargins(new Margins());
         data.setSize(50);
 
-        rightHeaderPanel = new FlowPanel();
+        rightHeaderPanel = new InlineFlowPanel();
         rightHeaderPanel.setStyleName("header-right");
 
         FlowPanel header = new FlowPanel();
