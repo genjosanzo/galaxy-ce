@@ -649,6 +649,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                     return new SearchResults(0, items);
                 }
                 
+                System.out.println("Query: " + qstr.toString());
                 if (log.isDebugEnabled()) {
                     log.debug("Query: " + qstr.toString());
                 }

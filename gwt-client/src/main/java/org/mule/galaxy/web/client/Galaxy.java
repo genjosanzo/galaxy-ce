@@ -376,7 +376,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
      * @param token
      */
     public void show(String token) {
-        show(getPageInfo(token), new ArrayList<String>());
+        show(getPageInfo(token), getParams(token));
     }
 
     protected void show(PageInfo page, List<String> params) {
@@ -412,14 +412,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         }
 
         PageInfo page = getPageInfo(token);
-        List<String> params = new ArrayList<String>();
-        String[] split = token.split("/");
-
-        if (split.length > 1) {
-            for (int i = 1; i < split.length; i++) {
-                params.add(split[i]);
-            }
-        }
+        List<String> params = getParams(token);
 
         // hide the previous page
         if (curInfo != null) {
@@ -442,6 +435,19 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         }
 
         suppressTabHistory = false;
+    }
+
+
+    private List<String> getParams(String token) {
+        List<String> params = new ArrayList<String>();
+        String[] split = token.split("/");
+
+        if (split.length > 1) {
+            for (int i = 1; i < split.length; i++) {
+                params.add(split[i]);
+            }
+        }
+        return params;
     }
 
     public String getCurrentToken() {

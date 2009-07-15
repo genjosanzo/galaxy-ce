@@ -53,9 +53,11 @@ public class LinkExtensionQueryBuilder extends IdentifiableExtensionQueryBuilder
             Collection<Link> links = linkDao.getLinks(pd.getId(), operator == Operator.LIKE, o);
             ArrayList<String> ids = new ArrayList<String>();
             for (Link result : links) {
-                String id = result.getItem().getId();
-                
-                ids.add(id.substring(id.indexOf('$') + 1));
+                if (result.getItem() != null) {
+                    String id = result.getItem().getId();
+                    
+                    ids.add(id.substring(id.indexOf('$') + 1));
+                }
             }
             
             return ids;
