@@ -18,15 +18,10 @@
 
 package org.mule.galaxy.web.client;
 
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.Toolbox;
-
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalSplitPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
@@ -82,14 +77,15 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
         initWidget(panel);
     }
 
-    public void onShow(List<String> params) {
+    @Override
+    public void show(List<String> params) {
         if (firstShow) {
             firstShow = false;
             onFirstShow();
         }
 
         if (mainWidget instanceof AbstractComposite) {
-            ((AbstractComposite) mainWidget).onShow(params);
+            ((AbstractComposite) mainWidget).show(params);
         }
     }
 
@@ -142,7 +138,7 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
             topPanel.remove(topWidget);
 
         if (widget instanceof AbstractComposite) {
-            ((AbstractComposite) widget).onShow();
+            ((AbstractComposite) widget).show();
         }
         topWidget = widget;
         if (widget != null) {

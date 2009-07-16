@@ -132,13 +132,14 @@ public abstract class ApplicationPanel extends AbstractErrorShowingComposite {
     }
 
 
-    public void onShow(List<String> params) {
+    @Override
+    public void show(List<String> params) {
         if (firstShow) {
             firstShow = false;
             onFirstShow();
         }
         if (mainWidget instanceof AbstractComposite) {
-            ((AbstractComposite) mainWidget).onShow(params);
+            ((AbstractComposite) mainWidget).show(params);
         }
 
         base.layout();
@@ -189,7 +190,7 @@ public abstract class ApplicationPanel extends AbstractErrorShowingComposite {
             topPanel.remove(topWidget);
 
         if (widget instanceof AbstractComposite) {
-            ((AbstractComposite) widget).onShow();
+            ((AbstractComposite) widget).show();
         }
         topWidget = widget;
         if (widget != null) {

@@ -18,14 +18,12 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Hyperlink;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Hyperlink;
-
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 
 public class PropertyDescriptorListPanel
     extends AbstractAdministrationComposite
@@ -34,23 +32,20 @@ public class PropertyDescriptorListPanel
         super(a);
     }
 
-    public void onShow() {
-        super.onShow();
+    @Override
+    public void doShow() {
+        super.doShow();
 
         final FlexTable table = createTitledRowTable(panel, "Properties");
 
         table.setText(0, 0, "Property");
         table.setText(0, 1, "Description");
 
-        adminPanel.getRegistryService().getPropertyDescriptors(false, new AbstractCallback(adminPanel) {
+        adminPanel.getRegistryService().getPropertyDescriptors(false, new AbstractCallback<List<WPropertyDescriptor>>(adminPanel) {
 
-            public void onSuccess(Object result) {
-                Collection props = (Collection) result;
-
+            public void onSuccess(List<WPropertyDescriptor> result) {
                 int i = 1;
-                for (Iterator itr = props.iterator(); itr.hasNext();) {
-                    final WPropertyDescriptor prop = (WPropertyDescriptor) itr.next();
-
+                for (WPropertyDescriptor prop : result) {
                     String propName = prop.getName();
                     if (propName == null || propName.trim().length() == 0) {
                         propName = "<empty>";

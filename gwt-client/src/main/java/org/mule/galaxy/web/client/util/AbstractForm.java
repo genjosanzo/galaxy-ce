@@ -62,8 +62,9 @@ public abstract class AbstractForm extends AbstractComposite {
         initWidget(panel);
     }
 
-    public void onShow(List<String> params) {
-        super.onShow();
+    @Override
+    public void show(List<String> params) {
+        super.show();
 
         if (params.size() > 0) {
             String param = params.get(0);

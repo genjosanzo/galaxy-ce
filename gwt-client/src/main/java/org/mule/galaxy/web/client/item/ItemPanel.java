@@ -93,7 +93,8 @@ public class ItemPanel extends AbstractWithTopComposite {
         initWidget(main);
     }
 
-    public void onShow(List<String> params) {
+    @Override
+    public void show(List<String> params) {
         this.params = params;
         clearErrorMessage();
         panel.clear();
@@ -234,7 +235,7 @@ public class ItemPanel extends AbstractWithTopComposite {
                 ItemPanel.this.clearErrorMessage();
                 AbstractComposite composite = (AbstractComposite) tabs.getWidget(tab);
 
-                composite.onShow();
+                composite.show();
             }
 
         });

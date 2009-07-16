@@ -63,8 +63,9 @@ public class PolicyResultsPanel extends AbstractErrorShowingComposite {
         initWidget(panel);
     }
 
-    public void onShow(List<String> params) {
-        super.onShow(params);
+    @Override
+    public void show(List<String> params) {
+        super.show(params);
     }
-    
+
 }

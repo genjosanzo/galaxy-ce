@@ -34,7 +34,8 @@ public class AbstractFlowComposite extends AbstractComposite {
         initWidget(panel);
     }
 
-    public void onShow() {
+    @Override
+    public void doShow() {
         panel.clear();
         
     }

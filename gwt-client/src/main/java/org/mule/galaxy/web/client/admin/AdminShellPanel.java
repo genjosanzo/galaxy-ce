@@ -102,8 +102,9 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         scriptResultsLabel = new Label();
     }
 
-    public void onShow() {
-        super.onShow();
+    @Override
+    public void doShow() {
+        super.doShow();
 
         initLocalWidgets();
 
@@ -189,7 +190,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
 
     protected void refresh() {
-        onShow();
+        doShow();
         saveAsCB.setChecked(false);
         saveAsTB.setText(null);
         loadOnStartupCB.setChecked(false);

@@ -49,7 +49,8 @@ public abstract class AbstractBrowsePanel extends AbstractWithTopComposite {
         initWidget(main);
     }
 
-    public void onShow(List<String> params) {
+    @Override
+    public void show(List<String> params) {
         int resultStartParamIdx = getResultStartParameterIndex();
         
         if (params.size() > resultStartParamIdx) {

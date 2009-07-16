@@ -78,7 +78,8 @@ public class PolicyPanel extends AbstractComposite {
 
     }
 
-    public void onShow() {
+    @Override
+    public void doShow() {
         panel.clear();
         lsPanel = new LifecycleSelectionPanel(menuPanel, svc);
 

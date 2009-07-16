@@ -125,7 +125,8 @@ public class AddItemForm extends AbstractErrorShowingComposite implements Submit
     }
 
 
-    public void onShow(List<String> params) {
+    @Override
+    public void show(List<String> params) {
         if (params.size() > 0) {
             itemId = params.get(0);
             galaxy.getRegistryService().getItemInfo(itemId, false, new AbstractCallback<ItemInfo>(this) {
@@ -149,7 +150,7 @@ public class AddItemForm extends AbstractErrorShowingComposite implements Submit
         panel.add(table);
 
         setupAddForm();
-        this.onShow();
+        this.show();
     }
 
 

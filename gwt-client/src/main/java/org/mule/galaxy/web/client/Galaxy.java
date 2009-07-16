@@ -46,7 +46,6 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.event.TabPanelEvent;
 import com.extjs.gxt.ui.client.util.Margins;
-import com.extjs.gxt.ui.client.util.Theme;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
@@ -399,7 +398,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         p.add(instance);
         p.layout();
 
-        instance.onShow(params);
+        instance.show(params);
     }
 
     public void onValueChange(ValueChangeEvent<String> event) {

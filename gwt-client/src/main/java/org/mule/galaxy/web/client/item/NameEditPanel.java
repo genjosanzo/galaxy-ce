@@ -160,7 +160,7 @@ public class NameEditPanel extends Composite {
 
                 public void onSuccess(Object arg0) {
                     // need to refresh the whole panel to fetch new workspace location and entry name
-                    callbackPanel.onShow(callbackParams);
+                    callbackPanel.show(callbackParams);
                 }
 
             });

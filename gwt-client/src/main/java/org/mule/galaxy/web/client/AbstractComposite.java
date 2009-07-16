@@ -19,6 +19,7 @@
 package org.mule.galaxy.web.client;
 
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.ui.ProgressIndicatorPopup;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -31,12 +32,51 @@ import java.util.List;
 
 public abstract class AbstractComposite extends Composite {
 
-    public void onShow() {
+    // we could provide a method to overload and create custom progress dialogs, but no need yet ;)
+    protected ProgressIndicatorPopup progressIndicatorPopup = new ProgressIndicatorPopup();
 
+    private boolean useLoadingIndicator = true;
+
+    public final void show() {
+        onBeforeShow();
+        doShow();
+        onAfterShow();
+    }
+    
+    public void doShow() {
+        // no-op
+    }
+
+    public void onBeforeShow() {
+        if (useLoadingIndicator) {
+            progressIndicatorPopup.show();
+        }
+    }
+
+    public void onAfterShow() {
+        if (useLoadingIndicator) {
+            progressIndicatorPopup.hide();
+        }
+    }
+
+    public void show(List<String> params) {
+        this.show();
+    }
+
+    public boolean isUseLoadingIndicator() {
+        return useLoadingIndicator;
+    }
+
+    /**
+     * Set to false if you don't want to use a standard 'loading' popup.
+     * @param useLoadingIndicator default is true
+     */
+    public void setUseLoadingIndicator(boolean useLoadingIndicator) {
+        this.useLoadingIndicator = useLoadingIndicator;
     }
 
     public void onHide() {
-
+        // no-op
     }
 
     public static Widget newSpacer() {
@@ -158,9 +198,5 @@ public abstract class AbstractComposite extends Composite {
 
         rightWidget.setStyleName("rightlinked-title-link");
         return commentTitlePanel;
-    }
-
-    public void onShow(List<String> params) {
-        onShow();
     }
 }

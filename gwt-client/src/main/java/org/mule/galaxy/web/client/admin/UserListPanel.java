@@ -34,8 +34,9 @@ public class UserListPanel
         super(a);
     }
 
-    public void onShow() {
-        super.onShow();
+    @Override
+    public void doShow() {
+        super.doShow();
 
         final FlexTable table = createTitledRowTable(panel, "Users");
 

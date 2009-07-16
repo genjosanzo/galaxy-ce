@@ -68,7 +68,8 @@ public class ViewPanel extends AbstractBrowsePanel {
         return "view/" + viewId;
     }
 
-    public void onShow(List<String> params) {
+    @Override
+    public void show(List<String> params) {
         if (params.size() > 0) {
             String newId = params.get(0);
             if (!newId.equals(viewId)) {
@@ -108,7 +109,7 @@ public class ViewPanel extends AbstractBrowsePanel {
 
         loadView();
 
-        super.onShow(params);
+        super.show(params);
 
         if (NEW_VIEW_ID.equals(viewId)) {
             if (artifactListPanel != null) {

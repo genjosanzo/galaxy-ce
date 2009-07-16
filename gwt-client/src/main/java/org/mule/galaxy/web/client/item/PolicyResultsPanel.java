@@ -51,7 +51,8 @@ public class PolicyResultsPanel extends AbstractErrorShowingComposite {
         initWidget(base);
     }
     
-    public void onShow() {
+    @Override
+    public void doShow() {
         panel.clear();
         
         panel.add(createTitle("Policy Failures"));
@@ -106,5 +107,5 @@ public class PolicyResultsPanel extends AbstractErrorShowingComposite {
             artifactPanel.add(failurePanel);
         }
     }
-    
+
 }
