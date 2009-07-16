@@ -108,12 +108,13 @@ public class AdministrationPanel extends MenuPanel {
 
         for (final NavMenuItem item : ls.getModels()) {
 
-            // TODO:
+            // handle page creation for list forms
             createPageInfo(item.getTokenBase(), item.getListPanel());
 
             // we could add a contextual menul item for each add
             if (item.getFormPanel() != null) {
 
+                // handle page infor creation for add forms
                 createPageInfo(item.getTokenBase() + "/" + Galaxy.WILDCARD, item.getFormPanel());
 
                 MenuItem insert = new MenuItem();
