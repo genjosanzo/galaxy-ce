@@ -21,17 +21,27 @@ package org.mule.galaxy.web.client.admin;
 import org.mule.galaxy.web.client.AbstractComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.MenuPanel;
+import org.mule.galaxy.web.client.NavMenuItem;
 import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.activity.ActivityPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 
+import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.ListView;
+import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.google.gwt.user.client.ui.Hyperlink;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdministrationPanel extends MenuPanel {
 
     private final Galaxy galaxy;
+    private ListStore<NavMenuItem> ls;
+    private ListView<NavMenuItem> lv;
 
     public AdministrationPanel(Galaxy galaxy) {
         super();
@@ -42,6 +52,13 @@ public class AdministrationPanel extends MenuPanel {
     protected void onFirstShow() {
         super.onFirstShow();
 
+        /*List<NavMenuItem> items = createNavMenuItemsList();
+        ContentPanel c = new ContentPanel();
+        c = (ContentPanel) createNavMeunContainer(c, items);
+        c.setHeading("Manage");
+        addMenuContainer(c);
+        */
+
         Toolbox manageBox = new Toolbox(false);
         manageBox.setTitle("Manage");
         addMenuItem(manageBox);
@@ -51,6 +68,54 @@ public class AdministrationPanel extends MenuPanel {
         utilityBox.setTitle("Utilities");
         addMenuItem(utilityBox);
         createUtilityMenuItems(this.galaxy, utilityBox);
+    }
+
+    protected List<NavMenuItem> createNavMenuItemsList() {
+        ArrayList a = new ArrayList();
+        if (galaxy.hasPermission("MANAGE_GROUPS")) {
+            a.add(new NavMenuItem("Groups",
+                    "groups",
+                    new GroupListPanel(this),
+                    new GroupForm(this)));
+        }
+        if (galaxy.hasPermission("MANAGE_LIFECYCLES")) {
+            a.add(new NavMenuItem("Lifecycles",
+                    "lifecycles",
+                    new LifecycleListPanel(this),
+                    new LifecycleForm(this)));
+        }
+
+        if (galaxy.hasPermission("MANAGE_POLICIES")) {
+            /*
+            Hyperlink link = new Hyperlink("Policies", "policies");
+            createPageInfo(link.getTargetHistoryToken(), new PolicyPanel(this, galaxy));
+            manageBox.add(link);
+            
+                    */
+        }
+
+        if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
+            a.add(new NavMenuItem("Properties",
+                    "properties",
+                    new PropertyDescriptorListPanel(this),
+                    new PropertyDescriptorForm(this)));
+        }
+
+        if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
+            a.add(new NavMenuItem("Types",
+                    "types",
+                    new TypeListPanel(this),
+                    new TypeForm(this)));
+        }
+
+        if (galaxy.hasPermission("MANAGE_USERS")) {
+            a.add(new NavMenuItem("Users",
+                    "users",
+                    new UserListPanel(this),
+                    new UserForm(this)));
+        }
+
+        return a;
     }
 
     protected void createMenuItems(Galaxy galaxy, Toolbox manageBox) {

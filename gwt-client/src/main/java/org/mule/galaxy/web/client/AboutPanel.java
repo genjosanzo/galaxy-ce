@@ -18,34 +18,19 @@
 
 package org.mule.galaxy.web.client;
 
-import com.extjs.gxt.ui.client.Style;
-import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.Dialog;
-import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.Html;
-import com.extjs.gxt.ui.client.widget.layout.CenterLayout;
 
 
 /**
  * Used to display version and license information
  */
-public class AboutPanel extends LayoutContainer {
+public class AboutPanel extends AbstractInfoPanel {
 
-    public AboutPanel() {
-        final Dialog simple = new Dialog();
-        simple.setHeading("About...");
-        simple.setButtons(Dialog.OK);
-        simple.setBodyStyleName("pad-text");
-        simple.add(getAboutText());
-        simple.setScrollMode(Style.Scroll.AUTO);
-        simple.setHideOnButtonClick(true);
-        simple.setWidth(500);
-        simple.show();
+    public String getHeading() {
+        return "About...";
     }
 
-    // FIXME:
-    // we need version info, license info, support info, etc...
-    public Html getAboutText() {
+    public Html getText() {
         Html html = new Html();
         html.setHtml("<b>Sed ut perspiciatis unde</b>" +
                 "<br><br> " +
@@ -68,5 +53,6 @@ public class AboutPanel extends LayoutContainer {
 
         return html;
     }
+
 
 }

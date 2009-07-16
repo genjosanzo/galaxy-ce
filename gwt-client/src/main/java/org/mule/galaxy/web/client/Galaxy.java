@@ -102,6 +102,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     protected List extensions;
     private String currentToken;
     protected Label footer;
+    protected InlineFlowPanel footerPanel;
 
     protected List<String> tabNames = new ArrayList<String>();
     protected int repositoryTabIndex;
@@ -114,7 +115,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     public void onModuleLoad() {
 
 
-        GXT.setDefaultTheme(Theme.GRAY, true);
+        //GXT.setDefaultTheme(Theme.GRAY, true);
         GXT.BLANK_IMAGE_URL = "extjsresources/images/default/s.gif";
 
         // prefetch the image, so that e.g. SessionKilled dialog can be properly displayed for the first time
@@ -222,17 +223,23 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         BorderLayoutData data = new BorderLayoutData(LayoutRegion.SOUTH, 33);
         data.setMargins(new Margins());
 
-        footer = new Label(getFooterText());
+        footerPanel = new InlineFlowPanel();
+        footerPanel.setStyleName("footer");
+
+         createFooterConent();
+
+        southPanel.add(footerPanel);
+        base.add(southPanel, data);
+    }
+
+    protected void createFooterConent() {
+        Label footer = new Label(getFooterText());
         footer.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent arg0) {
                 new AboutPanel();
             }
         });
-
-        footer.setStyleName("footer");
-
-        southPanel.add(footer);
-        base.add(southPanel, data);
+        footerPanel.add(footer);
     }
 
     protected void createHeader(Image logo) {
