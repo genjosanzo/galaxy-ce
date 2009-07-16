@@ -21,20 +21,8 @@ package org.mule.galaxy.web.client;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.Toolbox;
 
-import com.extjs.gxt.ui.client.event.BaseEvent;
-import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.ListViewEvent;
-import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.MenuEvent;
-import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.widget.LayoutContainer;
-import com.extjs.gxt.ui.client.widget.ListView;
-import com.extjs.gxt.ui.client.widget.menu.Menu;
-import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalSplitPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -53,6 +41,7 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
     private FlowPanel leftMenu;
     private FlowPanel centerPanel;
     private boolean firstShow = true;
+
 
     public MenuPanel() {
         this(true);
@@ -165,6 +154,7 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
         return mainWidget;
     }
 
+    /*
     protected void createLinkWithAdd(Toolbox manageBox,
                                      String title,
                                      String tokenBase,
@@ -179,52 +169,6 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
         createPageInfo(tokenBase + "/" + Galaxy.WILDCARD, form);
     }
 
-    /*
-     * Render a listview inside a container. The is the GXT version of createLinkWithAdd
-     */
-
-    protected LayoutContainer createNavMeunContainer(LayoutContainer c, List<NavMenuItem> items) {
-
-        // store for all menu items in container
-        ListStore<NavMenuItem> ls = new ListStore<NavMenuItem>();
-        ls.add(items);
-
-        ListView<NavMenuItem> lv = new ListView<NavMenuItem>();
-        lv.setDisplayProperty("title"); // from item
-        lv.setStore(ls);
-
-        for (final NavMenuItem item : ls.getModels()) {
-
-            // add contextual menul
-            if (item.getFormPanel() != null) {
-                Menu contextMenu = new Menu();
-                contextMenu.setWidth(100);
-
-                MenuItem add = new MenuItem();
-                add.setText("Add");
-                add.addSelectionListener(new SelectionListener<MenuEvent>() {
-                    public void componentSelected(MenuEvent ce) {
-                        History.newItem(item.getTokenBase() + NavMenuItem.NEW);
-                    }
-                });
-                contextMenu.add(add);
-                lv.setContextMenu(contextMenu);
-            }
-
-            lv.addListener(Events.Select, new Listener<BaseEvent>() {
-                public void handleEvent(BaseEvent be) {
-                    ListViewEvent lve = (ListViewEvent) be;
-                    NavMenuItem nmi = (NavMenuItem) lve.getModel();
-                    History.newItem(nmi.getTokenBase());
-                }
-            });
-
-        }
-
-        c.add(lv);
-        return c;
-    }
-
 
     protected void createLinkWithAdd(String tokenBase,
                                      AbstractComposite list,
@@ -233,8 +177,6 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
         createPageInfo(tokenBase, list);
         createPageInfo(tokenBase + "/" + Galaxy.WILDCARD, form);
     }
-
-    protected abstract void createPageInfo(String token, final AbstractComposite composite);
 
     protected void createDivWithAdd(Toolbox manageBox, Hyperlink link, Hyperlink add) {
         InlineFlowPanel item = new InlineFlowPanel();
@@ -245,6 +187,9 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
 
         manageBox.add(item);
     }
+    */
+
+    protected abstract void createPageInfo(String token, final AbstractComposite composite);
 
 
 }

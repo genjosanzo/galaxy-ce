@@ -190,10 +190,10 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
                 ExternalHyperlink logout = new ExternalHyperlink(" Sign out", GWT.getHostPageBaseURL() + "j_logout");
 
-                rightHeaderPanel.add(new Label("Signed in as: " + user.getName()));
-                /*
+                rightHeaderPanel.add(new Label("Welcome, " + user.getName()));
                 rightHeaderPanel.add(new Label(" | "));
                 rightHeaderPanel.add(new Hyperlink("Help",null));
+                /*
                 rightHeaderPanel.add(new Label(" | "));
                 rightHeaderPanel.add(new Hyperlink("Preferences",null));
                 */
