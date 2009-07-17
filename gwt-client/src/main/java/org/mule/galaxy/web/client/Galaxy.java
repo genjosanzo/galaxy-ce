@@ -233,6 +233,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
     protected void createFooterConent() {
         Label footer = new Label(getFooterText());
+        footer.setStyleName("footer-link");
         footer.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent arg0) {
                 new AboutPanel();
