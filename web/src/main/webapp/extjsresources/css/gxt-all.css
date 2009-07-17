@@ -1,8 +1,8 @@
 /*
- * Ext GWT Library 2.0-rc2
+ * Ext GWT Library 2.0
  * Copyright(c) 2006-2009, Ext JS, LLC.
  * licensing@extjs.com
- * 
+ *
  * http://extjs.com/license
  */
 html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,td{margin:0;padding:0;}img,body,html{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}ol,ul {list-style:none;}caption,th {text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;}q:before,q:after{content:'';}
@@ -335,7 +335,7 @@ html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,bloc
 
 /* Grid & Tree boders */
 .x-border {
-  /* border: 1px solid green; */
+  /* border: 1px solid #99BBE8; */
 }
 
 .x-border-top {
@@ -565,7 +565,7 @@ html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,bloc
 }
 /* Line below tabs */
 .x-tab-panel-header {
-	/* border: 1px solid;
+	/*border: 1px solid;
 	padding-bottom: 2px; */
 }
 .x-tab-panel-footer {
@@ -633,7 +633,7 @@ ul.x-tab-strip-bottom{
 /* Tab Spacing */
 ul.x-tab-strip li {
     float:left;
-    margin-left:0;
+    margin-left:0px;
 }
 ul.x-tab-strip li.x-tab-edge {
     float:left;
@@ -838,10 +838,10 @@ ul.x-tab-strip li.x-tab-edge {
     margin-right:18px;
 }
 .x-tab-scrolling {
-    position:relative;    
+    position:relative;
 }
 .x-tab-panel-bbar .x-toolbar {
-    border:1px solid;
+    /*border:1px solid;*/
     border-top:0 none;
     overflow:hidden;
     padding:2px;
@@ -856,7 +856,7 @@ ul.x-tab-strip li.x-tab-edge {
     margin: 0;
 }
 .x-form-text, textarea.x-form-field{
-    padding:1px 3px;
+    padding:px 3px;
     background:repeat-x 0 0;
     border:1px solid;
 }
@@ -884,14 +884,14 @@ textarea.x-form-field {
     height:18px;
 }
 .ext-safari.ext-mac textarea.x-form-field {
-    margin-bottom:-2px;  
+    margin-bottom:-2px;
 }
 .ext-gecko .x-form-text, .ext-ie8 .x-form-text {
-    padding-top:2px;  
+    padding-top:2px;
     padding-bottom:0;
 }
 textarea {
-    resize: none;   
+    resize: none;
 }
 .x-form-select-one {
     height:20px;
@@ -928,7 +928,7 @@ textarea {
     top:0;
 }
 .ext-safari .x-form-field-wrap .x-form-trigger{
-    height:21px;  
+    height:21px;
 }
 .x-form-field-wrap .x-form-date-trigger, .x-form-field-wrap .x-form-clear-trigger, .x-form-field-wrap .x-form-search-trigger{
     cursor:pointer;
@@ -1029,6 +1029,7 @@ textarea {
 }
 .x-form-element {
     padding-left:105px;
+    position: relative;
 }
 .x-form-invalid-msg {
     padding:2px;
@@ -1064,7 +1065,7 @@ textarea {
     vertical-align:middle;
 }
 .ext-ie6 .x-small-editor .x-form-text, .ext-ie7 .x-small-editor .x-form-text {
-    height:20px !important;  
+    height:20px !important;
     line-height:16px !important;
 }
 
@@ -1132,10 +1133,10 @@ textarea {
 	clear:none;
 }
 .x-form .x-form-btns-ct .x-form-btns-center{
-	text-align:center;  
+	text-align:center;
 }
 .x-form .x-form-btns-ct .x-form-btns-center table{
-	margin:0 auto;  
+	margin:0 auto;
 }
 .x-form .x-form-btns-ct table td.x-form-btn-td{
 	padding:3px;
@@ -1171,7 +1172,7 @@ textarea {
     border:1px solid;
     padding:10px;
     margin-bottom:10px;
-    display:block;  
+    display:block;
 }
 .ext-ie .x-fieldset legend {
     margin-bottom:10px;
@@ -1196,7 +1197,7 @@ fieldset.x-panel-collapsed {
     border-width: 1px 1px 0 1px !important;
     border-left-color: transparent;
     border-right-color: transparent;
-}      
+}
 .ext-ie6 fieldset.x-panel-collapsed{
     padding-bottom:0 !important;
     border-width: 1px 0 0 0 !important;
@@ -1381,7 +1382,7 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 .ext-ie .x-item-disabled .x-btn-mc img {
 	filter: alpha(opacity=60);
 }
-.ext-gecko .x-btn button {
+.ext-gecko .x-btn button,.ext-webkit .x-btn button {
     padding-left:0;
     padding-right:0;
 }
@@ -1706,7 +1707,7 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 }
 .x-toolbar{
     border-style:solid;
-    border-width:0 0 1px 0;
+    border-width:0 0 0 0;
     display: block;
 	padding:2px;
     background:repeat-x top left;
@@ -1741,7 +1742,7 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 .x-toolbar .x-toolbar-cell {
     vertical-align:middle;
 }
-.x-toolbar .x-btn-tl, .x-toolbar .x-btn-tr, .x-toolbar .x-btn-tc, .x-toolbar .x-btn-ml, .x-toolbar .x-btn-mr, 
+.x-toolbar .x-btn-tl, .x-toolbar .x-btn-tr, .x-toolbar .x-btn-tc, .x-toolbar .x-btn-ml, .x-toolbar .x-btn-mr,
 .x-toolbar .x-btn-mc, .x-toolbar .x-btn-bl, .x-toolbar .x-btn-br, .x-toolbar .x-btn-bc
 {
 	background-position: 500px 500px;
@@ -1869,7 +1870,7 @@ div.x-toolbar-no-items {
     height:100%;
 }
 .ext-ie .x-resizable-handle-east {
-    margin-right:-1px;  
+    margin-right:-1px;
 }
 .x-resizable-handle-south{
     width:100%;
@@ -1879,7 +1880,7 @@ div.x-toolbar-no-items {
     height:6px;
 }
 .ext-ie .x-resizable-handle-south {
-    margin-bottom:-1px;  
+    margin-bottom:-1px;
 }
 .x-resizable-handle-west{
     width:6px;
@@ -1984,7 +1985,8 @@ div.x-toolbar-no-items {
 }
 
 .x-grid-panel .x-panel-mc .x-panel-body {
-  border: 1px solid;
+  /*border: 1px solid;*/
+    border: 0px solid;
 }
 
 .x-grid3 .x-grid3-row-table {
@@ -2392,7 +2394,7 @@ a.x-grid3-hd-btn:hover {
   background-color: transparent;
 }
 .x-grid3-hd-checker {
-  padding-bottom: 0px !important; 
+  padding-bottom: 0px !important;
 }
 .x-grid3-row .x-grid3-row-checker {
   background-position: 2px 2px;
@@ -2624,7 +2626,7 @@ a.x-grid3-hd-btn:hover {
 }
 
 .x-dd-cursor {
-  cursor: default !important; 
+  cursor: default !important;
 }
 
 .x-insert-bar {
@@ -2877,7 +2879,7 @@ a.x-grid3-hd-btn:hover {
 }
 
 .x-ftree2-node-drop {
-  background-color: #defadc; 
+  background-color: #defadc;
 }
 
 .x-ftree2-joint,.x-ftree2-icon {
@@ -3046,7 +3048,7 @@ a.x-grid3-hd-btn:hover {
 .x-date-middle {
     padding-top:2px;
     padding-bottom:2px;
-    width:130px;  
+    width:130px;
 }
 .x-date-right a, .x-date-left a{
     display:block;
@@ -3219,7 +3221,7 @@ td.x-date-mp-sep {
 }
 
 .x-date-picker, .x-date-picker a {
-  font-size: 11px; 
+  font-size: 11px;
 }
 
 .x-date-right-icon {
@@ -3604,7 +3606,7 @@ a.x-menu-item {
 }
 
 .x-menu-text {
-  
+
   border-style: solid;
   background: #D6E3F2;
   border-color:#DAE6F4 #99bbe8 #99bbe8 #DAE6F4;
@@ -3696,7 +3698,7 @@ a.x-menu-item {
 }
 .x-combo-list-inner {
     overflow:auto;
-    position:relative;  
+    position:relative;
     zoom:1;
     overflow-x:hidden;
 }
@@ -3723,16 +3725,18 @@ a.x-menu-item {
     border-bottom:0 none;
 }
 
-/* Tree Buttons positioning */
+/* Tree Buttons positioning
 .x-panel-bbar {
     position:relative;
     top:-300px;
 }
-/* Tree items positioning */
+ */
+/* Tree items positioning
 .x-panel-mc{
     position:relative;
     top:40px;
 }
+  */
 
 .x-panel {
     border-style: solid;
@@ -3750,7 +3754,7 @@ a.x-menu-item {
     border:1px solid;
     border-top:0 none;
     overflow:hidden;
-    position: relative;  
+    position: relative;
 }
 .x-panel-bbar .x-toolbar, .x-panel-tbar .x-toolbar {
     border:1px solid;
@@ -3759,7 +3763,7 @@ a.x-menu-item {
     padding:2px;
 }
 .x-panel-tbar-noheader .x-toolbar, .x-panel-mc .x-panel-tbar .x-toolbar {
-    border-top:1px solid;
+    /*border-top:1px solid;*/
     border-bottom: 0 none;
 }
 .x-panel-body-noheader, .x-panel-mc .x-panel-body {
@@ -3793,7 +3797,7 @@ a.x-menu-item {
 }
 .x-panel-tc {
 	background: transparent repeat-x 0 0;
-	/* overflow:hidden; */
+    /* overflow:hidden; */
     zoom:1;
 }
 .ext-strict .ext-ie7 .x-panel-tc {
@@ -3803,7 +3807,7 @@ a.x-menu-item {
 	background: transparent no-repeat 0 0;
 	padding-left:6px;
     zoom:1;
-    /* border-bottom:1px solid; */
+    /*border-bottom:1px solid;*/
 }
 .x-panel-tr {
 	background: transparent no-repeat right 0;
@@ -4051,10 +4055,10 @@ a.x-menu-item {
 	clear:none;
 }
 .x-panel-btns-center{
-	text-align:center;  
+	text-align:center;
 }
 .x-panel-btns-center .x-toolbar-ct {
-	margin:0 auto;  
+	margin:0 auto;
     text-align:left;
     width:auto;
 }
@@ -4318,6 +4322,7 @@ body.ext-ie6.x-body-masked .x-window select {
 .x-panel-noborder .x-panel-bbar-noborder .x-toolbar {
     border-width:1px 0 0 0;
     border-style:solid;
+    border-width:0px
 }
 .x-window-noborder .x-window-mc {
     border-width:0;
@@ -4629,7 +4634,7 @@ body.ext-ie6.x-body-masked .x-window select {
     -khtml-user-select: none;
     -webkit-user-select: ignore
 	display:block;
-	overflow:hidden;  
+	overflow:hidden;
 }
 .x-slider-horz {
     padding-left:7px;
@@ -4719,7 +4724,7 @@ body.ext-ie6.x-body-masked .x-window select {
     height:32px;
 }
 .ext-ie .x-window-dlg .ext-mb-icon {
-    width:44px;  
+    width:44px;
 }
 .x-window-dlg .x-dlg-icon .ext-mb-content{
     zoom: 1; margin-left: 47px;
@@ -5180,7 +5185,7 @@ body.ext-ie6.x-body-masked .x-window select {
   padding-left: 25px !important;
   background: transparent no-repeat left center;
 }
-.x-status-busy {   
+.x-status-busy {
   background-image: url(../images/default/grid/loading.gif);
 }
 .x-status-text-panel {
@@ -5204,7 +5209,7 @@ body.ext-ie6.x-body-masked .x-window select {
 }
 
 .ext-ie .my-tbl-col-overflow {
-  
+
 }
 
 .my-tbl-col-text {
@@ -5671,7 +5676,7 @@ body.ext-ie6.x-body-masked .x-window select {
 .x-tab-panel-header, .x-tab-panel-footer {
 	/* border-top-color:#99bccf;
     border-bottom-color:#fff; */
-    border-width: 0;    
+    border-width: 0;
 }
 /* Nav background */
 ul.x-tab-strip-top{
@@ -5731,10 +5736,9 @@ ul.x-tab-strip-bottom{
 .x-tab-strip .x-tab-strip-closable a.x-tab-strip-close:hover{
 	background-image:url(../images/default/tabs/tab-close.gif);
 }
-
 /* Background of main content below header */
 .x-tab-panel-body {
-    border-color:yellow;
+    border-color:#8db2e3;
     background-color:#fff;
 }
 .x-tab-panel-body-top {
@@ -5766,6 +5770,7 @@ ul.x-tab-strip-bottom{
 }
 .x-form-field{
     font:normal 12px tahoma, arial, helvetica, sans-serif;
+    padding-top:2px;
 }
 .x-form-text, textarea.x-form-field{
     background-color:#fff;
@@ -5940,16 +5945,16 @@ ul.x-tab-strip-bottom{
 .x-toolbar .x-btn-mc em.x-btn-split {
     background-image:url(../images/default/button/s-arrow-noline.gif);
 }
-.x-toolbar .x-btn-over .x-btn-mc em.x-btn-split, .x-toolbar .x-btn-click .x-btn-mc em.x-btn-split, 
-.x-toolbar .x-btn-menu-active .x-btn-mc em.x-btn-split, .x-toolbar .x-btn-pressed .x-btn-mc em.x-btn-split 
+.x-toolbar .x-btn-over .x-btn-mc em.x-btn-split, .x-toolbar .x-btn-click .x-btn-mc em.x-btn-split,
+.x-toolbar .x-btn-menu-active .x-btn-mc em.x-btn-split, .x-toolbar .x-btn-pressed .x-btn-mc em.x-btn-split
 {
     background-image:url(../images/default/button/s-arrow-o.gif);
 }
 .x-toolbar .x-btn-mc em.x-btn-split-bottom {
     background-image:url(../images/default/button/s-arrow-b-noline.gif);
 }
-.x-toolbar .x-btn-over .x-btn-mc em.x-btn-split-bottom, .x-toolbar .x-btn-click .x-btn-mc em.x-btn-split-bottom, 
-.x-toolbar .x-btn-menu-active .x-btn-mc em.x-btn-split-bottom, .x-toolbar .x-btn-pressed .x-btn-mc em.x-btn-split-bottom 
+.x-toolbar .x-btn-over .x-btn-mc em.x-btn-split-bottom, .x-toolbar .x-btn-click .x-btn-mc em.x-btn-split-bottom,
+.x-toolbar .x-btn-menu-active .x-btn-mc em.x-btn-split-bottom, .x-toolbar .x-btn-pressed .x-btn-mc em.x-btn-split-bottom
 {
     background-image:url(../images/default/button/s-arrow-bo.gif);
 }
@@ -6052,8 +6057,8 @@ ul.x-tab-strip-bottom{
 .x-grid3-row-over {
 	border-color:#ddd;
     background-color:#ddf1fc;
-    /* background-image:url(../images/default/grid/row-over.gif); */
-    font-weight: bold;
+    /*background-image:url(../images/default/grid/row-over.gif);*/
+     font-weight: bold;
 }
 .x-grid3-resize-proxy {
     background-color:#777;
@@ -6082,7 +6087,7 @@ td.x-grid3-hd-over, td.sort-desc, td.sort-asc, td.x-grid3-hd-menu-open {
 td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-asc .x-grid3-hd-inner, td.x-grid3-hd-menu-open .x-grid3-hd-inner {
     background-color:#ebf3fd;
     background-image:url(../images/default/grid/grid3-hrow-over2.gif);
-    color: #333;
+        color: #333;
     font-weight: bold;
 }
 .sort-asc .x-grid3-sort-icon {
@@ -6540,8 +6545,8 @@ a.x-menu-item {
 .x-combo-list-small {
     font:normal 11px tahoma, arial, helvetica, sans-serif;
 }
-/* Borders around tree, grid, and instructions */
-.x-panel {
+
+/* Borders around tree, grid, and instructions */.x-panel {
     border-color: #c4c4c4;
 }
 
@@ -6569,11 +6574,11 @@ a.x-menu-item {
 }
 /* Frame around header, main, footer */
 .x-panel-body-noheader, .x-panel-mc .x-panel-body {
-    /* border-top-color:#99bbe8; */
-    border-width: 0;
+    /*border-top-color:#99bbe8;*/
+     border-width: 0;
 }
 .x-panel-tl .x-panel-header {
-    /* color:#15428b; */
+    /*color:#15428b;*/
 	font:bold 11px tahoma,arial,verdana,sans-serif;
 }
 .x-panel-tc {
@@ -6588,7 +6593,7 @@ a.x-menu-item {
 }
 .x-panel-mc {
     font: normal 11px tahoma,arial,helvetica,sans-serif;
-    /* background-color:#dfe8f6; */
+    /*background-color:#dfe8f6;*/
 }
 .x-panel-ml {
 	background-color: #fff;
@@ -6681,7 +6686,7 @@ body.x-body-masked .x-window-plain .x-window-mc {
 
 .x-html-editor-tb .x-edit-bold, .x-menu-item .x-edit-bold {
     background-position:0 0;
-    background-image:url(../images/default/editor/tb-sprite.gif);    
+    background-image:url(../images/default/editor/tb-sprite.gif);
 }
 
 .x-html-editor-tb .x-edit-italic, .x-menu-item .x-edit-italic {

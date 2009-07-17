@@ -100,7 +100,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     protected PropertyInterfaceManager propertyInterfaceManager = new PropertyInterfaceManager();
     protected List extensions;
     private String currentToken;
-    protected Label footer;
+    protected Label product;
     protected InlineFlowPanel footerPanel;
 
     protected List<String> tabNames = new ArrayList<String>();
@@ -225,21 +225,27 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         footerPanel = new InlineFlowPanel();
         footerPanel.setStyleName("footer");
 
-         createFooterConent();
+        createFooterConent();
 
         southPanel.add(footerPanel);
         base.add(southPanel, data);
     }
 
     protected void createFooterConent() {
-        Label footer = new Label(getFooterText());
-        footer.setStyleName("footer-link");
-        footer.addClickHandler(new ClickHandler() {
+        product = new Label("About " + getProductName());
+        product.setStyleName("footer-link");
+        product.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent arg0) {
                 new AboutPanel();
             }
         });
-        footerPanel.add(footer);
+        footerPanel.add(product);
+
+        Label spacer = new Label(" | ");
+        footerPanel.add(spacer);
+
+        Label copyright = new Label(getFooterText());
+        footerPanel.add(copyright);
     }
 
     protected void createHeader(Image logo) {
@@ -297,7 +303,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     }
 
     protected String getFooterText() {
-        return getProductName() + ", Copyright 2009 MuleSource, Inc.";
+        return "Copyright 2009 MuleSource, Inc. All rights reserved";
     }
 
     protected String getProductName() {

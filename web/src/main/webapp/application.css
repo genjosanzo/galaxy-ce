@@ -164,7 +164,7 @@ a:visited {
     padding: 4px 8px;
     margin: 5px auto;
     width: 125px;
-    text-align: center;
+    text-align: center;                         l
 }
 
 .workspaces {
@@ -435,7 +435,7 @@ a:visited {
 }
 
 .footer-link {
-    cursor:pointer;
+    cursor:pointer
 }
 
 /**
