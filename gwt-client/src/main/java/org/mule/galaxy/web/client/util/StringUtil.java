@@ -13,4 +13,10 @@ public class StringUtil {
         return extension;
     }
 
+    public static String[] createInlineHelpHeaderAndBody(String s, int len) {
+        String a = s.substring(0, len) + "...";
+        String b = s.substring(len);
+        return new String[]{a , b };
+    }
+
 }
