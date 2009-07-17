@@ -133,12 +133,12 @@ a:visited {
 }
 
 .x-panel: before {
-  background: transparent url(http://localhost:8080/console/extjsresources/images/default/panel/tr-gray.gif) scroll no-repeat top right;
+  background: transparent url(extjsresources/images/default/panel/tr-gray.gif) scroll no-repeat top right;
   margin-bottom: -20px;
   height: 30px;
   display: block;
   border: none;
-  content: url(http://localhost:8080/console/extjsresources/images/default/panel/tl-gray.gif);
+  content: url(extjsresources/images/default/panel/tl-gray.gif);
   padding: 0;
   line-height: 0.1;
   font-size: 1px;
@@ -148,11 +148,11 @@ a:visited {
   display: block;
   line-height: 0.1;
   font-size: 1px;
-  content:  url(http://localhost:8080/console/extjsresources/images/default/panel/bl-gray.gif);
+  content:  url(extjsresources/images/default/panel/bl-gray.gif);
   margin: 0 0 -1px 0;
   height: 30px;
   background: white;
-  background: transparent url(http://localhost:8080/console/extjsresources/images/default/panel/br-gray.gif) scroll no-repeat bottom right ;
+  background: transparent url(extjsresources/images/default/panel/br-gray.gif) scroll no-repeat bottom right ;
   padding: 0;
 }
 
