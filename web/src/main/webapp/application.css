@@ -47,6 +47,21 @@ body {
     text-decoration: underline;
 }
 
+.header-right-options {
+    color: #016c96;
+    padding-left: 20px;
+    font-size: 8pt;
+    text-align: right;
+}
+.header-right-options a, .header-right-options a:visited {
+    color: #016c96;
+    text-decoration: none;
+}
+
+.header-right-options a:hover {
+    text-decoration: underline;
+}
+
 .headerTabPanel {
   margin-top: 0px;
   margin-left: 0px;
@@ -103,6 +118,12 @@ a:visited {
         font-size: smaller;
         background-color: #ffc;
 }
+
+.pipe-with-space {
+    margin: 5px;
+    color: #808080;
+}
+
 
 /**
  **
@@ -437,6 +458,8 @@ a:visited {
 .footer-link {
     cursor:pointer
 }
+
+
 
 /**
  **

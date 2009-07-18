@@ -27,6 +27,7 @@ import org.mule.galaxy.web.client.ui.BaseConstants;
 import org.mule.galaxy.web.client.ui.BaseMessages;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.WidgetUtil;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.AdminService;
 import org.mule.galaxy.web.rpc.AdminServiceAsync;
@@ -187,17 +188,22 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
             public void onSuccess(Object o) {
                 user = (WUser) o;
 
-                ExternalHyperlink logout = new ExternalHyperlink(" Sign out", GWT.getHostPageBaseURL() + "j_logout");
+                ExternalHyperlink logout = new ExternalHyperlink(" Log Out", GWT.getHostPageBaseURL() + "j_logout");
 
                 rightHeaderPanel.add(new Label("Welcome, " + user.getName()));
-                rightHeaderPanel.add(new Label(" | "));
-                rightHeaderPanel.add(new Hyperlink("Help",null));
-                /*
-                rightHeaderPanel.add(new Label(" | "));
-                rightHeaderPanel.add(new Hyperlink("Preferences",null));
-                */
-                rightHeaderPanel.add(new Label(" | "));
-                rightHeaderPanel.add(logout);
+
+                InlineFlowPanel options = new InlineFlowPanel();
+                options.setStyleName("header-right-options");
+
+                options.add(new Hyperlink("Help",null));
+                options.add(WidgetUtil.newSpacerPipe());
+
+                options.add(new Hyperlink("Preferences",null));
+                options.add(WidgetUtil.newSpacerPipe());
+                options.add(logout);
+
+                rightHeaderPanel.add(options);
+
                 suppressTabHistory = true;
                 loadTabs(galaxy);
                 suppressTabHistory = false;
@@ -241,8 +247,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         });
         footerPanel.add(product);
 
-        Label spacer = new Label(" | ");
-        footerPanel.add(spacer);
+        footerPanel.add(WidgetUtil.newSpacerPipe());
 
         Label copyright = new Label(getFooterText());
         footerPanel.add(copyright);
