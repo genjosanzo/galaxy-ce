@@ -18,7 +18,7 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.AbstractShowable;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.PageInfo;
@@ -45,7 +45,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class PolicyPanel extends AbstractComposite {
+public class PolicyPanel extends AbstractShowable {
 
     private InlineFlowPanel panel;
     private RegistryServiceAsync svc;

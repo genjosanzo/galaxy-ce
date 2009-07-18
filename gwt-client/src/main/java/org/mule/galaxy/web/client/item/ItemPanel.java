@@ -18,7 +18,7 @@
 
 package org.mule.galaxy.web.client.item;
 
-import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.AbstractShowable;
 import org.mule.galaxy.web.client.AbstractWithTopComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.admin.PolicyPanel;
@@ -233,7 +233,7 @@ public class ItemPanel extends AbstractWithTopComposite {
 
             public void onTabSelected(SourcesTabEvents events, int tab) {
                 ItemPanel.this.clearErrorMessage();
-                AbstractComposite composite = (AbstractComposite) tabs.getWidget(tab);
+                AbstractShowable composite = (AbstractShowable) tabs.getWidget(tab);
 
                 composite.show();
             }

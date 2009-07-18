@@ -33,13 +33,13 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.AbstractShowable;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WPolicy;
 
-public class PolicySelectionPanel extends AbstractComposite{
+public class PolicySelectionPanel extends AbstractShowable{
 
     private ListBox unselectedPolicies;
     private ListBox selectedPolicies;

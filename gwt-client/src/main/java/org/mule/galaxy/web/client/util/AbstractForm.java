@@ -18,7 +18,7 @@
 
 package org.mule.galaxy.web.client.util;
 
-import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.AbstractShowable;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -34,7 +34,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 
 import java.util.List;
 
-public abstract class AbstractForm extends AbstractComposite {
+public abstract class AbstractForm extends AbstractShowable {
 
     protected FlowPanel panel;
     protected boolean newItem;

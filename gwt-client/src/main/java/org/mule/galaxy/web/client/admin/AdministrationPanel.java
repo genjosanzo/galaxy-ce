@@ -18,7 +18,8 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.AbstractShowable;
+import org.mule.galaxy.web.client.WidgetHelper;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.MenuPanel;
 import org.mule.galaxy.web.client.NavMenuItem;
@@ -297,15 +298,15 @@ public class AdministrationPanel extends MenuPanel {
 
     */
 
-    protected void createPageInfo(String token, final AbstractComposite composite) {
+    protected void createPageInfo(String token, final WidgetHelper composite) {
         final AdministrationPanel aPanel = this;
         PageInfo page = new PageInfo(token, getGalaxy().getAdminTab()) {
 
-            public AbstractComposite createInstance() {
+            public AbstractShowable createInstance() {
                 return null;
             }
 
-            public AbstractComposite getInstance() {
+            public AbstractShowable getInstance() {
                 aPanel.setMain(composite);
                 return aPanel;
             }

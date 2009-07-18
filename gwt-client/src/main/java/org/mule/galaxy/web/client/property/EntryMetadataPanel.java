@@ -28,7 +28,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
 
-import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.AbstractShowable;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
@@ -40,7 +40,7 @@ import org.mule.galaxy.web.rpc.WProperty;
 /**
  * Shows all the artifact metadata.
  */
-public class EntryMetadataPanel extends AbstractComposite {
+public class EntryMetadataPanel extends AbstractShowable {
 
     private FlowPanel metadata;
     private ErrorPanel errorPanel;

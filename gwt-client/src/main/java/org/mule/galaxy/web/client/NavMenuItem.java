@@ -7,13 +7,13 @@ public class NavMenuItem extends BaseModel {
 
     private String title;
     private String tokenBase;
-    private AbstractComposite listPanel;
-    private AbstractComposite formPanel;
+    private WidgetHelper listPanel;
+    private WidgetHelper formPanel;
     public static final String NEW = "/new";
 
 
-    public NavMenuItem(String title, String tokenBase, AbstractComposite listPanel,
-                       AbstractComposite formPanel) {
+    public NavMenuItem(String title, String tokenBase, AbstractShowable listPanel,
+                       AbstractShowable formPanel) {
         set("title", title);
         set("tokenBase", tokenBase);
         set("listPanel", listPanel);
@@ -36,19 +36,19 @@ public class NavMenuItem extends BaseModel {
         set("tokenBase", tokenBase);
     }
 
-    public AbstractComposite getListPanel() {
-        return (AbstractComposite) get("listPanel");
+    public WidgetHelper getListPanel() {
+        return (WidgetHelper) get("listPanel");
     }
 
-    public void setListPanel(AbstractComposite listPanel) {
+    public void setListPanel(AbstractShowable listPanel) {
         set("listPanel", listPanel);
     }
 
-    public AbstractComposite getFormPanel() {
-        return (AbstractComposite) get("formPanel");
+    public WidgetHelper getFormPanel() {
+        return (WidgetHelper) get("formPanel");
     }
 
-    public void setFormPanel(AbstractComposite formPanel) {
+    public void setFormPanel(AbstractShowable formPanel) {
         set("formPanel", formPanel);
     }
 

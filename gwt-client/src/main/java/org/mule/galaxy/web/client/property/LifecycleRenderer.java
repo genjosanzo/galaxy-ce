@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.AbstractShowable;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WPhase;
@@ -27,7 +27,7 @@ public class LifecycleRenderer extends AbstractPropertyRenderer {
     private ListBox phaseLB;
     
     public Widget createEditForm() {
-        lifecycleTable = AbstractComposite.createColumnTable();
+        lifecycleTable = AbstractShowable.createColumnTable();
         
         if (lifecycles == null) {
             galaxy.getRegistryService().getLifecycles(new AbstractCallback(errorPanel) {

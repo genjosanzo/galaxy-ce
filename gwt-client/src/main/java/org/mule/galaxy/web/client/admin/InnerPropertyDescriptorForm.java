@@ -18,7 +18,7 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.AbstractShowable;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.WExtensionInfo;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
@@ -85,7 +85,7 @@ public class InnerPropertyDescriptorForm {
 
             showTypeConfiguration(table, id);
         }
-        AbstractComposite.styleHeaderColumn(table);
+        AbstractShowable.styleHeaderColumn(table);
     }
 
     private void addTypeSelector(final FlexTable table) {
@@ -134,7 +134,7 @@ public class InnerPropertyDescriptorForm {
 
         if ("".equals(id)) {
             initializeMultivalue(table);
-            AbstractComposite.styleHeaderColumn(table);
+            AbstractShowable.styleHeaderColumn(table);
             return;
         }
 
@@ -162,7 +162,7 @@ public class InnerPropertyDescriptorForm {
             table.setWidget(row, 1, field);
         }
 
-        AbstractComposite.styleHeaderColumn(table);
+        AbstractShowable.styleHeaderColumn(table);
     }
 
     private void initializeMultivalue(FlexTable table) {

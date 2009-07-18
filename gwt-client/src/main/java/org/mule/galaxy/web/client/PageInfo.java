@@ -19,7 +19,7 @@
 package org.mule.galaxy.web.client;
 
 public abstract class PageInfo {
-    private AbstractComposite instance;
+    private AbstractShowable instance;
     private String name;
     private int tabIndex;
     
@@ -33,9 +33,9 @@ public abstract class PageInfo {
         this(name, -1);
     }
     
-    public abstract AbstractComposite createInstance();
+    public abstract AbstractShowable createInstance();
 
-    public AbstractComposite getInstance() {
+    public AbstractShowable getInstance() {
         if (instance != null) {
             return instance;
         }

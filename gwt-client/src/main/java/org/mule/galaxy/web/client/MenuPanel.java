@@ -84,8 +84,8 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
             onFirstShow();
         }
 
-        if (mainWidget instanceof AbstractComposite) {
-            ((AbstractComposite) mainWidget).show(params);
+        if (mainWidget instanceof AbstractShowable) {
+            ((AbstractShowable) mainWidget).show(params);
         }
     }
 
@@ -137,8 +137,8 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
         if (topWidget != null)
             topPanel.remove(topWidget);
 
-        if (widget instanceof AbstractComposite) {
-            ((AbstractComposite) widget).show();
+        if (widget instanceof AbstractShowable) {
+            ((AbstractShowable) widget).show();
         }
         topWidget = widget;
         if (widget != null) {
@@ -154,8 +154,8 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
     protected void createLinkWithAdd(Toolbox manageBox,
                                      String title,
                                      String tokenBase,
-                                     AbstractComposite list,
-                                     AbstractComposite form) {
+                                     AbstractShowable list,
+                                     AbstractShowable form) {
 
         Hyperlink link = new Hyperlink(title, tokenBase);
         Hyperlink addLink = new Hyperlink("Add", tokenBase + "/new");
@@ -167,8 +167,8 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
 
 
     protected void createLinkWithAdd(String tokenBase,
-                                     AbstractComposite list,
-                                     AbstractComposite form) {
+                                     AbstractShowable list,
+                                     AbstractShowable form) {
 
         createPageInfo(tokenBase, list);
         createPageInfo(tokenBase + "/" + Galaxy.WILDCARD, form);
@@ -185,7 +185,7 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
     }
     */
 
-    protected abstract void createPageInfo(String token, final AbstractComposite composite);
+    protected abstract void createPageInfo(String token, final WidgetHelper composite);
 
 
 }

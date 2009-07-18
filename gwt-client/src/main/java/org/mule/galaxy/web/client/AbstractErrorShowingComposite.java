@@ -25,7 +25,7 @@ import com.google.gwt.user.client.ui.Label;
  * Forms the basis for a page that can show error messages at the top.
  */
 public class AbstractErrorShowingComposite 
-    extends AbstractComposite implements ErrorPanel  {
+    extends AbstractShowable implements ErrorPanel  {
 
     private FlowPanel errorPanel;
     private FlowPanel mainPanel;

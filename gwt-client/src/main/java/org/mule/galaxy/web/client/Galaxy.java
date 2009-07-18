@@ -17,29 +17,6 @@
  */
 package org.mule.galaxy.web.client;
 
-import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.client.item.AddItemForm;
-import org.mule.galaxy.web.client.item.ItemPanel;
-import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
-import org.mule.galaxy.web.client.registry.SearchPanel;
-import org.mule.galaxy.web.client.registry.ViewPanel;
-import org.mule.galaxy.web.client.ui.BaseConstants;
-import org.mule.galaxy.web.client.ui.BaseMessages;
-import org.mule.galaxy.web.client.util.ExternalHyperlink;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.WidgetUtil;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.AdminService;
-import org.mule.galaxy.web.rpc.AdminServiceAsync;
-import org.mule.galaxy.web.rpc.HeartbeatService;
-import org.mule.galaxy.web.rpc.HeartbeatServiceAsync;
-import org.mule.galaxy.web.rpc.RegistryService;
-import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.rpc.SecurityService;
-import org.mule.galaxy.web.rpc.SecurityServiceAsync;
-import org.mule.galaxy.web.rpc.WExtensionInfo;
-import org.mule.galaxy.web.rpc.WUser;
-
 import com.extjs.gxt.ui.client.GXT;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -63,10 +40,10 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,6 +51,29 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.mule.galaxy.web.client.admin.AdministrationPanel;
+import org.mule.galaxy.web.client.item.AddItemForm;
+import org.mule.galaxy.web.client.item.ItemPanel;
+import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
+import org.mule.galaxy.web.client.registry.SearchPanel;
+import org.mule.galaxy.web.client.registry.ViewPanel;
+import org.mule.galaxy.web.client.ui.BaseConstants;
+import org.mule.galaxy.web.client.ui.BaseMessages;
+import org.mule.galaxy.web.client.util.ExternalHyperlink;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import static org.mule.galaxy.web.client.WidgetHelper.*;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.AdminService;
+import org.mule.galaxy.web.rpc.AdminServiceAsync;
+import org.mule.galaxy.web.rpc.HeartbeatService;
+import org.mule.galaxy.web.rpc.HeartbeatServiceAsync;
+import org.mule.galaxy.web.rpc.RegistryService;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.SecurityService;
+import org.mule.galaxy.web.rpc.SecurityServiceAsync;
+import org.mule.galaxy.web.rpc.WExtensionInfo;
+import org.mule.galaxy.web.rpc.WUser;
 
 
 /**
@@ -94,7 +94,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     protected WUser user;
     protected int oldTab;
     private boolean suppressTabHistory;
-    private Map<String, AbstractComposite> historyListeners = new HashMap<String, AbstractComposite>();
+    private Map<String, AbstractShowable> historyListeners = new HashMap<String, AbstractShowable>();
     protected int adminTabIndex;
     private ItemPanel itemPanel;
     protected Viewport base;
@@ -196,10 +196,10 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
                 options.setStyleName("header-right-options");
 
                 options.add(new Hyperlink("Help",null));
-                options.add(WidgetUtil.newSpacerPipe());
+                options.add(newSpacerPipe());
 
                 options.add(new Hyperlink("Preferences",null));
-                options.add(WidgetUtil.newSpacerPipe());
+                options.add(newSpacerPipe());
                 options.add(logout);
 
                 rightHeaderPanel.add(options);
@@ -247,7 +247,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         });
         footerPanel.add(product);
 
-        footerPanel.add(WidgetUtil.newSpacerPipe());
+        footerPanel.add(WidgetHelper.newSpacerPipe());
 
         Label copyright = new Label(getFooterText());
         footerPanel.add(copyright);
@@ -316,10 +316,10 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     }
 
     public PageInfo createPageInfo(String token,
-                                   final AbstractComposite composite,
+                                   final AbstractShowable composite,
                                    int tab) {
         PageInfo page = new PageInfo(token, tab) {
-            public AbstractComposite createInstance() {
+            public AbstractShowable createInstance() {
                 return composite;
             }
         };
@@ -405,8 +405,9 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         }
 
         p.removeAll();
-
-        AbstractComposite instance = page.getInstance();
+        p.layout();
+        
+        AbstractShowable instance = page.getInstance();
         p.add(instance);
         p.layout();
 
@@ -550,7 +551,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         return adminTabIndex;
     }
 
-    public void addHistoryListener(String token, AbstractComposite composite) {
+    public void addHistoryListener(String token, AbstractShowable composite) {
         historyListeners.put(token, composite);
     }
 

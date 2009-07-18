@@ -21,7 +21,7 @@ package org.mule.galaxy.web.client.item;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.AbstractShowable;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.property.EntryMetadataPanel;
@@ -47,7 +47,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ItemInfoPanel extends AbstractComposite {
+public class ItemInfoPanel extends AbstractShowable {
 
     private HorizontalPanel topPanel;
     private Galaxy galaxy;

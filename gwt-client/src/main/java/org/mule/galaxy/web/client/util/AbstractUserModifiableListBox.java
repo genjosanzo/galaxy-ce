@@ -18,11 +18,6 @@
 
 package org.mule.galaxy.web.client.util;
 
-import org.mule.galaxy.web.client.AbstractComposite;
-import org.mule.galaxy.web.client.validation.ListBoxNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.Validator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -34,7 +29,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-public abstract class AbstractUserModifiableListBox extends AbstractComposite {
+import org.mule.galaxy.web.client.WidgetHelper;
+import org.mule.galaxy.web.client.validation.ListBoxNotEmptyValidator;
+import org.mule.galaxy.web.client.validation.Validator;
+import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
+
+public abstract class AbstractUserModifiableListBox extends WidgetHelper {
 
     private ListBox listBox;
     private Button rmButton;

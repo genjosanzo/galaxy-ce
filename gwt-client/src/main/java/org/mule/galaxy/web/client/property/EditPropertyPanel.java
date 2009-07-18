@@ -1,6 +1,6 @@
 package org.mule.galaxy.web.client.property;
 
-import org.mule.galaxy.web.client.AbstractComposite;
+import org.mule.galaxy.web.client.AbstractShowable;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.admin.PolicyPanel;
@@ -25,7 +25,7 @@ import java.io.Serializable;
 /**
  * Encapsulates the rendering and editing of a property value.
  */
-public class EditPropertyPanel extends AbstractComposite {
+public class EditPropertyPanel extends AbstractShowable {
 
     private Button save;
     protected Button cancel;
