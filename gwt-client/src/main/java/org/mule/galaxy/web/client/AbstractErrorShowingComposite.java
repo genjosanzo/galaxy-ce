@@ -20,6 +20,7 @@ package org.mule.galaxy.web.client;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Forms the basis for a page that can show error messages at the top.
@@ -45,7 +46,7 @@ public class AbstractErrorShowingComposite
         mainPanel.remove(errorPanel);
     }
 
-    public void setMessage(Label label) {
+    public void setMessage(Widget label) {
         errorPanel.clear();
         addMessage(label);
     }
@@ -58,7 +59,7 @@ public class AbstractErrorShowingComposite
         addMessage(new Label(message));
     }
 
-    public void addMessage(Label message) {
+    public void addMessage(Widget message) {
         int pos = getErrorPanelPosition();
         if (pos > mainPanel.getWidgetCount()) {
             pos = mainPanel.getWidgetCount();

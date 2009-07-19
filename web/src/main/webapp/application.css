@@ -124,6 +124,9 @@ a:visited {
     color: #808080;
 }
 
+.progress-indicator-message {
+  font-family: Arial;
+}
 
 /**
  **

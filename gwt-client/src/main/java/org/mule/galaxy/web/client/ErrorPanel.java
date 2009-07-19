@@ -18,14 +18,16 @@
 
 package org.mule.galaxy.web.client;
 
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 
 public interface ErrorPanel {
     void clearErrorMessage();
-    void setMessage(Label label);
+    
+    void setMessage(Widget label);
+    
     void setMessage(String string);
 
     void addMessage(String message);
 
-    void addMessage(Label message);
+    void addMessage(Widget message);
 }
