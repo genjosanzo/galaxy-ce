@@ -5680,18 +5680,18 @@ body.ext-ie6.x-body-masked .x-window select {
 }
 /* Nav background */
 ul.x-tab-strip-top{
-    background-color:#016c96;
+    background-color:#FFF;
 	background-image: url(../images/default/tabs/tab-strip-bg_blue.gif);
-	border-bottom-color:#8db2e3;
+	/* border-bottom-color:#8db2e3; */
 }
 ul.x-tab-strip-bottom{
     background-color:#cedff5;
 	background-image: url(../images/default/tabs/tab-strip-btm-bg.gif);
-	border-top-color:#8db2e3;
+	/* border-top-color:#8db2e3; */
 }
 .x-tab-panel-header-plain .x-tab-strip-spacer,
 .x-tab-panel-footer-plain .x-tab-strip-spacer {
-    border-color:#8db2e3;
+    /* border-color:#8db2e3; */
     background-color: #deecfd;
 }
 /* Inactive tab */
@@ -5738,7 +5738,7 @@ ul.x-tab-strip-bottom{
 }
 /* Background of main content below header */
 .x-tab-panel-body {
-    border-color:#8db2e3;
+    border-color:#fff;
     background-color:#fff;
 }
 .x-tab-panel-body-top {
@@ -6034,7 +6034,7 @@ ul.x-tab-strip-bottom{
     background-color:#fff;
 }
 .x-grid-panel .x-panel-mc .x-panel-body {
-    border-color:#99bbe8;
+    /*border-color:#99bbe8;*/
 }
 .x-grid3-hd-row .x-grid3-hd, .x-grid3-row .x-grid3-cell, .x-grid3-summary-row .x-grid3-cell{
 	font:normal 11px arial, tahoma, helvetica, sans-serif;
