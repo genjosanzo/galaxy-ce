@@ -473,8 +473,11 @@ a:visited {
 
 /* override content panel */
 .help-panel-inline {
-    font-family: arial, tahoma, helvetica, sans-serif;    !important
-    font-style:normal 10pt !important;
+    font-family: arial, tahoma, helvetica, sans-serif !important;
+    font-size: 12px!important;
+    font-variant:normal!important;
+    font-style:normal  !important;
+    font-weight: normal !important;
     background-image: none !important;
     border-color: white !important;
     margin: 0 !important;
