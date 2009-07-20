@@ -6,6 +6,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
+
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 
 public class WidgetHelper extends Composite {
@@ -132,6 +134,22 @@ public class WidgetHelper extends Composite {
     
         rightWidget.setStyleName("rightlinked-title-link");
         return commentTitlePanel;
+    }
+
+    public static ContentPanel createInlineHelpPanel(String header, String body) {
+        ContentPanel cp = new ContentPanel();
+        cp.addText(body);
+        cp.setHeading(header);
+        cp.setBorders(false);
+        cp.setTitleCollapse(true);
+        cp.setCollapsible(true);
+        cp.setAutoWidth(true);
+        cp.collapse();
+        cp.setStyleName("help-panel-inline");
+        cp.setBodyStyleName("help-panel-inline");
+        cp.getHeader().setStyleName("help-panel-inline");
+        cp.getHeader().setTextStyle("help-panel-inline");
+        return cp;
     }
 
     public WidgetHelper() {
