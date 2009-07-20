@@ -50,7 +50,7 @@ public abstract class AbstractBrowsePanel extends AbstractWithTopComposite {
     }
 
     @Override
-    public void show(List<String> params) {
+    public void showPage(List<String> params) {
         int resultStartParamIdx = getResultStartParameterIndex();
         
         if (params.size() > resultStartParamIdx) {
@@ -129,7 +129,7 @@ public abstract class AbstractBrowsePanel extends AbstractWithTopComposite {
     }
 
     @Override
-    public void onHide() {
+    public void hidePage() {
         artifactListPanel.clear();
     }
 

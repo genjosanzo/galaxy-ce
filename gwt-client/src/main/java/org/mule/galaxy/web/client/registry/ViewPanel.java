@@ -69,7 +69,7 @@ public class ViewPanel extends AbstractBrowsePanel {
     }
 
     @Override
-    public void show(List<String> params) {
+    public void showPage(List<String> params) {
         if (params.size() > 0) {
             String newId = params.get(0);
             if (!newId.equals(viewId)) {
@@ -109,7 +109,7 @@ public class ViewPanel extends AbstractBrowsePanel {
 
         loadView();
 
-        super.show(params);
+        super.showPage(params);
 
         if (NEW_VIEW_ID.equals(viewId)) {
             if (artifactListPanel != null) {
@@ -169,7 +169,7 @@ public class ViewPanel extends AbstractBrowsePanel {
         }
     }
 
-    public void onHide() {
+    public void hidePage() {
     }
 
     protected void save() {

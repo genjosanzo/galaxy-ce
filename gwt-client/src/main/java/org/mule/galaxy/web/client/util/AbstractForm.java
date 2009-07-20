@@ -63,9 +63,9 @@ public abstract class AbstractForm extends AbstractShowable {
     }
 
     @Override
-    public void show(List<String> params) {
-        super.show();
-
+    public void showPage(List<String> params) {
+        super.showPage(params);
+        
         if (params.size() > 0) {
             String param = params.get(0);
             if ("new".equals(param)) {

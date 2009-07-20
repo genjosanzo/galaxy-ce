@@ -18,16 +18,6 @@
 
 package org.mule.galaxy.web.client.item;
 
-import org.mule.galaxy.web.client.AbstractShowable;
-import org.mule.galaxy.web.client.AbstractWithTopComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.admin.PolicyPanel;
-import org.mule.galaxy.web.client.util.ColumnView;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ItemInfo;
-import org.mule.galaxy.web.rpc.SecurityService;
-
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.widget.Dialog;
@@ -47,8 +37,19 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.mule.galaxy.web.client.AbstractShowable;
+import org.mule.galaxy.web.client.AbstractWithTopComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.admin.PolicyPanel;
+import org.mule.galaxy.web.client.util.ColumnView;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemInfo;
+import org.mule.galaxy.web.rpc.SecurityService;
 
 
 /**
@@ -94,7 +95,7 @@ public class ItemPanel extends AbstractWithTopComposite {
     }
 
     @Override
-    public void show(List<String> params) {
+    public void showPage(List<String> params) {
         this.params = params;
         clearErrorMessage();
         panel.clear();
@@ -235,7 +236,7 @@ public class ItemPanel extends AbstractWithTopComposite {
                 ItemPanel.this.clearErrorMessage();
                 AbstractShowable composite = (AbstractShowable) tabs.getWidget(tab);
 
-                composite.show();
+                composite.showPage(new ArrayList<String>());
             }
 
         });

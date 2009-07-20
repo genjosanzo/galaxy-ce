@@ -64,7 +64,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
     }
 
     @Override
-    public void doShow() {
+    public void doShowPage() {
         // table.setStyleName("permission-grant-table");
         mainPanel.clear();
         mainPanel.add(new Label("Loading..."));
@@ -153,7 +153,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
                 if (btn == resetButton) {
                     // Go back to the previously saved state.
                     errorPanel.clearErrorMessage();
-                    doShow();
+                    doShowPage();
                 }
 
             }

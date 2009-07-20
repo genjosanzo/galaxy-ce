@@ -103,8 +103,8 @@ public class AdminShellPanel extends AbstractAdministrationComposite
     }
 
     @Override
-    public void doShow() {
-        super.doShow();
+    public void doShowPage() {
+        super.doShowPage();
 
         initLocalWidgets();
 
@@ -190,7 +190,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
 
     protected void refresh() {
-        doShow();
+        doShowPage();
         saveAsCB.setChecked(false);
         saveAsTB.setText(null);
         loadOnStartupCB.setChecked(false);

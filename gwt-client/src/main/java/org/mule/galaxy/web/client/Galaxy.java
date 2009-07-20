@@ -17,6 +17,7 @@
  */
 package org.mule.galaxy.web.client;
 
+import static org.mule.galaxy.web.client.WidgetHelper.newSpacerPipe;
 import com.extjs.gxt.ui.client.GXT;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -44,6 +45,7 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,7 +64,6 @@ import org.mule.galaxy.web.client.ui.BaseConstants;
 import org.mule.galaxy.web.client.ui.BaseMessages;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import static org.mule.galaxy.web.client.WidgetHelper.*;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.AdminService;
 import org.mule.galaxy.web.rpc.AdminServiceAsync;
@@ -407,11 +408,13 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         p.removeAll();
         p.layout();
         
-        AbstractShowable instance = page.getInstance();
+        Widget instance = page.getInstance();
         p.add(instance);
         p.layout();
 
-        instance.show(params);
+        if (instance instanceof Showable) {
+            ((Showable) instance).showPage(params);
+        }
     }
 
     public void onValueChange(ValueChangeEvent<String> event) {
@@ -435,7 +438,10 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
         // hide the previous page
         if (curInfo != null) {
-            curInfo.getInstance().onHide();
+            Widget instance = curInfo.getInstance();
+            if (instance instanceof Showable) {
+                ((Showable) instance).hidePage();
+            }
         }
 
         if (page == null) {

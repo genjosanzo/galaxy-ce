@@ -18,23 +18,6 @@
 
 package org.mule.galaxy.web.client.item;
 
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.property.AbstractPropertyRenderer;
-import org.mule.galaxy.web.client.property.ArtifactRenderer;
-import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
-import org.mule.galaxy.web.client.registry.PolicyResultsPanel;
-import org.mule.galaxy.web.client.util.AddItemHelper;
-import org.mule.galaxy.web.client.util.ItemPathOracle;
-import org.mule.galaxy.web.client.util.StringUtil;
-import org.mule.galaxy.web.client.util.TooltipListener;
-import org.mule.galaxy.web.client.util.WTypeComparator;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ItemExistsException;
-import org.mule.galaxy.web.rpc.ItemInfo;
-import org.mule.galaxy.web.rpc.WPropertyDescriptor;
-import org.mule.galaxy.web.rpc.WType;
-
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -53,12 +36,12 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -66,6 +49,23 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.property.AbstractPropertyRenderer;
+import org.mule.galaxy.web.client.property.ArtifactRenderer;
+import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
+import org.mule.galaxy.web.client.registry.PolicyResultsPanel;
+import org.mule.galaxy.web.client.util.AddItemHelper;
+import org.mule.galaxy.web.client.util.ItemPathOracle;
+import org.mule.galaxy.web.client.util.StringUtil;
+import org.mule.galaxy.web.client.util.TooltipListener;
+import org.mule.galaxy.web.client.util.WTypeComparator;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemExistsException;
+import org.mule.galaxy.web.rpc.ItemInfo;
+import org.mule.galaxy.web.rpc.WPropertyDescriptor;
+import org.mule.galaxy.web.rpc.WType;
 
 /**
  * This form is definitely complex and ugly, so here's a run down of how it works.
@@ -120,13 +120,13 @@ public class AddItemForm extends AbstractErrorShowingComposite implements Submit
         initWidget(main);
     }
 
-    public void onHide() {
+    public void hidePage() {
         form.clear();
     }
 
 
     @Override
-    public void show(List<String> params) {
+    public void showPage(List<String> params) {
         if (params.size() > 0) {
             itemId = params.get(0);
             galaxy.getRegistryService().getItemInfo(itemId, false, new AbstractCallback<ItemInfo>(this) {
@@ -150,7 +150,6 @@ public class AddItemForm extends AbstractErrorShowingComposite implements Submit
         panel.add(table);
 
         setupAddForm();
-        this.show();
     }
 
 

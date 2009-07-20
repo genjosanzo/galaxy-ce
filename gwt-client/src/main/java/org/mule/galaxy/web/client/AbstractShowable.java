@@ -28,36 +28,36 @@ import org.mule.galaxy.web.client.ui.ProgressIndicatorPopup;
  * see {@link Galaxy}.createPageInfo.
  * 
  */
-public abstract class AbstractShowable extends WidgetHelper {
+public abstract class AbstractShowable extends WidgetHelper implements Showable {
 
     // we could provide a method to overload and create custom progress dialogs, but no need yet ;)
     protected ProgressIndicatorPopup progressIndicatorPopup = new ProgressIndicatorPopup();
 
     private boolean useLoadingIndicator = true;
 
-    public final void show() {
-        onBeforeShow();
-        doShow();
-        onAfterShow();
+    private void show() {
+        onBeforeShowPage();
+        doShowPage();
+        onAfterShowPage();
     }
     
-    public void doShow() {
+    public void doShowPage() {
         // no-op
     }
 
-    public void onBeforeShow() {
+    public void onBeforeShowPage() {
         if (useLoadingIndicator) {
             progressIndicatorPopup.show();
         }
     }
 
-    public void onAfterShow() {
+    public void onAfterShowPage() {
         if (useLoadingIndicator) {
             progressIndicatorPopup.hide();
         }
     }
 
-    public void show(List<String> params) {
+    public void showPage(List<String> params) {
         this.show();
     }
 
@@ -73,7 +73,7 @@ public abstract class AbstractShowable extends WidgetHelper {
         this.useLoadingIndicator = useLoadingIndicator;
     }
 
-    public void onHide() {
+    public void hidePage() {
         // no-op
     }
 }

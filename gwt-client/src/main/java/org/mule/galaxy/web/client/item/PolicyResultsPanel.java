@@ -52,7 +52,7 @@ public class PolicyResultsPanel extends AbstractErrorShowingComposite {
     }
     
     @Override
-    public void doShow() {
+    public void doShowPage() {
         panel.clear();
         
         panel.add(createTitle("Policy Failures"));

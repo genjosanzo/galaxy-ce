@@ -35,7 +35,7 @@ public class AbstractFlowComposite extends AbstractShowable {
     }
 
     @Override
-    public void doShow() {
+    public void doShowPage() {
         panel.clear();
         
     }

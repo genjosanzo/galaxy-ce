@@ -79,7 +79,7 @@ public class PolicyPanel extends AbstractShowable {
     }
 
     @Override
-    public void doShow() {
+    public void doShowPage() {
         panel.clear();
         lsPanel = new LifecycleSelectionPanel(menuPanel, svc);
 

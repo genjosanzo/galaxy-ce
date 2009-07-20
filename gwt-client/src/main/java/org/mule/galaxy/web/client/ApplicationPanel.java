@@ -33,6 +33,7 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
@@ -133,13 +134,13 @@ public abstract class ApplicationPanel extends AbstractErrorShowingComposite {
 
 
     @Override
-    public void show(List<String> params) {
+    public void showPage(List<String> params) {
         if (firstShow) {
             firstShow = false;
             onFirstShow();
         }
         if (mainWidget instanceof AbstractShowable) {
-            ((AbstractShowable) mainWidget).show(params);
+            ((AbstractShowable) mainWidget).showPage(params);
         }
 
         base.layout();
@@ -189,8 +190,8 @@ public abstract class ApplicationPanel extends AbstractErrorShowingComposite {
         if (topWidget != null)
             topPanel.remove(topWidget);
 
-        if (widget instanceof AbstractShowable) {
-            ((AbstractShowable) widget).show();
+        if (widget instanceof Showable) {
+            ((Showable) widget).showPage(new ArrayList<String>());
         }
         topWidget = widget;
         if (widget != null) {

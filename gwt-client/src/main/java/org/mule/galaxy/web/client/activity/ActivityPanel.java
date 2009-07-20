@@ -165,7 +165,7 @@ public class ActivityPanel extends AbstractFlowComposite {
         search.addClickHandler(new ClickHandler() {
 
             public void onClick(ClickEvent event) {
-                doShow();
+                doShowPage();
             }
 
         });
@@ -175,7 +175,7 @@ public class ActivityPanel extends AbstractFlowComposite {
 
             public void onClick(ClickEvent event) {
                 reset();
-                doShow();
+                doShowPage();
             }
 
         });
@@ -202,7 +202,7 @@ public class ActivityPanel extends AbstractFlowComposite {
     
 
     @Override
-    public void doShow() {
+    public void doShowPage() {
         if (panel.getWidgetCount() == 0) {
             initialize();
         }
@@ -286,7 +286,7 @@ public class ActivityPanel extends AbstractFlowComposite {
                     public void onClick(ClickEvent event) {
                         resultStart += maxResults;
 
-                        doShow();
+                        doShowPage();
                     }
 
                 });
@@ -302,7 +302,7 @@ public class ActivityPanel extends AbstractFlowComposite {
                         resultStart = resultStart - maxResults;
                         if (resultStart < 0) resultStart = 0;
 
-                        doShow();
+                        doShowPage();
                     }
 
                 });

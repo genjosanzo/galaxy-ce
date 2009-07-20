@@ -18,8 +18,10 @@
 
 package org.mule.galaxy.web.client;
 
+import com.google.gwt.user.client.ui.Widget;
+
 public abstract class PageInfo {
-    private AbstractShowable instance;
+    private Widget instance;
     private String name;
     private int tabIndex;
     
@@ -33,9 +35,9 @@ public abstract class PageInfo {
         this(name, -1);
     }
     
-    public abstract AbstractShowable createInstance();
+    public abstract Widget createInstance();
 
-    public AbstractShowable getInstance() {
+    public Widget getInstance() {
         if (instance != null) {
             return instance;
         }

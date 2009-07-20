@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalSplitPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MenuPanel extends AbstractErrorShowingComposite {
@@ -36,7 +37,6 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
     private FlowPanel leftMenu;
     private FlowPanel centerPanel;
     private boolean firstShow = true;
-
 
     public MenuPanel() {
         this(true);
@@ -78,14 +78,14 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
     }
 
     @Override
-    public void show(List<String> params) {
+    public void showPage(List<String> params) {
         if (firstShow) {
             firstShow = false;
             onFirstShow();
         }
 
-        if (mainWidget instanceof AbstractShowable) {
-            ((AbstractShowable) mainWidget).show(params);
+        if (mainWidget instanceof Showable) {
+            ((Showable) mainWidget).showPage(params);
         }
     }
 
@@ -137,8 +137,8 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
         if (topWidget != null)
             topPanel.remove(topWidget);
 
-        if (widget instanceof AbstractShowable) {
-            ((AbstractShowable) widget).show();
+        if (widget instanceof Showable) {
+            ((Showable) widget).showPage(new ArrayList<String>());
         }
         topWidget = widget;
         if (widget != null) {

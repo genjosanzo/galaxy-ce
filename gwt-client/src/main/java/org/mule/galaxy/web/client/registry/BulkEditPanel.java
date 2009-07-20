@@ -140,16 +140,16 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
      * @param params
      */
     @Override
-    public void show(List<String> params) {
+    public void showPage(List<String> params) {
         clearErrorMessage();
-        this.doShow();
+        this.doShowPage();
     }
 
     /**
      * main init method for this screen
      */
     @Override
-    public void doShow() {
+    public void doShowPage() {
 
         wrapperPanel.clear();
 

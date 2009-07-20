@@ -38,8 +38,8 @@ public class TypeListPanel
     }
 
     @Override
-    public void doShow() {
-        super.doShow();
+    public void doShowPage() {
+        super.doShowPage();
 
         final FlexTable table = createTitledRowTable(panel, "Types");
 
