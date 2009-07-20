@@ -47,7 +47,8 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
         panel.setSplitPosition("220px");
 
         if (left) {
-            leftMenu = new FlowPanel() {
+            leftMenu = new FlowPanel();
+            /*leftMenu = new FlowPanel() {
                 protected void onLoad() {
 
                     Element br = DOM.createElement("br");
@@ -55,11 +56,11 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
                     DOM.appendChild(DOM.getParent(this.getElement()), br);
                 }
             };
+            */
             leftMenu.setStyleName("left-menu");
-
             panel.setLeftWidget(leftMenu);
-
-            leftMenuContainer = new FlowPanel() {
+            leftMenuContainer = new FlowPanel();
+            /*leftMenuContainer = new FlowPanel() {
 
                 protected void onLoad() {
 
@@ -69,8 +70,8 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
                 }
 
             };
+            */
             leftMenuContainer.setStyleName("left-menu-container");
-
             leftMenu.add(leftMenuContainer);
         }
 
