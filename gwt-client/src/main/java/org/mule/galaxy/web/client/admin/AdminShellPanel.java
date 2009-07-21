@@ -18,18 +18,20 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WScript;
 
+import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
-import com.google.gwt.user.client.ui.Button;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasAlignment;
@@ -45,14 +47,14 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
 
 public class AdminShellPanel extends AbstractAdministrationComposite
-        implements ClickListener, KeyboardListener {
+        implements KeyboardListener {
 
 
     private Tree scriptTree;
     private FlexTable table;
     private Button evaluateBtn;
     private CheckBox saveAsCB;
-    private ValidatableTextBox saveAsTB;
+    private TextField<String> saveAsTB;
     private Button saveBtn;
     private Button deleteBtn;
     private Button clearBtn;
@@ -73,33 +75,84 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         // main page layout
         table = new FlexTable();
 
-        saveBtn = new Button("Save");
-        saveBtn.addClickListener(this);
+        scriptResultsLabel = new Label();
 
-        deleteBtn = new Button("Delete");
-        deleteBtn.addClickListener(this);
+        final SelectionListener<ButtonEvent> buttonListner = new SelectionListener<ButtonEvent>() {
+            public void componentSelected(ButtonEvent buttonEvent) {
+                Button sender = buttonEvent.getButton();
 
-        clearBtn = new Button("Reset");
-        clearBtn.addClickListener(this);
+                if (sender == saveBtn) {
+                    save();
+                }
 
-        evaluateBtn = new Button("Evaluate");
-        evaluateBtn.addClickListener(this);
+                if (sender == deleteBtn) {
+                    final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
+                        public void handleEvent(MessageBoxEvent ce) {
+                            com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
 
-        saveAsCB = new CheckBox("Save As... ");
-        saveAsCB.addClickListener(this);
+                            if (Dialog.YES.equals(btn.getItemId())) {
+                                delete();
+                            }
+                        }
+                    };
+                    MessageBox.confirm("Confirm", "Are you sure you want to delete this script?", l);
+                }
 
-        saveAsTB = new ValidatableTextBox(new StringNotEmptyValidator());
-        saveAsTB.getTextBox().setEnabled(false);
 
-        loadOnStartupCB = new CheckBox("Run on startup ");
-        loadOnStartupCB.addClickListener(this);
+                if (sender == clearBtn) {
+                    adminPanel.clearErrorMessage();
+                    refresh();
+                }
+
+                if (sender == evaluateBtn) {
+                    evaluateBtn.setEnabled(false);
+                    adminPanel.getGalaxy().getAdminService().executeScript(scriptArea.getText(), new AbstractCallback(adminPanel) {
+                        public void onFailure(Throwable caught) {
+                            evaluateBtn.setEnabled(true);
+                            scriptResultsLabel.setText("");
+                            super.onFailure(caught);
+                        }
+
+                        public void onSuccess(Object o) {
+                            adminPanel.clearErrorMessage();
+                            evaluateBtn.setEnabled(true);
+                            scriptResultsLabel.setText(o == null ? "No value returned" : o.toString());
+                        }
+                    });
+
+                }
+
+            }
+        };
+
+        saveBtn = new Button("Save", buttonListner);
+        deleteBtn = new Button("Delete", buttonListner);
+        clearBtn = new Button("Reset", buttonListner);
+        evaluateBtn = new Button("Evaluate", buttonListner);
+
+        saveAsCB = new CheckBox(" Save As... ");
+        saveAsCB.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                saveAsTB.setEnabled(true);
+                if (saveAsCB.isChecked()) {
+                    saveAsTB.focus();
+                    saveAsTB.setAllowBlank(false);
+                } else {
+                    saveAsTB.clearInvalid();
+                }
+            }
+        });
+
+        saveAsTB = new TextField<String>();
+        saveAsTB.setEnabled(true);
+
+        loadOnStartupCB = new CheckBox(" Run on startup ");
 
         // where the scripts are pasted into
         scriptArea = new TextArea();
         scriptArea.setCharacterWidth(80);
         scriptArea.setVisibleLines(30);
 
-        scriptResultsLabel = new Label();
     }
 
     @Override
@@ -133,9 +186,6 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         scriptResultsLabel.setWordWrap(false);
         scriptOutputPanel.add(scriptResultsLabel);
 
-        // results of script execution
-        table.setWidget(4, 0, scriptOutputPanel);
-
         // add user control buttons in a table
         FlexTable execButtonTable = new FlexTable();
         execButtonTable.setWidget(0, 0, evaluateBtn);
@@ -151,6 +201,9 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         persistButtonTable.setWidget(0, 4, deleteBtn);
 
         table.setWidget(4, 0, persistButtonTable);
+
+        // results of script execution
+        table.setWidget(5, 0, scriptOutputPanel);
 
         panel.add(table);
         saveBtn.setEnabled(true);
@@ -192,61 +245,8 @@ public class AdminShellPanel extends AbstractAdministrationComposite
     protected void refresh() {
         doShowPage();
         saveAsCB.setChecked(false);
-        saveAsTB.setText(null);
+        saveAsTB.setValue(null);
         loadOnStartupCB.setChecked(false);
-    }
-
-
-    // only use one listener for all events. It's less overhead and easier to read
-    public void onClick(Widget sender) {
-        if (sender == saveBtn) {
-            save();
-        }
-
-        if (sender == deleteBtn) {
-            final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
-                public void handleEvent(MessageBoxEvent ce) {
-                    com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
-
-                    if (Dialog.YES.equals(btn.getItemId())) {
-                        delete();
-                    }
-                }
-            };
-
-            MessageBox.confirm("Confirm", "Are you sure you want to delete this script?", l);
-        }
-
-        if (sender == saveAsCB) {
-            saveAsTB.getTextBox().setEnabled(true);
-            if (saveAsCB.isChecked()) {
-                saveAsTB.getTextBox().setFocus(true);
-            }
-        }
-
-        if (sender == clearBtn) {
-            adminPanel.clearErrorMessage();
-            refresh();
-        }
-
-        if (sender == evaluateBtn) {
-            evaluateBtn.setEnabled(false);
-            adminPanel.getGalaxy().getAdminService().executeScript(scriptArea.getText(), new AbstractCallback(adminPanel) {
-                public void onFailure(Throwable caught) {
-                    evaluateBtn.setEnabled(true);
-                    scriptResultsLabel.setText("");
-                    super.onFailure(caught);
-                }
-
-                public void onSuccess(Object o) {
-                    adminPanel.clearErrorMessage();
-                    evaluateBtn.setEnabled(true);
-                    scriptResultsLabel.setText(o == null ? "No value returned" : o.toString());
-                }
-            });
-
-        }
-
     }
 
 
@@ -268,7 +268,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         }
 
         if (saveAsCB.isChecked()) {
-            ws.setName(saveAsTB.getText());
+            ws.setName(saveAsTB.getValue());
             // save as should null out the Id so it creates a new copy
             ws.setId(null);
         }

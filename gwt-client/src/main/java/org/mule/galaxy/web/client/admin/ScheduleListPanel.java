@@ -21,13 +21,30 @@ package org.mule.galaxy.web.client.admin;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WScriptJob;
 
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Hyperlink;
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.BeanModelFactory;
+import com.extjs.gxt.ui.client.data.BeanModelLookup;
+import com.extjs.gxt.ui.client.event.BaseEvent;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.GridEvent;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
+import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
+import com.extjs.gxt.ui.client.widget.grid.Grid;
+import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
+import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.google.gwt.user.client.History;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- *  Show all scheduled items
+ * Show all scheduled items
  */
 public class ScheduleListPanel extends AbstractAdministrationComposite {
 
@@ -35,36 +52,65 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
         super(a);
     }
 
+
     @Override
     public void doShowPage() {
         super.doShowPage();
 
-        final FlexTable table = createTitledRowTable(panel, "Scheduled Jobs");
-
-        table.setText(0, 0, "Name");
-        table.setText(0, 1, "Script");
-        table.setText(0, 2, "Cron Command");
-        table.setText(0, 3, "Description");
-
         adminPanel.getGalaxy().getAdminService().getScriptJobs(new AbstractCallback<List<WScriptJob>>(adminPanel) {
-
             public void onSuccess(List<WScriptJob> jobs) {
-                showJobs(table, jobs);
+                showJobs(jobs);
             }
 
         });
+
     }
 
-    protected void showJobs(FlexTable table, List<WScriptJob> jobs) {
-         int i = 1;
-         for (WScriptJob j : jobs) {
-             table.setWidget(i, 0, new Hyperlink(j.getName(), "schedules/" + j.getId()));
-             table.setText(i, 1, j.getScriptName());
-             table.setText(i, 2, j.getExpression());
-             table.setText(i, 3, j.getDescription());
 
-             i++;
-         }
-     }
+    private void showJobs(List<WScriptJob> jobs) {
+
+        ContentPanel cp = new ContentPanel();
+        cp.setHeading("Scheduled Jobs");
+
+        ToolBar toolbar = new ToolBar();
+        toolbar.add(new FillToolItem());
+
+        Button newBtn = new Button("New");
+        newBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+            @Override
+            public void componentSelected(ButtonEvent ce) {
+                History.newItem("schedules/new");
+            }
+        });
+        toolbar.add(newBtn);
+        cp.setTopComponent(toolbar);
+
+        BeanModelFactory factory = BeanModelLookup.get().getFactory(WScriptJob.class);
+
+        List list = factory.createModel(jobs);
+        final ListStore<BeanModel> store = new ListStore<BeanModel>();
+        store.add(list);
+
+        List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
+        columns.add(new ColumnConfig("name", "Name", 100));
+        columns.add(new ColumnConfig("scriptName", "Script", 100));
+        columns.add(new ColumnConfig("expression", "Cron Expression", 200));
+        columns.add(new ColumnConfig("description", "Description", 300));
+        ColumnModel cm = new ColumnModel(columns);
+
+        Grid grid = new Grid<BeanModel>(store, cm);
+        grid.setAutoWidth(true);
+        grid.addListener(Events.CellClick, new Listener<BaseEvent>() {
+            public void handleEvent(BaseEvent be) {
+                GridEvent ge = (GridEvent) be;
+                WScriptJob s = store.getAt(ge.getRowIndex()).getBean();
+                History.newItem("schedules/" + s.getId());
+            }
+        });
+
+        cp.add(grid);
+        panel.add(cp);
+
+    }
 
 }

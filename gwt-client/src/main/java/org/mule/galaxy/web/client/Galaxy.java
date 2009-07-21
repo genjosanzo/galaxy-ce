@@ -118,6 +118,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
         //GXT.setDefaultTheme(Theme.GRAY, true);
         GXT.BLANK_IMAGE_URL = "extjsresources/images/default/s.gif";
+        final String LOGO = "images/galaxy_logo_main_trans.gif";
 
         // prefetch the image, so that e.g. SessionKilled dialog can be properly displayed for the first time
         // when the server is already down and cannot serve it.
@@ -151,7 +152,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         base = new Viewport();
         base.setLayout(new BorderLayout());
 
-        createHeader(new Image("images/galaxy_logo_main_trans.gif"));
+        createHeader(new Image(LOGO));
 
         tabPanel = new TabPanel();
         tabPanel.setAutoHeight(true);
@@ -189,21 +190,8 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
             public void onSuccess(Object o) {
                 user = (WUser) o;
 
-                ExternalHyperlink logout = new ExternalHyperlink(" Log Out", GWT.getHostPageBaseURL() + "j_logout");
-
-                rightHeaderPanel.add(new Label("Welcome, " + user.getName()));
-
-                InlineFlowPanel options = new InlineFlowPanel();
-                options.setStyleName("header-right-options");
-
-                options.add(new Hyperlink("Help",null));
-                options.add(newSpacerPipe());
-
-                options.add(new Hyperlink("Preferences",null));
-                options.add(newSpacerPipe());
-                options.add(logout);
-
-                rightHeaderPanel.add(options);
+                // always the left most item
+                rightHeaderPanel.insert(new Label("Welcome, " + user.getName()), 0);
 
                 suppressTabHistory = true;
                 loadTabs(galaxy);
@@ -232,13 +220,17 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         footerPanel = new InlineFlowPanel();
         footerPanel.setStyleName("footer");
 
-        createFooterConent();
+        prependFooterConent();
 
         southPanel.add(footerPanel);
         base.add(southPanel, data);
     }
 
-    protected void createFooterConent() {
+
+    /**
+     * adds to the left of the  copyright info
+     */
+    protected void prependFooterConent() {
         product = new Label("About " + getProductName());
         product.setStyleName("footer-link");
         product.addClickHandler(new ClickHandler() {
@@ -247,12 +239,12 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
             }
         });
         footerPanel.add(product);
-
         footerPanel.add(WidgetHelper.newSpacerPipe());
 
         Label copyright = new Label(getFooterText());
         footerPanel.add(copyright);
     }
+
 
     protected void createHeader(Image logo) {
         ContentPanel northPanel = new ContentPanel();
@@ -265,6 +257,20 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
         rightHeaderPanel = new InlineFlowPanel();
         rightHeaderPanel.setStyleName("header-right");
+
+        ExternalHyperlink logout = new ExternalHyperlink(" Log Out", GWT.getHostPageBaseURL() + "j_logout");
+
+        InlineFlowPanel options = new InlineFlowPanel();
+        options.setStyleName("header-right-options");
+
+        options.add(new Hyperlink("Help",null));
+        options.add(newSpacerPipe());
+
+        options.add(new Hyperlink("Preferences",null));
+        options.add(newSpacerPipe());
+        options.add(logout);
+
+        rightHeaderPanel.add(options);
 
         FlowPanel header = new FlowPanel();
         header.setStyleName("header");

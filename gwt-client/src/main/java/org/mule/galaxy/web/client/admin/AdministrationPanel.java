@@ -19,11 +19,12 @@
 package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.AbstractShowable;
-import org.mule.galaxy.web.client.WidgetHelper;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.MenuPanel;
 import org.mule.galaxy.web.client.NavMenuItem;
 import org.mule.galaxy.web.client.PageInfo;
+import org.mule.galaxy.web.client.WidgetHelper;
+import org.mule.galaxy.web.client.activity.ActivityPanel;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 
@@ -86,6 +87,7 @@ public class AdministrationPanel extends MenuPanel {
 
     /**
      * Also does the createPageInfo calls..
+     *
      * @param heading
      * @param items
      * @return
@@ -160,7 +162,7 @@ public class AdministrationPanel extends MenuPanel {
         if (galaxy.hasPermission("VIEW_ACTIVITY")) {
             a.add(new NavMenuItem("Activity",
                     "ActivityPanel",
-                    new PolicyPanel(this, galaxy),
+                    new ActivityPanel(this, galaxy),
                     null));
         }
 
