@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 
@@ -151,6 +152,19 @@ public class WidgetHelper extends Composite {
         cp.getHeader().setTextStyle("help-panel-inline");
         return cp;
     }
+
+    public static ContentPanel createAccodionWrapperPanel() {
+        AccordionLayout alayout = new AccordionLayout();
+        alayout.setHideCollapseTool(true);
+        alayout.setFill(true);
+        ContentPanel accordionPanel = new ContentPanel();
+        accordionPanel.setBodyBorder(false);
+        accordionPanel.setHeaderVisible(false);
+        accordionPanel.setLayout(alayout);
+        return accordionPanel;
+    }
+
+
 
     public WidgetHelper() {
         super();

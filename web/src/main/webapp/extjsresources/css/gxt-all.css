@@ -1745,7 +1745,8 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 .x-toolbar .x-btn-tl, .x-toolbar .x-btn-tr, .x-toolbar .x-btn-tc, .x-toolbar .x-btn-ml, .x-toolbar .x-btn-mr,
 .x-toolbar .x-btn-mc, .x-toolbar .x-btn-bl, .x-toolbar .x-btn-br, .x-toolbar .x-btn-bc
 {
-	background-position: 500px 500px;
+	/* this will make the toolbar buttons appear if you comment this out */
+    background-position: 500px 500px;
 }
 .x-toolbar .x-btn-over .x-btn-tl{
 	background-position: -6px 0;

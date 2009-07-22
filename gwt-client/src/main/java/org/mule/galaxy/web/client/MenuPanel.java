@@ -18,8 +18,6 @@
 
 package org.mule.galaxy.web.client;
 
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalSplitPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -48,29 +46,11 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
 
         if (left) {
             leftMenu = new FlowPanel();
-            /*leftMenu = new FlowPanel() {
-                protected void onLoad() {
-
-                    Element br = DOM.createElement("br");
-                    DOM.setElementAttribute(br, "class", "clearit");
-                    DOM.appendChild(DOM.getParent(this.getElement()), br);
-                }
-            };
-            */
             leftMenu.setStyleName("left-menu");
+
             panel.setLeftWidget(leftMenu);
+
             leftMenuContainer = new FlowPanel();
-            /*leftMenuContainer = new FlowPanel() {
-
-                protected void onLoad() {
-
-                    Element br = DOM.createElement("br");
-                    DOM.setElementAttribute(br, "class", "clearit");
-                    DOM.appendChild(DOM.getParent(this.getElement()), br);
-                }
-
-            };
-            */
             leftMenuContainer.setStyleName("left-menu-container");
             leftMenu.add(leftMenuContainer);
         }

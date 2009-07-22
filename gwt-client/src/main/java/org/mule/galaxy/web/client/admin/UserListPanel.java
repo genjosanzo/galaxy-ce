@@ -21,15 +21,30 @@ package org.mule.galaxy.web.client.admin;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WUser;
 
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Hyperlink;
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.BeanModelFactory;
+import com.extjs.gxt.ui.client.data.BeanModelLookup;
+import com.extjs.gxt.ui.client.event.BaseEvent;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.GridEvent;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
+import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
+import com.extjs.gxt.ui.client.widget.grid.Grid;
+import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
+import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.google.gwt.user.client.History;
 
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserListPanel
-    extends AbstractAdministrationComposite
-{
+        extends AbstractAdministrationComposite {
     public UserListPanel(AdministrationPanel a) {
         super(a);
     }
@@ -38,36 +53,56 @@ public class UserListPanel
     public void doShowPage() {
         super.doShowPage();
 
-        final FlexTable table = createTitledRowTable(panel, "Users");
+        adminPanel.getSecurityService().getUsers(new AbstractCallback<List<WUser>>(adminPanel) {
 
-        table.setText(0, 0, "Username");
-        table.setText(0, 1, "Name");
-        table.setText(0, 2, "Email");
-
-        adminPanel.getSecurityService().getUsers(new AbstractCallback(adminPanel) {
-
-            public void onSuccess(Object result) {
-                Collection users = (Collection) result;
-
-                int i = 1;
-                for (Iterator itr = users.iterator(); itr.hasNext();) {
-                    final WUser u = (WUser) itr.next();
-
-                    Hyperlink hyperlink = new Hyperlink(u.getUsername(),
-                                                        "users/" + u.getId());
-
-                    table.setWidget(i, 0, hyperlink);
-                    table.setText(i, 1, u.getName());
-                    table.setText(i, 2, u.getEmail());
-                    table.getRowFormatter().setStyleName(i, "artifactTableEntry");
-                    i++;
-                }
+            public void onSuccess(List<WUser> users) {
+                showUsers(users);
             }
         });
     }
 
-    public String getTitle()
-    {
-        return "Users";
+    private void showUsers(List<WUser> users) {
+        ContentPanel cp = new ContentPanel();
+        cp.setHeading("Users");
+
+        ToolBar toolbar = new ToolBar();
+        toolbar.add(new FillToolItem());
+
+        Button newBtn = new Button("New");
+        newBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+            @Override
+            public void componentSelected(ButtonEvent ce) {
+                History.newItem("users/new");
+            }
+        });
+        toolbar.add(newBtn);
+        cp.setTopComponent(toolbar);
+
+        BeanModelFactory factory = BeanModelLookup.get().getFactory(WUser.class);
+
+        List<BeanModel> list = factory.createModel(users);
+        final ListStore<BeanModel> store = new ListStore<BeanModel>();
+        store.add(list);
+
+        List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
+        columns.add(new ColumnConfig("username", "Username", 100));
+        columns.add(new ColumnConfig("name", "Name", 200));
+        columns.add(new ColumnConfig("email", "Email Address", 200));
+        ColumnModel cm = new ColumnModel(columns);
+
+        Grid grid = new Grid<BeanModel>(store, cm);
+        grid.setAutoWidth(true);
+        grid.addListener(Events.CellClick, new Listener<BaseEvent>() {
+            public void handleEvent(BaseEvent be) {
+                GridEvent ge = (GridEvent) be;
+                WUser s = store.getAt(ge.getRowIndex()).getBean();
+                History.newItem("users/" + s.getId());
+            }
+        });
+
+        cp.add(grid);
+        panel.add(cp);
+
     }
+
 }

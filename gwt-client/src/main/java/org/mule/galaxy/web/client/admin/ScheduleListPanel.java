@@ -87,7 +87,7 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WScriptJob.class);
 
-        List list = factory.createModel(jobs);
+        List<BeanModel> list = factory.createModel(jobs);
         final ListStore<BeanModel> store = new ListStore<BeanModel>();
         store.add(list);
 

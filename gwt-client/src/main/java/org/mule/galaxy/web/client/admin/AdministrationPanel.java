@@ -37,7 +37,6 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.ListView;
-import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.google.gwt.user.client.History;
@@ -48,7 +47,6 @@ import java.util.List;
 public class AdministrationPanel extends MenuPanel {
 
     private final Galaxy galaxy;
-    protected ContentPanel accordionPanel;
     protected List<NavMenuItem> ManageItems;
     protected List<NavMenuItem> utilityItems;
 
@@ -61,7 +59,7 @@ public class AdministrationPanel extends MenuPanel {
     protected void onFirstShow() {
         super.onFirstShow();
 
-        accordionPanel = createAccodionWrapperPanel();
+        ContentPanel accordionPanel = createAccodionWrapperPanel();
 
         // list of all items for this panel
         ManageItems = fetchManageMenuItems(this.galaxy);
@@ -71,17 +69,6 @@ public class AdministrationPanel extends MenuPanel {
         accordionPanel.add(createPanelWithListView("Utility", utilityItems));
         addMenuItem(accordionPanel);
 
-        /*
-        Toolbox manageBox = new Toolbox(false);
-        manageBox.setTitle("Manage");
-        addMenuItem(manageBox);
-        createMenuItems(this.galaxy, manageBox);
-
-        Toolbox utilityBox = new Toolbox(false);
-        utilityBox.setTitle("Utilities");
-        addMenuItem(utilityBox);
-        createUtilityMenuItems(this.galaxy, utilityBox);
-         */
     }
 
 
@@ -226,79 +213,6 @@ public class AdministrationPanel extends MenuPanel {
         return a;
     }
 
-    /*
-    protected void createMenuItems(Galaxy galaxy, Toolbox manageBox) {
-        if (galaxy.hasPermission("MANAGE_GROUPS")) {
-            createLinkWithAdd(manageBox,
-                    "Groups",
-                    "groups",
-                    new GroupListPanel(this),
-                    new GroupForm(this));
-        }
-
-        if (galaxy.hasPermission("MANAGE_LIFECYCLES")) {
-            createLinkWithAdd(manageBox,
-                    "Lifecycles",
-                    "lifecycles",
-                    new LifecycleListPanel(this),
-                    new LifecycleForm(this));
-        }
-
-        if (galaxy.hasPermission("MANAGE_POLICIES")) {
-            Hyperlink link = new Hyperlink("Policies", "policies");
-            createPageInfo(link.getTargetHistoryToken(), new PolicyPanel(this, galaxy));
-            manageBox.add(link);
-        }
-
-        if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
-            createLinkWithAdd(manageBox,
-                    "Properties",
-                    "properties",
-                    new PropertyDescriptorListPanel(this),
-                    new PropertyDescriptorForm(this));
-        }
-
-        if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
-            createLinkWithAdd(manageBox,
-                    "Types",
-                    "types",
-                    new TypeListPanel(this),
-                    new TypeForm(this));
-        }
-
-        if (galaxy.hasPermission("MANAGE_USERS")) {
-            createLinkWithAdd(manageBox,
-                    "Users",
-                    "users",
-                    new UserListPanel(this),
-                    new UserForm(this));
-        }
-
-
-    }
-
-    protected void createUtilityMenuItems(Galaxy galaxy, Toolbox utilityBox) {
-        if (galaxy.hasPermission("VIEW_ACTIVITY")) {
-            Hyperlink activityLink = new Hyperlink("Activity", "activity");
-            createPageInfo(activityLink.getTargetHistoryToken(), new ActivityPanel(this, galaxy));
-            utilityBox.add(activityLink);
-        }
-
-        Hyperlink adminLink = new Hyperlink("Admin Shell", "adminShell");
-        createPageInfo(adminLink.getTargetHistoryToken(), new AdminShellPanel(this));
-        utilityBox.add(adminLink);
-
-
-        // Scheduler
-        createLinkWithAdd(utilityBox,
-                "Scheduler",
-                "schedules",
-                new ScheduleListPanel(this),
-                new ScheduleForm(this));
-
-    }
-
-    */
 
     protected void createPageInfo(String token, final WidgetHelper composite) {
         final AdministrationPanel aPanel = this;
@@ -330,26 +244,6 @@ public class AdministrationPanel extends MenuPanel {
         return getGalaxy().getSecurityService();
     }
 
-    /*
-     * root panel to add other panels too
-     */
-    protected ContentPanel createAccodionWrapperPanel() {
-        AccordionLayout alayout = new AccordionLayout();
-        accordionPanel = new ContentPanel();
-        accordionPanel.setBodyBorder(false);
-        accordionPanel.setHeaderVisible(false);
-        accordionPanel.setLayout(alayout);
-        return accordionPanel;
-    }
-
-
-    public ContentPanel getAccordionPanel() {
-        return accordionPanel;
-    }
-
-    public void setAccordionPanel(ContentPanel accordionPanel) {
-        this.accordionPanel = accordionPanel;
-    }
 
     public List<NavMenuItem> getManageItems() {
         return ManageItems;
