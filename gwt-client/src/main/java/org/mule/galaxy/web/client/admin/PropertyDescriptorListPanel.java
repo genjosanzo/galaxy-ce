@@ -18,16 +18,37 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Hyperlink;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.BeanModelFactory;
+import com.extjs.gxt.ui.client.data.BeanModelLookup;
+import com.extjs.gxt.ui.client.event.BaseEvent;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.GridEvent;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
+import com.extjs.gxt.ui.client.widget.grid.ColumnData;
+import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
+import com.extjs.gxt.ui.client.widget.grid.Grid;
+import com.extjs.gxt.ui.client.widget.grid.GridCellRenderer;
+import com.extjs.gxt.ui.client.widget.grid.RowNumberer;
+import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
+import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.google.gwt.user.client.History;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class PropertyDescriptorListPanel
-    extends AbstractAdministrationComposite
-{
+        extends AbstractAdministrationComposite {
     public PropertyDescriptorListPanel(AdministrationPanel a) {
         super(a);
     }
@@ -36,31 +57,78 @@ public class PropertyDescriptorListPanel
     public void doShowPage() {
         super.doShowPage();
 
-        final FlexTable table = createTitledRowTable(panel, "Properties");
-
-        table.setText(0, 0, "Property");
-        table.setText(0, 1, "Description");
-
         adminPanel.getRegistryService().getPropertyDescriptors(false, new AbstractCallback<List<WPropertyDescriptor>>(adminPanel) {
 
             public void onSuccess(List<WPropertyDescriptor> result) {
-                int i = 1;
-                for (WPropertyDescriptor prop : result) {
-                    String propName = prop.getName();
-                    if (propName == null || propName.trim().length() == 0) {
-                        propName = "<empty>";
-                    }
-                    Hyperlink hyperlink = new Hyperlink(propName,
-                                                        "properties/" + prop.getId());
 
-                    table.setWidget(i, 0, hyperlink);
-                    table.setText(i, 1, prop.getDescription());
-
-                    table.getRowFormatter().setStyleName(i, "artifactTableEntry");
-                    i++;
-                }
+                showProperties(result);
             }
 
         });
     }
+
+    private void showProperties(List<WPropertyDescriptor> props) {
+
+        ContentPanel cp = new ContentPanel();
+        cp.setHeading("Properties");
+
+        ToolBar toolbar = new ToolBar();
+        toolbar.add(new FillToolItem());
+
+        Button newBtn = new Button("New");
+        newBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+            @Override
+            public void componentSelected(ButtonEvent ce) {
+                History.newItem("properties/new");
+            }
+        });
+        toolbar.add(newBtn);
+        cp.setTopComponent(toolbar);
+
+        BeanModelFactory factory = BeanModelLookup.get().getFactory(WPropertyDescriptor.class);
+
+        List<BeanModel> list = factory.createModel(props);
+        final ListStore<BeanModel> store = new ListStore<BeanModel>();
+        store.add(list);
+
+        RowNumberer r = new RowNumberer();
+
+        List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
+        columns.add(r);
+
+        ColumnConfig nameConfig = new ColumnConfig("name", "Property", 200);
+        nameConfig.setRenderer(new GridCellRenderer<BeanModel>() {
+
+            public Object render(BeanModel beanModel, String s,
+                                 ColumnData columnData, int i, int i1,
+                                 ListStore<BeanModel> beanModelListStore, Grid<BeanModel> beanModelGrid) {
+
+                String propName = beanModel.get("name");
+                if (propName == null || propName.trim().length() == 0) {
+                    propName = "<empty>";
+                }
+
+                return propName;
+            }
+        });
+        columns.add(nameConfig);
+        columns.add(new ColumnConfig("description", "Description", 200));
+
+        ColumnModel cm = new ColumnModel(columns);
+
+        Grid grid = new Grid<BeanModel>(store, cm);
+        grid.addPlugin(r);
+        grid.setAutoWidth(true);
+        grid.addListener(Events.CellClick, new Listener<BaseEvent>() {
+            public void handleEvent(BaseEvent be) {
+                GridEvent ge = (GridEvent) be;
+                WPropertyDescriptor s = store.getAt(ge.getRowIndex()).getBean();
+                History.newItem("properties/" + s.getId());
+            }
+        });
+        cp.add(grid);
+        panel.add(cp);
+
+    }
+
 }

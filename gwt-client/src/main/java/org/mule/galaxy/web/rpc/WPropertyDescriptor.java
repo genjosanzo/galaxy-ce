@@ -18,11 +18,12 @@
 
 package org.mule.galaxy.web.rpc;
 
+import com.extjs.gxt.ui.client.data.BeanModelTag;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.util.Map;
 
-public class WPropertyDescriptor implements IsSerializable {
+public class WPropertyDescriptor implements IsSerializable, BeanModelTag {
     private String id;
     private boolean multiValued;
     private String name;
@@ -30,7 +31,7 @@ public class WPropertyDescriptor implements IsSerializable {
     private String extension;
     private Map<String, String> configuration;
     private String typeId;
-    
+
     public WPropertyDescriptor(String id, String name, String description, String extension, boolean multiValued, Map<String, String> configuration) {
         super();
         this.id = id;
@@ -40,52 +41,67 @@ public class WPropertyDescriptor implements IsSerializable {
         this.description = description;
         this.configuration = configuration;
     }
+
     public WPropertyDescriptor() {
         super();
     }
+
     public String getId() {
         return id;
     }
+
     public void setId(String id) {
         this.id = id;
     }
+
     public boolean isMultiValued() {
         return multiValued;
     }
+
     public void setMultiValued(boolean multiValued) {
         this.multiValued = multiValued;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public String getDescription() {
         return description;
     }
+
     public void setDescription(String description) {
         this.description = description;
     }
+
     public String getExtension() {
         return extension;
     }
+
     public void setExtension(String extension) {
         this.extension = extension;
     }
+
     public Map<String, String> getConfiguration() {
         return configuration;
     }
+
     public void setConfiguration(Map<String, String> configuration) {
         this.configuration = configuration;
     }
-    
+
     public String getTypeId() {
         return typeId;
     }
+
     public void setTypeId(String typeId) {
         this.typeId = typeId;
     }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -93,6 +109,7 @@ public class WPropertyDescriptor implements IsSerializable {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

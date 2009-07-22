@@ -32,10 +32,12 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
+import com.extjs.gxt.ui.client.widget.grid.RowNumberer;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.user.client.History;
@@ -84,13 +86,16 @@ public class UserListPanel
         final ListStore<BeanModel> store = new ListStore<BeanModel>();
         store.add(list);
 
+        RowNumberer r = new RowNumberer();
         List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
+        columns.add(r);
         columns.add(new ColumnConfig("username", "Username", 100));
         columns.add(new ColumnConfig("name", "Name", 200));
         columns.add(new ColumnConfig("email", "Email Address", 200));
         ColumnModel cm = new ColumnModel(columns);
 
         Grid grid = new Grid<BeanModel>(store, cm);
+        grid.addPlugin(r);
         grid.setAutoWidth(true);
         grid.addListener(Events.CellClick, new Listener<BaseEvent>() {
             public void handleEvent(BaseEvent be) {
