@@ -90,6 +90,10 @@ public class TypeListPanel
             }
 
         });
+
+        // FIXME:
+        panel.add(createSimpleHistoryButton("New", "types/new"));
+
     }
 
     protected WType getType(String id) {

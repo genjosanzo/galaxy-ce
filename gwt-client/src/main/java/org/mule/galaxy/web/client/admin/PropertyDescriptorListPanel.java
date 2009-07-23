@@ -25,15 +25,11 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
 import com.extjs.gxt.ui.client.data.BeanModelLookup;
 import com.extjs.gxt.ui.client.event.BaseEvent;
-import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.GridEvent;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.layout.FitLayout;
-import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnData;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
@@ -74,15 +70,7 @@ public class PropertyDescriptorListPanel
 
         ToolBar toolbar = new ToolBar();
         toolbar.add(new FillToolItem());
-
-        Button newBtn = new Button("New");
-        newBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-            @Override
-            public void componentSelected(ButtonEvent ce) {
-                History.newItem("properties/new");
-            }
-        });
-        toolbar.add(newBtn);
+        toolbar.add(createSimpleHistoryButton("New", "properties/new"));
         cp.setTopComponent(toolbar);
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WPropertyDescriptor.class);

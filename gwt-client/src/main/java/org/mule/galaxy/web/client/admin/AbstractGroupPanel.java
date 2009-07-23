@@ -159,12 +159,14 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
             }
         };
 
+        
         applyButton = new Button("Save", listener);
         resetButton = new Button("Cancel", listener);
 
         ButtonBar bb = new ButtonBar();
         bb.add(applyButton);
         bb.add(resetButton);
+        bb.add(createSimpleHistoryButton("New", "groups/new"));
 
         table.setWidget(rows.size() + 1, 0, bb);
 

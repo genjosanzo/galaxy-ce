@@ -6,8 +6,12 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.History;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
 
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 
@@ -162,6 +166,24 @@ public class WidgetHelper extends Composite {
         accordionPanel.setHeaderVisible(false);
         accordionPanel.setLayout(alayout);
         return accordionPanel;
+    }
+
+    /**
+     *  Creates a simple button that links to a History item 
+     * @param buttonLabel
+     * @param token
+     * @return
+     */
+    public static Button createSimpleHistoryButton(String buttonLabel, final String token) {
+        Button newBtn = new Button(buttonLabel);
+        newBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+            @Override
+            public void componentSelected(ButtonEvent ce) {
+                History.newItem(token);
+            }
+        });
+        return newBtn;
+
     }
 
 

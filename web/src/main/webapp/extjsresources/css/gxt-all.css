@@ -1400,8 +1400,9 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 	white-space: nowrap;
     padding:0;
 }
+/* Height of tree and grid buttons */
 .x-btn-noicon .x-btn-small .x-btn-text{
-	height: 16px;
+	height: 12px;
 }
 .x-btn-noicon .x-btn-medium .x-btn-text{
     height: 24px;
@@ -1527,7 +1528,7 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 	background:repeat-x 0 -1096px;
     vertical-align: middle;
 	text-align:center;
-	padding:0 5px;
+	padding:0 25px;
 	cursor:pointer;
 	white-space:nowrap;
 }
@@ -1602,6 +1603,7 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 .x-btn-disabled *{
 	cursor:default !important;
 }
+/* Space between text and arrow in grid buttons */
 .x-btn-mc em.x-btn-arrow {
     display:block;
     background:transparent no-repeat right center;
@@ -1742,11 +1744,12 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 .x-toolbar .x-toolbar-cell {
     vertical-align:middle;
 }
+
+/* Default button display */
 .x-toolbar .x-btn-tl, .x-toolbar .x-btn-tr, .x-toolbar .x-btn-tc, .x-toolbar .x-btn-ml, .x-toolbar .x-btn-mr,
 .x-toolbar .x-btn-mc, .x-toolbar .x-btn-bl, .x-toolbar .x-btn-br, .x-toolbar .x-btn-bc
 {
-	/* this will make the toolbar buttons appear if you comment this out */
-    background-position: 500px 500px;
+	background-position: 500px 500px; /*This setting makes buttons invisible */
 }
 .x-toolbar .x-btn-over .x-btn-tl{
 	background-position: -6px 0;
@@ -5863,10 +5866,11 @@ ul.x-tab-strip-bottom{
 }
 .x-btn{
 	font:normal 11px tahoma, verdana, helvetica;
+    padding: 0; /* spacing between buttons */
 }
 .x-btn button{
     font:normal 11px arial,tahoma,verdana,helvetica;
-    color:#333;
+    color:#016c96;
 }
 .x-btn em {
     font-style:normal;
@@ -6756,8 +6760,9 @@ body.x-body-masked .x-window-plain .x-window-mc {
 }.x-panel-noborder .x-panel-header-noborder {
     border-bottom-color:#99bbe8;
 }
+/* Above grid table's title bar */
 .x-panel-noborder .x-panel-tbar-noborder .x-toolbar {
-    border-bottom-color:#99bbe8;
+    border-bottom-color:#c4c4c4;
 }
 .x-panel-noborder .x-panel-bbar-noborder .x-toolbar {
     border-top-color:#99bbe8;
