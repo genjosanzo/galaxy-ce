@@ -79,7 +79,7 @@ public class RegistryInitializer {
 
                 });
             }
-            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "6");
+            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "100");
         }
 
         session.save();
