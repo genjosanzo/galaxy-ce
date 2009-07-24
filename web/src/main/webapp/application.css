@@ -156,12 +156,17 @@ a:visited {
   border: 1px solid #c4c4c4;
   /*border-right: 1px #aaa solid;*/
   width: 205px;
-  min-height: 85%;
-  height: 80%;
+  min-height: 85% !important;
+  height: 80% !important;
 }
 
 .left-menu-container {
     padding: 0;
+}
+
+.x-panel-container-full {
+    min-height: 85% !important;
+    height: 80% !important;
 }
 
 .x-panel: before {
