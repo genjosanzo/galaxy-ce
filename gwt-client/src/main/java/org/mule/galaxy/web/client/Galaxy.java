@@ -257,21 +257,9 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
         rightHeaderPanel = new InlineFlowPanel();
         rightHeaderPanel.setStyleName("header-right");
+        rightHeaderPanel.add(createHeaderOptions());
 
-        ExternalHyperlink logout = new ExternalHyperlink(" Log Out", GWT.getHostPageBaseURL() + "j_logout");
-
-        InlineFlowPanel options = new InlineFlowPanel();
-        options.setStyleName("header-right-options");
-
-        options.add(new Hyperlink("Help",null));
-        options.add(newSpacerPipe());
-
-        options.add(new Hyperlink("Preferences",null));
-        options.add(newSpacerPipe());
-        options.add(logout);
-
-        rightHeaderPanel.add(options);
-
+        // custom logo
         FlowPanel header = new FlowPanel();
         header.setStyleName("header");
         header.add(rightHeaderPanel);
@@ -286,6 +274,18 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
         northPanel.add(header);
         base.add(northPanel, data);
+    }
+
+    protected InlineFlowPanel createHeaderOptions() {
+
+        InlineFlowPanel options = new InlineFlowPanel();
+        options.setStyleName("header-right-options");
+
+        ExternalHyperlink logout = new ExternalHyperlink("Log Out", GWT.getHostPageBaseURL() + "j_logout");
+        options.add(newSpacerPipe());
+        options.add(logout);
+
+        return options;
     }
 
     protected void createBody() {
