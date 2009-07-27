@@ -348,6 +348,9 @@ a:visited {
     margin: 0px;
 }
 
+.no-border {
+    border-width:0 !important;
+}
 
 /**
  **

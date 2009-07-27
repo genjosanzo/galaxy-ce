@@ -81,6 +81,8 @@ public class AdministrationPanel extends MenuPanel {
      */
     protected ContentPanel createPanelWithListView(String heading, List<NavMenuItem> items) {
         ContentPanel c = new ContentPanel();
+        c.addStyleName("no-border");
+        c.setBodyBorder(false);
         c.setHeading(heading);
         c.setAutoHeight(true);
         c.setAutoHeight(true);
@@ -90,6 +92,7 @@ public class AdministrationPanel extends MenuPanel {
         ls.add(items);
 
         ListView<NavMenuItem> lv = new ListView<NavMenuItem>();
+        lv.setStyleName("no-border");
         lv.setDisplayProperty("title"); // from item
         lv.setStore(ls);
 
