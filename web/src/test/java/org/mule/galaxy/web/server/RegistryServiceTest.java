@@ -151,14 +151,10 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         // test links
         System.out.println(wsdl.getPath());
-        Collection<ItemInfo> items = gwtRegistry.getItems(wsdl.getId());
-        ItemInfo av = items.iterator().next();
+        Collection<ItemInfo> items = gwtRegistry.getItems(null);
         assertEquals(1, items.size());
-
-        av = av.getItem("hello.wsdl").getItem("0.1");
-        assertNotNull(av);
         
-        av = gwtRegistry.getItemInfo(av.getId(), true);
+        ItemInfo av = gwtRegistry.getItemInfo(registry.getItemByPath("/Default Workspace/hello.wsdl/0.1").getId(), true);
         WProperty prop = av.getProperty("depends");
         assertNotNull(prop);
         
@@ -219,7 +215,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         gwtRegistry.addItem(w.getPath(), "Foo", null, type.getId(), null);
         
         workspaces = gwtRegistry.getItems(w.getId());
-        assertEquals(1, workspaces.size());
+        assertEquals(6, workspaces.size());
         
         workspaces = gwtRegistry.getItemsInPath(w.getPath());
         

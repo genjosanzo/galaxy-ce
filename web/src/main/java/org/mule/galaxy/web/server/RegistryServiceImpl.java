@@ -164,19 +164,7 @@ public class RegistryServiceImpl implements RegistryService {
                 Item w = (Item) registry.getItemById(parentId);
 
                 Collection<ItemInfo> workspaces = toWeb(w.getItems());
-                while (w != null) {
-                    Item parent = w.getParent();
-                    Collection<ItemInfo> parentWorkspaces;
-                    if (parent != null) {
-                        parentWorkspaces = toWeb(parent.getItems());
-                    } else {
-                        parentWorkspaces = toWeb(registry.getItems());
-                    }
-                    
-                    addWorkspaces(w.getName(), parentWorkspaces, workspaces);
-                    workspaces = parentWorkspaces;
-                    w = parent;
-                }
+                
                 return workspaces;
             }
         } catch (RegistryException e) {
@@ -205,12 +193,12 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         }
     }
-
     
     private Collection<ItemInfo> toWeb(Collection<Item> workspaces) {
         if (workspaces == null) {
             return null;
         }
+
         List<ItemInfo> wis = new ArrayList<ItemInfo>();
         for (Item w : workspaces) {
             ItemInfo ww = toWeb(w);
@@ -220,15 +208,6 @@ public class RegistryServiceImpl implements RegistryService {
         return wis;
     }
 
-    private void addWorkspaces(String name, Collection<ItemInfo> parents, Collection<ItemInfo> children) {
-        for (ItemInfo w : parents) {
-            if (name.equals(w.getName())) {
-                w.setItems(children);
-                return;
-            }
-        }
-    }
-    
     private ItemInfo toWeb(Item i) {
         ItemInfo ii = new ItemInfo();
         ii.setId(i.getId());

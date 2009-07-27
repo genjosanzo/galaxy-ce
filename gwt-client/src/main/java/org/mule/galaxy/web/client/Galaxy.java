@@ -55,11 +55,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.client.item.AddItemForm;
-import org.mule.galaxy.web.client.item.ItemPanel;
+import org.mule.galaxy.web.client.item.RepositoryMenuPanel;
 import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
 import org.mule.galaxy.web.client.registry.SearchPanel;
-import org.mule.galaxy.web.client.registry.ViewPanel;
 import org.mule.galaxy.web.client.ui.BaseConstants;
 import org.mule.galaxy.web.client.ui.BaseMessages;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
@@ -97,7 +95,6 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     private boolean suppressTabHistory;
     private Map<String, AbstractShowable> historyListeners = new HashMap<String, AbstractShowable>();
     protected int adminTabIndex;
-    private ItemPanel itemPanel;
     protected Viewport base;
     protected PropertyInterfaceManager propertyInterfaceManager = new PropertyInterfaceManager();
     protected List extensions;
@@ -109,6 +106,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     protected int repositoryTabIndex;
     private BaseConstants baseConstants;
     private BaseMessages baseMessages;
+    private RepositoryMenuPanel repositoryPanel;
 
     /**
      * This is the entry point method.
@@ -177,7 +175,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         createBody();
 
         // prefetch extensions
-        registryService.getExtensions(new AbstractCallback(itemPanel) {
+        registryService.getExtensions(new AbstractCallback(repositoryPanel) {
             @SuppressWarnings("unchecked")
             public void onSuccess(Object o) {
                 extensions = (List) o;
@@ -186,7 +184,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         });
 
         final Galaxy galaxy = this;
-        registryService.getUserInfo(new AbstractCallback(itemPanel) {
+        registryService.getUserInfo(new AbstractCallback(repositoryPanel) {
             public void onSuccess(Object o) {
                 user = (WUser) o;
 
@@ -303,14 +301,10 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     }
 
     protected void createRepositoryPanels() {
-        itemPanel = new ItemPanel(this);
-        createPageInfo(DEFAULT_PAGE, itemPanel, getRepositoryTab());
-        createPageInfo("item/" + WILDCARD, new ItemPanel(this), getRepositoryTab());
-        createPageInfo("add-item", new AddItemForm(this), getRepositoryTab());
-        createPageInfo("view", new ViewPanel(this), getRepositoryTab());
+        repositoryPanel = new RepositoryMenuPanel(this);
     }
 
-    private int getRepositoryTab() {
+    public int getRepositoryTab() {
         return repositoryTabIndex;
     }
 

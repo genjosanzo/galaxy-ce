@@ -50,7 +50,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.AbstractFlowComposite;
+import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.property.AbstractPropertyRenderer;
 import org.mule.galaxy.web.client.property.ArtifactRenderer;
@@ -81,7 +82,7 @@ import org.mule.galaxy.web.rpc.WType;
  *
  * @author Dan
  */
-public class AddItemForm extends AbstractErrorShowingComposite implements SubmitCompleteHandler {
+public class AddItemForm extends AbstractFlowComposite implements SubmitCompleteHandler {
 
     private FlexTable table;
     private TextField<String> nameBox;
@@ -106,18 +107,18 @@ public class AddItemForm extends AbstractErrorShowingComposite implements Submit
     private ListBox versionTypes;
     private WType selectedVersion;
     private AddItemHelper form;
+    private final ErrorPanel errorPanel;
 
-    public AddItemForm(final Galaxy galaxy) {
-        this.galaxy = galaxy;
-
-        FlowPanel main = getMainPanel();
+    public AddItemForm(final Galaxy galaxy, ErrorPanel errorPanel) {
+        this.galaxy = galaxy;       
+        this.errorPanel = errorPanel;
+            
 
         form = new AddItemHelper(galaxy);
         form.setAction(GWT.getModuleBaseURL() + "../artifactUpload.form");
         form.addSubmitCompleteHandler(this);
 
-        main.add(form);
-        initWidget(main);
+        panel.add(form);
     }
 
     public void hidePage() {
@@ -129,7 +130,7 @@ public class AddItemForm extends AbstractErrorShowingComposite implements Submit
     public void showPage(List<String> params) {
         if (params.size() > 0) {
             itemId = params.get(0);
-            galaxy.getRegistryService().getItemInfo(itemId, false, new AbstractCallback<ItemInfo>(this) {
+            galaxy.getRegistryService().getItemInfo(itemId, false, new AbstractCallback<ItemInfo>(errorPanel) {
                 public void onSuccess(ItemInfo item) {
                     AddItemForm.this.item = item;
                     finishShow();
@@ -163,7 +164,7 @@ public class AddItemForm extends AbstractErrorShowingComposite implements Submit
         // note how spacing uses a clear pixel on the second column
         table.setWidget(1, 0, new Label("Parent:"));
 
-        parentSB = new SuggestBox(new ItemPathOracle(galaxy, this));
+        parentSB = new SuggestBox(new ItemPathOracle(galaxy, errorPanel));
         parentSB.setStyleName("x-form-text");
 
         parentSB.getTextBox().setName("workspacePath");
@@ -184,7 +185,7 @@ public class AddItemForm extends AbstractErrorShowingComposite implements Submit
         nameBox.setName("name");
         table.setWidget(2, 2, nameBox);
 
-        galaxy.getRegistryService().getTypes(new AbstractCallback<List<WType>>(this) {
+        galaxy.getRegistryService().getTypes(new AbstractCallback<List<WType>>(errorPanel) {
             public void onSuccess(List<WType> wtypes) {
                 Collections.sort(wtypes, new WTypeComparator());
                 AddItemForm.this.types = new HashMap<String, WType>();
@@ -353,7 +354,7 @@ public class AddItemForm extends AbstractErrorShowingComposite implements Submit
         for (WPropertyDescriptor pd : props) {
             table.setText(row, 0, pd.getDescription());
             AbstractPropertyRenderer renderer = factory.createRenderer(pd.getExtension(), pd.isMultiValued());
-            renderer.initialize(galaxy, this, null, false);
+            renderer.initialize(galaxy, errorPanel, null, false);
             typeRenderers.put(pd.getName(), renderer);
             table.setWidget(row, 2, renderer.createEditForm());
 
@@ -440,7 +441,7 @@ public class AddItemForm extends AbstractErrorShowingComposite implements Submit
             // submission process.
             addItem();
         } else {
-            this.setMessage(msg);
+            errorPanel.setMessage(msg);
             resetFormFields();
         }
     }
@@ -530,7 +531,7 @@ public class AddItemForm extends AbstractErrorShowingComposite implements Submit
     }
 
     private AbstractCallback geAddItemCallback() {
-        AbstractCallback callback = new AbstractCallback(this) {
+        AbstractCallback callback = new AbstractCallback(errorPanel) {
             public void onSuccess(Object id) {
                 History.newItem("item/" + id);
             }
@@ -540,7 +541,7 @@ public class AddItemForm extends AbstractErrorShowingComposite implements Submit
                 resetFormFields();
 
                 if (caught instanceof ItemExistsException) {
-                    setMessage("An item with that name already exists.");
+                    errorPanel.setMessage("An item with that name already exists.");
                     return;
                 }
 
@@ -607,7 +608,7 @@ public class AddItemForm extends AbstractErrorShowingComposite implements Submit
 
 
     private boolean validate() {
-        clearErrorMessage();
+        errorPanel.clearErrorMessage();
         boolean v = true;
 
         v &= nameBox.validate();
