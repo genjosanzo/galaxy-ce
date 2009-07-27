@@ -1,6 +1,5 @@
 package org.mule.galaxy.web.client.util;
 
-
 public class StringUtil {
 
 
@@ -15,9 +14,11 @@ public class StringUtil {
 
     public static String[] createInlineHelpHeaderAndBody(String s, int len, boolean ellipsis) {
         String a = s.substring(0, len);
-        if(ellipsis) s.concat("...");
+        if (ellipsis) {
+            a = a.concat("...");
+        }
         String b = s.substring(len);
-        return new String[]{a , b };
+        return new String[]{a, b};
     }
 
 }

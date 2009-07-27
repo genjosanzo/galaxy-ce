@@ -1,19 +1,24 @@
 package org.mule.galaxy.web.client;
 
+import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.button.ToolButton;
+import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.History;
-import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
-import com.extjs.gxt.ui.client.event.ButtonEvent;
-import com.extjs.gxt.ui.client.event.SelectionListener;
-
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
 
 public class WidgetHelper extends Composite {
 
@@ -77,7 +82,7 @@ public class WidgetHelper extends Composite {
         table.setWidth("100%");
         table.setCellSpacing(0);
         table.setCellPadding(0);
-    
+
         return table;
     }
 
@@ -93,7 +98,7 @@ public class WidgetHelper extends Composite {
         table.setStyleName("columnTable");
         table.setCellSpacing(0);
         table.setCellPadding(0);
-    
+
         return table;
     }
 
@@ -114,7 +119,7 @@ public class WidgetHelper extends Composite {
     public static InlineFlowPanel createTitle(String title) {
         InlineFlowPanel titlePanel = new InlineFlowPanel();
         titlePanel.setStyleName("rightlinked-title-panel");
-    
+
         Label label = new Label(title);
         label.setStyleName("rightlinked-title");
         titlePanel.add(label);
@@ -130,19 +135,20 @@ public class WidgetHelper extends Composite {
     public static InlineFlowPanel createTitleWithLink(String name, Widget rightWidget) {
         InlineFlowPanel commentTitlePanel = new InlineFlowPanel();
         commentTitlePanel.setStyleName("rightlinked-title-panel");
-    
+
         commentTitlePanel.add(rightWidget);
-    
+
         Label label = new Label(name);
         label.setStyleName("rightlinked-title");
         commentTitlePanel.add(label);
-    
+
         rightWidget.setStyleName("rightlinked-title-link");
         return commentTitlePanel;
     }
 
-    public static ContentPanel createInlineHelpPanel(String header, String body) {
-        ContentPanel cp = new ContentPanel();
+
+    public static InlineHelpPanel createInlineHelpPanel(String header, String body) {
+        final InlineHelpPanel cp = new InlineHelpPanel();
         cp.addText(body);
         cp.setHeading(header);
         cp.setBorders(false);
@@ -150,12 +156,19 @@ public class WidgetHelper extends Composite {
         cp.setCollapsible(true);
         cp.setAutoWidth(true);
         cp.collapse();
-        cp.setStyleName("help-panel-inline");
-        cp.setBodyStyleName("help-panel-inline");
-        cp.getHeader().setStyleName("help-panel-inline");
-        cp.getHeader().setTextStyle("help-panel-inline");
+        cp.setHideCollapseTool(true);
+        ToolButton btn = new ToolButton("x-tool-help");
+        cp.getHeader().addTool(btn);
+        btn.addListener(Events.Select, new Listener<ComponentEvent>() {
+            public void handleEvent(ComponentEvent ce) {
+                ce.stopEvent();
+                cp.setExpanded(!cp.isExpanded());
+            }
+        });
+
         return cp;
     }
+
 
     public static ContentPanel createAccodionWrapperPanel() {
         AccordionLayout alayout = new AccordionLayout();
@@ -168,8 +181,10 @@ public class WidgetHelper extends Composite {
         return accordionPanel;
     }
 
+
     /**
-     *  Creates a simple button that links to a History item 
+     * Creates a simple button that links to a History item
+     *
      * @param buttonLabel
      * @param token
      * @return
@@ -185,7 +200,6 @@ public class WidgetHelper extends Composite {
         return newBtn;
 
     }
-
 
 
     public WidgetHelper() {
