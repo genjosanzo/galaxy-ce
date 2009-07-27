@@ -211,8 +211,9 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
 
     private void deleteIfExists(File file) throws IOException {
         if (file.exists()) {
+            
             boolean deleted = false;
-            while (!deleted) {
+            for (int i = 0; i < 10 && !deleted; i++) {
                 // Give the other threads time to be shut down in case it's still running from the previous test
                 try {
                     FileUtil.delete(file);
