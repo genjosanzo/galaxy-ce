@@ -158,6 +158,7 @@ public class WidgetHelper extends Composite {
         cp.collapse();
         cp.setHideCollapseTool(true);
         ToolButton btn = new ToolButton("x-tool-help");
+        btn.setToolTip("More information available. Click to expand.");
         cp.getHeader().addTool(btn);
         btn.addListener(Events.Select, new Listener<ComponentEvent>() {
             public void handleEvent(ComponentEvent ce) {
