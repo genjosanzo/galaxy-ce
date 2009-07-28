@@ -1402,7 +1402,7 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 	white-space: nowrap;
     padding:0;
     position:relative;
-    top:-2px;
+    /*top:-2px;*/
 }
 /* Height of tree and grid buttons */
 .x-btn-noicon .x-btn-small .x-btn-text{
