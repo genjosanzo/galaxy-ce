@@ -18,34 +18,34 @@
 
 package org.mule.galaxy.web.client.item;
 
+import org.mule.galaxy.web.client.AbstractFlowComposite;
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.WidgetHelper;
+import org.mule.galaxy.web.client.admin.PolicyPanel;
+import org.mule.galaxy.web.client.util.ShowableTabListener;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemInfo;
+import org.mule.galaxy.web.rpc.SecurityService;
+
+import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
+import com.extjs.gxt.ui.client.Style;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
-
-import org.mule.galaxy.web.client.AbstractFlowComposite;
-import org.mule.galaxy.web.client.ErrorPanel;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.admin.PolicyPanel;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.ShowableTabListener;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ItemInfo;
-import org.mule.galaxy.web.rpc.SecurityService;
 
 
 /**
@@ -66,7 +66,7 @@ public class ItemPanel extends AbstractFlowComposite {
     private String itemId;
     private List<String> params;
     private ErrorPanel errorPanel;
-    
+
     public ItemPanel(Galaxy galaxy, ErrorPanel errorPanel) {
         this.galaxy = galaxy;
         this.errorPanel = errorPanel;
@@ -90,7 +90,7 @@ public class ItemPanel extends AbstractFlowComposite {
 
         if (itemId != null) {
             fetchItem();
-        } 
+        }
     }
 
     private void fetchItem() {
@@ -107,23 +107,26 @@ public class ItemPanel extends AbstractFlowComposite {
 
     private void init() {
         panel.clear();
-//        initLinks();
         initTabs();
     }
-    
-   
+
+
     private void initTabs() {
         ContentPanel cp = new ContentPanel();
-    
+        cp.setStyleName("x-panel-container-full");
+        cp.setBodyBorder(false);
+        cp.setHeading(info.getName());
+
+
         final TabPanel tabPanel = new TabPanel();
         tabPanel.setStyleName("x-tab-panel-header_sub1");
         tabPanel.setAutoWidth(true);
         tabPanel.setAutoHeight(true);
-    
+
         TabItem items = new TabItem("Items");
-        items.add(new Label("blank"));
+        items.add(createToolbar());
         tabPanel.add(items);
-        
+
         TabItem infoTab = new TabItem("Info");
         infoTab.add(new ItemInfoPanel(galaxy, errorPanel, info, this, params));
         tabPanel.add(infoTab);
@@ -139,16 +142,15 @@ public class ItemPanel extends AbstractFlowComposite {
             tab.add(new ItemGroupPermissionPanel(galaxy, errorPanel, info.getId(), SecurityService.ITEM_PERMISSIONS));
             tabPanel.add(tab);
         }
-        
+
         /**
          * Lazily initialize the panels with the proper parameters.
          */
         tabPanel.addListener(Events.Select, new ShowableTabListener(params));
-        
+
         cp.add(tabPanel);
         panel.add(cp);
-        
-        
+
 
         if (selectedTab > -1) {
             tabPanel.setSelection(tabPanel.getItem(selectedTab));
@@ -157,65 +159,49 @@ public class ItemPanel extends AbstractFlowComposite {
         }
     }
 
-    public void initLinks() {
-        String style = "artifactToolbarItemFirst";
+    public ToolBar createToolbar() {
+
+        ToolBar tb = new ToolBar();
+        tb.add(new FillToolItem());
 
         if (info.isModifiable()) {
-            Image addImg = new Image("images/add_obj.gif");
-            addImg.addClickListener(new ClickListener() {
-                public void onClick(Widget w) {
-                    w.addStyleName("gwt-Hyperlink");
-
-                    History.newItem("add-item/" + info.getId());
-                }
-            });
-
-            Hyperlink addLink = new Hyperlink("New", "add-item/" + info.getId());
-            InlineFlowPanel p = asHorizontal(addImg, new Label(" "), addLink);
-            p.setStyleName(style);
-            style = "artifactToolbarItem";
+            Button addBtn = WidgetHelper.createSimpleHistoryButton("New Item", "add-item/" + info.getId());
+            tb.add(addBtn);
         }
 
         if (info.isDeletable()) {
-            ClickListener cl = new ClickListener() {
-                public void onClick(Widget arg0) {
+            Button delBtn = new Button("Delete Item");
+            delBtn.setEnabled(false);
+            delBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+                @Override
+                public void componentSelected(ButtonEvent ce) {
                     warnDelete();
+                    History.newItem("artifact/" + info.getId());
                 }
-            };
-            Image img = new Image("images/delete_config.gif");
-            img.setStyleName("icon-baseline");
-            img.addClickListener(cl);
-            Hyperlink hl = new Hyperlink("Delete", "artifact/" + info.getId());
-            hl.addClickListener(cl);
+            });
+            tb.add(delBtn);
 
-            InlineFlowPanel p = asHorizontal(img, new Label(" "), hl);
-            p.setStyleName(style);
-            style = "artifactToolbarItem";
         }
 
-        ClickListener cl = new ClickListener() {
+        /*
+        ClickHandler cl = new ClickHandler() {
 
-            public void onClick(Widget sender) {
+            public void onClick(ClickEvent sender) {
                 Window.open(info.getArtifactFeedLink(), null, "scrollbars=yes");
             }
         };
 
         Image img = new Image("images/feed-icon.png");
-//        img.setStyleName("feed-icon");
         img.setTitle("Versions Atom Feed");
-        img.addClickListener(cl);
+        img.addClickHandler(cl);
         img.setStyleName("icon-baseline");
 
         Hyperlink hl = new Hyperlink("Feed", "feed/" + info.getId());
-        hl.addClickListener(cl);
+        hl.addClickHandler(cl);
+        */
 
-        InlineFlowPanel p = asHorizontal(img, new Label(" "), hl);
-        p.setStyleName(style);
-        style = "artifactToolbarItem";
+        return tb;
 
-        // spacer to divide the actions
-        SimplePanel spacer = new SimplePanel();
-        spacer.addStyleName("hr");
     }
 
     protected void warnDelete() {
