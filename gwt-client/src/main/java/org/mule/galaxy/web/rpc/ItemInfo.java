@@ -26,8 +26,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.extjs.gxt.ui.client.data.BeanModelTag;
 
-public class ItemInfo implements IsSerializable {
+public class ItemInfo implements IsSerializable, BeanModelTag {
     private String id;
     private List<WProperty> properties = new ArrayList<WProperty>();
     private boolean local;

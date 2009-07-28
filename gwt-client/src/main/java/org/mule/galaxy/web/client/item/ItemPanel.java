@@ -28,23 +28,34 @@ import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.SecurityService;
 
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.BeanModelFactory;
+import com.extjs.gxt.ui.client.data.BeanModelLookup;
+import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.GridEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.extjs.gxt.ui.client.widget.grid.CheckBoxSelectionModel;
+import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
+import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
+import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
-import com.extjs.gxt.ui.client.Style;
+import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Label;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -62,6 +73,7 @@ public class ItemPanel extends AbstractFlowComposite {
 
     private Galaxy galaxy;
     private ItemInfo info;
+    private Collection<ItemInfo> items;
     private int selectedTab = -1;
     private String itemId;
     private List<String> params;
@@ -90,6 +102,7 @@ public class ItemPanel extends AbstractFlowComposite {
 
         if (itemId != null) {
             fetchItem();
+            fetchAllItems();
         }
     }
 
@@ -97,12 +110,22 @@ public class ItemPanel extends AbstractFlowComposite {
         AbstractCallback callback = new AbstractCallback(errorPanel) {
             public void onSuccess(Object o) {
                 info = (ItemInfo) o;
-
                 init();
             }
         };
 
         galaxy.getRegistryService().getItemInfo(itemId, true, callback);
+    }
+
+
+    private void fetchAllItems() {
+        AbstractCallback callback = new AbstractCallback(errorPanel) {
+            public void onSuccess(Object o) {
+                items = (Collection) o;
+            }
+        };
+
+        galaxy.getRegistryService().getItems(itemId, callback);
     }
 
     private void init() {
@@ -116,16 +139,17 @@ public class ItemPanel extends AbstractFlowComposite {
         cp.setStyleName("x-panel-container-full");
         cp.setBodyBorder(false);
         cp.setHeading(info.getName());
-
+        cp.setAutoWidth(true);
 
         final TabPanel tabPanel = new TabPanel();
         tabPanel.setStyleName("x-tab-panel-header_sub1");
         tabPanel.setAutoWidth(true);
         tabPanel.setAutoHeight(true);
 
-        TabItem items = new TabItem("Items");
-        items.add(createToolbar());
-        tabPanel.add(items);
+        TabItem itemsTab = new TabItem("Items");
+        itemsTab.add(createItemGrid(info, items));
+        tabPanel.add(itemsTab);
+
 
         TabItem infoTab = new TabItem("Info");
         infoTab.add(new ItemInfoPanel(galaxy, errorPanel, info, this, params));
@@ -151,7 +175,6 @@ public class ItemPanel extends AbstractFlowComposite {
         cp.add(tabPanel);
         panel.add(cp);
 
-
         if (selectedTab > -1) {
             tabPanel.setSelection(tabPanel.getItem(selectedTab));
         } else {
@@ -159,31 +182,103 @@ public class ItemPanel extends AbstractFlowComposite {
         }
     }
 
-    public ToolBar createToolbar() {
 
-        ToolBar tb = new ToolBar();
-        tb.add(new FillToolItem());
+    /**
+     * generic grid for itemInfo
+     *
+     * @param info
+     * @return
+     */
+    private ContentPanel createItemGrid(final ItemInfo info, final Collection items) {
 
+        ContentPanel cp = new ContentPanel();
+        cp.setHeaderVisible(false);
+        cp.setAutoWidth(true);
+
+        ToolBar toolbar = new ToolBar();
+        toolbar.add(new FillToolItem());
         if (info.isModifiable()) {
-            Button addBtn = WidgetHelper.createSimpleHistoryButton("New Item", "add-item/" + info.getId());
-            tb.add(addBtn);
+            toolbar.add(WidgetHelper.createSimpleHistoryButton("New Item", "add-item/" + info.getId()));
         }
-
         if (info.isDeletable()) {
             Button delBtn = new Button("Delete Item");
             delBtn.setEnabled(false);
             delBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
                 @Override
                 public void componentSelected(ButtonEvent ce) {
-                    warnDelete();
-                    History.newItem("artifact/" + info.getId());
+                    warnDelete(info);
+                    //History.newItem("artifact/" + info.getId());
                 }
             });
-            tb.add(delBtn);
+            toolbar.add(delBtn);
 
         }
 
-        /*
+        cp.setTopComponent(toolbar);
+
+        CheckBoxSelectionModel<BeanModel> sm = new CheckBoxSelectionModel<BeanModel>();
+
+        BeanModelFactory factory = BeanModelLookup.get().getFactory(ItemInfo.class);
+        List<BeanModel> model = factory.createModel(items);
+
+        final ListStore<BeanModel> store = new ListStore<BeanModel>();
+        store.add(model);
+
+        List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
+        columns.add(sm.getColumn());
+        columns.add(new ColumnConfig("name", "Name", 100));
+        columns.add(new ColumnConfig("path", "Path", 200));
+        columns.add(new ColumnConfig("parentPath", "Parent", 150));
+        columns.add(new ColumnConfig("authorName", "Author", 150));
+        columns.add(new ColumnConfig("type", "Type", 100));
+
+        ColumnModel cm = new ColumnModel(columns);
+
+        Grid grid = new Grid<BeanModel>(store, cm);
+        grid.setAutoWidth(true);
+        grid.setSelectionModel(sm);
+        grid.setBorders(true);
+        grid.addPlugin(sm);
+        grid.setAutoExpandColumn("name");
+
+        grid.setAutoWidth(true);
+        grid.addListener(Events.CellClick, new Listener<BaseEvent>() {
+            public void handleEvent(BaseEvent be) {
+                GridEvent ge = (GridEvent) be;
+                // any non checkbox...
+                if (ge.getColIndex() > 0) {
+                    ItemInfo ii = store.getAt(ge.getRowIndex()).getBean();
+                    History.newItem("artifact/" + ii.getId());
+                }
+            }
+        });
+
+        cp.add(grid);
+        return cp;
+
+    }
+
+
+    protected void warnDelete(final ItemInfo item) {
+        final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
+            public void handleEvent(MessageBoxEvent ce) {
+                com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
+
+                if (Dialog.YES.equals(btn.getItemId())) {
+                    galaxy.getRegistryService().delete(item.getId(), new AbstractCallback(errorPanel) {
+                        public void onSuccess(Object arg0) {
+                            galaxy.setMessageAndGoto("browse", "Item was deleted.");
+                        }
+                    });
+                }
+            }
+        };
+        MessageBox.confirm("Confirm", "Are you sure you want to delete this item?", l);
+    }
+
+    /*
+    public void createToolbar() {
+
         ClickHandler cl = new ClickHandler() {
 
             public void onClick(ClickEvent sender) {
@@ -198,29 +293,8 @@ public class ItemPanel extends AbstractFlowComposite {
 
         Hyperlink hl = new Hyperlink("Feed", "feed/" + info.getId());
         hl.addClickHandler(cl);
+
+    }
         */
-
-        return tb;
-
-    }
-
-    protected void warnDelete() {
-
-        final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
-            public void handleEvent(MessageBoxEvent ce) {
-                com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
-
-                if (Dialog.YES.equals(btn.getItemId())) {
-                    galaxy.getRegistryService().delete(info.getId(), new AbstractCallback(errorPanel) {
-                        public void onSuccess(Object arg0) {
-                            galaxy.setMessageAndGoto("browse", "Item was deleted.");
-                        }
-                    });
-                }
-            }
-        };
-
-        MessageBox.confirm("Confirm", "Are you sure you want to delete this item?", l);
-    }
 
 }
