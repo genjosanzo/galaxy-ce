@@ -254,9 +254,6 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
 
         ThreadLocalCacheProviderFacade.clearCache();
         indexManager.destroy();
-
-        applicationContext.stop();
-        applicationContext.close();
         
         if (repository != null) {
             setDirty();
