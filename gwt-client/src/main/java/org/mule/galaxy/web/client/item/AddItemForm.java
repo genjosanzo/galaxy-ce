@@ -27,6 +27,7 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ButtonBar;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -118,7 +119,15 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
         form.setAction(GWT.getModuleBaseURL() + "../artifactUpload.form");
         form.addSubmitCompleteHandler(this);
 
-        panel.add(form);
+        ContentPanel cp = new ContentPanel();
+        cp.setHeading("Add Item");
+        cp.setBodyBorder(false);
+        cp.setAutoWidth(true);
+        cp.setStyleName("x-panel-container-full");
+        cp.add(form);
+
+
+        panel.add(cp);
     }
 
     public void hidePage() {
@@ -145,7 +154,7 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
         FlowPanel panel = new FlowPanel();
         form.add(panel);
 
-        panel.add(createPrimaryTitle("Add Item"));
+        //panel.add(createPrimaryTitle("Add Item"));
 
         table = createColumnTable();
         panel.add(table);
