@@ -38,6 +38,8 @@ import com.extjs.gxt.ui.client.event.GridEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.event.SelectionChangedListener;
+import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
@@ -104,6 +106,7 @@ public class ItemPanel extends AbstractFlowComposite {
             fetchItem();
             fetchAllItems();
         }
+
     }
 
     private void fetchItem() {
@@ -196,27 +199,15 @@ public class ItemPanel extends AbstractFlowComposite {
         cp.setAutoWidth(true);
 
         ToolBar toolbar = new ToolBar();
+        cp.setTopComponent(toolbar);
+
         toolbar.add(new FillToolItem());
         if (info.isModifiable()) {
             toolbar.add(WidgetHelper.createSimpleHistoryButton("New Item", "add-item/" + info.getId()));
         }
-        if (info.isDeletable()) {
-            Button delBtn = new Button("Delete Item");
-            delBtn.setEnabled(false);
-            delBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-                @Override
-                public void componentSelected(ButtonEvent ce) {
-                    warnDelete(info);
-                    //History.newItem("artifact/" + info.getId());
-                }
-            });
-            toolbar.add(delBtn);
 
-        }
 
-        cp.setTopComponent(toolbar);
-
-        CheckBoxSelectionModel<BeanModel> sm = new CheckBoxSelectionModel<BeanModel>();
+        final CheckBoxSelectionModel<BeanModel> sm = new CheckBoxSelectionModel<BeanModel>();
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(ItemInfo.class);
         List<BeanModel> model = factory.createModel(items);
@@ -248,10 +239,32 @@ public class ItemPanel extends AbstractFlowComposite {
                 // any non checkbox...
                 if (ge.getColIndex() > 0) {
                     ItemInfo ii = store.getAt(ge.getRowIndex()).getBean();
-                    History.newItem("artifact/" + ii.getId());
+                    History.newItem("item/" + ii.getId());
                 }
             }
         });
+
+        final Button delBtn = new Button("Delete Item");
+        delBtn.setEnabled(false);
+        delBtn.setEnabled(false);
+        delBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+            @Override
+            public void componentSelected(ButtonEvent ce) {
+                warnDelete(sm.getSelectedItems());
+                //History.newItem("artifact/" + info.getId());
+            }
+        });
+        if (info.isDeletable()) {
+            toolbar.add(delBtn);
+        }
+        
+        sm.addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
+            public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
+                boolean isSelected = sm.getSelectedItems().size() > 0;
+                delBtn.setEnabled(isSelected);
+            }
+        });
+
 
         cp.add(grid);
         return cp;
@@ -259,21 +272,24 @@ public class ItemPanel extends AbstractFlowComposite {
     }
 
 
-    protected void warnDelete(final ItemInfo item) {
+    protected void warnDelete(final List itemlist) {
         final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
             public void handleEvent(MessageBoxEvent ce) {
                 com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
 
                 if (Dialog.YES.equals(btn.getItemId())) {
-                    galaxy.getRegistryService().delete(item.getId(), new AbstractCallback(errorPanel) {
+
+                    // FIXME: delete collection.
+                    /*galaxy.getRegistryService().delete(item.getId(), new AbstractCallback(errorPanel) {
                         public void onSuccess(Object arg0) {
                             galaxy.setMessageAndGoto("browse", "Item was deleted.");
                         }
                     });
+                    */
                 }
             }
         };
-        MessageBox.confirm("Confirm", "Are you sure you want to delete this item?", l);
+        MessageBox.confirm("Confirm", "Are you sure you want to delete these items?", l);
     }
 
     /*

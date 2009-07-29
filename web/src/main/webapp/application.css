@@ -14,7 +14,7 @@ body {
 }
 
 .main-application-panel {
-    padding-bottom: 25px;
+    padding-bottom: 25px !important;
 }
 
 .header {
@@ -145,8 +145,8 @@ a:visited {
   border: 1px solid #c4c4c4;
   /*border-right: 1px #aaa solid;*/
   width: 205px;
-  min-height: 85% !important;
-  height: 80% !important;
+  min-height: 85%;
+  height: 80%;
 }
 
 .left-menu-container {
@@ -154,8 +154,8 @@ a:visited {
 }
 
 .x-panel-container-full {
-    min-height: 85% !important;
-    height: 80% !important;
+    min-height: 85%;
+    height: 80%;
 }
 
 .x-panel: before {

@@ -106,22 +106,13 @@ public class RepositoryMenuPanel extends MenuPanel {
         });
 
         tree = new TreePanel<ModelData>(store);
+        tree.setAutoSelect(true);
         tree.setAutoLoad(true);
         tree.setDisplayProperty("name");
         tree.setWidth(250);
         tree.setIconProvider(new ModelIconProvider<ModelData>() {
             public AbstractImagePrototype getIcon(ModelData model) {
-//                if (SERVER_GROUP_MODEL_TYPE.equals(model.get("type"))) {
-//                    return IconHelper.createPath("images/tree/server-group.gif");
-//                }
-//                if (SERVER_MODEL_TYPE.equals(model.get("type"))) {
-//                    return IconHelper.createPath("images/tree/server.gif");
-//                }
-//                // else you are all or unregistered..
-//                return IconHelper.createPath("images/tree/server-collection.gif");
-
-                // this is just for hosted mode right now...  
-                return IconHelper.createPath("extjsresources/images/default/tree/folder.gif");
+                return null;
             }
         });
 
@@ -180,10 +171,10 @@ public class RepositoryMenuPanel extends MenuPanel {
         tree.addListener(Events.Expand, new Listener<TreePanelEvent<ModelData>>() {
             public void handleEvent(TreePanelEvent<ModelData> be) {
                 TreeModel parent = (TreeModel) be.getItem();
-
                 loadItems(parent);
             }
         });
+
 
         // add accordion panel to left nav
         addMenuItem(accordionPanel);

@@ -73,6 +73,7 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
     protected void onFirstShow() {
         centerPanel = new FlowPanel();
         centerPanel.setStyleName("main-application-panel");
+
         panel.setRightWidget(centerPanel);
 
         centerPanel.add(getMainPanel());
