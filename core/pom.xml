@@ -339,7 +339,7 @@
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-core</artifactId>
-            <version>1.6-07072009-MuleSource</version>
+            <version>1.6-07202009-MuleSource</version>
             <exclusions>
                 <exclusion>
                     <groupId>xerces</groupId>
@@ -352,6 +352,21 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>jackrabbit-spi-commons</artifactId>
+            <version>1.6-07202009-MuleSource</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xmlParserAPIs</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xmlParserAPIs</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-server</artifactId>
