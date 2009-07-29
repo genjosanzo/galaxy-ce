@@ -1388,7 +1388,7 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
     padding-left:0;
     padding-right:0;
 }
-.ext-gecko .x-btn button::-moz-focus-inner {
+.ext-gecko .x-btn button:-moz-focus-inner {
     padding:0;
 }
 .ext-ie .x-btn button {
@@ -1407,7 +1407,12 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 /* Height of tree and grid buttons */
 .x-btn-noicon .x-btn-small .x-btn-text{
 	height: 12px;
+    line-height: 10px;
 }
+.x-btn_left .x-btn_center .x-btn_right .x-btn-noicon .x-btn-small .x-btn-text{
+	height: 12px;
+}
+
 .x-btn-noicon .x-btn-medium .x-btn-text{
     height: 24px;
 }
@@ -1755,6 +1760,12 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 {
     background-position: 500px 500px;  /*This setting makes buttons invisible */
 }
+.x-btn_left .x-btn_center .x-btn_right .x-toolbar .x-btn-tl, .x-toolbar .x-btn-tr, .x-toolbar .x-btn-tc, .x-toolbar .x-btn-ml, .x-toolbar .x-btn-mr,
+.x-toolbar .x-btn-mc, .x-toolbar .x-btn-bl, .x-toolbar .x-btn-br, .x-toolbar .x-btn-bc
+{
+    background-position: 500px 500px;  /*This setting makes buttons invisible */
+}
+
 .x-toolbar .x-btn-over .x-btn-tl{
 	background-position: -6px 0;
 }
@@ -5688,7 +5699,7 @@ body.ext-ie6.x-body-masked .x-window select {
     border-width: 0;
 }
 /* Nav background */
-ul.x-tab-strip-top{
+.x-tab-panel ul.x-tab-strip-top{
     /* background-color:#FFF; */
 	background-image: url(../images/default/tabs/tab-strip-bg_blue.gif);
 	/* border-bottom-color:#8db2e3; */
@@ -5711,7 +5722,6 @@ ul.x-tab-strip-bottom{
 	color:#fff;
     font-weight:bold;
 }
-
 /* Hover Tab */
 .x-tab-strip-over span.x-tab-strip-text {
 	color:#99bccf;
@@ -5723,7 +5733,7 @@ ul.x-tab-strip-bottom{
 .x-tab-strip-disabled .x-tabs-text {
 	color:#aaa;
 }
-.x-tab-strip-top .x-tab-right, .x-tab-strip-top .x-tab-left, .x-tab-strip-top .x-tab-strip-inner{
+.x-tab-panel .x-tab-strip-top .x-tab-right, .x-tab-panel .x-tab-strip-top .x-tab-left, .x-tab-panel .x-tab-strip-top .x-tab-strip-inner{
 	background-image: url(../images/default/tabs/tabs-sprite.gif);
 }
 .x-tab-strip-bottom .x-tab-right {
@@ -5776,6 +5786,122 @@ ul.x-tab-strip-bottom{
 .x-tab-panel-bbar .x-toolbar, .x-tab-panel-tbar .x-toolbar {
     border-color:#99bbe8;
 }
+
+/* SUBTABS 1 */
+
+/* Extends inactive tabs to bottom of strip */
+.x-tab-panel-header_sub1 .x-tab-strip-top .x-tab-strip-active .x-tab-right {
+    margin-bottom:-1px;
+}
+/* Covers blue bottom of active tab */
+.x-tab-panel-header_sub1 .x-tab-strip-top .x-tab-strip-active .x-tab-right span.x-tab-strip-text {
+    padding-bottom:8px;
+}
+
+
+.x-tab-panel-header_sub1 .x-tab-panel-header, .x-tab-panel-footer {
+	/* background-color: #deecfd;
+	border-color:#8db2e3; */
+    overflow:hidden;
+    zoom:1;
+}
+/* Border around tabs section */
+.x-tab-panel-header_sub1 .x-tab-panel-header, .x-tab-panel-footer {
+	/* border-top-color:#99bccf; */
+    border-color: #fff #fff #c4c4c4 #fff;
+    border-width: 0 0 1px 0;
+    padding-left: 10px;
+}
+/* Nav background */
+.x-tab-panel-header_sub1 ul.x-tab-strip-top{
+    background-color:#FFF;
+	background-image: url(../images/default/s.gif);
+
+}
+/* .x-tab-panel-header_sub1 ul.x-tab-strip-bottom{
+    background-color:#cedff5;
+	background-image: url(../images/default/tabs/tab-strip-btm-bg.gif); */
+	/* border-top-color:#8db2e3; */
+/* } */
+.x-tab-panel-header_sub1 .x-tab-panel-header-plain .x-tab-strip-spacer,
+.x-tab-panel-header_sub1 .x-tab-panel-footer-plain .x-tab-strip-spacer {
+    /* border-color:#8db2e3; */
+    /* background-color: #deecfd; */
+}
+/* Inactive tab */
+.x-tab-panel-header_sub1 .x-tab-strip span.x-tab-strip-text {
+	font:normal 11px tahoma,arial,helvetica;
+	color:#000;
+    font-weight:bold;
+}
+/* Hover Tab */
+.x-tab-panel-header_sub1 .x-tab-strip-over span.x-tab-strip-text {
+	color:#99bccf;
+}
+/* Active Tab */
+.x-tab-panel-header_sub1 .x-tab-strip-active span.x-tab-strip-text {
+	color:#666;
+    padding-bottom: -1px;
+}
+.x-tab-panel-header_sub1 .x-tab-strip-disabled .x-tabs-text {
+	color:#aaa;
+}
+.x-tab-panel-header_sub1 .x-tab-strip-top .x-tab-right, .x-tab-panel-header_sub1 .x-tab-strip-top .x-tab-left, .x-tab-panel-header_sub1 .x-tab-strip-top .x-tab-strip-inner{
+	background-image: url(../images/default/tabs/tabs-sub1-sprite.gif);
+}
+/* .x-tab-panel-header_sub1 .x-tab-strip-bottom .x-tab-right {
+	background-image: url(../images/default/tabs/tab-btm-inactive-right-bg.gif);
+}
+.x-tab-panel-header_sub1 .x-tab-strip-bottom .x-tab-left {
+	background-image: url(../images/default/tabs/tab-btm-inactive-left-bg.gif);
+}
+.x-tab-panel-header_sub1 .x-tab-strip-bottom .x-tab-strip-active .x-tab-right {
+	background-image: url(../images/default/tabs/tab-btm-right-bg.gif);
+}
+.x-tab-panel-header_sub1 .x-tab-strip-bottom .x-tab-strip-active .x-tab-left {
+	background-image: url(../images/default/tabs/tab-btm-left-bg.gif);
+}
+.x-tab-panel-header_sub1 .x-tab-strip .x-tab-strip-closable a.x-tab-strip-close {
+	background-image:url(../images/default/tabs/tab-close.gif);
+}
+.x-tab-panel-header_sub1 .x-tab-strip .x-tab-strip-closable a.x-tab-strip-close:hover{
+	background-image:url(../images/default/tabs/tab-close.gif);
+} */
+/* Background of main content below header */
+/* .x-tab-panel-header_sub1 .x-tab-panel-body {
+    border-color:#fff;
+    background-color:#fff;
+}
+.x-tab-panel-header_sub1 .x-tab-panel-body-top {
+    border-top: 0 none;
+}
+.x-tab-panel-header_sub1 .x-tab-panel-body-bottom {
+    border-bottom: 0 none;
+}
+.x-tab-panel-header_sub1 .x-tab-scroller-left {
+    background-image:url(../images/default/tabs/scroll-left.gif);
+    border-bottom-color:#8db2e3;
+}
+.x-tab-panel-header_sub1 .x-tab-scroller-left-over {
+    background-position: 0 0;
+}
+.x-tab-panel-header_sub1 .x-tab-scroller-left-disabled {
+    background-position: -18px 0;
+    opacity:.5;
+    -moz-opacity:.5;
+    filter:alpha(opacity=50);
+    cursor:default;
+}
+.x-tab-panel-header_sub1 .x-tab-scroller-right {
+    background-image:url(../images/default/tabs/scroll-right.gif);
+    border-bottom-color:#8db2e3;
+}
+.x-tab-panel-header_sub1 .x-tab-panel-bbar .x-toolbar, .x-tab-panel-tbar .x-toolbar {
+    border-color:#99bbe8;
+} */
+/* END SUBTABS 1 */
+
+
 .x-form-field{
     font:normal 12px tahoma, arial, helvetica, sans-serif;
     padding-top:2px;
