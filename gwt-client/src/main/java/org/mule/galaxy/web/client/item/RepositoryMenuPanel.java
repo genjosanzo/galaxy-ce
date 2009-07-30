@@ -76,17 +76,17 @@ public class RepositoryMenuPanel extends MenuPanel {
         // add to root
         accordionPanel.add(browsePanel);
 
-        // search panel
-        ContentPanel searchPanel = new ContentPanel();
-        searchPanel.setLayout(new FitLayout());
-        searchPanel.setAutoHeight(true);
-        searchPanel.setAutoWidth(true);
-        searchPanel.setHeading("Search");
-
-        searchPanel.add(createSearchContainer());
-
-        // add to root
-        accordionPanel.add(searchPanel);
+//         search panel
+//        ContentPanel searchPanel = new ContentPanel();
+//        searchPanel.setLayout(new FitLayout());
+//        searchPanel.setAutoHeight(true);
+//        searchPanel.setAutoWidth(true);
+//        searchPanel.setHeading("Search");
+//
+//        searchPanel.add(createSearchContainer());
+//
+//        // add to root
+//        accordionPanel.add(searchPanel);
 
 
         loader = new BaseTreeLoader<ModelData>(new TreeModelReader<List<ModelData>>()) {

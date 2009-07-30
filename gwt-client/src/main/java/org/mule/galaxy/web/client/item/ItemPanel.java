@@ -218,9 +218,7 @@ public class ItemPanel extends AbstractFlowComposite {
 
         List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
         columns.add(sm.getColumn());
-        columns.add(new ColumnConfig("name", "Name", 100));
-        columns.add(new ColumnConfig("path", "Path", 200));
-        columns.add(new ColumnConfig("parentPath", "Parent", 150));
+        columns.add(new ColumnConfig("name", "Name", 150));
         columns.add(new ColumnConfig("authorName", "Author", 150));
         columns.add(new ColumnConfig("type", "Type", 100));
 
