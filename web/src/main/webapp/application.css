@@ -159,6 +159,7 @@ a:visited {
 
 .x-panel-container-full {
     min-height: 85%;
+    width:100%;
 }
 
 .x-panel: before {
@@ -1081,7 +1082,7 @@ a:visited {
 }
 
 .gwt-PasswordTextBox {
-    border: 1px solid lightsteelblue;
+    border: 1fpx solid lightsteelblue;
 }
 
 .gwt-RadioButton {
