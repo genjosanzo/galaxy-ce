@@ -10,14 +10,17 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
 
+import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Showable;
 
 public class ShowableTabListener extends SelectionListener<TabPanelEvent> {
     private TabItem previous;
     private List<String> params;
+    private final ErrorPanel errorPanel;
     
-    public ShowableTabListener(List<String> params) {
+    public ShowableTabListener(ErrorPanel errorPanel, List<String> params) {
         super();
+        this.errorPanel = errorPanel;
         this.params = params;
     }
 
@@ -36,6 +39,7 @@ public class ShowableTabListener extends SelectionListener<TabPanelEvent> {
             }
         }
         
+        errorPanel.clearErrorMessage();
         Widget widget = item.getWidget(0);
         if (widget instanceof Showable) {
             ((Showable)widget).showPage(params);

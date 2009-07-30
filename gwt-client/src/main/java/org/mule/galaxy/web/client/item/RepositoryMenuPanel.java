@@ -1,14 +1,5 @@
 package org.mule.galaxy.web.client.item;
 
-import org.mule.galaxy.web.client.AbstractShowable;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.MenuPanel;
-import org.mule.galaxy.web.client.PageInfo;
-import org.mule.galaxy.web.client.WidgetHelper;
-import org.mule.galaxy.web.client.registry.ViewPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ItemInfo;
-
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BaseTreeModel;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -37,6 +28,15 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import java.util.Collection;
 import java.util.List;
 
+import org.mule.galaxy.web.client.AbstractShowable;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.MenuPanel;
+import org.mule.galaxy.web.client.PageInfo;
+import org.mule.galaxy.web.client.WidgetHelper;
+import org.mule.galaxy.web.client.registry.ViewPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemInfo;
+
 public class RepositoryMenuPanel extends MenuPanel {
 
     private final Galaxy galaxy;
@@ -44,6 +44,7 @@ public class RepositoryMenuPanel extends MenuPanel {
     private TreeStore<ModelData> store;
     private TreePanel<ModelData> tree;
     private BaseTreeModel root;
+    protected Collection<ItemInfo> items;
 
     public RepositoryMenuPanel(Galaxy galaxy) {
         super();
@@ -176,6 +177,7 @@ public class RepositoryMenuPanel extends MenuPanel {
         });
 
 
+        
         // add accordion panel to left nav
         addMenuItem(accordionPanel);
     }
@@ -218,6 +220,8 @@ public class RepositoryMenuPanel extends MenuPanel {
         galaxy.getRegistryService().getItems(id, new AbstractCallback<Collection<ItemInfo>>(this) {
 
             public void onSuccess(Collection<ItemInfo> items) {
+                RepositoryMenuPanel.this.items = items;
+                
                 for (ItemInfo i : items) {
                     BaseTreeModel model = new BaseTreeModel();
                     model.set("id", i.getId());
@@ -228,6 +232,14 @@ public class RepositoryMenuPanel extends MenuPanel {
                     } else {
                         store.add(model, false);
                     }
+                }
+                
+                if (getMain() instanceof ItemPanel 
+                    && ((ItemPanel) getMain()).getItemId() == null 
+                    && items.size() > 0) {
+                    History.newItem("item/" + items.iterator().next().getId());
+                } else {
+                    History.newItem("add-item");
                 }
             }
 
@@ -254,6 +266,9 @@ public class RepositoryMenuPanel extends MenuPanel {
         return galaxy;
     }
 
+    public void showItem(ItemInfo item) {
+        
+    }
 
     public TreeStore<ModelData> getStore() {
         return store;
