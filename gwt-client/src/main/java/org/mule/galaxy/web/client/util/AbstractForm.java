@@ -28,6 +28,9 @@ import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ButtonBar;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.layout.FormLayout;
+import com.extjs.gxt.ui.client.Style;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -84,8 +87,14 @@ public abstract class AbstractForm extends AbstractShowable {
     }
 
     protected void onShowPostInitialize() {
+
+        ContentPanel cp = new ContentPanel(new FormLayout());
+        cp.setBodyBorder(false);
+        cp.setAutoWidth(true);
+        cp.setStyleName("x-panel-container-full");
+        cp.setHeading(getTitle());
+
         panel.clear();
-        panel.add(createPrimaryTitle(getTitle()));
 
         SelectionListener listener = new SelectionListener<ComponentEvent>() {
             public void componentSelected(ComponentEvent ce) {
@@ -109,9 +118,11 @@ public abstract class AbstractForm extends AbstractShowable {
         FlexTable table = createFormTable();
         addFields(table);
 
-        panel.add(table);
+        cp.add(table);
 
         ButtonBar bb = new ButtonBar();
+        // TODO: use FormLayout to correctly position button bar.
+        bb.setStyleAttribute("paddingLeft", "120");
         bb.add(save);
 
         if (newItem) {
@@ -120,7 +131,9 @@ public abstract class AbstractForm extends AbstractShowable {
             bb.add(delete);
             bb.add(cancel);
         }
-        panel.add(bb);
+
+        cp.add(bb);
+        panel.add(cp);
     }
 
     protected abstract void fetchItem(String id);

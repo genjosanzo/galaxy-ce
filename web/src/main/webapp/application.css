@@ -7,10 +7,10 @@
 body {
   color: black;
   font-family: arial, tahoma, helvetica, sans-serif;
-  font-size: 10pt;
   margin: 0;
   padding: 0;
   min-height: 100%;
+  font-size:12px;
 }
 
 .main-application-panel {
@@ -24,7 +24,7 @@ body {
 
 .header-right {
     float: right;
-    font-size: 9pt;
+    font-size: 10pt;
     color: #707070 ; /* dark gray */
     text-align: right;
     background-image: url("images/header_bg.jpg");
@@ -49,7 +49,7 @@ body {
 .header-right-options {
     color: #016c96;
     padding: 0px 15px 0px 15px;
-    font-size: 8pt;
+    font-size: 9pt;
     text-align: right;
 }
 .header-right-options a, .header-right-options a:visited {
@@ -127,6 +127,10 @@ a:visited {
   font-family: Arial;
 }
 
+.padded-label {
+    padding: 5px;
+}
+
 /**
  **
  ** The Left Menu
@@ -155,7 +159,6 @@ a:visited {
 
 .x-panel-container-full {
     min-height: 85%;
-    height: 80%;
 }
 
 .x-panel: before {
@@ -290,9 +293,8 @@ a:visited {
     font-weight: bold;
     padding: 4px;
     margin-top: 8px;
-    font-size: 1.2em;
+    font-size: 13px;
     background-color: white;
-    color: #A35200
 }
 
 
@@ -300,7 +302,7 @@ a:visited {
     font-weight: bold;
     padding: 6px;
     margin-top: 4px;
-    font-size: 1.5em;
+    font-size: 13px;
 }
 
 .right-title-panel {
@@ -311,7 +313,7 @@ a:visited {
     padding: 4px;
     font-weight: bold;
     /* burnt orange */
-    color: #A35200;
+    /*color: #A35200;*/
 }
 
 /* A different right title which allows a link */
@@ -319,8 +321,9 @@ a:visited {
     width: 100%;
     padding: 4px 3px;
     color: black;
-    background-color: #EEEEEE;
+    /*background-color: #EEEEEE;
     border: 1px #C0C0C0 solid;
+    */
 }
 
 .rightlinked-title-link {
@@ -400,7 +403,7 @@ a:visited {
 
 .toolbox .selected-link,
 .toolbox .unselected-link {
-    font-size: 0.9em;
+    font-size: 11px;
     margin-left: 4px;
     padding-left: 4px;
 }
@@ -457,12 +460,12 @@ a:visited {
     background-repeat:no-repeat;
     background-position: right;
     text-align: right;
+    font-size: 11px;
     font-family: arial, tahoma, helvetica, sans-serif;
-    font-size: .7em;
     padding: 1em;
 }
 
-.footer-link {
+.footer .footer-link {
     cursor:pointer
 }
 
@@ -470,16 +473,11 @@ a:visited {
 /* override content panel */
 .help-panel-inline {
     font-family: arial, tahoma, helvetica, sans-serif !important;
-    font-size: 12px!important;
-    font-variant:normal!important;
-    font-style:normal  !important;
-    font-weight: normal !important;
-    background-image: none !important;
-    border-color: white !important;
-    margin: 0 !important;
-    padding: 0 5 5 5 !important;
-    background-color: #fff !important;
-    color:black !important;
+    border-color: white;
+    margin: 0;
+    padding: 0 5px 5px 5px;
+    background-color: #fff;
+    color:black;
 }
 
 /**
@@ -520,7 +518,6 @@ a:visited {
 
 .artifact-title-base .artifact-path {
     display: block;
-    font-size: 1.1em;
     margin-left: 3px;
 }
 
@@ -531,7 +528,7 @@ a:visited {
 .artifact-title-base .artifact-name {
     display: inline;
     font-weight: bold;
-    font-size: 1.4em;
+    font-size: 13px;
     padding-top: 4px;
 }
 
@@ -910,7 +907,6 @@ a:visited {
  **
  **/
 .lifecycle-selection-header {
-    font-size: 1.0em;
     font-weight: bold;
     padding-top: 10px;
 }
@@ -946,7 +942,6 @@ a:visited {
     margin: 4px;
 }
 .next-phases {
-    font-size: 1.1em;
     font-weight: bold;
 }
 
@@ -1092,60 +1087,15 @@ a:visited {
 .gwt-RadioButton {
 }
 
-/*
-
-.gwt-TabPanel {
-  margin-top: 4px;
-  margin-left: 0px;
-  width: 100%;
-}
-
-.gwt-TabPanelBottom {
-  background-color: white;
-  width: 100%;
-}
-
-.gwt-TabBar {
-  padding-top: 2px;
-  border-bottom: 4px solid #87B3FF;
-  background-color: #fff;
-}
-
-.gwt-TabBar .gwt-TabBarFirst {
-}
-
-.gwt-TabBar .gwt-TabBarRest {
-}
-
-.gwt-TabBar .gwt-TabBarItem {
-  padding: 5px 10px 5px 10px;
-  cursor: pointer;
-  cursor: hand;
-
-  background-color: white;
-  border-bottom: 2px solid white;
-  margin-right: 2px;
-}
-
-.gwt-TabBar .gwt-TabBarItem-selected {
-  padding: 5px 10px;
-  cursor: default;
-
-  background-color: #87b3ff;
-  border-bottom: 2px solid #87b3ff;
-  margin-right: 2px;
-  background-image: url("images/nw_maj_rond.gif");
-  background-repeat: no-repeat;
-}
-*/
 
 .gwt-TextArea {
     border: 1px solid lightsteelblue;
 }
 
-.gwt-TextBox {
-    border: 1px solid lightsteelblue;
+.x-form-text .gwt-TextBox  {
+    /*border: 1px solid lightsteelblue; */
 }
+
 
 .gwt-TextBox-readonly {
   border: 1px solid lightsteelblue;
@@ -1476,7 +1426,7 @@ a:visited {
 }
 
 .ValidationMessage {
-    font-size: 8pt;
+    font-size: 10px;
     text-align: right;
 }
 
@@ -1496,7 +1446,7 @@ Date picker styles, most of these will eventually move into a default resource b
   width: 150px;
   border: 1px solid #f1f1f1;
   border-bottom: 2px solid #f1f1f1;
-  color: 6b6b6b;
+  color: #6b6b6b;
   cursor: default;
 
 }
@@ -1517,7 +1467,7 @@ Date picker styles, most of these will eventually move into a default resource b
 }
 
 .gwt-DateBox input {
-  width: 8em;
+  /*width: 8em;*/
 }
 
 /**
@@ -1689,6 +1639,6 @@ helper styles
 .x-grid-panel .x-panel-mc .x-panel-body {
     border:1px solid #d0d0d0;
 }
-                          
+
 
 

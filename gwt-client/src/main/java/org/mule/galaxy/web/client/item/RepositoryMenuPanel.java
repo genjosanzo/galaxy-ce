@@ -24,7 +24,6 @@ import com.extjs.gxt.ui.client.event.TreePanelEvent;
 import com.extjs.gxt.ui.client.store.Store;
 import com.extjs.gxt.ui.client.store.StoreSorter;
 import com.extjs.gxt.ui.client.store.TreeStore;
-import com.extjs.gxt.ui.client.util.IconHelper;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -166,6 +165,7 @@ public class RepositoryMenuPanel extends MenuPanel {
         loadItems();
         loader.load(root);
 
+
         tree.setAutoHeight(true);
         treeContainer.add(tree);
         tree.addListener(Events.Expand, new Listener<TreePanelEvent<ModelData>>() {
@@ -252,5 +252,18 @@ public class RepositoryMenuPanel extends MenuPanel {
 
     public Galaxy getGalaxy() {
         return galaxy;
+    }
+
+
+    public TreeStore<ModelData> getStore() {
+        return store;
+    }
+
+    public TreePanel<ModelData> getTree() {
+        return tree;
+    }
+
+    public BaseTreeModel getRoot() {
+        return root;
     }
 }

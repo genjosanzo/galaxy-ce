@@ -18,27 +18,6 @@
 
 package org.mule.galaxy.web.client.activity;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.widgetideas.client.event.KeyDownEvent;
-import com.google.gwt.widgetideas.client.event.KeyDownHandler;
-import com.google.gwt.widgetideas.datepicker.client.DateBox;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-
 import org.mule.galaxy.web.client.AbstractFlowComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
@@ -47,6 +26,32 @@ import org.mule.galaxy.web.client.util.ItemPathOracle;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WActivity;
 import org.mule.galaxy.web.rpc.WUser;
+
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.button.ButtonBar;
+import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.layout.FormLayout;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.widgetideas.client.event.KeyDownEvent;
+import com.google.gwt.widgetideas.client.event.KeyDownHandler;
+import com.google.gwt.widgetideas.datepicker.client.DateBox;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 
 public class ActivityPanel extends AbstractFlowComposite {
 
@@ -59,7 +64,7 @@ public class ActivityPanel extends AbstractFlowComposite {
     private FlexTable table;
     private int maxResults;
     private SuggestBox itemSB;
-    private TextBox textTB;
+    private TextField<String> textTB;
     private DateBox startDate;
     private DateBox endDate;
     private final ErrorPanel errorPanel;
@@ -72,12 +77,17 @@ public class ActivityPanel extends AbstractFlowComposite {
 
     public void initialize() {
 
+
+        ContentPanel cp = new ContentPanel(new FormLayout());
+        cp.setHeading("Activity Log");
+        cp.setBodyBorder(false);
+        cp.setAutoWidth(true);
+        cp.setStyleName("x-panel-container-full");
+
         FlowPanel searchContainer = new FlowPanel();
-        searchContainer.setStyleName("activity-search-panel-container");
-        panel.add(searchContainer);
+        cp.add(searchContainer);
 
         InlineFlowPanel searchPanel = new InlineFlowPanel();
-        searchPanel.setStyleName("activity-search-panel");
         searchContainer.add(searchPanel);
 
         FlexTable searchTable = new FlexTable();
@@ -85,7 +95,9 @@ public class ActivityPanel extends AbstractFlowComposite {
         searchPanel.add(searchTable);
 
         startDate = new DateBox();
+        startDate.setStyleName("x-form-text");
         endDate = new DateBox();
+        endDate.setStyleName("x-form-text");
 
         DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy-MM-dd");
         startDate.setAnimationEnabled(true);
@@ -111,6 +123,17 @@ public class ActivityPanel extends AbstractFlowComposite {
                 }
             }
         });
+
+        /*
+        final DatePicker picker = new DatePicker();
+        picker.addListener(Events.Select, new Listener<ComponentEvent>() {
+            public void handleEvent(ComponentEvent be) {
+                String d = DateTimeFormat.getShortDateFormat().format(picker.getValue());
+                Info.display("Date Selected", "You selected {0}.", new Params(d));
+            }
+
+        });
+        */
 
         // always start with today's date
         startDate.showDate(new Date());
@@ -143,11 +166,12 @@ public class ActivityPanel extends AbstractFlowComposite {
         searchTable.setWidget(1, 3, eventLB);
 
         searchTable.setWidget(0, 4, new Label("Text Contains:"));
-        textTB = new TextBox();
+        textTB = new TextField<String>();
         searchTable.setWidget(0, 5, textTB);
 
         searchTable.setWidget(1, 4, new Label("Relating to:"));
         itemSB = new SuggestBox(new ItemPathOracle(galaxy, errorPanel));
+        itemSB.setStyleName("x-form-text");
         itemSB.setText("[All Items]");
         searchTable.setWidget(1, 5, itemSB);
 
@@ -162,31 +186,32 @@ public class ActivityPanel extends AbstractFlowComposite {
         searchTable.setWidget(0, 7, resultsLB);
 
         Button search = new Button("Search");
-        search.addClickHandler(new ClickHandler() {
-
-            public void onClick(ClickEvent event) {
+        search.addSelectionListener(new SelectionListener<ButtonEvent>() {
+            @Override
+            public void componentSelected(ButtonEvent ce) {
                 doShowPage();
             }
-
         });
 
         Button reset = new Button("Reset");
-        reset.addClickHandler(new ClickHandler() {
-
-            public void onClick(ClickEvent event) {
+        reset.addSelectionListener(new SelectionListener<ButtonEvent>() {
+            @Override
+            public void componentSelected(ButtonEvent ce) {
                 reset();
                 doShowPage();
             }
-
         });
-        InlineFlowPanel btnPanel = new InlineFlowPanel();
-        btnPanel.setStyleName("activity-search-panel");
-        btnPanel.add(search);
-        btnPanel.add(reset);
-        searchContainer.add(btnPanel);
+
+        ButtonBar bb = new ButtonBar();
+        bb.add(search);
+        bb.add(reset);
+        searchContainer.add(bb);
 
         resultsPanel = new FlowPanel();
-        panel.add(resultsPanel);
+
+        cp.add(resultsPanel);
+
+        panel.add(cp);
 
         // set form widgets to default values
         reset();
@@ -199,10 +224,12 @@ public class ActivityPanel extends AbstractFlowComposite {
             userLB.addItem(user.getName() + " (" + user.getUsername() + ")", user.getId());
         }
     }
-    
+
 
     @Override
     public void doShowPage() {
+
+
         if (panel.getWidgetCount() == 0) {
             initialize();
         }
@@ -246,7 +273,7 @@ public class ActivityPanel extends AbstractFlowComposite {
         }
         galaxy.getRegistryService().getActivities(fromDate, toDate, user,
                 itemSB.getText(),
-                textTB.getText(),
+                textTB.getValue(),
                 eventType, resultStart, maxResults,
                 ascending, callback);
     }
@@ -275,12 +302,12 @@ public class ActivityPanel extends AbstractFlowComposite {
 
         if (o.size() == maxResults || resultStart > 0) {
             FlowPanel activityNavPanel = new FlowPanel();
-            activityNavPanel.setStyleName("activity-nav-panel");
+            //activityNavPanel.setStyleName("activity-nav-panel");
             Hyperlink hl = null;
 
             if (o.size() == maxResults) {
                 hl = new Hyperlink("Next", "next");
-                hl.setStyleName("activity-nav-next");
+                //hl.setStyleName("activity-nav-next");
                 hl.addClickHandler(new ClickHandler() {
 
                     public void onClick(ClickEvent event) {
@@ -295,7 +322,7 @@ public class ActivityPanel extends AbstractFlowComposite {
 
             if (resultStart > 0) {
                 hl = new Hyperlink("Previous", "previous");
-                hl.setStyleName("activity-nav-previous");
+                //hl.setStyleName("activity-nav-previous");
                 hl.addClickHandler(new ClickHandler() {
 
                     public void onClick(ClickEvent event) {
@@ -328,7 +355,7 @@ public class ActivityPanel extends AbstractFlowComposite {
             WActivity act = (WActivity) itr.next();
 
             table.setText(i, 0, act.getDate());
-            table.getCellFormatter().setStyleName(i, 0, "activityTableDate");
+            //table.getCellFormatter().setStyleName(i, 0, "activityTableDate");
 
             if (act.getName() == null) {
                 table.setText(i, 1, "System");

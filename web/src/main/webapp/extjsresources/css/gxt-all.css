@@ -1400,9 +1400,9 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 .x-btn-text {
     cursor:pointer;
 	white-space: nowrap;
-    padding:0;
+    padding: 0;
     position:relative;
-    /*top:-2px;*/
+    top:-1px; /* this is trouble in FF mac vs FF pc vs IE, etc*/
 }
 /* Height of tree and grid buttons */
 .x-btn-noicon .x-btn-small .x-btn-text{
@@ -1754,16 +1754,19 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
     vertical-align:middle;
 }
 
+
 /* Default button display */
 .x-toolbar .x-btn-tl, .x-toolbar .x-btn-tr, .x-toolbar .x-btn-tc, .x-toolbar .x-btn-ml, .x-toolbar .x-btn-mr,
 .x-toolbar .x-btn-mc, .x-toolbar .x-btn-bl, .x-toolbar .x-btn-br, .x-toolbar .x-btn-bc
 {
-    background-position: 500px 500px;  /*This setting makes buttons invisible */
+    background-position: 500px 500px; /*This setting makes buttons invisible */
 }
+
 .x-btn_left .x-btn_center .x-btn_right .x-toolbar .x-btn-tl, .x-toolbar .x-btn-tr, .x-toolbar .x-btn-tc, .x-toolbar .x-btn-ml, .x-toolbar .x-btn-mr,
 .x-toolbar .x-btn-mc, .x-toolbar .x-btn-bl, .x-toolbar .x-btn-br, .x-toolbar .x-btn-bc
 {
-    background-position: 500px 500px;  /*This setting makes buttons invisible */
+   /*This setting makes buttons invisible */
+    background-position: 500px 500px;
 }
 
 .x-toolbar .x-btn-over .x-btn-tl{

@@ -19,7 +19,6 @@
 package org.mule.galaxy.web.client.item;
 
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -32,6 +31,11 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
 
 import java.util.Iterator;
 import java.util.List;
@@ -127,9 +131,9 @@ public class ItemInfoPanel extends AbstractShowable {
         Image img = new Image("images/feed-icon-14x14.png");
         img.setStyleName("feed-icon");
         img.setTitle("Comments Atom Feed");
-        img.addClickListener(new ClickListener() {
+        img.addClickHandler(new ClickHandler() {
 
-            public void onClick(Widget sender) {
+            public void onClick(ClickEvent clickEvent) {
                 Window.open(info.getCommentsFeedLink(), null, "scrollbars=yes");
             }
             
@@ -169,16 +173,14 @@ public class ItemInfoPanel extends AbstractShowable {
         commentBody.setStyleName("commentText");
         
         commentPanel.add(commentBody);
-        
-        for (Iterator<WComment> comments = c.getComments().iterator(); comments.hasNext();) {
-            WComment child = comments.next();
-            
+
+        for (WComment child : c.getComments()) {
             SimplePanel nestedComment = new SimplePanel();
             nestedComment.setStyleName("nestedComment");
-            
+
             Widget childPanel = createCommentPanel(child);
             nestedComment.add(childPanel);
-            
+
             commentPanel.add(nestedComment);
         }
         return commentPanel;
@@ -206,16 +208,19 @@ public class ItemInfoPanel extends AbstractShowable {
         buttons.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 
         final Button cancelButton = new Button("Cancel");
-        cancelButton.addClickListener(new ClickListener() {
-            public void onClick(Widget w) {
+        cancelButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+            @Override
+            public void componentSelected(ButtonEvent ce) {
                 commentPanel.remove(addCommentPanel);
                 replyClickListener.setShowingComment(false);
             }
         });
 
+
         final Button addButton = new Button("Save");
-        addButton.addClickListener(new ClickListener() {
-            public void onClick(Widget w) {
+        addButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+            @Override
+            public void componentSelected(ButtonEvent ce) {
 
                 if (!validateComment(textArea)) {
                     return;
@@ -228,8 +233,10 @@ public class ItemInfoPanel extends AbstractShowable {
                            addButton,
                            parentId,
                            replyClickListener);
+
             }
         });
+
 
         buttons.add(addButton);
         buttons.add(cancelButton);

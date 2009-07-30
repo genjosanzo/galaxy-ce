@@ -27,6 +27,9 @@ import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Html;
+import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -161,13 +164,27 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
         initLocalWidgets();
 
+        ContentPanel cp = new ContentPanel(new FormLayout());
+        cp.setBodyBorder(false);
+        cp.setAutoWidth(true);
+        cp.setStyleName("x-panel-container-full");
+        cp.setHeading("Admin Shell");
+
+        Label instructions = new Label("Type or paste a Groovy script to be executed on the server. A return value will be displayed below the area. ");
+        instructions.setStyleName("padded-label");
+        cp.add(instructions);
+
+        Html tips = new Html();
+        tips.setStyleName("padded-label");
+        tips.setHtml("Tips:<br>&nbsp;&nbsp;Spring's context is available as the 'applicationContext' variable." +
+                "<br>&nbsp;&nbsp;Only String return values are supported (or null).");
+
+        cp.add(tips);
+
+
         scriptArea.setText(null);
 
         // text area to paste script into
-        table.setWidget(0, 0, createPrimaryTitle("Galaxy Admin Shell"));
-        table.setWidget(1, 0, new Label("Type or paste a Groovy script to be executed on the server. A return value will be displayed below the area. " +
-                "Tips: \n   Spring's context is available as 'applicationContext' variable" +
-                "\n   only String return values are supported (or null)"));
         table.getFlexCellFormatter().setColSpan(1, 0, 2);
         table.getCellFormatter().setWidth(1, 0, "500px");
         table.setWidget(2, 0, scriptArea);
@@ -205,7 +222,9 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         // results of script execution
         table.setWidget(5, 0, scriptOutputPanel);
 
-        panel.add(table);
+        cp.add(table);
+
+        panel.add(cp);
         saveBtn.setEnabled(true);
     }
 

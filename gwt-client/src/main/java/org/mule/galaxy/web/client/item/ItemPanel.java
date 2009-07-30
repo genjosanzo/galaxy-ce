@@ -19,9 +19,9 @@
 package org.mule.galaxy.web.client.item;
 
 import org.mule.galaxy.web.client.AbstractFlowComposite;
-import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.WidgetHelper;
+import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.admin.PolicyPanel;
 import org.mule.galaxy.web.client.util.ShowableTabListener;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -37,9 +37,9 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.GridEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
-import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
+import com.extjs.gxt.ui.client.event.SelectionChangedListener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
@@ -143,6 +143,7 @@ public class ItemPanel extends AbstractFlowComposite {
         cp.setBodyBorder(false);
         cp.setHeading(info.getName());
         cp.setAutoWidth(true);
+        //cp.setLayout(new FitLayout());
 
         final TabPanel tabPanel = new TabPanel();
         tabPanel.setStyleName("x-tab-panel-header_sub1");
@@ -239,6 +240,8 @@ public class ItemPanel extends AbstractFlowComposite {
                 // any non checkbox...
                 if (ge.getColIndex() > 0) {
                     ItemInfo ii = store.getAt(ge.getRowIndex()).getBean();
+
+                    // drill down into the grid
                     History.newItem("item/" + ii.getId());
                 }
             }
@@ -257,7 +260,7 @@ public class ItemPanel extends AbstractFlowComposite {
         if (info.isDeletable()) {
             toolbar.add(delBtn);
         }
-        
+
         sm.addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
             public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
                 boolean isSelected = sm.getSelectedItems().size() > 0;
