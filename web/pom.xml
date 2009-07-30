@@ -165,6 +165,16 @@
             <artifactId>spring-webmvc</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>concurrent</groupId>
+            <artifactId>concurrent</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
