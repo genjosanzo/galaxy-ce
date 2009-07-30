@@ -29,7 +29,9 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.GridEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.store.Store;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.form.StoreFilterField;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnData;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
@@ -67,11 +69,8 @@ public class PropertyDescriptorListPanel
 
         ContentPanel cp = new ContentPanel();
         cp.setHeading("Properties");
-
-        ToolBar toolbar = new ToolBar();
-        toolbar.add(new FillToolItem());
-        toolbar.add(createSimpleHistoryButton("New", "properties/new"));
-        cp.setTopComponent(toolbar);
+        cp.setBodyBorder(false);
+        cp.setStyleName("x-panel-container-full");
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WPropertyDescriptor.class);
 
@@ -115,6 +114,40 @@ public class PropertyDescriptorListPanel
             }
         });
         cp.add(grid);
+
+        // search filter
+        StoreFilterField<BeanModel> filter = new StoreFilterField<BeanModel>() {
+            @Override
+            protected boolean doSelect(Store<BeanModel> store, BeanModel parent,
+                                       BeanModel record, String property, String filter) {
+
+                String name = record.get("name");
+                name = name.toLowerCase();
+
+                String description = record.get("description");
+                description = description.toLowerCase();
+
+
+                if (name.indexOf(filter.toLowerCase()) != -1 ||
+                        description.indexOf(filter.toLowerCase()) != -1) {
+                    return true;
+                }
+                return false;
+            }
+        };
+
+        filter.setName("Search");
+        filter.setFieldLabel("Search");
+        filter.setWidth(300);
+        // Bind the filter field to your grid store (grid.getStore())
+        filter.bind(store);
+
+        ToolBar toolbar = new ToolBar();
+        toolbar.add(filter);
+        toolbar.add(new FillToolItem());
+        toolbar.add(createSimpleHistoryButton("New", "properties/new"));
+        cp.setTopComponent(toolbar);
+
         panel.add(cp);
 
     }

@@ -159,7 +159,6 @@ a:visited {
 
 .x-panel-container-full {
     min-height: 85%;
-    width:100%;
 }
 
 .x-panel: before {
@@ -442,15 +441,20 @@ a:visited {
 
 
 .error-panel {
-    background: white;
-    padding: 10px;
+    background: #ffc;
+    border: 1px solid #fc0;
+    border-style: dashed;
+    padding: 2px;
+    text-align: center;
+    width: 80%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto
 }
 
 .error-panel .gwt-Label {
-    background: #ffc;
-    padding: 5px;
-    border: 1px solid #fc0;
-    text-align: center;
+    /*padding: 4px 4px 10px 4px; */ /* use with gxt panel */
+    padding: 4px;
 }
 
 .footer {
@@ -1082,21 +1086,66 @@ a:visited {
 }
 
 .gwt-PasswordTextBox {
-    border: 1fpx solid lightsteelblue;
+    border: 1px solid lightsteelblue;
 }
 
 .gwt-RadioButton {
 }
 
+/*
+
+.gwt-TabPanel {
+  margin-top: 4px;
+  margin-left: 0px;
+  width: 100%;
+}
+
+.gwt-TabPanelBottom {
+  background-color: white;
+  width: 100%;
+}
+
+.gwt-TabBar {
+  padding-top: 2px;
+  border-bottom: 4px solid #87B3FF;
+  background-color: #fff;
+}
+
+.gwt-TabBar .gwt-TabBarFirst {
+}
+
+.gwt-TabBar .gwt-TabBarRest {
+}
+
+.gwt-TabBar .gwt-TabBarItem {
+  padding: 5px 10px 5px 10px;
+  cursor: pointer;
+  cursor: hand;
+
+  background-color: white;
+  border-bottom: 2px solid white;
+  margin-right: 2px;
+}
+
+.gwt-TabBar .gwt-TabBarItem-selected {
+  padding: 5px 10px;
+  cursor: default;
+
+  background-color: #87b3ff;
+  border-bottom: 2px solid #87b3ff;
+  margin-right: 2px;
+  background-image: url("images/nw_maj_rond.gif");
+  background-repeat: no-repeat;
+}
+*/
 
 .gwt-TextArea {
     border: 1px solid lightsteelblue;
 }
 
-.x-form-text .gwt-TextBox  {
-    /*border: 1px solid lightsteelblue; */
+.gwt-TextBox {
+    /*border: 1px solid lightsteelblue;
 }
-
 
 .gwt-TextBox-readonly {
   border: 1px solid lightsteelblue;

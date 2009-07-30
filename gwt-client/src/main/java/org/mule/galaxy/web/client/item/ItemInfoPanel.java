@@ -84,7 +84,7 @@ public class ItemInfoPanel extends AbstractShowable {
                                                     errorPanel,
                                                     item.getId(),
                                                     item.getName(),
-                                                    item.getPath(), 
+                                                    item.getParentPath(), 
                                                     artifactPanel, 
                                                     callbackParams);
         

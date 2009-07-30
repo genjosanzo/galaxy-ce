@@ -25,28 +25,33 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * Forms the basis for a page that can show error messages at the top.
  */
-public class AbstractErrorShowingComposite 
-    extends AbstractShowable implements ErrorPanel  {
+public class AbstractErrorShowingComposite
+        extends AbstractShowable implements ErrorPanel {
 
     private FlowPanel errorPanel;
+    //private ErrorContentPanel errorPanel;
+
     private FlowPanel mainPanel;
-    
+
     public AbstractErrorShowingComposite() {
         super();
 
         mainPanel = new FlowPanel();
         mainPanel.setStyleName("main-panel");
-        
+
+        //errorPanel = new ErrorContentPanel();
         errorPanel = new FlowPanel();
         errorPanel.setStyleName("error-panel");
     }
-    
+
     public void clearErrorMessage() {
+        //errorPanel.clearState();
         errorPanel.clear();
         mainPanel.remove(errorPanel);
     }
 
     public void setMessage(Widget label) {
+        //errorPanel.clearState();
         errorPanel.clear();
         addMessage(label);
     }
@@ -65,13 +70,16 @@ public class AbstractErrorShowingComposite
             pos = mainPanel.getWidgetCount();
         }
         errorPanel.add(message);
-
         mainPanel.insert(errorPanel, pos);
     }
 
     protected int getErrorPanelPosition() {
         return 0;
     }
+
+    //protected ErrorContentPanel getErrorPanel() {
+     //   return errorPanel;
+    //}
 
     protected FlowPanel getErrorPanel() {
         return errorPanel;
