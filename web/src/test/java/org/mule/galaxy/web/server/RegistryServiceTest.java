@@ -244,8 +244,15 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertNotNull(w.getPath());
         
         // try adding an item to the top level
-        gwtRegistry.addItem("", "Foo", null, type.getId(), null);
-        gwtRegistry.addItem("/", "Foo2", null, type.getId(), null);
+        String fooId = gwtRegistry.addItem("", "Foo", null, type.getId(), null);
+        String foo2Id = gwtRegistry.addItem("/", "Foo2", null, type.getId(), null);
+        
+        gwtRegistry.move(foo2Id, "/Foo", "Foo2");
+        registry.getItemByPath("/Foo/Foo2");
+        
+        gwtRegistry.move(foo2Id, "/", "Foo2");
+        registry.getItemByPath("/Foo2");
+        
     }
     
     public void testEntries() throws Exception

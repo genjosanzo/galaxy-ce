@@ -31,7 +31,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
 
-import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.admin.PolicyPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
@@ -52,28 +51,23 @@ public class NameEditPanel extends Composite {
     private String name;
     private final String workspacePath;
     private final Galaxy galaxy;
-    private final ErrorPanel errorPanel;
-
-    private final ItemPanel callbackPanel;
+    private final RepositoryMenuPanel menuPanel;
     private final List<String> callbackParams;
 
     public NameEditPanel(Galaxy galaxy,
-                         ErrorPanel errorPanel,
+                         RepositoryMenuPanel menuPanel,
                          String itemId,
                          String name,
-                         String workspacePath, 
-                         final ItemPanel callbackPanel, 
+                         String workspacePath,  
                          final List<String> callbackParams) {
         super();
         this.galaxy = galaxy;
-        this.errorPanel = errorPanel;
+        this.menuPanel = menuPanel;
         this.itemId = itemId;
         this.name = name;
         this.workspacePath = workspacePath;
 
         panel = new InlineFlowPanel();
-
-        this.callbackPanel = callbackPanel;
         this.callbackParams = callbackParams;
 
         initName();
@@ -102,7 +96,7 @@ public class NameEditPanel extends Composite {
 
         final HorizontalPanel row = new HorizontalPanel();
 
-        final SuggestBox workspaceSB = new SuggestBox(new ItemPathOracle(galaxy, errorPanel));
+        final SuggestBox workspaceSB = new SuggestBox(new ItemPathOracle(galaxy, menuPanel));
         workspaceSB.setText(workspacePath);
         row.add(workspaceSB);
         
@@ -145,12 +139,12 @@ public class NameEditPanel extends Composite {
         if (!newParent.equals(this.workspacePath) 
             || !newName.equals(this.name)) {
             // save only if name or workspace changed
-            galaxy.getRegistryService().move(itemId, newParent, newName, new AbstractCallback(errorPanel) {
+            galaxy.getRegistryService().move(itemId, newParent, newName, new AbstractCallback(menuPanel) {
 
                 @Override
                 public void onFailure(Throwable caught) {
                     if (caught instanceof ItemNotFoundException) {
-                        errorPanel.setMessage("No parent workspace exists with that name!");
+                        menuPanel.setMessage("No parent workspace exists with that name!");
                     } else if (caught instanceof WPolicyException) {
                         PolicyPanel.handlePolicyFailure(galaxy, (WPolicyException) caught);
                     } else {
@@ -160,7 +154,7 @@ public class NameEditPanel extends Composite {
 
                 public void onSuccess(Object arg0) {
                     // need to refresh the whole panel to fetch new workspace location and entry name
-                    callbackPanel.showPage(callbackParams);
+                    menuPanel.showPage(callbackParams);
                 }
 
             });

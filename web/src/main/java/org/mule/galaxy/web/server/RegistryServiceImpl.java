@@ -1583,9 +1583,7 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             Item i = registry.getItemById(itemId);
             
-            if ((i.getParent() != null && !i.getParent().getId().equals(workspacePath)) || !name.equals(i.getName())) {
-                registry.move(i, workspacePath, name);
-            }
+            registry.move(i, workspacePath, name);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());

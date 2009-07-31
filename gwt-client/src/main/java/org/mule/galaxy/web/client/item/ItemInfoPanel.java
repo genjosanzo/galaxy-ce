@@ -18,6 +18,11 @@
 
 package org.mule.galaxy.web.client.item;
 
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -31,17 +36,11 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.event.ButtonEvent;
-import com.extjs.gxt.ui.client.event.SelectionListener;
 
 import java.util.Iterator;
 import java.util.List;
 
 import org.mule.galaxy.web.client.AbstractShowable;
-import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.property.EntryMetadataPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
@@ -59,15 +58,15 @@ public class ItemInfoPanel extends AbstractShowable {
     private VerticalPanel panel;
     private FlowPanel commentsPanel;
     private ItemInfo info;
-    private final ErrorPanel errorPanel;
+    private final RepositoryMenuPanel menuPanel;
     
     public ItemInfoPanel(final Galaxy galaxy,
-                         ErrorPanel errorPanel,
+                         RepositoryMenuPanel menuPanel,
                          ItemInfo item, 
                          final ItemPanel artifactPanel, 
                          final List<String> callbackParams) {
         this.galaxy = galaxy;
-        this.errorPanel = errorPanel;
+        this.menuPanel = menuPanel;
         this.info = item;
         
         panel = new VerticalPanel();
@@ -81,11 +80,10 @@ public class ItemInfoPanel extends AbstractShowable {
         FlexTable table = createColumnTable();
         
         final NameEditPanel nep = new NameEditPanel(galaxy, 
-                                                    errorPanel,
+                                                    menuPanel,
                                                     item.getId(),
                                                     item.getName(),
                                                     item.getParentPath(), 
-                                                    artifactPanel, 
                                                     callbackParams);
         
         table.setWidget(0, 0, new Label("Name:"));
@@ -106,7 +104,7 @@ public class ItemInfoPanel extends AbstractShowable {
         if (item.isLocal()) {
             panel.add(newSpacer());
             
-            panel.add(new EntryMetadataPanel(galaxy, errorPanel, "Metadata", item, false));
+            panel.add(new EntryMetadataPanel(galaxy, menuPanel, "Metadata", item, false));
             panel.add(newSpacer());
             
             initComments();
@@ -267,7 +265,7 @@ public class ItemInfoPanel extends AbstractShowable {
         addButton.setEnabled(false);
         text.getTextArea().setEnabled(false);
         
-        galaxy.getRegistryService().addComment(info.getId(), parentId, text.getTextArea().getText(), new AbstractCallback(errorPanel) {
+        galaxy.getRegistryService().addComment(info.getId(), parentId, text.getTextArea().getText(), new AbstractCallback(menuPanel) {
 
             public void onFailure(Throwable caught) {
                 super.onFailure(caught);

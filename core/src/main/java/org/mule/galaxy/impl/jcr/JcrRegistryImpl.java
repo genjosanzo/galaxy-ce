@@ -457,17 +457,30 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
             }
 
             // handle workspace move
-            final Item parent = (Item) getItemByPath(newWorkspacePath);
-            accessControlManager.assertAccess(Permission.MODIFY_ITEM, parent);
+            final Item parent;
+            if (newWorkspacePath != null && !newWorkspacePath.equals("") && !newWorkspacePath.equals("/")) {
+                parent = (Item) getItemByPath(newWorkspacePath);
+                accessControlManager.assertAccess(Permission.MODIFY_ITEM, parent);
+            } else {
+                parent = null;
+                accessControlManager.assertAccess(Permission.MODIFY_ITEM);
+            }
 
             // only if workspace changed
-            if (!item.getParent().getId().equals(parent.getId())) {
+            if ((item.getParent() == null && parent != null) || 
+                (item.getParent() != null && parent == null) || 
+                (item.getParent() != null && parent != null && !item.getParent().getId().equals(parent.getId()))) {
 
                 executeMove(new JcrCallback() {
                     public Object doInJcr(Session session) throws IOException, RepositoryException {
 
                         Node childNode = ((JcrItem) item).getNode();
-                        Node parentNode = ((JcrItem) parent).getNode();
+                        Node parentNode;
+                        if (parent == null) {
+                            parentNode = getWorkspacesNode();
+                        } else {
+                            parentNode = ((JcrItem) parent).getNode();
+                        }
 
                         JcrWorkspaceManagerImpl.approveChild(parent, item);
                         
@@ -561,7 +574,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                     }
                 }
                 
-                qstr.append("[@jcr:primaryType='galaxy:item']");
+                qstr.append("[@jcr:primaryType='galaxy:item' and not(@internal = 'true')]");
 
                 QueryResult result = qm.createQuery(qstr.toString(), Query.XPATH).execute();
                 
