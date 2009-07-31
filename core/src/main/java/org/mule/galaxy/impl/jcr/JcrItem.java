@@ -56,6 +56,7 @@ public class JcrItem extends AbstractItem {
     public static final String LOCKED = ".locked";
     public static final String VISIBLE = ".visible";
     public static final String UPDATED = "updated";
+    public static final String INTERNAL = "internal";
     public static final String NAME = "name";
     public static final String CREATED = "created";
     public static final String TYPE = "type";
@@ -145,6 +146,22 @@ public class JcrItem extends AbstractItem {
         }
     }
     
+    public boolean isInternal() {
+        Boolean b = JcrUtil.getBooleanOrNull(node, INTERNAL);
+        if (b == null) {
+            return false;
+        }
+        return b;
+    }
+
+    public void setInternal(boolean internal) {
+        try {
+            node.setProperty(INTERNAL, internal);
+        } catch (RepositoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public boolean isLocal() {
         return true;
     }

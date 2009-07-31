@@ -225,6 +225,14 @@ public class DefaultEventManagerTest extends TestCase {
             return null;
         }
 
+        public boolean isInternal() {
+            return false;
+        }
+
+        public void setInternal(boolean internal) {
+            
+        }
+
         public <T> T getInternalProperty(String name) {
             return null;
         }

@@ -17,9 +17,6 @@ import com.extjs.gxt.ui.client.store.StoreSorter;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
-import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.button.ButtonBar;
-import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.user.client.History;
@@ -266,7 +263,7 @@ public class RepositoryMenuPanel extends MenuPanel {
         addMenuItem(accordionPanel);
     }
 
-
+/*
     private ContentPanel createSearchContainer() {
         ContentPanel cp = new ContentPanel();
         cp.setHeaderVisible(false);
@@ -286,7 +283,8 @@ public class RepositoryMenuPanel extends MenuPanel {
 
         return cp;
     }
-
+*/
+    
     protected BaseTreeModel toModel(ItemInfo i) {
         BaseTreeModel model = new BaseTreeModel();
         model.set("id", i.getId());

@@ -73,6 +73,27 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals("bar", info.getProperty("foo").getValue());
     }
 
+    public void testInternalItems() throws Exception
+    {
+        Item item = registry.newItem("test", getSimpleType()).getItem();
+        
+        Item item2 = item.newItem("test2", getSimpleType()).getItem();
+        item2.setInternal(true);
+        registry.save(item2);
+        
+        Collection<ItemInfo> items = gwtRegistry.getItems(item.getId(), false);
+        assertEquals(0, items.size());
+        
+        items = gwtRegistry.getItems(null, false);
+        assertEquals(2, items.size());
+        
+        item.setInternal(true);
+        registry.save(item);
+        
+        items = gwtRegistry.getItems(null, false);
+        assertEquals(1, items.size());
+    }
+
     public void testAddArtifact() throws Exception
     {
         Type aType = typeManager.getTypeByName(TypeManager.ARTIFACT);

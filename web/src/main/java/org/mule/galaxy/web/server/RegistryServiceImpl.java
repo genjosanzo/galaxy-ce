@@ -219,8 +219,10 @@ public class RegistryServiceImpl implements RegistryService {
         }
         List<ItemInfo> wis = new ArrayList<ItemInfo>();
         for (Item w : workspaces) {
-            ItemInfo ww = toWeb(w);
-            wis.add(ww);
+            if (!w.isInternal()) {
+                ItemInfo ww = toWeb(w);
+                wis.add(ww);
+            }
         }
         
         return wis;

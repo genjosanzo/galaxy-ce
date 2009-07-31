@@ -51,6 +51,13 @@ public class AtomItem extends AbstractItem {
         return null;
     }
 
+    public boolean isInternal() {
+        return false;
+    }
+
+    public void setInternal(boolean internal) {
+    }
+
     private void initializeProperties() {
         if (properties != null) return;
         

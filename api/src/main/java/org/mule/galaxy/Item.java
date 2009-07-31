@@ -29,6 +29,15 @@ public interface Item {
     
     boolean isLocal();
     
+    /**
+     * Whether or not this item is for Galaxy's internal use only. This in essence means
+     * that there is another way of interacting with it which is not through the repository UI.
+     * @return
+     */
+    boolean isInternal();
+    
+    void setInternal(boolean internal);
+    
     String getPath();
     
     Calendar getCreated();
