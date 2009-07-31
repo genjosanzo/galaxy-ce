@@ -9,18 +9,16 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnData;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.grid.GridCellRenderer;
 
-public final class LinkRenderer implements GridCellRenderer<BaseModel> {
-    private final String anchor;
-     private final boolean nostyle;
+public final class FauxLinkRenderer implements GridCellRenderer<BaseModel> {
+    private final boolean hover;
 
 
-    public LinkRenderer(String anchor) {
-        this(anchor, true);
+    public FauxLinkRenderer(boolean hover) {
+        this.hover = hover;
     }
 
-    public LinkRenderer(String anchor, boolean nostyle) {
-        this.anchor = anchor;
-        this.nostyle = nostyle;
+    public FauxLinkRenderer() {
+        this(true);
     }
 
     public Object render(BaseModel model, String property, ColumnData config, int rowIndex,
@@ -28,13 +26,13 @@ public final class LinkRenderer implements GridCellRenderer<BaseModel> {
         String html = "";
         String value = (String) model.get(property);
 
-        html += "<a href=\""+anchor+"\"";
-        html += " style=\"text-decoration : none\" ";
-        if(nostyle) {
+        html += " <div style=\"text-decoration: none; color: #016c96;\" ";
+        if (hover) {
             html += " onmouseover=\"this.style.textDecoration = 'underline'\" onmouseout=\"this.style.textDecoration = 'none'\" ";
         }
-        html += ">" + value + "</a>";
+        html += ">" + value + "</div>";
 
         return html;
     }
+
 }
