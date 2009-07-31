@@ -5921,9 +5921,8 @@ ul.x-tab-strip-bottom{
     background-image:url(../images/default/form/text-bg.gif);
     /* border-color:#b5b8c8; */
     border-color:#bababa;
-    /*border-width: 1px 0 1px 1px;*/
+    border-width: 1px;
 }
-
 .x-form-select-one {
     background-color:#fff;
     border-color:#b5b8c8;
@@ -5942,13 +5941,15 @@ ul.x-tab-strip-bottom{
 .x-form-field-wrap .x-form-date-trigger{
     background-image: url(../images/default/form/date-trigger.gif);
 }
-.x-form-field-wrap .x-form-clear-trigger{
+/* .x-form-field-wrap .x-form-clear-trigger{
     background-image: url(../images/default/form/clear-trigger.gif);
+} */
+.x-form-field-wrap .x-form-clear-trigger{
+    background-image: url(../images/default/form/search-trigger.gif);
 }
 .x-form-field-wrap .x-form-search-trigger{
     background-image: url(../images/default/form/search-trigger.gif);
 }
-
 /* Search Box border after-click */
 .x-trigger-wrap-focus .x-form-trigger{
     border-bottom-color:#bababa;
@@ -6011,6 +6012,113 @@ ul.x-tab-strip-bottom{
 	/* border-color:#7eadd9; */
     border-color:#bababa;
 }
+
+
+/* SPECIAL SEARCH FORM */
+
+.x-form-search-field .x-form-field{
+    font:normal 12px tahoma, arial, helvetica, sans-serif;
+    padding-top:2px;
+}
+.x-form-search-field .x-form-text, .x-form-search-field textarea.x-form-field{
+    background-color:#fff;
+    background-image:url(../images/default/form/search-bg.gif);
+    /* border-color:#b5b8c8; */
+    border-color:#bababa;
+    border-width: 1px 0 1px 1px;
+}
+.x-form-search-field .x-form-select-one {
+    background-color:#fff;
+    border-color:#b5b8c8;
+}
+.x-form-search-field .x-form-check-group-label {
+    border-bottom: 1px solid #99bbe8;
+    color: #15428b;
+}
+.x-form-search-field .x-editor .x-form-check-wrap {
+    background-color:#fff;
+}
+.x-form-search-field .x-form-field-wrap .x-form-trigger{
+    background-image:url(../images/default/form/trigger.gif);
+    border-bottom-color:#b5b8c8;
+}
+.x-form-search-field .x-form-field-wrap .x-form-date-trigger{
+    background-image: url(../images/default/form/date-trigger.gif);
+}
+/* .x-form-field-wrap .x-form-clear-trigger{
+    background-image: url(../images/default/form/clear-trigger.gif);
+} */
+.x-form-field-wrap .x-form-clear-trigger{
+    background-image: url(../images/default/form/search-trigger.gif);
+}
+.x-form-field-wrap .x-form-search-trigger{
+    background-image: url(../images/default/form/search-trigger.gif);
+}
+/* Search Box border after-click */
+.x-form-search-field .x-trigger-wrap-focus .x-form-trigger{
+    border-bottom-color:#bababa;
+}
+.x-form-search-field .x-item-disabled .x-form-trigger-over{
+    border-bottom-color:#b5b8c8;
+}
+.x-form-search-field .x-item-disabled .x-form-trigger-click{
+    border-bottom-color:#b5b8c8;
+}
+/* Search Box border on-click */
+.x-form-search-field .x-form-focus, .x-form-search-field textarea.x-form-focus{
+	border-color:#bababa;
+}
+.x-form-search-field .x-form-invalid, .x-form-search-field textarea.x-form-invalid{
+    background-color:#fff;
+	background-image:url(../images/default/grid/invalid_line.gif);
+	border-color:#c30;
+}
+.x-form-search-field .ext-safari .x-form-invalid{
+	background-color:#fee;
+	border-color:#ff7870;
+}
+.x-form-search-field .x-form-inner-invalid, .x-form-search-field textarea.x-form-inner-invalid{
+    background-color:#fff;
+	background-image:url(../images/default/grid/invalid_line.gif);
+}
+.x-form-search-field .x-form-grow-sizer {
+	font:normal 12px tahoma, arial, helvetica, sans-serif;
+}
+.x-form-search-field .x-form-item label {
+    font:normal 12px tahoma, arial, helvetica, sans-serif;
+}
+.x-form-search-field .x-form-invalid-msg {
+    color:#c0272b;
+    font:normal 11px tahoma, arial, helvetica, sans-serif;
+    background-image:url(../images/default/shared/warning.gif);
+}
+.x-form-search-field .x-form-empty-field {
+    color:gray;
+}
+.x-form-search-field .x-small-editor .x-form-field {
+    font:normal 11px arial, tahoma, helvetica, sans-serif;
+}
+.x-form-search-field .ext-safari .x-small-editor .x-form-field {
+    font:normal 12px arial, tahoma, helvetica, sans-serif;
+}
+.x-form-search-field .x-form-invalid-icon {
+    background-image:url(../images/default/form/exclamation.gif);
+}
+.x-form-search-field .x-fieldset {
+    border-color:#b5b8c8;
+}
+.x-form-search-field .x-fieldset legend {
+    font:bold 11px tahoma, arial, helvetica, sans-serif;
+    color:#15428b;
+}
+
+.x-form-search-field .x-editor .x-form-check-wrap {
+	/* border-color:#7eadd9; */
+    border-color:#bababa;
+}
+/* END SPECIAL SEARCH FORM */
+
+
 .x-btn{
 	font:normal 11px tahoma, verdana, helvetica;
     padding: 0; /* spacing between buttons */

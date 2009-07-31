@@ -13,9 +13,11 @@ import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.store.Store;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.form.StoreFilterField;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.grid.CheckBoxSelectionModel;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
@@ -85,19 +87,32 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         cp.setAutoWidth(true);
 
         ToolBar toolbar = new ToolBar();
-        cp.setTopComponent(toolbar);
+        // search filter
+        StoreFilterField<BeanModel> filter = new StoreFilterField<BeanModel>() {
+            @Override
+            protected boolean doSelect(Store<BeanModel> store, BeanModel parent,
+                                       BeanModel record, String property, String filter) {
 
-        toolbar.add(new FillToolItem());
-        if (info == null || info.isModifiable()) {
-            String token;
-            if (info != null) {
-                token = "add-item/" + info.getId();
-            } else {
-                token = "add-item/";
-            
+                String name = record.get("name");
+                name = name.toLowerCase();
+
+                String authorName = record.get("authorName");
+                authorName = authorName.toLowerCase();
+
+                String type = record.get("type");
+                type = type.toLowerCase();
+
+                if (name.indexOf(filter.toLowerCase()) != -1 ||
+                        authorName.indexOf(filter.toLowerCase()) != -1 ||
+                        type.indexOf(filter.toLowerCase()) != -1) {
+                    return true;
+                }
+                return false;
             }
-            toolbar.add(WidgetHelper.createSimpleHistoryButton("New", token));
-        }
+        };
+
+        toolbar.add(filter);
+        toolbar.add(new FillToolItem());
 
         selectionModel = new CheckBoxSelectionModel<BeanModel>();
 
@@ -159,6 +174,27 @@ public class ChildItemsPanel extends AbstractFlowComposite {
 
 
         cp.add(grid);
+
+        filter.setName("Search");
+        filter.setFieldLabel("Search");
+        filter.setWidth(300);
+        filter.setTriggerStyle("x-form-search-trigger");
+        filter.setStyleName("x-form-search-field");
+        filter.bind(store);
+
+
+        if (info == null || info.isModifiable()) {
+            String token;
+            if (info != null) {
+                token = "add-item/" + info.getId();
+            } else {
+                token = "add-item/";
+            }
+            toolbar.add(WidgetHelper.createSimpleHistoryButton("New", token));
+        }
+        cp.setTopComponent(toolbar);
+
+
         panel.add(cp);
     }
 
