@@ -118,7 +118,7 @@ public abstract class AbstractBrowsePanel extends AbstractWithTopComposite {
             }
 
             public void onFailure(Throwable caught) {
-                menuPanel.setMessage(caught.getMessage());
+                AbstractBrowsePanel.this.setMessage(caught.getMessage());
                 if (artifactListPanel != null) {
                     artifactListPanel.clear();
                 }

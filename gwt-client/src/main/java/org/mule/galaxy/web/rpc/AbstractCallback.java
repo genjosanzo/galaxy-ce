@@ -22,20 +22,20 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.mule.galaxy.web.client.ErrorPanel;
 
 public abstract class AbstractCallback<T> implements AsyncCallback<T> {
-    public ErrorPanel menuPanel;
+    private ErrorPanel errorPanel;
 
     public AbstractCallback(ErrorPanel panel) {
         super();
-        this.menuPanel = panel;
+        this.errorPanel = panel;
     }
 
     public void onFailureDirect(Throwable caught) {
         String msg = caught.getMessage();
         
         if (msg != null || !"".equals(msg)) {
-            menuPanel.setMessage("Error communicating with server: " + caught.getMessage() + "");
+            errorPanel.setMessage("Error communicating with server: " + caught.getMessage() + "");
         } else {
-            menuPanel.setMessage("There was an error communicating with the server. Please try again." + caught.getClass().getName());
+            errorPanel.setMessage("There was an error communicating with the server. Please try again." + caught.getClass().getName());
         }
     }
 
