@@ -258,7 +258,8 @@ public class RepositoryMenuPanel extends MenuPanel {
             }
         });
 
-        
+        tree.getSelectionModel().select(root, false);
+
         // add accordion panel to left nav
         addMenuItem(accordionPanel);
     }

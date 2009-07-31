@@ -73,14 +73,15 @@ public class ChildItemsPanel extends AbstractFlowComposite {
     /**
      * generic grid for itemInfo
      *
-     * @param info
      * @return
      */
     private void createItemGrid() {
         panel.clear();
         
         ContentPanel cp = new ContentPanel();
-        cp.setHeaderVisible(false);
+        cp.setStyleName("x-panel-container-full");
+        cp.setBodyBorder(false);
+        cp.setHeading(info != null ? info.getName()  : "All Items");
         cp.setAutoWidth(true);
 
         ToolBar toolbar = new ToolBar();

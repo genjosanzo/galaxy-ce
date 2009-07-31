@@ -164,7 +164,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
         initLocalWidgets();
 
-        ContentPanel cp = new ContentPanel(new FormLayout());
+        ContentPanel cp = new ContentPanel();
         cp.setBodyBorder(false);
         cp.setAutoWidth(true);
         cp.setStyleName("x-panel-container-full");
