@@ -11,10 +11,16 @@ import com.extjs.gxt.ui.client.widget.grid.GridCellRenderer;
 
 public final class LinkRenderer implements GridCellRenderer<BaseModel> {
     private final String anchor;
+     private final boolean nostyle;
 
 
     public LinkRenderer(String anchor) {
+        this(anchor, true);
+    }
+
+    public LinkRenderer(String anchor, boolean nostyle) {
         this.anchor = anchor;
+        this.nostyle = nostyle;
     }
 
     public Object render(BaseModel model, String property, ColumnData config, int rowIndex,
@@ -22,7 +28,12 @@ public final class LinkRenderer implements GridCellRenderer<BaseModel> {
         String html = "";
         String value = (String) model.get(property);
 
-        html += "<a href=\""+anchor+"\">" + value + "</a>";
+        html += "<a href=\""+anchor+"\"";
+        if(nostyle) {
+            html += " style=\"text-decoration : none\"";
+        }
+        html += ">" + value + "</a>";
+
         return html;
     }
 }
