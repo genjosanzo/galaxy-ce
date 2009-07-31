@@ -41,7 +41,6 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -399,6 +398,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     }
 
     protected void show(PageInfo page, List<String> params) {
+        suppressTabHistory = true;
         TabItem p = (TabItem) tabPanel.getWidget(page.getTabIndex());
 
         if (!tabPanel.getSelectedItem().equals(p)) {
@@ -422,7 +422,6 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     }
 
     public void onHistoryChanged(String token) {
-        suppressTabHistory = true;
         currentToken = token;
         if ("".equals(token)) {
             token = DEFAULT_PAGE;
@@ -452,10 +451,6 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         } else {
             curInfo = page;
 
-            int idx = page.getTabIndex();
-            if (idx >= 0 && idx < tabPanel.getItemCount()) {
-                tabPanel.setSelection(tabPanel.getItem(page.getTabIndex()));
-            }
             show(page, params);
         }
 

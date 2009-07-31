@@ -96,7 +96,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     public void testItemOperations() throws Exception
     {
         //importHelloTestWSDL();
-        Collection<ItemInfo> workspaces = gwtRegistry.getItems(null);
+        Collection<ItemInfo> workspaces = gwtRegistry.getItems(null, false);
         assertEquals(1, workspaces.size());
 
         Collection<WArtifactType> artifactTypes = gwtRegistry.getArtifactTypes();
@@ -151,7 +151,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
         // test links
         System.out.println(wsdl.getPath());
-        Collection<ItemInfo> items = gwtRegistry.getItems(null);
+        Collection<ItemInfo> items = gwtRegistry.getItems(null, false);
         assertEquals(1, items.size());
         
         ItemInfo av = gwtRegistry.getItemInfo(registry.getItemByPath("/Default Workspace/hello.wsdl/0.1").getId(), true);
@@ -203,7 +203,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     }
     
     public void testWorkspaces() throws Exception {
-        Collection<ItemInfo> workspaces = gwtRegistry.getItems(null);
+        Collection<ItemInfo> workspaces = gwtRegistry.getItems(null, false);
         assertEquals(1, workspaces.size());
 
         workspaces = gwtRegistry.getItemsInPath(null);
@@ -214,7 +214,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         Type type = typeManager.getTypeByName(TypeManager.WORKSPACE);
         gwtRegistry.addItem(w.getPath(), "Foo", null, type.getId(), null);
         
-        workspaces = gwtRegistry.getItems(w.getId());
+        workspaces = gwtRegistry.getItems(w.getId(), false);
         assertEquals(6, workspaces.size());
         
         workspaces = gwtRegistry.getItemsInPath(w.getPath());
@@ -230,7 +230,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     public void testEntries() throws Exception
     {
         //importHelloTestWSDL();
-        Collection<ItemInfo> workspaces = gwtRegistry.getItems(null);
+        Collection<ItemInfo> workspaces = gwtRegistry.getItems(null, false);
         assertEquals(1, workspaces.size());
         
         ItemInfo w = workspaces.iterator().next();

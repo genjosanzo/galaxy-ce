@@ -25,8 +25,12 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.mule.galaxy.web.client.AbstractShowable;
 import org.mule.galaxy.web.client.Galaxy;
@@ -44,16 +48,109 @@ public class RepositoryMenuPanel extends MenuPanel {
     private TreeStore<ModelData> store;
     private TreePanel<ModelData> tree;
     private BaseTreeModel root;
-    protected Collection<ItemInfo> items;
+    protected Map<String,ModelData> idToData  = new HashMap<String,ModelData>();
+    private LayoutContainer treeContainer;
+    private String itemId;
 
     public RepositoryMenuPanel(Galaxy galaxy) {
         super();
         this.galaxy = galaxy;
 
-        createPageInfo("browse", new ItemPanel(galaxy, this));
+        createPageInfo("browse", new ChildItemsPanel(galaxy, this, null));
         createPageInfo("item/" + Galaxy.WILDCARD, new ItemPanel(galaxy, this));
         createPageInfo("add-item", new AddItemForm(galaxy, this));
         createPageInfo("view", new ViewPanel(galaxy));
+    }
+
+    @Override
+    public void showPage(List<String> params) {
+        String token = History.getToken();
+        itemId = null;
+        if (token.startsWith("browse") || token.startsWith("item")) {
+            if (params.size() > 0) {
+                itemId = params.get(0);
+                
+                AbstractCallback getItemCallback = new AbstractCallback<ItemInfo>(this) {
+                    public void onSuccess(ItemInfo item) {
+                        ((ItemPanel)getMain()).initializeItem(item);
+                    }
+                };
+                galaxy.getRegistryService().getItemInfo(itemId, true, getItemCallback);
+                
+                loadItems(itemId);
+            } else {
+                loadItems(null);
+            }
+        }
+        
+        super.showPage(params);
+    }
+
+    private void loadItems(String itemId) {
+        AbstractCallback getItemsCallback = new AbstractCallback<Collection<ItemInfo>>(this) {
+            public void onSuccess(Collection<ItemInfo> items) {
+                loadAndExpandItems(items);
+            }
+        };
+        galaxy.getRegistryService().getItems(itemId, true, getItemsCallback);
+    }
+
+    
+    protected void loadAndExpandItems(Collection<ItemInfo> items) {
+        TreeModel parent = root;
+        
+        mergeItems(items, parent);
+    }
+
+    private void mergeItems(Collection<ItemInfo> items, TreeModel parent) {
+        if (itemId != null && itemId.equals(parent.get("id"))) {
+            tree.getSelectionModel().select(parent, false);
+        }
+        
+        if (items == null) {
+            return;
+        }
+
+        tree.setExpanded(parent, true);
+        List<ItemInfo> found = new ArrayList<ItemInfo>();
+        
+        // merge and remove non existant items
+        for (Iterator<ModelData> itr = parent.getChildren().iterator(); itr.hasNext();) {
+            TreeModel data = (TreeModel) itr.next();
+            ItemInfo item = getItem((String)data.get("id"), items);
+            if (item == null) {
+                itr.remove();
+                parent.remove(data);
+            } else {
+                found.add(item);
+                mergeItems(item.getItems(), (TreeModel)data);
+            }
+        }
+        
+        // Add in new items
+        for (ItemInfo item : items) {
+            
+            if (!found.contains(item)) {
+                BaseTreeModel model = toModel(item);
+
+                parent.add(model);
+                mergeItems(item.getItems(), (TreeModel)model);
+            }
+        }
+    }
+
+
+    private ItemInfo getItem(String id, Collection<ItemInfo> items) {
+        for (ItemInfo itemInfo : items) {
+            if (id.equals(itemInfo.getId())) {
+                return itemInfo;
+            }
+        }
+        return null;
+    }
+
+    public void showItem(ItemInfo item) {
+        loadItems(item.getId());
     }
 
     @Override
@@ -69,7 +166,7 @@ public class RepositoryMenuPanel extends MenuPanel {
         browsePanel.setAutoWidth(true);
         browsePanel.setHeading("Browse");
 
-        LayoutContainer treeContainer = new LayoutContainer();
+        treeContainer = new LayoutContainer();
         treeContainer.setStyleAttribute("backgroundColor", "white");
         treeContainer.addStyleName("no-border");
 
@@ -120,28 +217,10 @@ public class RepositoryMenuPanel extends MenuPanel {
         store.setStoreSorter(new StoreSorter<ModelData>() {
             @Override
             public int compare(Store<ModelData> store, ModelData m1, ModelData m2, String property) {
-//                if ("all".equals(m1.get("id"))) {
-//                    return -1;
-//                }
-//
-//                if ("all".equals(m2.get("id"))) {
-//                    return 1;
-//                }
-//
-//
-//                boolean isGroup1 = SERVER_GROUP_MODEL_TYPE.equals(m1.get("type"));
-//                boolean isGroup2 = SERVER_GROUP_MODEL_TYPE.equals(m2.get("type"));
-//
-//                if (isGroup1 && !isGroup2) return -1;
-//                if (isGroup2 && !isGroup1) return 1;
-//
-//                if (isGroup1 && isGroup2) {
-//                    String name1 = m1.get("name");
-//                    String name2 = m2.get("name");
-//
-//                    return name1.compareTo(name2);
-//                }
-                return 0;
+                String name1 = m1.get("name");
+                String name2 = m2.get("name");
+
+                return name1.compareTo(name2);
             }
 
         });
@@ -162,20 +241,25 @@ public class RepositoryMenuPanel extends MenuPanel {
         });
 
         root = new BaseTreeModel();
-
-        loadItems();
-        loader.load(root);
-
+        root.set("name", "All");
+        root.set("token", "browse");
+        loader.load();
+        store.add(root, false);
 
         tree.setAutoHeight(true);
         treeContainer.add(tree);
         tree.addListener(Events.Expand, new Listener<TreePanelEvent<ModelData>>() {
             public void handleEvent(TreePanelEvent<ModelData> be) {
-                TreeModel parent = (TreeModel) be.getItem();
-                loadItems(parent);
+                final TreeModel parent = (TreeModel) be.getItem();
+                
+                String id = (String)parent.get("id");
+                galaxy.getRegistryService().getItems(id, false, new AbstractCallback<Collection<ItemInfo>>(RepositoryMenuPanel.this) {
+                    public void onSuccess(Collection<ItemInfo> items) {
+                        mergeItems(items, parent);
+                    }
+                });
             }
         });
-
 
         
         // add accordion panel to left nav
@@ -203,47 +287,13 @@ public class RepositoryMenuPanel extends MenuPanel {
         return cp;
     }
 
-    private void loadItems() {
-        loadItems(null);
-    }
-
-    protected void loadItems(final TreeModel parent) {
-        String id = null;
-
-        if (parent != null) {
-            id = (String) parent.get("id");
-            parent.removeAll();
-        } else {
-            store.removeAll();
-        }
-
-        galaxy.getRegistryService().getItems(id, new AbstractCallback<Collection<ItemInfo>>(this) {
-
-            public void onSuccess(Collection<ItemInfo> items) {
-                RepositoryMenuPanel.this.items = items;
-                
-                for (ItemInfo i : items) {
-                    BaseTreeModel model = new BaseTreeModel();
-                    model.set("id", i.getId());
-                    model.set("name", i.getName());
-                    model.set("token", "item/" + i.getId());
-                    if (parent != null) {
-                        store.add(parent, model, false);
-                    } else {
-                        store.add(model, false);
-                    }
-                }
-                
-                if (getMain() instanceof ItemPanel 
-                    && ((ItemPanel) getMain()).getItemId() == null 
-                    && items.size() > 0) {
-                    History.newItem("item/" + items.iterator().next().getId());
-                } else {
-                    History.newItem("add-item");
-                }
-            }
-
-        });
+    protected BaseTreeModel toModel(ItemInfo i) {
+        BaseTreeModel model = new BaseTreeModel();
+        model.set("id", i.getId());
+        model.set("name", i.getName());
+        model.set("token", "item/" + i.getId());
+        idToData.put(i.getId(), model);
+        return model;
     }
 
     public void createPageInfo(String token, final WidgetHelper composite) {
@@ -264,10 +314,6 @@ public class RepositoryMenuPanel extends MenuPanel {
 
     public Galaxy getGalaxy() {
         return galaxy;
-    }
-
-    public void showItem(ItemInfo item) {
-        
     }
 
     public TreeStore<ModelData> getStore() {

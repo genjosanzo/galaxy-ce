@@ -31,7 +31,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 
 public interface RegistryService extends RemoteService {
 
-    Collection<ItemInfo> getItems(String parentId) throws RPCException;
+    Collection<ItemInfo> getItems(String parentId, boolean traverseUpParents) throws RPCException;
 
     Collection<ItemInfo> getItemsInPath(String parentPath) throws RPCException;
 

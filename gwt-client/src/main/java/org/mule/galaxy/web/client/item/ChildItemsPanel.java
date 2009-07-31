@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.mule.galaxy.web.client.AbstractFlowComposite;
-import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.WidgetHelper;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -39,15 +38,15 @@ import org.mule.galaxy.web.rpc.ItemInfo;
 public class ChildItemsPanel extends AbstractFlowComposite {
 
     protected Collection items;
-    private final ErrorPanel errorPanel;
+    private final RepositoryMenuPanel menuPanel;
     private final Galaxy galaxy;
     private final ItemInfo info;
 
 
-    public ChildItemsPanel(Galaxy galaxy, ErrorPanel errorPanel, ItemInfo item) {
+    public ChildItemsPanel(Galaxy galaxy, RepositoryMenuPanel menuPanel, ItemInfo item) {
         super();
         this.galaxy = galaxy;
-        this.errorPanel = errorPanel;
+        this.menuPanel = menuPanel;
         this.info = item;
     }
 
@@ -60,14 +59,14 @@ public class ChildItemsPanel extends AbstractFlowComposite {
 
 
     private void fetchAllItems() {
-        AbstractCallback callback = new AbstractCallback(errorPanel) {
+        AbstractCallback callback = new AbstractCallback(menuPanel) {
             public void onSuccess(Object o) {
                 items = (Collection) o;
                 createItemGrid();
             }
         };
 
-        galaxy.getRegistryService().getItems(info.getId(), callback);
+        galaxy.getRegistryService().getItems(info != null ? info.getId() : null, false, callback);
     }
     
     /**
@@ -86,8 +85,15 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         cp.setTopComponent(toolbar);
 
         toolbar.add(new FillToolItem());
-        if (info.isModifiable()) {
-            toolbar.add(WidgetHelper.createSimpleHistoryButton("New Item", "add-item/" + info.getId()));
+        if (info == null || info.isModifiable()) {
+            String token;
+            if (info != null) {
+                token = "add-item/" + info.getId();
+            } else {
+                token = "add-item/";
+            
+            }
+            toolbar.add(WidgetHelper.createSimpleHistoryButton("New Item", token));
         }
 
         final CheckBoxSelectionModel<BeanModel> sm = new CheckBoxSelectionModel<BeanModel>();
@@ -122,6 +128,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                     ItemInfo ii = store.getAt(ge.getRowIndex()).getBean();
 
                     // drill down into the grid
+                    menuPanel.showItem(ii);
                     History.newItem("item/" + ii.getId());
                 }
             }
@@ -137,7 +144,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                 //History.newItem("artifact/" + info.getId());
             }
         });
-        if (info.isDeletable()) {
+        if (info == null || info.isDeletable()) {
             toolbar.add(delBtn);
         }
 

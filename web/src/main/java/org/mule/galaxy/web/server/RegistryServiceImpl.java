@@ -154,7 +154,7 @@ public class RegistryServiceImpl implements RegistryService {
         return exts;
     }
 
-    public Collection<ItemInfo> getItems(String parentId) throws RPCException {
+    public Collection<ItemInfo> getItems(String parentId, boolean traverseUpParents) throws RPCException {
         try {
             if (parentId == null) {
                 Collection<Item> items = registry.getItems();
@@ -163,8 +163,26 @@ public class RegistryServiceImpl implements RegistryService {
             } else {
                 Item w = (Item) registry.getItemById(parentId);
 
-                Collection<ItemInfo> workspaces = toWeb(w.getItems());
-                
+                Collection<ItemInfo> workspaces = null;
+                if (traverseUpParents) {
+                    while (w != null) {
+                        Item parent = w.getParent();
+                        Collection<ItemInfo> parentWorkspaces;
+                        if (parent != null) {
+                            parentWorkspaces = toWeb(parent.getItems());
+                        } else {
+                            parentWorkspaces = toWeb(registry.getItems());
+                        }
+                        
+                        if (workspaces != null) {
+                            addWorkspaces(w.getName(), parentWorkspaces, workspaces);
+                        }
+                        workspaces = parentWorkspaces;
+                        w = parent;
+                    }
+                } else {
+                    workspaces = toWeb(w.getItems());
+                }
                 return workspaces;
             }
         } catch (RegistryException e) {
@@ -193,12 +211,12 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         }
     }
+
     
     private Collection<ItemInfo> toWeb(Collection<Item> workspaces) {
         if (workspaces == null) {
             return null;
         }
-
         List<ItemInfo> wis = new ArrayList<ItemInfo>();
         for (Item w : workspaces) {
             ItemInfo ww = toWeb(w);
@@ -208,6 +226,15 @@ public class RegistryServiceImpl implements RegistryService {
         return wis;
     }
 
+    private void addWorkspaces(String name, Collection<ItemInfo> parents, Collection<ItemInfo> children) {
+        for (ItemInfo w : parents) {
+            if (name.equals(w.getName())) {
+                w.setItems(children);
+                return;
+            }
+        }
+    }
+    
     private ItemInfo toWeb(Item i) {
         ItemInfo ii = new ItemInfo();
         ii.setId(i.getId());
@@ -951,8 +978,7 @@ public class RegistryServiceImpl implements RegistryService {
         return info;
     }
 
-    public ItemInfo getItemInfo(String itemId, boolean showHidden) throws RPCException,
-                                                                                                           ItemNotFoundException {
+    public ItemInfo getItemInfo(String itemId, boolean showHidden) throws RPCException, ItemNotFoundException {
         try {
             Item item = registry.getItemById(itemId);
 

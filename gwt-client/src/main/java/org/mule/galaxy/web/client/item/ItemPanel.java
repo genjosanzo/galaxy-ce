@@ -27,11 +27,9 @@ import com.google.gwt.user.client.ui.Label;
 import java.util.List;
 
 import org.mule.galaxy.web.client.AbstractFlowComposite;
-import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.admin.PolicyPanel;
 import org.mule.galaxy.web.client.util.ShowableTabListener;
-import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.SecurityService;
 
@@ -53,11 +51,12 @@ public class ItemPanel extends AbstractFlowComposite {
     private int selectedTab = -1;
     private String itemId;
     private List<String> params;
-    private ErrorPanel errorPanel;
+    private RepositoryMenuPanel menuPanel;
+    private TabPanel tabPanel;
 
-    public ItemPanel(Galaxy galaxy, ErrorPanel errorPanel) {
+    public ItemPanel(Galaxy galaxy, RepositoryMenuPanel menuPanel) {
         this.galaxy = galaxy;
-        this.errorPanel = errorPanel;
+        this.menuPanel = menuPanel;
     }
 
     @Override
@@ -66,36 +65,21 @@ public class ItemPanel extends AbstractFlowComposite {
         panel.clear();
         panel.add(new Label("Loading..."));
 
-        if (params.size() > 0) {
-            itemId = params.get(0);
-        }
-
         if (params.size() >= 2) {
             selectedTab = new Integer(params.get(1)).intValue();
         } else {
             selectedTab = 0;
         }
-
-        if (itemId != null) {
-            fetchItem();
-        }
-
     }
 
-    private void fetchItem() {
-        AbstractCallback callback = new AbstractCallback(errorPanel) {
-            public void onSuccess(Object o) {
-                info = (ItemInfo) o;
-                init();
-            }
-        };
-
-        galaxy.getRegistryService().getItemInfo(itemId, true, callback);
-    }
-
-    private void init() {
+    public void initializeItem(ItemInfo info) {
+        this.info = info;
         panel.clear();
         initTabs();
+        
+        if (info.getType().equals("Artifact Version")) {
+            tabPanel.setSelection(tabPanel.getItem(1));
+        }
     }
     
     private void initTabs() {
@@ -106,36 +90,36 @@ public class ItemPanel extends AbstractFlowComposite {
         cp.setAutoWidth(true);
         //cp.setLayout(new FitLayout());
 
-        final TabPanel tabPanel = new TabPanel();
+        tabPanel = new TabPanel();
         tabPanel.setStyleName("x-tab-panel-header_sub1");
         tabPanel.setAutoWidth(true);
         tabPanel.setAutoHeight(true);
 
         TabItem itemsTab = new TabItem("Items");
-        itemsTab.add(new ChildItemsPanel(galaxy, errorPanel, info));
+        itemsTab.add(new ChildItemsPanel(galaxy, menuPanel, info));
         tabPanel.add(itemsTab);
 
 
         TabItem infoTab = new TabItem("Info");
-        infoTab.add(new ItemInfoPanel(galaxy, errorPanel, info, this, params));
+        infoTab.add(new ItemInfoPanel(galaxy, menuPanel, info, this, params));
         tabPanel.add(infoTab);
 
         if (galaxy.hasPermission("MANAGE_POLICIES") && info.isLocal()) {
             TabItem tab = new TabItem("Policies");
-            tab.add(new PolicyPanel(errorPanel, galaxy, itemId));
+            tab.add(new PolicyPanel(menuPanel, galaxy, itemId));
             tabPanel.add(tab);
         }
 
         if (galaxy.hasPermission("MANAGE_GROUPS") && info.isLocal()) {
             TabItem tab = new TabItem("Security");
-            tab.add(new ItemGroupPermissionPanel(galaxy, errorPanel, info.getId(), SecurityService.ITEM_PERMISSIONS));
+            tab.add(new ItemGroupPermissionPanel(galaxy, menuPanel, info.getId(), SecurityService.ITEM_PERMISSIONS));
             tabPanel.add(tab);
         }
 
         /**
          * Lazily initialize the panels with the proper parameters.
          */
-        tabPanel.addListener(Events.Select, new ShowableTabListener(errorPanel, params));
+        tabPanel.addListener(Events.Select, new ShowableTabListener(menuPanel, params));
 
         cp.add(tabPanel);
         panel.add(cp);
