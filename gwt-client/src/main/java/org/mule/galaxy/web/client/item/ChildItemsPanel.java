@@ -41,6 +41,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
     private final RepositoryMenuPanel menuPanel;
     private final Galaxy galaxy;
     private final ItemInfo info;
+    private CheckBoxSelectionModel<BeanModel> selectionModel;
 
 
     public ChildItemsPanel(Galaxy galaxy, RepositoryMenuPanel menuPanel, ItemInfo item) {
@@ -76,7 +77,8 @@ public class ChildItemsPanel extends AbstractFlowComposite {
      * @return
      */
     private void createItemGrid() {
-
+        panel.clear();
+        
         ContentPanel cp = new ContentPanel();
         cp.setHeaderVisible(false);
         cp.setAutoWidth(true);
@@ -93,10 +95,10 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                 token = "add-item/";
             
             }
-            toolbar.add(WidgetHelper.createSimpleHistoryButton("New Item", token));
+            toolbar.add(WidgetHelper.createSimpleHistoryButton("New", token));
         }
 
-        final CheckBoxSelectionModel<BeanModel> sm = new CheckBoxSelectionModel<BeanModel>();
+        selectionModel = new CheckBoxSelectionModel<BeanModel>();
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(ItemInfo.class);
         List<BeanModel> model = factory.createModel(items);
@@ -105,7 +107,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         store.add(model);
 
         List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
-        columns.add(sm.getColumn());
+        columns.add(selectionModel.getColumn());
         columns.add(new ColumnConfig("name", "Name", 150));
         columns.add(new ColumnConfig("authorName", "Author", 150));
         columns.add(new ColumnConfig("type", "Type", 100));
@@ -114,9 +116,9 @@ public class ChildItemsPanel extends AbstractFlowComposite {
 
         Grid grid = new Grid<BeanModel>(store, cm);
         grid.setAutoWidth(true);
-        grid.setSelectionModel(sm);
+        grid.setSelectionModel(selectionModel);
         grid.setBorders(true);
-        grid.addPlugin(sm);
+        grid.addPlugin(selectionModel);
         grid.setAutoExpandColumn("name");
 
         grid.setAutoWidth(true);
@@ -134,23 +136,22 @@ public class ChildItemsPanel extends AbstractFlowComposite {
             }
         });
 
-        final Button delBtn = new Button("Delete Item");
+        final Button delBtn = new Button("Delete");
         delBtn.setEnabled(false);
         delBtn.setEnabled(false);
         delBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
             @Override
             public void componentSelected(ButtonEvent ce) {
-                warnDelete(sm.getSelectedItems());
-                //History.newItem("artifact/" + info.getId());
+                warnDelete(selectionModel.getSelectedItems());
             }
         });
         if (info == null || info.isDeletable()) {
             toolbar.add(delBtn);
         }
 
-        sm.addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
+        selectionModel.addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
             public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
-                boolean isSelected = sm.getSelectedItems().size() > 0;
+                boolean isSelected = selectionModel.getSelectedItems().size() > 0;
                 delBtn.setEnabled(isSelected);
             }
         });
@@ -167,14 +168,19 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                 com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
 
                 if (Dialog.YES.equals(btn.getItemId())) {
-
+                    List<String> ids = new ArrayList<String>();
+                    for (BeanModel data : selectionModel.getSelectedItems()) {
+                        ids.add((String)data.get("id"));
+                    }
+                    
                     // FIXME: delete collection.
-                    /*galaxy.getRegistryService().delete(item.getId(), new AbstractCallback(errorPanel) {
+                    galaxy.getRegistryService().delete(ids, new AbstractCallback(menuPanel) {
                         public void onSuccess(Object arg0) {
-                            galaxy.setMessageAndGoto("browse", "Item was deleted.");
+                            menuPanel.setMessage("Items were deleted.");
+                            fetchAllItems();
                         }
                     });
-                    */
+                    
                 }
             }
         };

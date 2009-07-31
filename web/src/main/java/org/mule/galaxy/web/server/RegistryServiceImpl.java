@@ -1581,7 +1581,7 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             Item i = registry.getItemById(itemId);
             
-            if (!i.getParent().getId().equals(workspacePath) || !name.equals(i.getName())) {
+            if ((i.getParent() != null && !i.getParent().getId().equals(workspacePath)) || !name.equals(i.getName())) {
                 registry.move(i, workspacePath, name);
             }
         } catch (RegistryException e) {
@@ -1603,6 +1603,23 @@ public class RegistryServiceImpl implements RegistryService {
             Item item = registry.getItemById(itemId);
 
             item.delete();
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
+            throw new RPCException(e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ItemNotFoundException();
+        } catch (AccessException e) {
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+    public void delete(List<String> ids) throws RPCException, ItemNotFoundException {
+        try {
+            for (String id : ids) {
+                Item item = registry.getItemById(id);
+    
+                item.delete();
+            }
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());

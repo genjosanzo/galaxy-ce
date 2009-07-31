@@ -138,6 +138,8 @@ public interface RegistryServiceAsync {
     void move(String itemId, String parentPath, String name, AsyncCallback c);
     
     void delete(String itemId, AsyncCallback c);
+    
+    void delete(List<String> itemIds, AsyncCallback c);
 
     void getPolicies(AsyncCallback c);
 
