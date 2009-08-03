@@ -415,6 +415,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         if (instance instanceof Showable) {
             ((Showable) instance).showPage(params);
         }
+        suppressTabHistory = false;
     }
 
     public void onValueChange(ValueChangeEvent<String> event) {
@@ -453,8 +454,6 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
             show(page, params);
         }
-
-        suppressTabHistory = false;
     }
 
 
