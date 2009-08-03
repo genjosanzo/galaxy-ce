@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.4"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee   http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+    <!-- $Id$ -->
+
+    <distributable/>
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            classpath:/META-INF/applicationContext-core.xml
+            classpath:/META-INF/applicationContext-core-extensions.xml
+            classpath:/META-INF/applicationContext-cache.xml
+            classpath:/META-INF/applicationContext-abdera.xml
+            classpath:/META-INF/applicationContext-acegi-security.xml
+            classpath:/META-INF/applicationContext-acegi-security-web.xml
+            classpath:/META-INF/applicationContext-web.xml
+            classpath*:/META-INF/galaxy-applicationContext.xml
+        </param-value>
+    </context-param>
+
+    <filter>
+        <filter-name>jcr</filter-name>
+        <filter-class>
+            org.springmodules.jcr.support.OpenSessionInViewFilter
+        </filter-class>
+    </filter>
+
+    <filter>
+        <filter-name>Acegi Filter Chain Proxy</filter-name>
+        <filter-class>
+            org.acegisecurity.util.FilterToBeanProxy
+        </filter-class>
+        <init-param>
+            <param-name>targetClass</param-name>
+            <param-value>org.acegisecurity.util.FilterChainProxy</param-value>
+        </init-param>
+    </filter>
+    
+    <filter>
+        <filter-name>ContextPathSaver</filter-name>
+        <filter-class>org.mule.galaxy.web.ContextPathSaverFilter</filter-class>
+    </filter>
+    
+    <filter>
+        <filter-name>ThreadLocalCache</filter-name>
+        <filter-class>org.mule.galaxy.web.ThreadLocalCacheFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>Acegi Filter Chain Proxy</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>jcr</filter-name>
+        <url-pattern>/handler/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>jcr</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>ContextPathSaver</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>ThreadLocalCache</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <filter-mapping>
+        <filter-name>jcr</filter-name>
+        <url-pattern>*.form</url-pattern>
+    </filter-mapping>
+
+
+    <listener>
+        <listener-class>
+            org.springframework.web.context.ContextLoaderListener
+        </listener-class>
+    </listener>
+    <listener>
+        <listener-class>
+            org.apache.commons.fileupload.servlet.FileCleanerCleanup
+        </listener-class>
+    </listener>
+
+    <servlet id="abdera">
+        <servlet-name>Abdera</servlet-name>
+        <servlet-class>org.apache.abdera.spring.SpringAbderaServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>handler</servlet-name>
+        <servlet-class>
+            org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>form</servlet-name>
+        <servlet-class>
+            org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>form</servlet-name>
+        <url-pattern>*.form</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>handler</servlet-name>
+        <url-pattern>/handler/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping id="abdera-mapping">
+        <servlet-name>Abdera</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+
+    <!--<error-page>-->
+    <!--<error-code>403</error-code>-->
+    <!--<location>/error.html</location>-->
+    <!--</error-page>-->
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+</web-app>
+

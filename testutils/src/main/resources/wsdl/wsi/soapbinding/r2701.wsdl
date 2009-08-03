@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="HelloWorld"
+  targetNamespace="http://mule.org/hello_world"
+  xmlns="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:tns="http://mule.org/hello_world"
+  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+    <schema
+      targetNamespace="http://mule.org/hello_world"
+      xmlns="http://www.w3.org/2001/XMLSchema"
+      xmlns:tns="http://mule.org/hello_world"
+      elementFormDefault="qualified">
+
+      <element name="sayHi">
+        <complexType />
+      </element>
+
+      <element name="sayHiResponse">
+        <complexType>
+          <sequence>
+            <element name="response" type="string" />
+          </sequence>
+        </complexType>
+      </element>
+
+    </schema>
+  </wsdl:types>
+  <wsdl:message name="sayHiRequest">
+    <wsdl:part element="sayHi" name="in" />
+  </wsdl:message>
+  <wsdl:message name="sayHiResponse">
+    <wsdl:part element="sayHiResponse" name="out" />
+  </wsdl:message>
+
+  <wsdl:portType name="HelloWorld">
+    <wsdl:operation name="sayHi">
+      <wsdl:input message="tns:sayHiRequest" name="sayHiRequest" />
+      <wsdl:output message="tns:sayHiResponse" name="sayHiResponse" />
+    </wsdl:operation>
+
+  </wsdl:portType>
+  <wsdl:binding name="HelloWorldBinding" type="tns:HelloWorld">
+    <soap:binding style="document"
+      transport="" />
+
+    <wsdl:operation name="sayHi">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="sayHiRequest">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="sayHiResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+  </wsdl:binding>
+  <wsdl:service name="HelloWorldService">
+    <wsdl:port binding="tns:HelloWorldBinding" name="SoapPort">
+      <soap:address
+        location="http://localhost:9000/SoapContext/SoapPort" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
+

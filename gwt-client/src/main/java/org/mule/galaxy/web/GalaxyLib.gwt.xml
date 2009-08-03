@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--<!DOCTYPE module PUBLIC "-//Google //DTD gwt-module-configuration XML V1.0//EN"-->
+            <!--"http://google-web-toolkit.googlecode.com/svn/tags/1.4.61/distro-source/core/src/gwt-module.dtd">-->
+        
+<module>
+
+    <!-- Inherit the core Web Toolkit stuff.                  -->
+    <inherits name='com.google.gwt.user.User'/>
+    <inherits name='com.google.gwt.widgetideas.DatePicker' />
+    <inherits name='com.extjs.gxt.ui.GXT'/>
+    <inherits name='com.google.gwt.i18n.I18N'/>
+    
+
+    <source path="rpc"/>
+    <source path="client"/>
+
+    <public path="public">
+        <!--
+            Don't recursively include GWT compiler output when
+            developing with IDE and m2.
+        -->
+        <exclude name="org.mule.galaxy.web.Galaxy/**"/>
+        <exclude name="WEB-INF/**"/>
+        <exclude name="META-INF/**"/> 
+    </public>
+
+    <stylesheet src="application.css"/>
+
+</module>

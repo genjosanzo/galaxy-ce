@@ -1,0 +1,144 @@
+<nodeTypes xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+  xmlns:jcr="http://www.jcp.org/jcr/1.0" 
+  xmlns:galaxy="http://galaxy.mule.org"
+  xmlns:mix="http://www.jcp.org/jcr/mix/1.0">
+
+  <nodeType name="galaxy:noSiblings" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+  </nodeType>
+    
+  <nodeType name="galaxy:item" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+  </nodeType>  
+  <nodeType name="galaxy:workspace" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+  </nodeType>
+  
+  <nodeType name="galaxy:attachedItem" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+  </nodeType>
+  
+  <nodeType name="galaxy:artifact" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
+    
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+    
+  </nodeType>
+  
+  <nodeType name="galaxy:artifactVersion" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
+    <supertypes>
+        <supertype>nt:file</supertype>
+        <supertype>mix:referenceable</supertype>
+    </supertypes>
+    
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+    
+  </nodeType>
+  
+  <nodeType name="galaxy:link" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
+    
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+    
+  </nodeType>
+    
+  <nodeType name="galaxy:scriptJob" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
+    
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" sameNameSiblings="false" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+    
+  </nodeType>
+  
+  <nodeType 
+    name="galaxy:activity" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
+    
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+    
+  </nodeType>
+      
+  <nodeType name="galaxy:artifactView"
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
+    
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+    
+  </nodeType>
+  
+  <nodeType name="galaxy:index" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="" >
+    
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+    
+  </nodeType>
+  
+  <nodeType name="galaxy:lifecycle" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
+    
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+    
+  </nodeType>
+
+  <nodeType name="galaxy:group" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
+    
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+    
+  </nodeType>
+</nodeTypes>

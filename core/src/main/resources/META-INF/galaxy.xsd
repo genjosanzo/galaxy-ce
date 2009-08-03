@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xsd:schema xmlns="http://www.mulesource.org/schema/galaxy-config"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:spring="http://www.springframework.org/schema/beans"
+            xmlns:spring-context="http://www.springframework.org/schema/context"
+            targetNamespace="http://www.mulesource.org/schema/galaxy-config"
+            attributeFormDefault="unqualified"
+            elementFormDefault="qualified">
+
+    <xsd:annotation>
+        <xsd:documentation>Galaxy schema for Spring-based configuration.</xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:import namespace="http://www.springframework.org/schema/beans"
+                schemaLocation="http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"/>
+
+    <xsd:element name="custom-listeners">
+        <xsd:annotation>
+            <xsd:documentation>
+                Register user event listeners.
+            </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:complexType>
+
+            <xsd:sequence>
+                <xsd:element name="eventManager" maxOccurs="1" minOccurs="0">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            A reference to the Galaxy Event Manager. This is automatically discovered and shouldn't
+                            typically be set by a user.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                    <xsd:complexType>
+                        <xsd:attribute name="ref" type="xsd:NMTOKEN" use="required"/>
+                    </xsd:complexType>
+                </xsd:element>
+
+                <xsd:element name="listener" minOccurs="1" maxOccurs="unbounded">
+                    <xsd:annotation>
+                        <xsd:documentation>Galaxy event listener instance</xsd:documentation>
+                    </xsd:annotation>
+                    <xsd:complexType>
+                        <xsd:group ref="spring:collectionElements"/>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+
+        </xsd:complexType>
+
+    </xsd:element>
+
+</xsd:schema>

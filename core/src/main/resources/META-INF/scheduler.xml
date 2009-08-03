@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+    <bean name="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"
+          depends-on="dbInitializer">
+        <!--
+            Avoid deadlocks when duplicate spring app context initialization happens, typically
+            when a saved durable job tries to recover and obtain an app context. The scheduler
+            will be started by a separate launcher bean when everything is available and calm.
+        -->
+        <property name="autoStartup" value="false"/>
+
+        <!-- Expose application context via a scheduler context -->
+        <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
+        <property name="waitForJobsToCompleteOnShutdown" value="true"/>
+        <!-- TODO wire a listener writing to activity log -->
+        <!--<property name="schedulerListeners" .../>-->
+        <!--<property name="globalJobListeners" .../>-->
+
+        <!-- Probably jcrTransactionManager won't work till JcrDataStore is implemented, use jdbc -->
+        <!--<property name="transactionManager" ref="jcrTransactionManager"/>-->
+
+        <property name="schedulerName" value="galaxy_job_scheduler"/>
+
+        <property name="jobFactory">
+            <bean class="org.springframework.scheduling.quartz.SpringBeanJobFactory"/>
+        </property>
+
+        <property name="dataSource" ref="internalDataSource"/>
+
+        <property name="quartzProperties">
+            <util:properties location="classpath:META-INF/scheduler.properties"/>
+        </property>
+    </bean>
+
+    <bean id="schedulerLifecycle" class="org.mule.galaxy.config.quartz.QuartzLifecycleBean">
+        <property name="scheduler" ref="scheduler"/>
+    </bean>
+
+</beans>

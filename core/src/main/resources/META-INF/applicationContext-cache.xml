@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="threadLocalCacheProvider" class="org.mule.galaxy.impl.cache.ThreadLocalCacheProviderFacade"/>
+
+    <bean id="cacheKeyGenerator" class="org.springmodules.cache.key.HashCodeCacheKeyGenerator"/>
+
+    <bean id="threadLocalCachingInterceptor"
+      class="org.springmodules.cache.interceptor.caching.MethodMapCachingInterceptor">
+      <property name="cacheProviderFacade" ref="threadLocalCacheProvider" />
+      <property name="cachingModels">
+        <props>
+          <prop key="org.mule.galaxy.type.TypeManager.getProp*"/>
+          <prop key="org.mule.galaxy.type.TypeManager.getType*"/>
+        </props>
+      </property>
+    </bean>
+    
+    <bean id="threadLocalFlushingInterceptor"
+      class="org.springmodules.cache.interceptor.flush.MethodMapFlushingInterceptor">
+      <property name="cacheProviderFacade" ref="threadLocalCacheProvider" />
+      <property name="flushingModels">
+        <props>
+          <prop key="org.mule.galaxy.type.TypeManager.save*"></prop>
+          <prop key="org.mule.galaxy.type.TypeManager.delete*"></prop>
+        </props>
+      </property>
+    </bean>
+
+    <bean id="proxyCreator" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames">
+            <list>
+               <idref bean="typeManager"/>
+               <idref bean="lifecycleManager"/>
+               <idref bean="artifactTypeDao"/>
+            </list>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>threadLocalCachingInterceptor</value>
+                <value>threadLocalFlushingInterceptor</value>
+            </list>
+        </property>
+    </bean>
+</beans>    

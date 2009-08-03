@@ -1,0 +1,46 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:a="http://abdera.apache.org"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+    http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
+
+    <bean id="gwtRegistry" class="org.mule.galaxy.web.server.RegistryServiceImpl">
+      <property name="registry" ref="registry"/>
+      <property name="artifactTypeDao" ref="artifactTypeDao"/>
+      <property name="indexManager" ref="indexManager"/>
+      <property name="rendererManager" ref="rendererManager"/>
+      <property name="lifecycleManager" ref="lifecycleManager"/>
+      <property name="policyManager" ref="policyManager"/>
+      <property name="activityManager" ref="activityManager"/>
+      <property name="artifactViewManager" ref="artifactViewManager"/>
+      <property name="accessControlManager" ref="accessControlManager"/>
+      <property name="typeManager" ref="typeManager"/>
+      <property name="uploadService" ref="uploadService"/>
+      <property name="userManager" ref="userManager"/>
+      <property name="contextPathResolver">
+          <bean class="org.mule.galaxy.web.server.ContextPathResolver"/>
+      </property>
+      <property name="eventManager" ref="eventManager"/>
+    </bean>
+
+    <bean id="gwtSecurityService" class="org.mule.galaxy.web.server.SecurityServiceImpl">
+      <property name="accessControlManager" ref="accessControlManager"/>
+      <property name="registry" ref="registry"/>
+      <property name="userManager" ref="userManager"/>
+    </bean>
+
+    <bean id="heartbeatService" class="org.mule.galaxy.web.server.HeartbeatServiceImpl">
+    </bean>
+
+    <bean id="adminService" class="org.mule.galaxy.web.server.AdminServiceImpl">
+        <property name="scriptManager" ref="scriptManager"/>
+        <property name="scriptJobDao" ref="scriptJobDao"/>
+    </bean>
+    
+    <bean id="demoArtifactPlugin" class="org.mule.galaxy.web.DemoArtifactPlugin" parent="abstractArtifactPlugin"/>    
+</beans>

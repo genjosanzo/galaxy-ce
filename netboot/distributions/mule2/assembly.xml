@@ -1,0 +1,153 @@
+<!--
+Assembly descriptor for the full Mule distribution.
+-->
+<assembly>
+    <id>mule2-netboot</id>
+    <formats>
+        <format>zip</format>
+        <!--<format>tar.gz</format>-->
+    </formats>
+
+    <fileSets>
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+
+        <!-- Make binary directories executable. -->
+        <fileSet>
+            <directory>src/main/resources/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>644</fileMode>
+            <includes>
+                <include>*.txt</include>
+                <include>*.conf</include>
+                <include>*.groovy</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/sbin</directory>
+            <outputDirectory>sbin</outputDirectory>
+            <fileMode>755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/sbin</directory>
+            <outputDirectory>sbin</outputDirectory>
+            <fileMode>644</fileMode>
+            <includes>
+                <include>*.txt</include>
+            </includes>
+        </fileSet>
+
+        <!-- Copy the USAGE.txt file to the root directory for visibility -->
+        <fileSet>
+            <directory>src/main/resources/bin</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>USAGE.txt</include>
+            </includes>
+        </fileSet>
+
+
+    </fileSets>
+
+    <!--
+    ============================
+        Libraries
+    ============================
+    -->
+
+    <!--
+         TODO: http://jira.codehaus.org/browse/MASSEMBLY-41 is now fixed.
+         Update to use wildcards.
+
+         Unfortunately we still cannot use wildcards, see
+         http://jira.codehaus.org/browse/MASSEMBLY-220
+    -->
+    <dependencySets>
+        <!-- Mule NetBoot -->
+        <dependencySet>
+            <outputDirectory>lib/boot</outputDirectory>
+            <includes>
+                <include>org.mule.galaxy.netboot:mule-netboot-launcher</include>
+                <include>commons-cli:commons-cli</include>
+                <include>tanukisoft:wrapper</include>
+            </includes>
+            <!-- no XML -->
+            <excludes>
+                <exclude>xml-apis:xml-apis</exclude>
+                <exclude>xerces:xercesImpl</exclude>
+                <exclude>xerces:xml-serializer</exclude>
+                <exclude>xalan:xalan</exclude>
+            </excludes>
+        </dependencySet>
+
+        <!-- Galaxy Bootstrap -->
+        <dependencySet>
+            <outputDirectory>lib/galaxy</outputDirectory>
+            <includes>
+                <include>org.mule.galaxy.netboot:mule-netboot-support</include>
+                <include>commons-httpclient:commons-httpclient</include>
+                <include>commons-codec:commons-codec</include>
+                <include>org.slf4j:jcl104-over-slf4j</include>
+                <include>org.slf4j:slf4j-log4j12</include>
+                <include>org.slf4j:slf4j-api</include>
+                <include>log4j:log4j</include>
+                <!--<include>org.apache.abdera:abdera-core</include>-->
+                <!--<include>org.apache.abdera:abdera-client</include>-->
+                <!--<include>org.apache.abdera:abdera-protocol</include>-->
+            </includes>
+            <!-- no XML -->
+            <excludes>
+                <exclude>xml-apis:xml-apis</exclude>
+                <exclude>xerces:xercesImpl</exclude>
+                <exclude>xerces:xml-serializer</exclude>
+                <exclude>xalan:xalan</exclude>
+            </excludes>
+        </dependencySet>
+
+
+        <!-- Non-Mule libraries -->
+        <dependencySet>
+            <outputDirectory>lib/opt</outputDirectory>
+            <scope>runtime</scope>
+
+            <includes>
+                <include>org.codehaus.groovy:groovy-all</include>
+            </includes>
+
+            <excludes>
+                <!-- no XML -->
+                <exclude>xml-apis:xml-apis</exclude>
+                <exclude>xerces:xercesImpl</exclude>
+                <exclude>xerces:xml-serializer</exclude>
+                <exclude>xalan:xalan</exclude>
+            </excludes>
+        </dependencySet>
+
+
+        <!--
+            These XML dependencies end up in the "endorsed" directory
+            and must be excluded from other dependencySets, otherwise
+            the inclusions here will cause other artifacts to pull them
+            in as well. If that happens, the MAVP blacklisting mechanism
+            should kick in, since only jars in the endorsed directory are
+            explicitly blacklisted by full path.
+        -->
+        <!-- dependencySet>
+            <outputDirectory>lib/endorsed</outputDirectory>
+            <includes>
+                <include>xml-apis:xml-apis</include>
+                <include>xerces:xercesImpl</include>
+                <include>xerces:xml-serializer</include>
+                <include>xalan:xalan</include>
+            </includes>
+        </dependencySet -->
+
+    </dependencySets>
+</assembly>

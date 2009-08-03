@@ -1,0 +1,225 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.mule.galaxy</groupId>
+        <artifactId>galaxy-examples-parent</artifactId>
+        <version>2.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.mule.galaxy</groupId>
+    <artifactId>galaxy-example-background-check-service</artifactId>
+    <version>2.0-SNAPSHOT</version>
+    <name>Example: Background Check Service</name>
+    <description>
+      An example service which checks the background of an individual. 
+    </description>
+    <properties>
+        <mule.version>2.2.0</mule.version>
+    </properties>
+    
+    <dependencies>
+    
+        <dependency>
+           <groupId>org.mule</groupId>
+           <artifactId>mule-core</artifactId>
+           <version>${mule.version}</version>
+        </dependency>
+            
+        <dependency>
+           <groupId>org.mule.transports</groupId>
+           <artifactId>mule-transport-cxf</artifactId>
+           <version>${mule.version}</version>
+           <exclusions>
+           
+                  <exclusion>
+                      <groupId>org.springframework</groupId>
+                      <artifactId>spring-beans</artifactId>
+                  </exclusion>
+                  <exclusion>
+                      <groupId>org.springframework</groupId>
+                      <artifactId>spring-core</artifactId>
+                  </exclusion>
+                  <exclusion>
+                      <groupId>org.springframework</groupId>
+                      <artifactId>spring-context</artifactId>
+                  </exclusion>
+          </exclusions>
+           
+        </dependency>
+        
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-spring-config</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-client</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-functional</artifactId>
+            <version>${mule.version}</version>
+            <scope>test</scope>
+        </dependency>
+                
+        <dependency>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <version>2.7.1</version>
+            <scope>test</scope>
+        </dependency>
+        
+         <dependency>
+             <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jcl</artifactId>
+            <version>${slf4jVersion}</version>
+        </dependency>
+        
+        <dependency>
+           <groupId>junit</groupId>
+           <artifactId>junit</artifactId>
+           <optional>true</optional>
+           <scope>test</scope>
+        </dependency>
+        
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Configuration to publish resources to Galaxy -->
+            <plugin>
+                <groupId>org.mule.galaxy</groupId>
+                <artifactId>galaxy-maven-publish-plugin</artifactId>
+                <version>${version}</version>
+                <configuration>
+                    <url>http://localhost:8080/api/registry/Applications/BackgroundCheck</url>
+                    <username>admin</username>
+                    <password>admin</password>
+                    
+                    <!-- Use this to set up the username/password in your ~/.m2/settings.xml -->
+                    <!-- <serverId>galaxy</serverId> -->
+                    
+                    <clearWorkspace>true</clearWorkspace>
+                    
+                    <!-- Don't publish Mule & CXF to the repository -->
+                    <dependencyExcludes>
+                      <dependencyExclude>org.mule:mule-core</dependencyExclude>
+                      <dependencyExclude>org.mule.transports:*</dependencyExclude>
+                      <dependencyExclude>org.mule.modules:*</dependencyExclude>
+                      <dependencyExclude>org.mule.tests:*</dependencyExclude>
+                      <dependencyExclude>org.apache.cxf:*</dependencyExclude>
+                    </dependencyExcludes>
+                    
+                    <!-- Publish our shared artifacts -->
+                    <includes>
+                        <include>src/main/resources/*.xsd</include>
+                        <include>src/main/resources/*.wsdl</include>
+                        <include>src/main/resources/mule-config.xml</include>
+                    </includes>
+                    <publishProjectMetadata>true</publishProjectMetadata> 
+                    <!-- 
+                      This is configured here so it can be disabled during the larger 
+                      Galaxy build when there is no Galaxy instance running.
+                    -->
+                    <skip>${skipPublish}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>publish-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <!-- Generate Java classes from our WSDL -->
+            <plugin>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-codegen-plugin</artifactId>
+                <version>2.1.2</version>
+                <executions>
+                    <execution>
+                        <id>generate-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wsdl2java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <sourceRoot>${basedir}/target/generated/src/main/java</sourceRoot>
+                    <wsdlOptions>
+                        <wsdlOption>
+                            <wsdl>
+                                ${basedir}/src/main/resources/background.wsdl
+                            </wsdl>
+                        </wsdlOption>
+                    </wsdlOptions>
+                </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>apache-incubating</id>
+            <name>Apache Incubating Repository</name>
+            <url>http://people.apache.org/repo/m2-incubating-repository/</url>
+        </repository>
+        <repository>
+            <id>java.net</id>
+            <url>http://download.java.net/maven/1/</url>
+            <layout>legacy</layout>
+        </repository>
+        <repository>
+            <id>muleforge</id>
+            <url>http://repository.muleforge.org/</url>
+        </repository>
+        <repository>
+            <id>muleforge.snapshots</id>
+            <url>http://snapshots.repository.muleforge.org/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>apache-incubating</id>
+            <name>Apache Incubating Repository</name>
+            <url>http://people.apache.org/repo/m2-incubating-repository/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>java.net</id>
+            <url>http://download.java.net/maven/1/</url>
+            <layout>legacy</layout>
+        </pluginRepository>
+        <pluginRepository>
+            <id>muleforge</id>
+            <url>http://repository.muleforge.org/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>muleforge.snapshots</id>
+            <url>http://snapshots.repository.muleforge.org/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+   </pluginRepositories>
+</project>

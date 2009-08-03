@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- SimpleDriverDataSource is a slightly better version of DriverManagerDataSource (improved classloading behavior) -->
+    <bean name="internalDataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <!-- TODO: change this via the configurator -->
+        <property name="driverClass" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+        <property name="url" value="jdbc:derby:${galaxy.data}/db;create=true"/>
+        <!-- TODO reuse the homeDir constant -->
+    </bean>
+
+    <bean name="dbInitializer" class="org.mule.galaxy.config.jackrabbit.DatabaseInitializer">
+        <property name="dataSource" ref="internalDataSource"/>
+        <!-- TODO: change this via the configurator -->
+        <property name="ddlScript" value="classpath:/quartz/tables_derby.sql"/>
+    </bean>
+
+    <!--
+        Set up a shared in-memory JNDI context with bindings for use by Jackrabbit and Galaxy.
+        Application code can still use new InitialContext() to lookup from the app server's JNDI.
+    -->
+    <bean name="jndiContext" class="org.mule.galaxy.config.jndi.SpringInitialContextFactory"
+          factory-method="makeInitialContext"
+          scope="singleton">
+        <property name="entries">
+            <map>
+                <entry key="jdbc/galaxy/InternalDS" value-ref="internalDataSource"/>
+            </map>
+        </property>
+    </bean>
+
+</beans>

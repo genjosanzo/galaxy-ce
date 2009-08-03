@@ -1,0 +1,65 @@
+body {
+    background-color: #E5EDF5;
+}
+
+.loginBox {
+    width: 550px;
+} 
+
+.loginTop {
+    background-image: url("images/header_bg.jpg");
+    width: 100%;
+    height: 50px;
+    border-bottom: 1px solid #E5EDF5;
+}
+
+.loginLeft {
+    background-image: url("images/img_mulelogin.jpg");
+    background-repeat: no-repeat;
+    background-color: #000;
+    height: 212px;
+    width: 257px;
+    position: relative;
+}
+.loginRight {
+    background-color: black;
+    color: white;
+    font-family: verdana;
+    font-size: .6em;
+    text-align: right;
+    
+    
+    position: relative;
+    top: -212px;
+    left: 257px;
+    height: 212px;
+    width: 293px;
+}
+
+.error {
+    padding-bottom: 10px;
+}
+
+.loginContent {
+    padding-top: 50px;
+    padding-right: 20px;
+}
+
+.loginButton {
+    padding-top: 10px;
+}
+.loginBottom {
+    border-top: 1px solid #E5EDF5;
+    background-color: #004A80;
+    text-align: right;
+    color: white;
+    font-family: verdana;
+    font-size: .6em;
+    padding: 1em;
+    position: relative;
+    top: -215px;
+}
+
+.loginBottom a {
+    color: white;
+}

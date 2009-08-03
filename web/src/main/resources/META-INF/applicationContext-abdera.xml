@@ -1,0 +1,54 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:a="http://abdera.apache.org"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+    http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
+
+  <!-- Collections -->
+  <bean name="itemCollection" class="org.mule.galaxy.atom.ItemCollection">
+    <constructor-arg ref="registry"/>
+    <constructor-arg ref="typeManager"/>
+  </bean>
+  
+  <bean name="commentCollection" class="org.mule.galaxy.atom.CommentCollectionProvider">
+    <constructor-arg ref="commentManager"/>
+    <constructor-arg ref="registry"/>
+    <property name="href" value="comments"/>
+  </bean>
+  
+  <!-- The Provider -->
+  <bean id="org.apache.abdera.protocol.server.Provider"
+        class="org.mule.galaxy.atom.ServiceProvider">
+    <property name="targetResolver">
+      <bean class="org.mule.galaxy.atom.ItemResolver">
+        <property name="registry" ref="registry"/>
+        <property name="itemCollection" ref="itemCollection"/>
+        <property name="commentCollection" ref="commentCollection"/>
+      </bean>
+    </property>
+    <property name="workspaceManager">
+      <bean class="org.apache.abdera.protocol.server.impl.DefaultWorkspaceManager">
+        <!-- These are the workspaces we'll be listing out in the services doc -->
+        <property name="workspaces">
+          <list>
+            <bean class="org.apache.abdera.protocol.server.impl.SimpleWorkspaceInfo">
+              <property name="title" value="Mule Galaxy Registry &amp; Repository"/>
+              <property name="collections">
+                <list>
+                  <ref bean="itemCollection"/>
+                  <ref bean="commentCollection"/>
+                </list>
+              </property>
+            </bean> 
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+  
+</beans>

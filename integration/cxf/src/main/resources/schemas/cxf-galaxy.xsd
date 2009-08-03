@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:beans="http://www.springframework.org/schema/beans"
+  xmlns:cxf-beans="http://cxf.apache.org/configuration/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  targetNamespace="http://galaxy.mule.org/cxf/" 
+  elementFormDefault="qualified"
+  attributeFormDefault="unqualified"  >
+
+  <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans-2.0.xsd"/>
+  <xsd:import namespace="http://cxf.apache.org/configuration/beans" schemaLocation="http://cxf.apache.org/schemas/configuration/cxf-beans.xsd"/>
+  
+  <xsd:element name="galaxy">
+    <xsd:annotation>
+      <xsd:documentation>
+        
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="policyQuery" type="xsd:string" minOccurs="0" maxOccurs="unbounded">
+          <xsd:annotation>
+            <xsd:documentation>
+            
+            </xsd:documentation>          
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="username" type="xsd:string"/>
+      <xsd:attribute name="password" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+</xsd:schema>

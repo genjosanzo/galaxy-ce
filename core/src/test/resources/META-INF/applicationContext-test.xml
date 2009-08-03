@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+    <!-- SimpleDriverDataSource is a slightly better version of DriverManagerDataSource (improved classloading behavior) -->
+    <bean name="internalDataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <!-- TODO: change this via the configurator -->
+        <property name="driverClass" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+        <property name="url" value="jdbc:derby:${galaxy.data}/db;create=true"/>
+        <!-- TODO reuse the homeDir constant -->
+    </bean>
+
+    <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean" 
+    destroy-method="destroy" depends-on="jndiContext, dbInitializer">
+        <!-- normal factory beans params -->
+        <property name="configuration" value="classpath:/META-INF/jackrabbit-repo-test.xml"/>
+        <property name="homeDir" value="file:${galaxy.data}"/>
+    </bean>
+
+    <bean id="indexManager" class="org.mule.galaxy.impl.index.IndexManagerImpl"
+          init-method="initialize" destroy-method="destroy">
+        <property name="activityManager" ref="activityManager"/>
+        <property name="sessionFactory" ref="sessionFactory"/>
+        <property name="typeManager" ref="typeManager"/>
+        <property name="indexArtifactsAsynchronously" value="false"/>
+    </bean>
+
+    <bean id="removeOddCharsFn" class="org.mule.galaxy.impl.query.RemoveArtifactsWithOddNumberOfCharsFunction"/>
+
+    <bean id="dummyWorkspaceManagerFactory" class="org.mule.galaxy.impl.DummyWorkspaceManagerFactory"/>
+
+    <bean id="quartzCleaner" class="org.mule.galaxy.impl.QuartzCleaner" destroy-method="clean">
+    </bean>
+</beans>

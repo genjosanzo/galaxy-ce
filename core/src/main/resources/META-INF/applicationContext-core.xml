@@ -1,0 +1,422 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:p="http://www.springframework.org/schema/p"
+  xmlns:a="http://abdera.apache.org"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+    http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
+
+    <bean id="properties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations" value="classpath:galaxy.properties"/>
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    </bean>
+
+    <import resource="datasource.xml"/>
+    
+    <!-- use Spring's RMI classes to retrieve the RMI registry
+    <bean id="rmiRegistry" class="org.springframework.remoting.rmi.RmiRegistryFactoryBean"/>
+    <bean id="rmiServer" class="org.springmodules.jcr.jackrabbit.RmiServerRepositoryFactoryBean">
+        <property name="repository" ref="repository"/>
+        <property name="remoteAdapterFactory">
+            <bean class="org.apache.jackrabbit.rmi.server.ServerAdapterFactory"/>
+        </property>
+        <property name="registry" ref="rmiRegistry"/>
+        <property name="rmiName" value="jackrabbit"/>
+    </bean -->
+
+
+  <bean id="sessionFactory" class="org.mule.galaxy.impl.jcr.JackrabbitSessionFactory">
+    <property name="repository" ref="repository"/>
+    <property name="credentials">
+     <bean class="javax.jcr.SimpleCredentials">
+      <constructor-arg value="username"/>
+      <!-- create the credentials using a bean factory -->
+      <constructor-arg><value type="char[]">password</value></constructor-arg>
+     </bean>
+    </property>
+  </bean>
+  <bean id="indexer.xpath" class="org.mule.galaxy.impl.index.XPathIndexer"/>
+  <bean id="indexer.xquery" class="org.mule.galaxy.impl.index.XQueryIndexer"/>
+  
+  <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean" destroy-method="destroy" depends-on="jndiContext, dbInitializer">
+    <!-- normal factory beans params -->
+    <property name="configuration" value="classpath:/META-INF/jackrabbit-repo.xml"/>
+    <property name="homeDir" value="file:${galaxy.data}"/>
+  </bean>
+
+  <bean id="jcrInitializer" class="org.mule.galaxy.impl.jcr.JcrInitializer"
+    init-method="initialize" destroy-method="destroy">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
+  <bean id="functionRegistry" 
+        class="org.mule.galaxy.impl.query.FunctionRegistryImpl"
+        init-method="initialize"/>
+        
+  <bean id="lifecycleManager" 
+        class="org.mule.galaxy.impl.lifecycle.LifecycleManagerImpl" 
+        init-method="initialize">
+    <property name="sessionFactory" ref="sessionFactory" />
+
+    <property name="eventManager" ref="eventManager" />
+  </bean>
+        
+  <bean id="indexManager"  
+        class="org.mule.galaxy.impl.index.IndexManagerImpl"
+        init-method="initialize" destroy-method="destroy">
+    <property name="activityManager" ref="activityManager" />
+    <property name="typeManager" ref="typeManager" />
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <bean id="policyManager" 
+        class="org.mule.galaxy.impl.policy.PolicyManagerImpl" init-method="initilaize">
+    <property name="jcrTemplate" ref="jcrTemplate" />
+    <property name="typeManager" ref="typeManager" />
+  </bean>
+  
+  <bean id="accessControlManager" 
+        class="org.mule.galaxy.impl.jcr.AccessControlManagerImpl"
+        init-method="initialize"
+        depends-on="jcrInitializer">
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="userManager" ref="userManager" />
+
+  </bean>
+  
+  <bean id="jcrTemplate" class="org.springmodules.jcr.JcrTemplate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <bean id="abstractActivityLogger" abstract="true">
+      <property name="activityManager" ref="activityManager"/>
+  </bean>
+
+  <bean id="eventManager" class="org.mule.galaxy.impl.event.DefaultEventManager" destroy-method="destroy">
+      <constructor-arg>
+          <list>
+              <!-- entry -->
+              <bean class="org.mule.galaxy.event.listener.activity.ItemCreatedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.ItemDeletedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.ItemMovedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.CommentCreatedEventListener" parent="abstractActivityLogger"/>
+              <!-- properties -->
+              <bean class="org.mule.galaxy.event.listener.activity.PropertyChangedEventListener" parent="abstractActivityLogger"/>
+              <!-- misc -->
+              <bean class="org.mule.galaxy.event.listener.activity.LifecycleTransitionEventListener" parent="abstractActivityLogger"/>
+
+              <ref bean="linkDao"/>
+          </list>
+      </constructor-arg>
+      <constructor-arg ref="sessionFactory"/>
+      <constructor-arg>
+          <bean class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+              <property name="corePoolSize" value="1"/>
+              <property name="maxPoolSize" value="20"/>
+              <property name="queueCapacity" value="10000"/>
+              <property name="threadFactory">
+                  <!-- Customize thread names -->
+                  <bean class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
+                      <property name="threadGroupName" value="pool-async-events"/>
+                      <property name="threadNamePrefix" value="async-event-thread-"/>
+                  </bean>
+              </property>
+          </bean>
+      </constructor-arg>
+  </bean>
+  
+  <bean id="registryInitializer" class="org.mule.galaxy.impl.jcr.RegistryInitializer" 
+    init-method="intialize" lazy-init="false">
+    <property name="artifactExtension" ref="artifactExtension" />
+    <property name="contentService" ref="contentService" />
+    <property name="lifecycleExtension" ref="lifecycleExtension" />
+    <property name="linkExtension" ref="linkExtension" />
+    <property name="localWorkspaceManager" ref="localWorkspaceManager" />
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="settings" ref="settings" />
+    <property name="upgraders">
+        <list>
+            <bean class="org.mule.galaxy.impl.upgrade.V151Upgrader">
+                <property name="typeManager" ref="typeManager" />
+            </bean>
+            <bean class="org.mule.galaxy.impl.upgrade.V152Upgrader">
+                <property name="sessionFactory" ref="sessionFactory"/>
+                <property name="registry" ref="registry"/>
+            </bean>
+            <bean class="org.mule.galaxy.impl.upgrade.V153Upgrader">
+                <property name="sessionFactory" ref="sessionFactory"/>
+            </bean>
+        </list>
+    </property>
+  </bean>  
+  
+  <bean id="registry" class="org.mule.galaxy.impl.jcr.JcrRegistryImpl"
+        init-method="initialize">
+    <property name="accessControlManager" ref="accessControlManager" />
+    <property name="eventManager" ref="eventManager"/>
+    <property name="functionRegistry" ref="functionRegistry" />
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="lifecycleManager" ref="lifecycleManager" />
+    <property name="localWorkspaceManager" ref="localWorkspaceManager"/>
+    <property name="policyManager" ref="policyManager" />
+    <property name="typeManager" ref="typeManager" />
+    <property name="userManager" ref="userManager" />
+  </bean>
+  
+  <bean id="localWorkspaceManager"
+        class="org.mule.galaxy.impl.jcr.JcrWorkspaceManagerImpl">
+    <property name="accessControlManager" ref="accessControlManager" />
+    <property name="activityManager" ref="activityManager" />
+    <property name="artifactTypeDao" ref="artifactTypeDao" />
+    <property name="commentManager" ref="commentManager" />
+    <property name="contentService" ref="contentService" />
+    <property name="lifecycleManager" ref="lifecycleManager" />
+    <property name="indexManager" ref="indexManager" />
+    <property name="policyManager" ref="policyManager" />
+    <property name="template" ref="jcrTemplate" />
+    <property name="typeManager" ref="typeManager" />
+    <property name="userManager" ref="userManager" />
+    <property name="eventManager" ref="eventManager"/>
+  </bean>
+  
+  <bean id="lifecycleExtension" class="org.mule.galaxy.impl.lifecycle.LifecycleExtension">
+    <property name="lifecycleManager" ref="lifecycleManager"/>
+    <property name="id" value="lifecycleExtension"/>
+  </bean>
+  
+  <bean id="linkExtension" class="org.mule.galaxy.impl.link.LinkExtension" init-method="initialize">
+    <property name="dao" ref="linkDao"/>
+    <property name="id" value="linkExtension"/>
+    <property name="typeManager" ref="typeManager"/>
+  </bean>
+  
+  <bean id="linkDao" 
+        class="org.mule.galaxy.impl.link.LinkDaoImpl"
+        init-method="initialize">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <bean id="linkQueryBuilder" class="org.mule.galaxy.impl.link.LinkExtensionQueryBuilder">
+    <constructor-arg ref="linkExtension"/>
+    <property name="typeManager" ref="typeManager"/>
+  </bean>
+    
+  <bean id="artifactExtension" class="org.mule.galaxy.impl.artifact.ArtifactExtension" init-method="initialize">
+    <property name="artifactTypeDao" ref="artifactTypeDao"/>
+    <property name="contentService" ref="contentService"/>
+    <property name="id" value="artifactExtension"/>
+    <property name="name" value="Artifact"/>
+    <property name="multivalueSupported" value="false"/>
+    <property name="template" ref="jcrTemplate"/>
+    <property name="registry" ref="registry"/>
+  </bean>
+      
+  <bean id="mapExtension" class="org.mule.galaxy.impl.extension.MapExtension">
+    <property name="id" value="mapExtension"/>
+    <property name="name" value="Map"/>
+    <property name="multivalueSupported" value="false"/>
+    <property name="queryProperties">
+      <map>
+        <entry key="key" value="Key"/>
+        <entry key="value" value="Value"/>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="mapQueryBuilder" class="org.mule.galaxy.impl.extension.MapQueryBuilder">
+    <property name="typeManager" ref="typeManager"/>
+    <property name="extension" ref="mapExtension"/>
+  </bean>
+  
+  <bean id="userExtension" class="org.mule.galaxy.impl.extension.IdentifiableExtension">
+    <property name="dao" ref="userManager"/>
+    <property name="id" value="userExtension"/>
+    <property name="name" value="User(s)"/>
+    <property name="multivalueSupported" value="false"/>
+    <property name="queryProperties">
+      <map>
+        <entry key="name" value="Name"/>
+        <entry key="email" value="Email"/>
+        <entry key="username" value="Username"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="userQueryBuilder" class="org.mule.galaxy.impl.extension.IdentifiableExtensionQueryBuilder">
+    <constructor-arg ref="userExtension"/>
+    <property name="typeManager" ref="typeManager"/>
+  </bean>
+  
+  <bean id="userManager" class="org.mule.galaxy.impl.jcr.UserManagerImpl"
+        init-method="initialize">
+    <property name="sessionFactory" ref="sessionFactory" />
+
+  </bean>
+
+  <bean class="org.mule.galaxy.impl.lifecycle.PhaseQueryBuilder">
+    <property name="lifecycleManager" ref="lifecycleManager"/>
+    <property name="extension" ref="lifecycleExtension"/>
+    <property name="typeManager" ref="typeManager"/>
+  </bean>
+  
+  <bean class="org.mule.galaxy.impl.lifecycle.LifecycleQueryBuilder">
+    <property name="lifecycleManager" ref="lifecycleManager"/>
+    <property name="extension" ref="lifecycleExtension"/>
+    <property name="typeManager" ref="typeManager"/>
+  </bean>
+  
+  <bean id="treeItemDao" class="org.mule.galaxy.impl.tree.TreeItemDaoImpl"
+        init-method="initialize">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <bean id="treeExtension" class="org.mule.galaxy.impl.extension.IdentifiableExtension">
+    <property name="dao" ref="treeItemDao"/>
+    <property name="id" value="treeExtension"/>
+    <property name="name" value="Tree of Items"/>
+    <property name="multivalueSupported" value="true"/>
+    <property name="queryProperties">
+      <map>
+        <entry key="" value="Name"/>
+      </map>
+    </property>
+  </bean>
+  
+  <bean class="org.mule.galaxy.impl.tree.TreeItemQueryBuilder">
+    <constructor-arg ref="treeExtension"/>
+    <property name="typeManager" ref="typeManager"/>
+  </bean>
+  
+  
+  <bean id="commentManager" class="org.mule.galaxy.impl.jcr.CommentManagerImpl"
+        init-method="initialize">
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="eventManager" ref="eventManager" />
+  </bean>
+    
+  <bean id="activityManager" class="org.mule.galaxy.impl.jcr.ActivityManagerImpl"
+        init-method="initialize">
+    <property name="accessControlManager" ref="accessControlManager" />
+    <property name="sessionFactory" ref="sessionFactory" />
+
+  </bean>
+  <bean id="artifactTypeDao" class="org.mule.galaxy.impl.jcr.ArtifactTypeDaoImpl"
+    init-method="initialize" >
+    <property name="sessionFactory" ref="sessionFactory" />
+
+  </bean>
+    
+  <bean id="typeManager" class="org.mule.galaxy.impl.jcr.TypeManagerImpl">
+    <property name="propertyDescriptorDao" ref="propertyDescriptorDao" />
+    <property name="jcrTemplate" ref="jcrTemplate" />
+    <property name="typeDao" ref="typeDao" />
+    <property name="accessControlManager" ref="accessControlManager" />
+  </bean>
+  
+  <bean id="propertyDescriptorDao" 
+        class="org.mule.galaxy.impl.jcr.PropertyDescriptorDaoImpl"
+        init-method="initialize" 
+        depends-on="jcrInitializer">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <bean id="typeDao" class="org.mule.galaxy.impl.jcr.TypeDaoImpl"
+        init-method="initialize" >
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <bean id="artifactViewManager" 
+        class="org.mule.galaxy.impl.view.ArtifactViewManagerImpl"
+        init-method="initialize">
+    <property name="sessionFactory" ref="sessionFactory" />
+
+  </bean>
+  
+  <bean id="persisterManager" class="org.mule.galaxy.impl.jcr.onm.PersisterManager">
+    <property name="persisters">
+      <map>
+        <entry key="org.mule.galaxy.lifecycle.Phase">
+          <bean class="org.mule.galaxy.impl.lifecycle.PhasePersister"/>
+        </entry>
+        <entry key="org.mule.galaxy.Item">
+          <bean class="org.mule.galaxy.impl.jcr.ItemPersister"/>
+        </entry>
+        <entry key="org.mule.galaxy.extension.Extension">
+          <bean class="org.mule.galaxy.impl.extension.ExtensionPersister"/>
+        </entry>
+        <entry key="java.util.Map">
+          <bean class="org.mule.galaxy.impl.jcr.onm.MapPersister"/>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="settings" class="org.mule.galaxy.impl.SettingsImpl"/>
+  
+  <bean id="contentService" class="org.mule.galaxy.impl.content.ContentServiceImpl">
+    <constructor-arg>
+      <list>
+        <bean class="org.mule.galaxy.impl.content.XmlDocumentContentHandler"/>
+        <bean class="org.mule.galaxy.impl.content.WsdlContentHandler"/>
+        <bean class="org.mule.galaxy.impl.content.SchemaContentHandler"/>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <bean id="rendererManager" class="org.mule.galaxy.impl.render.RendererManagerImpl"/>
+
+  <bean id="abstractArtifactPlugin" abstract="true">
+    <property name="artifactTypeDao" ref="artifactTypeDao"/>
+    <property name="rendererManager" ref="rendererManager"/>
+    <property name="indexManager" ref="indexManager"/>
+    <property name="typeManager" ref="typeManager"/>
+    <property name="registry" ref="registry"/>
+  </bean>
+
+  <bean id="pluginManager" class="org.mule.galaxy.impl.plugin.PluginManagerImpl" 
+        parent="abstractArtifactPlugin"  init-method="initialize">
+    <property name="pluginDao" ref="pluginDao"/>
+    <property name="policyManager" ref="policyManager"/>
+    <property name="jcrTemplate" ref="jcrTemplate"/>
+  </bean>
+
+  <bean id="pluginDao" class="org.mule.galaxy.impl.plugin.PluginDaoImpl"
+        init-method="initialize">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+
+  <bean class="org.mule.galaxy.impl.plugin.OtherArtifactPlugin" parent="abstractArtifactPlugin"/>
+
+  <bean class="org.mule.galaxy.impl.plugin.JarArtifactPlugin" parent="abstractArtifactPlugin">
+    <property name="contentService" ref="contentService"/>
+    <property name="jcrTemplate" ref="jcrTemplate" />
+  </bean>
+    
+  <bean id="jcrTransactionManager"
+   class="org.springmodules.jcr.jackrabbit.LocalTransactionManager">
+     <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
+  <!-- the transactional advice (i.e. what 'happens'; see the <aop:advisor/> bean below) -->
+  <tx:advice id="txAdvice" transaction-manager="jcrTransactionManager">
+    <!-- the transactional semantics... -->
+    <tx:attributes>
+      <!-- all methods starting with 'get' are read-only -->
+      <tx:method name="get*" read-only="true"/>
+      <!-- other methods use the default transaction settings (see below) -->
+      <tx:method name="*" rollback-for="*Exception"/>
+    </tx:attributes>
+  </tx:advice>
+  
+  <!-- ensure that the above transactional advice runs for any execution
+       of an operation defined by the FooService interface -->
+  <aop:config>
+    <aop:pointcut id="fooServiceOperation" expression="execution(* org.mule..*ManagerImpl.*(..)))"/>
+    <aop:advisor advice-ref="txAdvice" pointcut-ref="fooServiceOperation"/>
+  </aop:config>
+</beans>

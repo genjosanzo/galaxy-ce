@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+           targetNamespace="http://www.mulesource.org/schema/galaxy-plugins"
+           xmlns="http://www.mulesource.org/schema/galaxy-plugins"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="galaxy" type="galaxyType">
+         <xs:annotation>
+            <xs:documentation>A Galaxy plugin file can contain one or more galaxy-plugin elements. A Galaxy plugin
+                defines how the Galaxy server can index and manage an artifact. An artifact can be anything from an Xml
+                file text file Jar or other binary format.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:complexType name="galaxyType">
+        <xs:sequence>
+            <xs:element name="artifact-type" type="galaxyArtifactType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>A Galaxy plugin defines Indexes, views and policies that apply to an artifact managed by
+                        Galaxy. There is on plugin per artifact. For example The plug in for Mule 1 configuration files defines
+                        a set of indexes that a Mule configuration can be queriesd on, a set of polices that will get applied
+                        to Mule configurations managed by Galaxy and a 'view' that defines how the artifact gets deployed in
+                        the Galaxy web interface.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="properties" type="galaxyPropertiesType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                      Property descriptions which should be registered.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="policies" type="galaxyPoliciesType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>A Galaxy plugin defines Indexes, views and policies that apply to an artifact managed by
+                        Galaxy. There is on plugin per artifact. For example The plug in for Mule 1 configuration files defines
+                        a set of indexes that a Mule configuration can be queriesd on, a set of polices that will get applied
+                        to Mule configurations managed by Galaxy and a 'view' that defines how the artifact gets deployed in
+                        the Galaxy web interface.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="galaxyArtifactType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="name">
+                <xs:annotation>
+                    <xs:documentation>The name of the plugin</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element type="xs:string" name="description">
+                <xs:annotation>
+                    <xs:documentation>A description of what the plugin does</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element type="xs:string" name="content-type">
+                <xs:annotation>
+                    <xs:documentation>The content type of the artifact associated with this plugin</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element type="xs:string" name="small-icon" maxOccurs="1" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>A small icon 16x16 pixels (gif, png) associated with this artifact
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element type="xs:string" name="large-icon" maxOccurs="1" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>A small icon 32x32 pixels (gif, png) associated with this artifact
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element type="namespaceType" name="namespace" minOccurs="1" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>The namespace for this plugin. At least a local name should be used. If the
+                        artifact associated with this plugin is an XML schema or DTD the same namespace should be used
+                        for the plugin.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element type="xs:string" name="extension" minOccurs="1" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>A file extension that this artifact type supports.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element type="indexesType" name="indexes" maxOccurs="1" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>A set of indexes that define the critera that the artifact can be searched on.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element type="viewsType" name="views" maxOccurs="1" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>A set of views that describe how the artifact will be represented in the Galaxy
+                        admin interface.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="indexesType">
+        <xs:sequence>
+            <!--<xs:element type="xs:string" name="notes" minOccurs="0" maxOccurs="1"/>-->
+            <xs:element type="indexType" name="index" maxOccurs="unbounded" minOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="indexType">
+        <xs:sequence>
+            <xs:element name="description" type="xs:string"/>
+            <xs:element name="indexer" type="xs:string"/>
+            <xs:element name="search-input-type" type="xs:NMTOKEN"/>
+            <xs:element name="configuration" type="configurationType"/>
+            <xs:element name="namespace" type="namespaceType" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="galaxyPropertiesType">
+       <xs:sequence>
+           <xs:element name="property" type="propertyType" maxOccurs="unbounded"/>
+       </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="propertyType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:NMTOKEN"/>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="multivalued" type="xs:boolean"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="configurationType">
+        <xs:sequence>
+            <xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" namespace="##any"/>
+            
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="viewsType">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+            <!--<xs:element type="xs:string" name="notes" minOccurs="0" maxOccurs="1"/>-->
+            <xs:element type="viewType" name="view"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="namespaceType">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+            <xs:element name="local-name" type="xs:string" maxOccurs="1" minOccurs="1"/>
+            <xs:element name="uri" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <!--<xs:element name="prefix" type="xs:string" maxOccurs="1" minOccurs="0"/>-->
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="viewType">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+            <xs:element type="columnType" name="column"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="columnType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="name"/>
+            <xs:element type="xs:string" name="expression"/>
+        </xs:sequence>
+        <xs:attribute name="column" type="xs:int"/>
+        <xs:attribute name="summary" type="xs:boolean" default="true"/>
+        <xs:attribute name="detail" type="xs:boolean" default="false"/>
+    </xs:complexType>
+    
+    <xs:complexType name="galaxyPoliciesType">
+        <xs:sequence>
+            <xs:element name="artifact-policy" type="artifactPolicyType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="artifactPolicyType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="name"/>
+            <xs:element type="xs:NMTOKEN" name="class"/>
+            <xs:element type="xs:string" name="description"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
