@@ -66,7 +66,20 @@ public class JcrUtil {
      *           Any string.
      * @return A valid XPath 2.0 string literal, including enclosing quotes.
      */
-    public static String stringToXPathLiteral(String str) {
+    public static String stringToXPathLiteralWithoutQuotes(String str) {
+       // Single quotes needed for jcr:contains()
+       return str.replaceAll("'", "''");
+    }
+    
+    /**
+     * Convert a string to an XPath 2.0 string literal, suitable for inclusion in
+     * a query. See JSR-170 spec v1.0, Sec. 6.6.4.9.
+     * 
+     * @param str
+     *           Any string.
+     * @return A valid XPath 2.0 string literal, including enclosing quotes.
+     */
+    public static String stringToXPathLiteralWithQuotes(String str) {
        // Single quotes needed for jcr:contains()
        return "'" + str.replaceAll("'", "''") + "'";
     }
@@ -85,7 +98,7 @@ public class JcrUtil {
     public static String stringToJCRSearchExp(String str) {
        // Escape ' and \ everywhere, preceding them with \ except when \ appears
        // in one of the combinations \" or \-
-       return stringToXPathLiteral(str.replaceAll("\\\\(?![-\" ])", "\\\\\\\\").replaceAll("'", "\\\\'"));
+       return stringToXPathLiteralWithQuotes(str.replaceAll("\\\\(?![-\" ])", "\\\\\\\\").replaceAll("'", "\\\\'"));
     }
     
     /** Recursively outputs the contents of the given node. */

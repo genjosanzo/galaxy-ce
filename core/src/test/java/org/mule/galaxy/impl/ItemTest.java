@@ -53,12 +53,12 @@ public class ItemTest extends AbstractGalaxyTest {
         assertEquals("2.0", prev.getName());
         
         // test all the characters. [] is not allowed.
-        r = e.newItem("!@#$%^&*()_+`-=<>.,{}|\\", simpleType);
+        r = e.newItem("!@#$%^&*()'_+`-=<>.,{}|\\", simpleType);
         assertNotNull(r);
-        assertEquals("/Default Workspace/MyService/1.0/!@#$%^&*()_+`-=<>.,{}|\\", r.getItem().getPath());
-        assertEquals("!@#$%^&*()_+`-=<>.,{}|\\",  r.getItem().getName());
+        assertEquals("/Default Workspace/MyService/1.0/!@#$%^&*()'_+`-=<>.,{}|\\", r.getItem().getPath());
+        assertEquals("!@#$%^&*()'_+`-=<>.,{}|\\",  r.getItem().getName());
      
-        Item item = root.getItem("MyService").getItem("1.0").getItem("!@#$%^&*()_+`-=<>.,{}|\\");
+        Item item = root.getItem("MyService").getItem("1.0").getItem("!@#$%^&*()'_+`-=<>.,{}|\\");
         assertNotNull(item);
          
     }

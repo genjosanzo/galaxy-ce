@@ -70,7 +70,7 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
             StringBuilder stmt = new StringBuilder();
             stmt.append("//").append(rootNode)
              .append("/*[not(@linkedTo) and jcr:like(@linkedToPath, '%")
-             .append(item.getName())
+             .append(JcrUtil.stringToXPathLiteralWithoutQuotes(item.getName()))
              .append("%')]");
             
             QueryManager qm = getQueryManager(session);

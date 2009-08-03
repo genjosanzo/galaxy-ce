@@ -121,11 +121,11 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 QName dt = artifact.getDocumentType();
                 if (dt == null) {
                     qstr.append("[@mediaType=")
-                       .append(JcrUtil.stringToXPathLiteral(artifact.getContentType().toString()))
+                       .append(JcrUtil.stringToXPathLiteralWithQuotes(artifact.getContentType().toString()))
                        .append("]");
                 } else {
                     qstr.append("[@documentTypes=")
-                        .append(JcrUtil.stringToXPathLiteral(dt.toString()))
+                        .append(JcrUtil.stringToXPathLiteralWithQuotes(dt.toString()))
                         .append("]");
                 }
 
