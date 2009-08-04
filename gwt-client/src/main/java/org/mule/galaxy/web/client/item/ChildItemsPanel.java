@@ -5,6 +5,7 @@ import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.WidgetHelper;
 import org.mule.galaxy.web.client.util.ToolbarButton;
 import org.mule.galaxy.web.client.util.ToolbarButtonEvent;
+import org.mule.galaxy.web.client.util.StringUtil;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemInfo;
 
@@ -85,6 +86,11 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         cp.setBodyBorder(false);
         cp.setHeading(info != null ? info.getName() : "All Items");
         cp.setAutoWidth(true);
+
+        // add inline help string and widget
+        String[] sa = StringUtil.createInlineHelpHeaderAndBody(
+                galaxy.getRepositoryConstants().repo_Tip(), 8, true);
+        cp.setTopComponent(WidgetHelper.createInlineHelpPanel(sa[0], sa[1]));
 
         ToolBar toolbar = new ToolBar();
         // search filter
@@ -172,6 +178,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
             }
         });
 
+        cp.add(toolbar);
 
         cp.add(grid);
 
@@ -191,9 +198,9 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                 token = "add-item/";
             }
             ToolbarButton newBtn = WidgetHelper.createToolbarHistoryButton("New", token, "toolbar-btn_right");
+            newBtn.setToolTip(galaxy.getRepositoryConstants().repo_Items_New());
             toolbar.add(newBtn);
         }
-        cp.setTopComponent(toolbar);
 
 
         panel.add(cp);

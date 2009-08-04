@@ -54,6 +54,7 @@ import java.util.Map;
 import org.mule.galaxy.web.client.AbstractFlowComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.WidgetHelper;
 import org.mule.galaxy.web.client.property.AbstractPropertyRenderer;
 import org.mule.galaxy.web.client.property.ArtifactRenderer;
 import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
@@ -126,6 +127,11 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
         cp.setStyleName("x-panel-container-full");
         cp.add(form);
 
+
+        // add inline help string and widget
+        String[] sa = StringUtil.createInlineHelpHeaderAndBody(
+                galaxy.getRepositoryConstants().repo_Add_Item_Tip(), 21, true);
+        cp.setTopComponent(WidgetHelper.createInlineHelpPanel(sa[0], sa[1]));
 
         panel.add(cp);
     }

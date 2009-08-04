@@ -96,22 +96,26 @@ public class ItemPanel extends AbstractFlowComposite {
         tabPanel.setAutoHeight(true);
 
         TabItem itemsTab = new TabItem("Items");
+        itemsTab.getHeader().setToolTip(galaxy.getRepositoryConstants().repo_Items_TabTip());
         itemsTab.add(new ChildItemsPanel(galaxy, menuPanel, info));
         tabPanel.add(itemsTab);
 
 
         TabItem infoTab = new TabItem("Info");
+        infoTab.getHeader().setToolTip(galaxy.getRepositoryConstants().repo_Info_TabTip());
         infoTab.add(new ItemInfoPanel(galaxy, menuPanel, info, this, params));
         tabPanel.add(infoTab);
 
         if (galaxy.hasPermission("MANAGE_POLICIES") && info.isLocal()) {
             TabItem tab = new TabItem("Policies");
+            tab.getHeader().setToolTip(galaxy.getRepositoryConstants().repo_Policies_TabTip());
             tab.add(new PolicyPanel(menuPanel, galaxy, itemId));
             tabPanel.add(tab);
         }
 
         if (galaxy.hasPermission("MANAGE_GROUPS") && info.isLocal()) {
             TabItem tab = new TabItem("Security");
+            tab.getHeader().setToolTip(galaxy.getRepositoryConstants().repo_Security_TabTip());
             tab.add(new ItemRolePermissionPanel(galaxy, menuPanel, info.getId(), SecurityService.ITEM_PERMISSIONS));
             tabPanel.add(tab);
         }
