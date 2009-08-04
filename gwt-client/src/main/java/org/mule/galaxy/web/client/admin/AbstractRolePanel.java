@@ -22,7 +22,7 @@ import org.mule.galaxy.web.client.AbstractFlowComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WGroup;
+import org.mule.galaxy.web.rpc.WRole;
 import org.mule.galaxy.web.rpc.WPermission;
 import org.mule.galaxy.web.rpc.WPermissionGrant;
 
@@ -44,7 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractGroupPanel extends AbstractFlowComposite {
+public abstract class AbstractRolePanel extends AbstractFlowComposite {
 
     protected final ErrorPanel errorPanel;
     protected FlexTable table;
@@ -56,7 +56,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
     protected final Galaxy galaxy;
     protected FlowPanel mainPanel;
 
-    public AbstractGroupPanel(Galaxy galaxy, ErrorPanel errorPanel) {
+    public AbstractRolePanel(Galaxy galaxy, ErrorPanel errorPanel) {
         super();
         this.galaxy = galaxy;
         this.errorPanel = errorPanel;
@@ -109,16 +109,16 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
 
         rows = new ArrayList<String>();
         for (Iterator itr = groups2Permissions.keySet().iterator(); itr.hasNext();) {
-            rows.add(((WGroup) itr.next()).getName());
+            rows.add(((WRole) itr.next()).getName());
         }
         Collections.sort(rows);
 
         for (Iterator itr = groups2Permissions.entrySet().iterator(); itr.hasNext();) {
             Map.Entry e = (Map.Entry) itr.next();
 
-            final WGroup group = (WGroup) e.getKey();
-            final String groupName = group.getName();
-            final Hyperlink hl = new Hyperlink(groupName, "groups/" + group.getId());
+            final WRole role = (WRole) e.getKey();
+            final String groupName = role.getName();
+            final Hyperlink hl = new Hyperlink(groupName, "roles/" + role.getId());
 
             int row = rows.indexOf(groupName) + 1;
 
@@ -166,7 +166,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
         ButtonBar bb = new ButtonBar();
         bb.add(applyButton);
         bb.add(resetButton);
-        bb.add(createHistoryButton("New", "groups/new"));
+        bb.add(createHistoryButton("New", "roles/new"));
 
         table.setWidget(rows.size() + 1, 0, bb);
 
@@ -181,7 +181,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
         for (Iterator itr = groups2Permissions.entrySet().iterator(); itr.hasNext();) {
             Map.Entry e = (Map.Entry) itr.next();
 
-            WGroup g = (WGroup) e.getKey();
+            WRole g = (WRole) e.getKey();
             Collection permGrants = (Collection) e.getValue();
 
             int row = rows.indexOf(g.getName());

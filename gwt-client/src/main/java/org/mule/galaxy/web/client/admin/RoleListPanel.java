@@ -28,11 +28,11 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Map;
 
-public class GroupListPanel extends AbstractGroupPanel {
+public class RoleListPanel extends AbstractRolePanel {
 
     private final AdministrationPanel adminPanel;
 
-    public GroupListPanel(AdministrationPanel a) {
+    public RoleListPanel(AdministrationPanel a) {
         super(a.getGalaxy(), a);
         this.adminPanel = a;
     }

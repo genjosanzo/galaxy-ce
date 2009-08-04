@@ -17,15 +17,15 @@ public interface SecurityServiceAsync {
 
     void getPermissions(int permissionType, AsyncCallback callback);
 
-    void save(WGroup group, AsyncCallback callback);
+    void save(WRole role, AsyncCallback callback);
     
     void getGroupPermissions(AsyncCallback callback);
     
-    void applyPermissions(Map<WGroup, Collection<WPermissionGrant>> group2Permissions, AsyncCallback callback);
+    void applyPermissions(Map<WRole, Collection<WPermissionGrant>> group2Permissions, AsyncCallback callback);
 
     void getGroupPermissions(String itemId, AsyncCallback callback);
     
-    void applyPermissions(String itemId, Map<WGroup, Collection<WPermissionGrant>> group2Permissions, AsyncCallback callback);
+    void applyPermissions(String itemId, Map<WRole, Collection<WPermissionGrant>> group2Permissions, AsyncCallback callback);
 
     void getGroups(AsyncCallback abstractCallback);
 

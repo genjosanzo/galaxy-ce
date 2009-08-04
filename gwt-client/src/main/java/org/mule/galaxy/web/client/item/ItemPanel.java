@@ -112,7 +112,7 @@ public class ItemPanel extends AbstractFlowComposite {
 
         if (galaxy.hasPermission("MANAGE_GROUPS") && info.isLocal()) {
             TabItem tab = new TabItem("Security");
-            tab.add(new ItemGroupPermissionPanel(galaxy, menuPanel, info.getId(), SecurityService.ITEM_PERMISSIONS));
+            tab.add(new ItemRolePermissionPanel(galaxy, menuPanel, info.getId(), SecurityService.ITEM_PERMISSIONS));
             tabPanel.add(tab);
         }
 

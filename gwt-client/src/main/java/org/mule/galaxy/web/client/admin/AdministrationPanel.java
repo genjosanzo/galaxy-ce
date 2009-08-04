@@ -173,10 +173,10 @@ public class AdministrationPanel extends MenuPanel {
         ArrayList a = new ArrayList();
 
         if (galaxy.hasPermission("MANAGE_GROUPS")) {
-            a.add(new NavMenuItem("Groups",
-                    "groups",
-                    new GroupListPanel(this),
-                    new GroupForm(this)));
+            a.add(new NavMenuItem("Roles",
+                    "roles",
+                    new RoleListPanel(this),
+                    new RoleForm(this)));
         }
         if (galaxy.hasPermission("MANAGE_LIFECYCLES")) {
             a.add(new NavMenuItem("Lifecycles",

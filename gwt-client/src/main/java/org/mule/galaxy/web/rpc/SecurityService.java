@@ -27,24 +27,24 @@ public interface SecurityService extends RemoteService {
 
     Collection<WPermission> getPermissions(int permissionType);
 
-    Map<WGroup, Collection<WPermissionGrant>> getGroupPermissions();
+    Map<WRole, Collection<WPermissionGrant>> getGroupPermissions();
 
-    Map<WGroup, Collection<WPermissionGrant>> getGroupPermissions(String itemId) throws RPCException;
+    Map<WRole, Collection<WPermissionGrant>> getGroupPermissions(String itemId) throws RPCException;
     
     /**
      * @throws RPCException 
      * @throws ItemExistsException 
      */
-    void save(WGroup group) throws RPCException, ItemExistsException;
+    void save(WRole role) throws RPCException, ItemExistsException;
     
-    WGroup getGroup(String id) throws RPCException;
+    WRole getGroup(String id) throws RPCException;
     
     void deleteGroup(String id) throws RPCException;
     
 
-    void applyPermissions(Map<WGroup, Collection<WPermissionGrant>> group2Permissions) throws RPCException;
+    void applyPermissions(Map<WRole, Collection<WPermissionGrant>> group2Permissions) throws RPCException;
 
-    void applyPermissions(String itemId, Map<WGroup, Collection<WPermissionGrant>> group2Permissions) throws RPCException;
+    void applyPermissions(String itemId, Map<WRole, Collection<WPermissionGrant>> group2Permissions) throws RPCException;
 
-    Collection<WGroup> getGroups() throws RPCException;
+    Collection<WRole> getGroups() throws RPCException;
 }
