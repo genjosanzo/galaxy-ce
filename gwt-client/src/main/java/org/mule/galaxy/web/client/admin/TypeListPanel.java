@@ -92,7 +92,7 @@ public class TypeListPanel
         });
 
         // FIXME:
-        panel.add(createSimpleHistoryButton("New", "types/new"));
+        panel.add(createHistoryButton("New", "types/new"));
 
     }
 

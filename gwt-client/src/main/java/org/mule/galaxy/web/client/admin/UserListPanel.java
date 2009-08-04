@@ -130,7 +130,7 @@ public class UserListPanel extends AbstractAdministrationComposite {
         ToolBar toolbar = new ToolBar();
         toolbar.add(filter);
         toolbar.add(new FillToolItem());
-        toolbar.add(createSimpleHistoryButton("New", "users/new"));
+        toolbar.add(createToolbarHistoryButton("New", "users/new"));
         cp.setTopComponent(toolbar);
 
         panel.add(cp);

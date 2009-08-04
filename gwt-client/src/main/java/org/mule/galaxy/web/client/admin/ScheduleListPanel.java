@@ -137,7 +137,7 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
         ToolBar toolbar = new ToolBar();
         toolbar.add(filter);
         toolbar.add(new FillToolItem());
-        toolbar.add(createSimpleHistoryButton("New", "schedules/new"));
+        toolbar.add(createToolbarHistoryButton("New", "schedules/new"));
         cp.setTopComponent(toolbar);
 
         panel.add(cp);

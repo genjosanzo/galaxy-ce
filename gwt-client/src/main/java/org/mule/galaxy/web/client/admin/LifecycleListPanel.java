@@ -24,7 +24,6 @@ import org.mule.galaxy.web.rpc.WPhase;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Hyperlink;
-import com.extjs.gxt.ui.client.widget.button.ButtonBar;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -53,7 +52,7 @@ public class LifecycleListPanel extends AbstractAdministrationComposite {
         });
 
         // FIXME:
-        panel.add(createSimpleHistoryButton("New", "lifecycles/new"));
+        panel.add(createHistoryButton("New", "lifecycles/new"));
 
     }
 

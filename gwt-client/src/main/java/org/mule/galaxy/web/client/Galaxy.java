@@ -59,6 +59,8 @@ import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
 import org.mule.galaxy.web.client.registry.SearchPanel;
 import org.mule.galaxy.web.client.ui.BaseConstants;
 import org.mule.galaxy.web.client.ui.BaseMessages;
+import org.mule.galaxy.web.client.ui.RepositoryConstants;
+import org.mule.galaxy.web.client.ui.AdministrationConstants;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -107,6 +109,9 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     private BaseMessages baseMessages;
     private RepositoryMenuPanel repositoryPanel;
 
+    private AdministrationConstants administrationConstants;
+    private RepositoryConstants repositoryConstants;
+
     /**
      * This is the entry point method.
      */
@@ -145,6 +150,8 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         this.baseConstants = (BaseConstants) GWT.create(BaseConstants.class);
         this.baseMessages = (BaseMessages) GWT.create(BaseMessages.class);
 
+        this.administrationConstants = (AdministrationConstants) GWT.create(AdministrationConstants.class);
+        this.repositoryConstants = (RepositoryConstants) GWT.create(RepositoryConstants.class);
 
         base = new Viewport();
         base.setLayout(new BorderLayout());
@@ -328,7 +335,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     }
 
     protected void loadTabs(final Galaxy galaxy) {
-        tabPanel.add(createEmptyTab("Registry"));
+        tabPanel.add(createEmptyTab("Registry", repositoryConstants.repo_TabTip()) );
         createRepositoryPanels();
 
         int searchIdx = tabPanel.getItemCount();
@@ -339,7 +346,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
             adminTabIndex = tabPanel.getItemCount();
             tabNames.add(adminTabIndex, "admin");
             createPageInfo("admin", createAdministrationPanel(), adminTabIndex);
-            tabPanel.add(createEmptyTab("Administration"));
+            tabPanel.add(createEmptyTab("Administration", administrationConstants.admin_TabTip()));
         }
     }
 
@@ -564,6 +571,14 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
             }
         }
         return null;
+    }
+
+    public AdministrationConstants getAdministrationConstants() {
+        return administrationConstants;
+    }
+
+    public RepositoryConstants getRepositoryConstants() {
+        return repositoryConstants;
     }
 
 }

@@ -147,7 +147,7 @@ public class PropertyDescriptorListPanel
         ToolBar toolbar = new ToolBar();
         toolbar.add(filter);
         toolbar.add(new FillToolItem());
-        toolbar.add(createSimpleHistoryButton("New", "properties/new"));
+        toolbar.add(createToolbarHistoryButton("New", "properties/new"));
         cp.setTopComponent(toolbar);
 
         panel.add(cp);

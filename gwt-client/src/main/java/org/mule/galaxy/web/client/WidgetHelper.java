@@ -2,6 +2,8 @@ package org.mule.galaxy.web.client;
 
 import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.ToolbarButton;
+import org.mule.galaxy.web.client.util.ToolbarButtonEvent;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.ComponentEvent;
@@ -191,7 +193,7 @@ public class WidgetHelper extends Composite {
      * @param token
      * @return
      */
-    public static Button createSimpleHistoryButton(String buttonLabel, final String token) {
+    public static Button createHistoryButton(String buttonLabel, final String token) {
         Button newBtn = new Button(buttonLabel);
         newBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
             @Override
@@ -203,6 +205,38 @@ public class WidgetHelper extends Composite {
 
     }
 
+
+    /**
+     * Creates a simple toolbar button that links to a History item
+     *
+     * @param buttonLabel
+     * @param token
+     * @param style - toolbar-btn_left, toolbar-btn_center, toolbar-btn_right
+     * @return
+     */
+    public static ToolbarButton createToolbarHistoryButton(String buttonLabel,
+                                                                 final String token, String style) {
+        ToolbarButton newBtn = new ToolbarButton(buttonLabel);
+        newBtn.setStyleName(style);
+        newBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
+            @Override
+            public void componentSelected(ToolbarButtonEvent ce) {
+                History.newItem(token);
+            }
+        });
+        return newBtn;
+
+    }
+
+    /**
+     * Use base style - which is for a button by itself
+     * @param buttonLabel
+     * @param token
+     * @return
+     */
+    public static ToolbarButton createToolbarHistoryButton(String buttonLabel, final String token) {
+        return createToolbarHistoryButton(buttonLabel, token, "toolbar-btn");
+    }
 
     public WidgetHelper() {
         super();

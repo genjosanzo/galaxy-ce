@@ -166,7 +166,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
         ButtonBar bb = new ButtonBar();
         bb.add(applyButton);
         bb.add(resetButton);
-        bb.add(createSimpleHistoryButton("New", "groups/new"));
+        bb.add(createHistoryButton("New", "groups/new"));
 
         table.setWidget(rows.size() + 1, 0, bb);
 

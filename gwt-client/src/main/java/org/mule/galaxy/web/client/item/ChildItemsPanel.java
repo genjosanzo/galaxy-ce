@@ -1,10 +1,17 @@
 package org.mule.galaxy.web.client.item;
 
+import org.mule.galaxy.web.client.AbstractFlowComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.WidgetHelper;
+import org.mule.galaxy.web.client.util.ToolbarButton;
+import org.mule.galaxy.web.client.util.ToolbarButtonEvent;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemInfo;
+
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
 import com.extjs.gxt.ui.client.data.BeanModelLookup;
 import com.extjs.gxt.ui.client.event.BaseEvent;
-import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.GridEvent;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -18,7 +25,6 @@ import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.form.StoreFilterField;
-import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.grid.CheckBoxSelectionModel;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
@@ -30,12 +36,6 @@ import com.google.gwt.user.client.History;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.mule.galaxy.web.client.AbstractFlowComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.WidgetHelper;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ItemInfo;
 
 public class ChildItemsPanel extends AbstractFlowComposite {
 
@@ -56,7 +56,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
     @Override
     public void doShowPage() {
         super.doShowPage();
-        
+
         fetchAllItems();
     }
 
@@ -71,7 +71,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
 
         galaxy.getRegistryService().getItems(info != null ? info.getId() : null, false, callback);
     }
-    
+
     /**
      * generic grid for itemInfo
      *
@@ -79,11 +79,11 @@ public class ChildItemsPanel extends AbstractFlowComposite {
      */
     private void createItemGrid() {
         panel.clear();
-        
+
         ContentPanel cp = new ContentPanel();
         cp.setStyleName("x-panel-container-full");
         cp.setBodyBorder(false);
-        cp.setHeading(info != null ? info.getName()  : "All Items");
+        cp.setHeading(info != null ? info.getName() : "All Items");
         cp.setAutoWidth(true);
 
         ToolBar toolbar = new ToolBar();
@@ -152,12 +152,12 @@ public class ChildItemsPanel extends AbstractFlowComposite {
             }
         });
 
-        final Button delBtn = new Button("Delete");
+        final ToolbarButton delBtn = new ToolbarButton("Delete");
+        delBtn.setStyleName("toolbar-btn_left");
         delBtn.setEnabled(false);
-        delBtn.setEnabled(false);
-        delBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+        delBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
             @Override
-            public void componentSelected(ButtonEvent ce) {
+            public void componentSelected(ToolbarButtonEvent ce) {
                 warnDelete(selectionModel.getSelectedItems());
             }
         });
@@ -190,7 +190,8 @@ public class ChildItemsPanel extends AbstractFlowComposite {
             } else {
                 token = "add-item/";
             }
-            toolbar.add(WidgetHelper.createSimpleHistoryButton("New", token));
+            ToolbarButton newBtn = WidgetHelper.createToolbarHistoryButton("New", token, "toolbar-btn_right");
+            toolbar.add(newBtn);
         }
         cp.setTopComponent(toolbar);
 
@@ -207,9 +208,9 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                 if (Dialog.YES.equals(btn.getItemId())) {
                     List<String> ids = new ArrayList<String>();
                     for (BeanModel data : selectionModel.getSelectedItems()) {
-                        ids.add((String)data.get("id"));
+                        ids.add((String) data.get("id"));
                     }
-                    
+
                     // FIXME: delete collection.
                     galaxy.getRegistryService().delete(ids, new AbstractCallback(menuPanel) {
                         public void onSuccess(Object arg0) {
@@ -217,7 +218,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                             fetchAllItems();
                         }
                     });
-                    
+
                 }
             }
         };
