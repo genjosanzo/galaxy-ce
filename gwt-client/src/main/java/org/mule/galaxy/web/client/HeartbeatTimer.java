@@ -111,7 +111,7 @@ class HeartbeatTimer extends Timer
     protected boolean isSessionKilled(Throwable t)
     {
         final String msg = t.getMessage();
-        if (msg.indexOf("<title>Mule Galaxy Login</title>") > -1)
+        if (msg.indexOf("/j_acegi_security_check") > -1)
         {
             return true;
         }
