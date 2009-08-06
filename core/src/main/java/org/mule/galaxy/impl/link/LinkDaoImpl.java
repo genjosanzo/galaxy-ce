@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -202,7 +203,14 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
          .append(property)
          .append("']");
         
-        return doQuery(q.toString());
+        List<Link> links = doQuery(q.toString());
+        for (Iterator<Link> itr = links.iterator(); itr.hasNext();) {
+            Link link = itr.next();
+            if (link.getLinkedTo() == null && link.getLinkedToPath() == null) {
+                itr.remove();
+            }
+        }
+        return links;
     }
     
     public void deleteLinks(final Item item, final String property) {
