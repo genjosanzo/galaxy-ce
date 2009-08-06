@@ -49,19 +49,21 @@ public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob> {
     @Override
     protected void doSave(ScriptJob t, Node node, boolean isNew, boolean isMoved, Session session) throws RepositoryException {
         String origName = getJobName(t.getId(), JcrUtil.getStringOrNull(node, "name"));
+        String name = getJobName(t.getId(), t.getName());
         
         super.doSave(t, node, isNew, isMoved, session);
         
         try {
-            scheduler.unscheduleJob(origName, null);
-            String name = getJobName(t.getId(), t.getName());
-            
             JobDetail job = new JobDetail(name, null, ExecuteScriptJob.class);
             job.setDurability(true);
             job.getJobDataMap().put(ExecuteScriptJob.SCRIPT_ID, t.getScript().getId());
             
             CronTrigger trigger = new CronTrigger(name, null, t.getExpression());
             trigger.setJobName(name);
+            
+            if (origName != null) {
+                scheduler.deleteJob(origName, null);
+            }
             
             scheduler.scheduleJob(job, trigger);
         } catch (SchedulerException e) {
