@@ -19,11 +19,12 @@
 package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.extjs.gxt.ui.client.data.BeanModelTag;
 
 import java.util.Collection;
 import java.util.Iterator;
 
-public class WLifecycle implements IsSerializable {
+public class WLifecycle implements IsSerializable, BeanModelTag {
     
     private String name;
     private String id;

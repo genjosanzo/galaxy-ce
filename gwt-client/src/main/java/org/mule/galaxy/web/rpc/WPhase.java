@@ -19,10 +19,11 @@
 package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.extjs.gxt.ui.client.data.BeanModelTag;
 
 import java.util.Collection;
 
-public class WPhase implements IsSerializable {
+public class WPhase implements IsSerializable, BeanModelTag {
     private String id;
     private String name;
     private Collection<WPhase> nextPhases;
@@ -60,6 +61,10 @@ public class WPhase implements IsSerializable {
     public void setNextPhases(Collection<WPhase> nextPhases) {
         this.nextPhases = nextPhases;
     }
-    
+
+    public String toString() {
+        return getName();
+    }
+
     
 }
