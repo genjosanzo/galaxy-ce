@@ -19,10 +19,11 @@
 package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.extjs.gxt.ui.client.data.BeanModelTag;
 
 import java.util.Collection;
 
-public class WIndex implements IsSerializable {
+public class WIndex implements IsSerializable, BeanModelTag {
     
     private String id;
     private String description;

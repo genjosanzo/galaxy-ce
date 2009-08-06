@@ -86,8 +86,8 @@ public class LifecycleListPanel extends AbstractAdministrationComposite {
 
         ColumnConfig pcol = new ColumnConfig("phases", "Phases", 400);
         pcol.setRenderer(new ListCellRenderer(false));
-
         columns.add(pcol);
+
         ColumnModel cm = new ColumnModel(columns);
 
         Grid grid = new Grid<BeanModel>(store, cm);
@@ -96,7 +96,7 @@ public class LifecycleListPanel extends AbstractAdministrationComposite {
         grid.addListener(Events.CellClick, new Listener<BaseEvent>() {
             public void handleEvent(BaseEvent be) {
                 GridEvent ge = (GridEvent) be;
-                WUser s = store.getAt(ge.getRowIndex()).getBean();
+                WLifecycle s = store.getAt(ge.getRowIndex()).getBean();
                 History.newItem("lifecycles/" + s.getId());
             }
         });
