@@ -2,6 +2,7 @@ package org.mule.galaxy.web.client;
 
 import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.StringUtil;
 import org.mule.galaxy.web.client.util.ToolbarButton;
 import org.mule.galaxy.web.client.util.ToolbarButtonEvent;
 
@@ -149,7 +150,12 @@ public class WidgetHelper extends Composite {
     }
 
 
-    public static InlineHelpPanel createInlineHelpPanel(String header, String body) {
+    public static InlineHelpPanel createInlineHelpPanel(String content, int num) {
+        String[] sa = StringUtil.wordCountSplitter(content, num, true);
+        return createHelpPanel(sa[0], sa[1]);
+    }
+
+    public static InlineHelpPanel createHelpPanel(String header, String body) {
         final InlineHelpPanel cp = new InlineHelpPanel();
         cp.addText(body);
         cp.setHeading(header);
@@ -211,11 +217,11 @@ public class WidgetHelper extends Composite {
      *
      * @param buttonLabel
      * @param token
-     * @param style - toolbar-btn_left, toolbar-btn_center, toolbar-btn_right
+     * @param style       - toolbar-btn_left, toolbar-btn_center, toolbar-btn_right
      * @return
      */
     public static ToolbarButton createToolbarHistoryButton(String buttonLabel,
-                                                                 final String token, String style) {
+                                                           final String token, String style) {
         ToolbarButton newBtn = new ToolbarButton(buttonLabel);
         newBtn.setStyleName(style);
         newBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
@@ -230,6 +236,7 @@ public class WidgetHelper extends Composite {
 
     /**
      * Use base style - which is for a button by itself
+     *
      * @param buttonLabel
      * @param token
      * @return

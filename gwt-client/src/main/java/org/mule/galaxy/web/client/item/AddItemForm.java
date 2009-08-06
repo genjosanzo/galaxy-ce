@@ -18,43 +18,9 @@
 
 package org.mule.galaxy.web.client.item;
 
-import com.extjs.gxt.ui.client.event.BaseEvent;
-import com.extjs.gxt.ui.client.event.ComponentEvent;
-import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.button.ButtonBar;
-import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
-import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.mule.galaxy.web.client.AbstractFlowComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.WidgetHelper;
 import org.mule.galaxy.web.client.property.AbstractPropertyRenderer;
 import org.mule.galaxy.web.client.property.ArtifactRenderer;
 import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
@@ -69,6 +35,39 @@ import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 import org.mule.galaxy.web.rpc.WType;
+
+import com.extjs.gxt.ui.client.event.BaseEvent;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.button.ButtonBar;
+import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.SuggestBox;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This form is definitely complex and ugly, so here's a run down of how it works.
@@ -112,9 +111,9 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
     private final ErrorPanel errorPanel;
 
     public AddItemForm(final Galaxy galaxy, ErrorPanel errorPanel) {
-        this.galaxy = galaxy;       
+        this.galaxy = galaxy;
         this.errorPanel = errorPanel;
-            
+
 
         form = new AddItemHelper(galaxy);
         form.setAction(GWT.getModuleBaseURL() + "../artifactUpload.form");
@@ -129,9 +128,8 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
 
 
         // add inline help string and widget
-        String[] sa = StringUtil.createInlineHelpHeaderAndBody(
-                galaxy.getRepositoryConstants().repo_Add_Item_Tip(), 21, true);
-        cp.setTopComponent(WidgetHelper.createInlineHelpPanel(sa[0], sa[1]));
+        cp.setTopComponent(
+                createInlineHelpPanel(galaxy.getRepositoryConstants().repo_Add_Item_Tip(), 21));
 
         panel.add(cp);
     }

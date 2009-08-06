@@ -5,7 +5,6 @@ import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.WidgetHelper;
 import org.mule.galaxy.web.client.util.ToolbarButton;
 import org.mule.galaxy.web.client.util.ToolbarButtonEvent;
-import org.mule.galaxy.web.client.util.StringUtil;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemInfo;
 
@@ -88,9 +87,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         cp.setAutoWidth(true);
 
         // add inline help string and widget
-        String[] sa = StringUtil.createInlineHelpHeaderAndBody(
-                galaxy.getRepositoryConstants().repo_Tip(), 8, true);
-        cp.setTopComponent(WidgetHelper.createInlineHelpPanel(sa[0], sa[1]));
+        cp.setTopComponent(createInlineHelpPanel(galaxy.getRepositoryConstants().repo_Tip(), 8));
 
         ToolBar toolbar = new ToolBar();
         // search filter

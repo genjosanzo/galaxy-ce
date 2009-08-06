@@ -12,15 +12,16 @@ public class StringUtil {
         return extension;
     }
 
+
     /**
-     * Create a header and body panel. Tokenize by word count.
+     * Split a string (sentence) into two sections.
      *
      * @param s
-     * @param len
+     * @param len      - how many words should be in the first array element
      * @param ellipsis
      * @return
      */
-    public static String[] createInlineHelpHeaderAndBody(String s, int len, boolean ellipsis) {
+    public static String[] wordCountSplitter(String s, int len, boolean ellipsis) {
 
         String a = "";
         String b = "";
