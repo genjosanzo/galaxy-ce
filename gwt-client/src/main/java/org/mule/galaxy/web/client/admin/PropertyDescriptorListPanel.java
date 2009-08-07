@@ -20,6 +20,7 @@ package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
+import org.mule.galaxy.web.client.WidgetHelper;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
@@ -95,7 +96,7 @@ public class PropertyDescriptorListPanel
                     propName = "<empty>";
                 }
 
-                return propName;
+                return WidgetHelper.createFauxLink(propName);
             }
         });
         columns.add(nameConfig);

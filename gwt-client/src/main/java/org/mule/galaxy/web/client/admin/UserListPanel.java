@@ -20,6 +20,7 @@ package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WUser;
+import org.mule.galaxy.web.client.util.FauxLinkRenderer;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
@@ -77,7 +78,9 @@ public class UserListPanel extends AbstractAdministrationComposite {
         RowNumberer r = new RowNumberer();
         List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
         columns.add(r);
-        columns.add(new ColumnConfig("username", "Username", 100));
+        ColumnConfig userConfig = new ColumnConfig("username", "Username", 100);
+        userConfig.setRenderer(new FauxLinkRenderer());
+        columns.add(userConfig);
         columns.add(new ColumnConfig("name", "Name", 200));
         columns.add(new ColumnConfig("email", "Email Address", 200));
         ColumnModel cm = new ColumnModel(columns);

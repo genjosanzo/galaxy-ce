@@ -19,6 +19,7 @@
 package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.util.ListCellRenderer;
+import org.mule.galaxy.web.client.util.FauxLinkRenderer;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WUser;
@@ -82,7 +83,10 @@ public class LifecycleListPanel extends AbstractAdministrationComposite {
         RowNumberer r = new RowNumberer();
         List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
         columns.add(r);
-        columns.add(new ColumnConfig("name", "Lifecycle Name", 200));
+
+        ColumnConfig nameConfig = new ColumnConfig("name", "Lifecycle Name", 200);
+        nameConfig.setRenderer(new FauxLinkRenderer());
+        columns.add(nameConfig);
 
         ColumnConfig pcol = new ColumnConfig("phases", "Phases", 400);
         pcol.setRenderer(new ListCellRenderer(false));

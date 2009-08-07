@@ -18,6 +18,7 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.util.FauxLinkRenderer;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WScriptJob;
 
@@ -35,6 +36,7 @@ import com.extjs.gxt.ui.client.widget.form.StoreFilterField;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
+import com.extjs.gxt.ui.client.widget.grid.RowNumberer;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.user.client.History;
@@ -79,14 +81,21 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
         final ListStore<BeanModel> store = new ListStore<BeanModel>();
         store.add(list);
 
+        RowNumberer r = new RowNumberer();
         List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
-        columns.add(new ColumnConfig("name", "Name", 100));
-        columns.add(new ColumnConfig("scriptName", "Script", 100));
-        columns.add(new ColumnConfig("expression", "Cron Expression", 200));
-        columns.add(new ColumnConfig("description", "Description", 300));
+        columns.add(r);
+        
+        ColumnConfig nameConfig = new ColumnConfig("name", "Name", 150);
+        nameConfig.setRenderer(new FauxLinkRenderer());
+        columns.add(nameConfig);
+
+        columns.add(new ColumnConfig("scriptName", "Script", 150));
+        columns.add(new ColumnConfig("expression", "Cron Expression", 150));
+        columns.add(new ColumnConfig("description", "Description", 250));
         ColumnModel cm = new ColumnModel(columns);
 
         Grid grid = new Grid<BeanModel>(store, cm);
+        grid.addPlugin(r);
         grid.setAutoWidth(true);
         grid.addListener(Events.CellClick, new Listener<BaseEvent>() {
             public void handleEvent(BaseEvent be) {

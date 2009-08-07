@@ -245,6 +245,28 @@ public class WidgetHelper extends Composite {
         return createToolbarHistoryButton(buttonLabel, token, "toolbar-btn");
     }
 
+
+    public static String createFauxLink(String value) {
+        return createFauxLink(value, true);
+    }
+
+    /**
+     * Make Labels, strings, etc appear to be links
+     * @param value
+     * @param hover
+     * @return
+     */
+    public static String createFauxLink(String value, boolean hover) {
+        String html = "";
+        html += " <div style=\"text-decoration: none; color: #016c96;\" ";
+        if (hover) {
+            html += " onmouseover=\"this.style.textDecoration = 'underline'\" onmouseout=\"this.style.textDecoration = 'none'\" ";
+        }
+        html += ">" + value + "</div>";
+        return html;
+
+    }
+
     public WidgetHelper() {
         super();
     }
