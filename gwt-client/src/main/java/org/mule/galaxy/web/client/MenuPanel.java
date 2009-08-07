@@ -82,6 +82,10 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
         topPanel.setStyleName("top-panel");
     }
 
+    public boolean isFirstShow() {
+        return firstShow;
+    }
+
     public void hidePage() {
         if (mainWidget instanceof Showable) {
             ((Showable) mainWidget).hidePage();
