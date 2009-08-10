@@ -19,8 +19,9 @@
 package org.mule.galaxy.web.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.extjs.gxt.ui.client.data.BeanModelTag;
 
-public class WPermissionGrant implements IsSerializable {
+public class WPermissionGrant implements IsSerializable, BeanModelTag {
     public static final int GRANTED = 1;
     public static final int INHERITED = 0;
     public static final int REVOKED = -1;

@@ -18,22 +18,24 @@
 
 package org.mule.galaxy.web.rpc;
 
+import com.extjs.gxt.ui.client.data.BeanModelTag;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.util.Collection;
 
-public class WArtifactType implements IsSerializable {
+public class WArtifactType implements IsSerializable, BeanModelTag {
     private String id;
     private String mediaType;
     private String description;
     private Collection<String> documentTypes;
     private Collection<String> fileExtensions;
-    
-    
+
+
     public WArtifactType() {
         super();
     }
-    public WArtifactType(String id, String mediaType, 
+
+    public WArtifactType(String id, String mediaType,
                          String description, Collection<String> documentTypes,
                          Collection<String> fileExtensions) {
         super();
@@ -43,36 +45,46 @@ public class WArtifactType implements IsSerializable {
         this.documentTypes = documentTypes;
         this.fileExtensions = fileExtensions;
     }
+
     public String getId() {
         return id;
     }
+
     public void setId(String id) {
         this.id = id;
     }
+
     public String getDescription() {
         return description;
     }
+
     public void setDescription(String description) {
         this.description = description;
     }
+
     public String getMediaType() {
         return mediaType;
     }
+
     public void setMediaType(String mediaType) {
         this.mediaType = mediaType;
     }
+
     public Collection<String> getDocumentTypes() {
         return documentTypes;
     }
+
     public void setDocumentTypes(Collection<String> documentTypes) {
         this.documentTypes = documentTypes;
     }
+
     public Collection<String> getFileExtensions() {
         return fileExtensions;
     }
+
     public void setFileExtensions(Collection<String> fileExtensions) {
         this.fileExtensions = fileExtensions;
     }
-    
-    
+
+
 }

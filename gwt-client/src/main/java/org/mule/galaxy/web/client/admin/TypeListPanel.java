@@ -18,9 +18,9 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.WidgetHelper;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WType;
-import org.mule.galaxy.web.client.WidgetHelper;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
@@ -62,7 +62,6 @@ public class TypeListPanel
         adminPanel.getRegistryService().getTypes(new AbstractCallback<List<WType>>(adminPanel) {
 
             public void onSuccess(List<WType> types) {
-                //Collections.sort(types, new WTypeComparator());
                 TypeListPanel.this.types = types;
                 showTypes(types);
             }
@@ -100,23 +99,6 @@ public class TypeListPanel
                 if (isSystem) {
                     return propName + " (Read Only)";
                 }
-
-                /*
-                        String propName = type.getName();
-                        if (propName == null || propName.trim().length() == 0) {
-                            propName = "<empty>";
-                        }
-
-                        if (type.isSystem()) {
-                            table.setText(i, 0, type.getName() + " (Read Only)");
-                        } else {
-                            Hyperlink hyperlink = new Hyperlink(propName,
-                                                                "types/" + type.getId());
-
-                            table.setWidget(i, 0, hyperlink);
-                        }
-
-                 */
 
                 return WidgetHelper.createFauxLink(propName);
             }
