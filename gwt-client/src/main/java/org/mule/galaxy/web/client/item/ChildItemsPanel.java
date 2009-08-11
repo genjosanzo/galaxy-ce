@@ -24,6 +24,7 @@ import com.extjs.gxt.ui.client.store.Store;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.form.StoreFilterField;
 import com.extjs.gxt.ui.client.widget.grid.CheckBoxSelectionModel;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
@@ -81,6 +82,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         panel.clear();
 
         ContentPanel cp = new ContentPanel();
+        cp.setLayout(new FitLayout());
         cp.setStyleName("x-panel-container-full");
         cp.setBodyBorder(false);
         cp.setHeading(info != null ? info.getName() : "All Items");
@@ -140,8 +142,6 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         grid.setBorders(true);
         grid.addPlugin(selectionModel);
         grid.setAutoExpandColumn("name");
-        grid.setAutoExpandColumn("authorName");
-        grid.setAutoExpandColumn("type");
 
         grid.setAutoWidth(true);
         grid.addListener(Events.CellClick, new Listener<BaseEvent>() {

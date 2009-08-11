@@ -477,10 +477,13 @@ a:visited {
 
 /* override content panel */
 .help-panel-inline {
+    background-image: url("images/icon-info.gif");
+    background-repeat:no-repeat;
+    background-position: top left;
     font-family: arial, tahoma, helvetica, sans-serif !important;
     border-color: white;
     margin: 0;
-    padding: 0 5px 5px 5px;
+    padding: 3px 5px 5px 22px;
     background-color: #fff;
     color:black;
 }

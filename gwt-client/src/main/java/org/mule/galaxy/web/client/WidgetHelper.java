@@ -7,13 +7,9 @@ import org.mule.galaxy.web.client.util.ToolbarButton;
 import org.mule.galaxy.web.client.util.ToolbarButtonEvent;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
-import com.extjs.gxt.ui.client.event.ComponentEvent;
-import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.button.ToolButton;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Composite;
@@ -165,7 +161,10 @@ public class WidgetHelper extends Composite {
         cp.setAutoWidth(true);
         cp.setAnimCollapse(true);
         cp.collapse();
-        cp.setHideCollapseTool(true);
+        if (body != null && body.length() > 0) {
+            cp.getHeader().setToolTip("More information available. Click to expand.");
+        }
+        /*cp.setHideCollapseTool(true);
         ToolButton btn = new ToolButton("x-tool-help");
         btn.setToolTip("More information available. Click to expand.");
         cp.getHeader().addTool(btn);
@@ -175,6 +174,7 @@ public class WidgetHelper extends Composite {
                 cp.setExpanded(!cp.isExpanded());
             }
         });
+        */
 
         return cp;
     }
@@ -253,6 +253,7 @@ public class WidgetHelper extends Composite {
 
     /**
      * Make Labels, strings, etc appear to be links
+     *
      * @param value
      * @param hover
      * @return
