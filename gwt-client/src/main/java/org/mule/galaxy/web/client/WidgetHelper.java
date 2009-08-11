@@ -163,6 +163,7 @@ public class WidgetHelper extends Composite {
         cp.setTitleCollapse(true);
         cp.setCollapsible(true);
         cp.setAutoWidth(true);
+        cp.setAnimCollapse(true);
         cp.collapse();
         cp.setHideCollapseTool(true);
         ToolButton btn = new ToolButton("x-tool-help");

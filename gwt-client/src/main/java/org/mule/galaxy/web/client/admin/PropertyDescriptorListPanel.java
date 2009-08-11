@@ -105,6 +105,7 @@ public class PropertyDescriptorListPanel
         ColumnModel cm = new ColumnModel(columns);
 
         Grid grid = new Grid<BeanModel>(store, cm);
+        grid.setStripeRows(true);
         grid.addPlugin(r);
         grid.setAutoWidth(true);
         grid.addListener(Events.CellClick, new Listener<BaseEvent>() {

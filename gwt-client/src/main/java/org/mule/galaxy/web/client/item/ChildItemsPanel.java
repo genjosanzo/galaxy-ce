@@ -127,18 +127,21 @@ public class ChildItemsPanel extends AbstractFlowComposite {
 
         List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
         columns.add(selectionModel.getColumn());
-        columns.add(new ColumnConfig("name", "Name", 150));
-        columns.add(new ColumnConfig("authorName", "Author", 150));
-        columns.add(new ColumnConfig("type", "Type", 100));
+        columns.add(new ColumnConfig("name", "Name", 250));
+        columns.add(new ColumnConfig("authorName", "Author", 200));
+        columns.add(new ColumnConfig("type", "Type", 200));
 
         ColumnModel cm = new ColumnModel(columns);
 
         Grid grid = new Grid<BeanModel>(store, cm);
+        grid.setStripeRows(true);
         grid.setAutoWidth(true);
         grid.setSelectionModel(selectionModel);
         grid.setBorders(true);
         grid.addPlugin(selectionModel);
         grid.setAutoExpandColumn("name");
+        grid.setAutoExpandColumn("authorName");
+        grid.setAutoExpandColumn("type");
 
         grid.setAutoWidth(true);
         grid.addListener(Events.CellClick, new Listener<BaseEvent>() {
