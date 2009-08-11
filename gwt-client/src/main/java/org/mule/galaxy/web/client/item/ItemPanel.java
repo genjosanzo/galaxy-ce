@@ -18,6 +18,13 @@
 
 package org.mule.galaxy.web.client.item;
 
+import org.mule.galaxy.web.client.AbstractFlowComposite;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.admin.PolicyPanel;
+import org.mule.galaxy.web.client.util.ShowableTabListener;
+import org.mule.galaxy.web.rpc.ItemInfo;
+import org.mule.galaxy.web.rpc.SecurityService;
+
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.TabItem;
@@ -25,13 +32,6 @@ import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.google.gwt.user.client.ui.Label;
 
 import java.util.List;
-
-import org.mule.galaxy.web.client.AbstractFlowComposite;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.admin.PolicyPanel;
-import org.mule.galaxy.web.client.util.ShowableTabListener;
-import org.mule.galaxy.web.rpc.ItemInfo;
-import org.mule.galaxy.web.rpc.SecurityService;
 
 
 /**
@@ -76,19 +76,18 @@ public class ItemPanel extends AbstractFlowComposite {
         this.info = info;
         panel.clear();
         initTabs();
-        
+
         if (info.getType().equals("Artifact Version")) {
             tabPanel.setSelection(tabPanel.getItem(1));
         }
     }
-    
+
     private void initTabs() {
         ContentPanel cp = new ContentPanel();
-        cp.setStyleName("x-panel-container-full");
         cp.setBodyBorder(false);
-        cp.setHeading(info.getName());
+        cp.setStyleName("no-border");
         cp.setAutoWidth(true);
-        //cp.setLayout(new FitLayout());
+        cp.setHeaderVisible(false);
 
         tabPanel = new TabPanel();
         tabPanel.setStyleName("x-tab-panel-header_sub1");
