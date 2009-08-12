@@ -165,16 +165,16 @@ public class WidgetHelper extends Composite {
 
         cp.addListener(Events.Expand, new Listener<ComponentEvent>() {
             public void handleEvent(ComponentEvent ce) {
-                // FIXME: create toolIcon
                 cp.getHeader().setToolTip("Click to collapse.");
-                cp.setHeading(header + "<font class=\"help-panel-link\"> less</font>");
+                // FIXME: create toolIcon
+                cp.setHeading(header + createFauxLink(" [less]"));
             }
         });
         cp.addListener(Events.Collapse, new Listener<ComponentEvent>() {
             public void handleEvent(ComponentEvent ce) {
-                // FIXME: create toolIcon
                 cp.getHeader().setToolTip("Click to expand.");
-                cp.setHeading(header + "<font class=\"help-panel-link\"> more</font>");
+                // FIXME: create toolIcon
+                cp.setHeading(header + createFauxLink(" [more]"));
             }
         });
         cp.addText(body);
@@ -269,11 +269,11 @@ public class WidgetHelper extends Composite {
      */
     public static String createFauxLink(String value, boolean hover) {
         String html = "";
-        html += " <div style=\"text-decoration: none; color: #016c96;\" ";
+        html += " <span style=\"text-decoration: none; color: #016c96;\" ";
         if (hover) {
             html += " onmouseover=\"this.style.textDecoration = 'underline'\" onmouseout=\"this.style.textDecoration = 'none'\" ";
         }
-        html += ">" + value + "</div>";
+        html += ">" + value + "</span>";
         return html;
 
     }
