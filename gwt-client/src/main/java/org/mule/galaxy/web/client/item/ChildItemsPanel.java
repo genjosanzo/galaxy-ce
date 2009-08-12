@@ -30,6 +30,8 @@ import com.extjs.gxt.ui.client.widget.grid.CheckBoxSelectionModel;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
+import com.extjs.gxt.ui.client.widget.grid.GridView;
+import com.extjs.gxt.ui.client.widget.grid.BufferView;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.user.client.History;
@@ -82,7 +84,6 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         panel.clear();
 
         ContentPanel cp = new ContentPanel();
-        cp.setLayout(new FitLayout());
         cp.setStyleName("x-panel-container-full");
         cp.setBodyBorder(false);
         cp.setHeading(info != null ? info.getName() : "All Items");
@@ -131,7 +132,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         columns.add(selectionModel.getColumn());
         columns.add(new ColumnConfig("name", "Name", 250));
         columns.add(new ColumnConfig("authorName", "Author", 200));
-        columns.add(new ColumnConfig("type", "Type", 200));
+        columns.add(new ColumnConfig("type", "Type", 300));
 
         ColumnModel cm = new ColumnModel(columns);
 
@@ -141,9 +142,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         grid.setSelectionModel(selectionModel);
         grid.setBorders(true);
         grid.addPlugin(selectionModel);
-        grid.setAutoExpandColumn("name");
-
-        grid.setAutoWidth(true);
+        grid.setAutoExpandColumn("type");
         grid.addListener(Events.CellClick, new Listener<BaseEvent>() {
             public void handleEvent(BaseEvent be) {
                 GridEvent ge = (GridEvent) be;
@@ -201,7 +200,6 @@ public class ChildItemsPanel extends AbstractFlowComposite {
             newBtn.setToolTip(galaxy.getRepositoryConstants().repo_Items_New());
             toolbar.add(newBtn);
         }
-
 
         panel.add(cp);
     }

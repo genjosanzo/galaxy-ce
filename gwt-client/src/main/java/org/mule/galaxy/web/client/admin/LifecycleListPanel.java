@@ -73,6 +73,7 @@ public class LifecycleListPanel extends AbstractAdministrationComposite {
         cp.setHeading("Lifecycles");
         cp.setBodyBorder(false);
         cp.setStyleName("x-panel-container-full");
+        cp.setAutoWidth(true);
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WLifecycle.class);
 

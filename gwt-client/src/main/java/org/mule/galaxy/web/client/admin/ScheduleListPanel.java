@@ -74,6 +74,7 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
         cp.setHeading("Scheduled Jobs");
         cp.setBodyBorder(false);
         cp.setStyleName("x-panel-container-full");
+        cp.setAutoWidth(true);
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WScriptJob.class);
 

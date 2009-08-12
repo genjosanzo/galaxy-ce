@@ -67,7 +67,7 @@ public class UserListPanel extends AbstractAdministrationComposite {
         cp.setHeading("Users");
         cp.setBodyBorder(false);
         cp.setStyleName("x-panel-container-full");
-
+        cp.setAutoWidth(true);
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WUser.class);
 

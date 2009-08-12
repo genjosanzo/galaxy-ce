@@ -32,6 +32,7 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.store.Store;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.form.StoreFilterField;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnData;
@@ -39,6 +40,7 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.grid.GridCellRenderer;
 import com.extjs.gxt.ui.client.widget.grid.RowNumberer;
+import com.extjs.gxt.ui.client.widget.grid.BufferView;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.user.client.History;
@@ -70,6 +72,7 @@ public class PropertyDescriptorListPanel
 
         ContentPanel cp = new ContentPanel();
         cp.setHeading("Properties");
+        cp.setAutoWidth(true);
         cp.setBodyBorder(false);
         cp.setStyleName("x-panel-container-full");
 
@@ -106,8 +109,9 @@ public class PropertyDescriptorListPanel
 
         Grid grid = new Grid<BeanModel>(store, cm);
         grid.setStripeRows(true);
-        grid.addPlugin(r);
         grid.setAutoWidth(true);
+        grid.setAutoExpandColumn("description");
+        grid.addPlugin(r);
         grid.addListener(Events.CellClick, new Listener<BaseEvent>() {
             public void handleEvent(BaseEvent be) {
                 GridEvent ge = (GridEvent) be;
@@ -115,6 +119,7 @@ public class PropertyDescriptorListPanel
                 History.newItem("properties/" + s.getId());
             }
         });
+
         cp.add(grid);
 
         // search filter

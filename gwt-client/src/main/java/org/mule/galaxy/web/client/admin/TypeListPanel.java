@@ -74,7 +74,7 @@ public class TypeListPanel
         cp.setHeading("Types");
         cp.setBodyBorder(false);
         cp.setStyleName("x-panel-container-full");
-
+        cp.setAutoWidth(true);
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WType.class);
 
