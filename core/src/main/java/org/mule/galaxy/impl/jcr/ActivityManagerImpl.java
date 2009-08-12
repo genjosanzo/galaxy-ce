@@ -187,13 +187,16 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
     private Node getDateNode(Node parent, Calendar date) throws InvalidItemStateException,
         RepositoryException, ItemExistsException, PathNotFoundException, VersionException,
         ConstraintViolationException, LockException, NoSuchNodeTypeException {
-//        String year = new Integer(date.get(Calendar.YEAR)).toString();
-//        String month = new Integer(date.get(Calendar.MONTH)).toString();
-//        String day = new Integer(date.get(Calendar.DAY_OF_MONTH)).toString();
-//        
-//        parent = JcrUtil.getOrCreate(parent, year);
-//        parent = JcrUtil.getOrCreate(parent, month);
-//        parent = JcrUtil.getOrCreate(parent, day);
+        String year = new Integer(date.get(Calendar.YEAR)).toString();
+        
+        String month = new Integer(date.get(Calendar.MONTH)).toString();
+        String day = new Integer(date.get(Calendar.DAY_OF_MONTH)).toString();
+        String hour = new Integer(date.get(Calendar.HOUR_OF_DAY)).toString();
+        
+        parent = JcrUtil.getOrCreate(parent, year);
+        parent = JcrUtil.getOrCreate(parent, month);
+        parent = JcrUtil.getOrCreate(parent, day);
+        parent = JcrUtil.getOrCreate(parent, hour);
 
         return parent;
     }
