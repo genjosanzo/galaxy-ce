@@ -40,9 +40,9 @@ public class StringUtil {
 
         if (ellipsis) {
             if (a.endsWith(".")) {
-                a = a.concat("..");
+                a = a.concat(".. ");
             } else {
-                a = a.concat("...");
+                a = a.concat("... ");
             }
         }
         return new String[]{a, b};

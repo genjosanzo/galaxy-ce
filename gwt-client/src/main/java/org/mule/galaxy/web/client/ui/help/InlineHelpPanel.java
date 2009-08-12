@@ -8,10 +8,22 @@ import com.extjs.gxt.ui.client.widget.ContentPanel;
  */
 public class InlineHelpPanel extends ContentPanel {
 
+    private String status;
+
     public InlineHelpPanel() {
         super();
         baseStyle = "help-panel-inline";
         setDeferHeight(false);
+
     }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 
 }

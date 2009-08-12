@@ -7,6 +7,9 @@ import org.mule.galaxy.web.client.util.ToolbarButton;
 import org.mule.galaxy.web.client.util.ToolbarButtonEvent;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -151,31 +154,37 @@ public class WidgetHelper extends Composite {
         return createHelpPanel(sa[0], sa[1]);
     }
 
-    public static InlineHelpPanel createHelpPanel(String header, String body) {
+
+    public static InlineHelpPanel createHelpPanel(final String header, String body) {
         final InlineHelpPanel cp = new InlineHelpPanel();
-        cp.addText(body);
-        cp.setHeading(header);
-        cp.setBorders(false);
-        cp.setTitleCollapse(true);
-        cp.setCollapsible(true);
-        cp.setAutoWidth(true);
-        cp.setAnimCollapse(true);
-        cp.collapse();
-        if (body != null && body.length() > 0) {
-            cp.getHeader().setToolTip("More information available. Click to expand.");
-        }
-        /*cp.setHideCollapseTool(true);
+        /*
         ToolButton btn = new ToolButton("x-tool-help");
         btn.setToolTip("More information available. Click to expand.");
         cp.getHeader().addTool(btn);
-        btn.addListener(Events.Select, new Listener<ComponentEvent>() {
-            public void handleEvent(ComponentEvent ce) {
-                ce.stopEvent();
-                cp.setExpanded(!cp.isExpanded());
-            }
-        });
         */
 
+        cp.addListener(Events.Expand, new Listener<ComponentEvent>() {
+            public void handleEvent(ComponentEvent ce) {
+                // FIXME: create toolIcon
+                cp.getHeader().setToolTip("Click to collapse.");
+                cp.setHeading(header + "<font class=\"help-panel-link\"> less</font>");
+            }
+        });
+        cp.addListener(Events.Collapse, new Listener<ComponentEvent>() {
+            public void handleEvent(ComponentEvent ce) {
+                // FIXME: create toolIcon
+                cp.getHeader().setToolTip("Click to expand.");
+                cp.setHeading(header + "<font class=\"help-panel-link\"> more</font>");
+            }
+        });
+        cp.addText(body);
+        cp.setBorders(false);
+        cp.setTitleCollapse(true);
+        cp.setCollapsible(true);
+        cp.setHideCollapseTool(true);
+        cp.setAutoWidth(true);
+        cp.setAnimCollapse(true);
+        cp.collapse();
         return cp;
     }
 
