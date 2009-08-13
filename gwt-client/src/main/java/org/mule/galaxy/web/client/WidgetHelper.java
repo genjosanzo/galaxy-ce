@@ -269,7 +269,7 @@ public class WidgetHelper extends Composite {
      */
     public static String createFauxLink(String value, boolean hover) {
         String html = "";
-        html += " <span style=\"text-decoration: none; color: #016c96;\" ";
+        html += " <span style=\"text-decoration: none; cursor:pointer; color: #016c96;\" ";
         if (hover) {
             html += " onmouseover=\"this.style.textDecoration = 'underline'\" onmouseout=\"this.style.textDecoration = 'none'\" ";
         }

@@ -10,7 +10,7 @@
 
     <properties>
         <slf4jVersion>1.5.0</slf4jVersion>
-        <gwtVersion>1.6.4</gwtVersion>
+        <gwtVersion>1.7.0</gwtVersion>
         <springVersion>2.5.5</springVersion>
         <!--
             Well, it's broken too, and some assemblies override it to
@@ -360,7 +360,7 @@
             <dependency>
                 <groupId>com.google.gwt</groupId>
                 <artifactId>gwt-incubator</artifactId>
-                <version>march-02-2009</version>
+                <version>july-14-2009</version>
             </dependency>
 
             <dependency>
