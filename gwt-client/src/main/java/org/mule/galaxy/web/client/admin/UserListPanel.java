@@ -89,6 +89,7 @@ public class UserListPanel extends AbstractAdministrationComposite {
         grid.setStripeRows(true);
         grid.addPlugin(r);
         grid.setAutoWidth(true);
+        grid.setAutoExpandColumn("email");
         grid.addListener(Events.CellClick, new Listener<BaseEvent>() {
             public void handleEvent(BaseEvent be) {
                 GridEvent ge = (GridEvent) be;

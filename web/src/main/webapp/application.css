@@ -468,7 +468,8 @@ a:visited {
     text-align: right;
     font-size: 11px;
     font-family: arial, tahoma, helvetica, sans-serif;
-    padding:1em;
+    height: 50px;
+    padding: 1em;
 }
 
 .footer .footer-link {

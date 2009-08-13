@@ -218,7 +218,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         southPanel.setBorders(false);
         southPanel.setHeaderVisible(false);
 
-        BorderLayoutData data = new BorderLayoutData(LayoutRegion.SOUTH, 33);
+        BorderLayoutData data = new BorderLayoutData(LayoutRegion.SOUTH, 38);
         data.setMargins(new Margins());
 
         footerPanel = new InlineFlowPanel();
@@ -236,7 +236,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
      */
     protected void prependFooterConent() {
         product = new Label("About " + getProductName());
-        product.setStyleName("footer-link");
+        product.setStyleName("footer-link footer-text");
         product.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent arg0) {
                 new AboutPanel();
