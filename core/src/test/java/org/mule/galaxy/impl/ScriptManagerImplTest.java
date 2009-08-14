@@ -97,7 +97,7 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
         sj.setDescription("test");
         sj.setExpression("bad expression");
         sj.setScript(script);
-        sj.setMisfireAllowed(true);
+//        sj.setMisfireAllowed(true);
         
         try {
             scriptJobDao.save(sj);
