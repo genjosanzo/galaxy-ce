@@ -211,7 +211,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                 com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
 
                 if (Dialog.YES.equals(btn.getItemId())) {
-                    List<String> ids = new ArrayList<String>();
+                    final List<String> ids = new ArrayList<String>();
                     for (BeanModel data : selectionModel.getSelectedItems()) {
                         ids.add((String) data.get("id"));
                     }
@@ -219,8 +219,9 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                     // FIXME: delete collection.
                     galaxy.getRegistryService().delete(ids, new AbstractCallback(menuPanel) {
                         public void onSuccess(Object arg0) {
-                            menuPanel.setMessage("Items were deleted.");
                             fetchAllItems();
+                            menuPanel.removeItems(info, ids);
+                            menuPanel.setMessage("Items were deleted.");
                         }
                     });
 

@@ -273,7 +273,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     public String addItem(String parentPath, 
-                          String workspaceName, 
+                          String itemName, 
                           String lifecycleId, 
                           String typeId, 
                           Map<String, Serializable> properties) 
@@ -300,14 +300,14 @@ public class RegistryServiceImpl implements RegistryService {
             }
             
             if (parentPath == null || "".equals(parentPath) || "/".equals(parentPath)) {
-                item = registry.newItem(workspaceName, type, localProperties).getItem();
+                item = registry.newItem(itemName, type, localProperties).getItem();
             } else {
                 Item parent = (Item) registry.getItemByPath(parentPath);
                 
                 if (parent == null) {
                     throw new RPCException("Could not find parent workspace: " + parentPath);
                 }
-                item = parent.newItem(workspaceName, type, localProperties).getItem();
+                item = parent.newItem(itemName, type, localProperties).getItem();
             }
             if (lifecycleId != null) {
                 item.setDefaultLifecycle(item.getLifecycleManager().getLifecycleById(lifecycleId));

@@ -395,11 +395,16 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     }
     
     public void testSuggestions() throws Exception {
+        Collection<ItemInfo> items = gwtRegistry.suggestEntries("hello.wsdl", "xxx", new String[] { "Artifact" });
+        assertEquals(1, items.size());
+        
         // Just ensuring we can handle some bad input
         gwtRegistry.suggestEntries("/", "xxx", new String[0]);
         gwtRegistry.suggestEntries("/Default", "xxx", new String[0]);
         gwtRegistry.suggestEntries("/D/", "xxx", new String[0]);
         gwtRegistry.suggestEntries("!@#$%^&*(){}[]?'\"><", "xxx", new String[0]);
+//        
+        
     }
     
     private final class FauxPolicy implements Policy {

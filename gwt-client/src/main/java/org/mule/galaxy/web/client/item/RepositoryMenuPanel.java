@@ -147,7 +147,11 @@ public class RepositoryMenuPanel extends MenuPanel {
     }
 
     public void showItem(ItemInfo item) {
-        loadItems(item.getId());
+        if (item == null) {
+            loadItems(null);
+        } else {
+            loadItems(item.getId());
+        }
     }
 
     @Override
@@ -325,5 +329,20 @@ public class RepositoryMenuPanel extends MenuPanel {
 
     public BaseTreeModel getRoot() {
         return root;
+    }
+
+    public void removeItems(ItemInfo info, List<String> ids) {
+        if (info == null) {
+            loadItems(null);
+            return;
+        }
+        
+        TreeModel data = (TreeModel)idToData.get(info.getId());
+        
+        for (ModelData child : data.getChildren()) {
+            if (ids.contains(child.get("id"))) {
+                store.remove(data, child);
+            }
+        }
     }
 }
