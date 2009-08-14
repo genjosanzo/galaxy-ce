@@ -12,7 +12,7 @@ import org.mule.galaxy.script.ScriptManager;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class ScriptManagerImplTest extends AbstractGalaxyTest {
-    public static CountDownLatch latch = new CountDownLatch(1);
+    public static CountDownLatch latch;
     
     protected ScriptManager scriptManager;
     protected Dao<ScriptJob> scriptJobDao;
@@ -29,6 +29,8 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
         };
     }
     public void testScripts() throws Exception {
+        latch = new CountDownLatch(1);
+        
         Script script = new Script();
         script.setName("test");
         script.setRunOnStartup(true);
@@ -57,6 +59,59 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
         latch.await(10, TimeUnit.SECONDS);
         
         assertEquals(0, latch.getCount());
+        
+        List<ScriptJob> jobs = scriptJobDao.listAll();
+        assertEquals(1, jobs.size());
+        
+        sj.setName("Foo_Bar");
+        scriptJobDao.save(sj);
+
+        latch = new CountDownLatch(1);
+        latch.await(10, TimeUnit.SECONDS);
+        assertEquals(0, latch.getCount());
+        
+        scriptManager.delete(script.getId());
+        
+        jobs = scriptJobDao.listAll();
+        assertEquals(0, jobs.size());
+    }
+    
+
+    public void xxtestMisfire() throws Exception {
+        latch = new CountDownLatch(2);
+        
+        // This script will sleep for 10 seconds. Given the short time, it should only fire once and 
+        // our latch count should be 1, not 0
+        
+        Script script = new Script();
+        script.setName("test");
+        script.setRunOnStartup(true);
+        script.setScript("println 'hello'; org.mule.galaxy.impl.ScriptManagerImplTest.latch.countDown(); Thread.sleep(10000); 'hello'");
+        
+        scriptManager.save(script);
+        
+        assertEquals("hello", scriptManager.execute(script.getScript()));
+        
+        ScriptJob sj = new ScriptJob();
+        sj.setName("test_123");
+        sj.setDescription("test");
+        sj.setExpression("bad expression");
+        sj.setScript(script);
+        sj.setMisfireAllowed(true);
+        
+        try {
+            scriptJobDao.save(sj);
+            fail("Expected parse exception");
+        } catch (CronParseException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        sj.setExpression("* * * ? * *");
+        scriptJobDao.save(sj);
+        scriptJobDao.save(sj);
+        latch.await(2, TimeUnit.SECONDS);
+        
+        assertEquals(1, latch.getCount());
         
         List<ScriptJob> jobs = scriptJobDao.listAll();
         assertEquals(1, jobs.size());
