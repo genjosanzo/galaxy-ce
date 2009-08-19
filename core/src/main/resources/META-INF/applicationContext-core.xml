@@ -106,7 +106,7 @@
               <bean class="org.mule.galaxy.event.listener.activity.ItemMovedEventListener" parent="abstractActivityLogger"/>
               <bean class="org.mule.galaxy.event.listener.activity.CommentCreatedEventListener" parent="abstractActivityLogger"/>
               <!-- properties -->
-              <bean class="org.mule.galaxy.event.listener.activity.PropertyChangedEventListener" parent="abstractActivityLogger"/>
+              <ref bean="propertyChangedEventListener"/>
               <!-- misc -->
               <bean class="org.mule.galaxy.event.listener.activity.LifecycleTransitionEventListener" parent="abstractActivityLogger"/>
 
@@ -130,6 +130,10 @@
       </constructor-arg>
   </bean>
   
+  <bean id="propertyChangedEventListener"
+        class="org.mule.galaxy.event.listener.activity.PropertyChangedEventListener" 
+        parent="abstractActivityLogger"/>
+              
   <bean id="registryInitializer" class="org.mule.galaxy.impl.jcr.RegistryInitializer" 
     init-method="intialize" lazy-init="false">
     <property name="artifactExtension" ref="artifactExtension" />
