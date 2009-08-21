@@ -30,10 +30,11 @@ import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.WPolicyException;
 
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -102,13 +103,13 @@ public class PolicyPanel extends AbstractShowable {
         panel.add(table);
 
         saveButton = new Button("Save");
-        saveButton.addClickListener(new ClickListener() {
-
-            public void onClick(Widget arg0) {
+        saveButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+            @Override
+            public void componentSelected(ButtonEvent ce) {
                 save();
             }
-
         });
+
         table.setWidget(1, 0, saveButton);
         table.getCellFormatter().setHorizontalAlignment(1, 0, HasHorizontalAlignment.ALIGN_LEFT);
 
@@ -154,13 +155,13 @@ public class PolicyPanel extends AbstractShowable {
         };
 
         for (Iterator itr = lifecycle2Phase2Panel.entrySet().iterator(); itr.hasNext();) {
-            Map.Entry lifecycleEntry = (Map.Entry)itr.next();
+            Map.Entry lifecycleEntry = (Map.Entry) itr.next();
 
             String lifecycle = (String) lifecycleEntry.getKey();
             Map phase2Panel = (Map) lifecycleEntry.getValue();
 
             for (Iterator pitr = phase2Panel.entrySet().iterator(); pitr.hasNext();) {
-                Map.Entry phaseEntry = (Map.Entry)pitr.next();
+                Map.Entry phaseEntry = (Map.Entry) pitr.next();
 
                 String phase = (String) phaseEntry.getKey();
                 Collection<String> active = ((PolicySelectionPanel) phaseEntry.getValue()).getSelectedPolicyIds();
@@ -181,9 +182,9 @@ public class PolicyPanel extends AbstractShowable {
 
     public static void handlePolicyFailure(Galaxy galaxy, WPolicyException caught) {
         PageInfo page =
-            galaxy.createPageInfo("policy-failure-" + caught.hashCode(),
-                                  new PolicyResultsPanel(galaxy, caught.getPolicyFailures()),
-                                  0);
+                galaxy.createPageInfo("policy-failure-" + caught.hashCode(),
+                        new PolicyResultsPanel(galaxy, caught.getPolicyFailures()),
+                        0);
 
         History.newItem(page.getName());
     }
@@ -200,7 +201,7 @@ public class PolicyPanel extends AbstractShowable {
         AbstractCallback callback = new AbstractCallback(menuPanel) {
             @SuppressWarnings("unchecked")
             public void onSuccess(Object o) {
-               currentPsPanel.selectAndShow((Collection<String>) o);
+                currentPsPanel.selectAndShow((Collection<String>) o);
             }
 
         };

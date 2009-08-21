@@ -434,6 +434,10 @@ a:visited {
     padding: 5px;
 }
 
+.bold-right-label {
+    font-weight: bold;
+    text-align: right;
+}
 
 .error-panel {
     background: #ffc;
@@ -465,6 +469,15 @@ a:visited {
 
 .footer .footer-link {
     cursor:pointer
+}
+
+.footer-link a,  a:visited {
+    color: #707070 ; /* dark gray */
+    text-decoration: none;
+}
+
+.footer-link a:hover {
+    text-decoration: underline;
 }
 
 
@@ -906,7 +919,7 @@ a:visited {
  **/
 .lifecycle-selection-header {
     font-weight: bold;
-    padding-top: 10px;
+    padding-top: 4px;
 }
 
 .qnameListBox-add-row {
@@ -1046,9 +1059,16 @@ a:visited {
 .gwt-HTML {
 }
 
-.gwt-Hyperlink {
+
+.gwt-Hyperlink a, gwt-Hyperlink a:visited{
+    color: #016c96;
+    text-decoration: none;
     cursor: hand;
     cursor: pointer;
+}
+
+.gwt-Hyperlink  a:hover{
+    text-decoration: underline;
 }
 .hyperlink-NewWindow {
     padding-right: 14px;

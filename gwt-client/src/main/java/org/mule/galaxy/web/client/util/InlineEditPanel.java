@@ -21,13 +21,17 @@ package org.mule.galaxy.web.client.util;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.History;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
@@ -80,18 +84,18 @@ public abstract class InlineEditPanel extends Composite {
         row.add(createEditWidget());
         
         saveButton = new Button("Save");
-        saveButton.addClickHandler(new ClickHandler() {
-
-            public void onClick(ClickEvent arg0) {
+        saveButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+            @Override
+            public void componentSelected(ButtonEvent ce) {
                 setEnabled(false);
                 doSave(getSaveCallback());
             }
-            
         });
 
         cancelButton = new Button("Cancel");
-        cancelButton.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent arg0) {
+        cancelButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+            @Override
+            public void componentSelected(ButtonEvent ce) {
                 cancel();
                 showDisplayPanel();
             }

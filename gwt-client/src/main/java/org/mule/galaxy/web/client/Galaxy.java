@@ -268,7 +268,6 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         header.setStyleName("header");
         header.add(rightHeaderPanel);
         logo.setTitle("Home");
-        logo.addStyleName("gwt-Hyperlink");
         logo.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent clickEvent) {
                 History.newItem("browse");

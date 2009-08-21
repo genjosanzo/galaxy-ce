@@ -49,10 +49,10 @@ public class LifecycleSelectionPanel extends AbstractShowable {
         label.setStyleName("lifecycle-selection-header");
         panel.add(label);
         lifecyclesLB = new ListBox();
-        lifecyclesLB.setVisibleItemCount(4);
+        //lifecyclesLB.setVisibleItemCount(4);
         
         phasesLB = new ListBox();
-        phasesLB.setVisibleItemCount(10);
+        //phasesLB.setVisibleItemCount(10);
         
         svc.getLifecycles(new AbstractCallback(menuPanel) {
             public void onSuccess(Object o) {

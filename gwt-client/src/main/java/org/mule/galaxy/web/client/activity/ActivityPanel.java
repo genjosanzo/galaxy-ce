@@ -32,11 +32,12 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ButtonBar;
+import com.extjs.gxt.ui.client.widget.form.DateField;
+import com.extjs.gxt.ui.client.widget.form.DateTimePropertyEditor;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -45,9 +46,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.widgetideas.client.event.KeyDownEvent;
-import com.google.gwt.widgetideas.client.event.KeyDownHandler;
-import com.google.gwt.widgetideas.datepicker.client.DateBox;
 
 import java.util.Collection;
 import java.util.Date;
@@ -65,8 +63,8 @@ public class ActivityPanel extends AbstractFlowComposite {
     private int maxResults;
     private SuggestBox itemSB;
     private TextField<String> textTB;
-    private DateBox startDate;
-    private DateBox endDate;
+    private DateField startDate;
+    private DateField endDate;
     private final ErrorPanel errorPanel;
 
     public ActivityPanel(ErrorPanel errorPanel, final Galaxy galaxy) {
@@ -94,49 +92,10 @@ public class ActivityPanel extends AbstractFlowComposite {
         searchTable.setCellSpacing(3);
         searchPanel.add(searchTable);
 
-        startDate = new DateBox();
-        startDate.setStyleName("x-form-text");
-        endDate = new DateBox();
-        endDate.setStyleName("x-form-text");
-
-        DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy-MM-dd");
-        startDate.setAnimationEnabled(true);
-        startDate.setDateFormat(dateFormat);
-        endDate.setAnimationEnabled(true);
-        endDate.setDateFormat(dateFormat);
-
-        startDate.addKeyDownHandler(new KeyDownHandler() {
-            public void onKeyDown(KeyDownEvent e) {
-                if (e.getKeyCode() == KEY_RIGHT
-                        && startDate.getCursorPos() == startDate.getText().length()) {
-                    startDate.hideDatePicker();
-                    endDate.setFocus(true);
-                }
-            }
-        });
-
-        endDate.addKeyDownHandler(new KeyDownHandler() {
-            public void onKeyDown(KeyDownEvent e) {
-                if ((e.getKeyCode() == KEY_LEFT) && endDate.getCursorPos() == 0) {
-                    startDate.setFocus(true);
-                    endDate.hideDatePicker();
-                }
-            }
-        });
-
-        /*
-        final DatePicker picker = new DatePicker();
-        picker.addListener(Events.Select, new Listener<ComponentEvent>() {
-            public void handleEvent(ComponentEvent be) {
-                String d = DateTimeFormat.getShortDateFormat().format(picker.getValue());
-                Info.display("Date Selected", "You selected {0}.", new Params(d));
-            }
-
-        });
-        */
-
-        // always start with today's date
-        startDate.showDate(new Date());
+        startDate = new DateField();
+        startDate.setPropertyEditor(new DateTimePropertyEditor("yyyy-MM-dd"));
+        endDate = new DateField();
+        endDate.setPropertyEditor(new DateTimePropertyEditor("yyyy-MM-dd"));
 
         searchTable.setWidget(0, 0, new Label("From:"));
         searchTable.setWidget(0, 1, startDate);
@@ -236,7 +195,6 @@ public class ActivityPanel extends AbstractFlowComposite {
         errorPanel.clearErrorMessage();
 
         resultsPanel.clear();
-        resultsPanel.add(new Label("Loading..."));
 
         String user = userLB.getValue(userLB.getSelectedIndex());
         String eventType = eventLB.getItemText(eventLB.getSelectedIndex());
@@ -250,32 +208,20 @@ public class ActivityPanel extends AbstractFlowComposite {
             }
 
         };
-        String fromStr = startDate.getText();
-        String toStr = endDate.getText();
-        Date fromDate = null;
-        if (fromStr != null && !"".equals(fromStr)) {
-            try {
-                fromDate = parseDate(fromStr);
-            } catch (DateParseException e) {
-                errorPanel.setMessage("\"From\" date is invalid. It must be in the form of YYYY-MM-DD.");
-                return;
-            }
+
+        Date fromDate = startDate.getValue();
+        Date toDate = endDate.getValue();
+
+        if(fromDate != null && endDate != null) {
+            galaxy.getRegistryService().getActivities(fromDate, toDate, user,
+                    itemSB.getText(),
+                    textTB.getValue(),
+                    eventType, resultStart, maxResults,
+                    ascending, callback);
+
         }
 
-        Date toDate = null;
-        if (toStr != null && !"".equals(toStr)) {
-            try {
-                toDate = parseDate(toStr);
-            } catch (DateParseException e) {
-                errorPanel.setMessage("\"From\" date is invalid. It must be in the form of YYYY-MM-DD.");
-                return;
-            }
-        }
-        galaxy.getRegistryService().getActivities(fromDate, toDate, user,
-                itemSB.getText(),
-                textTB.getValue(),
-                eventType, resultStart, maxResults,
-                ascending, callback);
+
     }
 
     private Date parseDate(String s) throws DateParseException {

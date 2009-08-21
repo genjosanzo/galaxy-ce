@@ -165,14 +165,14 @@ public class WidgetHelper extends Composite {
 
         cp.addListener(Events.Expand, new Listener<ComponentEvent>() {
             public void handleEvent(ComponentEvent ce) {
-                cp.getHeader().setToolTip("Click to collapse.");
+                cp.getHeader().setToolTip("Click to Collapse.");
                 // FIXME: create toolIcon
                 cp.setHeading(header + createFauxLink(" [less]"));
             }
         });
         cp.addListener(Events.Collapse, new Listener<ComponentEvent>() {
             public void handleEvent(ComponentEvent ce) {
-                cp.getHeader().setToolTip("Click to expand.");
+                cp.getHeader().setToolTip("Click to Expand.");
                 // FIXME: create toolIcon
                 cp.setHeading(header + createFauxLink(" [more]"));
             }
@@ -281,5 +281,12 @@ public class WidgetHelper extends Composite {
     public WidgetHelper() {
         super();
     }
+
+    public static Label ColumnLabel(String s) {
+        Label l = new Label(s);
+        l.addStyleName("bold-right-label");
+        return l;
+    }
+
 
 }
