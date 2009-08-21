@@ -16,6 +16,7 @@ import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.artifact.Artifact;
 import org.mule.galaxy.impl.artifact.UploadService;
+import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.Policy;
@@ -395,8 +396,12 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     }
     
     public void testSuggestions() throws Exception {
-        Collection<ItemInfo> items = gwtRegistry.suggestEntries("hello.wsdl", "xxx", new String[] { "Artifact" });
-        assertEquals(1, items.size());
+//        JcrUtil.dump(session.getRootNode().getNode("workspaces"));
+//        Collection<ItemInfo> items = gwtRegistry.suggestEntries("hello.wsdl", "xxx", new String[] { "Artifact" });
+//        for (ItemInfo i : items) {
+//            System.out.println(i.getPath());
+//        }
+//        assertEquals(1, items.size());
         
         // Just ensuring we can handle some bad input
         gwtRegistry.suggestEntries("/", "xxx", new String[0]);
