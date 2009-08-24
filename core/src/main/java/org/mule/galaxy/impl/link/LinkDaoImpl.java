@@ -321,9 +321,9 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
         }
 
         if (!like) {
-            q.add(OpRestriction.eq("name", path));
+            q.add(OpRestriction.eq("name", JcrUtil.stringToXPathLiteralWithoutQuotes(path)));
         } else {
-            q.add(OpRestriction.like("name", path));
+            q.add(OpRestriction.like("name", JcrUtil.stringToXPathLiteralWithoutQuotes(path)));
         }
         
         SearchResults results = getRegistry().search(q);

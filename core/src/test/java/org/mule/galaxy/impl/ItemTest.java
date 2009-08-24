@@ -17,7 +17,7 @@ import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
 
 public class ItemTest extends AbstractGalaxyTest {
-    public void testEntries() throws Exception {
+    public void testItems() throws Exception {
         Item root = registry.getItems().iterator().next();
         assertEquals("/Default Workspace", root.getPath());
         
@@ -60,6 +60,9 @@ public class ItemTest extends AbstractGalaxyTest {
      
         Item item = root.getItem("MyService").getItem("1.0").getItem("!@#$%^&*()'_+`-=<>.,{}|\\");
         assertNotNull(item);
+        
+        SearchResults results = registry.search(new Query().add(OpRestriction.eq("name", e.getName())));
+        assertEquals(1, results.getTotal());
          
     }
     
