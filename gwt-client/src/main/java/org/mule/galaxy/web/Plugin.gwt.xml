@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--<!DOCTYPE module PUBLIC "-//Google //DTD gwt-module-configuration XML V1.0//EN"-->
+            <!--"http://google-web-toolkit.googlecode.com/svn/tags/1.4.61/distro-source/core/src/gwt-module.dtd">-->
+        
+<module>
+
+    <source path="client/plugin"/>
+
+</module>

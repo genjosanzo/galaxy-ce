@@ -94,11 +94,14 @@ import org.mule.galaxy.util.SecurityUtils;
 import org.mule.galaxy.util.UserUtils;
 import org.mule.galaxy.view.ArtifactViewManager;
 import org.mule.galaxy.view.View;
+import org.mule.galaxy.web.GwtManager;
+import org.mule.galaxy.web.GwtPlugin;
 import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
 import org.mule.galaxy.web.rpc.LinkInfo;
+import org.mule.galaxy.web.rpc.Plugin;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.WActivity;
@@ -146,6 +149,22 @@ public class RegistryServiceImpl implements RegistryService {
 
     private UploadService uploadService;
     
+    private GwtManager gwtManager;
+    
+    public Collection<Plugin> getPlugins() {
+        Collection<GwtPlugin> plugins = gwtManager.getGwtPlugins();
+        ArrayList<Plugin> wPlugins = new ArrayList<Plugin>();
+        for (GwtPlugin p : plugins) {
+            if (!p.getName().equals("core")) {
+                Plugin wp = new Plugin();
+                wp.setName(p.getName());
+                wp.setRootToken(p.getRootToken());
+                wPlugins.add(wp);
+            }
+        }
+        return wPlugins;
+    }
+
     public List<WExtensionInfo> getExtensions() throws RPCException {
         ArrayList<WExtensionInfo> exts = new ArrayList<WExtensionInfo>();
         for (Extension e : registry.getExtensions()) {
@@ -2089,4 +2108,9 @@ public class RegistryServiceImpl implements RegistryService {
     public void setUploadService(UploadService uploadService) {
         this.uploadService = uploadService;
     }
+
+    public void setGwtManager(GwtManager gwtManager) {
+        this.gwtManager = gwtManager;
+    }
+    
 }

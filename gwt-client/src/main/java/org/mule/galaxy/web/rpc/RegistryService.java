@@ -18,6 +18,8 @@
 
 package org.mule.galaxy.web.rpc;
 
+import com.google.gwt.user.client.rpc.RemoteService;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -27,10 +29,10 @@ import java.util.Set;
 
 import org.mule.galaxy.web.client.RPCException;
 
-import com.google.gwt.user.client.rpc.RemoteService;
-
 public interface RegistryService extends RemoteService {
 
+    Collection<Plugin> getPlugins();
+    
     Collection<ItemInfo> getItems(String parentId, boolean traverseUpParents) throws RPCException;
 
     Collection<ItemInfo> getItemsInPath(String parentPath) throws RPCException;

@@ -41,7 +41,7 @@
       <property name="authenticationManager"><ref bean="authenticationManager"/></property>
       <property name="alwaysUseDefaultTargetUrl" value="true"/>
       <property name="authenticationFailureUrl"><value>/login.jsp?login_error=1</value></property>
-      <property name="defaultTargetUrl"><value>/index.html</value></property>
+      <property name="defaultTargetUrl"><value>/index.jsp</value></property>
       <property name="filterProcessesUrl"><value>/j_acegi_security_check</value></property>
       <property name="rememberMeServices"><ref bean="rememberMeServices"/></property>
    </bean>
@@ -93,7 +93,7 @@
       <property name="userDetailsService" ref="userManager" />
       <property name="switchUserUrl"><value>/j_acegi_switch_user</value></property>
       <property name="exitUserUrl"><value>/j_acegi_exit_user</value></property>
-      <property name="targetUrl"><value>/index.html</value></property>
+      <property name="targetUrl"><value>/index.jsp</value></property>
    </bean>
 
 </beans>

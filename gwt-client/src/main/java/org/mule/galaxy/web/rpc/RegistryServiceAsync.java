@@ -18,6 +18,8 @@
 
 package org.mule.galaxy.web.rpc;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -25,9 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 public interface RegistryServiceAsync {
+    void getPlugins(AsyncCallback<Collection<Plugin>> callack);
+    
     void getItems(String parentId, boolean traverseUpParents, AsyncCallback callback);
 
     void getItemsInPath(String parentPath, AsyncCallback callback);

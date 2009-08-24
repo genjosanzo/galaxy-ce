@@ -16,7 +16,6 @@ import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.artifact.Artifact;
 import org.mule.galaxy.impl.artifact.UploadService;
-import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.Policy;
@@ -27,6 +26,7 @@ import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.LinkInfo;
+import org.mule.galaxy.web.rpc.Plugin;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.WApprovalMessage;
@@ -410,6 +410,11 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         gwtRegistry.suggestEntries("!@#$%^&*(){}[]?'\"><", "xxx", new String[0]);
 //        
         
+    }
+    
+    public void testGwtPlugins() throws Exception {
+        Collection<Plugin> plugins = gwtRegistry.getPlugins();
+        assertEquals(0, plugins.size());
     }
     
     private final class FauxPolicy implements Policy {

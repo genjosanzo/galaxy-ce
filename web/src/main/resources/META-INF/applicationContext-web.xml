@@ -9,6 +9,23 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
 
+    <bean id="gwtManager" class="org.mule.galaxy.web.GwtManager"  />
+    
+    <bean id="gwtRpcMappings" factory-bean="gwtManager" factory-method="getRpcServices"/>
+    
+    <bean id="coreGwtModule" class="org.mule.galaxy.web.GwtPlugin">
+      <property name="name" value="core"/>
+      <property name="moduleName" value="org.mule.galaxy.web.Galaxy"/>
+      <property name="rpcServices">
+        <map>
+          <entry key="/registry.rpc" value-ref="gwtRegistry" />
+          <entry key="/securityService.rpc" value-ref="gwtSecurityService" />
+          <entry key="/heartbeat.rpc" value-ref="heartbeatService"/>
+          <entry key="/admin.rpc" value-ref="adminService"/>
+        </map>
+      </property>
+    </bean>
+    
     <bean id="gwtRegistry" class="org.mule.galaxy.web.server.RegistryServiceImpl">
       <property name="registry" ref="registry"/>
       <property name="artifactTypeDao" ref="artifactTypeDao"/>
@@ -22,6 +39,7 @@
       <property name="typeManager" ref="typeManager"/>
       <property name="uploadService" ref="uploadService"/>
       <property name="userManager" ref="userManager"/>
+      <property name="gwtManager" ref="gwtManager"/>
       <property name="contextPathResolver">
           <bean class="org.mule.galaxy.web.server.ContextPathResolver"/>
       </property>

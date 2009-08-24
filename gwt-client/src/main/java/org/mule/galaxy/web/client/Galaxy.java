@@ -17,7 +17,6 @@
  */
 package org.mule.galaxy.web.client;
 
-import static org.mule.galaxy.web.client.WidgetHelper.newSpacerPipe;
 import com.extjs.gxt.ui.client.GXT;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -47,6 +46,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -57,10 +57,10 @@ import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.item.RepositoryMenuPanel;
 import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
 import org.mule.galaxy.web.client.registry.SearchPanel;
+import org.mule.galaxy.web.client.ui.AdministrationConstants;
 import org.mule.galaxy.web.client.ui.BaseConstants;
 import org.mule.galaxy.web.client.ui.BaseMessages;
 import org.mule.galaxy.web.client.ui.RepositoryConstants;
-import org.mule.galaxy.web.client.ui.AdministrationConstants;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -68,12 +68,15 @@ import org.mule.galaxy.web.rpc.AdminService;
 import org.mule.galaxy.web.rpc.AdminServiceAsync;
 import org.mule.galaxy.web.rpc.HeartbeatService;
 import org.mule.galaxy.web.rpc.HeartbeatServiceAsync;
+import org.mule.galaxy.web.rpc.Plugin;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.SecurityService;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WExtensionInfo;
 import org.mule.galaxy.web.rpc.WUser;
+
+import static org.mule.galaxy.web.client.WidgetHelper.newSpacerPipe;
 
 
 /**
@@ -111,6 +114,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
     private AdministrationConstants administrationConstants;
     private RepositoryConstants repositoryConstants;
+    protected Collection<Plugin> plugins;
 
     /**
      * This is the entry point method.
@@ -162,7 +166,6 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         tabPanel.setAutoHeight(true);
 
         tabNames.add("browse");
-        tabNames.add("search");
 
         tabPanel.addListener(Events.Select, new SelectionListener<TabPanelEvent>() {
 
@@ -189,18 +192,13 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
             }
         });
 
-        final Galaxy galaxy = this;
         registryService.getUserInfo(new AbstractCallback(repositoryPanel) {
             public void onSuccess(Object o) {
                 user = (WUser) o;
 
                 // always the left most item
                 rightHeaderPanel.insert(new Label("Welcome, " + user.getName()), 0);
-
-                suppressTabHistory = true;
-                loadTabs(galaxy);
-                suppressTabHistory = false;
-                showFirstPage();
+                retrievePlugins();
             }
         });
 
@@ -210,6 +208,19 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         base.layout(true);
 
         new HeartbeatTimer(Galaxy.this);
+    }
+
+
+    private void retrievePlugins() {
+        registryService.getPlugins(new AbstractCallback<Collection<Plugin>>(repositoryPanel) {
+            public void onSuccess(Collection<Plugin> plugins) {
+                Galaxy.this.plugins = plugins;
+                suppressTabHistory = true;
+                loadTabs(Galaxy.this);
+                suppressTabHistory = false;
+                showFirstPage();
+            }
+        });
     }
 
 
@@ -322,10 +333,10 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     }
 
     public PageInfo createPageInfo(String token,
-                                   final AbstractShowable composite,
+                                   final Widget composite,
                                    int tab) {
         PageInfo page = new PageInfo(token, tab) {
-            public AbstractShowable createInstance() {
+            public Widget createInstance() {
                 return composite;
             }
         };
@@ -334,19 +345,35 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     }
 
     protected void loadTabs(final Galaxy galaxy) {
-        tabPanel.add(createEmptyTab("Registry", repositoryConstants.repo_TabTip()) );
+        tabPanel.add(createEmptyTab("Repository", repositoryConstants.repo_TabTip()) );
         createRepositoryPanels();
 
         int searchIdx = tabPanel.getItemCount();
         createPageInfo("search", new SearchPanel(this), searchIdx);
         tabPanel.add(createEmptyTab("Search"));
+        tabNames.add("search");
 
+        loadPluginTabs();
+        
         if (showAdminTab(user)) {
             adminTabIndex = tabPanel.getItemCount();
             tabNames.add(adminTabIndex, "admin");
             createPageInfo("admin", createAdministrationPanel(), adminTabIndex);
             tabPanel.add(createEmptyTab("Administration", administrationConstants.admin_TabTip()));
         }
+    }
+
+    protected void loadPluginTabs() {
+        for (Plugin plugin : getPlugins()) {   
+            int idx = tabPanel.getItemCount();
+            createPageInfo(plugin.getRootToken(), new PluginPanel(plugin), idx);
+            tabNames.add(idx, plugin.getRootToken());
+            tabPanel.add(createEmptyTab(plugin.getName()));
+        }
+    }
+
+    protected Collection<Plugin> getPlugins() {
+        return plugins;
     }
 
     protected TabItem createEmptyTab(String name, String toolTip) {
