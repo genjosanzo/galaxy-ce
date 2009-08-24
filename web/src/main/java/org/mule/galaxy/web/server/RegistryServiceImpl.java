@@ -503,9 +503,9 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public Collection<ItemInfo> suggestEntries(String query, String excludePath, String[] types) throws RPCException {
+    public Collection<ItemInfo> suggestEntries(String query, boolean recursive, String excludePath, String[] types) throws RPCException {
         try {
-            SearchResults results = registry.suggest(query, 10, excludePath, types);
+            SearchResults results = registry.suggest(query, recursive, 10, excludePath, types);
             
             ArrayList<ItemInfo> entries = new ArrayList<ItemInfo>();
             for (Item i : results.getResults()) {

@@ -70,7 +70,7 @@ public interface RegistryServiceAsync {
                       int maxResults, 
                       AsyncCallback callback);
     
-    void suggestEntries(String query, String exclude, String[] type, AsyncCallback<Collection<ItemInfo>> callback);
+    void suggestEntries(String query, boolean recursive, String exclude, String[] type, AsyncCallback<Collection<ItemInfo>> callback);
     
     void getIndexes(AsyncCallback callback);
 

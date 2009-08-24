@@ -75,7 +75,7 @@ public interface Registry {
 
     SearchResults search(Query query) throws RegistryException, QueryException;
     
-    SearchResults suggest(final String path, final int maxResults, final String excludePath, String... types)
+    SearchResults suggest(final String path, boolean recursive, final int maxResults, final String excludePath, String... types)
         throws RegistryException, QueryException;
     
     /**

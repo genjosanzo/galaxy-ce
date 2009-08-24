@@ -100,7 +100,7 @@ public class LinksRenderer extends AbstractListRenderer {
             }
         };
         
-        suggest = new ValidatableSuggestBox(validator, new ItemPathOracle(galaxy, errorPanel, "xxx"));
+        suggest = new ValidatableSuggestBox(validator, new ItemPathOracle(galaxy, errorPanel, true, "xxx"));
         addPanel.add(suggest);
 
         addButton = new Button();

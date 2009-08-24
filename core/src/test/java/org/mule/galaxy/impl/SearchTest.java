@@ -164,25 +164,25 @@ public class SearchTest extends AbstractGalaxyTest {
         t2.newItem("Test3", workspaceType).getItem();
         w.newItem("NotAWorkspace", typeManager.getTypeByName(TypeManager.BASE_TYPE));
         
-        SearchResults results = registry.suggest("Work", 10, "/bar", TypeManager.WORKSPACE);
+        SearchResults results = registry.suggest("Work", true, 10, "/bar", TypeManager.WORKSPACE);
         assertEquals(1, results.getTotal());
         
-        results = registry.suggest("Test2", 10, "/bar", TypeManager.WORKSPACE);
+        results = registry.suggest("Test2", true, 10, "/bar", TypeManager.WORKSPACE);
         assertEquals(2, results.getTotal());
         
-        results = registry.suggest("Test3", 10, "/bar", TypeManager.WORKSPACE);
+        results = registry.suggest("Test3", true, 10, "/bar", TypeManager.WORKSPACE);
         assertEquals(1, results.getTotal());
         
-        results = registry.suggest("1/Test2/T", 10, "/bar", TypeManager.WORKSPACE);
+        results = registry.suggest("1/Test2/T", true, 10, "/bar", TypeManager.WORKSPACE);
         assertEquals(1, results.getTotal());
 
-        results = registry.suggest("/Test1/Test2/", 10, "/bar", TypeManager.WORKSPACE);
+        results = registry.suggest("/Test1/Test2/", true, 10, "/bar", TypeManager.WORKSPACE);
         assertEquals(1, results.getTotal());
 
-        results = registry.suggest("/Test1/Test2/T", 10, "/bar", TypeManager.WORKSPACE);
+        results = registry.suggest("/Test1/Test2/T", true, 10, "/bar", TypeManager.WORKSPACE);
         assertEquals(1, results.getTotal());
 
-        results = registry.suggest("/test1/test2/t", 10, "/bar", TypeManager.WORKSPACE);
+        results = registry.suggest("/test1/test2/t", true, 10, "/bar", TypeManager.WORKSPACE);
         assertEquals(1, results.getTotal());
     }
     

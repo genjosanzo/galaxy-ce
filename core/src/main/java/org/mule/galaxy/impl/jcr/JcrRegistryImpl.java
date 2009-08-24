@@ -506,7 +506,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
     }
 
     
-    public SearchResults suggest(final String p, final int maxResults, final String excludePath, final String... typeNames)
+    public SearchResults suggest(final String p, 
+                                 final boolean recursive, 
+                                 final int maxResults, 
+                                 final String excludePath, 
+                                 final String... typeNames)
         throws RegistryException, QueryException {
         return (SearchResults) executeWithQueryException(new JcrCallback() {
             
@@ -583,7 +587,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                     Node node = nodes.nextNode();
 
                     try {
-                        addNodes(node, results);
+                        addNodes(node, results, recursive);
                     } catch (RegistryException e) {
                         throw new RuntimeException(e);
                     }
@@ -597,7 +601,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
             }
 
             private void addNodes(Node node, 
-                                  Set<Item> results) throws RepositoryException, ItemNotFoundException,
+                                  Set<Item> results,
+                                  boolean recursive) throws RepositoryException, ItemNotFoundException,
                 AccessDeniedException, RegistryException {
 
                 try {
@@ -614,11 +619,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                     return;
                 }
                 
-                for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
-                    addNodes(nodes.nextNode(), results);
-                    
-                    if (results.size() == maxResults) {
-                        return;
+                if (recursive) {
+                    for (NodeIterator nodes = node.getNodes(); nodes.hasNext();) {
+                        addNodes(nodes.nextNode(), results, recursive);
+                        
+                        if (results.size() == maxResults) {
+                            return;
+                        }
                     }
                 }
             }

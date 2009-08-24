@@ -17,24 +17,26 @@ public class ItemPathOracle extends SuggestOracle {
     private ErrorPanel errorPanel;
     private final String exclude;
     private final String[] types;
+    private boolean recursive;
     
-    public ItemPathOracle(Galaxy galaxy, ErrorPanel errorPanel, String exclude, String... types) {
-        super();
+    public ItemPathOracle(Galaxy galaxy, ErrorPanel errorPanel, boolean recursive, String exclude, String... types) {
+        super();    
         this.errorPanel = errorPanel;
         this.galaxy = galaxy;
+        this.recursive = recursive;
         this.exclude = exclude;
         this.types = types;
     }
 
     public ItemPathOracle(Galaxy galaxy, ErrorPanel errorPanel) {
-        this(galaxy, errorPanel, "xxx", new String[0]);
+        this(galaxy, errorPanel, true, "xxx", new String[0]);
     }
 
 
     @Override
     public void requestSuggestions(final Request request, final Callback callback) {
-        galaxy.getRegistryService().suggestEntries(request.getQuery(), exclude, types,
-            new AbstractCallback<Collection<ItemInfo>>(errorPanel) {
+        galaxy.getRegistryService().suggestEntries(request.getQuery(), recursive, exclude,
+            types, new AbstractCallback<Collection<ItemInfo>>(errorPanel) {
 
             public void onSuccess(Collection<ItemInfo> entries) {
                 updateSuggestions(entries, request, callback);
