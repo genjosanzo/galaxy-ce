@@ -8,6 +8,7 @@ public class ScriptJob implements Identifiable {
     private String name;
     private String description;
     private String expression;
+    private boolean concurrentExecutionAllowed;
     
     public String getId() {
         return id;
@@ -39,4 +40,11 @@ public class ScriptJob implements Identifiable {
     public void setExpression(String expression) {
         this.expression = expression;
     }
+    public boolean isConcurrentExecutionAllowed() {
+        return concurrentExecutionAllowed;
+    }
+    public void setConcurrentExecutionAllowed(boolean concurrentExecutionAllowed) {
+        this.concurrentExecutionAllowed = concurrentExecutionAllowed;
+    }
+    
 }

@@ -10,13 +10,16 @@ public class WScriptJob implements IsSerializable, BeanModelTag {
     private String description;
     private String expression;
     private String scriptName;
+    private boolean concurrentExecutionAllowed;
     
-    public WScriptJob(String description, String expression, String id, String name, String script, String scriptName) {
+    public WScriptJob(String description, String expression, String id, String name, boolean concurrentExecutionAllowed,
+                      String script, String scriptName) {
         super();
         this.description = description;
         this.expression = expression;
         this.id = id;
         this.name = name;
+        this.concurrentExecutionAllowed = concurrentExecutionAllowed;
         this.script = script;
         this.scriptName = scriptName;
     }
@@ -59,4 +62,13 @@ public class WScriptJob implements IsSerializable, BeanModelTag {
     public String getScriptName() {
         return scriptName;
     }
+
+    public boolean isConcurrentExecutionAllowed() {
+        return concurrentExecutionAllowed;
+    }
+
+    public void setConcurrentExecutionAllowed(boolean concurrentExecutionAllowed) {
+        this.concurrentExecutionAllowed = concurrentExecutionAllowed;
+    }
+    
 }

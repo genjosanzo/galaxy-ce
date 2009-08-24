@@ -77,7 +77,7 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
     }
     
 
-    public void xxtestMisfire() throws Exception {
+    public void testConcurrentExecution() throws Exception {
         latch = new CountDownLatch(2);
         
         // This script will sleep for 10 seconds. Given the short time, it should only fire once and 
@@ -86,46 +86,44 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
         Script script = new Script();
         script.setName("test");
         script.setRunOnStartup(true);
-        script.setScript("println 'hello'; org.mule.galaxy.impl.ScriptManagerImplTest.latch.countDown(); Thread.sleep(10000); 'hello'");
+        script.setScript("org.mule.galaxy.impl.ScriptManagerImplTest.latch.countDown(); println 'hello2'; Thread.sleep(5000);");
         
         scriptManager.save(script);
-        
-        assertEquals("hello", scriptManager.execute(script.getScript()));
-        
+       
         ScriptJob sj = new ScriptJob();
         sj.setName("test_123");
         sj.setDescription("test");
-        sj.setExpression("bad expression");
         sj.setScript(script);
-//        sj.setMisfireAllowed(true);
-        
-        try {
-            scriptJobDao.save(sj);
-            fail("Expected parse exception");
-        } catch (CronParseException e) {
-            System.out.println(e.getMessage());
-        }
-        
         sj.setExpression("* * * ? * *");
         scriptJobDao.save(sj);
-        scriptJobDao.save(sj);
-        latch.await(2, TimeUnit.SECONDS);
+        latch.await(3, TimeUnit.SECONDS);
         
         assertEquals(1, latch.getCount());
-        
-        List<ScriptJob> jobs = scriptJobDao.listAll();
-        assertEquals(1, jobs.size());
-        
-        sj.setName("Foo_Bar");
-        scriptJobDao.save(sj);
+    }
 
-        latch = new CountDownLatch(1);
-        latch.await(10, TimeUnit.SECONDS);
+    public void testConcurrentExecutionAllowed() throws Exception {
+        latch = new CountDownLatch(2);
+        
+        // This script will sleep for 10 seconds. However, since we enable concurrent execution
+        // it will run more than once.
+        
+        Script script = new Script();
+        script.setName("test");
+        script.setRunOnStartup(true);
+        script.setScript("org.mule.galaxy.impl.ScriptManagerImplTest.latch.countDown(); println 'hello2'; Thread.sleep(5000);");
+        
+        scriptManager.save(script);
+       
+        ScriptJob sj = new ScriptJob();
+        sj.setName("test_123");
+        sj.setDescription("test");
+        sj.setScript(script);
+        sj.setExpression("* * * ? * *");
+        sj.setConcurrentExecutionAllowed(true);
+        scriptJobDao.save(sj);
+        latch.await(4, TimeUnit.SECONDS);
+        
         assertEquals(0, latch.getCount());
-        
-        scriptManager.delete(script.getId());
-        
-        jobs = scriptJobDao.listAll();
-        assertEquals(0, jobs.size());
+                
     }
 }

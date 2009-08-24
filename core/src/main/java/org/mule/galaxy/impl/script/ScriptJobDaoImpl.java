@@ -54,7 +54,14 @@ public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob> {
         super.doSave(t, node, isNew, isMoved, session);
         
         try {
-            JobDetail job = new JobDetail(name, null, ExecuteScriptJob.class);
+            Class cls; 
+            if (!t.isConcurrentExecutionAllowed()) {
+                cls = StatefulExecuteScriptJob.class;
+            } else {
+                cls = ExecuteScriptJob.class;
+            }
+            JobDetail job = new JobDetail(name, null, cls);
+            
             job.setDurability(true);
             job.getJobDataMap().put(ExecuteScriptJob.SCRIPT_ID, t.getScript().getId());
             

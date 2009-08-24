@@ -129,7 +129,8 @@ public class AdminServiceImpl implements AdminService {
 
     private WScriptJob toWeb(ScriptJob s) {
         return new WScriptJob(s.getDescription(), s.getExpression(), s.getId(), 
-                              s.getName(), s.getScript().getId(), s.getScript().getName());
+                              s.getName(), s.isConcurrentExecutionAllowed(), 
+                              s.getScript().getId(), s.getScript().getName());
     }
 
 
@@ -147,6 +148,7 @@ public class AdminServiceImpl implements AdminService {
         ScriptJob s = new ScriptJob();
         s.setId(ws.getId());
         s.setName(ws.getName());
+        s.setConcurrentExecutionAllowed(ws.isConcurrentExecutionAllowed());
         
         try {
             s.setScript(scriptManager.get(ws.getScript()));

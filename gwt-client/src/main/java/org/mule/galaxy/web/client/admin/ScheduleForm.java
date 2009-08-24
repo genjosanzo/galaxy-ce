@@ -30,6 +30,7 @@ import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.tips.ToolTipConfig;
@@ -47,6 +48,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
     private TextField<String> cronTB;
     private TextArea descriptionTA;
     private WScriptJob job;
+    private CheckBox concurrentCB;
 
     public ScheduleForm(AdministrationPanel administrationPanel) {
         super(administrationPanel, "schedules", "Scheduled item was saved.", "Scheduled item was deleted.",
@@ -73,6 +75,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
         table.setText(row++, 0, "Name:");
         table.setText(row++, 0, "Description:");
         table.setText(row++, 0, "Cron Command:");
+        table.setText(row++, 0, "Allow Concurrent Execution:");
 
         row = 0;
         scriptLB = new ValidatableListBox(new StringNotEmptyValidator());
@@ -98,13 +101,19 @@ public class ScheduleForm extends AbstractAdministrationForm {
         cronTB = new TextField<String>();
         cronTB.setAllowBlank(false);
         cronTB.setValue(job.getExpression());
-
+        
         ToolTipConfig ttcfg = new ToolTipConfig("Cron Help:", getCronHelpString());
         ttcfg.setTrackMouse(true);
         ttcfg.setAutoHide(false);
         cronTB.setToolTip(ttcfg);
 
         table.setWidget(row, 1, cronTB);
+        
+        row++;
+        concurrentCB = new CheckBox();
+        concurrentCB.setValue(job.isConcurrentExecutionAllowed());
+        table.setWidget(row, 1, concurrentCB);
+        
         styleHeaderColumn(table);
     }
 
@@ -187,6 +196,8 @@ public class ScheduleForm extends AbstractAdministrationForm {
         job.setName(nameTB.getValue());
         job.setDescription(descriptionTA.getValue());
         job.setExpression(cronTB.getValue());
+        job.setConcurrentExecutionAllowed(concurrentCB.getValue());
+        
         ListBox lb = scriptLB.getListBox();
         int selectedIndex = lb.getSelectedIndex();
         if (selectedIndex != -1) {
