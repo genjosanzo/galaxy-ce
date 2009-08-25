@@ -4,7 +4,6 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
