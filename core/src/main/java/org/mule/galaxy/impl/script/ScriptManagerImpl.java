@@ -1,11 +1,14 @@
 package org.mule.galaxy.impl.script;
 
 import groovy.lang.Binding;
+import groovy.lang.GroovyCodeSource;
 import groovy.lang.GroovyShell;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
@@ -43,6 +46,10 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
     private ScriptJobDaoImpl scriptJobDao;
     
     private ActivityManager activityManager;
+
+    private GroovyShell shell;
+
+    private Map<String,GroovyCodeSource> cache = new HashMap<String, GroovyCodeSource>();
     
     public ScriptManagerImpl() throws Exception {
         super(Script.class, "scripts", true);
@@ -68,6 +75,21 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
         }
     }
     
+    @Override
+    public void delete(String id) {
+        super.delete(id);
+        cache.remove(id);
+    }
+
+    @Override
+    protected void doSave(Script t, Node node, boolean isNew, boolean isMoved, Session session)
+        throws RepositoryException {
+        if (t.getId() != null) {
+            cache.remove(t.getId());
+        }
+        super.doSave(t, node, isNew, isMoved, session);
+    }
+
     public String execute(final String scriptText) throws AccessException, RegistryException {
         return execute(scriptText, null);
     }
@@ -85,17 +107,26 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
         for (Map.Entry<String, Object> e : scriptVariables.entrySet()) {
             binding.setProperty(e.getKey(), e.getValue());
         }
-
         if (script != null) {
             binding.setProperty("script", script);
+        }
+        
+        final GroovyShell shell = new GroovyShell(Thread.currentThread().getContextClassLoader(), binding);
+        final GroovyCodeSource source; 
+        if (script != null && cache.containsKey(script.getId())) {
+            source = cache.get(script.getId());
+        } else {
+            source = new GroovyCodeSource(scriptText, "script" + new Integer(scriptText.hashCode()).toString().replace('-', 'm'), "");
+            if (script != null) {
+                cache.put(script.getId(), source);
+            }
         }
         
         try {
             return (String)JcrUtil.doInTransaction(getSessionFactory(), new JcrCallback() {
 
                 public Object doInJcr(Session session) throws IOException, RepositoryException {
-                    GroovyShell shell = new GroovyShell(Thread.currentThread().getContextClassLoader(), binding);
-                    Object result = shell.evaluate(scriptText);
+                    Object result = shell.evaluate(source);
                     return result == null ? null : result.toString();
                 }
                 
@@ -105,7 +136,6 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
             throw new RegistryException(e1);
         }
     }
-
 
     @Override
     protected void doDelete(String id, Session session) throws RepositoryException {
