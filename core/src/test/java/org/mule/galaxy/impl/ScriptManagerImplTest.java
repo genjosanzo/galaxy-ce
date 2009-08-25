@@ -50,7 +50,7 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
             scriptJobDao.save(sj);
             fail("Expected parse exception");
         } catch (CronParseException e) {
-            System.out.println(e.getMessage());
+            System.out.println("(expected error): " + e.getMessage());
         }
         
         sj.setExpression("* * * ? * *");
@@ -77,7 +77,7 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
     }
     
 
-    public void xtestConcurrentExecution() throws Exception {
+    public void testConcurrentExecution() throws Exception {
         latch = new CountDownLatch(2);
         
         // This script will sleep for 10 seconds. Given the short time, it should only fire once and 

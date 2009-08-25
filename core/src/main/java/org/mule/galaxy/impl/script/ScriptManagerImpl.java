@@ -47,7 +47,8 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
     
     private ActivityManager activityManager;
 
-    private Map<String,GroovyCodeSource> cache = new HashMap<String, GroovyCodeSource>();
+    //@GuardedBy(self)
+    private final Map<String, GroovyCodeSource> cache = new HashMap<String, GroovyCodeSource>();
     
     public ScriptManagerImpl() throws Exception {
         super(Script.class, "scripts", true);
@@ -75,15 +76,19 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
     
     @Override
     public void delete(String id) {
+        synchronized (cache) {
+            cache.remove(id);
+        }
         super.delete(id);
-        cache.remove(id);
     }
 
     @Override
     protected void doSave(Script t, Node node, boolean isNew, boolean isMoved, Session session)
         throws RepositoryException {
         if (t.getId() != null) {
-            cache.remove(t.getId());
+            synchronized (cache) {
+                cache.remove(t.getId());
+            }
         }
         super.doSave(t, node, isNew, isMoved, session);
     }
@@ -110,16 +115,18 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
         }
         
         final GroovyShell shell = new GroovyShell(Thread.currentThread().getContextClassLoader(), binding);
-        final GroovyCodeSource source; 
-        if (script != null && cache.containsKey(script.getId())) {
-            source = cache.get(script.getId());
-        } else {
-            source = new GroovyCodeSource(scriptText, "script" + new Integer(scriptText.hashCode()).toString().replace('-', 'm'), "");
-            if (script != null) {
-                cache.put(script.getId(), source);
+        final GroovyCodeSource source;
+        synchronized (cache) {
+            if (script != null && cache.containsKey(script.getId())) {
+                source = cache.get(script.getId());
+            } else {
+                source = new GroovyCodeSource(scriptText, "script" + Integer.toString(scriptText.hashCode()).replace('-', 'm'), "");
+                if (script != null) {
+                    cache.put(script.getId(), source);
+                }
             }
         }
-        
+
         try {
             return (String)JcrUtil.doInTransaction(getSessionFactory(), new JcrCallback() {
 
