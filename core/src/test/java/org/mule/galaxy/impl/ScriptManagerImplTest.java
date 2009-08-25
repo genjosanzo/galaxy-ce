@@ -101,20 +101,20 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
         assertEquals(1, latch.getCount());
     }
 
-    public void xxxtestConcurrentExecutionAllowed() throws Exception {
+    public void testConcurrentExecutionAllowed() throws Exception {
         latch = new CountDownLatch(2);
         
         // This script will sleep for 10 seconds. However, since we enable concurrent 
         // execution it will run more than once.
         
         Script script = new Script();
-        script.setName("test");
-        script.setScript("org.mule.galaxy.impl.ScriptManagerImplTest.latch.countDown(); println 'hello2'; Thread.sleep(5000);");
+        script.setName("test2");
+        script.setScript("org.mule.galaxy.impl.ScriptManagerImplTest.latch.countDown(); println 'hello2'; Thread.sleep(6000);");
         
         scriptManager.save(script);
        
         ScriptJob sj = new ScriptJob();
-        sj.setName("test_123");
+        sj.setName("test_1234");
         sj.setDescription("test");
         sj.setScript(script);
         sj.setExpression("* * * ? * *");

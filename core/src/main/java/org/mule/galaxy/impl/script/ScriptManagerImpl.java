@@ -1,10 +1,10 @@
 package org.mule.galaxy.impl.script;
 
 import groovy.lang.Binding;
-import groovy.lang.GroovyCodeSource;
 import groovy.lang.GroovyShell;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,9 +47,11 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
     
     private ActivityManager activityManager;
 
-    //@GuardedBy(self)
-    private final Map<String, GroovyCodeSource> cache = new HashMap<String, GroovyCodeSource>();
+    private GroovyShell shell;
     
+    //@GuardedBy(self)
+    private final Map<String, groovy.lang.Script> cache = new HashMap<String, groovy.lang.Script>();
+
     public ScriptManagerImpl() throws Exception {
         super(Script.class, "scripts", true);
     }
@@ -103,26 +105,26 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
     
     public String execute(final String scriptText, Script script) throws AccessException, RegistryException {
         accessControlManager.assertAccess(Permission.EXECUTE_ADMIN_SCRIPTS);
-        
-        final Binding binding = new Binding();
-        binding.setProperty("applicationContext", applicationContext);
-        
-        for (Map.Entry<String, Object> e : scriptVariables.entrySet()) {
-            binding.setProperty(e.getKey(), e.getValue());
-        }
-        if (script != null) {
-            binding.setProperty("script", script);
-        }
-        
-        final GroovyShell shell = new GroovyShell(Thread.currentThread().getContextClassLoader(), binding);
-        final GroovyCodeSource source;
+
+        final groovy.lang.Script gScript; 
         synchronized (cache) {
             if (script != null && cache.containsKey(script.getId())) {
-                source = cache.get(script.getId());
+                gScript = cache.get(script.getId());
             } else {
-                source = new GroovyCodeSource(scriptText, "script" + Integer.toString(scriptText.hashCode()).replace('-', 'm'), "");
+                gScript = getGroovyShell().parse(scriptText);
+                final Binding binding = new Binding();
+                binding.setProperty("applicationContext", applicationContext);
+                
+                for (Map.Entry<String, Object> e : scriptVariables.entrySet()) {
+                    binding.setProperty(e.getKey(), e.getValue());
+                }
                 if (script != null) {
-                    cache.put(script.getId(), source);
+                    binding.setProperty("script", script);
+                }
+                gScript.setBinding(binding);
+                
+                if (script != null) {
+                    cache.put(script.getId(), gScript);
                 }
             }
         }
@@ -131,7 +133,7 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
             return (String)JcrUtil.doInTransaction(getSessionFactory(), new JcrCallback() {
 
                 public Object doInJcr(Session session) throws IOException, RepositoryException {
-                    Object result = shell.evaluate(source);
+                    Object result = gScript.run();
                     return result == null ? null : result.toString();
                 }
                 
@@ -142,6 +144,21 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
         }
     }
 
+    private synchronized GroovyShell getGroovyShell() {
+        if (shell != null) {
+            return shell;
+        }
+        
+        final Binding binding = new Binding();
+        binding.setProperty("applicationContext", applicationContext);
+        
+        for (Map.Entry<String, Object> e : scriptVariables.entrySet()) {
+            binding.setProperty(e.getKey(), e.getValue());
+        }
+        shell = new GroovyShell(Thread.currentThread().getContextClassLoader(), binding);
+        return shell;
+    }
+    
     @Override
     protected void doDelete(String id, Session session) throws RepositoryException {
         // Delete all scriptJobs which are associated with this Job
