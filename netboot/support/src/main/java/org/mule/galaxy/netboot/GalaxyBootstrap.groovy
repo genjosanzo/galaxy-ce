@@ -214,7 +214,7 @@ Debug: $debug""")
     }
 
 
-    // Rrecursively delete files and folders
+    // Recursively delete files and folders
     def static delete(File f) {
         if (!f.exists()) { return }
         println "Deleting $f.canonicalPath"
