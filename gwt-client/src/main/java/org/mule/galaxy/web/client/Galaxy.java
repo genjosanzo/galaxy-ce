@@ -250,7 +250,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         product.setStyleName("footer-link footer-text");
         product.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent arg0) {
-                new AboutPanel();
+                getAboutPanel();
             }
         });
         footerPanel.add(product);
@@ -258,6 +258,10 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
         Label copyright = new Label(getFooterText());
         footerPanel.add(copyright);
+    }
+
+    protected AboutPanel getAboutPanel() {
+        return new AboutPanel();
     }
 
 
