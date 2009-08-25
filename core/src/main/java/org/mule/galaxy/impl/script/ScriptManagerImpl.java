@@ -4,13 +4,13 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.UnsupportedRepositoryOperationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,15 +49,14 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
     private GroovyShell shell;
     
     //@GuardedBy(self)
-    private final Map<String, groovy.lang.Script> cache = new HashMap<String, groovy.lang.Script>();
+    private final ConcurrentMap<String, groovy.lang.Script> cache = new ConcurrentHashMap<String, groovy.lang.Script>();
 
     public ScriptManagerImpl() throws Exception {
         super(Script.class, "scripts", true);
     }
 
     @Override
-    protected void doInitializeInJcrTransaction(Session session) throws RepositoryException,
-        UnsupportedRepositoryOperationException {
+    protected void doInitializeInJcrTransaction(Session session) throws RepositoryException {
         super.doInitializeInJcrTransaction(session);
         
         // Run startup scripts
@@ -77,9 +76,7 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
     
     @Override
     public void delete(String id) {
-        synchronized (cache) {
-            cache.remove(id);
-        }
+        cache.remove(id);
         super.delete(id);
     }
 
@@ -87,9 +84,7 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
     protected void doSave(Script t, Node node, boolean isNew, boolean isMoved, Session session)
         throws RepositoryException {
         if (t.getId() != null) {
-            synchronized (cache) {
-                cache.remove(t.getId());
-            }
+            cache.remove(t.getId());
         }
         super.doSave(t, node, isNew, isMoved, session);
     }
@@ -105,34 +100,37 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
     public String execute(final String scriptText, Script script) throws AccessException, RegistryException {
         accessControlManager.assertAccess(Permission.EXECUTE_ADMIN_SCRIPTS);
 
-        final groovy.lang.Script gScript; 
-        synchronized (cache) {
-            if (script != null && cache.containsKey(script.getId())) {
-                gScript = cache.get(script.getId());
-            } else {
-                gScript = getGroovyShell().parse(scriptText);
-                final Binding binding = new Binding();
-                binding.setProperty("applicationContext", applicationContext);
-                
-                for (Map.Entry<String, Object> e : scriptVariables.entrySet()) {
-                    binding.setProperty(e.getKey(), e.getValue());
-                }
-                if (script != null) {
-                    binding.setProperty("script", script);
-                }
-                gScript.setBinding(binding);
-                
-                if (script != null) {
-                    cache.put(script.getId(), gScript);
+        groovy.lang.Script gScript;
+        if (script != null && cache.containsKey(script.getId())) {
+            gScript = cache.get(script.getId());
+        } else {
+            gScript = getGroovyShell().parse(scriptText);
+            final Binding binding = new Binding();
+            binding.setProperty("applicationContext", applicationContext);
+
+            for (Map.Entry<String, Object> e : scriptVariables.entrySet()) {
+                binding.setProperty(e.getKey(), e.getValue());
+            }
+            if (script != null) {
+                binding.setProperty("script", script);
+            }
+            gScript.setBinding(binding);
+
+            if (script != null) {
+                groovy.lang.Script newerValue = cache.putIfAbsent(script.getId(), gScript);
+                if (newerValue != null) {
+                    // other thread was faster, use its result instead
+                    gScript = newerValue;
                 }
             }
         }
 
         try {
+            final groovy.lang.Script finalGScript = gScript;
             return (String)JcrUtil.doInTransaction(getSessionFactory(), new JcrCallback() {
 
                 public Object doInJcr(Session session) throws IOException, RepositoryException {
-                    Object result = gScript.run();
+                    Object result = finalGScript.run();
                     return result == null ? null : result.toString();
                 }
                 
