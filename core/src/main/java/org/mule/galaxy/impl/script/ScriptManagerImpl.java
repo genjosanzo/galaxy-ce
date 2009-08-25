@@ -47,8 +47,6 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
     
     private ActivityManager activityManager;
 
-    private GroovyShell shell;
-
     private Map<String,GroovyCodeSource> cache = new HashMap<String, GroovyCodeSource>();
     
     public ScriptManagerImpl() throws Exception {
