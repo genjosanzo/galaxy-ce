@@ -1,9 +1,9 @@
 package org.mule.galaxy.security;
 
 public enum Permission {
-    READ_ITEM("Read Artifact/Entry", true),
-    MODIFY_ITEM("Modify Artifact/Entry", true),
-    DELETE_ITEM("Delete Artifact/Entry", true),
+    READ_ITEM("Read Item", true),
+    MODIFY_ITEM("Modify Item", true),
+    DELETE_ITEM("Delete Item", true),
     VIEW_ACTIVITY("View Activity Log", false),
     MANAGE_USERS("Manage Users", false),
     MANAGE_INDEXES("Manage Indexes", false),
