@@ -48,4 +48,8 @@ public class StringUtil {
         return new String[]{a, b};
     }
 
+    public static native String getUserAgent() /*-{
+        return navigator.userAgent.toLowerCase();
+    }-*/;
+
 }
