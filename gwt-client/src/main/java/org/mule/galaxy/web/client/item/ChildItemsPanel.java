@@ -92,6 +92,12 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         // add inline help string and widget
         cp.setTopComponent(createInlineHelpPanel(galaxy.getRepositoryConstants().repo_Tip(), 8));
 
+        BeanModelFactory factory = BeanModelLookup.get().getFactory(ItemInfo.class);
+        List<BeanModel> model = factory.createModel(items);
+
+        final ListStore<BeanModel> store = new ListStore<BeanModel>();
+        store.add(model);
+        
         ToolBar toolbar = new ToolBar();
         // search filter
         StoreFilterField<BeanModel> filter = new StoreFilterField<BeanModel>() {
@@ -117,16 +123,17 @@ public class ChildItemsPanel extends AbstractFlowComposite {
             }
         };
 
+        filter.setName("Search");
+        filter.setFieldLabel("Search");
+        filter.setWidth(300);
+        filter.setTriggerStyle("x-form-search-trigger");
+        filter.setStyleName("x-form-search-field");
+        filter.bind(store);
+
         toolbar.add(filter);
         toolbar.add(new FillToolItem());
 
         selectionModel = new CheckBoxSelectionModel<BeanModel>();
-
-        BeanModelFactory factory = BeanModelLookup.get().getFactory(ItemInfo.class);
-        List<BeanModel> model = factory.createModel(items);
-
-        final ListStore<BeanModel> store = new ListStore<BeanModel>();
-        store.add(model);
 
         List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
         columns.add(selectionModel.getColumn());
@@ -139,6 +146,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         Grid grid = new Grid<BeanModel>(store, cm);
         grid.setStripeRows(true);
         grid.setAutoWidth(true);
+        grid.setAutoHeight(true);
         grid.setSelectionModel(selectionModel);
         grid.setBorders(true);
         grid.addPlugin(selectionModel);
@@ -180,14 +188,6 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         cp.add(toolbar);
 
         cp.add(grid);
-
-        filter.setName("Search");
-        filter.setFieldLabel("Search");
-        filter.setWidth(300);
-        filter.setTriggerStyle("x-form-search-trigger");
-        filter.setStyleName("x-form-search-field");
-        filter.bind(store);
-
 
         if (info == null || info.isModifiable()) {
             String token;
