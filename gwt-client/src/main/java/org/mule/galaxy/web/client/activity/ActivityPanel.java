@@ -93,6 +93,7 @@ public class ActivityPanel extends AbstractFlowComposite {
         searchPanel.add(searchTable);
 
         startDate = new DateField();
+        startDate.setValue(new Date());
         startDate.setPropertyEditor(new DateTimePropertyEditor("yyyy-MM-dd"));
         endDate = new DateField();
         endDate.setPropertyEditor(new DateTimePropertyEditor("yyyy-MM-dd"));
