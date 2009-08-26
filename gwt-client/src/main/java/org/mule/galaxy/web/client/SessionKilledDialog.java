@@ -81,6 +81,7 @@ public class SessionKilledDialog extends DialogBox {
                 "<ul><li>Server having crashed</li><li>Client session forcefully killed on the server</li></ul>" +
                 "This error is <strong>unrecoverable</strong> and you'll need to re-login. Next " +
                 "connection attempt will be made in ");
+        text.addStyleName("dialog-connectionLost");
         timerLabel = new Label("" + heartbeatTimer.getIntervalSeconds());
         trailingText = new HTML("&nbsp;seconds.");
         mainMessage.add(text);
