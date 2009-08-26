@@ -33,6 +33,7 @@ import org.mule.galaxy.web.rpc.WPolicyException;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -81,6 +82,14 @@ public class PolicyPanel extends AbstractShowable {
 
     @Override
     public void doShowPage() {
+
+        ContentPanel cp = new ContentPanel();
+        cp.setHeading("Policies");
+        cp.setBodyBorder(false);
+        cp.setStyleName("x-panel-container-full");
+        cp.setAutoWidth(true);
+
+
         panel.clear();
         lsPanel = new LifecycleSelectionPanel(menuPanel, svc);
 
@@ -100,7 +109,7 @@ public class PolicyPanel extends AbstractShowable {
 
         });
 
-        panel.add(table);
+        cp.add(table);
 
         saveButton = new Button("Save");
         saveButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -112,6 +121,8 @@ public class PolicyPanel extends AbstractShowable {
 
         table.setWidget(1, 0, saveButton);
         table.getCellFormatter().setHorizontalAlignment(1, 0, HasHorizontalAlignment.ALIGN_LEFT);
+
+        panel.add(cp);
 
     }
 
