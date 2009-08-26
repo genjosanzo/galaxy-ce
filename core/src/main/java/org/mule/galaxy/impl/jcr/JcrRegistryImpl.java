@@ -531,24 +531,23 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 String[] paths = path.split("/");
                 
                 if (paths.length == 1 && "".equals(paths[0])) {
-                    Set<Item> empty = Collections.emptySet();
-                    return new SearchResults(0, empty);
-                }
-                
-                for (int i = 0; i < paths.length; i++) {
-                    if (paths[i].equals("")) {
-                        startsWithExact = true;
-                        continue;
-                    }
-                     
-                    String value = paths[i].toLowerCase();
-                    value = JcrUtil.escape(value);
-                    if (i == 0 && startsWithExact) {
-                        qstr.append("/*[jcr:like(fn:lower-case(@name), '").append(value).append("%')]");
-                    } else if (i == (paths.length - 1) && endsWithExact) {
-                        qstr.append("/*[jcr:like(fn:lower-case(@name), '%").append(value).append("')]/*");
-                    } else {
-                        qstr.append("/*[jcr:like(fn:lower-case(@name), '%").append(value).append("%')]");
+                    qstr.append("/*");
+                } else {
+                    for (int i = 0; i < paths.length; i++) {
+                        if (paths[i].equals("")) {
+                            startsWithExact = true;
+                            continue;
+                        }
+                         
+                        String value = paths[i].toLowerCase();
+                        value = JcrUtil.escape(value);
+                        if (i == 0 && startsWithExact) {
+                            qstr.append("/*[jcr:like(fn:lower-case(@name), '").append(value).append("%')]");
+                        } else if (i == (paths.length - 1) && endsWithExact) {
+                            qstr.append("/*[jcr:like(fn:lower-case(@name), '%").append(value).append("')]/*");
+                        } else {
+                            qstr.append("/*[jcr:like(fn:lower-case(@name), '%").append(value).append("%')]");
+                        }
                     }
                 }
                 

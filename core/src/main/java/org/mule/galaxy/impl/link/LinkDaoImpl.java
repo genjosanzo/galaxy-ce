@@ -134,12 +134,12 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
         Query q = qm.createQuery(stmt.toString(), Query.XPATH);
         
         QueryResult qr = q.execute();
-        
         for (NodeIterator nodes = qr.getNodes(); nodes.hasNext();) {
             Node node = nodes.nextNode();
             
             Boolean auto = JcrUtil.getBooleanOrNull(node, "autoDetected");
             String linkedTo = JcrUtil.getStringOrNull(node, "linkedTo");
+            
             if (auto != null && auto && id.equals(linkedTo)) {
                 // we may want to auto resolve this again in the future
                 node.setProperty("linkedTo", (String) null);
