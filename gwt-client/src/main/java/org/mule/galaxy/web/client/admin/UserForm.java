@@ -18,15 +18,6 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.LightBox;
-import org.mule.galaxy.web.client.util.SelectionPanel;
-import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.SecurityServiceAsync;
-import org.mule.galaxy.web.rpc.WRole;
-import org.mule.galaxy.web.rpc.WUser;
-
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.widget.Dialog;
@@ -43,6 +34,15 @@ import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
 import java.util.Iterator;
+
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.LightBox;
+import org.mule.galaxy.web.client.util.SelectionPanel;
+import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.SecurityServiceAsync;
+import org.mule.galaxy.web.rpc.WRole;
+import org.mule.galaxy.web.rpc.WUser;
 
 public class UserForm extends AbstractAdministrationForm {
 
@@ -144,7 +144,7 @@ public class UserForm extends AbstractAdministrationForm {
         }
 
         row++;
-        table.setText(row, 1, "Loading Groups...");
+        table.setText(row, 1, "Loading Roles...");
         // temp var for anonymous class
         final int groupRow = row;
         getSecurityService().getGroups(new AbstractCallback(adminPanel) {
@@ -189,7 +189,7 @@ public class UserForm extends AbstractAdministrationForm {
         };
         groupPanel = new SelectionPanel(groups, itemInfo,
                 user.getGroupIds(), 6,
-                "Available Groups", "Joined Groups");
+                "Available Roles", "Joined Roles");
         table.setWidget(currentRow, 1, groupPanel);
         FlexTable.FlexCellFormatter cellFormatter = (FlexTable.FlexCellFormatter) table.getCellFormatter();
         cellFormatter.setColSpan(currentRow, 1, 2);
@@ -249,7 +249,7 @@ public class UserForm extends AbstractAdministrationForm {
 
         // make sure admin user is still a member of the Administrators group
         if (!(newItem) && user.getUsername().equals(UBER_USER)) {
-            if (!(groupPanel.getSelectedValues().contains(getAdminGroupKey(this.wgroups)))) {
+            if (!(groupPanel.getSelectedValues().contains(getAdminRoleKey(this.wgroups)))) {
                 getErrorPanel().addMessage(UBER_USER + " user must be a member of the " + UBER_GROUP + " group");
                 isOk = false;
             }
@@ -260,7 +260,7 @@ public class UserForm extends AbstractAdministrationForm {
 
 
     /* find the key that maps to the Administrator group and verify */
-    private String getAdminGroupKey(Collection groups) {
+    private String getAdminRoleKey(Collection groups) {
         for (Iterator itr = groups.iterator(); itr.hasNext();) {
             WRole wg = (WRole) itr.next();
             if (wg.getName().equals(UBER_GROUP)) {
