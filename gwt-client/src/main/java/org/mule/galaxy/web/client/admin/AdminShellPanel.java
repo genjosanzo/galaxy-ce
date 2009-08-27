@@ -176,7 +176,8 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
         Html tips = new Html();
         tips.setStyleName("padded-label");
-        tips.setHtml("Tips:<br>&nbsp;&nbsp;Spring's context is available as the 'applicationContext' variable." +
+        tips.setHtml("Tips:<br>&nbsp;&nbsp;Spring's context is available as an 'applicationContext' variable." +
+                "<br>&nbsp;&nbsp;Logger (commons-logging) is available as a 'log' variable." +
                 "<br>&nbsp;&nbsp;Only String return values are supported (or null).");
 
         cp.add(tips);
