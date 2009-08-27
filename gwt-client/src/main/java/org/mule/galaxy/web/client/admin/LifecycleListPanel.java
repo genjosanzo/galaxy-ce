@@ -75,6 +75,10 @@ public class LifecycleListPanel extends AbstractAdministrationComposite {
         cp.setStyleName("x-panel-container-full");
         cp.setAutoWidth(true);
 
+        // add inline help string and widget
+        cp.setTopComponent(
+                createInlineHelpPanel(adminPanel.getGalaxy().getAdministrationConstants().admin_Lifecycles_Tip(), 20));
+
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WLifecycle.class);
 
         List<BeanModel> list = factory.createModel(lifecycles);
@@ -106,8 +110,6 @@ public class LifecycleListPanel extends AbstractAdministrationComposite {
                 History.newItem("lifecycles/" + s.getId());
             }
         });
-
-        cp.add(grid);
 
         // search filter
         StoreFilterField<BeanModel> filter = new StoreFilterField<BeanModel>() {
@@ -142,8 +144,13 @@ public class LifecycleListPanel extends AbstractAdministrationComposite {
         ToolBar toolbar = new ToolBar();
         toolbar.add(filter);
         toolbar.add(new FillToolItem());
-        toolbar.add(createToolbarHistoryButton("New", "lifecycles/new"));
-        cp.setTopComponent(toolbar);
+
+        String tooltip = adminPanel.getGalaxy().getAdministrationConstants().admin_Lifecycles_New();
+        toolbar.add(createToolbarHistoryButton("New", "lifecycles/new", tooltip));
+
+        cp.add(toolbar);
+        cp.add(grid);
+
 
         panel.add(cp);
     }

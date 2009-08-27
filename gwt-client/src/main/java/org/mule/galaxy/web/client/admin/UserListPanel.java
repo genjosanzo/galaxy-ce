@@ -21,6 +21,7 @@ package org.mule.galaxy.web.client.admin;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WUser;
 import org.mule.galaxy.web.client.util.FauxLinkRenderer;
+import org.mule.galaxy.web.client.Galaxy;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
@@ -69,6 +70,11 @@ public class UserListPanel extends AbstractAdministrationComposite {
         cp.setStyleName("x-panel-container-full");
         cp.setAutoWidth(true);
 
+        // add inline help string and widget
+        cp.setTopComponent(
+                createInlineHelpPanel(adminPanel.getGalaxy().getAdministrationConstants().admin_Users_Tip(), 19));
+
+
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WUser.class);
 
         List<BeanModel> list = factory.createModel(users);
@@ -97,8 +103,6 @@ public class UserListPanel extends AbstractAdministrationComposite {
                 History.newItem("users/" + s.getId());
             }
         });
-
-        cp.add(grid);
 
         // search filter
         StoreFilterField<BeanModel> filter = new StoreFilterField<BeanModel>() {
@@ -135,8 +139,12 @@ public class UserListPanel extends AbstractAdministrationComposite {
         ToolBar toolbar = new ToolBar();
         toolbar.add(filter);
         toolbar.add(new FillToolItem());
-        toolbar.add(createToolbarHistoryButton("New", "users/new"));
-        cp.setTopComponent(toolbar);
+
+        String buttonTip = adminPanel.getGalaxy().getAdministrationConstants().admin_Users_New();
+        toolbar.add(createToolbarHistoryButton("New", "users/new", buttonTip));
+
+        cp.add(toolbar);
+        cp.add(grid);
 
         panel.add(cp);
 

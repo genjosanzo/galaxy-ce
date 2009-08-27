@@ -19,6 +19,7 @@
 package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
@@ -170,8 +171,12 @@ public class LifecycleForm extends AbstractAdministrationForm {
         if (newItem) {
             title = "Add Lifecycle";
             lifecycle.setPhases(new ArrayList<WPhase>());
+            setHelpPanel(createInlineHelpPanel(
+                    galaxy.getAdministrationConstants().admin_AddLifecycle_Tip(), 22));
         } else {
             title = "Edit Lifecycle " + lifecycle.getName();
+            setHelpPanel(createInlineHelpPanel(
+                    galaxy.getAdministrationConstants().admin_EditLifecycle_Tip(), 22));
         }
         return title;
     }

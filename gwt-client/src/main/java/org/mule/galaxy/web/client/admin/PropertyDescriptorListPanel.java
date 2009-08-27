@@ -76,6 +76,10 @@ public class PropertyDescriptorListPanel
         cp.setBodyBorder(false);
         cp.setStyleName("x-panel-container-full");
 
+        // add inline help string and widget
+        cp.setTopComponent(
+                createInlineHelpPanel(adminPanel.getGalaxy().getAdministrationConstants().admin_Properties_Tip(), 17));
+
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WPropertyDescriptor.class);
 
         List<BeanModel> list = factory.createModel(props);
@@ -120,8 +124,6 @@ public class PropertyDescriptorListPanel
             }
         });
 
-        cp.add(grid);
-
         // search filter
         StoreFilterField<BeanModel> filter = new StoreFilterField<BeanModel>() {
             @Override
@@ -155,7 +157,9 @@ public class PropertyDescriptorListPanel
         toolbar.add(filter);
         toolbar.add(new FillToolItem());
         toolbar.add(createToolbarHistoryButton("New", "properties/new"));
-        cp.setTopComponent(toolbar);
+
+        cp.add(toolbar);
+        cp.add(grid);
 
         panel.add(cp);
 

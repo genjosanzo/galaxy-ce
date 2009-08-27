@@ -20,6 +20,7 @@ package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
 import org.mule.galaxy.web.client.validation.ui.ValidatableListBox;
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.AdminServiceAsync;
 import org.mule.galaxy.web.rpc.WScript;
@@ -53,6 +54,10 @@ public class ScheduleForm extends AbstractAdministrationForm {
     public ScheduleForm(AdministrationPanel administrationPanel) {
         super(administrationPanel, "schedules", "Scheduled item was saved.", "Scheduled item was deleted.",
                 "A Scheduled item with that name already exists");
+
+        setHelpPanel(createInlineHelpPanel(
+                galaxy.getAdministrationConstants().admin_Add_Scheduled_Item_Tip(), 17));
+
     }
 
     protected void fetchItem(String id) {

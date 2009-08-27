@@ -39,6 +39,7 @@ import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.client.util.SelectionPanel;
 import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WRole;
@@ -62,6 +63,11 @@ public class UserForm extends AbstractAdministrationForm {
     public UserForm(AdministrationPanel adminPanel) {
         super(adminPanel, "users", "User was saved.", "User was deleted.",
                 "A user with that username already exists.");
+
+        galaxy = (Galaxy) adminPanel.getGalaxy();
+        setHelpPanel(createInlineHelpPanel(
+                galaxy.getAdministrationConstants().admin_Add_User_Tip(), 12));
+
     }
 
     protected void addFields(final FlexTable table) {

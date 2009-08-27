@@ -21,16 +21,16 @@ package org.mule.galaxy.web.client.util;
 import org.mule.galaxy.web.client.AbstractShowable;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
+import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ButtonBar;
-import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
-import com.extjs.gxt.ui.client.Style;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -50,6 +50,7 @@ public abstract class AbstractForm extends AbstractShowable {
     private final String deleteMessage;
     private final String CANCEL_MESSAGE = "Action Canceled";
     private String existsMessage;
+    private InlineHelpPanel helpPanel;
 
     public AbstractForm(ErrorPanel errorPanel, String successToken,
                         String successMessage, String deleteMessage, String existsMessage) {
@@ -68,7 +69,7 @@ public abstract class AbstractForm extends AbstractShowable {
     @Override
     public void showPage(List<String> params) {
         super.showPage(params);
-        
+
         if (params.size() > 0) {
             String param = params.get(0);
             if ("new".equals(param)) {
@@ -93,6 +94,12 @@ public abstract class AbstractForm extends AbstractShowable {
         cp.setAutoWidth(true);
         cp.setStyleName("x-panel-container-full");
         cp.setHeading(getTitle());
+
+        // add optional inline help widget
+        if (helpPanel != null) {
+            cp.setTopComponent(helpPanel);
+        }
+
 
         panel.clear();
 
@@ -266,6 +273,15 @@ public abstract class AbstractForm extends AbstractShowable {
 
     public void setCancel(Button cancel) {
         this.cancel = cancel;
+    }
+
+
+    public InlineHelpPanel getHelpPanel() {
+        return helpPanel;
+    }
+
+    public void setHelpPanel(InlineHelpPanel helpPanel) {
+        this.helpPanel = helpPanel;
     }
 
 

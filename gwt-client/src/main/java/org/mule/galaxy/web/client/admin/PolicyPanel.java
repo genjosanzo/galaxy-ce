@@ -89,6 +89,10 @@ public class PolicyPanel extends AbstractShowable {
         cp.setStyleName("x-panel-container-full");
         cp.setAutoWidth(true);
 
+        // add inline help string and widget
+        cp.setTopComponent(
+                createInlineHelpPanel(galaxy.getAdministrationConstants().admin_Policies_Tip(), 20));
+
 
         panel.clear();
         lsPanel = new LifecycleSelectionPanel(menuPanel, svc);

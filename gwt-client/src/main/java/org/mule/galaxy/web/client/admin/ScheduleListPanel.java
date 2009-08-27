@@ -76,6 +76,10 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
         cp.setStyleName("x-panel-container-full");
         cp.setAutoWidth(true);
 
+        // add inline help string and widget
+        cp.setTopComponent(
+                createInlineHelpPanel(adminPanel.getGalaxy().getAdministrationConstants().admin_Scheduler_Tip(), 12));
+
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WScriptJob.class);
 
         List<BeanModel> list = factory.createModel(jobs);
@@ -106,8 +110,6 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
                 History.newItem("schedules/" + s.getId());
             }
         });
-
-        cp.add(grid);
 
         // search filter
         StoreFilterField<BeanModel> filter = new StoreFilterField<BeanModel>() {
@@ -149,7 +151,9 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
         toolbar.add(filter);
         toolbar.add(new FillToolItem());
         toolbar.add(createToolbarHistoryButton("New", "schedules/new"));
-        cp.setTopComponent(toolbar);
+
+        cp.add(toolbar);
+        cp.add(grid);
 
         panel.add(cp);
 

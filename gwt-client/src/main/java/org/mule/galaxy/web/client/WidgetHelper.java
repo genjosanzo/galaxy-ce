@@ -231,9 +231,12 @@ public class WidgetHelper extends Composite {
      * @return
      */
     public static ToolbarButton createToolbarHistoryButton(String buttonLabel,
-                                                           final String token, String style) {
+                                                           final String token, String style, String toolTip) {
         ToolbarButton newBtn = new ToolbarButton(buttonLabel);
         newBtn.setStyleName(style);
+        if (toolTip != null) {
+            newBtn.setToolTip(toolTip);
+        }
         newBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
             @Override
             public void componentSelected(ToolbarButtonEvent ce) {
@@ -251,10 +254,13 @@ public class WidgetHelper extends Composite {
      * @param token
      * @return
      */
-    public static ToolbarButton createToolbarHistoryButton(String buttonLabel, final String token) {
-        return createToolbarHistoryButton(buttonLabel, token, "toolbar-btn");
+    public static ToolbarButton createToolbarHistoryButton(String buttonLabel, final String token, String tooltip) {
+        return createToolbarHistoryButton(buttonLabel, token, "toolbar-btn", tooltip);
     }
 
+    public static ToolbarButton createToolbarHistoryButton(String buttonLabel, final String token) {
+        return createToolbarHistoryButton(buttonLabel, token, "toolbar-btn", null);
+    }
 
     public static String createFauxLink(String value) {
         return createFauxLink(value, true);
