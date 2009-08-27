@@ -86,7 +86,7 @@ public class TreeItem implements Identifiable {
             sb.insert(0, i.getName());
             i = i.getParent();
             
-            if (i == null || !includeRoot && i == null && i.getParent() == null) {
+            if (i == null || !includeRoot && i.getParent() == null) {
                 break;
             }
         }
