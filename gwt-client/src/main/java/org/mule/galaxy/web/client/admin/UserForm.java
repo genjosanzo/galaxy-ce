@@ -76,7 +76,7 @@ public class UserForm extends AbstractAdministrationForm {
         } else {
             table.setText(row++, 0, "");
         }
-        table.setText(row++, 0, "Groups:");
+        table.setText(row++, 0, "Roles:");
 
         // reset row counter for input fields
         row = 0;
