@@ -172,6 +172,13 @@ public class AdministrationPanel extends MenuPanel {
     protected List<NavMenuItem> fetchManageMenuItems(Galaxy galaxy) {
         ArrayList a = new ArrayList();
 
+        if (galaxy.hasPermission("MANAGE_USERS")) {
+            a.add(new NavMenuItem("Users",
+                    "users",
+                    new UserListPanel(this),
+                    new UserForm(this)));
+        }
+
         if (galaxy.hasPermission("MANAGE_GROUPS")) {
             a.add(new NavMenuItem("Roles",
                     "roles",
@@ -209,13 +216,6 @@ public class AdministrationPanel extends MenuPanel {
             }
         }
         
-        if (galaxy.hasPermission("MANAGE_USERS")) {
-            a.add(new NavMenuItem("Users",
-                    "users",
-                    new UserListPanel(this),
-                    new UserForm(this)));
-        }
-
         return a;
     }
 
