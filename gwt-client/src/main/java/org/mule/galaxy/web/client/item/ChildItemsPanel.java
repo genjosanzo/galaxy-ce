@@ -87,7 +87,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         cp.setAutoWidth(true);
 
         // add inline help string and widget
-        cp.setTopComponent(createInlineHelpPanel(galaxy.getRepositoryConstants().repo_Tip(), 8));
+        cp.setTopComponent(createInlineHelpPanel(galaxy.getRepositoryConstants().repo_Tip(), 14));
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(ItemInfo.class);
         List<BeanModel> model = factory.createModel(items);
