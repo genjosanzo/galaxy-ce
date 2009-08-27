@@ -178,6 +178,7 @@ public class AdministrationPanel extends MenuPanel {
                     new RoleListPanel(this),
                     new RoleForm(this)));
         }
+        
         if (galaxy.hasPermission("MANAGE_LIFECYCLES")) {
             a.add(new NavMenuItem("Lifecycles",
                     "lifecycles",
@@ -192,20 +193,22 @@ public class AdministrationPanel extends MenuPanel {
                     null));
         }
 
-        if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
-            a.add(new NavMenuItem("Properties",
-                    "properties",
-                    new PropertyDescriptorListPanel(this),
-                    new PropertyDescriptorForm(this)));
+        if (showTypeSystem()) {
+            if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
+                a.add(new NavMenuItem("Properties",
+                        "properties",
+                        new PropertyDescriptorListPanel(this),
+                        new PropertyDescriptorForm(this)));
+            }
+    
+            if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
+                a.add(new NavMenuItem("Types",
+                        "types",
+                        new TypeListPanel(this),
+                        new TypeForm(this)));
+            }
         }
-
-        if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
-            a.add(new NavMenuItem("Types",
-                    "types",
-                    new TypeListPanel(this),
-                    new TypeForm(this)));
-        }
-
+        
         if (galaxy.hasPermission("MANAGE_USERS")) {
             a.add(new NavMenuItem("Users",
                     "users",
@@ -216,6 +219,9 @@ public class AdministrationPanel extends MenuPanel {
         return a;
     }
 
+    protected boolean showTypeSystem() {
+        return true;
+    }
 
     protected void createPageInfo(String token, final WidgetHelper composite) {
         final AdministrationPanel aPanel = this;
