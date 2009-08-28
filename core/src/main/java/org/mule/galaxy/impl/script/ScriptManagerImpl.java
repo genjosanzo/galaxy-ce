@@ -113,7 +113,7 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
             }
             if (script != null) {
                 binding.setProperty("script", script);
-                final String scriptLog = String.format("admin.shell.[script: %s]", script.getName());
+                final String scriptLog = String.format("admin.shell.script.[%s]", script.getName());
                 binding.setProperty("log", LogFactory.getLog(scriptLog));
             }
 
