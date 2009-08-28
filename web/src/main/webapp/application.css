@@ -20,7 +20,7 @@ body {
 .header {
     padding: 5px 0 10px 10px;
     background-color: white;
-}
+}                                                              
 
 .header-right {
     float: right;
@@ -465,16 +465,16 @@ a:visited {
 .footer {
     border-top: 1px solid black;
     color: #707070 ; /* dark gray */
-    background: #fff url("images/header_bg.jpg") no-repeat right;
+    background: #fff url("images/footer_bg.jpg") no-repeat right;
     text-align: right;
     font-size: 11px;
     font-family: arial, tahoma, helvetica, sans-serif;
     height: 50px;
-    padding: 1em;
+    padding: 1.1em;
 }
 
 .footer .footer-link {
-    cursor:pointer
+    cursor:pointer;
 }
 
 .footer-link a,  a:visited {

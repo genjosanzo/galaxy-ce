@@ -229,7 +229,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         southPanel.setBorders(false);
         southPanel.setHeaderVisible(false);
 
-        BorderLayoutData data = new BorderLayoutData(LayoutRegion.SOUTH, 38);
+        BorderLayoutData data = new BorderLayoutData(LayoutRegion.SOUTH, 45);
         data.setMargins(new Margins());
 
         footerPanel = new InlineFlowPanel();
