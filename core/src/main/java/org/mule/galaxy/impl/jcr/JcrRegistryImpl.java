@@ -836,9 +836,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         }
         
         String property = (String) r.getLeft();
-        String[] split = property.split(":");
-        property = split[split.length-1];
-        QueryBuilder builder = getQueryBuilder(property);
         
         // Do special stuff if this is a NOT operator
         boolean not = false;
@@ -851,6 +848,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         }
         
         String prefix = "";
+        String[] split = property.split(":");
+        property = split[split.length-1];
+        QueryBuilder builder = getQueryBuilder(property);
         for (int i = 0; i < split.length - 1; i++) {
             if ("child".equals(split[0])) {
                 prefix += "*/";
