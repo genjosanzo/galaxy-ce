@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -671,7 +670,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 if (log.isDebugEnabled()) {
                     log.debug("Query: " + qstr.toString());
                 }
-               
+                System.out.println("Query: " + qstr.toString());
                 Query jcrQuery = qm.createQuery(qstr, Query.XPATH);
                 
                 QueryResult result = jcrQuery.execute();
@@ -837,6 +836,8 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         }
         
         String property = (String) r.getLeft();
+        String[] split = property.split(":");
+        property = split[split.length-1];
         QueryBuilder builder = getQueryBuilder(property);
         
         // Do special stuff if this is a NOT operator
@@ -849,7 +850,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
             property = r.getLeft().toString();
         }
         
-        String[] split = property.split(":");
         String prefix = "";
         for (int i = 0; i < split.length - 1; i++) {
             if ("child".equals(split[0])) {
@@ -860,8 +860,6 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 prefix += "*//";
             }
         }
-        property = split[split.length - 1];
-
 
         return builder.build(queryStr, property, prefix, r.getRight(), not, operator);
     }

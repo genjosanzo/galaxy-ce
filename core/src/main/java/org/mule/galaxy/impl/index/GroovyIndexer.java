@@ -22,6 +22,8 @@ import groovy.lang.Binding;
 import groovy.util.GroovyScriptEngine;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,27 +33,34 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyInfo;
+import org.mule.galaxy.Registry;
 import org.mule.galaxy.artifact.Artifact;
 import org.mule.galaxy.index.Index;
 import org.mule.galaxy.index.IndexException;
+import org.mule.galaxy.type.TypeManager;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 
 public class GroovyIndexer extends AbstractIndexer
 {
+    public static final String NAME = "groovy";
     protected static final ConcurrentMap<String, GroovyScriptEngine> scriptCache = new ConcurrentHashMap<String, GroovyScriptEngine>();
 
     private final Log log = LogFactory.getLog(getClass());
 
-    public void index(final Item item, final PropertyInfo property, final Index index) 
-        throws IOException, IndexException {
-    Map<String, String> config = index.getConfiguration();
-    Artifact artifact = property.getValue();
-    if (artifact == null) {
-        return;
-    }
+    private TypeManager typeManager;
+    
+    private Registry registry;
+    
+    public void index(final Item item, final PropertyInfo property, final Index index) throws IOException,
+        IndexException {
+        Map<String, String> config = index.getConfiguration();
+        Artifact artifact = property.getValue();
+        if (artifact == null) {
+            return;
+        }
 
-    if (log.isDebugEnabled())
+        if (log.isDebugEnabled())
         {
             log.debug("Processing: " + index);
         }
@@ -71,7 +80,19 @@ public class GroovyIndexer extends AbstractIndexer
         b.setVariable("contentHandler", artifact.getContentHandler());
         b.setVariable("index", index);
         b.setVariable("log", LogFactory.getLog(getClass().getName()));
+        b.setVariable("typeManager", typeManager);
+        b.setVariable("registry", registry);
 
+        final ResourceLoader loader = new DefaultResourceLoader();
+        final ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        
+        if (!runCompiledScript(scriptSource, b, cl)) {
+            runScript(scriptSource, b, loader, cl);
+        }
+    }
+
+    private void runScript(String scriptSource, Binding b, final ResourceLoader loader, final ClassLoader cl)
+        throws IndexException {
         try
         {
             // scriptSource is the key
@@ -82,8 +103,6 @@ public class GroovyIndexer extends AbstractIndexer
                 {
                     log.debug("Cache miss for " + scriptSource);
                 }
-                final ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                final ResourceLoader loader = new DefaultResourceLoader();
                 engine = new GroovyScriptEngine(new URL[] {loader.getResource(scriptSource).getURL()}, cl);
 
                 // in case processed it already, use the cached version instead
@@ -108,5 +127,40 @@ public class GroovyIndexer extends AbstractIndexer
         {
             throw new IndexException(ex);
         }
+    }
+
+    private boolean runCompiledScript(String scriptSource, Binding b, final ClassLoader cl) {
+        int idx = scriptSource.indexOf(".groovy");
+        String clsName = scriptSource;
+        if (idx != -1) {
+            clsName = scriptSource.substring(0, idx);
+        }
+        clsName = clsName.replace("/", ".");
+        
+        try {
+            Class<?> cls = cl.loadClass(clsName);
+            Constructor<?> constructor = cls.getConstructor(Binding.class);
+            
+            Object instance = constructor.newInstance(b);
+            
+            Method runMethod = cls.getMethod("run");
+            runMethod.invoke(instance);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        } catch (NoSuchMethodException e) {
+            return false;
+        } catch (Exception e) {
+            log.error("Could not invoke indexing script", e);
+            return true;
+        }
+    }
+
+    public void setTypeManager(TypeManager typeManager) {
+        this.typeManager = typeManager;
+    }
+
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
     }
 }

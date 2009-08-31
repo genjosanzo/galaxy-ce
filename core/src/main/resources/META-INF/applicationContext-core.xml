@@ -44,6 +44,11 @@
   <bean id="indexer.xpath" class="org.mule.galaxy.impl.index.XPathIndexer"/>
   <bean id="indexer.xquery" class="org.mule.galaxy.impl.index.XQueryIndexer"/>
   
+  <bean id="indexer.groovy" class="org.mule.galaxy.impl.index.GroovyIndexer">
+    <property name="typeManager" ref="typeManager"/>
+    <property name="registry" ref="registry"/>
+  </bean>
+  
   <bean id="repository" class="org.springmodules.jcr.jackrabbit.RepositoryFactoryBean" destroy-method="destroy" depends-on="jndiContext, dbInitializer">
     <!-- normal factory beans params -->
     <property name="configuration" value="classpath:/META-INF/jackrabbit-repo.xml"/>
@@ -259,13 +264,23 @@
   <bean id="userManager" class="org.mule.galaxy.impl.jcr.UserManagerImpl"
         init-method="initialize">
     <property name="sessionFactory" ref="sessionFactory" />
-
   </bean>
 
-  <bean class="org.mule.galaxy.impl.lifecycle.PhaseQueryBuilder">
-    <property name="lifecycleManager" ref="lifecycleManager"/>
-    <property name="extension" ref="lifecycleExtension"/>
+  <bean id="typeExtension" class="org.mule.galaxy.impl.extension.IdentifiableExtension">
+    <property name="dao" ref="typeDao"/>
+    <property name="id" value="typeExtension"/>
+    <property name="name" value="Type(s)"/>
+    <property name="multivalueSupported" value="false"/>
+    <property name="queryProperties">
+      <map>
+        <entry key="name" value="Name"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="typeQueryBuilder" class="org.mule.galaxy.impl.jcr.TypeQueryBuilder">
     <property name="typeManager" ref="typeManager"/>
+    <property name="typeDao" ref="typeDao"/>
   </bean>
   
   <bean class="org.mule.galaxy.impl.lifecycle.LifecycleQueryBuilder">
