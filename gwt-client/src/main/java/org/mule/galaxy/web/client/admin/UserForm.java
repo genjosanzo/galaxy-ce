@@ -35,11 +35,11 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.client.util.SelectionPanel;
 import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
-import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WRole;
@@ -118,21 +118,11 @@ public class UserForm extends AbstractAdministrationForm {
 
         if (newItem) {
             row++;
-            //passTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
-            passTB = new TextField<String>();
-            passTB.setAllowBlank(false);
-            passTB.setPassword(true);
-            passTB.setToolTip("Must be at least " + PASSWORD_MIN_LENGTH + " characters in length");
-            passTB.setMinLength(PASSWORD_MIN_LENGTH);
+            passTB = createPasswordTextBox();
             table.setWidget(row, 1, passTB);
 
             row++;
-            //confirmTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
-            confirmTB = new TextField<String>();
-            confirmTB.setAllowBlank(false);
-            confirmTB.setPassword(true);
-            confirmTB.setMinLength(PASSWORD_MIN_LENGTH);
-            confirmTB.setToolTip("Must be at least " + PASSWORD_MIN_LENGTH + " characters in length");
+            confirmTB = createPasswordConfirmTextBox();
             table.setWidget(row, 1, confirmTB);
         } else {
             row++;
@@ -160,6 +150,24 @@ public class UserForm extends AbstractAdministrationForm {
         });
 
         styleHeaderColumn(table);
+    }
+
+    private TextField createPasswordConfirmTextBox() {
+        TextField confirmTB = new TextField<String>();
+        confirmTB.setAllowBlank(false);
+        confirmTB.setPassword(true);
+        confirmTB.setMinLength(PASSWORD_MIN_LENGTH);
+        confirmTB.setToolTip("Must be at least " + PASSWORD_MIN_LENGTH + " characters in length");
+        return confirmTB;
+    }
+
+    private TextField createPasswordTextBox() {
+        TextField passTB = new TextField<String>();
+        passTB.setAllowBlank(false);
+        passTB.setPassword(true);
+        passTB.setToolTip("Must be at least " + PASSWORD_MIN_LENGTH + " characters in length");
+        passTB.setMinLength(PASSWORD_MIN_LENGTH);
+        return passTB;
     }
 
     protected void fetchItem(String id) {
@@ -307,8 +315,8 @@ public class UserForm extends AbstractAdministrationForm {
             setText("Reset Password");
 
             VerticalPanel main = new VerticalPanel();
-            //passTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
-            //confirmTB = new ValidatablePasswordTextBox(new MinLengthValidator(PASSWORD_MIN_LENGTH));
+            passTB = createPasswordTextBox();
+            confirmTB = createPasswordConfirmTextBox();
             InlineFlowPanel row = new InlineFlowPanel();
             Label label = new Label("New Password:");
             label.addStyleName("form-label");
