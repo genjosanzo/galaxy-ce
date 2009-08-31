@@ -25,7 +25,8 @@ class AnnotationInfo
 {
     public String className;
     public List<NameValue> params = new ArrayList<NameValue>();
-
+    public String method;
+    
     static class NameValue
     {
         public String name;
@@ -98,6 +99,11 @@ class AnnotationInfo
         {
             return false;
         }
+        if (method != null ? !method.equals(that.method) : that.method != null)
+        {
+            return false;
+        }
+
 
         return true;
     }
@@ -107,6 +113,7 @@ class AnnotationInfo
         int result;
         result = className.hashCode();
         result = 31 * result + (params != null ? params.hashCode() : 0);
+        result = 31 * result + (method != null ? method.hashCode() : 0);
         return result;
     }
 

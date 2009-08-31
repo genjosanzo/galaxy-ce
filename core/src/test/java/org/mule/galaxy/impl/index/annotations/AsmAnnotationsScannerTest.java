@@ -113,6 +113,7 @@ public class AsmAnnotationsScannerTest extends TestCase
         // @Marker("MethodLevel / Main")
         AnnotationInfo ann = methodAnnotations.get(0);
         assertEquals(Marker.class.getName(), ann.className);
+        assertEquals("main", ann.method);
         List<AnnotationInfo.NameValue> annValues = ann.params;
         assertNotNull(annValues);
         assertEquals(1, annValues.size());

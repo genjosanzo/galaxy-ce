@@ -46,7 +46,8 @@ public class AsmAnnotationsScanner extends EmptyVisitor
     private static final int PROCESSING_PARAM = 4;
 
     private final BitSet currentlyProcessing = new BitSet(4);
-
+    private String currentMethod;
+    
     @Override
     public AnnotationVisitor visitParameterAnnotation(final int parameter, final String desc, final boolean visible)
     {
@@ -72,6 +73,11 @@ public class AsmAnnotationsScanner extends EmptyVisitor
 
         currentAnnotation = new AnnotationInfo();
         currentAnnotation.className = getAnnotationClassName(desc);
+        if (currentlyProcessing.get(PROCESSING_METHOD))
+        {
+            currentAnnotation.method = currentMethod;
+        }
+        
         if (log.isDebugEnabled())
         {
             log.debug("Annotation: " + getAnnotationClassName(desc));
@@ -117,6 +123,7 @@ public class AsmAnnotationsScanner extends EmptyVisitor
     public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature, final String[] exceptions)
     {
         currentlyProcessing.set(PROCESSING_METHOD);
+        currentMethod = name;
         return this;
     }
 
