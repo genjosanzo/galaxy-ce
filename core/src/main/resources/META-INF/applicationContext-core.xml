@@ -278,15 +278,21 @@
     </property>
   </bean>
 
-  <bean id="typeQueryBuilder" class="org.mule.galaxy.impl.jcr.TypeQueryBuilder">
+  <bean class="org.mule.galaxy.impl.lifecycle.PhaseQueryBuilder">
+    <property name="lifecycleManager" ref="lifecycleManager"/>
+    <property name="extension" ref="lifecycleExtension"/>
     <property name="typeManager" ref="typeManager"/>
-    <property name="typeDao" ref="typeDao"/>
   </bean>
   
   <bean class="org.mule.galaxy.impl.lifecycle.LifecycleQueryBuilder">
     <property name="lifecycleManager" ref="lifecycleManager"/>
     <property name="extension" ref="lifecycleExtension"/>
     <property name="typeManager" ref="typeManager"/>
+  </bean>
+  
+  <bean id="typeQueryBuilder" class="org.mule.galaxy.impl.jcr.TypeQueryBuilder">
+    <property name="typeManager" ref="typeManager"/>
+    <property name="typeDao" ref="typeDao"/>
   </bean>
   
   <bean id="treeItemDao" class="org.mule.galaxy.impl.tree.TreeItemDaoImpl"
