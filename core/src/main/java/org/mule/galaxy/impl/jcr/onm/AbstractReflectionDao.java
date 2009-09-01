@@ -3,9 +3,7 @@ package org.mule.galaxy.impl.jcr.onm;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
-import org.mule.galaxy.Identifiable;
-
-public class AbstractReflectionDao<T extends Identifiable> extends AbstractDao<T> {
+public class AbstractReflectionDao<T> extends AbstractDao<T> {
 
     protected ClassPersister persister;
     
@@ -25,7 +23,7 @@ public class AbstractReflectionDao<T extends Identifiable> extends AbstractDao<T
     public T build(Node node, Session session) throws Exception {
         T t = (T) persister.build(node, session);
         if (generateId) {
-            t.setId(getId(t, node, session));
+            setId(t, getId(t, node, session));
         }
         return t;
     }

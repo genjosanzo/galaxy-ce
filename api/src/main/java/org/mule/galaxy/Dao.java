@@ -3,7 +3,7 @@ package org.mule.galaxy;
 import java.util.List;
 import java.util.Map;
 
-public interface Dao<T extends Identifiable> {
+public interface Dao<T extends Object> {
     
     T get(String id) throws NotFoundException;
     

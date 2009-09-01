@@ -29,7 +29,7 @@ import org.mule.galaxy.util.SecurityUtils;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
-public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate implements Dao<T> {
+public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
 
     protected String rootNode;
     protected String objectsNodeId;
@@ -276,7 +276,7 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     
     protected void doSave(T t, Session session) 
         throws RepositoryException, NotFoundException {
-        String id = t.getId();
+        String id = getId(t);
         Node node = null;
         boolean isNew = true;
         boolean isMoved = false;
@@ -286,7 +286,7 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
             node = getNodeForObject(getObjectsNode(session), t).addNode(genId, getNodeType());
             node.addMixin("mix:referenceable");
             
-            t.setId(ISO9075.decode(getId(t, node, session)));
+            setId(t, ISO9075.decode(getId(t, node, session)));
         } else {
             node = findNode(id, session);
             
@@ -308,9 +308,17 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
             
         }
         
-        if (node == null) throw new NotFoundException(t.getId());
+        if (node == null) throw new NotFoundException(getId(t));
         
         doSave(t, node, isNew, isMoved, session);
+    }
+
+    protected String getId(T t) {
+        return ((Identifiable) t).getId();
+    }
+
+    protected void setId(T t, String id) {
+        ((Identifiable) t).setId(id);
     }
 
     protected void move(Session session, Node node, String newName) throws RepositoryException {
@@ -331,8 +339,8 @@ public abstract class AbstractDao<T extends Identifiable> extends JcrTemplate im
     }
 
     protected String generateNodeName(T t) {
-        if (t.getId() != null) {
-            return t.getId();
+        if (getId(t) != null) {
+            return getId(t);
         }
         
         return UUID.randomUUID().toString();
