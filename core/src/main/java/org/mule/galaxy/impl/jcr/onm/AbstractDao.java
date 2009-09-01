@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.jcr.ItemExistsException;
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -370,7 +371,11 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
     }
 
     protected Node findNode(String id, Session session) throws RepositoryException {
-        return session.getNodeByUUID(id);
+        try {
+            return session.getNodeByUUID(id);
+        } catch (ItemNotFoundException e) {
+            return null;
+        }
     }
 
     public String getRootNodeName() {

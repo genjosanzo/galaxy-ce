@@ -178,7 +178,4 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
     }
     */
 
-    protected abstract void createPageInfo(String token, final WidgetHelper composite);
-
-
 }

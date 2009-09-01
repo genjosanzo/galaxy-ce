@@ -39,12 +39,9 @@ public class CollectionPersister implements FieldPersister {
     @SuppressWarnings("unchecked")
     public Object build(Node n, FieldDescriptor fd, Session session) throws Exception {
         OneToMany otm = fd.getOneToMany();
-        if (otm == null) {
-            throw new UnsupportedOperationException("You must supply a @OneToMany annotation for " 
-                                                    + fd.getName() + " on " + fd.getClassPersister().getType());
-        }
+        boolean hasAnnotation = otm != null;
         
-        if (otm.treatAsField()) {
+        if (!hasAnnotation || otm.treatAsField()) {
             return JcrUtil.getProperty(fd.getName(), n);
         }
 
@@ -62,12 +59,9 @@ public class CollectionPersister implements FieldPersister {
 
     public void persist(Object o, Node n, FieldDescriptor fd, Session session) throws Exception {
         OneToMany otm = fd.getOneToMany();
-        if (otm == null) {
-            throw new UnsupportedOperationException("You must supply a @OneToMany annotation for " 
-                                                    + fd.getName() + " on " + fd.getClassPersister().getType());
-        }
+        boolean hasAnnotation = otm != null;
         
-        if (otm.treatAsField()) {
+        if (!hasAnnotation || otm.treatAsField()) {
             JcrUtil.setProperty(fd.getName(), o, n);
         } else if (fd.getOneToMany().mappedBy().equals("")) {
             List<String> values = new ArrayList<String>();

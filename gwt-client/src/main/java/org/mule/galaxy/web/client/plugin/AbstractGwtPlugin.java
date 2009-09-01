@@ -2,11 +2,22 @@ package org.mule.galaxy.web.client.plugin;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 
-public abstract class AbstractGwtPlugin implements EntryPoint {
+import java.util.HashMap;
+import java.util.Map;
+
+public abstract class AbstractGwtPlugin implements EntryPoint, ValueChangeHandler<String> {
     protected String rootToken;
     protected String name;
+    
+    private RootPanel insertPoint;
+    private Map<String,Widget> pages = new HashMap<String,Widget>();
+    private Widget currentWidget;
     
     public AbstractGwtPlugin(String rootToken, String name) {
         super();
@@ -15,6 +26,7 @@ public abstract class AbstractGwtPlugin implements EntryPoint {
     }
 
     public void onModuleLoad() {
+        History.addValueChangeHandler(this);
         register(rootToken, getClass().getName());
         GWT.log(name + " Plugin loaded", null);
     }
@@ -40,11 +52,44 @@ public abstract class AbstractGwtPlugin implements EntryPoint {
             // in hosted mode. However, second time works fine. We'll just ignore it
             // for now I guess...
         }
-        RootPanel insertPoint = RootPanel.get("plugin");
         insertPoint = RootPanel.get("plugin");
         load(insertPoint);
     }
     
-    public abstract void load(RootPanel insertPoint);
+    public void load(RootPanel insertPoint) {
+        String token = History.getToken();
+        show(token);
+    }
+
+    public void onValueChange(ValueChangeEvent<String> event) {
+        show(event.getValue());
+    }
+
+    /**
+     * Shows the widget associated with the specified token.
+     * @param value
+     */
+    protected void show(String t) {
+        Widget w = pages.get(t);
+        
+        if (w == null) {
+            String[] tokens = t.split("/");
+            w = pages.get(tokens[0] + "/*");
+        }
+        
+        if (w == null) {
+            return;
+        }
+        
+        if (currentWidget != null) {
+            insertPoint.remove(currentWidget);
+        }
+        
+        currentWidget = w;
+        insertPoint.add(currentWidget);
+    }
     
+    public void addPage(String tokenPattern, Widget page) {
+        pages.put(tokenPattern, page);
+    }
 }

@@ -296,6 +296,8 @@ public class JcrUtil {
                     values[i] = new DoubleValue((Double) o);
                 } else if (o instanceof Long) {
                     values[i] = new LongValue((Long) o);
+                } else if (o instanceof Integer) {
+                    values[i] = new LongValue(((Integer) o).longValue());
                 } else if (o instanceof String) {
                     values[i] = new StringValue((String) o);
                 } else {
