@@ -77,6 +77,11 @@ public abstract class AbstractGwtPlugin implements EntryPoint, ValueChangeHandle
             w = pages.get(tokens[0] + "/*");
         }
         
+        // default to a global wildcard
+        if (w == null) {
+            w = pages.get("*");
+        }
+        
         if (w == null) {
             return;
         }
