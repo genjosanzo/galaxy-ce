@@ -132,8 +132,11 @@ public class GroovyIndexer extends AbstractIndexer
     private boolean runCompiledScript(String scriptSource, Binding b, final ClassLoader cl) {
         int idx = scriptSource.indexOf(".groovy");
         String clsName = scriptSource;
+        if (clsName.startsWith("/")) {
+            clsName = clsName.substring(1);
+        }
         if (idx != -1) {
-            clsName = scriptSource.substring(0, idx);
+            clsName = clsName.substring(0, idx);
         }
         clsName = clsName.replace("/", ".");
         
