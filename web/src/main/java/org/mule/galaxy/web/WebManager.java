@@ -12,9 +12,11 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-public class GwtManager implements ApplicationContextAware {
+public class WebManager implements ApplicationContextAware {
     private final Log log = LogFactory.getLog(getClass());
 
+    private String productName;
+    private String productCss;
     private Map modules;
     private Map<String,RemoteService> services = new HashMap<String,RemoteService>();
     
@@ -38,4 +40,21 @@ public class GwtManager implements ApplicationContextAware {
     public Map<String,RemoteService> getRpcServices() {
         return services;
     }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getProductCss() {
+        return productCss;
+    }
+
+    public void setProductCss(String productCss) {
+        this.productCss = productCss;
+    }
+    
 }

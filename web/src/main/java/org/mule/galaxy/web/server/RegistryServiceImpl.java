@@ -94,7 +94,7 @@ import org.mule.galaxy.util.SecurityUtils;
 import org.mule.galaxy.util.UserUtils;
 import org.mule.galaxy.view.ArtifactViewManager;
 import org.mule.galaxy.view.View;
-import org.mule.galaxy.web.GwtManager;
+import org.mule.galaxy.web.WebManager;
 import org.mule.galaxy.web.GwtPlugin;
 import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.rpc.ItemExistsException;
@@ -149,10 +149,10 @@ public class RegistryServiceImpl implements RegistryService {
 
     private UploadService uploadService;
     
-    private GwtManager gwtManager;
+    private WebManager webManager;
     
     public Collection<Plugin> getPlugins() {
-        Collection<GwtPlugin> plugins = gwtManager.getGwtPlugins();
+        Collection<GwtPlugin> plugins = webManager.getGwtPlugins();
         ArrayList<Plugin> wPlugins = new ArrayList<Plugin>();
         for (GwtPlugin p : plugins) {
             if (!p.getName().equals("core")) {
@@ -2109,8 +2109,8 @@ public class RegistryServiceImpl implements RegistryService {
         this.uploadService = uploadService;
     }
 
-    public void setGwtManager(GwtManager gwtManager) {
-        this.gwtManager = gwtManager;
+    public void setWebManager(WebManager webManager) {
+        this.webManager = webManager;
     }
     
 }

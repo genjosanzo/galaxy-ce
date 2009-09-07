@@ -31,4 +31,28 @@
 
     </dependencies>
 
+    <build>
+      <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/classes/galaxy/web/</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/../client/target/galaxy-helloworld-client-${version}</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+      </plugins>
+    </build>
 </project>

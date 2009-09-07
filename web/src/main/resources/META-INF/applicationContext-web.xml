@@ -9,9 +9,12 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
 
-    <bean id="gwtManager" class="org.mule.galaxy.web.GwtManager"  />
+    <bean id="webManager" class="org.mule.galaxy.web.WebManager">
+      <property name="productName" value="Galaxy"/>
+      <property name="productCss" value="application.css"/>
+    </bean>
     
-    <bean id="gwtRpcMappings" factory-bean="gwtManager" factory-method="getRpcServices"/>
+    <bean id="gwtRpcMappings" factory-bean="webManager" factory-method="getRpcServices"/>
     
     <bean id="coreGwtModule" class="org.mule.galaxy.web.GwtPlugin">
       <property name="name" value="core"/>
@@ -39,7 +42,7 @@
       <property name="typeManager" ref="typeManager"/>
       <property name="uploadService" ref="uploadService"/>
       <property name="userManager" ref="userManager"/>
-      <property name="gwtManager" ref="gwtManager"/>
+      <property name="webManager" ref="webManager"/>
       <property name="contextPathResolver">
           <bean class="org.mule.galaxy.web.server.ContextPathResolver"/>
       </property>

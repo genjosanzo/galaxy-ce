@@ -11,6 +11,9 @@
     are not otherwise restricted.
      -->
         <property name="mappings" ref="gwtRpcMappings"/>
+        <property name="serviceExporterFactory">
+            <bean class="org.mule.galaxy.web.GWTRPCServiceExporterFactory"/>
+        </property>
     </bean>
 
 </beans>

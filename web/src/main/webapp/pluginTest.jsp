@@ -1,4 +1,3 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" session="false" %>
 
 <%@page import="org.springframework.web.context.WebApplicationContext"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
@@ -16,10 +15,10 @@
     boolean hostedMode = Boolean.valueOf(System.getProperty("hostedMode"));
 %>
     <head>
-        <title>MuleSoft | ${mgr.productName}</title>
+        <title>MuleSoft | <% out.write(mgr.getProductName()); %></title>
         <link type="text/css" rel="stylesheet" href="column-view.css" />
         <link type="text/css" rel="stylesheet" href="extjsresources/css/gxt-all.css"/>
-        <link type="text/css" rel="stylesheet" href="${mgr.productCss)}" />
+        <link type="text/css" rel="stylesheet" href="<% out.write(mgr.getProductCss()); %>" />
     </head>
 
     <!--                                           -->
@@ -29,50 +28,36 @@
     <!--                                           -->
     <body>
         <script language='javascript'>
-          var plugins = new Array();
-
           // Registers a callback method to load a plugin when showPlugin is called
           function registerPlugin(token,instance,callbackMethod) {
-              plugins[token] = callbackMethod;
-          }
-
-          // Call out to the GWT plugin function
-          function showPlugin(token) {
-              var fn = plugins[token];
-              if (fn) {
-                  fn();
-              }
-              else alert("Plugin for token " + token + " was not found.");
+              callbackMethod();
           }
         </script>
         <%
-            List modules = new ArrayList(mgr.getGwtPlugins());
-            Collections.sort(modules, new Comparator() {
-                public int compare(Object o1, Object o2) {
-                    GwtPlugin p1 = (GwtPlugin) o1;
-                    GwtPlugin p2 = (GwtPlugin) o2;
-                    
-                    if (p1.getName().equals("core")) return 1;
-                    if (p2.getName().equals("core")) return -1;
-                    
+            List<GwtPlugin> modules = new ArrayList<GwtPlugin>(mgr.getGwtPlugins());
+            Collections.sort(modules, new Comparator<GwtPlugin>() {
+                public int compare(GwtPlugin p1, GwtPlugin p2) {
+                    if ("core".equals(p1.getName())) {
+                        return 1;
+                    }
+                    if ("core".equals(p2.getName())) {
+                        return -1;
+                    }
+
                     return p1.getName().compareTo(p2.getName());
                 }
             });
-            for (Iterator itr = modules.iterator(); itr.hasNext();) {
-                GwtPlugin mod = (GwtPlugin) itr.next();
-                out.write("<script language='javascript' src='");
-
-                if (!"core".equals(mod.getName()) && !hostedMode) {
-                    out.write("plugins/");
+            for (GwtPlugin mod : modules) {
+                if (!"core".equals(mod.getName())) {
+	                out.write("<script language='javascript' src='");
+	                out.write(mod.getModuleName());
+	                out.write("/");
+	                out.write(mod.getModuleName());
+	                out.write(".nocache.js'></script>");
                 }
-                
-                out.write(mod.getModuleName());
-                out.write("/");
-                out.write(mod.getModuleName());
-                out.write(".nocache.js'></script>");
             }
         %>
-
+        <div id="plugin"/>
         <!-- OPTIONAL: include this if you want history support -->
         <iframe src="javascript:''" id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
 

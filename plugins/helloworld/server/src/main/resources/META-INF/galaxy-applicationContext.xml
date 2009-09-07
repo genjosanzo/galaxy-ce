@@ -11,11 +11,11 @@
     <property name="name" value="HelloWorld"/>
     <property name="moduleName" value="org.mule.galaxy.helloworld.HelloWorld"/>
     <property name="rootToken" value="helloworld"/>
-      <property name="rpcServices">
-        <map>
-          <entry key="/hello.rpc" value-ref="helloWorldService" />
-        </map>
-      </property>
+    <property name="rpcServices">
+      <map>
+        <entry key="/hello.rpc" value-ref="helloWorldService" />
+      </map>
+    </property>
   </bean>
   
   <bean id="helloWorldService" class="org.mule.galaxy.helloworld.server.HelloWorldServiceImpl"/>
