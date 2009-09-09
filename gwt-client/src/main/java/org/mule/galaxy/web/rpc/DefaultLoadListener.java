@@ -22,10 +22,10 @@ import com.extjs.gxt.ui.client.data.LoadEvent;
 import com.extjs.gxt.ui.client.event.LoadListener;
 import org.mule.galaxy.web.client.ErrorPanel;
 
-public abstract class AbstractLoadListener extends LoadListener {
+public class DefaultLoadListener extends LoadListener {
     private ErrorPanel errorPanel;
 
-    public AbstractLoadListener(ErrorPanel panel) {
+    public DefaultLoadListener(ErrorPanel panel) {
         super();
         this.errorPanel = panel;
     }

@@ -19,7 +19,7 @@
         <title>MuleSoft | ${mgr.productName}</title>
         <link type="text/css" rel="stylesheet" href="column-view.css" />
         <link type="text/css" rel="stylesheet" href="extjsresources/css/gxt-all.css"/>
-        <link type="text/css" rel="stylesheet" href="${mgr.productCss)}" />
+        <link type="text/css" rel="stylesheet" href="${mgr.productCss}" />
     </head>
 
     <!--                                           -->
