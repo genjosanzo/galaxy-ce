@@ -66,7 +66,7 @@ public class UserForm extends AbstractAdministrationForm {
 
         galaxy = (Galaxy) adminPanel.getGalaxy();
         setHelpPanel(createInlineHelpPanel(
-                galaxy.getAdministrationConstants().admin_Add_User_Tip(), 12));
+                galaxy.getAdministrationConstants().admin_Add_User_Tip(), 21));
 
     }
 
@@ -126,7 +126,7 @@ public class UserForm extends AbstractAdministrationForm {
             table.setWidget(row, 1, confirmTB);
         } else {
             row++;
-            resetPassword = new CheckBox("Reset Password");
+            resetPassword = new CheckBox(" Reset Password ");
             table.setWidget(row, 1, resetPassword);
             resetPassword.addClickListener(new ClickListener() {
                 public void onClick(final Widget widget) {
@@ -312,7 +312,7 @@ public class UserForm extends AbstractAdministrationForm {
     private class ResetPasswordDialog extends DialogBox {
 
         public ResetPasswordDialog() {
-            setText("Reset Password");
+            setText(" Reset Password ");
 
             VerticalPanel main = new VerticalPanel();
             passTB = createPasswordTextBox();

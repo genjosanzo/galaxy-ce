@@ -295,4 +295,10 @@ public class WidgetHelper extends Composite {
     }
 
 
+    public static String stringIsBold(String s, boolean isBold) {
+        String w = (isBold) ? "bold" : "normal";
+        return "<div style='font-weight:"+w+"'>" + s + "</div>";
+
+    }
+
 }
