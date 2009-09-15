@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 public final class TemplateParser
 {
     public static final String ANT_TEMPLATE_STYLE = "ant";
+    public static final String CURLY_TEMPLATE_STYLE = "curly";
     public static final String SQUARE_TEMPLATE_STYLE = "square";
 
     /**
@@ -48,6 +49,11 @@ public final class TemplateParser
     {
         return new TemplateParser(SQUARE_TEMPLATE_STYLE);
     }
+    
+    public static TemplateParser createCurlyBracesStyleParser()
+    {
+        return new TemplateParser(CURLY_TEMPLATE_STYLE);
+    }
 
     private TemplateParser(String style)
     {
@@ -55,6 +61,12 @@ public final class TemplateParser
         {
             pattern = Pattern.compile("\\$\\{[^\\}]+\\}");
             pre = 2;
+            post = 1;
+        }
+        else if (CURLY_TEMPLATE_STYLE.equals(style))
+        {
+            pattern = Pattern.compile("\\{[^\\}]+\\}");
+            pre = 1;
             post = 1;
         }
         else if (SQUARE_TEMPLATE_STYLE.equals(style))
