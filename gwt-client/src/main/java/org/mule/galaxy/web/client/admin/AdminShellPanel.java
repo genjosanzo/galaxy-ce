@@ -169,6 +169,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         cp.setAutoWidth(true);
         cp.setStyleName("x-panel-container-full");
         cp.setHeading("Admin Shell");
+        cp.setBodyStyleName("padded-panel");
 
         Label instructions = new Label("Type or paste a Groovy script to be executed on the server. A return value will be displayed below the area. ");
         instructions.setStyleName("padded-label");

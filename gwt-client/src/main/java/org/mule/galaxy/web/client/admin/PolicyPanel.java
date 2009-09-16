@@ -88,6 +88,7 @@ public class PolicyPanel extends AbstractShowable {
         cp.setBodyBorder(false);
         cp.setStyleName("x-panel-container-full");
         cp.setAutoWidth(true);
+        cp.setBodyStyleName("padded-panel");
 
         // add inline help string and widget
         cp.setTopComponent(
