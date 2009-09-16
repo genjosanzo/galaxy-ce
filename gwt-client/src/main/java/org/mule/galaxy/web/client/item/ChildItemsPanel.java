@@ -193,8 +193,8 @@ public class ChildItemsPanel extends AbstractFlowComposite {
             } else {
                 token = "add-item/";
             }
-            ToolbarButton newBtn = WidgetHelper.createToolbarHistoryButton("New", token, "toolbar-btn_right");
-            newBtn.setToolTip(galaxy.getRepositoryConstants().repo_Items_New());
+            ToolbarButton newBtn = WidgetHelper.createToolbarHistoryButton("New", token,
+                    "toolbar-btn_right", galaxy.getRepositoryConstants().repo_Items_New());
             toolbar.add(newBtn);
         }
 
