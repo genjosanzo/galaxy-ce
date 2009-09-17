@@ -133,7 +133,7 @@ public class ArtifactExtension extends AbstractExtension implements AtomExtensio
 
         // Deal with the case where we don't have a good mime type
         if ("application/octet-stream".equals(contentType)) {
-            String ext = getExtension(name);
+            String ext = getExtension(item.getParent().getName());
             ArtifactType type = artifactTypeDao.getArtifactType(ext);
 
             if (type == null && "xml".equals(ext)) {

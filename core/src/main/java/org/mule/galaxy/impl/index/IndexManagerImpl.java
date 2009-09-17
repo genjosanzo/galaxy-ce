@@ -448,18 +448,18 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
     }
 
     private void doIndex(final Item item, String property) {
-    final PropertyInfo pi = item.getPropertyInfo(property);
-    if (pi == null) {
-        return;
-    }
+        final PropertyInfo pi = item.getPropertyInfo(property);
+        if (pi == null) {
+            return;
+        }
 
-    Artifact a = pi.getValue();
-    if (a == null) {
-        return;
-    }
+        Artifact a = pi.getValue();
+        if (a == null) {
+            return;
+        }
 
         final Collection<Index> indices = getIndexes(a);
-        
+
         SecurityUtils.doPriveleged(new Runnable() {
             public void run() {
                 for (Index idx : indices) {
@@ -471,7 +471,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 }
             }
         });
-        ((ArtifactImpl) a).setIndexed(true);
+        ((ArtifactImpl)a).setIndexed(true);
     }
 
     public Indexer getIndexer(String id) {
