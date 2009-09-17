@@ -107,7 +107,8 @@ public class ClassPersister {
                     
                 }
             } catch (NotFoundException e) {
-                log.error("While retreiving '" + n.getPath() + "': " + e.getMessage());
+                n.setProperty(fd.getName(), (String)null);
+                log.info("Item the value of the property '" + fd.getName() + "' on '" + n.getPath() + "' no longer exists: " + e.getMessage());
             }
         }
         
