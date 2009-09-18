@@ -27,12 +27,9 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
-
-import junit.framework.TestCase;
 
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
@@ -68,6 +65,8 @@ import org.mule.galaxy.type.TypeManager;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springmodules.jcr.SessionFactory;
+
+import junit.framework.TestCase;
 
 public abstract class AbstractAtomTest extends TestCase {
     
@@ -191,12 +190,7 @@ public abstract class AbstractAtomTest extends TestCase {
     }    
 
     protected ExtensibleElement getMetadata(Entry entry) {
-        QName metadataQ = new QName(ItemCollection.NAMESPACE, "metadata");
-        List<ExtensibleElement> extensions = entry.getExtensions(metadataQ);
-        for (ExtensibleElement el : extensions) {
-            return el;
-        }
-        return null;
+        return entry.getExtension(new QName(ItemCollection.NAMESPACE, "metadata"));
     }
     
     protected void prettyPrint(Base doc) throws IOException {
