@@ -107,6 +107,7 @@ public class TypeQueryBuilder extends SimpleQueryBuilder {
     @Override
     public Collection<String> getProperties() {
         List<String> props = new ArrayList<String>();
+        props.add("type.id");
         props.add("type.name");
         return props;
     }

@@ -125,6 +125,9 @@ public class JcrItem extends AbstractItem {
     
     public void setName(final String name) {
         try {
+            if (name.contains("/")) {
+                throw new RegistryException(new Message("INVALID_NAME_SLASH", BundleUtils.getBundle(getClass())));
+            }
             
             String nodeName = Text.unescapeIllegalJcrChars(node.getName());
             if (!nodeName.equals(name)) {

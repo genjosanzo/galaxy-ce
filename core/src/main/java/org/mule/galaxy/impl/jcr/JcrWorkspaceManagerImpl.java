@@ -51,6 +51,8 @@ import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
+import org.mule.galaxy.util.BundleUtils;
+import org.mule.galaxy.util.Message;
 import org.mule.galaxy.util.SecurityUtils;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
@@ -279,6 +281,10 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
         
         if (name == null) {
             throw new NullPointerException("Item name cannot be null.");
+        }
+
+        if (name.contains("/")) {
+            throw new RegistryException(new Message("INVALID_NAME_SLASH", BundleUtils.getBundle(getClass())));
         }
         
         final JcrWorkspaceManagerImpl registry = this;
