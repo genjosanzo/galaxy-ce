@@ -1,4 +1,4 @@
- package org.mule.galaxy.query;
+package org.mule.galaxy.query;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,7 +18,7 @@ public class Query {
     private String fromPath;
     private int start = -1;
     private int maxResults = Integer.MAX_VALUE;
-    
+
     public int getStart() {
         return start;
     }
@@ -36,13 +36,13 @@ public class Query {
     }
 
     public Query() {
-    super();
+        super();
     }
-    
+
     public Query(OpRestriction restriction) {
         restrictions.add(restriction);
     }
-    
+
     public Query add(Restriction restriction) {
         restrictions.add(restriction);
         return this;
@@ -56,24 +56,24 @@ public class Query {
         this.groupBy = field;
         return this;
     }
-    
+
     public Query fromId(String workspace, boolean workspaceSearchRecursive) {
         this.fromId = workspace;
         this.fomRecursive = workspaceSearchRecursive;
         return this;
     }
-    
+
     public Query fromId(String workspace) {
         this.fromId = workspace;
         return this;
     }
-    
+
     public Query fromPath(String workspace, boolean workspaceSearchRecursive) {
         this.fromPath = workspace;
         this.fomRecursive = workspaceSearchRecursive;
         return this;
     }
-    
+
     public Query fromPath(String path) {
         this.fromPath = path;
         return this;
@@ -94,42 +94,40 @@ public class Query {
     public boolean isFromRecursive() {
         return fomRecursive;
     }
-    
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        
+
         sb.append("select ");
-        
+
         if (fromId != null) {
-            sb.append("from '@")
-                .append(fromId)
-                .append("' ");
+            sb.append("from '@").append(fromId).append("' ");
         }
-        
+
         if (fromPath != null) {
-            sb.append("from '")
-              .append(fromPath)
-              .append("' ");
+            sb.append("from '").append(fromPath).append("' ");
         }
-        
+
         if (fomRecursive) {
             sb.append("recursive ");
         }
-        
+
         sb.append("where ");
-        
+
         boolean first = true;
-        
+
         for (Restriction r : restrictions) {
-            if (first) first = false;
-            else sb.append(" and ");
-            
+            if (first)
+                first = false;
+            else
+                sb.append(" and ");
+
             r.toString(sb);
         }
 
         return sb.toString();
     }
-    
+
     public static Query fromString(String queryString) throws QueryException {
         Stack<String> tokens = new Stack<String>();
         int start = 0;
@@ -144,33 +142,35 @@ public class Query {
                 start = i + 1;
                 break;
             case '!':
-                if ('=' == queryString.charAt(i+1)) {
+                if ('=' == queryString.charAt(i + 1)) {
                     tokens.add(0, "!=");
-                    start = i+2;
+                    start = i + 2;
                     i++;
                 }
                 break;
             case '=':
             case '(':
             case ')':
-             if (start != i) {
-                     tokens.add(0, queryString.substring(start, i));
-                 }
-                 tokens.add(0, new String(new char[] { c } ));
-                 start = i+1;
-                 break;
+                if (start != i) {
+                    tokens.add(0, queryString.substring(start, i));
+                }
+                tokens.add(0, new String(new char[] {
+                    c
+                }));
+                start = i + 1;
+                break;
             case '<':
-                if (queryString.charAt(i+1) == '=') {
+                if (queryString.charAt(i + 1) == '=') {
                     i++;
                     tokens.add(0, "<=");
                 } else {
                     tokens.add(0, "<");
                 }
-                start = i+1;  
+                start = i + 1;
                 break;
             }
         }
-        
+
         if (start != queryString.length()) {
             tokens.add(0, queryString.substring(start));
         }
@@ -178,34 +178,35 @@ public class Query {
         if (tokens.isEmpty()) {
             throw new QueryException(new Message("EMPTY_QUERY_STRING", BundleUtils.getBundle(Query.class)));
         }
-        
-        if (!tokens.pop().toLowerCase().equals("select")){
+
+        if (!tokens.pop().toLowerCase().equals("select")) {
             throw new QueryException(new Message("EXPECTED_SELECT", BundleUtils.getBundle(Query.class)));
         }
-        
+
         if (tokens.isEmpty()) {
             throw new QueryException(new Message("EXPECTED_SELECT_TYPE", BundleUtils.getBundle(Query.class)));
         }
-        
+
         org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query();
-        
-        if (tokens.isEmpty()){
+
+        if (tokens.isEmpty()) {
             return q;
         }
-        
+
         String next = tokens.pop();
         if ("from".equals(next.toLowerCase())) {
-            if (tokens.isEmpty()) throw new QueryException(new Message("EXPECTED_FROM", BundleUtils.getBundle(Query.class)));
-            
+            if (tokens.isEmpty())
+                throw new QueryException(new Message("EXPECTED_FROM", BundleUtils.getBundle(Query.class)));
+
             String workspace = dequote(tokens.pop(), tokens);
-            
+
             boolean recursive = false;
             if (!tokens.isEmpty()) {
                 next = tokens.pop();
 
                 if (next.toLowerCase().equals("recursive")) {
                     recursive = true;
-                    
+
                     if (!tokens.isEmpty()) {
                         next = tokens.pop();
                     } else {
@@ -215,7 +216,7 @@ public class Query {
             } else {
                 next = null;
             }
-            
+
             if (workspace.startsWith("@")) {
                 q.fromId(workspace.substring(1), recursive);
             } else {
@@ -223,59 +224,60 @@ public class Query {
             }
         }
 
-        
         if (next != null && !next.toLowerCase().equals("where")) {
-            throw new QueryException(new Message("EXPECTED_WHERE_BUT_FOUND", BundleUtils.getBundle(Query.class), next));
+            throw new QueryException(new Message("EXPECTED_WHERE_BUT_FOUND", BundleUtils
+                .getBundle(Query.class), next));
         }
-        
-    if (tokens.isEmpty()) {
-        return q;
-    }
+
+        if (tokens.isEmpty()) {
+            return q;
+        }
 
         OpRestriction r = handleSubClause(tokens, new DepthHolder());
-        
+
         if (!tokens.isEmpty()) {
             r = getFollowOnClauses(r, tokens, new DepthHolder());
         }
-        
-    append(q, r);
+
+        append(q, r);
 
         return q;
     }
 
     /**
      * Optimization to avoid unnecessary parentheses when serializing
+     * 
      * @param q
      * @param r2
      */
-    private static void append(org.mule.galaxy.query.Query q,
-        OpRestriction r2) {
-    if (r2.getOperator().equals(Operator.AND)) {
-        q.add((OpRestriction) r2.getLeft());
-        append(q, (OpRestriction) r2.getRight());
-    } else {
-        q.add(r2);
-    }
+    private static void append(org.mule.galaxy.query.Query q, OpRestriction r2) {
+        if (r2.getOperator().equals(Operator.AND)) {
+            q.add((OpRestriction)r2.getLeft());
+            append(q, (OpRestriction)r2.getRight());
+        } else {
+            q.add(r2);
+        }
     }
 
     private static String getJoin(Stack<String> tokens) throws QueryException {
-    String join = tokens.pop();
-    if (!"and".equals(join.toLowerCase()) && !"or".equals(join.toLowerCase())) {
-        throw new QueryException(new Message("EXPECTED_AND", BundleUtils.getBundle(Query.class)));
-    }
-    return join;
+        String join = tokens.pop();
+        if (!"and".equals(join.toLowerCase()) && !"or".equals(join.toLowerCase())) {
+            throw new QueryException(new Message("EXPECTED_AND", BundleUtils.getBundle(Query.class)));
+        }
+        return join;
     }
 
-    private static OpRestriction handleSubClause(Stack<String> tokens, DepthHolder holder) throws QueryException {
-    boolean firstRestriction = true;
-    boolean parens = false;
+    private static OpRestriction handleSubClause(Stack<String> tokens, DepthHolder holder)
+        throws QueryException {
+        boolean firstRestriction = true;
+        boolean parens = false;
 
-    String firstToken = tokens.peek();
-    if (firstToken.equals("(")) {
-        tokens.pop();
+        String firstToken = tokens.peek();
+        if (firstToken.equals("(")) {
+            tokens.pop();
             parens = true;
             holder.depth++;
-    }
+        }
 
         if (!parens) {
             return buildRestriction(tokens, holder);
@@ -287,117 +289,122 @@ public class Query {
             } else {
                 getJoin(tokens);
             }
-            
+
             OpRestriction r1 = handleSubClause(tokens, holder);
-            
+
             if (tokens.isEmpty()) {
-            return r1;
+                return r1;
             } else {
-            return getFollowOnClauses(r1, tokens, holder);
+                return getFollowOnClauses(r1, tokens, holder);
             }
         }
         return null;
     }
 
-    private static OpRestriction getFollowOnClauses(OpRestriction r1,
-        Stack<String> tokens, DepthHolder holder) throws QueryException {
-    Stack<Object[]> rightside = new Stack<Object[]>();
-    rightside.add(new Object[] { null, r1 });
-    int depth = holder.depth;
-    while (depth <= holder.depth) {
-        String join = getJoin(tokens);
-        OpRestriction r2 = handleSubClause(tokens, holder);
+    private static OpRestriction getFollowOnClauses(OpRestriction r1, Stack<String> tokens, DepthHolder holder)
+        throws QueryException {
+        Stack<Object[]> rightside = new Stack<Object[]>();
+        rightside.add(new Object[] {
+            null, r1
+        });
+        int depth = holder.depth;
+        while (depth <= holder.depth) {
+            String join = getJoin(tokens);
+            OpRestriction r2 = handleSubClause(tokens, holder);
 
-        rightside.add(new Object[] { join, r2 });
+            rightside.add(new Object[] {
+                join, r2
+            });
 
-        if (!tokens.isEmpty()) {
-        String next = tokens.peek();
-        while (next.equals(")")) {
-            holder.depth--;
-            tokens.pop();
+            if (!tokens.isEmpty()) {
+                String next = tokens.peek();
+                while (next.equals(")")) {
+                    holder.depth--;
+                    tokens.pop();
+
+                    if (tokens.isEmpty()) {
+                        break;
+                    }
+                    next = tokens.peek();
+                }
+            }
 
             if (tokens.isEmpty()) {
-            break;
+                holder.depth--;
             }
-            next = tokens.peek();
         }
+
+        Object[] joinRestriction = rightside.pop();
+        OpRestriction rightRestriction = (OpRestriction)joinRestriction[1];
+
+        while (!rightside.isEmpty()) {
+            String join = (String)joinRestriction[0];
+            joinRestriction = rightside.pop();
+            OpRestriction leftRestriction = (OpRestriction)joinRestriction[1];
+
+            if ("or".equals(join)) {
+                rightRestriction = OpRestriction.or(leftRestriction, rightRestriction);
+            } else {
+                rightRestriction = OpRestriction.and(leftRestriction, rightRestriction);
+            }
         }
+
+        return rightRestriction;
+    }
+
+    private static class DepthHolder {
+        public int depth = 0;
+    }
+
+    private static OpRestriction buildRestriction(Stack<String> tokens, DepthHolder holder)
+        throws QueryException {
+        String left = tokens.pop();
 
         if (tokens.isEmpty()) {
-        holder.depth--;
-        }
-    }
-
-    Object[] joinRestriction = rightside.pop();
-    OpRestriction rightRestriction = (OpRestriction) joinRestriction[1];
-
-    while (!rightside.isEmpty()) {
-        String join = (String) joinRestriction[0];
-        joinRestriction = rightside.pop();
-        OpRestriction leftRestriction = (OpRestriction) joinRestriction[1];
-
-        if ("or".equals(join)) {
-        rightRestriction = OpRestriction.or(leftRestriction,
-            rightRestriction);
-        } else {
-        rightRestriction = OpRestriction.and(leftRestriction,
-            rightRestriction);
-        }
-    }
-
-    return rightRestriction;
-    }
-  
-    private static class DepthHolder {
-    public int depth = 0;
-    }
-    
-    private static OpRestriction buildRestriction(Stack<String> tokens, DepthHolder holder) throws QueryException {
-    String left = tokens.pop();
-
-    if (tokens.isEmpty()) {
-        throw new QueryException(new Message("EXPECTED_COMPARATOR", BundleUtils.getBundle(Query.class)));
-    }
-
-    String compare = tokens.pop();
-
-    if (tokens.isEmpty()) {
-        throw new QueryException(new Message("EXPECTED_RIGHT", BundleUtils.getBundle(Query.class)));
-    }
-
-    OpRestriction r = null;
-    String right = tokens.pop();
-
-    if (compare.equals("=")) {
-        r = OpRestriction.eq(left, dequote(right, tokens));
-    } else if (compare.equals("like")) {
-        r = OpRestriction.like(left, dequote(right, tokens));
-    } else if (compare.equals("!=")) {
-        r = OpRestriction.not(OpRestriction.eq(left, dequote(right, tokens)));
-    } else if (compare.equals("in")) {
-        ArrayList<String> in = new ArrayList<String>();
-        String first = right;
-
-        if (!first.equals("(")) {
-        throw new QueryException(new Message("EXPECTED_IN_LEFT_PARENS", BundleUtils.getBundle(Query.class), first));
+            throw new QueryException(new Message("EXPECTED_COMPARATOR", BundleUtils.getBundle(Query.class)));
         }
 
-        boolean end = false;
-        while (!end && !tokens.isEmpty()) {
-            String nextIn = tokens.pop();
-            if (nextIn.equals(")")) {
-                end = true;
-                break;
-            } else {
-                in.add(dequote(nextIn, tokens));
+        String compare = tokens.pop();
+
+        if (tokens.isEmpty()) {
+            throw new QueryException(new Message("EXPECTED_RIGHT", BundleUtils.getBundle(Query.class)));
+        }
+
+        OpRestriction r = null;
+        String right = tokens.pop();
+
+        if (compare.equals("=")) {
+            r = OpRestriction.eq(left, dequote(right, tokens));
+        } else if (compare.equals("like")) {
+            r = OpRestriction.like(left, dequote(right, tokens));
+        } else if (compare.equals("!=")) {
+            r = OpRestriction.not(OpRestriction.eq(left, dequote(right, tokens)));
+        } else if (compare.equals("in")) {
+            ArrayList<String> in = new ArrayList<String>();
+            String first = right;
+
+            if (!first.equals("(")) {
+                throw new QueryException(new Message("EXPECTED_IN_LEFT_PARENS", BundleUtils
+                    .getBundle(Query.class), first));
             }
+
+            boolean end = false;
+            while (!end && !tokens.isEmpty()) {
+                String nextIn = tokens.pop();
+                if (nextIn.equals(")")) {
+                    end = true;
+                    break;
+                } else {
+                    in.add(dequote(nextIn, tokens));
+                }
+            }
+            r = OpRestriction.in(left, in);
+        } else {
+            new QueryException(new Message("UNKNOWN_COMPARATOR", BundleUtils.getBundle(Query.class), left));
         }
-        r = OpRestriction.in(left, in);
-    } else {
-        new QueryException(new Message("UNKNOWN_COMPARATOR", BundleUtils.getBundle(Query.class), left));
+        return r;
     }
-    return r;
-    }
+
     private static String dequote(String s, Stack<String> tokens) {
         if (s.startsWith("'")) {
             s = dequote2(s, "'", tokens);
@@ -414,9 +421,9 @@ public class Query {
             while (!tokens.isEmpty()) {
                 sb.append(" ");
                 String next = tokens.pop();
-                
+
                 if (next.endsWith(quote)) {
-                    sb.append(next.substring(0, next.length()-1));
+                    sb.append(next.substring(0, next.length() - 1));
                     break;
                 } else {
                     sb.append(next);
@@ -424,10 +431,8 @@ public class Query {
             }
             return sb.toString();
         } else {
-            return s.substring(1, s.length()-1);
+            return s.substring(1, s.length() - 1);
         }
     }
-
-
 
 }
