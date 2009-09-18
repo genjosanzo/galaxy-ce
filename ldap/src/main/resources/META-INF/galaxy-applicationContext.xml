@@ -1,0 +1,71 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ehcache="http://www.springmodules.org/schema/ehcache"
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+    http://www.springmodules.org/schema/ehcache http://www.springmodules.org/schema/cache/springmodules-ehcache.xsd">
+  
+  <import resource="classpath:ldap.xml"/>
+  
+  <bean id="ldapAuthProvider" class="org.mule.galaxy.security.ldap.GalaxyAuthenticationProvider">
+    <constructor-arg>
+        <bean class="org.acegisecurity.providers.ldap.authenticator.BindAuthenticator">
+            <constructor-arg ref="initialDirContextFactory"/>
+            <property name="userSearch" ref="userSearch"/>
+        </bean>
+    </constructor-arg>
+    <constructor-arg ref="ldapAuthoritiesPopulator"/>
+    <property name="accessControlManager" ref="accessControlManager"/>
+    <property name="userMapper" ref="userDetailsMapper"/>
+  </bean>
+  
+  <bean id="userDetailsMapper" class="org.mule.galaxy.security.ldap.UserLdapEntryMapper" />
+    
+  <bean id="authenticationManager" class="org.acegisecurity.providers.ProviderManager">
+    <property name="providers">
+       <list>
+         <ref bean="ldapAuthProvider"/>
+         <ref bean="anonymousAuthenticationProvider"/>
+         <ref bean="rememberMeAuthenticationProvider"/>
+       </list>
+    </property>
+  </bean>
+  
+  <ehcache:config id="cacheProvider" failQuietly="true" configLocation="classpath:META-INF/ehcache.xml" />
+
+  <bean id="ldapCacheKeyGenerator" class="org.springmodules.cache.key.HashCodeCacheKeyGenerator" />
+
+  <ehcache:methodMapInterceptors
+    providerId="cacheProvider"
+    cachingInterceptorId="cachingInterceptor" 
+    flushingInterceptorId="flushingInterceptor">
+
+    <ehcache:cacheKeyGenerator refId="ldapCacheKeyGenerator" />
+
+    <ehcache:caching cacheName="daoCache" methodFQN="org.mule.galaxy.Dao.get*" />
+    <ehcache:caching cacheName="daoCache" methodFQN="org.mule.galaxy.Dao.listAll*" />
+    <ehcache:caching cacheName="daoCache" methodFQN="org.mule.galaxy.security.UserManager.get*" />
+
+    <ehcache:flushing cacheNames="daoCache" methodFQN="org.mule.galaxy.Dao.delete*" when="after" />
+    <ehcache:flushing cacheNames="daoCache" methodFQN="org.mule.galaxy.Dao.save*" when="after" />
+  </ehcache:methodMapInterceptors>
+
+  <bean id="ldapCacheProxyCreator" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+    <property name="beanNames">
+      <list>
+        <idref bean="userManager" />
+      </list>
+    </property>
+    <property name="interceptorNames">
+      <list>
+        <value>cachingInterceptor</value>
+        <value>flushingInterceptor</value>
+      </list>
+    </property>
+  </bean>
+  
+</beans>

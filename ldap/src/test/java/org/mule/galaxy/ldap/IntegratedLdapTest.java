@@ -151,8 +151,8 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
                               "/META-INF/applicationContext-cache.xml",
                               "/META-INF/applicationContext-acegi-security.xml",
                               "/META-INF/applicationContext-test.xml",
-                              "/META-INF/applicationContext-ldap.xml",
-                              "server.xml"};
+                              "/server.xml",
+                              "classpath*:/META-INF/galaxy-applicationContext.xml"};
     }
 
 }

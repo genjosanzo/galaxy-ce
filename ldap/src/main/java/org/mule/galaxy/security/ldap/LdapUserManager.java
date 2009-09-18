@@ -76,16 +76,16 @@ public class LdapUserManager
     }
 
     public User get(String id) throws NotFoundException {
-    if (id.equals(SecurityUtils.SYSTEM_USER.getUsername())) {
-        return SecurityUtils.SYSTEM_USER;
-    }
-    try {
+        if (id.equals(SecurityUtils.SYSTEM_USER.getUsername())) {
+            return SecurityUtils.SYSTEM_USER;
+        }
+        try {
             LdapUserDetails d = userSearch.searchForUser(id);
 
-            return (User) userMapper.mapAttributes(d.getDn(), d.getAttributes());
-    } catch (UsernameNotFoundException e) {
-        throw new NotFoundException(id);
-    } catch (NamingException e) {
+            return (User)userMapper.mapAttributes(d.getDn(), d.getAttributes());
+        } catch (UsernameNotFoundException e) {
+            throw new NotFoundException(id);
+        } catch (NamingException e) {
             throw new RuntimeException(e);
         }
     }
