@@ -8,7 +8,7 @@
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-integration-distribution</artifactId>
   <version>2.0-M3</version>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   <name>Galaxy Integration Distribution</name>
   <dependencies>
 
