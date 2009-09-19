@@ -41,7 +41,7 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
         assertEquals("hello", scriptManager.execute(script.getScript()));
         
         ScriptJob sj = new ScriptJob();
-        sj.setName("test_123");
+        sj.setName("test 123");
         sj.setDescription("test");
         sj.setExpression("bad expression");
         sj.setScript(script);
@@ -63,12 +63,14 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
         List<ScriptJob> jobs = scriptJobDao.listAll();
         assertEquals(1, jobs.size());
         
-        sj.setName("Foo_Bar");
+        sj.setName("Foo Bar");
         scriptJobDao.save(sj);
 
         latch = new CountDownLatch(1);
         latch.await(10, TimeUnit.SECONDS);
         assertEquals(0, latch.getCount());
+        
+        scriptJobDao.delete(sj.getId());
         
         scriptManager.delete(script.getId());
         
