@@ -25,11 +25,11 @@ public interface RepositoryConstants extends com.google.gwt.i18n.client.Constant
     String repo_Items_New();
 
     /**
-     * Translated "Display related help topic on www.mulesource.org".
+     * Translated "Display related help topic on www.mulesoft.org".
      *
-     * @return translated "Display related help topic on www.mulesource.org"
+     * @return translated "Display related help topic on www.mulesoft.org"
      */
-    @DefaultStringValue("Display related help topic on www.mulesource.org")
+    @DefaultStringValue("Display related help topic on www.mulesoft.org")
     @Key("repo_HelpLink")
     String repo_HelpLink();
 
