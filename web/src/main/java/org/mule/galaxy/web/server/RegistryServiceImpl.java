@@ -265,8 +265,13 @@ public class RegistryServiceImpl implements RegistryService {
             ii.setParentPath(i.getParent().getPath());
         }
         ii.setLocal(i.isLocal());
-        ii.setAuthorName(i.getAuthor().getName());
-        ii.setAuthorUsername(i.getAuthor().getUsername());
+        if (i.getAuthor() != null) {
+            ii.setAuthorName(i.getAuthor().getName());
+            ii.setAuthorUsername(i.getAuthor().getUsername());
+        } else {
+            ii.setAuthorName("[Removed]");
+            ii.setAuthorName("[Removed]");
+        }
         ii.setType(i.getType().getName());
         
         return ii;
