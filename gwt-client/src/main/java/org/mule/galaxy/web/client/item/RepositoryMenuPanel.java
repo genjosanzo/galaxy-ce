@@ -47,7 +47,6 @@ public class RepositoryMenuPanel extends MenuPanel {
     private TreePanel<ModelData> tree;
     private BaseTreeModel root;
     protected Map<String,ModelData> idToData  = new HashMap<String,ModelData>();
-    private LayoutContainer treeContainer;
     private String itemId;
 
     public RepositoryMenuPanel(Galaxy galaxy) {
@@ -163,15 +162,14 @@ public class RepositoryMenuPanel extends MenuPanel {
 
         // browse panel
         ContentPanel browsePanel = new ContentPanel();
+        browsePanel.setBodyBorder(false);
         browsePanel.setLayout(new FitLayout());
         browsePanel.setAutoHeight(true);
         browsePanel.setAutoWidth(true);
         browsePanel.setHeading("Browse");
+        browsePanel.setStyleName("no-border");
+        browsePanel.setStyleAttribute("borderColor", "white");
 
-        treeContainer = new LayoutContainer();
-        treeContainer.setStyleAttribute("backgroundColor", "white");
-
-        browsePanel.add(treeContainer);
         // add to root
         accordionPanel.add(browsePanel);
 
@@ -210,7 +208,7 @@ public class RepositoryMenuPanel extends MenuPanel {
         tree.setDisplayProperty("name");
         tree.setWidth(250);
         tree.getStyle().setLeafIcon(IconHelper.createStyle("icon-page"));
-        tree.setHeight("96%");
+        tree.setHeight("95%");
         tree.setIconProvider(new ModelIconProvider<ModelData>() {
             public AbstractImagePrototype getIcon(ModelData model) {
                 // you are a leaf
@@ -258,7 +256,6 @@ public class RepositoryMenuPanel extends MenuPanel {
         loader.load();
         store.add(root, false);
 
-        treeContainer.add(tree);
         tree.addListener(Events.Expand, new Listener<TreePanelEvent<ModelData>>() {
             public void handleEvent(TreePanelEvent<ModelData> be) {
                 final TreeModel parent = (TreeModel) be.getItem();
@@ -273,7 +270,9 @@ public class RepositoryMenuPanel extends MenuPanel {
         });
 
         tree.getSelectionModel().select(root, false);
+
         // add accordion panel to left nav
+        browsePanel.add(tree);
         addMenuItem(accordionPanel);
     }
 

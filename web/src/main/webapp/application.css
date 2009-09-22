@@ -179,9 +179,18 @@ a:visited {
 
 .left-menu-container {
     padding: 0;
-    border-color:white !important; 
-    border: 0px !important;
+    border-color:white !important;
+    border: 0 !important;
 }
+
+/* x-body is giving us grief, force override*/
+.accordion-wrapper {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    border:0 !important;
+}
+
+
 
 .x-panel-container-full {
     min-height: 85%;

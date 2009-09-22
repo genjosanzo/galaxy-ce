@@ -202,9 +202,8 @@ public class WidgetHelper extends Composite {
         alayout.setHideCollapseTool(true);
         alayout.setFill(true);
         ContentPanel accordionPanel = new ContentPanel();
-        accordionPanel.setBodyBorder(false);
-        accordionPanel.addStyleName("no-border");
-        accordionPanel.setStyleAttribute("borderColor", "white");
+        accordionPanel.setBodyBorder(false);    
+        accordionPanel.setStyleName("accordion-wrapper");
         accordionPanel.setHeaderVisible(false);
         accordionPanel.setLayout(alayout);
         return accordionPanel;
