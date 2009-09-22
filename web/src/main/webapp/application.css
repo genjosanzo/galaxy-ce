@@ -4,6 +4,26 @@
  **
  **/
 
+/* GXT Overrides */
+
+.x-panel-body {
+    border-color:#d0d0d0;
+}
+
+/* Ghosting */
+.x-panel-ghost {
+    background:#e0e0e0;
+}
+
+.x-panel-ghost ul {
+    border-color:#b0b0b0;
+}
+
+.x-grid-panel .x-panel-mc .x-panel-body {
+    border:1px solid #d0d0d0;
+}
+
+
 body {
   color: black;
   font-family: arial, tahoma, helvetica, sans-serif;
@@ -159,6 +179,8 @@ a:visited {
 
 .left-menu-container {
     padding: 0;
+    border-color:white !important; 
+    border: 0px !important;
 }
 
 .x-panel-container-full {
@@ -345,7 +367,7 @@ a:visited {
 }
 
 .no-border {
-    border-width:0 !important;
+    border-width:0; !important;
 }
 
 /**
@@ -1638,26 +1660,5 @@ helper styles
   width: 30px;
   text-align: center;
 }
-
-
-/* GXT Overrides */
-
-.x-panel-body {
-    border-color:#d0d0d0;
-}
-
-/* Ghosting */
-.x-panel-ghost {
-    background:#e0e0e0;
-}
-
-.x-panel-ghost ul {
-    border-color:#b0b0b0;
-}
-
-.x-grid-panel .x-panel-mc .x-panel-body {
-    border:1px solid #d0d0d0;
-}
-
 
 

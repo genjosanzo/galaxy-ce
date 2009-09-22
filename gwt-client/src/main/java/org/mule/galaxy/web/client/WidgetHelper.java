@@ -150,31 +150,39 @@ public class WidgetHelper extends Composite {
 
 
     public static InlineHelpPanel createInlineHelpPanel(String content, int num) {
-        String[] sa = StringUtil.wordCountSplitter(content, num, true);
+        String[] sa;
+        if (num == -1) {
+            // don't split it, there is content for the body...
+            sa = new String[]{content, null};
+        } else {
+            sa = StringUtil.wordCountSplitter(content, num, true);
+        }
         return createHelpPanel(sa[0], sa[1]);
     }
 
 
-    public static InlineHelpPanel createHelpPanel(final String header, String body) {
+    public static InlineHelpPanel createHelpPanel(final String header, final String body) {
         final InlineHelpPanel cp = new InlineHelpPanel();
-        /*
-        ToolButton btn = new ToolButton("x-tool-help");
-        btn.setToolTip("More information available. Click to expand.");
-        cp.getHeader().addTool(btn);
-        */
-
         cp.addListener(Events.Expand, new Listener<ComponentEvent>() {
+
             public void handleEvent(ComponentEvent ce) {
-                cp.getHeader().setToolTip("Click to Collapse.");
-                // FIXME: create toolIcon
-                cp.setHeading(header + createFauxLink(" [less]"));
+                String s = header;
+                if (body != null) {
+                    s = s + createFauxLink(" [less]");
+                    cp.getHeader().setToolTip("Click to Collapse.");
+                }
+                cp.setHeading(s);
             }
         });
         cp.addListener(Events.Collapse, new Listener<ComponentEvent>() {
+
             public void handleEvent(ComponentEvent ce) {
-                cp.getHeader().setToolTip("Click to Expand.");
-                // FIXME: create toolIcon
-                cp.setHeading(header + createFauxLink(" [more]"));
+                String s = header;
+                if (body != null) {
+                    s = s + createFauxLink(" [more]");
+                    cp.getHeader().setToolTip("Click to Expand.");
+                }
+                cp.setHeading(s);
             }
         });
         cp.addText(body);
@@ -196,6 +204,7 @@ public class WidgetHelper extends Composite {
         ContentPanel accordionPanel = new ContentPanel();
         accordionPanel.setBodyBorder(false);
         accordionPanel.addStyleName("no-border");
+        accordionPanel.setStyleAttribute("borderColor", "white");
         accordionPanel.setHeaderVisible(false);
         accordionPanel.setLayout(alayout);
         return accordionPanel;
@@ -247,12 +256,8 @@ public class WidgetHelper extends Composite {
 
     }
 
-    /**
+    /*
      * Use base style - which is for a button by itself
-     *
-     * @param buttonLabel
-     * @param token
-     * @return
      */
     public static ToolbarButton createToolbarHistoryButton(String buttonLabel, final String token, String tooltip) {
         return createToolbarHistoryButton(buttonLabel, token, "toolbar-btn", tooltip);
@@ -266,12 +271,8 @@ public class WidgetHelper extends Composite {
         return createFauxLink(value, true);
     }
 
-    /**
+    /*
      * Make Labels, strings, etc appear to be links
-     *
-     * @param value
-     * @param hover
-     * @return
      */
     public static String createFauxLink(String value, boolean hover) {
         String html = "";
@@ -294,11 +295,9 @@ public class WidgetHelper extends Composite {
         return l;
     }
 
-
     public static String stringIsBold(String s, boolean isBold) {
         String w = (isBold) ? "bold" : "normal";
-        return "<span style=\"font-weight:"+w+";\">" + s + "</span>";
-
+        return "<span style=\"font-weight:" + w + ";\">" + s + "</span>";
     }
 
 }

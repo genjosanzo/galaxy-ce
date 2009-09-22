@@ -19,6 +19,7 @@ import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
+import com.extjs.gxt.ui.client.util.IconHelper;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
@@ -169,7 +170,6 @@ public class RepositoryMenuPanel extends MenuPanel {
 
         treeContainer = new LayoutContainer();
         treeContainer.setStyleAttribute("backgroundColor", "white");
-        treeContainer.addStyleName("no-border");
 
         browsePanel.add(treeContainer);
         // add to root
@@ -204,12 +204,23 @@ public class RepositoryMenuPanel extends MenuPanel {
         });
 
         tree = new TreePanel<ModelData>(store);
+        tree.addStyleName("no-border");
         tree.setAutoSelect(true);
         tree.setAutoLoad(true);
         tree.setDisplayProperty("name");
         tree.setWidth(250);
+        tree.getStyle().setLeafIcon(IconHelper.createStyle("icon-page"));
+        tree.setHeight("96%");
         tree.setIconProvider(new ModelIconProvider<ModelData>() {
             public AbstractImagePrototype getIcon(ModelData model) {
+                // you are a leaf
+                String name = (String)model.get("name");
+                if (name.contains(".")) {
+                    return IconHelper.createPath("extjsresources/images/default/tree/leaf.gif");
+                }
+                // FIXME: what about versions?
+
+                // else you are a node
                 return null;
             }
         });
@@ -247,7 +258,6 @@ public class RepositoryMenuPanel extends MenuPanel {
         loader.load();
         store.add(root, false);
 
-        tree.setAutoHeight(true);
         treeContainer.add(tree);
         tree.addListener(Events.Expand, new Listener<TreePanelEvent<ModelData>>() {
             public void handleEvent(TreePanelEvent<ModelData> be) {
@@ -263,7 +273,6 @@ public class RepositoryMenuPanel extends MenuPanel {
         });
 
         tree.getSelectionModel().select(root, false);
-
         // add accordion panel to left nav
         addMenuItem(accordionPanel);
     }

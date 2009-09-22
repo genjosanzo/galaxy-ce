@@ -38,7 +38,7 @@ public class StringUtil {
 
         a = a.trim();
 
-        if (ellipsis) {
+        if (ellipsis && b.length() > 0) {
             if (a.endsWith(".")) {
                 a = a.concat(".. ");
             } else {
