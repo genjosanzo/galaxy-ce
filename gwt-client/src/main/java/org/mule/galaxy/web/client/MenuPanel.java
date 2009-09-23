@@ -18,6 +18,7 @@
 
 package org.mule.galaxy.web.client;
 
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalSplitPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -28,11 +29,11 @@ import java.util.List;
 public abstract class MenuPanel extends AbstractErrorShowingComposite {
 
     private HorizontalSplitPanel panel;
-    private FlowPanel leftMenuContainer;
+    private LayoutContainer leftMenuContainer;
     private Widget mainWidget;
     private FlowPanel topPanel;
     private Widget topWidget;
-    private FlowPanel leftMenu;
+    private LayoutContainer leftMenu;
     private FlowPanel centerPanel;
     private boolean firstShow = true;
 
@@ -45,14 +46,21 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
         panel.setSplitPosition("220px");
 
         if (left) {
-            leftMenu = new FlowPanel();
+            // the left panel
+            leftMenu = new LayoutContainer();
             leftMenu.setStyleName("left-menu");
 
-            panel.setLeftWidget(leftMenu);
-
-            leftMenuContainer = new FlowPanel();
+            // wrapper/container for menu widgets in the left panel
+            leftMenuContainer = new LayoutContainer();
+            leftMenuContainer.setLayoutOnChange(true);
             leftMenuContainer.setStyleName("left-menu-container");
+            leftMenuContainer.layout(true);
+            leftMenuContainer.setMonitorWindowResize(true);
+
             leftMenu.add(leftMenuContainer);
+            leftMenu.layout(false);
+
+            panel.setLeftWidget(leftMenu);
         }
 
         initWidget(panel);

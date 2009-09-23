@@ -17,6 +17,7 @@ import com.extjs.gxt.ui.client.store.StoreSorter;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.extjs.gxt.ui.client.util.IconHelper;
@@ -172,6 +173,7 @@ public class RepositoryMenuPanel extends MenuPanel {
 
         // add to root
         accordionPanel.add(browsePanel);
+
 
 //         search panel
 //        ContentPanel searchPanel = new ContentPanel();
