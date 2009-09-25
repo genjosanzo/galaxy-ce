@@ -21,6 +21,7 @@ package org.mule.galaxy.web.client.activity;
 import org.mule.galaxy.web.client.AbstractFlowComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.ItemPathOracle;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -85,7 +86,7 @@ public class ActivityPanel extends AbstractFlowComposite {
 
         // add inline help string and widget
         cp.setTopComponent(
-                createInlineHelpPanel(galaxy.getAdministrationConstants().admin_Activity_Tip(), 22));
+                new InlineHelpPanel(galaxy.getAdministrationConstants().admin_Activity_Tip(), 22));
 
         FlowPanel searchContainer = new FlowPanel();
         cp.add(searchContainer);

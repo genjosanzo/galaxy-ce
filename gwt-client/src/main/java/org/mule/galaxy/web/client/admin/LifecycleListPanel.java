@@ -20,6 +20,7 @@ package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.util.ListCellRenderer;
 import org.mule.galaxy.web.client.util.FauxLinkRenderer;
+import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WLifecycle;
 import org.mule.galaxy.web.rpc.WUser;
@@ -77,7 +78,7 @@ public class LifecycleListPanel extends AbstractAdministrationComposite {
 
         // add inline help string and widget
         cp.setTopComponent(
-                createInlineHelpPanel(adminPanel.getGalaxy().getAdministrationConstants().admin_Lifecycles_Tip(), 20));
+                new InlineHelpPanel(adminPanel.getGalaxy().getAdministrationConstants().admin_Lifecycles_Tip(), 20));
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WLifecycle.class);
 

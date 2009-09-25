@@ -22,6 +22,7 @@ import org.mule.galaxy.web.client.AbstractShowable;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.PageInfo;
+import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 import org.mule.galaxy.web.client.item.PolicyResultsPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LifecycleSelectionPanel;
@@ -92,7 +93,7 @@ public class PolicyPanel extends AbstractShowable {
 
         // add inline help string and widget
         cp.setTopComponent(
-                createInlineHelpPanel(galaxy.getAdministrationConstants().admin_Policies_Tip(), 20));
+                new InlineHelpPanel(galaxy.getAdministrationConstants().admin_Policies_Tip(), 20));
 
 
         panel.clear();

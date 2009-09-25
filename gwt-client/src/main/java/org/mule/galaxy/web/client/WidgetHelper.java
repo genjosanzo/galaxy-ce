@@ -149,54 +149,6 @@ public class WidgetHelper extends Composite {
     }
 
 
-    public static InlineHelpPanel createInlineHelpPanel(String content, int num) {
-        String[] sa;
-        if (num == -1) {
-            // don't split it, there is content for the body...
-            sa = new String[]{content, null};
-        } else {
-            sa = StringUtil.wordCountSplitter(content, num, true);
-        }
-        return createHelpPanel(sa[0], sa[1]);
-    }
-
-
-    public static InlineHelpPanel createHelpPanel(final String header, final String body) {
-        final InlineHelpPanel cp = new InlineHelpPanel();
-        cp.addListener(Events.Expand, new Listener<ComponentEvent>() {
-
-            public void handleEvent(ComponentEvent ce) {
-                String s = header;
-                if (body != null) {
-                    s = s + createFauxLink(" [less]");
-                    cp.getHeader().setToolTip("Click to Collapse.");
-                }
-                cp.setHeading(s);
-            }
-        });
-        cp.addListener(Events.Collapse, new Listener<ComponentEvent>() {
-
-            public void handleEvent(ComponentEvent ce) {
-                String s = header;
-                if (body != null) {
-                    s = s + createFauxLink(" [more]");
-                    cp.getHeader().setToolTip("Click to Expand.");
-                }
-                cp.setHeading(s);
-            }
-        });
-        cp.addText(body);
-        cp.setBorders(false);
-        cp.setTitleCollapse(true);
-        cp.setCollapsible(true);
-        cp.setHideCollapseTool(true);
-        cp.setAutoWidth(true);
-        cp.setAnimCollapse(true);
-        cp.collapse();
-        return cp;
-    }
-
-
     public static ContentPanel createAccodionWrapperPanel() {
         AccordionLayout alayout = new AccordionLayout();
         alayout.setHideCollapseTool(true);
@@ -208,7 +160,6 @@ public class WidgetHelper extends Composite {
         accordionPanel.setLayout(alayout);
         return accordionPanel;
     }
-
 
     /**
      * Creates a simple button that links to a History item

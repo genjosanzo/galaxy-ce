@@ -21,6 +21,7 @@ package org.mule.galaxy.web.client.admin;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WPropertyDescriptor;
 import org.mule.galaxy.web.client.WidgetHelper;
+import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
@@ -78,7 +79,7 @@ public class PropertyDescriptorListPanel
 
         // add inline help string and widget
         cp.setTopComponent(
-                createInlineHelpPanel(adminPanel.getGalaxy().getAdministrationConstants().admin_Properties_Tip(), 17));
+                new InlineHelpPanel(adminPanel.getGalaxy().getAdministrationConstants().admin_Properties_Tip(), 17));
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WPropertyDescriptor.class);
 

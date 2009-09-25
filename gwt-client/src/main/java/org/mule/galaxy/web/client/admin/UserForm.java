@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.client.util.SelectionPanel;
@@ -65,7 +66,7 @@ public class UserForm extends AbstractAdministrationForm {
                 "A user with that username already exists.");
 
         galaxy = (Galaxy) adminPanel.getGalaxy();
-        setHelpPanel(createInlineHelpPanel(
+        setHelpPanel(new InlineHelpPanel(
                 galaxy.getAdministrationConstants().admin_Add_User_Tip(), 21));
 
     }

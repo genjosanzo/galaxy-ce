@@ -21,6 +21,7 @@ package org.mule.galaxy.web.client.item;
 import org.mule.galaxy.web.client.AbstractFlowComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 import org.mule.galaxy.web.client.property.AbstractPropertyRenderer;
 import org.mule.galaxy.web.client.property.ArtifactRenderer;
 import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
@@ -129,7 +130,7 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
 
         // add inline help string and widget
         cp.setTopComponent(
-                createInlineHelpPanel(galaxy.getRepositoryConstants().repo_Add_Item_Tip(), 21));
+                new InlineHelpPanel(galaxy.getRepositoryConstants().repo_Add_Item_Tip(), 21));
 
         panel.add(cp);
     }

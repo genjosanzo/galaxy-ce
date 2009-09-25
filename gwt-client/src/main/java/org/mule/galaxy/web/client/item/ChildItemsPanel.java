@@ -3,6 +3,7 @@ package org.mule.galaxy.web.client.item;
 import org.mule.galaxy.web.client.AbstractFlowComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.WidgetHelper;
+import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 import org.mule.galaxy.web.client.util.ToolbarButton;
 import org.mule.galaxy.web.client.util.ToolbarButtonEvent;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -87,7 +88,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         cp.setAutoWidth(true);
 
         // add inline help string and widget
-        cp.setTopComponent(createInlineHelpPanel(galaxy.getRepositoryConstants().repo_Tip(), 14));
+        cp.setTopComponent(new InlineHelpPanel(galaxy.getRepositoryConstants().repo_Tip(), 14));
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(ItemInfo.class);
         List<BeanModel> model = factory.createModel(items);
