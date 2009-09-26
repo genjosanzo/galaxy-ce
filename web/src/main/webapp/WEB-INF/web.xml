@@ -99,23 +99,41 @@
     <servlet>
         <servlet-name>PluginServlet</servlet-name>
         <servlet-class>org.mule.galaxy.web.PluginServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>handler</servlet-name>
         <servlet-class>
-            org.springframework.web.servlet.DispatcherServlet
+            org.mule.galaxy.web.ConfigurableDispatcherServlet
         </servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value></param-value>
+        </init-param>
+        <init-param>
+            <param-name>handlerMappingName</param-name>
+            <param-value>gwtHandlerMappings</param-value>
+        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>form</servlet-name>
         <servlet-class>
-            org.springframework.web.servlet.DispatcherServlet
+            org.mule.galaxy.web.ConfigurableDispatcherServlet
         </servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value></param-value>
+        </init-param>
+        <init-param>
+            <param-name>handlerMappingName</param-name>
+            <param-value>formHandlerMappings</param-value>
+        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
+
     
     <servlet-mapping>
         <servlet-name>form</servlet-name>

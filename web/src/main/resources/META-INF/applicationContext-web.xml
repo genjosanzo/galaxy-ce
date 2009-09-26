@@ -8,13 +8,21 @@
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
-
-    <bean id="webManager" class="org.mule.galaxy.web.WebManager">
+    
+    <bean id="pluginManager" class="org.mule.galaxy.web.WebPluginManager" 
+          parent="abstractArtifactPlugin" init-method="initialize" 
+          depends-on="jcrInitializer registryInitializer">
+      <property name="pluginDao" ref="pluginDao"/>
+      <property name="policyManager" ref="policyManager"/>
+      <property name="jcrTemplate" ref="jcrTemplate"/>
+    </bean>
+    
+    <bean id="webManager" class="org.mule.galaxy.web.WebManagerImpl">
       <property name="productName" value="Galaxy"/>
       <property name="productCss" value="application.css"/>
     </bean>
     
-    <bean id="gwtRpcMappings" factory-bean="webManager" factory-method="getRpcServices"/>
+    <bean class="org.mule.galaxy.web.GwtPluginPostProcessor"/>
     
     <bean id="coreGwtModule" class="org.mule.galaxy.web.GwtPlugin">
       <property name="name" value="core"/>
@@ -55,13 +63,21 @@
       <property name="userManager" ref="userManager"/>
     </bean>
 
-    <bean id="heartbeatService" class="org.mule.galaxy.web.server.HeartbeatServiceImpl">
-    </bean>
+    <bean id="heartbeatService" class="org.mule.galaxy.web.server.HeartbeatServiceImpl"/>
 
     <bean id="adminService" class="org.mule.galaxy.web.server.AdminServiceImpl">
         <property name="scriptManager" ref="scriptManager"/>
         <property name="scriptJobDao" ref="scriptJobDao"/>
     </bean>
     
-    <bean id="demoArtifactPlugin" class="org.mule.galaxy.web.DemoArtifactPlugin" parent="abstractArtifactPlugin"/>    
+    <bean id="demoArtifactPlugin" class="org.mule.galaxy.web.DemoArtifactPlugin" parent="abstractArtifactPlugin"/>
+    
+    <bean id="formHandlerMappings" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+    
+    <bean id="gwtHandlerMappings" class="org.mule.galaxy.web.GwtRpcHandlerMapping"/>
+            
+    <bean name="/artifactUpload.form"
+        class="org.mule.galaxy.web.ArtifactUploadServlet">
+        <property name="uploadService" ref="uploadService" />
+    </bean>
 </beans>

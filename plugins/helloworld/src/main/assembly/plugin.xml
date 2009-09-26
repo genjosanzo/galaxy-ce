@@ -1,0 +1,24 @@
+<assembly>
+  <id>galaxy-helloworld-plugin</id>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <formats>
+    <format>dir</format>
+    <format>zip</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory>client/target/galaxy-helloworld-client-${version}</directory>
+      <outputDirectory>web</outputDirectory>
+    </fileSet>
+  </fileSets>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <useTransitiveFiltering>false</useTransitiveFiltering>
+      <includes>
+        <include>org.mule.galaxy:galaxy-helloworld-server</include>
+        <include>org.mule.galaxy:galaxy-helloworld-client</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+</assembly>

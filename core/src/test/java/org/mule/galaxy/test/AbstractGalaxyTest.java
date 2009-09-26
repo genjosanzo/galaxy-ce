@@ -84,6 +84,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     public AbstractGalaxyTest() {
         super();
         System.setProperty("galaxy.data", "./target/galaxy-data");
+        System.setProperty("plugin.directory", "./target/plugins");
         setPopulateProtectedVariables(true);
     }
 

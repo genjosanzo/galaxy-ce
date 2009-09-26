@@ -1,5 +1,6 @@
 package org.mule.galaxy.web;
 
+import com.google.gwt.user.client.rpc.SerializationException;
 import com.google.gwt.user.server.rpc.SerializationPolicy;
 import com.google.gwt.user.server.rpc.SerializationPolicyLoader;
 
@@ -11,11 +12,29 @@ import java.text.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.gwtwidgets.server.spring.GWTRPCServiceExporter;
+
 /**
  * A service exporter which also looks on the classpath for serialization policy
  * files (in "galaxy/web/XXXX")
  */
-public class GWTRPCServiceExporter extends org.gwtwidgets.server.spring.GWTRPCServiceExporter {
+public class GwtRpcServiceExporter extends GWTRPCServiceExporter {
+
+    private ClassLoader classLoader;
+    
+
+    public GwtRpcServiceExporter(ClassLoader classLoader) {
+        super();
+        this.classLoader = classLoader;
+    }
+
+    @Override
+    public String processCall(String payload) throws SerializationException {
+        Thread.currentThread().setContextClassLoader(classLoader);
+        
+        return super.processCall(payload);
+    }
+    
     protected SerializationPolicy doGetSerializationPolicy(HttpServletRequest request, String moduleBaseURL,
                                                            String strongName) {
         // The request can tell you the path of the web app relative to the

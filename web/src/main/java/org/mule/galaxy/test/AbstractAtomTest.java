@@ -75,13 +75,14 @@ public abstract class AbstractAtomTest extends TestCase {
     protected Provider provider;
     protected Abdera abdera = new Abdera();
     protected Factory factory = abdera.getFactory();
-    private Server server;
-    private WebAppContext context;
+    protected Server server;
+    protected WebAppContext context;
     protected SessionFactory sessionFactory;
 
     @Override
     protected void setUp() throws Exception {
         System.setProperty("galaxy.data", "./target/galaxy-data");
+        System.setProperty("plugin.directory", "./target/plugins");
         deleteIfExists(new File("target/galaxy-data/repository"));
         deleteIfExists(new File("target/galaxy-data/version"));
         deleteIfExists(new File("target/galaxy-data/workspaces"));

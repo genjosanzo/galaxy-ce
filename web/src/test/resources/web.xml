@@ -22,7 +22,6 @@
             classpath:/META-INF/applicationContext-test.xml
         </param-value>
     </context-param>
-
     <filter>
         <filter-name>jcr</filter-name>
         <filter-class>
@@ -40,9 +39,15 @@
             <param-value>org.acegisecurity.util.FilterChainProxy</param-value>
         </init-param>
     </filter>
+    
     <filter>
         <filter-name>ContextPathSaver</filter-name>
         <filter-class>org.mule.galaxy.web.ContextPathSaverFilter</filter-class>
+    </filter>
+    
+    <filter>
+        <filter-name>ThreadLocalCache</filter-name>
+        <filter-class>org.mule.galaxy.web.ThreadLocalCacheFilter</filter-class>
     </filter>
 
     <filter-mapping>
@@ -66,6 +71,11 @@
     </filter-mapping>
 
     <filter-mapping>
+        <filter-name>ThreadLocalCache</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <filter-mapping>
         <filter-name>jcr</filter-name>
         <url-pattern>*.form</url-pattern>
     </filter-mapping>
@@ -87,6 +97,66 @@
         <servlet-class>org.apache.abdera.spring.SpringAbderaServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>PluginServlet</servlet-name>
+        <servlet-class>org.mule.galaxy.web.PluginServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>handler</servlet-name>
+        <servlet-class>
+            org.mule.galaxy.web.ConfigurableDispatcherServlet
+        </servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value></param-value>
+        </init-param>
+        <init-param>
+            <param-name>handlerMappingName</param-name>
+            <param-value>gwtHandlerMappings</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>form</servlet-name>
+        <servlet-class>
+            org.mule.galaxy.web.ConfigurableDispatcherServlet
+        </servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value></param-value>
+        </init-param>
+        <init-param>
+            <param-name>handlerMappingName</param-name>
+            <param-value>formHandlerMappings</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    
+    <servlet-mapping>
+        <servlet-name>form</servlet-name>
+        <url-pattern>*.form</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>handler</servlet-name>
+        <url-pattern>/handler/*</url-pattern>
+    </servlet-mapping>
+    
+    <!-- This is ugly, but it allows us to work more transparently in both hosted mode and out of it -->
+    <servlet-mapping>
+        <servlet-name>handler</servlet-name>
+        <url-pattern>/plugins/handler/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>PluginServlet</servlet-name>
+        <url-pattern>/plugins/*</url-pattern>
+    </servlet-mapping>
+    
     <servlet-mapping id="abdera-mapping">
         <servlet-name>Abdera</servlet-name>
         <url-pattern>/api/*</url-pattern>
@@ -98,7 +168,7 @@
     <!--</error-page>-->
 
     <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 </web-app>
 

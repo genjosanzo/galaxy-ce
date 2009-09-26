@@ -404,10 +404,11 @@
   </bean>
 
   <bean id="pluginManager" class="org.mule.galaxy.impl.plugin.PluginManagerImpl" 
-        parent="abstractArtifactPlugin"  init-method="initialize">
+        parent="abstractArtifactPlugin" init-method="initialize" depends-on="jcrInitializer registryInitializer">
     <property name="pluginDao" ref="pluginDao"/>
     <property name="policyManager" ref="policyManager"/>
     <property name="jcrTemplate" ref="jcrTemplate"/>
+    <property name="pluginDirectory" value="${plugin.directory}"/>
   </bean>
 
   <bean id="pluginDao" class="org.mule.galaxy.impl.plugin.PluginDaoImpl"

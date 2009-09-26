@@ -1,7 +1,10 @@
 package org.mule.galaxy.impl.plugin;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -30,16 +33,26 @@ import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.render.RendererManager;
 import org.mule.galaxy.type.TypeManager;
+import org.mule.galaxy.util.GalaxyUtils;
 import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.ClassUtils;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
 public class PluginManagerImpl
-    implements ApplicationContextAware, PluginManager {
+    implements ApplicationContextAware, PluginManager, ApplicationListener {
     public static final String PLUGIN_SERVICE_PATH = "META-INF/";
 
     public static final String GALAXY_PLUGIN_DESCRIPTOR = "galaxy-plugins.xml";
@@ -57,11 +70,13 @@ public class PluginManagerImpl
     private Dao<PluginInfo> pluginDao;
     private JcrTemplate jcrTemplate;
     
+    private String pluginDirectory;
+    
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         this.context = context;
     }
 
-    public void initialize() {
+    public void initialize() throws IOException {
         Runnable runnable = new Runnable() {
             public void run() {
                 try {
@@ -78,6 +93,33 @@ public class PluginManagerImpl
         SecurityUtils.doPriveleged(runnable);
     }
     
+    public boolean isRunning() {
+        return true;
+    }
+
+    public void onApplicationEvent(ApplicationEvent event) {
+        if (event instanceof ContextRefreshedEvent) {
+            if (((ContextRefreshedEvent)event).getApplicationContext() == context) {
+                File pluginDirFile = new File(pluginDirectory);
+                
+                if (pluginDirFile.exists()) {
+                    for (File p : pluginDirFile.listFiles()) {
+                        if (p.getName().endsWith(".zip")) {
+                            try {
+                                loadPluginArchive(p);
+                            } catch (IOException e) {
+                                log.error("Could not load plugin " + p.getAbsolutePath(), e);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void stop() {
+    }
+
     public List<PluginInfo> getInstalledPlugins() {
         return pluginDao.listAll();
     }
@@ -171,6 +213,62 @@ public class PluginManagerImpl
 
     }
 
+    public void loadPluginArchive(File plugin) throws IOException {
+        System.out.println("Loading plugin " + plugin.getAbsolutePath());
+        String name = plugin.getName();
+
+        File expand;
+        if (plugin.isDirectory()) {
+            expand = plugin;
+        } else {        
+            // trim off ".zip" and expand
+            name = name.substring(0, name.length() - 4);
+            expand = new File(pluginDirectory, name);
+            expand.delete();
+            expand.mkdirs();
+            
+            GalaxyUtils.expand(plugin.getAbsolutePath(), expand.getAbsolutePath());
+        }
+        
+        loadPluginDirectory(expand);
+    }
+
+    protected void loadPluginDirectory(File expand) throws MalformedURLException, IOException {
+        File libs = new File(expand, "lib");
+        File[] libraries = libs.listFiles();
+        URL[] urls = new URL[libraries.length];
+        for (int i = 0; i < libraries.length; i++) {
+            urls[i] = libraries[i].toURI().toURL();
+        }
+
+        ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
+        // All the libraries in this expanded archive
+        URLClassLoader libraryClassLoader = new URLClassLoader(urls, oldCL);
+        // Don't include a parent class loader so we only pick up configuration files from the new jars
+        URLClassLoader resourcesClassLoader = new URLClassLoader(urls, null);
+        
+        try {
+            Thread.currentThread().setContextClassLoader(libraryClassLoader);
+    
+            PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(resourcesClassLoader);
+            ConfigurableApplicationContext childCtx = createPluginApplicationContext(context);
+            XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader((BeanDefinitionRegistry)childCtx);
+            
+            // Find spring config files
+            Resource[] resources = resolver.getResources("classpath*:/META-INF/galaxy-applicationContext.xml");
+
+            // load them!
+            reader.loadBeanDefinitions(resources);
+            childCtx.refresh();
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldCL);
+        }
+    }
+
+    protected ConfigurableApplicationContext createPluginApplicationContext(ApplicationContext context) {
+        return new GenericApplicationContext(context);
+    }
+
     public void setRegistry(Registry registry) {
         this.registry = registry;
     }
@@ -202,4 +300,9 @@ public class PluginManagerImpl
     public void setTypeManager(TypeManager typeManager) {
         this.typeManager = typeManager;
     }
+
+    public void setPluginDirectory(String pluginDirectory) {
+        this.pluginDirectory = pluginDirectory;
+    }
+    
 }

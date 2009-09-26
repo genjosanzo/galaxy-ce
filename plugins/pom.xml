@@ -9,7 +9,6 @@
   <packaging>pom</packaging>
   <name>Galaxy Plugins</name>
   <modules>
-    <module>helloworld/client</module>
-    <module>helloworld/server</module>
+    <module>helloworld</module>
   </modules>
 </project>
