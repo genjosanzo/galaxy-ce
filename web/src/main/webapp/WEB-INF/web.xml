@@ -62,6 +62,11 @@
 
     <filter-mapping>
         <filter-name>jcr</filter-name>
+        <url-pattern>/plugins/handler/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>jcr</filter-name>
         <url-pattern>/api/*</url-pattern>
     </filter-mapping>
 

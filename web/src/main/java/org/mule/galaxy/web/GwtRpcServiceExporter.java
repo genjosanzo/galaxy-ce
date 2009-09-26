@@ -4,6 +4,9 @@ import com.google.gwt.user.client.rpc.SerializationException;
 import com.google.gwt.user.server.rpc.SerializationPolicy;
 import com.google.gwt.user.server.rpc.SerializationPolicyLoader;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -76,7 +79,17 @@ public class GwtRpcServiceExporter extends GWTRPCServiceExporter {
             InputStream is = getServletContext().getResourceAsStream(serializationPolicyFilePath);
             
             if (is == null && serializationPolicyFilePath.startsWith("/plugins")) {
-                is = getClass().getResourceAsStream("/galaxy/web" + serializationPolicyFilePath.substring(8));
+                for (File plugin : WebPluginManager.getPluginLocations()) {
+                    File file = new File(plugin, serializationPolicyFilePath.substring(8));
+                    if (file.exists()) {
+                        try {
+                            is = new FileInputStream(file);
+                        } catch (FileNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                        break;
+                    }
+                }
             }
             
             try {
@@ -106,4 +119,14 @@ public class GwtRpcServiceExporter extends GWTRPCServiceExporter {
 
         return serializationPolicy;
     }
+
+    /**
+     * Because we aren't embedded as a real servlet, we need this or else NPEs will occur when
+     * calling log().
+     */
+    @Override
+    public String getServletName() {
+        return "GwtRpcServiceExorter";
+    }
+    
 }

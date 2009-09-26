@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -20,7 +18,6 @@ import org.mule.galaxy.util.IOUtils;
  * Serves out files from plugins which are located in galaxy/web on the classpath.
  */
 public class PluginServlet extends HttpServlet {
-    private static List<File> pluginLocations = new ArrayList<File>();
     
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -36,7 +33,7 @@ public class PluginServlet extends HttpServlet {
         InputStream resource = getClass().getResourceAsStream("/galaxy/web" + path);
         
         if (resource == null) {
-            for (File plugin : pluginLocations) {
+            for (File plugin : WebPluginManager.getPluginLocations()) {
                 File file = new File(plugin, path);
                 if (file.exists()) {
                     resource = new FileInputStream(file);
@@ -64,9 +61,5 @@ public class PluginServlet extends HttpServlet {
         } finally {
             out.close();
         }
-    }
-
-    public static void addPluginLocation(File location) {
-        pluginLocations.add(location);
     }
 }

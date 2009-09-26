@@ -2,6 +2,8 @@ package org.mule.galaxy.web;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 
@@ -14,6 +16,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 
 public class WebPluginManager extends PluginManagerImpl implements ServletContextAware {
     private ServletContext servletContext;
+    private static List<File> pluginLocations = new ArrayList<File>();
     
     @Override
     public void initialize() throws IOException {
@@ -26,7 +29,7 @@ public class WebPluginManager extends PluginManagerImpl implements ServletContex
     public void loadPluginDirectory(File directory) throws IOException {
         super.loadPluginDirectory(directory);
         
-        PluginServlet.addPluginLocation(new File(directory, "web"));
+        addPluginLocation(new File(directory, "web"));
     }
 
     public void setServletContext(ServletContext servletContext) {
@@ -44,5 +47,13 @@ public class WebPluginManager extends PluginManagerImpl implements ServletContex
         ((AbstractAutowireCapableBeanFactory)ctx.getAutowireCapableBeanFactory()).addBeanPostProcessor(processor);
         
         return ctx;
+    }
+    
+    public static void addPluginLocation(File location) {
+        pluginLocations.add(location);
+    }
+    
+    public static List<File> getPluginLocations() {
+        return pluginLocations;
     }
 }
