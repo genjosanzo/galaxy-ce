@@ -9,20 +9,10 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
     
-    <bean id="pluginManager" class="org.mule.galaxy.web.WebPluginManager" 
-          parent="abstractArtifactPlugin" init-method="initialize" 
-          depends-on="jcrInitializer registryInitializer">
-      <property name="pluginDao" ref="pluginDao"/>
-      <property name="policyManager" ref="policyManager"/>
-      <property name="jcrTemplate" ref="jcrTemplate"/>
-    </bean>
-    
     <bean id="webManager" class="org.mule.galaxy.web.WebManagerImpl">
       <property name="productName" value="Galaxy"/>
       <property name="productCss" value="application.css"/>
     </bean>
-    
-    <bean class="org.mule.galaxy.web.GwtPluginPostProcessor"/>
     
     <bean id="coreGwtModule" class="org.mule.galaxy.web.GwtPlugin">
       <property name="name" value="core"/>
