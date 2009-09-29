@@ -101,6 +101,7 @@ public abstract class InlineEditPanel extends Composite {
             }
         });
 
+        row.add(new Label(" "));
         row.add(saveButton);
         row.add(cancelButton);
         row.setVerticalAlignment(HasAlignment.ALIGN_TOP);

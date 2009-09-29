@@ -61,6 +61,7 @@ import org.mule.galaxy.web.client.ui.AdministrationConstants;
 import org.mule.galaxy.web.client.ui.BaseConstants;
 import org.mule.galaxy.web.client.ui.BaseMessages;
 import org.mule.galaxy.web.client.ui.RepositoryConstants;
+import org.mule.galaxy.web.client.ui.ButtonIcons;
 import org.mule.galaxy.web.client.util.ExternalHyperlink;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -115,6 +116,8 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     private AdministrationConstants administrationConstants;
     private RepositoryConstants repositoryConstants;
     protected Collection<Plugin> plugins;
+
+    //public static final ButtonIcons IMAGES = GWT.create(ButtonIcons.class);
 
     /**
      * This is the entry point method.
