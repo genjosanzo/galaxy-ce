@@ -122,7 +122,8 @@
         </repository>
         <repository>
             <id>gwt-maven2</id>
-            <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo</url>
+            <!-- <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo</url> -->
+            <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
         </repository>
     </repositories>
 
@@ -133,7 +134,8 @@
         </pluginRepository>
         <pluginRepository>
             <id>gwt-maven2</id>
-            <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo</url>
+            <!-- <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo</url> -->
+	    <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
         </pluginRepository>
     </pluginRepositories>
 
