@@ -111,11 +111,18 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
             for (Map.Entry<String, Object> e : scriptVariables.entrySet()) {
                 binding.setProperty(e.getKey(), e.getValue());
             }
+
+            // setup logger for the script
+            final String scriptLog;
             if (script != null) {
+                // use physical script instance name
                 binding.setProperty("script", script);
-                final String scriptLog = String.format("admin.shell.script.[%s]", script.getName());
-                binding.setProperty("log", LogFactory.getLog(scriptLog));
+                scriptLog = String.format("admin.shell.script.[%s]", script.getName());
+            } else {
+                // runtime evaluation of an ad-hoc script
+                scriptLog = String.format("admin.shell.script.[%s]", "$shell");
             }
+            binding.setProperty("log", LogFactory.getLog(scriptLog));
 
 
             gScript.setBinding(binding);
