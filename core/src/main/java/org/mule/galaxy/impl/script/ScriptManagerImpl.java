@@ -120,7 +120,7 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
                 scriptLog = String.format("admin.shell.script.[%s]", script.getName());
             } else {
                 // runtime evaluation of an ad-hoc script
-                scriptLog = String.format("admin.shell.script.[%s]", "$shell");
+                scriptLog = "admin.shell.script.$shell";
             }
             binding.setProperty("log", LogFactory.getLog(scriptLog));
 
