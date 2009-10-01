@@ -34,6 +34,10 @@ public class InlineHelpPanel extends ContentPanel {
         setContent(content, num);
     }
 
+    public InlineHelpPanel(String content) {
+        this(content, -1);
+    }
+        
     public void setContent(String content, int num) {
         clearState();
         String[] sa;
