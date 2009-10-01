@@ -1,15 +1,10 @@
 package org.mule.galaxy.web.client;
 
-import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.StringUtil;
 import org.mule.galaxy.web.client.util.ToolbarButton;
 import org.mule.galaxy.web.client.util.ToolbarButtonEvent;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
-import com.extjs.gxt.ui.client.event.ComponentEvent;
-import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -154,7 +149,7 @@ public class WidgetHelper extends Composite {
         alayout.setHideCollapseTool(true);
         alayout.setFill(true);
         ContentPanel accordionPanel = new ContentPanel();
-        accordionPanel.setBodyBorder(false);    
+        accordionPanel.setBodyBorder(false);
         accordionPanel.setStyleName("accordion-wrapper");
         accordionPanel.setHeaderVisible(false);
         accordionPanel.setLayout(alayout);

@@ -151,39 +151,4 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
         return mainWidget;
     }
 
-    /*
-    protected void createLinkWithAdd(Toolbox manageBox,
-                                     String title,
-                                     String tokenBase,
-                                     AbstractShowable list,
-                                     AbstractShowable form) {
-
-        Hyperlink link = new Hyperlink(title, tokenBase);
-        Hyperlink addLink = new Hyperlink("Add", tokenBase + "/new");
-
-        createDivWithAdd(manageBox, link, addLink);
-        createPageInfo(tokenBase, list);
-        createPageInfo(tokenBase + "/" + Galaxy.WILDCARD, form);
-    }
-
-
-    protected void createLinkWithAdd(String tokenBase,
-                                     AbstractShowable list,
-                                     AbstractShowable form) {
-
-        createPageInfo(tokenBase, list);
-        createPageInfo(tokenBase + "/" + Galaxy.WILDCARD, form);
-    }
-
-    protected void createDivWithAdd(Toolbox manageBox, Hyperlink link, Hyperlink add) {
-        InlineFlowPanel item = new InlineFlowPanel();
-        item.add(link);
-        item.add(new Label(" ["));
-        item.add(add);
-        item.add(new Label("]"));
-
-        manageBox.add(item);
-    }
-    */
-
 }

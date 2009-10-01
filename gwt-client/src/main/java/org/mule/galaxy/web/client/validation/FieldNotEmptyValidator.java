@@ -1,5 +1,5 @@
 /*
- * $Id: StringNotEmptyValidator.java 948 2008-05-23 20:25:59Z andrew $
+ * $Id: FieldNotEmptyValidator.java 948 2009-09-28 20:25:59Z merv $
  * --------------------------------------------------------------------------------------
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
