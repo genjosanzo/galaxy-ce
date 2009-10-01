@@ -4,6 +4,8 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -26,6 +28,14 @@ public abstract class AbstractGwtPlugin implements EntryPoint, ValueChangeHandle
     }
 
     public void onModuleLoad() {
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+              onModuleLoad2();
+            }
+          });
+    }
+    
+    public void onModuleLoad2() {
         History.addValueChangeHandler(this);
         register(rootToken, getClass().getName());
         GWT.log(name + " Plugin loaded", null);
@@ -51,6 +61,7 @@ public abstract class AbstractGwtPlugin implements EntryPoint, ValueChangeHandle
             // for some reason, the first time this is called, it throws an exception
             // in hosted mode. However, second time works fine. We'll just ignore it
             // for now I guess...
+            GWT.log("", t);
         }
         insertPoint = RootPanel.get("plugin");
         load(insertPoint);
@@ -86,11 +97,8 @@ public abstract class AbstractGwtPlugin implements EntryPoint, ValueChangeHandle
             return;
         }
         
-        if (currentWidget != null) {
-            insertPoint.remove(currentWidget);
-        }
-        
         currentWidget = w;
+        insertPoint.clear();
         insertPoint.add(currentWidget);
     }
     

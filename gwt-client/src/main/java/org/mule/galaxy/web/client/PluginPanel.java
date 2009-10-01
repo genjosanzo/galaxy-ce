@@ -9,23 +9,31 @@ import org.mule.galaxy.web.rpc.Plugin;
  */
 public class PluginPanel extends AbstractShowable {
 
-    private FlowPanel insertPoint;
     private final Plugin plugin;
+    private FlowPanel main;
 
     public PluginPanel(Plugin plugin) {
         super();
         this.plugin = plugin;
-
-        insertPoint = new FlowPanel();
-        insertPoint.getElement().setId("plugin");
-        initWidget(insertPoint);
+        main = new FlowPanel();
+        
+        initWidget(main);
     }
 
     @Override
     public void doShowPage() {
-        insertPoint.clear();
+        FlowPanel insertPoint = new FlowPanel();
+        insertPoint.getElement().setId("plugin");
+        main.add(insertPoint);
         
         showPlugin(plugin.getRootToken());
+    }
+
+    @Override
+    public void hidePage() {
+        main.clear();
+        
+        super.hidePage();
     }
 
     public native void showPlugin(String token)
