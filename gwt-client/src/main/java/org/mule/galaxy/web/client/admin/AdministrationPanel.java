@@ -185,7 +185,7 @@ public class AdministrationPanel extends MenuPanel {
                     new RoleListPanel(this),
                     new RoleForm(this)));
         }
-        
+
         if (galaxy.hasPermission("MANAGE_LIFECYCLES")) {
             a.add(new NavMenuItem("Lifecycles",
                     "lifecycles",
@@ -207,7 +207,7 @@ public class AdministrationPanel extends MenuPanel {
                         new PropertyDescriptorListPanel(this),
                         new PropertyDescriptorForm(this)));
             }
-    
+
             if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
                 a.add(new NavMenuItem("Types",
                         "types",
@@ -215,7 +215,7 @@ public class AdministrationPanel extends MenuPanel {
                         new TypeForm(this)));
             }
         }
-        
+
         return a;
     }
 

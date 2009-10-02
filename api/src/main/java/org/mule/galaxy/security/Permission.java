@@ -7,7 +7,7 @@ public enum Permission {
     VIEW_ACTIVITY("View Activity Log", false),
     MANAGE_USERS("Manage Users", false),
     MANAGE_INDEXES("Manage Indexes", false),
-    MANAGE_GROUPS("Manage Groups", false),
+    MANAGE_GROUPS("Manage Roles", false),
     MANAGE_POLICIES("Manage Policies", true),
     MANAGE_PROPERTIES("Manage Properties", false),
     MANAGE_LIFECYCLES("Manage Lifecycles", false),

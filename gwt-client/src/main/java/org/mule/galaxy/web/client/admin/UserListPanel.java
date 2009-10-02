@@ -18,11 +18,10 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
+import org.mule.galaxy.web.client.util.FauxLinkRenderer;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WUser;
-import org.mule.galaxy.web.client.util.FauxLinkRenderer;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
