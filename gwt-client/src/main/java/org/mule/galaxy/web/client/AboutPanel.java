@@ -26,6 +26,14 @@ import com.extjs.gxt.ui.client.widget.Html;
  */
 public class AboutPanel extends AbstractInfoPanel {
 
+    public AboutPanel() {
+        super();
+    }
+
+    public AboutPanel(int height) {
+        super(height);
+    }
+
     public String getHeading() {
         return "About...";
     }

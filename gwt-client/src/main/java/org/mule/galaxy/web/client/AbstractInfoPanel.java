@@ -11,17 +11,23 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
 public abstract class AbstractInfoPanel extends LayoutContainer {
 
     private int width = 500;
-    private Dialog simple = new Dialog();
+    private Dialog simpleDialog = new Dialog();
+
+    public AbstractInfoPanel(int height) {
+        simpleDialog.setHeading(getHeading());
+        if(height != -1) {
+            simpleDialog.setMinHeight(height);
+        }
+        simpleDialog.setButtons(Dialog.OK);
+        simpleDialog.add(getText());
+        simpleDialog.setScrollMode(Style.Scroll.AUTO);
+        simpleDialog.setHideOnButtonClick(true);
+        simpleDialog.setWidth(getWidth());
+        simpleDialog.show();
+    }
 
     public AbstractInfoPanel() {
-        simple.setHeading(getHeading());
-        simple.setButtons(Dialog.OK);
-        simple.add(getText());
-        simple.setScrollMode(Style.Scroll.AUTO);
-        simple.setHideOnButtonClick(true);
-        simple.setWidth(getWidth());
-        simple.show();
-
+        this(-1);
     }
 
 
@@ -30,7 +36,7 @@ public abstract class AbstractInfoPanel extends LayoutContainer {
     public abstract Html getText();
 
     public void setHeading(String s) {
-        simple.setHeading(s);
+        simpleDialog.setHeading(s);
     }
 
     public int getWidth() {
@@ -39,6 +45,15 @@ public abstract class AbstractInfoPanel extends LayoutContainer {
 
     public void setWidth(int width) {
         this.width = width;
+    }
+
+
+    public Dialog getSimpleDialog() {
+        return simpleDialog;
+    }
+
+    public void setSimpleDialog(Dialog simpleDialog) {
+        this.simpleDialog = simpleDialog;
     }
 
 

@@ -21,6 +21,7 @@ package org.mule.galaxy.web.client.admin;
 import org.mule.galaxy.web.client.AbstractFlowComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WRole;
 import org.mule.galaxy.web.rpc.WPermission;
@@ -95,6 +96,9 @@ public abstract class AbstractRolePanel extends AbstractFlowComposite {
     protected void receiveGroups(Map groups2Permissions) {
         this.groups2Permissions = groups2Permissions;
         mainPanel.clear();
+
+        mainPanel.add(new InlineHelpPanel(galaxy.getAdministrationConstants().admin_Roles_Tip(), 14));
+
         table = createRowTable();
         mainPanel.add(table);
 
