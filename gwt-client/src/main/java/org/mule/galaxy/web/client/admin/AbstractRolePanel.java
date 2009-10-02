@@ -31,6 +31,7 @@ import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ButtonBar;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -97,10 +98,18 @@ public abstract class AbstractRolePanel extends AbstractFlowComposite {
         this.groups2Permissions = groups2Permissions;
         mainPanel.clear();
 
-        mainPanel.add(new InlineHelpPanel(galaxy.getAdministrationConstants().admin_Roles_Tip(), 14));
+        ContentPanel cp = new ContentPanel();
+        cp.setHeading("Roles");
+        cp.setBodyBorder(false);
+        cp.setStyleName("x-panel-container-full");
+        cp.setAutoWidth(true);
+
+        // add inline help string and widget
+        cp.setTopComponent(new InlineHelpPanel(galaxy.getAdministrationConstants().admin_Roles_Tip(), 14));
+        mainPanel.add(cp);
 
         table = createRowTable();
-        mainPanel.add(table);
+        cp.add(table);
 
         int col = 1;
         table.setWidget(0, 0, new Image("images/clearpixel.gif"));
@@ -144,7 +153,7 @@ public abstract class AbstractRolePanel extends AbstractFlowComposite {
             row++;
         }
 
-        table.getFlexCellFormatter().setColSpan(rows.size() + 1, 0, col);
+        //table.getFlexCellFormatter().setColSpan(rows.size() + 1, 0, col);
 
 
         SelectionListener listener = new SelectionListener<ComponentEvent>() {
@@ -172,8 +181,10 @@ public abstract class AbstractRolePanel extends AbstractFlowComposite {
         bb.add(resetButton);
         bb.add(createHistoryButton("New", "roles/new"));
 
-        table.setWidget(rows.size() + 1, 0, bb);
+        //table.setWidget(rows.size() + 1, 0, bb);
+        cp.add(bb);
 
+        cp.layout(true);
     }
 
 
