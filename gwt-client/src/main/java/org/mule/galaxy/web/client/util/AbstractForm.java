@@ -197,8 +197,10 @@ public abstract class AbstractForm extends AbstractShowable {
     protected void cancel() {
         setEnabled(false);
         cancel.setText("Canceling...");
-        ((AdministrationPanel) errorPanel).getGalaxy().setMessageAndGoto(successToken,
+        /*((AdministrationPanel) errorPanel).getGalaxy().setMessageAndGoto(successToken,
                 CANCEL_MESSAGE);
+                */
+        ((AdministrationPanel) errorPanel).getGalaxy().setInfoMessageAndGoto(successToken, CANCEL_MESSAGE);
     }
 
 

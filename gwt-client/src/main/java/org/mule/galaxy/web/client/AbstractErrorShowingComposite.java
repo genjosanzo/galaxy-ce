@@ -78,7 +78,7 @@ public class AbstractErrorShowingComposite
     }
 
     //protected ErrorContentPanel getErrorPanel() {
-     //   return errorPanel;
+    //   return errorPanel;
     //}
 
     protected FlowPanel getErrorPanel() {

@@ -35,7 +35,7 @@ public class RoleForm extends AbstractAdministrationForm {
     private TextField<String> nameTB;
 
     public RoleForm(AdministrationPanel adminPanel) {
-        super(adminPanel, "roles", "Role was saved.", "ROle was deleted.",
+        super(adminPanel, "roles", "Role was saved.", "Role was deleted.",
                 "A role with that name already exists.");
     }
 

@@ -17,6 +17,30 @@
  */
 package org.mule.galaxy.web.client;
 
+import static org.mule.galaxy.web.client.WidgetHelper.newSpacerPipe;
+import org.mule.galaxy.web.client.admin.AdministrationPanel;
+import org.mule.galaxy.web.client.item.RepositoryMenuPanel;
+import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
+import org.mule.galaxy.web.client.registry.SearchPanel;
+import org.mule.galaxy.web.client.ui.AdministrationConstants;
+import org.mule.galaxy.web.client.ui.BaseConstants;
+import org.mule.galaxy.web.client.ui.BaseMessages;
+import org.mule.galaxy.web.client.ui.RepositoryConstants;
+import org.mule.galaxy.web.client.util.ExternalHyperlink;
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.AdminService;
+import org.mule.galaxy.web.rpc.AdminServiceAsync;
+import org.mule.galaxy.web.rpc.HeartbeatService;
+import org.mule.galaxy.web.rpc.HeartbeatServiceAsync;
+import org.mule.galaxy.web.rpc.Plugin;
+import org.mule.galaxy.web.rpc.RegistryService;
+import org.mule.galaxy.web.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.rpc.SecurityService;
+import org.mule.galaxy.web.rpc.SecurityServiceAsync;
+import org.mule.galaxy.web.rpc.WExtensionInfo;
+import org.mule.galaxy.web.rpc.WUser;
+
 import com.extjs.gxt.ui.client.GXT;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -25,6 +49,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.event.TabPanelEvent;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.Viewport;
@@ -52,32 +77,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.client.item.RepositoryMenuPanel;
-import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
-import org.mule.galaxy.web.client.registry.SearchPanel;
-import org.mule.galaxy.web.client.ui.AdministrationConstants;
-import org.mule.galaxy.web.client.ui.BaseConstants;
-import org.mule.galaxy.web.client.ui.BaseMessages;
-import org.mule.galaxy.web.client.ui.RepositoryConstants;
-import org.mule.galaxy.web.client.ui.ButtonIcons;
-import org.mule.galaxy.web.client.util.ExternalHyperlink;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.AdminService;
-import org.mule.galaxy.web.rpc.AdminServiceAsync;
-import org.mule.galaxy.web.rpc.HeartbeatService;
-import org.mule.galaxy.web.rpc.HeartbeatServiceAsync;
-import org.mule.galaxy.web.rpc.Plugin;
-import org.mule.galaxy.web.rpc.RegistryService;
-import org.mule.galaxy.web.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.rpc.SecurityService;
-import org.mule.galaxy.web.rpc.SecurityServiceAsync;
-import org.mule.galaxy.web.rpc.WExtensionInfo;
-import org.mule.galaxy.web.rpc.WUser;
-
-import static org.mule.galaxy.web.client.WidgetHelper.newSpacerPipe;
 
 
 /**
@@ -352,7 +351,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     }
 
     protected void loadTabs(final Galaxy galaxy) {
-        tabPanel.add(createEmptyTab("Repository", repositoryConstants.repo_TabTip()) );
+        tabPanel.add(createEmptyTab("Repository", repositoryConstants.repo_TabTip()));
         createRepositoryPanels();
 
         int searchIdx = tabPanel.getItemCount();
@@ -361,7 +360,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         tabNames.add("search");
 
         loadPluginTabs();
-        
+
         if (showAdminTab(user)) {
             adminTabIndex = tabPanel.getItemCount();
             tabNames.add(adminTabIndex, "admin");
@@ -371,7 +370,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     }
 
     protected void loadPluginTabs() {
-        for (Plugin plugin : getPlugins()) {   
+        for (Plugin plugin : getPlugins()) {
             int idx = tabPanel.getItemCount();
             createPageInfo(plugin.getRootToken(), new PluginPanel(plugin), idx);
             tabNames.add(idx, plugin.getRootToken());
@@ -447,7 +446,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
         p.removeAll();
         p.layout();
-        
+
         Widget instance = page.getInstance();
         p.add(instance);
         p.layout();
@@ -541,6 +540,20 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
         ep.setMessage(message);
     }
+
+
+    /**
+     * just for informational messages.
+     * should not be used for errors because this fades out.
+     *
+     * @param token
+     * @param message
+     */
+    public void setInfoMessageAndGoto(String token, String message) {
+        History.newItem(token);
+        Info.display("Info:", message);
+    }
+
 
     public PropertyInterfaceManager getPropertyInterfaceManager() {
         return propertyInterfaceManager;
