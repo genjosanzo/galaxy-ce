@@ -162,6 +162,20 @@ public class PublishMojoTest extends AbstractAtomTest {
         feedDoc = res.getDocument();
         feed = feedDoc.getRoot();
         assertEquals(2, feed.getEntries().size());
+        res.release();
+        
+        // try updating
+        mojo.setOverwrite(true);
+        mojo.execute();
+
+        res = client.get(WORKSPACE_URL + "/pom.xml;history", defaultOpts);
+        assertEquals(200, res.getStatus());
+        prettyPrint(res.getDocument());
+        
+        feedDoc = res.getDocument();
+        feed = feedDoc.getRoot();
+        assertEquals(2, feed.getEntries().size());
+        res.release();
     }
     
     public void testDependencyFilters() throws Exception {

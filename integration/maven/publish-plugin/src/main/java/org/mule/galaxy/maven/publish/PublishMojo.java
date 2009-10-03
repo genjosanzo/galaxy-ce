@@ -156,6 +156,13 @@ public class PublishMojo extends AbstractMojo {
      * @parameter
      */
     private boolean clearWorkspace = false;
+    
+    /**
+     * Whether or not to overwrite artifact versions.
+     *
+     * @parameter
+     */
+    private boolean overwrite = false;
 
     private AbderaClient client;
 
@@ -469,8 +476,9 @@ public class PublishMojo extends AbstractMojo {
             
             // Check to see if this artifact version exists
             int artifactVersionExists = 404;
+            String versionUrl = artifactUrl + "?version=" + version;
             if (artifactExists != 404 && artifactExists < 300) {
-                res = client.head(artifactUrl + "?version=" + version, opts);
+                res = client.head(versionUrl, opts);
                 artifactVersionExists = res.getStatus();
                 res.release();
             }
@@ -483,7 +491,18 @@ public class PublishMojo extends AbstractMojo {
                 }
                 getLog().info("Created artifact " + name + " (version " + version + ")");
             } else if (artifactVersionExists < 300) {
-                getLog().info("Skipping artifact " + name + " as the current version already exists in the destination workspace.");
+                if (overwrite) {
+                    if (!showOnly) {
+                        res = client.delete(versionUrl);
+                        res.release();
+                        
+                        res = client.post(versionUrl, new FileInputStream(file), opts);
+                        res.release();
+                    }
+                    getLog().info("Overwrote artifact " + name + " (version " + version + ")");
+                } else {
+                    getLog().info("Skipping artifact " + name + " as the current version already exists in the destination workspace.");                    
+                }
             } else if (artifactVersionExists >= 300 && artifactVersionExists != 404) {
                 throw new MojoFailureException("Could not determine if resource already exists in: " + name
                     + ". Got status " + res.getStatus() + " for URL " + artifactUrl + ".");
@@ -662,6 +681,10 @@ public class PublishMojo extends AbstractMojo {
 
     public void setUseArtifactVersion(boolean useArtifactVersion) {
         this.useArtifactVersion = useArtifactVersion;
+    }
+
+    public void setOverwrite(boolean b) {
+        this.overwrite = true;
     }
     
 }
