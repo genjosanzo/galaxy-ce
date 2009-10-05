@@ -18,6 +18,13 @@
 
 package org.mule.galaxy.web.client.util;
 
+import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.WidgetComponent;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -27,13 +34,6 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.History;
-import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.event.ButtonEvent;
-import com.extjs.gxt.ui.client.event.SelectionListener;
-
-import org.mule.galaxy.web.client.ErrorPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
 
 /**
  * A panel for editing the name of a registry entry.
@@ -44,14 +44,14 @@ public abstract class InlineEditPanel extends Composite {
     private ErrorPanel errorPanel;
     private Button saveButton;
     private Button cancelButton;
-    
+
     public InlineEditPanel(ErrorPanel errorPanel) {
         super();
         this.errorPanel = errorPanel;
-        
+
         panel = new InlineFlowPanel();
         showDisplayPanel();
-        
+
         initWidget(panel);
     }
 
@@ -62,19 +62,21 @@ public abstract class InlineEditPanel extends Composite {
 
         Image editImg = new Image("images/page_edit.gif");
         editImg.setStyleName("icon-baseline");
-        editImg.setTitle("Edit");
         editImg.addClickHandler(new ClickHandler() {
-
             public void onClick(ClickEvent arg0) {
                 showEditPanel();
             }
-            
         });
-        panel.add(editImg);
+
+        WidgetComponent imageWrapper = new WidgetComponent(editImg);
+        imageWrapper.setStyleAttribute("display", "inline");
+        imageWrapper.setToolTip("Edit Server Name");
+
+        panel.add(imageWrapper);
     }
 
     protected abstract Widget createDisplayWidget();
-    
+
     protected abstract Widget createEditWidget();
 
     protected void showEditPanel() {
@@ -82,7 +84,7 @@ public abstract class InlineEditPanel extends Composite {
 
         final HorizontalPanel row = new HorizontalPanel();
         row.add(createEditWidget());
-        
+
         saveButton = new Button("Save");
         saveButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
             @Override
@@ -120,11 +122,11 @@ public abstract class InlineEditPanel extends Composite {
             public void onSuccess(Object arg0) {
                 finishSave();
             }
-            
+
         };
     }
 
-    protected void finishSave() {                
+    protected void finishSave() {
         setEnabled(true);
         showDisplayPanel();
     }
@@ -133,7 +135,7 @@ public abstract class InlineEditPanel extends Composite {
         cancelButton.setEnabled(e);
         saveButton.setEnabled(e);
     }
-    
+
     protected abstract void doSave(AsyncCallback asyncCallback);
 
     protected void cancel() {
