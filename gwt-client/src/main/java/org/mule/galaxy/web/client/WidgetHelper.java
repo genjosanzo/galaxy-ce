@@ -25,6 +25,12 @@ public class WidgetHelper extends Composite {
         return spacer;
     }
 
+    public static Label newSpacer(String width) {
+        Label spacer = new Label(" ");
+        spacer.setWidth(width);
+        return spacer;
+    }
+
     public static Label newSpacerPipe() {
         Label pipe = new Label(" | ");
         pipe.setStyleName("pipe-with-space");

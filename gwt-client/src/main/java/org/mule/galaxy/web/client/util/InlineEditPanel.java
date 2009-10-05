@@ -19,6 +19,7 @@
 package org.mule.galaxy.web.client.util;
 
 import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.WidgetHelper;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -103,7 +104,7 @@ public abstract class InlineEditPanel extends Composite {
             }
         });
 
-        row.add(new Label(" "));
+        row.add(WidgetHelper.newSpacer("20"));
         row.add(saveButton);
         row.add(cancelButton);
         row.setVerticalAlignment(HasAlignment.ALIGN_TOP);
