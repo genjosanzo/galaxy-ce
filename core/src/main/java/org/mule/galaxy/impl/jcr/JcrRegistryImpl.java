@@ -953,7 +953,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         Node workspaces = JcrUtil.getOrCreate(root, "workspaces", "galaxy:noSiblings");
         
         workspacesId = workspaces.getUUID();
-        id = root.getUUID();
+        id = workspacesId;
         
         session.save();
         session.logout();
