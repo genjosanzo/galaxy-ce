@@ -16,10 +16,10 @@
     boolean hostedMode = Boolean.valueOf(System.getProperty("hostedMode"));
 %>
     <head>
-        <title>MuleSoft | ${mgr.productName}</title>
+        <title>MuleSoft | <%=mgr.getProductName()%></title>
         <link type="text/css" rel="stylesheet" href="column-view.css" />
         <link type="text/css" rel="stylesheet" href="extjsresources/css/gxt-all.css"/>
-        <link type="text/css" rel="stylesheet" href="${mgr.productCss}" />
+        <link type="text/css" rel="stylesheet" href="<%=mgr.getProductCss()%>" />
     </head>
 
     <!--                                           -->
@@ -28,24 +28,7 @@
     <!-- to create a completely dynamic ui         -->
     <!--                                           -->
     <body>
-        <script language='javascript'>
-          var plugins = new Array();
-
-          // Registers a callback method to load a plugin when showPlugin is called
-          function registerPlugin(token,instance,callbackMethod) {
-              plugins[token] = callbackMethod;
-          }
-
-          // Call out to the GWT plugin function
-          function showPlugin(token) {
-              var fn = plugins[token];
-              if (fn) {
-                  fn();
-              }
-              else alert("Plugin for token " + token + " was not found.");
-          }
-        </script>
-        <%
+     <%
             List modules = new ArrayList(mgr.getGwtPlugins());
             Collections.sort(modules, new Comparator() {
                 public int compare(Object o1, Object o2) {
@@ -58,6 +41,69 @@
                     return p1.getName().compareTo(p2.getName());
                 }
             });
+      %>
+        <script language='javascript'>
+          var productName = "<%=mgr.getProductName()%>";
+          var plugins = new Array();
+          var pluginTokens = new Array();
+          var loadWhenRegister;
+
+          if (!Array.prototype.indexOf)
+          {
+            Array.prototype.indexOf = function(elt /*, from*/)
+            {
+              var len = this.length;
+
+              var from = Number(arguments[1]) || 0;
+              from = (from < 0)
+                   ? Math.ceil(from)
+                   : Math.floor(from);
+              if (from < 0)
+                from += len;
+
+              for (; from < len; from++)
+              {
+                if (from in this &&
+                    this[from] === elt)
+                  return from;
+              }
+              return -1;
+            };
+          }
+          
+          // Registers a callback method to load a plugin when showPlugin is called
+          function registerPlugin(token,instance,callbackMethod) {
+              plugins[token] = callbackMethod;
+              if (token = loadWhenRegister) {
+                  callbackMethod()
+                  loadWhenRegister = null;
+              }
+          }
+
+          // Call out to the GWT plugin function
+          function showPlugin(token) {
+              var fn = plugins[token];
+              if (fn) {
+                  fn();
+              } else if (pluginTokens.indexOf(token) >= 0) {
+                  loadWhenRegister = token;
+              }
+              else alert("Plugin for token " + token + " was not found.");
+          }
+          
+          <%
+           for (Iterator itr = modules.iterator(); itr.hasNext();) {
+              GwtPlugin mod = (GwtPlugin) itr.next();
+              if ("core".equals(mod.getName())) {
+                  continue;
+              }
+           %>
+           pluginTokens = pluginTokens.concat("<%= mod.getRootToken() %>");
+          <%
+           }
+           %>
+        </script>
+        <%
             for (Iterator itr = modules.iterator(); itr.hasNext();) {
                 GwtPlugin mod = (GwtPlugin) itr.next();
                 out.write("<script language='javascript' src='");

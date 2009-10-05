@@ -331,12 +331,14 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     }
 
     protected String getFooterText() {
-        return "Copyright 2009 MuleSource, Inc. All rights reserved";
+        return "Copyright 2009 MuleSoft, Inc. All rights reserved";
     }
 
-    protected String getProductName() {
-        return "Mule Galaxy";
-    }
+    protected native String getProductName()
+    /*-{
+        return $wnd.productName;
+    }-*/;
+
 
     public PageInfo createPageInfo(String token,
                                    final Widget composite,
