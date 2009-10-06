@@ -44,23 +44,27 @@ public class PersisterManager implements BeanPostProcessor {
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof Dao) {
             Dao dao = (Dao)bean;
-            String type = dao.getTypeClass().getName();
-            getPersisters().put(type, new DaoPersister(dao));
             
-            if (bean instanceof AbstractReflectionDao) {
-                try {
-                    ClassPersister p = new ClassPersister(dao.getTypeClass(), ((AbstractReflectionDao)dao).getRootNodeName());
-                    p.setPersisterManager(this);
-                    classPersisters.put(type, p);
-                    ((AbstractReflectionDao) dao).setPersister(p);
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
+            addDao(dao);
         }
         
         return bean;
+    }
+
+    public void addDao(Dao dao) {
+        String type = dao.getTypeClass().getName();
+        getPersisters().put(type, new DaoPersister(dao));
+        
+        if (dao instanceof AbstractReflectionDao) {
+            try {
+                ClassPersister p = new ClassPersister(dao.getTypeClass(), ((AbstractReflectionDao)dao).getRootNodeName());
+                p.setPersisterManager(this);
+                classPersisters.put(type, p);
+                ((AbstractReflectionDao) dao).setPersister(p);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public FieldPersister getPersister(Class<?> c) {
