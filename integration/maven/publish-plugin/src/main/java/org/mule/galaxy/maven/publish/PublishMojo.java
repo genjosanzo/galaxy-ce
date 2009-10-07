@@ -493,10 +493,7 @@ public class PublishMojo extends AbstractMojo {
             } else if (artifactVersionExists < 300) {
                 if (overwrite) {
                     if (!showOnly) {
-                        res = client.delete(versionUrl);
-                        res.release();
-                        
-                        res = client.post(versionUrl, new FileInputStream(file), opts);
+                        res = client.put(versionUrl, new FileInputStream(file), opts);
                         res.release();
                     }
                     getLog().info("Overwrote artifact " + name + " (version " + version + ")");

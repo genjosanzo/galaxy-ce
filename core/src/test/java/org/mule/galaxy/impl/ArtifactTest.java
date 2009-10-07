@@ -1,6 +1,8 @@
 package org.mule.galaxy.impl;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
@@ -14,6 +16,8 @@ import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.type.TypeManager;
+import org.mule.galaxy.util.IOUtils;
+
 import org.w3c.dom.Document;
 
 public class ArtifactTest extends AbstractGalaxyTest {
@@ -32,6 +36,18 @@ public class ArtifactTest extends AbstractGalaxyTest {
         
         // test moving it into the workspace its already in.
         registry.move(a, w.getPath(), a.getName());
+    }
+    
+    public void testUpdate() throws Exception {
+        Item i = importFile(new ByteArrayInputStream("test".getBytes()), "test.txt", "0.1", "text/plain");
+        
+        i.setProperty("artifact", new Object[] { new ByteArrayInputStream("test2".getBytes()), "text/plain" });
+        registry.save(i);
+        
+        Artifact a = (Artifact) i.getProperty("artifact");
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        IOUtils.copy(a.getInputStream(), byteStream);
+        assertEquals("test2", new String(byteStream.toByteArray()));
     }
     
     public void testRename() throws Exception {

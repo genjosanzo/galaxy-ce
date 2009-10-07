@@ -754,7 +754,22 @@ public class ItemCollection
                          InputStream inputStream, 
                          RequestContext request)
         throws ResponseContextException {
-        throw new ResponseContextException(405);
+        Item parent = (Item) request.getAttribute(Scope.REQUEST, ItemResolver.ITEM);
+
+        if (!parent.getType().inheritsFrom(TypeManager.ARTIFACT_VERSION)) {
+            throw new ResponseContextException(405);
+        }
+        
+        try {
+            parent.setProperty("artifact", new Object[] { inputStream, contentType.toString() });
+        } catch (AccessException e) {
+            throw new ResponseContextException(401, e);
+        } catch (PropertyException e) {
+            log.error("Could not set property.", e);
+            throw new ResponseContextException(500, e);
+        } catch (PolicyException e) {
+            throw createArtifactPolicyExceptionResponse(e);
+        } 
     }
 
 }
