@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.xml.namespace.QName;
@@ -125,9 +126,15 @@ public class ArtifactExtension extends AbstractExtension implements AtomExtensio
                                      String contentType, 
                                      Session session)
             throws RepositoryException {
-        Node artifacts = session.getNodeByUUID(artifactsNodeId);
-        Node node = artifacts.addNode(UUID.randomUUID().toString());
-        node.addMixin("mix:referenceable");
+        String nodeId = item.getInternalProperty(pd.getProperty());
+        Node node;
+        if (nodeId == null) {
+            Node artifacts = session.getNodeByUUID(artifactsNodeId);
+            node = artifacts.addNode(UUID.randomUUID().toString());
+            node.addMixin("mix:referenceable");
+        } else {
+            node = session.getNodeByUUID(nodeId);
+        }
 
         contentType = trimContentType(contentType);
 
@@ -189,6 +196,10 @@ public class ArtifactExtension extends AbstractExtension implements AtomExtensio
                                      final InputStream is,
                                      final String contentType)
             throws RepositoryException {
+        for (NodeIterator nodes = versionNode.getNodes(); nodes.hasNext();) {
+            nodes.nextNode().remove();
+        }
+        
         // these are required since we inherit from nt:file
         Node resNode = versionNode.addNode("jcr:content", "nt:resource");
         resNode.setProperty("jcr:mimeType", contentType);

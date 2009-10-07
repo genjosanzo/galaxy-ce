@@ -260,15 +260,15 @@ public class ItemCollectionTest extends AbstractAtomTest {
         opts.setHeader("Slug", "0.2");
         opts.setAuthorization(defaultOpts.getAuthorization());
 
-        // ensure we can't put
-        res = client.put(colUri.toString() + "/Default%20Workspace/hello_world.wsdl", getWsdl(), opts);
-        assertEquals(405, res.getStatus());
-        res.release();
-
         // post is what should work instead
         res = client.post(colUri.toString() + "/Default%20Workspace/hello_world.wsdl", getWsdl(), opts);
         assertEquals(201, res.getStatus());
         assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl?version=0.2", res.getLocation().toString());
+        res.release();
+        
+        // can we update the file?
+        res = client.put(colUri.toString() + "/Default%20Workspace/hello_world.wsdl?version=0.2", getWsdl(), opts);
+        assertEquals(200, res.getStatus());
         res.release();
         
         // Get the entry
