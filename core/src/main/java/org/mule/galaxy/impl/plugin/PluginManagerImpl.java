@@ -214,7 +214,7 @@ public class PluginManagerImpl
     }
 
     public void loadPluginArchive(File plugin) throws IOException {
-        System.out.println("Loading plugin " + plugin.getAbsolutePath());
+        log.info("Loading plugin " + plugin.getAbsolutePath());
         String name = plugin.getName();
 
         File expand;
