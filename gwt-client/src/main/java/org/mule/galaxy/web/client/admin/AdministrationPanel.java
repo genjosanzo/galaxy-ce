@@ -148,18 +148,19 @@ public class AdministrationPanel extends MenuPanel {
 
 
     protected List<NavMenuItem> fetchUtilityItems(Galaxy galaxy) {
-        ArrayList a = new ArrayList();
+        ArrayList<NavMenuItem> a = new ArrayList<NavMenuItem>();
+
+        a.add(new NavMenuItem("Admin Shell",
+                "adminShell",
+                new AdminShellPanel(this),
+                null));
+
         if (galaxy.hasPermission("VIEW_ACTIVITY")) {
             a.add(new NavMenuItem("Activity",
                     "ActivityPanel",
                     new ActivityPanel(this, galaxy),
                     null));
         }
-
-        a.add(new NavMenuItem("Admin Shell",
-                "adminShell",
-                new AdminShellPanel(this),
-                null));
 
         a.add(new NavMenuItem("Scheduler",
                 "schedules",
@@ -170,7 +171,7 @@ public class AdministrationPanel extends MenuPanel {
     }
 
     protected List<NavMenuItem> fetchManageMenuItems(Galaxy galaxy) {
-        ArrayList a = new ArrayList();
+        ArrayList<NavMenuItem> a = new ArrayList<NavMenuItem>();
 
         if (galaxy.hasPermission("MANAGE_USERS")) {
             a.add(new NavMenuItem("Users",
