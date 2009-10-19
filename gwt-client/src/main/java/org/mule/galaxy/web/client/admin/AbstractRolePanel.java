@@ -105,7 +105,7 @@ public abstract class AbstractRolePanel extends AbstractFlowComposite {
         cp.setAutoWidth(true);
 
         // add inline help string and widget
-        cp.setTopComponent(new InlineHelpPanel(galaxy.getAdministrationConstants().admin_Roles_Tip(), 14));
+        cp.setTopComponent(new InlineHelpPanel(galaxy.getRepositoryConstants().repo_Security_Tip(), 15));
         mainPanel.add(cp);
 
         table = createRowTable();

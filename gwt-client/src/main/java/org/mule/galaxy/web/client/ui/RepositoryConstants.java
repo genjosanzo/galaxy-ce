@@ -60,13 +60,22 @@ public interface RepositoryConstants extends com.google.gwt.i18n.client.Constant
   String repo_Policies_TabTip();
 
   /**
-   * Translated "Specify the type of access each security group has to the current workspace or item".
+   * Translated "Specify the type of access each role has to the current workspace or item".
    *
-   * @return translated "Specify the type of access each security group has to the current workspace or item"
+   * @return translated "Specify the type of access each role has to the current workspace or item"
    */
-  @DefaultStringValue("Specify the type of access each security group has to the current workspace or item")
+  @DefaultStringValue("Specify the type of access each role has to the current workspace or item")
   @Key("repo_Security_TabTip")
   String repo_Security_TabTip();
+
+  /**
+   * Translated "For each role, specify how users with that role can access this artifact or workspace. In the row for the role whose permissions you want to change, select whether you want to grant or revoke the right to read, modify, or delete the item, or to manage policies for the item.".
+   *
+   * @return translated "For each role, specify how users with that role can access this artifact or workspace. In the row for the role whose permissions you want to change, select whether you want to grant or revoke the right to read, modify, or delete the item, or to manage policies for the item."
+   */
+  @DefaultStringValue("For each role, specify how users with that role can access this artifact or workspace. In the row for the role whose permissions you want to change, select whether you want to grant or revoke the right to read, modify, or delete the item, or to manage policies for the item.")
+  @Key("repo_Security_Tip")
+  String repo_Security_Tip();
 
   /**
    * Translated "Manage your repository of applications, servers, and server groups".
