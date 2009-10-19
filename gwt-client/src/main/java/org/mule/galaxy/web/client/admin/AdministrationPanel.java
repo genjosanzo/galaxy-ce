@@ -69,6 +69,8 @@ public class AdministrationPanel extends MenuPanel {
         accordionPanel.add(createPanelWithListView("Utility", utilityItems));
         addMenuItem(accordionPanel);
 
+        // default to users panel.
+        History.newItem("users");
     }
 
 

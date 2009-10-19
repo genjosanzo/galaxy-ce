@@ -53,17 +53,16 @@ public class UserListPanel extends AbstractAdministrationComposite {
     @Override
     public void doShowPage() {
         super.doShowPage();
-
         adminPanel.getSecurityService().getUsers(new AbstractCallback<List<WUser>>(adminPanel) {
 
             public void onSuccess(List<WUser> users) {
+                panel.clear();
                 showUsers(users);
             }
         });
     }
 
     private void showUsers(List<WUser> users) {
-
         ContentPanel cp = new ContentPanel();
         cp.setHeading("Users");
         cp.setBodyBorder(false);
