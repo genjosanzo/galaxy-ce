@@ -1678,3 +1678,6 @@ helper styles
 }
 
 
+.icon-page {
+  background-image: url(images/text.png) !important;
+}
