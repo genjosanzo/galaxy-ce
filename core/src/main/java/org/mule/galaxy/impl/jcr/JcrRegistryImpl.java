@@ -368,7 +368,14 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
     }
 
     public Item getItemById(final String id) throws NotFoundException, RegistryException, AccessException {
-        return getWorkspaceManagerByItemId(id).getItemById(id);
+        WorkspaceManager wm;
+        try {
+            wm = getWorkspaceManagerByItemId(id);
+        } catch (IllegalStateException e) {
+            throw new NotFoundException(id);
+        }
+        
+        return wm.getItemById(id);
     }
         
     public Item getItemByPath(String path) throws RegistryException, NotFoundException, AccessException {
