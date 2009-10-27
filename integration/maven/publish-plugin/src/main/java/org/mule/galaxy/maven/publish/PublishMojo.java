@@ -445,8 +445,9 @@ public class PublishMojo extends AbstractMojo {
             version = project.getVersion();
         }
         File file = a.getFile();
-        
-        publishFile(file, version, a);
+        if (file != null) {
+            publishFile(file, version, a);
+        }
     }
 
     private void publishFile(File file, String version, Artifact a) throws MojoFailureException, MojoExecutionException {
@@ -517,7 +518,7 @@ public class PublishMojo extends AbstractMojo {
                                              + name, e);
         }
         
-        if (publishProjectMetadata) {
+        if (publishProjectMetadata && !showOnly) {
             publishProjectMetadata(name, artifactUrl + ";atom", a);
         }
     }
