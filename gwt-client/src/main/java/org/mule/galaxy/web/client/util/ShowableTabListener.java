@@ -37,6 +37,7 @@ public class ShowableTabListener extends SelectionListener<TabPanelEvent> {
     public void componentSelected(TabPanelEvent ce) {
         TabItem item = ce.getItem();
         
+        // Nasty trickery because GXT triggers tab selection events for every click on the screen
         if (item.equals(previous) && params.equals(previousParams)) {
             return;
         }
@@ -55,14 +56,25 @@ public class ShowableTabListener extends SelectionListener<TabPanelEvent> {
         }
         
         previous = item;
+        // Once we've shown a panel, store the previous params. We aren't going to trigger a new tab  
+        // selection event again until we get new params.
+        previousParams = params;
         item.layout();
     }
 
+    /**
+     * Update the parameters from a new history event. Call before calling showTab.
+     * @param params
+     */
     public void setParams(List<String> params) {
-        this.previousParams = this.params;
         this.params = params;
     }
 
+    /**
+     * Show a named tab. Handy when you have another page that manages history events and you have a tab
+     * as a sub component which needs to be triggered on certain history events.
+     * @param tabName
+     */
     public void showTab(String tabName) {
         int idx = tabNames.indexOf(tabName);
         if (idx == -1) {
@@ -74,5 +86,9 @@ public class ShowableTabListener extends SelectionListener<TabPanelEvent> {
         if (widget instanceof Showable) {
             ((Showable)widget).showPage(params);
         }
+        
+        // Once we've shown a panel, store the previous params. We aren't going to trigger a new tab  
+        // selection event again until we get new params.
+        previousParams = params;
     }
 }
