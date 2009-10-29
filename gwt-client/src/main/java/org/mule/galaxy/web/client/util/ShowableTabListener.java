@@ -5,6 +5,7 @@ package org.mule.galaxy.web.client.util;
 
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.event.TabPanelEvent;
+import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -68,6 +69,11 @@ public class ShowableTabListener extends SelectionListener<TabPanelEvent> {
         if (idx == -1) {
             idx = 0;
         }
-        tabPanel.setSelection(tabPanel.getItem(idx));
+        TabItem item = tabPanel.getItem(idx);
+        Widget widget = item.getWidget(0);
+        tabPanel.setSelection(item);
+        if (widget instanceof Showable) {
+            ((Showable)widget).showPage(params);
+        }
     }
 }
