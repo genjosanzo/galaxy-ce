@@ -15,12 +15,6 @@
     <dependencies>
 
         <dependency>
-            <groupId>org.mule.galaxy</groupId>
-            <artifactId>galaxy-core</artifactId>
-            <version>${version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.extjs</groupId>
             <artifactId>gxt</artifactId>
         </dependency>
@@ -39,13 +33,6 @@
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-incubator</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mule.galaxy</groupId>
-            <artifactId>galaxy-testutils</artifactId>
-            <version>${version}</version>
-            <scope>test</scope>
         </dependency>
 
     </dependencies>
