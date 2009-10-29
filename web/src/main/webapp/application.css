@@ -477,6 +477,10 @@ a:visited {
 .padded-panel {
     padding: 5px;
 }
+.lt-padded-panel {
+    padding: 5px 0 0 5px;
+}
+
 
 .bold-right-label {
     font-weight: bold;
