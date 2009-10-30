@@ -118,14 +118,14 @@ public class CollectionPersister implements FieldPersister {
         }
     }
     
-    public class LazySet extends HashSet {
+    public static class LazySet extends HashSet {
 
-        private final Node n;
-        private final FieldDescriptor fd;
-        private final Session session;
-        private final String parentField;
-        private final CollectionPersister persister;
-        private boolean initialized;
+        private transient  Node n;
+        private transient FieldDescriptor fd;
+        private transient Session session;
+        private transient String parentField;
+        private transient CollectionPersister persister;
+        private transient boolean initialized;
 
         public LazySet(CollectionPersister persister, 
                        Node n, 
@@ -250,14 +250,14 @@ public class CollectionPersister implements FieldPersister {
         
     }
     
-    public class LazyList extends ArrayList {
+    public static class LazyList extends ArrayList {
         
-        private final Node n;
-        private final FieldDescriptor fd;
-        private final Session session;
-        private final String parentField;
-        private final CollectionPersister persister;
-        private boolean initialized;
+        private transient Node n;
+        private transient FieldDescriptor fd;
+        private transient Session session;
+        private transient String parentField;
+        private transient CollectionPersister persister;
+        private transient boolean initialized;
 
         public LazyList(CollectionPersister persister,
                         Node n, 
