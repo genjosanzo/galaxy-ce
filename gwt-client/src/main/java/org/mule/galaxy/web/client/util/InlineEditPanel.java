@@ -41,7 +41,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public abstract class InlineEditPanel extends Composite {
 
-    private InlineFlowPanel panel;
+    protected InlineFlowPanel panel;
     private ErrorPanel errorPanel;
     private Button saveButton;
     private Button cancelButton;
@@ -61,8 +61,7 @@ public abstract class InlineEditPanel extends Composite {
         panel.add(createDisplayWidget());
         panel.add(new Label(" "));
 
-        Image editImg = new Image("images/page_edit.gif");
-        editImg.setStyleName("icon-baseline");
+        Image editImg = new Image("images/editor_area.gif");
         editImg.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent arg0) {
                 showEditPanel();
@@ -72,7 +71,6 @@ public abstract class InlineEditPanel extends Composite {
         WidgetComponent imageWrapper = new WidgetComponent(editImg);
         imageWrapper.setStyleAttribute("display", "inline");
         imageWrapper.setToolTip("Edit Server Name");
-
         panel.add(imageWrapper);
     }
 

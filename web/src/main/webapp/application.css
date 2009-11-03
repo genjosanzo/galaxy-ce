@@ -93,6 +93,16 @@ body {
     font-size:14px;
 }
 
+.a-faux-link {
+    color: #016c96;
+    text-decoration: none;
+    cursor: hand;
+    cursor: pointer;
+}
+.a-big-faux-link {
+    font-size: 20px;
+}
+
 h2 {
   font-weight: normal;
 }
