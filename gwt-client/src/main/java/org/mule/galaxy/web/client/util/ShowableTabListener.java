@@ -7,6 +7,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.event.TabPanelEvent;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
@@ -21,14 +22,17 @@ public class ShowableTabListener extends SelectionListener<TabPanelEvent> {
     private final ErrorPanel errorPanel;
     private final List<String> tabNames;
     private final TabPanel tabPanel;
+    private final String urlBase;
     
     public ShowableTabListener(TabPanel tabPanel,
                                ErrorPanel errorPanel, 
+                               String urlBase,
                                List<String> params,
                                List<String> tabNames) {
         super();
         this.tabPanel = tabPanel;
         this.errorPanel = errorPanel;
+        this.urlBase = urlBase;
         this.params = params;
         this.tabNames = tabNames;
     }
@@ -53,6 +57,13 @@ public class ShowableTabListener extends SelectionListener<TabPanelEvent> {
         Widget widget = item.getWidget(0);
         if (widget instanceof Showable) {
             ((Showable)widget).showPage(params);
+        }
+        
+        // Update the History token once the tab is selected.
+        int tabIndex = tabPanel.indexOf(item);
+        if (tabNames != null && tabIndex < tabNames.size()) {
+            String name = tabNames.get(tabIndex);
+            History.newItem(urlBase + "/" + name, false);
         }
         
         previous = item;

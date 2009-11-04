@@ -122,7 +122,7 @@ public class ItemPanel extends AbstractFlowComposite {
         /**
          * Lazily initialize the panels with the proper parameters.
          */
-        tabPanel.addListener(Events.Select, new ShowableTabListener(tabPanel, menuPanel, params, null));
+        tabPanel.addListener(Events.Select, new ShowableTabListener(tabPanel, menuPanel, "items/" + itemId, params, null));
 
         cp.add(tabPanel);
         panel.add(cp);
