@@ -53,6 +53,7 @@ public class AdministrationPanel extends MenuPanel {
     public AdministrationPanel(Galaxy galaxy) {
         super();
         this.galaxy = galaxy;
+        setId("administrationTabBody");
     }
 
     @Override

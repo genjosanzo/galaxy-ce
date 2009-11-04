@@ -15,12 +15,10 @@ import com.extjs.gxt.ui.client.event.TreePanelEvent;
 import com.extjs.gxt.ui.client.store.Store;
 import com.extjs.gxt.ui.client.store.StoreSorter;
 import com.extjs.gxt.ui.client.store.TreeStore;
+import com.extjs.gxt.ui.client.util.IconHelper;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.LayoutContainer;
-import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
-import com.extjs.gxt.ui.client.util.IconHelper;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
@@ -58,6 +56,8 @@ public class RepositoryMenuPanel extends MenuPanel {
         createPageInfo("item/" + Galaxy.WILDCARD, new ItemPanel(galaxy, this));
         createPageInfo("add-item", new AddItemForm(galaxy, this));
         createPageInfo("view", new ViewPanel(galaxy));
+        
+        setId("repositoryTabBody");
     }
 
     @Override

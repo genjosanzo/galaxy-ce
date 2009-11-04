@@ -66,6 +66,10 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
         initWidget(panel);
     }
 
+    public void setId(String id) {
+        panel.getElement().setId(id);
+    }
+    
     @Override
     public void showPage(List<String> params) {
         if (firstShow) {
