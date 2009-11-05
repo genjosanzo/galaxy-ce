@@ -99,6 +99,17 @@ body {
     cursor: hand;
     cursor: pointer;
 }
+
+.a-link a {
+    color: #016c96;
+    text-decoration: none;
+}
+.a-link a:hover {
+    text-decoration: underline;
+    cursor: hand;
+    cursor: pointer;
+}
+
 .a-big-faux-link {
     font-size: 20px;
 }
