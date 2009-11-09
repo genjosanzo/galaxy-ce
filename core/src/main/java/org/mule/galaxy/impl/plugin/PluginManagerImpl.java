@@ -153,7 +153,8 @@ public class PluginManagerImpl
                         }
                         else
                         {
-                            previousVersion = p.getVersion();
+                            // Stupid JCR ORM doesn't have int support
+                            previousVersion = new Long(pluginInfo.getVersion()).intValue();
                         }
         
                         p.update(previousVersion);

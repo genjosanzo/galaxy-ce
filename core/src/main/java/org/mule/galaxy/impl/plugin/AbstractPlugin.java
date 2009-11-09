@@ -74,7 +74,7 @@ public abstract class AbstractPlugin implements Plugin {
             log.info(String.format("Installing new plugin v%d: %s", getVersion(), getName()));
             doInstall();
         }
-        else if (previousVersion > getVersion())
+        else if (previousVersion < getVersion())
         {
             if (!isUpgradeSupported())
             {
@@ -83,7 +83,7 @@ public abstract class AbstractPlugin implements Plugin {
             log.info(String.format("Upgrading plugin from v%d to v%d: %s", previousVersion, getVersion(), getName()));
             doUpgrade();
         }
-        else if (previousVersion < getVersion())
+        else if (previousVersion > getVersion())
         {
             if (!isDowngradeSupported())
             {
