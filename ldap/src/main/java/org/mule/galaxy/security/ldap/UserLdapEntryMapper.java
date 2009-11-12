@@ -5,6 +5,7 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 
 import org.acegisecurity.ldap.LdapEntryMapper;
+import org.apache.commons.lang.StringUtils;
 import org.mule.galaxy.security.User;
 
 public class UserLdapEntryMapper implements LdapEntryMapper {
@@ -19,6 +20,11 @@ public class UserLdapEntryMapper implements LdapEntryMapper {
         user.setUsername(user.getId());
         user.setEmail(getValueOrNull(attributes, getEmailAttribute()));
         user.setName(getValueOrNull(attributes, getNameAttribute()));
+        
+        if (StringUtils.isEmpty(user.getId())) {
+            throw new NamingException("The username LDAP attribute value was empty. Is '" + getUsernameAttribute() +
+                                      "' really the attribute with the username? Please check your configuration.");
+        }
         return user;
     }
 

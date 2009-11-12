@@ -9,8 +9,6 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://www.springmodules.org/schema/ehcache http://www.springmodules.org/schema/cache/springmodules-ehcache.xsd">
   
-  <import resource="classpath:ldap.xml"/>
-  
   <bean id="ldapAuthProvider" class="org.mule.galaxy.security.ldap.GalaxyAuthenticationProvider">
     <constructor-arg>
         <bean class="org.acegisecurity.providers.ldap.authenticator.BindAuthenticator">
@@ -23,7 +21,7 @@
     <property name="userMapper" ref="userDetailsMapper"/>
   </bean>
   
-  <bean id="userDetailsMapper" class="org.mule.galaxy.security.ldap.UserLdapEntryMapper" />
+  <bean id="userDetailsMapper" class="org.mule.galaxy.security.ldap.UserLdapEntryMapper"/>
     
   <bean id="authenticationManager" class="org.acegisecurity.providers.ProviderManager">
     <property name="providers">
@@ -67,5 +65,8 @@
       </list>
     </property>
   </bean>
+    
+  <import resource="classpath:ldap.xml"/>
+  
   
 </beans>
