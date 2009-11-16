@@ -7,12 +7,14 @@ import org.mule.galaxy.web.client.util.ToolbarButtonEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.WidgetComponent;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
@@ -250,5 +252,18 @@ public class WidgetHelper extends Composite {
         String w = (isBold) ? "bold" : "normal";
         return "<span style=\"font-weight:" + w + ";\">" + s + "</span>";
     }
+
+    public static WidgetComponent deleteImage(String tooltip) {
+        Image i = new  Image("images/delete_config.gif");
+        WidgetComponent w = new WidgetComponent(i);
+        if(tooltip == null) {
+            // default value for tooltip
+            tooltip = "Delete";
+        }
+        w.setToolTip(tooltip);
+        return w;
+    }
+
+
 
 }
