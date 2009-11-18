@@ -258,7 +258,7 @@ public class WidgetHelper extends Composite {
         WidgetComponent w = new WidgetComponent(i);
         if(tooltip == null) {
             // default value for tooltip
-            tooltip = "Delete";
+            tooltip = "Remove Item";
         }
         w.setToolTip(tooltip);
         return w;
