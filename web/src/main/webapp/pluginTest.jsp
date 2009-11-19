@@ -3,7 +3,7 @@
 <%@page import="org.springframework.context.ApplicationContext"%>
 <%@page import="org.mule.galaxy.web.WebManager"%>
 <%@page import="java.util.List"%>
-<%@page import="org.mule.galaxy.web.GwtPlugin"%>
+<%@page import="org.mule.galaxy.web.GwtModule"%>
 <%@page import="java.util.Collection"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="java.util.ArrayList"%>
@@ -34,25 +34,13 @@
           }
         </script>
         <%
-            List<GwtPlugin> modules = new ArrayList<GwtPlugin>(mgr.getGwtPlugins());
-            Collections.sort(modules, new Comparator<GwtPlugin>() {
-                public int compare(GwtPlugin p1, GwtPlugin p2) {
-                    if ("core".equals(p1.getName())) {
-                        return 1;
-                    }
-                    if ("core".equals(p2.getName())) {
-                        return -1;
-                    }
-
-                    return p1.getName().compareTo(p2.getName());
-                }
-            });
-            for (GwtPlugin mod : modules) {
-                if (!"core".equals(mod.getName())) {
+            List<GwtModule> modules = new ArrayList<GwtModule>(mgr.getGwtModules());
+            for (GwtModule mod : modules) {
+                if (!mod.isCore()) {
 	                out.write("<script language='javascript' src='");
-	                out.write(mod.getModuleName());
+	                out.write(mod.getName());
 	                out.write("/");
-	                out.write(mod.getModuleName());
+	                out.write(mod.getName());
 	                out.write(".nocache.js'></script>");
                 }
             }
