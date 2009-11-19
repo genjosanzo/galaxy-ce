@@ -101,5 +101,6 @@ public class ShowableTabListener extends SelectionListener<TabPanelEvent> {
         // Once we've shown a panel, store the previous params. We aren't going to trigger a new tab  
         // selection event again until we get new params.
         previousParams = params;
+        previous = item;
     }
 }
