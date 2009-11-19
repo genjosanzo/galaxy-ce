@@ -141,7 +141,7 @@ public class ItemCollectionTest extends AbstractAtomTest {
         String defaultWkspcCol = colUri.toString() + "/Default%20Workspace";
         res = client.post(defaultWkspcCol, getWsdl(), opts);
         assertEquals(201, res.getStatus());
-        
+        prettyPrint(res.getDocument());
         assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl?version=0.1", 
                      res.getLocation().toString());
         res.release();

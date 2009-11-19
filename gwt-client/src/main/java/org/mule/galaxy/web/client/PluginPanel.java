@@ -1,7 +1,7 @@
 package org.mule.galaxy.web.client;
 
 import com.google.gwt.user.client.ui.FlowPanel;
-import org.mule.galaxy.web.rpc.Plugin;
+import org.mule.galaxy.web.rpc.PluginTabInfo;
 
 /**
  * Provides a single element with the id "plugin" which GWT modules
@@ -9,10 +9,10 @@ import org.mule.galaxy.web.rpc.Plugin;
  */
 public class PluginPanel extends AbstractShowable {
 
-    private final Plugin plugin;
+    private final PluginTabInfo plugin;
     private FlowPanel main;
 
-    public PluginPanel(Plugin plugin) {
+    public PluginPanel(PluginTabInfo plugin) {
         super();
         this.plugin = plugin;
         main = new FlowPanel();

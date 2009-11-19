@@ -49,27 +49,30 @@ public class GwtPluginPostProcessor
             throw new RuntimeException("ServletContext cannot be null!");
         }
         
-        if (bean instanceof GwtPlugin) {
-            GwtPlugin plugin = (GwtPlugin) bean;
+        if (bean instanceof GwtModule) {
+            GwtModule plugin = (GwtModule) bean;
             
-            webManager.addGwtPlugin(plugin);
+            webManager.addGwtModule(plugin);
             
             Map<String, RemoteService> services = plugin.getRpcServices();
-            for (Map.Entry<String,RemoteService> e : services.entrySet()) {
-                // create a spring service which gets mapped to the specified URL
-                RPCServiceExporter exporter = new GwtRpcServiceExporter(Thread.currentThread().getContextClassLoader());
-                exporter.setResponseCachingDisabled(false);
-                exporter.setServletContext(servletContext);
-                exporter.setService(e.getValue());
-                exporter.setServiceInterfaces(ReflectionUtils.getExposedInterfaces(e.getValue().getClass()));
-                try {
-                    exporter.afterPropertiesSet();
-                    gwtHandler.registerHandler(e.getKey(), exporter);
-                } catch (Exception ex) {
-                    // TODO Auto-generated catch block
-                    ex.printStackTrace();
-                }
+            if (services != null) {
+	            for (Map.Entry<String,RemoteService> e : services.entrySet()) {
+	                // create a spring service which gets mapped to the specified URL
+	                RPCServiceExporter exporter = new GwtRpcServiceExporter(Thread.currentThread().getContextClassLoader());
+	                exporter.setResponseCachingDisabled(false);
+	                exporter.setServletContext(servletContext);
+	                exporter.setService(e.getValue());
+	                exporter.setServiceInterfaces(ReflectionUtils.getExposedInterfaces(e.getValue().getClass()));
+	                try {
+	                    exporter.afterPropertiesSet();
+	                    gwtHandler.registerHandler(e.getKey(), exporter);
+	                } catch (Exception ex) {
+	                    throw new RuntimeException(ex);
+	                }
+	            }
             }
+        } else if (bean instanceof GwtFacet) {
+        	webManager.addGwtFacet((GwtFacet) bean);
         }
         
         return bean;

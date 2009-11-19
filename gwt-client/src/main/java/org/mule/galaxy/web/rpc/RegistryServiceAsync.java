@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 public interface RegistryServiceAsync {
-    void getPlugins(AsyncCallback<Collection<Plugin>> callack);
+    void getPluginTabs(AsyncCallback<Collection<PluginTabInfo>> callack);
     
     void getItems(String parentId, boolean traverseUpParents, AsyncCallback callback);
 

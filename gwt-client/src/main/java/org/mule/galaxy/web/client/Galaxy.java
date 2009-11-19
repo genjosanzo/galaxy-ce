@@ -33,7 +33,7 @@ import org.mule.galaxy.web.rpc.AdminService;
 import org.mule.galaxy.web.rpc.AdminServiceAsync;
 import org.mule.galaxy.web.rpc.HeartbeatService;
 import org.mule.galaxy.web.rpc.HeartbeatServiceAsync;
-import org.mule.galaxy.web.rpc.Plugin;
+import org.mule.galaxy.web.rpc.PluginTabInfo;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.SecurityService;
@@ -114,7 +114,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
     private AdministrationConstants administrationConstants;
     private RepositoryConstants repositoryConstants;
-    protected Collection<Plugin> plugins;
+    protected Collection<PluginTabInfo> plugins;
 
     //public static final ButtonIcons IMAGES = GWT.create(ButtonIcons.class);
 
@@ -214,8 +214,8 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
 
     private void retrievePlugins() {
-        registryService.getPlugins(new AbstractCallback<Collection<Plugin>>(repositoryPanel) {
-            public void onSuccess(Collection<Plugin> plugins) {
+        registryService.getPluginTabs(new AbstractCallback<Collection<PluginTabInfo>>(repositoryPanel) {
+            public void onSuccess(Collection<PluginTabInfo> plugins) {
                 Galaxy.this.plugins = plugins;
                 suppressTabHistory = true;
                 loadTabs(Galaxy.this);
@@ -372,7 +372,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     }
 
     protected void loadPluginTabs() {
-        for (Plugin plugin : getPlugins()) {
+        for (PluginTabInfo plugin : getPlugins()) {
             int idx = tabPanel.getItemCount();
             createPageInfo(plugin.getRootToken(), new PluginPanel(plugin), idx);
             tabNames.add(idx, plugin.getRootToken());
@@ -380,7 +380,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         }
     }
 
-    protected Collection<Plugin> getPlugins() {
+    protected Collection<PluginTabInfo> getPlugins() {
         return plugins;
     }
 

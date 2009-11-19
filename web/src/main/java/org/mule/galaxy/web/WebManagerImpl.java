@@ -12,14 +12,28 @@ public class WebManagerImpl implements WebManager {
 
     private String productName;
     private String productCss;
-    private List<GwtPlugin> plugins = new ArrayList<GwtPlugin>();
+    private List<GwtModule> plugins = new ArrayList<GwtModule>();
+    private List<GwtFacet> facets = new ArrayList<GwtFacet>();
 
-    public void addGwtPlugin(GwtPlugin mod) {
-        log.info("Found GWT module: " + mod.getModuleName());
+    public void addGwtModule(GwtModule mod) {
+        log.info("Found GWT module: " + mod.getName());
         plugins.add(mod);
     }
 
-    public Collection<GwtPlugin> getGwtPlugins() {
+    public void addGwtFacet(GwtFacet facet) {
+        log.info("Found GWT facet: " + facet.getName());
+        facets.add(facet);
+	}
+
+	public List<GwtFacet> getGwtFacets() {
+		return facets;
+	}
+
+	public void setGwtFacets(List<GwtFacet> facets) {
+		this.facets = facets;
+	}
+
+	public Collection<GwtModule> getGwtModules() {
         return plugins;
     }
     public String getProductName() {

@@ -10,7 +10,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mule.galaxy.test.AbstractAtomTest;
-import org.mule.galaxy.web.GwtPlugin;
+import org.mule.galaxy.web.GwtModule;
 import org.mule.galaxy.web.GwtRpcHandlerMapping;
 import org.mule.galaxy.web.WebManager;
 import org.springframework.web.context.WebApplicationContext;
@@ -27,7 +27,7 @@ public class PluginArchiveTest extends AbstractAtomTest {
     public void testPluginLoading() throws Exception {
         // Did the GwtPlugin get installed?
         WebManager webManager = (WebManager) getApplicationContext().getBean("webManager");
-        Collection<GwtPlugin> plugins = webManager.getGwtPlugins();
+        Collection<GwtModule> plugins = webManager.getGwtModules();
         assertEquals(2, plugins.size());
         
         // Are our RPC services actually registered?

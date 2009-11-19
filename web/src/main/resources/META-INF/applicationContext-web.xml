@@ -14,9 +14,9 @@
       <property name="productCss" value="application.css"/>
     </bean>
     
-    <bean id="coreGwtModule" class="org.mule.galaxy.web.GwtPlugin">
-      <property name="name" value="core"/>
-      <property name="moduleName" value="org.mule.galaxy.web.Galaxy"/>
+    <bean id="coreGwtModule" class="org.mule.galaxy.web.GwtModule">
+      <property name="core" value="true"/>
+      <property name="name" value="org.mule.galaxy.web.Galaxy"/>
       <property name="rpcServices">
         <map>
           <entry key="/registry.rpc" value-ref="gwtRegistry" />

@@ -7,10 +7,8 @@
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
-  <bean class="org.mule.galaxy.web.GwtPlugin">
-    <property name="name" value="HelloWorld"/>
-    <property name="moduleName" value="org.mule.galaxy.helloworld.HelloWorld"/>
-    <property name="rootToken" value="helloworld"/>
+  <bean class="org.mule.galaxy.web.GwtModule">
+    <property name="name" value="org.mule.galaxy.helloworld.HelloWorld"/>
     <property name="rpcServices">
       <map>
         <entry key="/hello.rpc" value-ref="helloWorldService" />
@@ -18,6 +16,11 @@
     </property>
   </bean>
   
-  <bean id="helloWorldService" class="org.mule.galaxy.helloworld.server.HelloWorldServiceImpl"/>
+  <bean class="org.mule.galaxy.web.GwtFacet">
+    <property name="name" value="HelloWorld"/>
+    <property name="token" value="helloworld"/>
+  </bean>
   
+  <bean id="helloWorldService" class="org.mule.galaxy.helloworld.server.HelloWorldServiceImpl"/>
+
 </beans>

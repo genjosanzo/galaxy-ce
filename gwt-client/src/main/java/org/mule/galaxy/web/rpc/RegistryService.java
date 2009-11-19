@@ -31,7 +31,7 @@ import org.mule.galaxy.web.client.RPCException;
 
 public interface RegistryService extends RemoteService {
 
-    Collection<Plugin> getPlugins();
+    Collection<PluginTabInfo> getPluginTabs();
     
     Collection<ItemInfo> getItems(String parentId, boolean traverseUpParents) throws RPCException;
 

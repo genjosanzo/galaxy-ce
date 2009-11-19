@@ -26,7 +26,7 @@ import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.LinkInfo;
-import org.mule.galaxy.web.rpc.Plugin;
+import org.mule.galaxy.web.rpc.PluginTabInfo;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.WApprovalMessage;
@@ -409,7 +409,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     }
     
     public void testGwtPlugins() throws Exception {
-        Collection<Plugin> plugins = gwtRegistry.getPlugins();
+        Collection<PluginTabInfo> plugins = gwtRegistry.getPluginTabs();
         assertEquals(0, plugins.size());
     }
     

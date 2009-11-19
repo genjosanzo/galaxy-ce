@@ -94,14 +94,14 @@ import org.mule.galaxy.util.SecurityUtils;
 import org.mule.galaxy.util.UserUtils;
 import org.mule.galaxy.view.ArtifactViewManager;
 import org.mule.galaxy.view.View;
+import org.mule.galaxy.web.GwtFacet;
 import org.mule.galaxy.web.WebManager;
-import org.mule.galaxy.web.GwtPlugin;
 import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
 import org.mule.galaxy.web.rpc.LinkInfo;
-import org.mule.galaxy.web.rpc.Plugin;
+import org.mule.galaxy.web.rpc.PluginTabInfo;
 import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.WActivity;
@@ -151,14 +151,14 @@ public class RegistryServiceImpl implements RegistryService {
     
     private WebManager webManager;
     
-    public Collection<Plugin> getPlugins() {
-        Collection<GwtPlugin> plugins = webManager.getGwtPlugins();
-        ArrayList<Plugin> wPlugins = new ArrayList<Plugin>();
-        for (GwtPlugin p : plugins) {
+    public Collection<PluginTabInfo> getPluginTabs() {
+        Collection<GwtFacet> facets = webManager.getGwtFacets();
+        ArrayList<PluginTabInfo> wPlugins = new ArrayList<PluginTabInfo>();
+        for (GwtFacet p : facets) {
             if (!p.getName().equals("core")) {
-                Plugin wp = new Plugin();
+                PluginTabInfo wp = new PluginTabInfo();
                 wp.setName(p.getName());
-                wp.setRootToken(p.getRootToken());
+                wp.setToken(p.getToken());
                 wPlugins.add(wp);
             }
         }
