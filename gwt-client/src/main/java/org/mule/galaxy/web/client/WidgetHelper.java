@@ -10,6 +10,7 @@ import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.WidgetComponent;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
+import com.extjs.gxt.ui.client.widget.layout.TableData;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -262,6 +263,12 @@ public class WidgetHelper extends Composite {
         }
         w.setToolTip(tooltip);
         return w;
+    }
+
+    public static TableData colspan(int value) {
+        TableData td = new TableData();
+        td.setColspan(value);
+        return td;
     }
 
 
