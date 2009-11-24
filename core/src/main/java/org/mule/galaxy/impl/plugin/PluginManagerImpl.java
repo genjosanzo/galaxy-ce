@@ -148,16 +148,18 @@ public class PluginManagerImpl
                             pluginInfo = new PluginInfo();
                             pluginInfo.setPlugin(p.getName());
                             pluginInfo.setVersion(p.getVersion());
-                            
+                            p.update(null);
                             pluginDao.save(pluginInfo);
                         }
                         else
                         {
                             // Stupid JCR ORM doesn't have int support
                             previousVersion = new Long(pluginInfo.getVersion()).intValue();
+                            p.update(previousVersion);
+                            pluginInfo.setVersion(p.getVersion());                            
+                            pluginDao.save(pluginInfo);
                         }
         
-                        p.update(previousVersion);
                         p.initialize();
                     }
                 } catch (Exception e) {
