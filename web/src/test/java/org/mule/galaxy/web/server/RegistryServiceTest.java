@@ -396,14 +396,14 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     }
     
     public void testSuggestions() throws Exception {
-        Collection<ItemInfo> items = gwtRegistry.suggestEntries("hello.wsdl", false, "xxx", new String[] { "Artifact" });
+        Collection<ItemInfo> items = gwtRegistry.suggestItems("hello.wsdl", false, "xxx", new String[] { "Artifact" });
         assertEquals(1, items.size());
         
         // Just ensuring we can handle some bad input
-        gwtRegistry.suggestEntries("/", true, "xxx", new String[0]);
-        gwtRegistry.suggestEntries("/Default", true, "xxx", new String[0]);
-        gwtRegistry.suggestEntries("/D/", true, "xxx", new String[0]);
-        gwtRegistry.suggestEntries("!@#$%^&*(){}[]?'\"><", true, "xxx", new String[0]);
+        gwtRegistry.suggestItems("/", true, "xxx", new String[0]);
+        gwtRegistry.suggestItems("/Default", true, "xxx", new String[0]);
+        gwtRegistry.suggestItems("/D/", true, "xxx", new String[0]);
+        gwtRegistry.suggestItems("!@#$%^&*(){}[]?'\"><", true, "xxx", new String[0]);
 //        
         
     }

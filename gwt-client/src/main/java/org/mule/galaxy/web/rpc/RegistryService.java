@@ -18,8 +18,6 @@
 
 package org.mule.galaxy.web.rpc;
 
-import com.google.gwt.user.client.rpc.RemoteService;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -28,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mule.galaxy.web.client.RPCException;
+
+import com.google.gwt.user.client.rpc.RemoteService;
 
 public interface RegistryService extends RemoteService {
 
@@ -98,7 +98,7 @@ public interface RegistryService extends RemoteService {
 
     ItemInfo getItemByPath(String path) throws RPCException, ItemNotFoundException;
 
-    Collection<ItemInfo> suggestEntries(String query, boolean recursive, String exclude, String[] types) throws RPCException;
+    Collection<ItemInfo> suggestItems(String query, boolean recursive, String exclude, String[] types) throws RPCException;
     
     void setPropertyForQuery(String query,
                              String propertyName,

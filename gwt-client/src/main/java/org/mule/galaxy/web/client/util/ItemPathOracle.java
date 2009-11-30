@@ -35,7 +35,7 @@ public class ItemPathOracle extends SuggestOracle {
 
     @Override
     public void requestSuggestions(final Request request, final Callback callback) {
-        galaxy.getRegistryService().suggestEntries(request.getQuery(), recursive, exclude,
+        galaxy.getRegistryService().suggestItems(request.getQuery(), recursive, exclude,
             types, new AbstractCallback<Collection<ItemInfo>>(errorPanel) {
 
             public void onSuccess(Collection<ItemInfo> entries) {
