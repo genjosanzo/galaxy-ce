@@ -5,10 +5,6 @@ import com.extjs.gxt.ui.client.data.BaseModel;
 // wrapper class for left side nav items
 public class NavMenuItem extends BaseModel {
 
-    private String title;
-    private String tokenBase;
-    private WidgetHelper listPanel;
-    private WidgetHelper formPanel;
     public static final String NEW = "/new";
 
 

@@ -18,6 +18,9 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mule.galaxy.web.client.AbstractShowable;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.MenuPanel;
@@ -41,19 +44,45 @@ import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.google.gwt.user.client.History;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class AdministrationPanel extends MenuPanel {
 
     private final Galaxy galaxy;
-    protected List<NavMenuItem> ManageItems;
+    protected List<NavMenuItem> manageItems;
     protected List<NavMenuItem> utilityItems;
 
-    public AdministrationPanel(Galaxy galaxy) {
-        super();
+    protected AdministrationPanel(Galaxy galaxy, boolean init) {
         this.galaxy = galaxy;
+        
+        if (init) {
+            init();
+        }
+    }
+    
+    public AdministrationPanel(Galaxy galaxy) {
+        this(galaxy, true);
+    }
+
+    protected void init() {
         setId("administrationTabBody");
+        manageItems = fetchManageMenuItems(this.galaxy);
+        utilityItems = fetchUtilityItems(this.galaxy);
+        
+        registerPages(manageItems);
+        registerPages(utilityItems);
+    }
+
+    private void registerPages(List<NavMenuItem> items) {
+        for (final NavMenuItem item : items) {
+
+            // handle page creation for list forms
+            createPageInfo(item.getTokenBase(), item.getListPanel());
+
+            if (item.getFormPanel() != null) {
+                // handle page info creation for add forms
+                createPageInfo(item.getTokenBase() + "/" + Galaxy.WILDCARD, item.getFormPanel());
+            }
+        }
+
     }
 
     @Override
@@ -63,15 +92,14 @@ public class AdministrationPanel extends MenuPanel {
         ContentPanel accordionPanel = createAccodionWrapperPanel();
 
         // list of all items for this panel
-        ManageItems = fetchManageMenuItems(this.galaxy);
-        accordionPanel.add(createPanelWithListView("Manage", ManageItems));
-
-        utilityItems = fetchUtilityItems(this.galaxy);
+        accordionPanel.add(createPanelWithListView("Manage", manageItems));
         accordionPanel.add(createPanelWithListView("Utility", utilityItems));
         addMenuItem(accordionPanel);
 
         // default to users panel.
-        History.newItem("users");
+        if ("admin".equals(History.getToken())) {
+            History.newItem("users");
+        }
     }
 
 
@@ -103,16 +131,8 @@ public class AdministrationPanel extends MenuPanel {
         contextMenu.setWidth(100);
 
         for (final NavMenuItem item : ls.getModels()) {
-
-            // handle page creation for list forms
-            createPageInfo(item.getTokenBase(), item.getListPanel());
-
-            // we could add a contextual menul item for each add
+            // we could add a contextual menu item for each add
             if (item.getFormPanel() != null) {
-
-                // handle page infor creation for add forms
-                createPageInfo(item.getTokenBase() + "/" + Galaxy.WILDCARD, item.getFormPanel());
-
                 MenuItem insert = new MenuItem();
                 insert.setText("Add " + item.getTitle());
                 insert.addSelectionListener(new SelectionListener<MenuEvent>() {
@@ -257,13 +277,12 @@ public class AdministrationPanel extends MenuPanel {
         return getGalaxy().getSecurityService();
     }
 
-
     public List<NavMenuItem> getManageItems() {
-        return ManageItems;
+        return manageItems;
     }
 
     public void setManageItems(List<NavMenuItem> manageItems) {
-        ManageItems = manageItems;
+        this.manageItems = manageItems;
     }
 
 
