@@ -87,7 +87,7 @@ public class RegistryOracle extends Oracle {
         '<strong>{name}</strong> in {path}',
         '</div></tpl>'
         ].join("");
-      }-*/;
+    }-*/;
 
 	private static native String getWorkspaceTemplate() /*-{
         return [
@@ -95,6 +95,5 @@ public class RegistryOracle extends Oracle {
         '<strong>{fullPath}</strong>',
         '</div></tpl>'
         ].join("");
-      }-*/;
-
+    }-*/;
 }

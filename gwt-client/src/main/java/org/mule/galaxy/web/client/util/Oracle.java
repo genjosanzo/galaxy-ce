@@ -8,7 +8,6 @@ import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 
 /**
@@ -16,7 +15,7 @@ import com.extjs.gxt.ui.client.widget.form.ComboBox;
  * @author Dan
  *
  */
-public class Oracle extends LayoutContainer {
+public class Oracle {
 	private boolean firstOracle = true;
 	private ComboBox<ModelData> combo;
 	
@@ -60,8 +59,8 @@ public class Oracle extends LayoutContainer {
                     firstOracle = false;
                 }
             }
-
         });
+        
         // reset, needed to maintain sorting and popup behavior
         combo.addListener(Events.Blur, new Listener<BaseEvent>() {
             public void handleEvent(BaseEvent be) {
@@ -69,8 +68,6 @@ public class Oracle extends LayoutContainer {
             }
 
         });
-		
-        add(combo);
     }
 
 	public ComboBox getComboBox() {
