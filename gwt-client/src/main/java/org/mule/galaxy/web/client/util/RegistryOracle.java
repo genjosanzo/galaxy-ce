@@ -29,8 +29,6 @@ public class RegistryOracle extends Oracle {
 	 */
 	public RegistryOracle(RegistryServiceAsync svc, String type) {
 		ComboBox<ModelData> combo = new ComboBox<ModelData>();
-
-		combo.setFieldLabel("test");
 		
 		boolean workspace = "Workspace".equals(type);
         String template = workspace ? getWorkspaceTemplate() : getTemplate();
