@@ -178,7 +178,7 @@ public class RegistryServiceImpl implements RegistryService {
             if (parentId == null) {
                 Collection<Item> items = registry.getItems();
                 
-                return toWeb(items);
+                return toWeb(items, false);
             } else {
                 Item w = (Item) registry.getItemById(parentId);
 
@@ -188,9 +188,9 @@ public class RegistryServiceImpl implements RegistryService {
                         Item parent = w.getParent();
                         Collection<ItemInfo> parentWorkspaces;
                         if (parent != null) {
-                            parentWorkspaces = toWeb(parent.getItems());
+                            parentWorkspaces = toWeb(parent.getItems(), false);
                         } else {
-                            parentWorkspaces = toWeb(registry.getItems());
+                            parentWorkspaces = toWeb(registry.getItems(), false);
                         }
                         
                         if (workspaces != null) {
@@ -200,7 +200,7 @@ public class RegistryServiceImpl implements RegistryService {
                         w = parent;
                     }
                 } else {
-                    workspaces = toWeb(w.getItems());
+                    workspaces = toWeb(w.getItems(), false);
                 }
                 return workspaces;
             }
@@ -214,12 +214,20 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
+    public Collection<ItemInfo> getItemsWithAllChildren(String parentPath) throws RPCException {
+        return getItemsInPath(parentPath, true);
+    }
+
     public Collection<ItemInfo> getItemsInPath(String parentPath) throws RPCException {
+        return getItemsInPath(parentPath, false);
+    }
+
+    private Collection<ItemInfo> getItemsInPath(String parentPath, boolean populateChildren) throws RPCException {
         try {
             if (parentPath == null || "".equals(parentPath) || "/".equals(parentPath)) {
-                return toWeb(registry.getItems());
+                return toWeb(registry.getItems(), populateChildren);
             } else {
-                return toWeb(registry.getItemByPath(parentPath).getItems());
+                return toWeb(registry.getItemByPath(parentPath).getItems(), populateChildren);
             }
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
@@ -232,14 +240,15 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     
-    private Collection<ItemInfo> toWeb(Collection<Item> workspaces) {
+    private Collection<ItemInfo> toWeb(Collection<Item> workspaces, boolean populateChildren) throws RegistryException {
         if (workspaces == null) {
             return null;
         }
+        
         List<ItemInfo> wis = new ArrayList<ItemInfo>();
         for (Item w : workspaces) {
             if (!w.isInternal()) {
-                ItemInfo ww = toWeb(w);
+                ItemInfo ww = toWeb(w, populateChildren);
                 wis.add(ww);
             }
         }
@@ -256,7 +265,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
     
-    private ItemInfo toWeb(Item i) {
+    private ItemInfo toWeb(Item i, boolean populateChildren) throws RegistryException {
         ItemInfo ii = new ItemInfo();
         ii.setId(i.getId());
         ii.setName(i.getName());
@@ -274,6 +283,10 @@ public class RegistryServiceImpl implements RegistryService {
         }
         ii.setType(i.getType().getName());
         
+        if (populateChildren) {
+            Collection<ItemInfo> children = toWeb(i.getItems(), populateChildren);
+            ii.setItems(children);
+        }
         return ii;
     }
 
@@ -514,7 +527,7 @@ public class RegistryServiceImpl implements RegistryService {
             
             ArrayList<ItemInfo> entries = new ArrayList<ItemInfo>();
             for (Item i : results.getResults()) {
-                entries.add(toWeb(i));
+                entries.add(toWeb(i, false));
             }
             return entries;
         } catch (QueryException e) {
@@ -543,7 +556,7 @@ public class RegistryServiceImpl implements RegistryService {
 
     private WSearchResults getSearchResults(String type, 
                                             Collection<? extends Item> results,
-                                            long total) {
+                                            long total) throws RegistryException {
 
         WSearchResults wsr = new WSearchResults();
         ItemRenderer view;
@@ -563,7 +576,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
         
         for (Item i : results) {
-            wsr.getRows().add(toWeb(i));
+            wsr.getRows().add(toWeb(i, false));
         }
 
         wsr.setTotal(total);
@@ -965,7 +978,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     private ItemInfo toWebExtended(Item e, boolean showProperties) throws RegistryException {
-        ItemInfo info = toWeb(e);
+        ItemInfo info = toWeb(e, false);
         
         Set<Permission> permissions = accessControlManager.getPermissions(SecurityUtils.getCurrentUser(), e);
         info.setModifiable(permissions.contains(Permission.MODIFY_ITEM));
@@ -1022,7 +1035,7 @@ public class RegistryServiceImpl implements RegistryService {
     public ItemInfo getItemByPath(String path) throws RPCException, ItemNotFoundException {
         try {
             Item item = registry.getItemByPath(path);
-            return toWeb(item);
+            return toWeb(item, false);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
@@ -1818,20 +1831,25 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    private WPolicyException toWeb(PolicyException e) {
+    private WPolicyException toWeb(PolicyException e) throws RPCException {
         Map<ItemInfo, Collection<WApprovalMessage>> failures = new HashMap<ItemInfo, Collection<WApprovalMessage>>();
         for (Map.Entry<Item, List<ApprovalMessage>> entry : e.getPolicyFailures().entrySet()) {
             Item i = entry.getKey();
             List<ApprovalMessage> approvals = entry.getValue();
 
-            ItemInfo info = toWeb(i);
-
-            ArrayList<WApprovalMessage> wapprovals = new ArrayList<WApprovalMessage>();
-            for (ApprovalMessage app : approvals) {
-                wapprovals.add(new WApprovalMessage(app.getMessage(), app.isWarning()));
+            try {
+                ItemInfo info = toWeb(i, false);
+    
+                ArrayList<WApprovalMessage> wapprovals = new ArrayList<WApprovalMessage>();
+                for (ApprovalMessage app : approvals) {
+                    wapprovals.add(new WApprovalMessage(app.getMessage(), app.isWarning()));
+                }
+    
+                failures.put(info, wapprovals);
+            } catch (RegistryException ex) {
+                log.error(ex.getMessage(), ex);
+                throw new RPCException(ex.getMessage());
             }
-
-            failures.put(info, wapprovals);
         }
         return new WPolicyException(failures);
     }

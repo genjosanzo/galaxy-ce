@@ -34,6 +34,8 @@ public interface RegistryService extends RemoteService {
     Collection<PluginTabInfo> getPluginTabs();
     
     Collection<ItemInfo> getItems(String parentId, boolean traverseUpParents) throws RPCException;
+    
+    Collection<ItemInfo> getItemsWithAllChildren(String parentPath) throws RPCException;
 
     Collection<ItemInfo> getItemsInPath(String parentPath) throws RPCException;
 
