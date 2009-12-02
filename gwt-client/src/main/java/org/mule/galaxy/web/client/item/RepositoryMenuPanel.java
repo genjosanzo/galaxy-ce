@@ -213,12 +213,11 @@ public class RepositoryMenuPanel extends MenuPanel {
         tree.setHeight("95%");
         tree.setIconProvider(new ModelIconProvider<ModelData>() {
             public AbstractImagePrototype getIcon(ModelData model) {
-                // you are a leaf
-                String name = (String)model.get("name");
-                if (name.contains(".")) {
+                // you are a leaf if you are not a workspace
+                String name = (String)model.get("type");
+                if (name != null && !name.equalsIgnoreCase("Workspace")) {
                     return IconHelper.createPath("extjsresources/images/default/tree/leaf.gif");
                 }
-                // FIXME: what about versions?
 
                 // else you are a node
                 return null;
@@ -304,6 +303,7 @@ public class RepositoryMenuPanel extends MenuPanel {
         BaseTreeModel model = new BaseTreeModel();
         model.set("id", i.getId());
         model.set("name", i.getName());
+        model.set("type", i.getType());
         model.set("token", "item/" + i.getId());
         idToData.put(i.getId(), model);
         return model;
