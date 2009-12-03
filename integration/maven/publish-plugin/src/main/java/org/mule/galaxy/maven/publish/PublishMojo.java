@@ -3,6 +3,8 @@ package org.mule.galaxy.maven.publish;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -450,6 +452,13 @@ public class PublishMojo extends AbstractMojo {
         }
     }
 
+    /**
+     * @param file
+     * @param version
+     * @param a
+     * @throws MojoFailureException
+     * @throws MojoExecutionException
+     */
     private void publishFile(File file, String version, Artifact a) throws MojoFailureException, MojoExecutionException {
         if (version == null) {
             throw new NullPointerException("Version can not be null!");
@@ -488,6 +497,7 @@ public class PublishMojo extends AbstractMojo {
                 // create a new artifact
                 if (!showOnly) {
                     res = client.post(url, new FileInputStream(file), opts);
+                    checkUploadResponse(res);
                     res.release();
                 }
                 getLog().info("Created artifact " + name + " (version " + version + ")");
@@ -508,6 +518,7 @@ public class PublishMojo extends AbstractMojo {
                 // update the artifact
                 if (!showOnly) {
                     res = client.post(artifactUrl, new FileInputStream(file), opts);
+                    checkUploadResponse(res);
                     res.release();
                 }
                 getLog().info("Updated artifact " + name + " (version " + version + ")");
@@ -523,6 +534,42 @@ public class PublishMojo extends AbstractMojo {
         }
     }
 
+    private void checkUploadResponse(ClientResponse res) throws IOException, MojoFailureException {
+        if (res.getStatus() != 200 || res.getStatus() != 201) {
+            InputStream inputStream = res.getInputStream();
+            copy(inputStream, System.out, 8096);
+            inputStream.close();
+            if (res.getStatus() == 404) {
+                throw new MojoFailureException("The specified repository URL is invalid. Got status: " + res.getStatus());
+            } else {
+                throw new MojoFailureException("Could not upload artifact to that location. Got status: " + res.getStatus());
+            }
+        }
+    }
+    
+    public static int copy(final InputStream input,
+                           final OutputStream output,
+                           int bufferSize)
+       throws IOException {
+       int avail = input.available();
+       if (avail > 262144) {
+           avail = 262144;
+       }
+       if (avail > bufferSize) {
+           bufferSize = avail;
+       }
+       final byte[] buffer = new byte[bufferSize];
+       int n = 0;
+       n = input.read(buffer);
+       int total = 0;
+       while (-1 != n) {
+           output.write(buffer, 0, n);
+           total += n;
+           n = input.read(buffer);
+       }
+       return total;
+   }
+    
     private void publishProjectMetadata(String name, String artifactUrl, Artifact a) throws MojoExecutionException {
         try{         
             RequestOptions defaultOpts = getEntryRequestOptions();
