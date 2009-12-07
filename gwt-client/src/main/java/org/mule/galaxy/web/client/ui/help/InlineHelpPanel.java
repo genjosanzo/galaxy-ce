@@ -17,13 +17,17 @@ public class InlineHelpPanel extends ContentPanel {
     private String status;
 
     public InlineHelpPanel() {
-        super();
-        baseStyle = "help-panel-inline";
-        setDeferHeight(false);
+        this(true);
     }
 
-    public InlineHelpPanel(String content, int num) {
-        this();
+    public InlineHelpPanel(boolean icon) {
+        super();
+        if(icon) {
+            baseStyle = "help-panel-inline";
+        } else {
+            baseStyle = "help-panel-inline-no-icon";
+        }
+        setDeferHeight(false);
         setBorders(false);
         setTitleCollapse(true);
         setCollapsible(true);
@@ -31,6 +35,10 @@ public class InlineHelpPanel extends ContentPanel {
         setAutoWidth(true);
         setAnimCollapse(true);
         collapse();
+    }
+
+    public InlineHelpPanel(String content, int num) {
+        this();
         setContent(content, num);
     }
 
@@ -38,6 +46,10 @@ public class InlineHelpPanel extends ContentPanel {
         this(content, -1);
     }
         
+    public void setContent(String content) {
+         setContent(content, -1); 
+    }
+
     public void setContent(String content, int num) {
         clearState();
         String[] sa;
