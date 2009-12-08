@@ -535,7 +535,7 @@ public class PublishMojo extends AbstractMojo {
     }
 
     private void checkUploadResponse(ClientResponse res) throws IOException, MojoFailureException {
-        if (res.getStatus() != 200 || res.getStatus() != 201) {
+        if (res.getStatus() != 200 && res.getStatus() != 201) {
             InputStream inputStream = res.getInputStream();
             copy(inputStream, System.out, 8096);
             inputStream.close();
