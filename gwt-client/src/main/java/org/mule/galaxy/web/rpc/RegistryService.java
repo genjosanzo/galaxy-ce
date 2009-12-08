@@ -31,7 +31,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 
 public interface RegistryService extends RemoteService {
 
-    Collection<PluginTabInfo> getPluginTabs();
+    ApplicationInfo getApplicationInfo() throws RPCException;
     
     Collection<ItemInfo> getItems(String parentId, boolean traverseUpParents) throws RPCException;
     
@@ -166,8 +166,6 @@ public interface RegistryService extends RemoteService {
     Collection<WActivity> getActivities(Date from, Date to, String user, String itemId, String text, 
                                         String eventType, int start, int results, boolean ascending) throws RPCException;
     
-    WUser getUserInfo() throws RPCException;
-
     void saveType(WType type) throws RPCException, ItemExistsException;
     
     WType getType(String id) throws RPCException;

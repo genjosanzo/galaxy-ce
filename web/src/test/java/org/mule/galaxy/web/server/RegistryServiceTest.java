@@ -275,7 +275,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     }
     
     public void testUserInfo() throws Exception {
-        WUser user = gwtRegistry.getUserInfo();
+        WUser user = gwtRegistry.getApplicationInfo().getUser();
         
         assertNotNull(user.getUsername());
         
@@ -409,7 +409,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     }
     
     public void testGwtPlugins() throws Exception {
-        Collection<PluginTabInfo> plugins = gwtRegistry.getPluginTabs();
+        Collection<PluginTabInfo> plugins = gwtRegistry.getApplicationInfo().getPluginTabs();
         assertEquals(0, plugins.size());
     }
     

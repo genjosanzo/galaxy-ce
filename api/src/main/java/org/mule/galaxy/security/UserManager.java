@@ -14,4 +14,11 @@ public interface UserManager extends Dao<User> {
     void setPassword(User user, String password);
 
     User getByUsername(String string) throws NotFoundException;
+    
+    /**
+     * Whether or not this implementation allows you to update users, change passwords,
+     * etc, or if we're pulling from another source.
+     * @return
+     */
+    boolean isManagementSupported();
 }

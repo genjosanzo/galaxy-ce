@@ -162,6 +162,10 @@ public class LdapUserManager
         return userSearchAttributes;
     }
 
+    public boolean isManagementSupported() {
+        return false;
+    }
+
     public void setUserSearchAttributes(Map<String, String> userSearchAttributes) {
         this.userSearchAttributes = userSearchAttributes;
     }

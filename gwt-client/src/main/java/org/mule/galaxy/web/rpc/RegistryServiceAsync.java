@@ -28,7 +28,7 @@ import java.util.Set;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface RegistryServiceAsync {
-    void getPluginTabs(AsyncCallback<Collection<PluginTabInfo>> callack);
+    void getApplicationInfo(AsyncCallback<ApplicationInfo> callback);
     
     void getItems(String parentId, boolean traverseUpParents, AsyncCallback callback);
 
@@ -166,8 +166,6 @@ public interface RegistryServiceAsync {
     
     void getActivities(Date from, Date to, String user, String itemId, String text,
                        String eventType, int start, int results, boolean ascending, AsyncCallback c);
-    
-    void getUserInfo(AsyncCallback c);
 
     void deleteLifecycle(String id, AsyncCallback abstractCallback);
 

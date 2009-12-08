@@ -196,7 +196,7 @@ public class AdministrationPanel extends MenuPanel {
     protected List<NavMenuItem> fetchManageMenuItems(Galaxy galaxy) {
         ArrayList<NavMenuItem> a = new ArrayList<NavMenuItem>();
 
-        if (galaxy.hasPermission("MANAGE_USERS")) {
+        if (galaxy.hasPermission("MANAGE_USERS") && galaxy.isUserManagementSupported()) {
             a.add(new NavMenuItem("Users",
                     "users",
                     new UserListPanel(this),

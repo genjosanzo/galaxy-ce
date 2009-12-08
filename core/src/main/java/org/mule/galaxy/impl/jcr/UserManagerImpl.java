@@ -316,6 +316,10 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         activeUsers.addNode(username);
     }
 
+    public boolean isManagementSupported() {
+        return true;
+    }
+
     private AccessControlManager getAccessControlManager() {
         if (accessControlManager == null) {
             accessControlManager =(AccessControlManager) applicationContext.getBean("accessControlManager");

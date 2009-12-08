@@ -97,6 +97,7 @@ import org.mule.galaxy.view.View;
 import org.mule.galaxy.web.GwtFacet;
 import org.mule.galaxy.web.WebManager;
 import org.mule.galaxy.web.client.RPCException;
+import org.mule.galaxy.web.rpc.ApplicationInfo;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
@@ -151,7 +152,16 @@ public class RegistryServiceImpl implements RegistryService {
     
     private WebManager webManager;
     
-    public Collection<PluginTabInfo> getPluginTabs() {
+    
+    public ApplicationInfo getApplicationInfo() throws RPCException {
+        ApplicationInfo info = new ApplicationInfo();
+        info.setPluginTabs(getPluginTabs());
+        info.setUser(getUserInfo());
+        info.setUserManagementSupported(userManager.isManagementSupported());
+        return info;
+    }
+
+    protected Collection<PluginTabInfo> getPluginTabs() {
         Collection<GwtFacet> facets = webManager.getGwtFacets();
         ArrayList<PluginTabInfo> wPlugins = new ArrayList<PluginTabInfo>();
         for (GwtFacet p : facets) {

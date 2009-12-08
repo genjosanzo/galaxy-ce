@@ -18,6 +18,15 @@
 package org.mule.galaxy.web.client;
 
 import static org.mule.galaxy.web.client.WidgetHelper.newSpacerPipe;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.item.RepositoryMenuPanel;
 import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
@@ -31,6 +40,7 @@ import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.AdminService;
 import org.mule.galaxy.web.rpc.AdminServiceAsync;
+import org.mule.galaxy.web.rpc.ApplicationInfo;
 import org.mule.galaxy.web.rpc.HeartbeatService;
 import org.mule.galaxy.web.rpc.HeartbeatServiceAsync;
 import org.mule.galaxy.web.rpc.PluginTabInfo;
@@ -70,14 +80,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -115,6 +117,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     private AdministrationConstants administrationConstants;
     private RepositoryConstants repositoryConstants;
     protected Collection<PluginTabInfo> plugins;
+    protected boolean userManagementSupported;
 
     //public static final ButtonIcons IMAGES = GWT.create(ButtonIcons.class);
 
@@ -194,13 +197,19 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
             }
         });
 
-        registryService.getUserInfo(new AbstractCallback(repositoryPanel) {
-            public void onSuccess(Object o) {
-                user = (WUser) o;
-
+        registryService.getApplicationInfo(new AbstractCallback<ApplicationInfo>(repositoryPanel) {
+            public void onSuccess(ApplicationInfo appInfo) {
+                user = (WUser) appInfo.getUser();
+                
                 // always the left most item
                 rightHeaderPanel.insert(new Label("Welcome, " + user.getName()), 0);
-                retrievePlugins();
+                
+                Galaxy.this.plugins = appInfo.getPluginTabs();
+                Galaxy.this.userManagementSupported = appInfo.isUserManagementSupported();
+                suppressTabHistory = true;
+                loadTabs(Galaxy.this);
+                suppressTabHistory = false;
+                showFirstPage();
             }
         });
 
@@ -211,20 +220,6 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
         new HeartbeatTimer(Galaxy.this);
     }
-
-
-    private void retrievePlugins() {
-        registryService.getPluginTabs(new AbstractCallback<Collection<PluginTabInfo>>(repositoryPanel) {
-            public void onSuccess(Collection<PluginTabInfo> plugins) {
-                Galaxy.this.plugins = plugins;
-                suppressTabHistory = true;
-                loadTabs(Galaxy.this);
-                suppressTabHistory = false;
-                showFirstPage();
-            }
-        });
-    }
-
 
     private void createFooter() {
         ContentPanel southPanel = new ContentPanel();
@@ -556,6 +551,9 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         Info.display("Info:", message);
     }
 
+    public boolean isUserManagementSupported() {
+        return userManagementSupported;
+    }
 
     public PropertyInterfaceManager getPropertyInterfaceManager() {
         return propertyInterfaceManager;
