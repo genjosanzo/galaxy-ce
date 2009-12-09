@@ -1,6 +1,7 @@
 package org.mule.galaxy.web.client.util;
 
 import com.extjs.gxt.ui.client.Style;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.google.gwt.dom.client.FormElement;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -13,30 +14,33 @@ public abstract class AbstractErrorHandlingPopup extends PopupPanel implements E
 
     protected FlowPanel errorPanel;
     protected FormPanel fpanel;
+    protected ContentPanel wrapperPanel;
+
 
     public AbstractErrorHandlingPopup() {
         errorPanel = new FlowPanel();
         errorPanel.setStyleName("error-panel");
-        
+
+        wrapperPanel = new ContentPanel();
+
         fpanel = new FormPanel();
-        fpanel.setFrame(true);
+        fpanel.setHeaderVisible(false);
         fpanel.setEncoding(FormPanel.Encoding.MULTIPART);
         fpanel.setMethod(FormPanel.Method.POST);
         fpanel.setButtonAlign(Style.HorizontalAlignment.CENTER);
         fpanel.setWidth(350);
         fpanel.getElement().<FormElement>cast().setTarget("_blank");
 
-        setWidget(fpanel);
+        wrapperPanel.add(fpanel);
+        setWidget(wrapperPanel);
     }
 
     public void clearErrorMessage() {
-        //errorPanel.clearState();
         errorPanel.clear();
         fpanel.remove(errorPanel);
     }
 
     public void setMessage(Widget label) {
-        //errorPanel.clearState();
         errorPanel.clear();
         addMessage(label);
     }
