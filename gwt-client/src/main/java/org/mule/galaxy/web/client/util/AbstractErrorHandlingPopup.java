@@ -22,6 +22,8 @@ public abstract class AbstractErrorHandlingPopup extends PopupPanel implements E
         errorPanel.setStyleName("error-panel");
 
         wrapperPanel = new ContentPanel();
+        wrapperPanel.setAutoWidth(true);
+        wrapperPanel.setAutoHeight(true);
 
         fpanel = new FormPanel();
         fpanel.setHeaderVisible(false);
