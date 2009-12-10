@@ -213,6 +213,7 @@ public class WidgetHelper extends Composite {
     /*
      * Use base style - which is for a button by itself
      */
+
     public static ToolbarButton createToolbarHistoryButton(String buttonLabel, final String token, String tooltip) {
         return createToolbarHistoryButton(buttonLabel, token, "toolbar-btn", tooltip);
     }
@@ -228,6 +229,7 @@ public class WidgetHelper extends Composite {
     /*
      * Make Labels, strings, etc appear to be links
      */
+
     public static String createFauxLink(String value, boolean hover) {
         String html = "";
         html += " <span style=\"text-decoration: none; cursor:pointer; color: #016c96;\" ";
@@ -254,14 +256,30 @@ public class WidgetHelper extends Composite {
         return "<span style=\"font-weight:" + w + ";\">" + s + "</span>";
     }
 
-    public static WidgetComponent deleteImage(String tooltip) {
-        Image i = new  Image("images/delete_config.gif");
+    public static WidgetComponent restoreImage(String tooltip) {
+        Image i = new Image("images/recycle_icon.gif");
         WidgetComponent w = new WidgetComponent(i);
-        if(tooltip == null) {
-            // default value for tooltip
-            tooltip = "Remove Item";
+        w.setToolTip(tooltip == null ? "Restore" : tooltip);
+        return w;
+    }
+
+    // can be used as a spacer or as a tooltip for grid cells, etc.
+    public static WidgetComponent clearPixel(String height, String width, String tooltip) {
+        Image i = new Image("images/clearpixel.gif");
+        i.setHeight(height);
+        i.setWidth(width);
+        WidgetComponent w = new WidgetComponent(i);
+        if (tooltip != null) {
+            w.setToolTip(tooltip);
         }
-        w.setToolTip(tooltip);
+        return w;
+    }
+
+
+    public static WidgetComponent deleteImage(String tooltip) {
+        Image i = new Image("images/delete_config.gif");
+        WidgetComponent w = new WidgetComponent(i);
+        w.setToolTip(tooltip == null ? "Click to Remove Item" : tooltip);
         return w;
     }
 
@@ -270,7 +288,6 @@ public class WidgetHelper extends Composite {
         td.setColspan(value);
         return td;
     }
-
 
 
 }
