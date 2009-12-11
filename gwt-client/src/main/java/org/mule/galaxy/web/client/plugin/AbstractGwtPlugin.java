@@ -20,6 +20,7 @@ public abstract class AbstractGwtPlugin implements EntryPoint, ValueChangeHandle
     private RootPanel insertPoint;
     private Map<String,Widget> pages = new HashMap<String,Widget>();
     private Widget currentWidget;
+    private boolean initialized;
     
     public AbstractGwtPlugin(String rootToken, String name) {
         super();
@@ -55,6 +56,11 @@ public abstract class AbstractGwtPlugin implements EntryPoint, ValueChangeHandle
     }-*/;
     
     public void loadPlugin() {  
+        if (!initialized) {
+            intialize();
+            initialized = true;
+        }
+        
         try {
             RootPanel.get("plugin");
         } catch (Throwable t) {
@@ -67,6 +73,9 @@ public abstract class AbstractGwtPlugin implements EntryPoint, ValueChangeHandle
         load(insertPoint);
     }
     
+    protected void intialize() {
+    }
+
     public void load(RootPanel insertPoint) {
         String token = History.getToken();
         show(token);
