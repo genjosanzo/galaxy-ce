@@ -41,8 +41,8 @@
     <!-- For XSOM -->
     <repository>
       <id>java.net</id>
-      <name>java.nety</name>
-      <url>https://maven-repository.dev.java.net/nonav/repository/</url>
+      <name>java.net</name>
+      <url>http://download.java.net/maven/1/</url>
       <layout>legacy</layout>
     </repository>
     
