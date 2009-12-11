@@ -120,12 +120,12 @@ public class CollectionPersister implements FieldPersister {
     
     public static class LazySet extends HashSet {
 
-        private transient  Node n;
+        private transient Node n;
         private transient FieldDescriptor fd;
         private transient Session session;
         private transient String parentField;
         private transient CollectionPersister persister;
-        private transient boolean initialized;
+        private boolean initialized;
 
         public LazySet(CollectionPersister persister, 
                        Node n, 
@@ -257,7 +257,7 @@ public class CollectionPersister implements FieldPersister {
         private transient Session session;
         private transient String parentField;
         private transient CollectionPersister persister;
-        private transient boolean initialized;
+        private boolean initialized;
 
         public LazyList(CollectionPersister persister,
                         Node n, 
