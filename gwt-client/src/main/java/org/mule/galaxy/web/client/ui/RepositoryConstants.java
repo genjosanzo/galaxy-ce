@@ -6,11 +6,11 @@ package org.mule.galaxy.web.client.ui;
 public interface RepositoryConstants extends com.google.gwt.i18n.client.Constants {
 
   /**
-   * Translated "Specify the type of item you are adding, the workspace (parent) where you want it stored, and a name for it. Additional fields appear depending on the type of item you select (see the <a href=\"http://www.mulesoft.org/display/TCAT/Managing+the+Repository\">online help</a> for details). Click <b>Add</b> to create the item.".
+   * Translated "Specify the type of item you are adding, the workspace (parent) where you want it stored, and a name for it. Additional fields appear depending on the type of item you select (see the <a href=\"http://www.mulesoft.org/display/TCAT/Managing+the+Repository\" target=\"_blank\">online help</a> for details). Click <b>Add</b> to create the item.".
    *
-   * @return translated "Specify the type of item you are adding, the workspace (parent) where you want it stored, and a name for it. Additional fields appear depending on the type of item you select (see the <a href=\"http://www.mulesoft.org/display/TCAT/Managing+the+Repository\">online help</a> for details). Click <b>Add</b> to create the item."
+   * @return translated "Specify the type of item you are adding, the workspace (parent) where you want it stored, and a name for it. Additional fields appear depending on the type of item you select (see the <a href=\"http://www.mulesoft.org/display/TCAT/Managing+the+Repository\" target=\"_blank\">online help</a> for details). Click <b>Add</b> to create the item."
    */
-  @DefaultStringValue("Specify the type of item you are adding, the workspace (parent) where you want it stored, and a name for it. Additional fields appear depending on the type of item you select (see the <a href=\"http://www.mulesoft.org/display/TCAT/Managing+the+Repository\">online help</a> for details). Click <b>Add</b> to create the item.")
+  @DefaultStringValue("Specify the type of item you are adding, the workspace (parent) where you want it stored, and a name for it. Additional fields appear depending on the type of item you select (see the <a href=\"http://www.mulesoft.org/display/TCAT/Managing+the+Repository\" target=\"_blank\">online help</a> for details). Click <b>Add</b> to create the item.")
   @Key("repo_Add_Item_Tip")
   String repo_Add_Item_Tip();
 
