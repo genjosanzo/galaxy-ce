@@ -279,6 +279,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
     public void refresh() {
         fetchAllItems();
         menuPanel.refresh();
+        menuPanel.clearErrorMessage();
     }
 
 }
