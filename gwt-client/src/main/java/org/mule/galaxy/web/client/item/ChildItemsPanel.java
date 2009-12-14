@@ -165,6 +165,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         });
 
         final ToolbarButton delBtn = new ToolbarButton("Delete");
+        delBtn.setToolTip(galaxy.getRepositoryConstants().repo_Delete());
         delBtn.setStyleName("toolbar-btn_left");
         delBtn.setEnabled(false);
         delBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
@@ -198,7 +199,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                         showNewWorkspace();
                     }
                 });
-                newWkspaceBtn.setToolTip(galaxy.getRepositoryConstants().repo_Items_New());
+                newWkspaceBtn.setToolTip(galaxy.getRepositoryConstants().repo_NewWorkspace());
                 toolbar.add(newWkspaceBtn);
                 
                 final ToolbarButton newArtifactBtn = new ToolbarButton("New Artifact");
@@ -209,7 +210,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                         showArtifactUploadForm(true);
                     }
                 });
-                newArtifactBtn.setToolTip(galaxy.getRepositoryConstants().repo_Items_New());
+                newArtifactBtn.setToolTip(galaxy.getRepositoryConstants().repo_NewArtifact());
                 toolbar.add(newArtifactBtn);
             } else if (info.getType().equals("Artifact")) {
                 final ToolbarButton newVersionBtn = new ToolbarButton("New Version");

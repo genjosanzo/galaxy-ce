@@ -15,6 +15,15 @@ public interface RepositoryConstants extends com.google.gwt.i18n.client.Constant
   String repo_Add_Item_Tip();
 
   /**
+   * Translated "Deletes the currently selected workspace(s) or artifact(s)".
+   *
+   * @return translated "Deletes the currently selected workspace(s) or artifact(s)"
+   */
+  @DefaultStringValue("Deletes the currently selected workspace(s) or artifact(s)")
+  @Key("repo_Delete")
+  String repo_Delete();
+
+  /**
    * Translated "Display related help topic on www.mulesoft.org".
    *
    * @return translated "Display related help topic on www.mulesoft.org"
@@ -49,6 +58,24 @@ public interface RepositoryConstants extends com.google.gwt.i18n.client.Constant
   @DefaultStringValue("Add, view, and delete items in the repository")
   @Key("repo_Items_TabTip")
   String repo_Items_TabTip();
+
+  /**
+   * Translated "Adds a new artifact (file) to the current workspace".
+   *
+   * @return translated "Adds a new artifact (file) to the current workspace"
+   */
+  @DefaultStringValue("Adds a new artifact (file) to the current workspace")
+  @Key("repo_NewArtifact")
+  String repo_NewArtifact();
+
+  /**
+   * Translated "Adds a new workspace under the current workspace".
+   *
+   * @return translated "Adds a new workspace under the current workspace"
+   */
+  @DefaultStringValue("Adds a new workspace under the current workspace")
+  @Key("repo_NewWorkspace")
+  String repo_NewWorkspace();
 
   /**
    * Translated "Apply policies to the different lifecycle phases for the current workspace or item".
