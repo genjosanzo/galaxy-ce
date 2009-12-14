@@ -80,7 +80,7 @@ public class GwtRpcServiceExporter extends GWTRPCServiceExporter {
             
             if (is == null && serializationPolicyFilePath.startsWith("/galaxy-plugins")) {
                 for (File plugin : WebPluginManager.getPluginLocations()) {
-                    File file = new File(plugin, serializationPolicyFilePath.substring(8));
+                    File file = new File(plugin, serializationPolicyFilePath.substring("/galaxy-plugins".length()));
                     if (file.exists()) {
                         try {
                             is = new FileInputStream(file);

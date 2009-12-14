@@ -62,7 +62,7 @@
 
     <filter-mapping>
         <filter-name>jcr</filter-name>
-        <url-pattern>/plugins/handler/*</url-pattern>
+        <url-pattern>/galaxy-plugins/handler/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
@@ -154,7 +154,7 @@
     <!-- This is ugly, but it allows us to work more transparently in both hosted mode and out of it -->
     <servlet-mapping>
         <servlet-name>handler</servlet-name>
-        <url-pattern>/plugins/handler/*</url-pattern>
+        <url-pattern>/galaxy-plugins/handler/*</url-pattern>
     </servlet-mapping>
     
     <servlet-mapping>
