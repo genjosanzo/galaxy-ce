@@ -57,7 +57,7 @@ public class AddArtifactForm extends AbstractErrorHandlingPopup {
         fpanel.setAction(GWT.getModuleBaseURL() + "../artifactUpload.form");
 
         FieldSet fieldSet = new FieldSet();
-        fieldSet.setHeading("Add New Workspace");
+        fieldSet.setHeading("Add New Artifact");
 
         FormLayout layout = new FormLayout();
         layout.setLabelWidth(75);

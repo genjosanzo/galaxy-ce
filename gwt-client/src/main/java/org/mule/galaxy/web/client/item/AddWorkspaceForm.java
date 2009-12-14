@@ -1,11 +1,8 @@
 package org.mule.galaxy.web.client.item;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.util.AbstractErrorHandlingPopup;
+import org.mule.galaxy.web.client.validation.FieldNotEmptyValidator;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.ItemInfo;
@@ -22,6 +19,10 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+
 public class AddWorkspaceForm extends AbstractErrorHandlingPopup {
 
     private List<WType> types;
@@ -35,16 +36,16 @@ public class AddWorkspaceForm extends AbstractErrorHandlingPopup {
     private final ItemInfo parent;
 
     public AddWorkspaceForm(final Galaxy galaxy,
-                           ItemInfo parent) {
+                            ItemInfo parent) {
         super();
         this.galaxy = galaxy;
         this.parent = parent;
-        
+
         formData = new FormData("-20");
         fpanel.setAction(GWT.getModuleBaseURL() + "../artifactUpload.form");
 
         FieldSet fieldSet = new FieldSet();
-        fieldSet.setHeading("Add New Application");
+        fieldSet.setHeading("Add New Workspace");
 
         FormLayout layout = new FormLayout();
         layout.setLabelWidth(75);
@@ -54,11 +55,12 @@ public class AddWorkspaceForm extends AbstractErrorHandlingPopup {
 
         fname = new TextField<String>();
         fname.setFieldLabel("Name");
-        fname.setAllowBlank(true);
+        fname.setAllowBlank(false);
+        fname.setValidator(new FieldNotEmptyValidator());
 //            fname.setName(this.getTypeByName("Artifact").getId());
         fieldSet.add(fname, formData);
         fpanel.add(fieldSet);
-        
+
         closeBtn = new Button("Close");
         closeBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
@@ -93,7 +95,7 @@ public class AddWorkspaceForm extends AbstractErrorHandlingPopup {
 
     protected void addWorkspace(List<WType> types) {
         this.types = types;
-        
+
         AbstractCallback callback = new AbstractCallback(this) {
             public void onSuccess(Object id) {
                 History.newItem("item/" + id);
@@ -114,12 +116,12 @@ public class AddWorkspaceForm extends AbstractErrorHandlingPopup {
         };
 
         String parentId = parent != null ? parent.getPath() : null;
-        galaxy.getRegistryService().addItem(parentId, 
-                                            fname.getValue(), 
-                                            null, 
-                                            getTypeByName("Workspace").getId(), 
-                                            new HashMap<String, Serializable>(), 
-                                            callback);
+        galaxy.getRegistryService().addItem(parentId,
+                fname.getValue(),
+                null,
+                getTypeByName("Workspace").getId(),
+                new HashMap<String, Serializable>(),
+                callback);
     }
 
     private WType getTypeByName(String name) {
@@ -131,7 +133,7 @@ public class AddWorkspaceForm extends AbstractErrorHandlingPopup {
         }
         return artifact;
     }
-    
+
     private void setEnabled(boolean enabled) {
         submitBtn.setEnabled(enabled);
         closeBtn.setEnabled(enabled);
