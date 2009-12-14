@@ -78,7 +78,7 @@ public class GwtRpcServiceExporter extends GWTRPCServiceExporter {
             // Open the RPC resource file read its contents.
             InputStream is = getServletContext().getResourceAsStream(serializationPolicyFilePath);
             
-            if (is == null && serializationPolicyFilePath.startsWith("/plugins")) {
+            if (is == null && serializationPolicyFilePath.startsWith("/galaxy-plugins")) {
                 for (File plugin : WebPluginManager.getPluginLocations()) {
                     File file = new File(plugin, serializationPolicyFilePath.substring(8));
                     if (file.exists()) {

@@ -159,7 +159,7 @@
     
     <servlet-mapping>
         <servlet-name>PluginServlet</servlet-name>
-        <url-pattern>/plugins/*</url-pattern>
+        <url-pattern>/galaxy-plugins/*</url-pattern>
     </servlet-mapping>
     
     <servlet-mapping id="abdera-mapping">

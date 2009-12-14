@@ -122,7 +122,7 @@
         out.write("<script language='javascript' src='");
 
         if (!mod.isCore() && !hostedMode) {
-            out.write("plugins/");
+            out.write("galaxy-plugins/");
         }
 
         out.write(mod.getName());
