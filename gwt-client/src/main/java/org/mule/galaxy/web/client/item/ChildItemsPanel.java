@@ -1,9 +1,14 @@
 package org.mule.galaxy.web.client.item;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.mule.galaxy.web.client.AbstractFlowComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.WidgetHelper;
 import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
+import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.client.util.ToolbarButton;
 import org.mule.galaxy.web.client.util.ToolbarButtonEvent;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -33,10 +38,6 @@ import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.user.client.History;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class ChildItemsPanel extends AbstractFlowComposite {
 
@@ -188,20 +189,66 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         cp.add(grid);
 
         if (info == null || info.isModifiable()) {
-            String token;
-            if (info != null) {
-                token = "add-item/" + info.getId();
+            if (info == null || info.getType().equals("Workspace")) {
+                final ToolbarButton newWkspaceBtn = new ToolbarButton("New Workspace");
+                newWkspaceBtn.setStyleName("toolbar-btn_center");
+                newWkspaceBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
+                    @Override
+                    public void componentSelected(ToolbarButtonEvent ce) {
+                        showNewWorkspace();
+                    }
+                });
+                newWkspaceBtn.setToolTip(galaxy.getRepositoryConstants().repo_Items_New());
+                toolbar.add(newWkspaceBtn);
+                
+                final ToolbarButton newArtifactBtn = new ToolbarButton("New Artifact");
+                newArtifactBtn.setStyleName("toolbar-btn_right");
+                newArtifactBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
+                    @Override
+                    public void componentSelected(ToolbarButtonEvent ce) {
+                        showArtifactUploadForm(true);
+                    }
+                });
+                newArtifactBtn.setToolTip(galaxy.getRepositoryConstants().repo_Items_New());
+                toolbar.add(newArtifactBtn);
+            } else if (info.getType().equals("Artifact")) {
+                final ToolbarButton newVersionBtn = new ToolbarButton("New Version");
+                newVersionBtn.setStyleName("toolbar-btn_right");
+                newVersionBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
+                    @Override
+                    public void componentSelected(ToolbarButtonEvent ce) {
+                        showArtifactUploadForm(false);
+                    }
+                });
+                
+                newVersionBtn.setToolTip(galaxy.getRepositoryConstants().repo_Items_New());
+                toolbar.add(newVersionBtn);
             } else {
-                token = "add-item/";
+                String token;
+                if (info != null) {
+                    token = "add-item/" + info.getId();
+                } else {
+                    token = "add-item/";
+                }
+                ToolbarButton newBtn = WidgetHelper.createToolbarHistoryButton("New", token,
+                        "toolbar-btn_right", galaxy.getRepositoryConstants().repo_Items_New());
+                toolbar.add(newBtn);
             }
-            ToolbarButton newBtn = WidgetHelper.createToolbarHistoryButton("New", token,
-                    "toolbar-btn_right", galaxy.getRepositoryConstants().repo_Items_New());
-            toolbar.add(newBtn);
         }
 
         panel.add(cp);
     }
 
+
+    protected void showArtifactUploadForm(boolean parentIsWorkspace) {
+        LightBox popup = new LightBox(new AddArtifactForm(galaxy, info, parentIsWorkspace, this));
+        popup.show();
+    }
+
+    protected void showNewWorkspace() {
+        LightBox popup = new LightBox(new AddWorkspaceForm(galaxy, info));
+        popup.show();
+    }
 
     protected void warnDelete(final List itemlist) {
         final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
@@ -227,6 +274,11 @@ public class ChildItemsPanel extends AbstractFlowComposite {
             }
         };
         MessageBox.confirm("Confirm", "Are you sure you want to delete these items?", l);
+    }
+
+    public void refresh() {
+        fetchAllItems();
+        menuPanel.refresh();
     }
 
 }

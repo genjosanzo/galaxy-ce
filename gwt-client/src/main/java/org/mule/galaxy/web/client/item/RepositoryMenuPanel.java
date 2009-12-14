@@ -1,5 +1,21 @@
 package org.mule.galaxy.web.client.item;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.mule.galaxy.web.client.AbstractShowable;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.MenuPanel;
+import org.mule.galaxy.web.client.PageInfo;
+import org.mule.galaxy.web.client.WidgetHelper;
+import org.mule.galaxy.web.client.registry.ViewPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemInfo;
+
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BaseTreeModel;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -21,22 +37,7 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.mule.galaxy.web.client.AbstractShowable;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.MenuPanel;
-import org.mule.galaxy.web.client.PageInfo;
-import org.mule.galaxy.web.client.WidgetHelper;
-import org.mule.galaxy.web.client.registry.ViewPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ItemInfo;
+import com.google.gwt.user.client.ui.Widget;
 
 public class RepositoryMenuPanel extends MenuPanel {
 
@@ -70,7 +71,10 @@ public class RepositoryMenuPanel extends MenuPanel {
                 
                 AbstractCallback getItemCallback = new AbstractCallback<ItemInfo>(this) {
                     public void onSuccess(ItemInfo item) {
-                        ((ItemPanel)getMain()).initializeItem(item);
+                        Widget main = getMain();
+                        if (main instanceof ItemPanel) {
+                            ((ItemPanel)main).initializeItem(item);
+                        }
                     }
                 };
                 galaxy.getRegistryService().getItemInfo(itemId, true, getItemCallback);
@@ -84,6 +88,10 @@ public class RepositoryMenuPanel extends MenuPanel {
         super.showPage(params);
     }
 
+    public void refresh() {
+        loadItems(itemId);
+    }
+    
     private void loadItems(String itemId) {
         AbstractCallback getItemsCallback = new AbstractCallback<Collection<ItemInfo>>(this) {
             public void onSuccess(Collection<ItemInfo> items) {
