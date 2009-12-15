@@ -29,7 +29,6 @@ import java.util.Map;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.item.RepositoryMenuPanel;
 import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
-import org.mule.galaxy.web.client.registry.SearchPanel;
 import org.mule.galaxy.web.client.ui.AdministrationConstants;
 import org.mule.galaxy.web.client.ui.BaseConstants;
 import org.mule.galaxy.web.client.ui.BaseMessages;
@@ -294,12 +293,7 @@ public class Galaxy implements EntryPoint {
 
     protected void loadTabs(final Galaxy galaxy) {
         loadRepositoryTab();
-        
-        int searchIdx = pageManager.createTab("Search", "search", "");
-        pageManager.createPageInfo("search", new SearchPanel(this), searchIdx);
-        
         loadPluginTabs();
-
         loadAdminTab();
         
         pageManager.initialize();
@@ -421,10 +415,6 @@ public class Galaxy implements EntryPoint {
 
     public int getAdminTab() {
         return adminTabIndex;
-    }
-
-    public void addHistoryListener(String token, AbstractShowable composite) {
-        historyListeners.put(token, composite);
     }
 
     public WExtensionInfo getExtension(String id) {
