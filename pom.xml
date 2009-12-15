@@ -41,7 +41,6 @@
         <module>gwt-client</module>
         <module>integration</module>
         <module>server</module>
-        <module>netboot</module>
 	<module>examples</module>
     </modules>
 
