@@ -87,8 +87,6 @@ public interface RegistryServiceAsync {
     
     void deleteIndex(String id, boolean removeArtifactMetadata, AsyncCallback callback);
     
-    void getExtensions(AsyncCallback callback);
-
     void itemExists(String path, AsyncCallback<Boolean> callback);
 
     void getItemByPath(String path, AsyncCallback<ItemInfo> callback);

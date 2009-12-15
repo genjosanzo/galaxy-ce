@@ -44,7 +44,7 @@ public class WorkspaceTest extends AbstractAtomTest {
         res.release();
         
         Entry entry = createEntry("MyWorkspace", "Workspace");
-        
+        prettyPrint(entry);
         res = client.post(dwBase, entry, defaultOpts);
         assertEquals(201, res.getStatus());
         Document<Entry> entryDoc = res.getDocument();

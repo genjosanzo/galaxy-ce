@@ -219,7 +219,7 @@ public class ArtifactListPanel extends AbstractShowable implements ClickListener
         img.addClickListener(cl);
         img.setStyleName("icon-baseline");
         
-        Hyperlink hl = new Hyperlink("Feed", galaxy.getCurrentToken());
+        Hyperlink hl = new Hyperlink("Feed", History.getToken());
         hl.addClickListener(cl);
 
         bulkEditPanel = new FlowPanel();
@@ -293,13 +293,13 @@ public class ArtifactListPanel extends AbstractShowable implements ClickListener
 
             // edit only what the user selectes via the checkboxes
         } else if (sender == editSelected) {
-            galaxy.createPageInfo("bulk-edit", new BulkEditPanel(getSelectedArtifacts(), galaxy), 0);
+            galaxy.getPageManager().createPageInfo("bulk-edit", new BulkEditPanel(getSelectedArtifacts(), galaxy), 0);
             History.newItem("bulk-edit");
 
             // edit the entire result set
             setEditable(false);
         } else if (sender == editAll) {
-            galaxy.createPageInfo("bulk-edit", new BulkEditPanel(searchResults.getQuery(), searchResults.getTotal(), galaxy), 0);
+            galaxy.getPageManager().createPageInfo("bulk-edit", new BulkEditPanel(searchResults.getQuery(), searchResults.getTotal(), galaxy), 0);
             History.newItem("bulk-edit");
 
             // toggle edit mode

@@ -132,9 +132,7 @@ public interface RegistryService extends RemoteService {
     List<WPropertyDescriptor> getPropertyDescriptors(boolean includeIndex) throws RPCException;
     
     Map<String, String> getQueryProperties() throws RPCException;
-    
-    List<WExtensionInfo> getExtensions() throws RPCException;
-    
+
     List<WType> getTypes() throws RPCException;
     
     void move(String entryId, String workspaceId, String name) throws RPCException, ItemNotFoundException, WPolicyException;

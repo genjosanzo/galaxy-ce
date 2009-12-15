@@ -18,12 +18,17 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.mule.galaxy.web.client.AbstractShowable;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.PageInfo;
-import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 import org.mule.galaxy.web.client.item.PolicyResultsPanel;
+import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.LifecycleSelectionPanel;
 import org.mule.galaxy.web.client.util.PolicySelectionPanel;
@@ -33,8 +38,8 @@ import org.mule.galaxy.web.rpc.WPolicyException;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -42,11 +47,6 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 public class PolicyPanel extends AbstractShowable {
 
@@ -199,7 +199,7 @@ public class PolicyPanel extends AbstractShowable {
 
     public static void handlePolicyFailure(Galaxy galaxy, WPolicyException caught) {
         PageInfo page =
-                galaxy.createPageInfo("policy-failure-" + caught.hashCode(),
+                galaxy.getPageManager().createPageInfo("policy-failure-" + caught.hashCode(),
                         new PolicyResultsPanel(galaxy, caught.getPolicyFailures()),
                         0);
 

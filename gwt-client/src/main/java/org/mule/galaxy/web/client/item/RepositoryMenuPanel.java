@@ -11,6 +11,7 @@ import org.mule.galaxy.web.client.AbstractShowable;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.MenuPanel;
 import org.mule.galaxy.web.client.PageInfo;
+import org.mule.galaxy.web.client.PageManager;
 import org.mule.galaxy.web.client.WidgetHelper;
 import org.mule.galaxy.web.client.registry.ViewPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -54,7 +55,7 @@ public class RepositoryMenuPanel extends MenuPanel {
         this.galaxy = galaxy;
 
         createPageInfo("browse", new ChildItemsPanel(galaxy, this, null));
-        createPageInfo("item/" + Galaxy.WILDCARD, new ItemPanel(galaxy, this));
+        createPageInfo("item/" + PageManager.WILDCARD, new ItemPanel(galaxy, this));
         createPageInfo("add-item", new AddItemForm(galaxy, this));
         createPageInfo("view", new ViewPanel(galaxy));
         
@@ -330,7 +331,7 @@ public class RepositoryMenuPanel extends MenuPanel {
             }
 
         };
-        getGalaxy().addPage(page);
+        getGalaxy().getPageManager().addPage(page);
     }
 
     public Galaxy getGalaxy() {

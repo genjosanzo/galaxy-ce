@@ -152,12 +152,12 @@ public class RegistryServiceImpl implements RegistryService {
     
     private WebManager webManager;
     
-    
     public ApplicationInfo getApplicationInfo() throws RPCException {
         ApplicationInfo info = new ApplicationInfo();
         info.setPluginTabs(getPluginTabs());
         info.setUser(getUserInfo());
         info.setUserManagementSupported(userManager.isManagementSupported());
+        info.setExtensions(getExtensions());
         return info;
     }
 

@@ -26,6 +26,7 @@ import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.MenuPanel;
 import org.mule.galaxy.web.client.NavMenuItem;
 import org.mule.galaxy.web.client.PageInfo;
+import org.mule.galaxy.web.client.PageManager;
 import org.mule.galaxy.web.client.WidgetHelper;
 import org.mule.galaxy.web.client.activity.ActivityPanel;
 import org.mule.galaxy.web.rpc.RegistryServiceAsync;
@@ -79,7 +80,7 @@ public class AdministrationPanel extends MenuPanel {
 
             if (item.getFormPanel() != null) {
                 // handle page info creation for add forms
-                createPageInfo(item.getTokenBase() + "/" + Galaxy.WILDCARD, item.getFormPanel());
+                createPageInfo(item.getTokenBase() + "/" + PageManager.WILDCARD, item.getFormPanel());
             }
         }
 
@@ -261,7 +262,7 @@ public class AdministrationPanel extends MenuPanel {
             }
 
         };
-        getGalaxy().addPage(page);
+        getGalaxy().getPageManager().addPage(page);
     }
 
 

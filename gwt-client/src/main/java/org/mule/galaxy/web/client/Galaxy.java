@@ -19,7 +19,6 @@ package org.mule.galaxy.web.client;
 
 import static org.mule.galaxy.web.client.WidgetHelper.newSpacerPipe;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,13 +53,9 @@ import org.mule.galaxy.web.rpc.WUser;
 import com.extjs.gxt.ui.client.GXT;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.Style.Scroll;
-import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.event.TabPanelEvent;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
-import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.Viewport;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
@@ -70,45 +65,33 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
+public class Galaxy implements EntryPoint {
 
-    public static final String WILDCARD = "*";
-    private static final String DEFAULT_PAGE = "browse";
     private RegistryServiceAsync registryService;
     private SecurityServiceAsync securityService;
     private HeartbeatServiceAsync heartbeatService;
     private AdminServiceAsync adminService;
     private InlineFlowPanel rightHeaderPanel;
-    private PageInfo curInfo;
-    private Map<String, PageInfo> history = new HashMap<String, PageInfo>();
-    protected TabPanel tabPanel;
     protected WUser user;
-    protected int oldTab;
-    private boolean suppressTabHistory;
     private Map<String, AbstractShowable> historyListeners = new HashMap<String, AbstractShowable>();
     protected int adminTabIndex;
     protected Viewport base;
     protected PropertyInterfaceManager propertyInterfaceManager = new PropertyInterfaceManager();
     protected List extensions;
-    private String currentToken;
     protected Label product;
     protected InlineFlowPanel footerPanel;
 
-    protected List<String> tabNames = new ArrayList<String>();
     protected int repositoryTabIndex;
     private BaseConstants baseConstants;
     private BaseMessages baseMessages;
@@ -118,6 +101,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     private RepositoryConstants repositoryConstants;
     protected Collection<PluginTabInfo> plugins;
     protected boolean userManagementSupported;
+    private PageManager pageManager;
 
     //public static final ButtonIcons IMAGES = GWT.create(ButtonIcons.class);
 
@@ -134,8 +118,6 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         // prefetch the image, so that e.g. SessionKilled dialog can be properly displayed for the first time
         // when the server is already down and cannot serve it.
         Image.prefetch("images/lightbox.png");
-
-        History.addValueChangeHandler(this);
 
         this.registryService = (RegistryServiceAsync) GWT.create(RegistryService.class);
 
@@ -161,54 +143,29 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
 
         this.administrationConstants = (AdministrationConstants) GWT.create(AdministrationConstants.class);
         this.repositoryConstants = (RepositoryConstants) GWT.create(RepositoryConstants.class);
-
         base = new Viewport();
         base.setLayout(new BorderLayout());
 
         createHeader(new Image(LOGO));
 
-        tabPanel = new TabPanel();
-        tabPanel.setAutoHeight(true);
-
-        tabNames.add("browse");
-
-        tabPanel.addListener(Events.Select, new SelectionListener<TabPanelEvent>() {
-
-            @Override
-            public void componentSelected(TabPanelEvent ce) {
-                TabItem item = ce.getItem();
-                int newTab = tabPanel.getItems().indexOf(item);
-                if (!suppressTabHistory) {
-                    History.newItem(tabNames.get(newTab));
-                }
-                oldTab = newTab;
-            }
-
-        });
+        this.pageManager = new PageManager();
 
         createBody();
-
-        // prefetch extensions
-        registryService.getExtensions(new AbstractCallback(repositoryPanel) {
-            @SuppressWarnings("unchecked")
-            public void onSuccess(Object o) {
-                extensions = (List) o;
-                Collections.sort(extensions);
-            }
-        });
 
         registryService.getApplicationInfo(new AbstractCallback<ApplicationInfo>(repositoryPanel) {
             public void onSuccess(ApplicationInfo appInfo) {
                 user = (WUser) appInfo.getUser();
+                extensions = (List) appInfo.getExtensions();
+                Collections.sort(extensions);
                 
                 // always the left most item
                 rightHeaderPanel.insert(new Label("Welcome, " + user.getName()), 0);
                 
                 Galaxy.this.plugins = appInfo.getPluginTabs();
                 Galaxy.this.userManagementSupported = appInfo.isUserManagementSupported();
-                suppressTabHistory = true;
+//                suppressTabHistory = true;
                 loadTabs(Galaxy.this);
-                suppressTabHistory = false;
+//                suppressTabHistory = false;
                 showFirstPage();
             }
         });
@@ -309,7 +266,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         centerPanel.setHeaderVisible(false);
         centerPanel.setScrollMode(Scroll.NONE);
         centerPanel.setLayout(new FlowLayout());
-        centerPanel.add(tabPanel);
+        centerPanel.add(pageManager.getTabPanel());
 
         BorderLayoutData data = new BorderLayoutData(LayoutRegion.CENTER);
         data.setMargins(new Margins());
@@ -317,8 +274,8 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         base.add(centerPanel, data);
     }
 
-    protected void createRepositoryPanels() {
-        repositoryPanel = new RepositoryMenuPanel(this);
+    protected RepositoryMenuPanel createRepositoryPanels() {
+        return new RepositoryMenuPanel(this);
     }
 
     public int getRepositoryTab() {
@@ -335,64 +292,40 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     }-*/;
 
 
-    public PageInfo createPageInfo(String token,
-                                   final Widget composite,
-                                   int tab) {
-        PageInfo page = new PageInfo(token, tab) {
-            public Widget createInstance() {
-                return composite;
-            }
-        };
-        addPage(page);
-        return page;
-    }
-
     protected void loadTabs(final Galaxy galaxy) {
-        tabPanel.add(createEmptyTab("Repository", repositoryConstants.repo_TabTip()));
-        createRepositoryPanels();
-
-        int searchIdx = tabPanel.getItemCount();
-        createPageInfo("search", new SearchPanel(this), searchIdx);
-        tabPanel.add(createEmptyTab("Search"));
-        tabNames.add("search");
-
+        loadRepositoryTab();
+        
+        int searchIdx = pageManager.createTab("Search", "search", "");
+        pageManager.createPageInfo("search", new SearchPanel(this), searchIdx);
+        
         loadPluginTabs();
 
+        loadAdminTab();
+        
+        pageManager.initialize();
+    }
+
+    protected void loadRepositoryTab() {
+        repositoryTabIndex = pageManager.createTab("Repository", "item", repositoryConstants.repo_TabTip());
+        createRepositoryPanels();
+    }
+
+    protected void loadAdminTab() {
         if (showAdminTab(user)) {
-            adminTabIndex = tabPanel.getItemCount();
-            tabNames.add(adminTabIndex, "admin");
-            createPageInfo("admin", createAdministrationPanel(), adminTabIndex);
-            tabPanel.add(createEmptyTab("Administration", administrationConstants.admin_TabTip()));
+            adminTabIndex = pageManager.createTab("Administration", "admin", administrationConstants.admin_TabTip());
+            createAdministrationPanel();
         }
     }
 
     protected void loadPluginTabs() {
         for (PluginTabInfo plugin : getPlugins()) {
-            int idx = tabPanel.getItemCount();
-            createPageInfo(plugin.getRootToken(), new PluginPanel(plugin), idx);
-            tabNames.add(idx, plugin.getRootToken());
-            tabPanel.add(createEmptyTab(plugin.getName()));
+            int index = pageManager.createTab(plugin.getName(), plugin.getRootToken(), "");
+            pageManager.createPageInfo(plugin.getRootToken(), new PluginPanel(plugin), index);
         }
     }
 
     protected Collection<PluginTabInfo> getPlugins() {
         return plugins;
-    }
-
-    protected TabItem createEmptyTab(String name, String toolTip) {
-        TabItem tab = new TabItem();
-        TabItem.HeaderItem header = tab.getHeader();
-        header.setText(name);
-
-        if (toolTip != null) {
-            header.setToolTip(toolTip);
-        }
-        tab.setLayout(new FlowLayout());
-        return tab;
-    }
-
-    protected TabItem createEmptyTab(String name) {
-        return createEmptyTab(name, null);
     }
 
     protected AdministrationPanel createAdministrationPanel() {
@@ -414,131 +347,13 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         // Show the initial screen.
         String initToken = History.getToken();
         if (initToken.length() > 0) {
-            onHistoryChanged(initToken);
+            pageManager.show(initToken);
         } else {
-            show("browse");
+            pageManager.show("browse");
         }
     }
 
-    public void addPage(PageInfo info) {
-        history.put(info.getName(), info);
-    }
-
-    /**
-     * Shows a page, but does not trigger a history event.
-     *
-     * @param token
-     */
-    public void show(String token) {
-        show(getPageInfo(token), getParams(token));
-    }
-
-    protected void show(PageInfo page, List<String> params) {
-        suppressTabHistory = true;
-        TabItem p = (TabItem) tabPanel.getWidget(page.getTabIndex());
-
-        if (!tabPanel.getSelectedItem().equals(p)) {
-            tabPanel.setSelection(p);
-        }
-
-        p.removeAll();
-        p.layout();
-
-        Widget instance = page.getInstance();
-        p.add(instance);
-        p.layout();
-
-        if (instance instanceof Showable) {
-            ((Showable) instance).showPage(params);
-        }
-        suppressTabHistory = false;
-    }
-
-    public void onValueChange(ValueChangeEvent<String> event) {
-        onHistoryChanged(event.getValue());
-    }
-
-    public void onHistoryChanged(String token) {
-        currentToken = token;
-        if ("".equals(token)) {
-            token = DEFAULT_PAGE;
-        }
-
-        if ("nohistory".equals(token) && curInfo != null) {
-            suppressTabHistory = false;
-            return;
-        }
-
-        PageInfo page = getPageInfo(token);
-        List<String> params = getParams(token);
-
-        // hide the previous page
-        if (curInfo != null) {
-            Widget instance = curInfo.getInstance();
-            if (instance instanceof Showable) {
-                ((Showable) instance).hidePage();
-            }
-        }
-
-        if (page == null) {
-            // went to a page which isn't in our history anymore. go to the first page
-            if (curInfo == null) {
-                onHistoryChanged(DEFAULT_PAGE);
-            }
-        } else {
-            curInfo = page;
-
-            show(page, params);
-        }
-    }
-
-
-    private List<String> getParams(String token) {
-        List<String> params = new ArrayList<String>();
-        String[] split = token.split("/");
-
-        if (split.length > 1) {
-            for (int i = 1; i < split.length; i++) {
-                params.add(split[i]);
-            }
-        }
-        return params;
-    }
-
-    public String getCurrentToken() {
-        return currentToken;
-    }
-
-    public PageInfo getPageInfo(String token) {
-        PageInfo page = history.get(token);
-
-        if (page == null) {
-
-            // hack to match "foo/*" style tokens
-            int slashIdx = token.indexOf("/");
-            if (slashIdx != -1) {
-                page = history.get(token.substring(0, slashIdx) + "/" + WILDCARD);
-            }
-
-            if (page == null) {
-                page = history.get(token.substring(0, slashIdx));
-            }
-        }
-
-        return page;
-    }
-
-    public void setMessageAndGoto(String token, String message) {
-        PageInfo pi = getPageInfo(token);
-
-        ErrorPanel ep = (ErrorPanel) pi.getInstance();
-
-        History.newItem(token);
-
-        ep.setMessage(message);
-    }
-
-
+    
     /**
      * just for informational messages.
      * should not be used for errors because this fades out.
@@ -549,6 +364,10 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     public void setInfoMessageAndGoto(String token, String message) {
         History.newItem(token);
         Info.display("Info:", message);
+    }
+
+    public PageManager getPageManager() {
+        return pageManager;
     }
 
     public boolean isUserManagementSupported() {
@@ -580,7 +399,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
     }
 
     public TabPanel getTabPanel() {
-        return tabPanel;
+        return pageManager.getTabPanel();
     }
 
     public BaseConstants getBaseConstants() {
@@ -627,4 +446,7 @@ public class Galaxy implements EntryPoint, ValueChangeHandler<String> {
         return repositoryConstants;
     }
 
+    public void setMessageAndGoto(String successToken, String successMessage) {
+        pageManager.setMessageAndGoto(successToken, successMessage);
+    }
 }

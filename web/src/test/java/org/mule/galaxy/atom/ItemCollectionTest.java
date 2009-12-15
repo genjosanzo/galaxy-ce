@@ -87,7 +87,7 @@ public class ItemCollectionTest extends AbstractAtomTest {
         
         res.release();
     }
-    
+
     public void testAddWsdl() throws Exception {
         AbderaClient client = new AbderaClient(abdera);
         RequestOptions defaultOpts = client.getDefaultRequestOptions();
@@ -150,7 +150,7 @@ public class ItemCollectionTest extends AbstractAtomTest {
         System.out.println("Grabbing the Feed Again");
         res = client.get(UrlEncoding.encode(defaultWkspcCol, Profile.PATH.filter()), defaultOpts);
         assertEquals(200, res.getStatus());
-        
+        prettyPrint(res.getDocument());
         org.apache.abdera.model.Document<Feed> feedDoc = res.getDocument();
         Feed feed = feedDoc.getRoot();
         List<Entry> entries = feed.getEntries();

@@ -18,6 +18,12 @@
 
 package org.mule.galaxy.web.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.Toolbox;
+
 import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.util.Margins;
@@ -32,12 +38,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.Toolbox;
 
 public abstract class ApplicationPanel extends AbstractErrorShowingComposite {
 
@@ -215,7 +215,7 @@ public abstract class ApplicationPanel extends AbstractErrorShowingComposite {
 
         createDivWithAdd(manageBox, link, addLink);
         createPageInfo(tokenBase, list);
-        createPageInfo(tokenBase + "/" + Galaxy.WILDCARD, form);
+        createPageInfo(tokenBase + "/" + PageManager.WILDCARD, form);
     }
 
     protected void createLinkWithAdd(String tokenBase,
@@ -223,7 +223,7 @@ public abstract class ApplicationPanel extends AbstractErrorShowingComposite {
                                      WidgetHelper form) {
 
         createPageInfo(tokenBase, list);
-        createPageInfo(tokenBase + "/" + Galaxy.WILDCARD, form);
+        createPageInfo(tokenBase + "/" + PageManager.WILDCARD, form);
     }
 
     protected abstract void createPageInfo(String token, final WidgetHelper composite);

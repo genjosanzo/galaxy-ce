@@ -23,6 +23,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -122,7 +123,7 @@ public class ItemInfoPanel extends AbstractShowable {
         commentsPanel.setStyleName("comments");
         commentsBase.add(commentsPanel);
         
-        Hyperlink addComment = new Hyperlink("Add", galaxy.getCurrentToken());
+        Hyperlink addComment = new Hyperlink("Add", History.getToken());
         addComment.addClickListener(new AddCommentClickListener(commentsPanel, null));
         
         InlineFlowPanel commentTitlePanel = createTitleWithLink("Comments", addComment);
@@ -158,7 +159,7 @@ public class ItemInfoPanel extends AbstractShowable {
         Label dateLabel = new Label(" at " + c.getDate());
         userLabel.setStyleName("user");
         
-        Hyperlink replyLink = new Hyperlink("Reply", galaxy.getCurrentToken());
+        Hyperlink replyLink = new Hyperlink("Reply", History.getToken());
         replyLink.addClickListener(new AddCommentClickListener(commentPanel, c.getId()));
         title.add(img);
         title.add(replyLink);

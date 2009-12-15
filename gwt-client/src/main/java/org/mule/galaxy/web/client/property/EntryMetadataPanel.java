@@ -18,6 +18,7 @@
 
 package org.mule.galaxy.web.client.property;
 
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -66,7 +67,7 @@ public class EntryMetadataPanel extends AbstractShowable {
         table = createColumnTable();
 
         
-        showAll = new Hyperlink("Show All", galaxy.getCurrentToken());
+        showAll = new Hyperlink("Show All", History.getToken());
         showAll.addClickListener(new ClickListener() {
 
             public void onClick(Widget arg0) {
@@ -78,7 +79,7 @@ public class EntryMetadataPanel extends AbstractShowable {
         
         
         if (item.isModifiable()) {
-            Hyperlink addMetadata = new Hyperlink("Add", galaxy.getCurrentToken());
+            Hyperlink addMetadata = new Hyperlink("Add", History.getToken());
             final EntryMetadataPanel amPanel = this;
             addMetadata.addClickListener(new ClickListener() {
     

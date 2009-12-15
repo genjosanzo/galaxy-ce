@@ -201,7 +201,7 @@ public class SearchForm extends AbstractErrorShowingComposite {
             }
         };
         
-        freeformQueryLink = new Hyperlink("Use Freeform Query", galaxy.getCurrentToken());
+        freeformQueryLink = new Hyperlink("Use Freeform Query", History.getToken());
         freeformQueryLink.addClickListener(switchListener);
         buttonPanel.add(freeformQueryLink);
          

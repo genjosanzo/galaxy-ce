@@ -18,14 +18,21 @@
 
 package org.mule.galaxy.web.client.item;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.mule.galaxy.web.client.AbstractFlowComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 import org.mule.galaxy.web.client.property.AbstractPropertyRenderer;
 import org.mule.galaxy.web.client.property.ArtifactRenderer;
 import org.mule.galaxy.web.client.property.PropertyInterfaceManager;
 import org.mule.galaxy.web.client.registry.PolicyResultsPanel;
+import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 import org.mule.galaxy.web.client.util.AddItemHelper;
 import org.mule.galaxy.web.client.util.ItemPathOracle;
 import org.mule.galaxy.web.client.util.StringUtil;
@@ -56,19 +63,12 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SuggestBox;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
 /**
  * This form is definitely complex and ugly, so here's a run down of how it works.
@@ -599,7 +599,7 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
         }
         PolicyResultsPanel failurePanel = new PolicyResultsPanel(galaxy, warnings, failures);
         failurePanel.setMessage("The artifact did not meet all the necessary policies!");
-        galaxy.createPageInfo(token, failurePanel, 0);
+        galaxy.getPageManager().createPageInfo(token, failurePanel, 0);
         History.newItem(token);
     }
 
