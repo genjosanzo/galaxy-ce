@@ -28,7 +28,7 @@
 
         <dependency>
             <groupId>org.mule.galaxy</groupId>
-            <artifactId>galaxy-repository-gwt-client</artifactId>
+            <artifactId>galaxy-repository-client</artifactId>
             <version>${version}</version>
         </dependency>
 

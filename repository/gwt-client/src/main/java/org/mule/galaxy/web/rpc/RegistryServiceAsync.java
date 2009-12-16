@@ -20,7 +20,6 @@ package org.mule.galaxy.web.rpc;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,8 +27,6 @@ import java.util.Set;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface RegistryServiceAsync {
-    void getApplicationInfo(AsyncCallback<ApplicationInfo> callback);
-    
     void getItems(String parentId, boolean traverseUpParents, AsyncCallback callback);
 
     /**
@@ -162,9 +159,6 @@ public interface RegistryServiceAsync {
 
     void setActivePolicies(String workspace, String lifecycle, String phase, Collection<String> ids, AsyncCallback c);
     
-    void getActivities(Date from, Date to, String user, String itemId, String text,
-                       String eventType, int start, int results, boolean ascending, AsyncCallback c);
-
     void deleteLifecycle(String id, AsyncCallback abstractCallback);
 
     void getPropertyDescriptor(String id, AsyncCallback fetchCallback);

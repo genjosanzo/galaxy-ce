@@ -1,20 +1,20 @@
 package org.mule.galaxy.web.client.util;
 
 
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.property.AbstractPropertyRenderer;
 import org.mule.galaxy.web.client.property.ArtifactRenderer;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.WType;
 import org.mule.galaxy.web.rpc.ItemInfo;
+import org.mule.galaxy.web.rpc.WType;
 
 import com.google.gwt.user.client.ui.FormPanel;
-
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.Collections;
 
 /**
  * encapsulate the addItem logic in this class and

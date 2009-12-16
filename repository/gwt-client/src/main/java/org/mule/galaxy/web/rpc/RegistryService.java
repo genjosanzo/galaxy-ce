@@ -31,7 +31,8 @@ import com.google.gwt.user.client.rpc.RemoteService;
 
 public interface RegistryService extends RemoteService {
 
-    ApplicationInfo getApplicationInfo() throws RPCException;
+    Collection<WActivity> getActivities(Date from, Date to, String user, String itemId, String text, 
+                                        String eventType, int start, int results, boolean ascending) throws RPCException;
     
     Collection<ItemInfo> getItems(String parentId, boolean traverseUpParents) throws RPCException;
     
@@ -58,7 +59,6 @@ public interface RegistryService extends RemoteService {
 
     WArtifactType getArtifactType(String id) throws RPCException;
     
-
     Collection<WArtifactType> getArtifactTypes();
 
     void saveArtifactType(WArtifactType artifactType) throws RPCException, ItemExistsException;
@@ -161,9 +161,6 @@ public interface RegistryService extends RemoteService {
 
     void setActivePolicies(String workspace, String lifecycle, String phase, Collection<String> ids) throws RPCException, WPolicyException, ItemNotFoundException;
 
-    Collection<WActivity> getActivities(Date from, Date to, String user, String itemId, String text, 
-                                        String eventType, int start, int results, boolean ascending) throws RPCException;
-    
     void saveType(WType type) throws RPCException, ItemExistsException;
     
     WType getType(String id) throws RPCException;

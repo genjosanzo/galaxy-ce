@@ -140,7 +140,6 @@ public class RegistryServiceImpl implements RegistryService {
     private AccessControlManager accessControlManager;
     private ArtifactViewManager artifactViewManager;
     private TypeManager typeManager;
-    private UserManager userManager;
 
     private ContextPathResolver contextPathResolver;
 
@@ -149,39 +148,6 @@ public class RegistryServiceImpl implements RegistryService {
     private EventManager eventManager;
 
     private UploadService uploadService;
-    
-    private WebManager webManager;
-    
-    public ApplicationInfo getApplicationInfo() throws RPCException {
-        ApplicationInfo info = new ApplicationInfo();
-        info.setPluginTabs(getPluginTabs());
-        info.setUser(getUserInfo());
-        info.setUserManagementSupported(userManager.isManagementSupported());
-        info.setExtensions(getExtensions());
-        return info;
-    }
-
-    protected Collection<PluginTabInfo> getPluginTabs() {
-        Collection<GwtFacet> facets = webManager.getGwtFacets();
-        ArrayList<PluginTabInfo> wPlugins = new ArrayList<PluginTabInfo>();
-        for (GwtFacet p : facets) {
-            if (!p.getName().equals("core")) {
-                PluginTabInfo wp = new PluginTabInfo();
-                wp.setName(p.getName());
-                wp.setToken(p.getToken());
-                wPlugins.add(wp);
-            }
-        }
-        return wPlugins;
-    }
-
-    public List<WExtensionInfo> getExtensions() throws RPCException {
-        ArrayList<WExtensionInfo> exts = new ArrayList<WExtensionInfo>();
-        for (Extension e : registry.getExtensions()) {
-            exts.add(new WExtensionInfo(e.getId(), e.getName(), e.getPropertyDescriptorConfigurationKeys(), e.isMultivalueSupported()));
-        }
-        return exts;
-    }
 
     public Collection<ItemInfo> getItems(String parentId, boolean traverseUpParents) throws RPCException {
         try {
@@ -2064,20 +2030,6 @@ public class RegistryServiceImpl implements RegistryService {
         return wa;
     }
 
-    public WUser getUserInfo() throws RPCException {
-        User user = getCurrentUser();
-        WUser w = SecurityServiceImpl.createWUser(user);
-
-        List<String> perms = new ArrayList<String>();
-
-        for (Permission p : accessControlManager.getGrantedPermissions(user)) {
-            perms.add(p.toString());
-        }
-        w.setPermissions(perms);
-
-        return w;
-    }
-
     public void setAccessControlManager(AccessControlManager accessControlManager) {
         this.accessControlManager = accessControlManager;
     }
@@ -2118,10 +2070,6 @@ public class RegistryServiceImpl implements RegistryService {
         this.artifactViewManager = artifactViewManager;
     }
 
-    public void setUserManager(UserManager userManager) {
-        this.userManager = userManager;
-    }
-
     public ContextPathResolver getContextPathResolver() {
         return contextPathResolver;
     }
@@ -2141,9 +2089,4 @@ public class RegistryServiceImpl implements RegistryService {
     public void setUploadService(UploadService uploadService) {
         this.uploadService = uploadService;
     }
-
-    public void setWebManager(WebManager webManager) {
-        this.webManager = webManager;
-    }
-    
 }

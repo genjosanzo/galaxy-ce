@@ -61,7 +61,6 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
     private FlowPanel securityPanel;
     private FlowPanel propertyPanel;
 
-    private Galaxy galaxy;
     private RegistryServiceAsync service;
 
     private CheckBox securityCB;
@@ -90,20 +89,22 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
 
     private Collection<String> entryIds;
 
-    public BulkEditPanel(Collection<String> entryIds, Galaxy galaxy) {
-        this(entryIds.size(), galaxy);
+    private Repository repository;
+
+    public BulkEditPanel(Collection<String> entryIds, Repository repository) {
+        this(entryIds.size(), repository);
         this.entryIds = entryIds;
     }
     
-    public BulkEditPanel(String query, long resultCount, Galaxy galaxy) {
-        this(resultCount, galaxy);
+    public BulkEditPanel(String query, long resultCount, Repository repository) {
+        this(resultCount, repository);
         this.query = query;
     }
     
-    public BulkEditPanel(long resultCount, Galaxy galaxy) {
+    public BulkEditPanel(long resultCount, Repository repository) {
         this.resultCount = resultCount;
-        this.galaxy = galaxy;
-        this.service = galaxy.getRegistryService();
+        this.repository = repository;
+        this.service = repository.getGalaxy().getRegistryService();
         this.permissions = new ArrayList();
         this.groups = new HashMap();
 
@@ -232,9 +233,9 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
         propertyDescriptor = getPropertyDescriptor(txt);
 
         renderer = 
-            galaxy.getPropertyInterfaceManager().createRenderer(propertyDescriptor.getExtension(), 
-                                                            propertyDescriptor.isMultiValued());
-        renderer.initialize(galaxy, this, null, true);
+            repository.getPropertyInterfaceManager().createRenderer(propertyDescriptor.getExtension(), 
+                                                                    propertyDescriptor.isMultiValued());
+        renderer.initialize(repository.getGalaxy(), this, null, true);
         
         table.setWidget(0, 4, renderer.createEditForm());
     }
@@ -294,7 +295,7 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
 
     // RPC call to get list of available permissions
     private void fetchPermissions() {
-        galaxy.getSecurityService().getPermissions(SecurityService.ITEM_PERMISSIONS, new AbstractCallback(this) {
+        repository.getGalaxy().getSecurityService().getPermissions(SecurityService.ITEM_PERMISSIONS, new AbstractCallback(this) {
             public void onFailure(Throwable caught) {
                 super.onFailure(caught);
             }
@@ -314,7 +315,7 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
 
     //RPC call to get list of available groups
     private void fetchGroups() {
-        galaxy.getSecurityService().getGroupPermissions(new AbstractCallback(this) {
+        repository.getGalaxy().getSecurityService().getGroupPermissions(new AbstractCallback(this) {
 
             public void onFailure(Throwable caught) {
                 super.onFailure(caught);
@@ -401,7 +402,7 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
                 if (caught instanceof WPolicyException) {
                     WPolicyException pe = (WPolicyException) caught;
 
-                    PolicyPanel.handlePolicyFailure(galaxy, pe);
+                    PolicyPanel.handlePolicyFailure(repository.getGalaxy(), pe);
                 } else {
                     super.onFailure(caught);
                 }
@@ -412,7 +413,7 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
             }
         };
         
-        RegistryServiceAsync svc = galaxy.getRegistryService();
+        RegistryServiceAsync svc = repository.getGalaxy().getRegistryService();
         if (entryIds != null) {
             svc.setProperty(entryIds, propertyDescriptor.getName(), (Serializable)value, callback);
         } else {
@@ -438,7 +439,7 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
                 if (caught instanceof WPolicyException) {
                     WPolicyException pe = (WPolicyException) caught;
 
-                    PolicyPanel.handlePolicyFailure(galaxy, pe);
+                    PolicyPanel.handlePolicyFailure(repository.getGalaxy(), pe);
                 } else {
                     super.onFailure(caught);
                 }

@@ -24,6 +24,7 @@ import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
+import org.mule.galaxy.web.rpc.GalaxyService;
 import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.LinkInfo;
 import org.mule.galaxy.web.rpc.PluginTabInfo;
@@ -274,17 +275,6 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertTrue(entry.isLocal());
     }
     
-    public void testUserInfo() throws Exception {
-        WUser user = gwtRegistry.getApplicationInfo().getUser();
-        
-        assertNotNull(user.getUsername());
-        
-        Collection<String> permissions = user.getPermissions();
-        assertTrue(permissions.size() > 0);
-        
-        assertTrue(permissions.contains("MANAGE_USERS"));
-    }
-    
     public void testGovernanceOperations() throws Exception {
         Type type = getSimpleType();
         String id = gwtRegistry.addItem("/Default Workspace", "Test", null, type.getId(), null);
@@ -406,11 +396,6 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         gwtRegistry.suggestItems("!@#$%^&*(){}[]?'\"><", true, "xxx", new String[0]);
 //        
         
-    }
-    
-    public void testGwtPlugins() throws Exception {
-        Collection<PluginTabInfo> plugins = gwtRegistry.getApplicationInfo().getPluginTabs();
-        assertEquals(0, plugins.size());
     }
     
     private final class FauxPolicy implements Policy {

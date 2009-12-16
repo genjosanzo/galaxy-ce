@@ -28,8 +28,6 @@ import org.mule.galaxy.web.client.NavMenuItem;
 import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.PageManager;
 import org.mule.galaxy.web.client.WidgetHelper;
-import org.mule.galaxy.web.client.activity.ActivityPanel;
-import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -179,13 +177,6 @@ public class AdministrationPanel extends MenuPanel {
                 new AdminShellPanel(this),
                 null));
 
-        if (galaxy.hasPermission("VIEW_ACTIVITY")) {
-            a.add(new NavMenuItem("Activity",
-                    "ActivityPanel",
-                    new ActivityPanel(this, galaxy),
-                    null));
-        }
-
         a.add(new NavMenuItem("Scheduler",
                 "schedules",
                 new ScheduleListPanel(this),
@@ -209,36 +200,6 @@ public class AdministrationPanel extends MenuPanel {
                     "roles",
                     new RoleListPanel(this),
                     new RoleForm(this)));
-        }
-
-        if (galaxy.hasPermission("MANAGE_LIFECYCLES")) {
-            a.add(new NavMenuItem("Lifecycles",
-                    "lifecycles",
-                    new LifecycleListPanel(this),
-                    new LifecycleForm(this)));
-        }
-
-        if (galaxy.hasPermission("MANAGE_POLICIES")) {
-            a.add(new NavMenuItem("Policies",
-                    "policies",
-                    new PolicyPanel(this, galaxy),
-                    null));
-        }
-
-        if (showTypeSystem()) {
-            if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
-                a.add(new NavMenuItem("Properties",
-                        "properties",
-                        new PropertyDescriptorListPanel(this),
-                        new PropertyDescriptorForm(this)));
-            }
-
-            if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
-                a.add(new NavMenuItem("Types",
-                        "types",
-                        new TypeListPanel(this),
-                        new TypeForm(this)));
-            }
         }
 
         return a;
@@ -268,10 +229,6 @@ public class AdministrationPanel extends MenuPanel {
 
     public Galaxy getGalaxy() {
         return galaxy;
-    }
-
-    public RegistryServiceAsync getRegistryService() {
-        return getGalaxy().getRegistryService();
     }
 
     public SecurityServiceAsync getSecurityService() {
