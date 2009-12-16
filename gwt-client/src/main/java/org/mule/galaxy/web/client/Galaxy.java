@@ -70,7 +70,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class Galaxy implements EntryPoint {
+public class Galaxy {
 
     private SecurityServiceAsync securityService;
     private HeartbeatServiceAsync heartbeatService;
@@ -93,11 +93,9 @@ public class Galaxy implements EntryPoint {
     private PageManager pageManager;
     private ContentPanel centerPanel;
     private GalaxyServiceAsync galaxyService;
+    private AdministrationPanel adminPanel;
 
-    /**
-     * This is the entry point method.
-     */
-    public void onModuleLoad() {
+    public void initialize(List<GalaxyModule> modules) {
         //GXT.setDefaultTheme(Theme.GRAY, true);
         GXT.BLANK_IMAGE_URL = "extjsresources/images/default/s.gif";
         final String LOGO = "images/galaxy_logo_main_trans.gif";
@@ -284,9 +282,13 @@ public class Galaxy implements EntryPoint {
     protected void loadAdminTab() {
         if (showAdminTab(user)) {
             adminTabIndex = pageManager.createTab("Administration", "admin", administrationConstants.admin_TabTip());
-            AdministrationPanel adminPanel = createAdministrationPanel();
+            adminPanel = createAdministrationPanel();
             pageManager.createPageInfo("admin", adminPanel, adminTabIndex);
         }
+    }
+
+    public AdministrationPanel getAministrationPanel() {
+        return adminPanel;
     }
 
     protected void loadPluginTabs() {

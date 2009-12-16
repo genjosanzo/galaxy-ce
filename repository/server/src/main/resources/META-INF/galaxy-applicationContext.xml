@@ -1,0 +1,46 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:a="http://abdera.apache.org"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+    http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
+    
+
+    <bean id="coreGwtModule" class="org.mule.galaxy.web.GwtModule">
+      <property name="core" value="true"/>
+      <property name="name" value="org.mule.galaxy.web.Repository"/>
+      <property name="rpcServices">
+        <map>
+          <entry key="/galaxyService.rpc" value-ref="galaxyService" />
+          <entry key="/securityService.rpc" value-ref="gwtSecurityService" />
+          <entry key="/heartbeat.rpc" value-ref="heartbeatService"/>
+          <entry key="/admin.rpc" value-ref="adminService"/>
+          <entry key="/registry.rpc" value-ref="gwtRegistry" />
+        </map>
+      </property>
+    </bean>
+    
+    <bean id="gwtRegistry" class="org.mule.galaxy.repository.RegistryServiceImpl">
+      <property name="registry" ref="registry"/>
+      <property name="artifactTypeDao" ref="artifactTypeDao"/>
+      <property name="indexManager" ref="indexManager"/>
+      <property name="rendererManager" ref="rendererManager"/>
+      <property name="lifecycleManager" ref="lifecycleManager"/>
+      <property name="policyManager" ref="policyManager"/>
+      <property name="activityManager" ref="activityManager"/>
+      <property name="artifactViewManager" ref="artifactViewManager"/>
+      <property name="accessControlManager" ref="accessControlManager"/>
+      <property name="typeManager" ref="typeManager"/>
+      <property name="uploadService" ref="uploadService"/>
+      <property name="userManager" ref="userManager"/>
+      <property name="contextPathResolver">
+          <bean class="org.mule.galaxy.web.ContextPathResolver"/>
+      </property>
+      <property name="eventManager" ref="eventManager"/>
+    </bean>
+
+</beans>

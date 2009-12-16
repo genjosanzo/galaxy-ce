@@ -252,5 +252,15 @@ public class AdministrationPanel extends MenuPanel {
         this.utilityItems = utilityItems;
     }
 
+    public void addUtilityMenuItem(NavMenuItem navMenuItem) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void addManageMenuItem(NavMenuItem item) {
+        // TODO Auto-generated method stub
+        
+    }
+
 
 }
