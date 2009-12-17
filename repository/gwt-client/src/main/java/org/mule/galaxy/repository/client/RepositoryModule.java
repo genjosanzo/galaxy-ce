@@ -21,17 +21,20 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
 public class RepositoryModule implements GalaxyModule {
-    private Galaxy galaxy;
+    protected Galaxy galaxy;
     private PropertyInterfaceManager propertyInterfaceManager = new PropertyInterfaceManager();
-    private RepositoryConstants repositoryConstants;
+    protected RepositoryConstants repositoryConstants;
     private RegistryServiceAsync registryService;
     private int repositoryTabIndex = 0;
     private boolean showTypeSystem = true;
     
     public void initialize(Galaxy galaxy) {
         this.galaxy = galaxy;
-        this.repositoryConstants = (RepositoryConstants) GWT.create(RepositoryConstants.class);
-
+        
+        if (repositoryConstants == null) {
+            this.repositoryConstants = (RepositoryConstants) GWT.create(RepositoryConstants.class);
+        }
+        
         createService();
         loadRepositoryTab();
         addAdministrationMenuItems();

@@ -57,6 +57,7 @@ import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -71,6 +72,7 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class Galaxy {
 
+    private String firstPage = "browse";
     private SecurityServiceAsync securityService;
     private HeartbeatServiceAsync heartbeatService;
     private AdminServiceAsync adminService;
@@ -165,11 +167,13 @@ public class Galaxy {
         
         plugins = appInfo.getPluginTabs();
         userManagementSupported = appInfo.isUserManagementSupported();
-        loadTabs(Galaxy.this);
+        adminPanel = createAdministrationPanel();
         
         for (GalaxyModule module : modules) {
             module.initialize(Galaxy.this);
         }
+        
+        loadTabs(Galaxy.this);
         showFirstPage();
     }
     
@@ -289,7 +293,6 @@ public class Galaxy {
     protected void loadAdminTab() {
         if (showAdminTab(user)) {
             adminTabIndex = pageManager.createTab("Administration", "admin", administrationConstants.admin_TabTip());
-            adminPanel = createAdministrationPanel();
             pageManager.createPageInfo("admin", adminPanel, adminTabIndex);
         }
     }
@@ -325,6 +328,9 @@ public class Galaxy {
     }
 
     protected void showFirstPage() {
+        ///Remove the loading message
+        DOM.setInnerHTML(RootPanel.get("loading-msg").getElement(), "");
+        
         // Show the initial screen.
         String initToken = History.getToken();
         if (initToken.length() > 0) {
@@ -335,8 +341,8 @@ public class Galaxy {
     }
 
     
-    private String getFirstPage() {
-        return "admin";
+    protected String getFirstPage() {
+        return firstPage;
     }
 
     /**
@@ -418,5 +424,9 @@ public class Galaxy {
 
     public void setMessageAndGoto(String successToken, String successMessage) {
         pageManager.setMessageAndGoto(successToken, successMessage);
+    }
+
+    public void setFirstPage(String firstPage) {
+        this.firstPage = firstPage;
     }
 }
