@@ -16,7 +16,7 @@
     
     <bean id="coreGwtModule" class="org.mule.galaxy.web.GwtModule">
       <property name="core" value="true"/>
-      <property name="name" value="org.mule.galaxy.web.Admin"/>
+      <property name="name" value="org.mule.galaxy.repository.Repository"/>
       <property name="rpcServices">
         <map>
           <entry key="/galaxyService.rpc" value-ref="galaxyService" />

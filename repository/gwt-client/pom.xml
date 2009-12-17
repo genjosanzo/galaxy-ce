@@ -55,10 +55,10 @@
                         <version>2.0-beta6</version>
                         <configuration>
                             <gwtVersion>${gwtVersion}</gwtVersion>
-                            <runTarget>org.mule.galaxy.web.Galaxy/Galaxy.html</runTarget>
+                            <runTarget>org.mule.galaxy.repository.Repository/Repository.html</runTarget>
                             <style>OBF</style>
                             <compileTargets>
-                                <value>org.mule.galaxy.web.Galaxy</value>
+                                <value>org.mule.galaxy.repository.Repository</value>
                             </compileTargets>
                             <extraJvmArgs>-Xss1024k -Xmx1024m -Dgwt.nowarn.legacy.tools</extraJvmArgs>
                             <!--

@@ -54,7 +54,6 @@ import com.extjs.gxt.ui.client.widget.Viewport;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
-import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -95,7 +94,7 @@ public class Galaxy {
     private GalaxyServiceAsync galaxyService;
     private AdministrationPanel adminPanel;
 
-    public void initialize(List<GalaxyModule> modules) {
+    public void initialize(final List<GalaxyModule> modules) {
         //GXT.setDefaultTheme(Theme.GRAY, true);
         GXT.BLANK_IMAGE_URL = "extjsresources/images/default/s.gif";
         final String LOGO = "images/galaxy_logo_main_trans.gif";
@@ -140,17 +139,7 @@ public class Galaxy {
             }
 
             public void onSuccess(ApplicationInfo appInfo) {
-                user = (WUser) appInfo.getUser();
-                // always the left most item
-                rightHeaderPanel.insert(new Label("Welcome, " + user.getName()), 0);
-                
-                extensions = (List) appInfo.getExtensions();
-                Collections.sort(extensions);
-                
-                plugins = appInfo.getPluginTabs();
-                userManagementSupported = appInfo.isUserManagementSupported();
-                loadTabs(Galaxy.this);
-                showFirstPage();
+                initializeApplication(appInfo, modules);
             }
         });
 
@@ -166,6 +155,24 @@ public class Galaxy {
         Image.prefetch("images/lightbox.png");
     }
 
+    protected void initializeApplication(ApplicationInfo appInfo, final List<GalaxyModule> modules) {
+        user = (WUser) appInfo.getUser();
+        // always the left most item
+        rightHeaderPanel.insert(new Label("Welcome, " + user.getName()), 0);
+        
+        extensions = (List) appInfo.getExtensions();
+        Collections.sort(extensions);
+        
+        plugins = appInfo.getPluginTabs();
+        userManagementSupported = appInfo.isUserManagementSupported();
+        loadTabs(Galaxy.this);
+        
+        for (GalaxyModule module : modules) {
+            module.initialize(Galaxy.this);
+        }
+        showFirstPage();
+    }
+    
     private void createFooter() {
         ContentPanel southPanel = new ContentPanel();
         southPanel.setBorders(false);

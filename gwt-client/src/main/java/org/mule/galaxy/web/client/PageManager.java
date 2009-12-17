@@ -185,9 +185,13 @@ public class PageManager implements ValueChangeHandler<String>{
 
     public int createTab(String name, String token, String toolTip) {
         int index = tabPanel.getItemCount();
-        tabPanel.add(createEmptyTab(name, toolTip));
-        tabNames.add(index, token);
+        createTab(index, name, token, toolTip);
         return index;
+    }
+    
+    public void createTab(int index, String name, String token, String toolTip) {
+        tabPanel.insert(createEmptyTab(name, toolTip), index);
+        tabNames.add(index, token);
     }
     
     protected TabItem createEmptyTab(String name, String toolTip) {

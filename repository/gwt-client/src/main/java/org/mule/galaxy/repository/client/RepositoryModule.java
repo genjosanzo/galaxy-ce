@@ -25,7 +25,7 @@ public class RepositoryModule implements GalaxyModule {
     private PropertyInterfaceManager propertyInterfaceManager = new PropertyInterfaceManager();
     private RepositoryConstants repositoryConstants;
     private RegistryServiceAsync registryService;
-    private int repositoryTabIndex;
+    private int repositoryTabIndex = 0;
     private boolean showTypeSystem = true;
     
     public void initialize(Galaxy galaxy) {
@@ -33,6 +33,8 @@ public class RepositoryModule implements GalaxyModule {
         this.repositoryConstants = (RepositoryConstants) GWT.create(RepositoryConstants.class);
 
         createService();
+        loadRepositoryTab();
+        addAdministrationMenuItems();
     }
 
     protected void addAdministrationMenuItems() {
@@ -86,7 +88,7 @@ public class RepositoryModule implements GalaxyModule {
     }
 
     protected void loadRepositoryTab() {
-        repositoryTabIndex = galaxy.getPageManager().createTab("Repository", "item", repositoryConstants.repo_TabTip());
+        galaxy.getPageManager().createTab(repositoryTabIndex, "Repository", "browse", repositoryConstants.repo_TabTip());
         createRepositoryPanels();
     }
 
@@ -119,6 +121,10 @@ public class RepositoryModule implements GalaxyModule {
 
     public void setShowTypeSystem(boolean showTypeSystem) {
         this.showTypeSystem = showTypeSystem;
+    }
+
+    public void setRepositoryTab(int repositoryTabIndex) {
+        this.repositoryTabIndex = repositoryTabIndex;
     }
     
 
