@@ -223,7 +223,7 @@
                 <configuration>
                     <tasks>
                         <echo>Copying to ${project.build.directory}/${project.build.finalName} from
-                            ${basedir}/../gwt-client/target/galaxy-gwt-client-${project.version}
+                            ${basedir}/../repository/gwt-client/target/galaxy-repository-gwt-client-${project.version}
                         </echo>
                         <copy todir="${project.build.directory}/${project.build.finalName}" overwrite="true">
                             <fileset dir="${basedir}/../repository/gwt-client/target/galaxy-repository-gwt-client-${project.version}/">
