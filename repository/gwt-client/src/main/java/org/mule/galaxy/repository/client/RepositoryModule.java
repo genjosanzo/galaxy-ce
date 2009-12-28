@@ -50,15 +50,15 @@ public class RepositoryModule implements GalaxyModule {
                                                           null));
         }
         
-        if (galaxy.hasPermission("MANAGE_LIFECYCLES")) {
-            NavMenuItem item = new NavMenuItem("Lifecycles",
-                                               "lifecycles",
-                                               new LifecycleListPanel(adminPanel, registryService),
-                                               new LifecycleForm(adminPanel, registryService));
-            adminPanel.addManageMenuItem(item);
-        }
-        
         if (isShowTypeSystem()) {
+            if (galaxy.hasPermission("MANAGE_LIFECYCLES")) {
+                NavMenuItem item = new NavMenuItem("Lifecycles",
+                                                   "lifecycles",
+                                                   new LifecycleListPanel(adminPanel, registryService),
+                                                   new LifecycleForm(adminPanel, registryService));
+                adminPanel.addManageMenuItem(item);
+            }
+            
             if (galaxy.hasPermission("MANAGE_POLICIES")) {
                 NavMenuItem item = new NavMenuItem("Policies", "policies", new PolicyPanel(adminPanel, galaxy, registryService), null);
                 adminPanel.addManageMenuItem(item);

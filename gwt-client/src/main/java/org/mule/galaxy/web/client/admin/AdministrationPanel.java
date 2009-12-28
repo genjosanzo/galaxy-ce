@@ -63,25 +63,43 @@ public class AdministrationPanel extends MenuPanel {
 
     protected void init() {
         setId("administrationTabBody");
-        manageItems = fetchManageMenuItems(this.galaxy);
-        utilityItems = fetchUtilityItems(this.galaxy);
         
-        registerPages(manageItems);
-        registerPages(utilityItems);
-    }
-
-    private void registerPages(List<NavMenuItem> items) {
-        for (final NavMenuItem item : items) {
-
-            // handle page creation for list forms
-            createPageInfo(item.getTokenBase(), item.getListPanel());
-
-            if (item.getFormPanel() != null) {
-                // handle page info creation for add forms
-                createPageInfo(item.getTokenBase() + "/" + PageManager.WILDCARD, item.getFormPanel());
-            }
+        manageItems = new ArrayList<NavMenuItem>();
+        utilityItems = new ArrayList<NavMenuItem>();
+        
+        if (galaxy.hasPermission("MANAGE_USERS") && galaxy.isUserManagementSupported()) {
+            addManageMenuItem(new NavMenuItem("Users",
+                    "users",
+                    new UserListPanel(this),
+                    new UserForm(this)));
         }
 
+        if (galaxy.hasPermission("MANAGE_GROUPS")) {
+            addManageMenuItem(new NavMenuItem("Roles",
+                    "roles",
+                    new RoleListPanel(this),
+                    new RoleForm(this)));
+        }
+        
+        addUtilityMenuItem(new NavMenuItem("Admin Shell",
+                                           "adminShell",
+                                           new AdminShellPanel(this),
+                                           null));
+
+        addUtilityMenuItem(new NavMenuItem("Scheduler",
+               "schedules",
+               new ScheduleListPanel(this),
+               new ScheduleForm(this)));
+    }
+
+    private void registrPage(final NavMenuItem item) {
+        // handle page creation for list forms
+        createPageInfo(item.getTokenBase(), item.getListPanel());
+
+        if (item.getFormPanel() != null) {
+            // handle page info creation for add forms
+            createPageInfo(item.getTokenBase() + "/" + PageManager.WILDCARD, item.getFormPanel());
+        }
     }
 
     @Override
@@ -167,44 +185,7 @@ public class AdministrationPanel extends MenuPanel {
         c.add(lv);
         return c;
     }
-
-
-    protected List<NavMenuItem> fetchUtilityItems(Galaxy galaxy) {
-        ArrayList<NavMenuItem> a = new ArrayList<NavMenuItem>();
-
-        a.add(new NavMenuItem("Admin Shell",
-                "adminShell",
-                new AdminShellPanel(this),
-                null));
-
-        a.add(new NavMenuItem("Scheduler",
-                "schedules",
-                new ScheduleListPanel(this),
-                new ScheduleForm(this)));
-
-        return a;
-    }
-
-    protected List<NavMenuItem> fetchManageMenuItems(Galaxy galaxy) {
-        ArrayList<NavMenuItem> a = new ArrayList<NavMenuItem>();
-
-        if (galaxy.hasPermission("MANAGE_USERS") && galaxy.isUserManagementSupported()) {
-            a.add(new NavMenuItem("Users",
-                    "users",
-                    new UserListPanel(this),
-                    new UserForm(this)));
-        }
-
-        if (galaxy.hasPermission("MANAGE_GROUPS")) {
-            a.add(new NavMenuItem("Roles",
-                    "roles",
-                    new RoleListPanel(this),
-                    new RoleForm(this)));
-        }
-
-        return a;
-    }
-
+    
     protected boolean showTypeSystem() {
         return true;
     }
@@ -252,14 +233,14 @@ public class AdministrationPanel extends MenuPanel {
         this.utilityItems = utilityItems;
     }
 
-    public void addUtilityMenuItem(NavMenuItem navMenuItem) {
-        // TODO Auto-generated method stub
-        
+    public void addUtilityMenuItem(NavMenuItem item) {
+        utilityItems.add(item);
+        registrPage(item);
     }
 
     public void addManageMenuItem(NavMenuItem item) {
-        // TODO Auto-generated method stub
-        
+        manageItems.add(item);
+        registrPage(item);
     }
 
 

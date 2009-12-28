@@ -1,25 +1,49 @@
 <%
     response.setHeader("Pragma", "no-cache");
     response.setHeader("Cache-Control", "no-cache");
-    response.addHeader("Cache-Control","no-store");
+    response.addHeader("Cache-Control", "no-store");
 %>
 <html>
-    <head>
-        <title>Mule Galaxy Login</title>
-        <link type="text/css" rel="stylesheet" href="login.css" />
-    </head>
-    <body onload="document.forms[0].j_username.focus()">
-    <div id="body">
+<head>
+    <title>MuleSoft | Tcat Server</title>
+    <link type="text/css" rel="stylesheet" href="login.css"/>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 
 
-     <form action="./j_acegi_security_check" method="post">
+    <script type="text/javascript">
+        function isIE()
+        {
+            var browser = navigator.appName;
+            var b_version = navigator.appVersion;
+            var version = parseFloat(b_version);
+            if (browser == "Microsoft Internet Explorer"
+                    && (version == 8)) {
+                return true;
+            }
+            return false;
+        }
+    </script>
+</head>
+
+</head>
+<body onLoad="document.forms[0].j_username.focus()">
+<div id="body">
+
+
+    <form action="./j_acegi_security_check" method="post">
         <div class="loginBox">
-                <div class="loginTop"><img src="images/galaxy_logo_main.gif" style="float: right; margin-top: 1px; " border="0"/></div>
+            <div class="loginHeader">
+                <img src="images/tcat_logo_main.gif" border="0"/>
 
-                <div class="loginLeft"></div>
+                <div class="loginHeader-right"></div>
+            </div>
 
-                <div class="loginRight">
-                    <div class="loginContent">
+            <div class="login-topBand"></div>
+
+            <div class="loginLeft"></div>
+
+            <div class="loginRight">
+                <div class="loginContent">
                     <%
                         if (request.getParameter("login_error") != null) {
                     %>
@@ -29,29 +53,39 @@
                     </div>
 
                     <%
-                    }
+                        }
                     %>
+                    <h2>Sign In</h2>
 
                     <div class="label">
                         Username:
-                        <input name="j_username" value="" />
+                        <input name="j_username" value=""/>
                     </div>
                     <div class="label">
                         Password:
-                        <input name="j_password" type="password" value="" />
+                        <input name="j_password" type="password" value=""/>
                     </div>
                     <div class="loginButton">
-                      <input type="submit" value="Login" />
+                        <input type="submit" value="Login"/>
                     </div>
-                    </div>
-                </div>
 
-                <div class="loginBottom">
-                  Powered by <a href="http://www.mulesource.com" target="_new">MuleSource</a>
+                    <br><br>
+                    <script type="text/javascript">
+                     if(isIE()) {
+                         document.write("IE 8 users, please verify you are operating in 'compatability mode'");
+                     }
+                    </script>
+
                 </div>
+            </div>
+
+            <div class="loginBottom">
+                Copyright &copy; 2008-2009 MuleSoft, Inc., All Rights
+                Reserved.
+            </div>
         </div>
 
     </form>
-    </div>
-    </body>
+</div>
+</body>
 </html>

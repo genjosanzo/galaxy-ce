@@ -95,11 +95,11 @@ public class Galaxy {
     private ContentPanel centerPanel;
     private GalaxyServiceAsync galaxyService;
     private AdministrationPanel adminPanel;
+    private String logoHref = "images/galaxy_logo_main_trans.gif";
 
     public void initialize(final List<GalaxyModule> modules) {
         //GXT.setDefaultTheme(Theme.GRAY, true);
         GXT.BLANK_IMAGE_URL = "extjsresources/images/default/s.gif";
-        final String LOGO = "images/galaxy_logo_main_trans.gif";
         
         this.galaxyService = (GalaxyServiceAsync) GWT.create(GalaxyService.class);
 
@@ -127,7 +127,7 @@ public class Galaxy {
         base = new Viewport();
         base.setLayout(new BorderLayout());
 
-        createHeader(new Image(LOGO));
+        createHeader(new Image(logoHref));
 
         this.pageManager = new PageManager();
 
@@ -429,4 +429,9 @@ public class Galaxy {
     public void setFirstPage(String firstPage) {
         this.firstPage = firstPage;
     }
+
+    public void setLogoHref(String logoHref) {
+        this.logoHref = logoHref;
+    }
+
 }
