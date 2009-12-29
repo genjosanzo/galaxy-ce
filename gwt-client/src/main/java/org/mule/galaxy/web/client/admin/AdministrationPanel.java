@@ -234,14 +234,27 @@ public class AdministrationPanel extends MenuPanel {
     }
 
     public void addUtilityMenuItem(NavMenuItem item) {
-        utilityItems.add(item);
+        addUtilityMenuItem(item, -1);
+    }
+
+    public void addUtilityMenuItem(NavMenuItem item, int pos) {
+        if(pos == -1) {
+            pos = utilityItems.size();
+        }
+        utilityItems.add(pos, item);
         registrPage(item);
     }
 
     public void addManageMenuItem(NavMenuItem item) {
-        manageItems.add(item);
-        registrPage(item);
+        addManageMenuItem(item, -1);
     }
 
+    public void addManageMenuItem(NavMenuItem item, int pos) {
+        if(pos == -1) {
+            pos = manageItems.size();
+        }
+        manageItems.add(pos, item);
+        registrPage(item);
+    }
 
 }

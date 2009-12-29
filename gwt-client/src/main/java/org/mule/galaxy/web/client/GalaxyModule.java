@@ -5,4 +5,6 @@ package org.mule.galaxy.web.client;
  */
 public interface GalaxyModule {
     public void initialize(Galaxy galaxy);
+
+    public Galaxy getGalaxy();
 }
