@@ -18,6 +18,7 @@ public class GalaxyServiceTest extends AbstractGalaxyTest {
                               "/META-INF/applicationContext-core-extensions.xml", 
                               "/META-INF/applicationContext-acegi-security.xml",
                               "/META-INF/applicationContext-web.xml",
+                              "classpath*:/META-INF/galaxy-applicationContext.xml",
                               "/META-INF/applicationContext-test.xml" };
         
     }
