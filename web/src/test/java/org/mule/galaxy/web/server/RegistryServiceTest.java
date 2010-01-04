@@ -38,11 +38,8 @@ import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
-import org.mule.galaxy.web.rpc.GalaxyService;
 import org.mule.galaxy.web.rpc.LinkInfo;
-import org.mule.galaxy.web.rpc.PluginTabInfo;
 import org.mule.galaxy.web.rpc.SearchPredicate;
-import org.mule.galaxy.web.rpc.WUser;
 
 public class RegistryServiceTest extends AbstractGalaxyTest {
     protected RegistryService gwtRegistry;
@@ -52,8 +49,9 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     protected String[] getConfigLocations() {
         return new String[] { "/META-INF/applicationContext-core.xml", 
                               "/META-INF/applicationContext-core-extensions.xml", 
-                              "/META-INF/applicationContext-acegi-security.xml", 
-                              "/META-INF/applicationContext-web.xml",
+                              "/META-INF/applicationContext-acegi-security.xml",  
+                              "/META-INF/applicationContext-web.xml", 
+                              "classpath*:/META-INF/galaxy-applicationContext.xml",
                               "/META-INF/applicationContext-test.xml" };
     }
 
@@ -149,7 +147,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         // Test reretrieving the artifact
         ItemInfo entry = gwtRegistry.getItemInfo(wsdl.getId(), true);
         assertEquals("Artifact", entry.getType());
-        
+
         gwtRegistry.setProperty(wsdl.getId(), "location", "Grand Rapids");
         
         Item artifact = registry.getItemById(wsdl.getId());
