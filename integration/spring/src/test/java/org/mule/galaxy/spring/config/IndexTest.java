@@ -15,6 +15,18 @@ public class IndexTest extends AbstractGalaxyTest
 {
 
 
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[] {
+            "/META-INF/applicationContext-core.xml",
+            "/META-INF/applicationContext-core-extensions.xml",
+            "/META-INF/applicationContext-acegi-security.xml",
+            "/META-INF/applicationContext-cache.xml",            
+            "classpath*:/META-INF/galaxy-applicationContext.xml",
+            "/META-INF/applicationContext-test.xml"
+        };
+    }
+
     public void testSpringIndexes() throws Exception {
         Collection<Index> indices = indexManager.getIndexes();
         assertNotNull(indices);
