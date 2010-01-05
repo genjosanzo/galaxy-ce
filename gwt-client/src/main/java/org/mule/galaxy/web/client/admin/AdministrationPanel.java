@@ -26,9 +26,8 @@ import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.MenuPanel;
 import org.mule.galaxy.web.client.NavMenuItem;
 import org.mule.galaxy.web.client.PageInfo;
+import org.mule.galaxy.web.client.PageManager;
 import org.mule.galaxy.web.client.WidgetHelper;
-import org.mule.galaxy.web.client.activity.ActivityPanel;
-import org.mule.galaxy.web.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -64,25 +63,43 @@ public class AdministrationPanel extends MenuPanel {
 
     protected void init() {
         setId("administrationTabBody");
-        manageItems = fetchManageMenuItems(this.galaxy);
-        utilityItems = fetchUtilityItems(this.galaxy);
         
-        registerPages(manageItems);
-        registerPages(utilityItems);
-    }
-
-    private void registerPages(List<NavMenuItem> items) {
-        for (final NavMenuItem item : items) {
-
-            // handle page creation for list forms
-            createPageInfo(item.getTokenBase(), item.getListPanel());
-
-            if (item.getFormPanel() != null) {
-                // handle page info creation for add forms
-                createPageInfo(item.getTokenBase() + "/" + Galaxy.WILDCARD, item.getFormPanel());
-            }
+        manageItems = new ArrayList<NavMenuItem>();
+        utilityItems = new ArrayList<NavMenuItem>();
+        
+        if (galaxy.hasPermission("MANAGE_USERS") && galaxy.isUserManagementSupported()) {
+            addManageMenuItem(new NavMenuItem("Users",
+                    "users",
+                    new UserListPanel(this),
+                    new UserForm(this)));
         }
 
+        if (galaxy.hasPermission("MANAGE_GROUPS")) {
+            addManageMenuItem(new NavMenuItem("Roles",
+                    "roles",
+                    new RoleListPanel(this),
+                    new RoleForm(this)));
+        }
+        
+        addUtilityMenuItem(new NavMenuItem("Admin Shell",
+                                           "adminShell",
+                                           new AdminShellPanel(this),
+                                           null));
+
+        addUtilityMenuItem(new NavMenuItem("Scheduler",
+               "schedules",
+               new ScheduleListPanel(this),
+               new ScheduleForm(this)));
+    }
+
+    private void registrPage(final NavMenuItem item) {
+        // handle page creation for list forms
+        createPageInfo(item.getTokenBase(), item.getListPanel());
+
+        if (item.getFormPanel() != null) {
+            // handle page info creation for add forms
+            createPageInfo(item.getTokenBase() + "/" + PageManager.WILDCARD, item.getFormPanel());
+        }
     }
 
     @Override
@@ -168,81 +185,7 @@ public class AdministrationPanel extends MenuPanel {
         c.add(lv);
         return c;
     }
-
-
-    protected List<NavMenuItem> fetchUtilityItems(Galaxy galaxy) {
-        ArrayList<NavMenuItem> a = new ArrayList<NavMenuItem>();
-
-        a.add(new NavMenuItem("Admin Shell",
-                "adminShell",
-                new AdminShellPanel(this),
-                null));
-
-        if (galaxy.hasPermission("VIEW_ACTIVITY")) {
-            a.add(new NavMenuItem("Activity",
-                    "ActivityPanel",
-                    new ActivityPanel(this, galaxy),
-                    null));
-        }
-
-        a.add(new NavMenuItem("Scheduler",
-                "schedules",
-                new ScheduleListPanel(this),
-                new ScheduleForm(this)));
-
-        return a;
-    }
-
-    protected List<NavMenuItem> fetchManageMenuItems(Galaxy galaxy) {
-        ArrayList<NavMenuItem> a = new ArrayList<NavMenuItem>();
-
-        if (galaxy.hasPermission("MANAGE_USERS") && galaxy.isUserManagementSupported()) {
-            a.add(new NavMenuItem("Users",
-                    "users",
-                    new UserListPanel(this),
-                    new UserForm(this)));
-        }
-
-        if (galaxy.hasPermission("MANAGE_GROUPS")) {
-            a.add(new NavMenuItem("Roles",
-                    "roles",
-                    new RoleListPanel(this),
-                    new RoleForm(this)));
-        }
-
-        if (galaxy.hasPermission("MANAGE_LIFECYCLES")) {
-            a.add(new NavMenuItem("Lifecycles",
-                    "lifecycles",
-                    new LifecycleListPanel(this),
-                    new LifecycleForm(this)));
-        }
-
-        if (galaxy.hasPermission("MANAGE_POLICIES")) {
-            a.add(new NavMenuItem("Policies",
-                    "policies",
-                    new PolicyPanel(this, galaxy),
-                    null));
-        }
-
-        if (showTypeSystem()) {
-            if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
-                a.add(new NavMenuItem("Properties",
-                        "properties",
-                        new PropertyDescriptorListPanel(this),
-                        new PropertyDescriptorForm(this)));
-            }
-
-            if (galaxy.hasPermission("MANAGE_PROPERTIES")) {
-                a.add(new NavMenuItem("Types",
-                        "types",
-                        new TypeListPanel(this),
-                        new TypeForm(this)));
-            }
-        }
-
-        return a;
-    }
-
+    
     protected boolean showTypeSystem() {
         return true;
     }
@@ -261,16 +204,12 @@ public class AdministrationPanel extends MenuPanel {
             }
 
         };
-        getGalaxy().addPage(page);
+        getGalaxy().getPageManager().addPage(page);
     }
 
 
     public Galaxy getGalaxy() {
         return galaxy;
-    }
-
-    public RegistryServiceAsync getRegistryService() {
-        return getGalaxy().getRegistryService();
     }
 
     public SecurityServiceAsync getSecurityService() {
@@ -294,5 +233,28 @@ public class AdministrationPanel extends MenuPanel {
         this.utilityItems = utilityItems;
     }
 
+    public void addUtilityMenuItem(NavMenuItem item) {
+        addUtilityMenuItem(item, -1);
+    }
+
+    public void addUtilityMenuItem(NavMenuItem item, int pos) {
+        if(pos == -1) {
+            pos = utilityItems.size();
+        }
+        utilityItems.add(pos, item);
+        registrPage(item);
+    }
+
+    public void addManageMenuItem(NavMenuItem item) {
+        addManageMenuItem(item, -1);
+    }
+
+    public void addManageMenuItem(NavMenuItem item, int pos) {
+        if(pos == -1) {
+            pos = manageItems.size();
+        }
+        manageItems.add(pos, item);
+        registrPage(item);
+    }
 
 }

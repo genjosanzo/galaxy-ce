@@ -16,35 +16,23 @@
     
     <bean id="coreGwtModule" class="org.mule.galaxy.web.GwtModule">
       <property name="core" value="true"/>
-      <property name="name" value="org.mule.galaxy.web.Galaxy"/>
+      <property name="name" value="org.mule.galaxy.repository.Repository"/>
       <property name="rpcServices">
         <map>
-          <entry key="/registry.rpc" value-ref="gwtRegistry" />
+          <entry key="/galaxyService.rpc" value-ref="galaxyService" />
           <entry key="/securityService.rpc" value-ref="gwtSecurityService" />
           <entry key="/heartbeat.rpc" value-ref="heartbeatService"/>
           <entry key="/admin.rpc" value-ref="adminService"/>
+          <entry key="/registry.rpc" value-ref="gwtRegistry" />
         </map>
       </property>
     </bean>
-    
-    <bean id="gwtRegistry" class="org.mule.galaxy.web.server.RegistryServiceImpl">
-      <property name="registry" ref="registry"/>
-      <property name="artifactTypeDao" ref="artifactTypeDao"/>
-      <property name="indexManager" ref="indexManager"/>
-      <property name="rendererManager" ref="rendererManager"/>
-      <property name="lifecycleManager" ref="lifecycleManager"/>
-      <property name="policyManager" ref="policyManager"/>
-      <property name="activityManager" ref="activityManager"/>
-      <property name="artifactViewManager" ref="artifactViewManager"/>
+
+    <bean id="galaxyService" class="org.mule.galaxy.web.server.GalaxyServiceImpl">
       <property name="accessControlManager" ref="accessControlManager"/>
-      <property name="typeManager" ref="typeManager"/>
-      <property name="uploadService" ref="uploadService"/>
+      <property name="registry" ref="registry"/>
       <property name="userManager" ref="userManager"/>
       <property name="webManager" ref="webManager"/>
-      <property name="contextPathResolver">
-          <bean class="org.mule.galaxy.web.server.ContextPathResolver"/>
-      </property>
-      <property name="eventManager" ref="eventManager"/>
     </bean>
 
     <bean id="gwtSecurityService" class="org.mule.galaxy.web.server.SecurityServiceImpl">

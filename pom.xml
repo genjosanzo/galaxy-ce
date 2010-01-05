@@ -36,12 +36,12 @@
         <module>wsdldiff</module>
         <module>wsi</module>
         <module>testutils</module>
+        <module>repository/gwt-client</module>
+        <module>repository/server</module>
         <module>web</module>
-        <module>web-standalone</module>
         <module>gwt-client</module>
         <module>integration</module>
         <module>server</module>
-        <module>netboot</module>
 	<module>examples</module>
     </modules>
 

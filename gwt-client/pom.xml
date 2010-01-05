@@ -10,10 +10,9 @@
     <artifactId>galaxy-gwt-client</artifactId>
     <version>2.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Galaxy GWT RPC Web Client</name>
+    <name>Galaxy GWT Client Core</name>
 
     <dependencies>
-
         <dependency>
             <groupId>com.extjs</groupId>
             <artifactId>gxt</artifactId>
@@ -55,75 +54,5 @@
             </resource>
         </resources>
     </build>
-
-    <profiles>
-        <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.totsp.gwt</groupId>
-                        <artifactId>maven-googlewebtoolkit2-plugin</artifactId>
-                        <version>2.0-beta6</version>
-                        <configuration>
-                            <gwtVersion>${gwtVersion}</gwtVersion>
-                            <runTarget>org.mule.galaxy.web.Galaxy/Galaxy.html</runTarget>
-                            <style>OBF</style>
-                            <compileTargets>
-                                <value>org.mule.galaxy.web.Galaxy</value>
-                            </compileTargets>
-                            <extraJvmArgs>-Xss1024k -Xmx1024m -Dgwt.nowarn.legacy.tools</extraJvmArgs>
-                            <!--
-                                CRITICAL: This should be false so that filtered resources are used instead.
-                                Also required for better IDE support of GWT (avoid looped symlinks).
-                            -->
-                            <sourcesOnPath>false</sourcesOnPath>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <!-- These two goals enable automatic GWT setup, but are expirimental -->
-                                    <goal>setup</goal>
-                                    <goal>extractGwt</goal>
-
-                                    <!-- Compile GWT stuff -->
-                                    <goal>compile</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>nogwt</id>
-        </profile>
-    </profiles>
-    <repositories>
-        <repository>
-            <id>gwt-maven</id>
-            <url>http://dist.codehaus.org/mule/dependencies/maven2/</url>
-        </repository>
-        <repository>
-            <id>gwt-maven2</id>
-            <!-- <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo</url> -->
-            <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>gwt-maven</id>
-            <url>http://dist.codehaus.org/mule/dependencies/maven2/</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>gwt-maven2</id>
-            <!-- <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo</url> -->
-	    <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
-        </pluginRepository>
-    </pluginRepositories>
 
 </project>

@@ -28,7 +28,14 @@ public class Main {
         connector.setHost("0.0.0.0");
         server.addConnector(connector);
 
-        final File baseWebapp = new File("src/main/webapp");
+        File base;
+        if (args.length > 0) {
+            base = new File(args[0]);
+        } else {
+            base = new File(".");
+        }
+        
+        final File baseWebapp = new File(base, "src/main/webapp");
 
         final FileResource webappResource = new FileResource(baseWebapp.toURI().toURL());
         final FileResource generated = new FileResource(new File("target/gwt-webapp").toURI().toURL());
@@ -65,7 +72,7 @@ public class Main {
             
         };
         wac.setContextPath("/");
-        wac.setDefaultsDescriptor(new File("src/test/resources/webdefault.xml").getAbsolutePath());
+        wac.setDefaultsDescriptor(new File(base, "src/test/resources/webdefault.xml").getAbsolutePath());
         wac.setWar(baseWebapp.getAbsolutePath());
         
         Map<String, Object> params = new HashMap<String, Object>();

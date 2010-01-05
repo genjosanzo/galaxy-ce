@@ -20,27 +20,26 @@ import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.query.Query;
+import org.mule.galaxy.repository.RegistryServiceImpl;
+import org.mule.galaxy.repository.rpc.ItemInfo;
+import org.mule.galaxy.repository.rpc.RegistryService;
+import org.mule.galaxy.repository.rpc.WApprovalMessage;
+import org.mule.galaxy.repository.rpc.WArtifactType;
+import org.mule.galaxy.repository.rpc.WComment;
+import org.mule.galaxy.repository.rpc.WIndex;
+import org.mule.galaxy.repository.rpc.WLifecycle;
+import org.mule.galaxy.repository.rpc.WLinks;
+import org.mule.galaxy.repository.rpc.WPolicyException;
+import org.mule.galaxy.repository.rpc.WProperty;
+import org.mule.galaxy.repository.rpc.WPropertyDescriptor;
+import org.mule.galaxy.repository.rpc.WSearchResults;
+import org.mule.galaxy.repository.rpc.WType;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
-import org.mule.galaxy.web.rpc.ItemInfo;
 import org.mule.galaxy.web.rpc.LinkInfo;
-import org.mule.galaxy.web.rpc.PluginTabInfo;
-import org.mule.galaxy.web.rpc.RegistryService;
 import org.mule.galaxy.web.rpc.SearchPredicate;
-import org.mule.galaxy.web.rpc.WApprovalMessage;
-import org.mule.galaxy.web.rpc.WArtifactType;
-import org.mule.galaxy.web.rpc.WComment;
-import org.mule.galaxy.web.rpc.WIndex;
-import org.mule.galaxy.web.rpc.WLifecycle;
-import org.mule.galaxy.web.rpc.WLinks;
-import org.mule.galaxy.web.rpc.WPolicyException;
-import org.mule.galaxy.web.rpc.WProperty;
-import org.mule.galaxy.web.rpc.WPropertyDescriptor;
-import org.mule.galaxy.web.rpc.WSearchResults;
-import org.mule.galaxy.web.rpc.WType;
-import org.mule.galaxy.web.rpc.WUser;
 
 public class RegistryServiceTest extends AbstractGalaxyTest {
     protected RegistryService gwtRegistry;
@@ -50,8 +49,9 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     protected String[] getConfigLocations() {
         return new String[] { "/META-INF/applicationContext-core.xml", 
                               "/META-INF/applicationContext-core-extensions.xml", 
-                              "/META-INF/applicationContext-acegi-security.xml", 
-                              "/META-INF/applicationContext-web.xml",
+                              "/META-INF/applicationContext-acegi-security.xml",  
+                              "/META-INF/applicationContext-web.xml", 
+                              "classpath*:/META-INF/galaxy-applicationContext.xml",
                               "/META-INF/applicationContext-test.xml" };
     }
 
@@ -147,7 +147,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         // Test reretrieving the artifact
         ItemInfo entry = gwtRegistry.getItemInfo(wsdl.getId(), true);
         assertEquals("Artifact", entry.getType());
-        
+
         gwtRegistry.setProperty(wsdl.getId(), "location", "Grand Rapids");
         
         Item artifact = registry.getItemById(wsdl.getId());
@@ -274,17 +274,6 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertTrue(entry.isLocal());
     }
     
-    public void testUserInfo() throws Exception {
-        WUser user = gwtRegistry.getApplicationInfo().getUser();
-        
-        assertNotNull(user.getUsername());
-        
-        Collection<String> permissions = user.getPermissions();
-        assertTrue(permissions.size() > 0);
-        
-        assertTrue(permissions.contains("MANAGE_USERS"));
-    }
-    
     public void testGovernanceOperations() throws Exception {
         Type type = getSimpleType();
         String id = gwtRegistry.addItem("/Default Workspace", "Test", null, type.getId(), null);
@@ -406,11 +395,6 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         gwtRegistry.suggestItems("!@#$%^&*(){}[]?'\"><", true, "xxx", new String[0]);
 //        
         
-    }
-    
-    public void testGwtPlugins() throws Exception {
-        Collection<PluginTabInfo> plugins = gwtRegistry.getApplicationInfo().getPluginTabs();
-        assertEquals(0, plugins.size());
     }
     
     private final class FauxPolicy implements Policy {

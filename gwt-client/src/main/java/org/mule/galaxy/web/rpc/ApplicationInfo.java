@@ -7,6 +7,7 @@ public class ApplicationInfo implements Serializable {
     private boolean userManagementSupported;
     private WUser user;
     private Collection<PluginTabInfo> pluginTabs;
+    private Collection<WExtensionInfo> extensions;
     
     public boolean isUserManagementSupported() {
         return userManagementSupported;
@@ -26,4 +27,11 @@ public class ApplicationInfo implements Serializable {
     public void setPluginTabs(Collection<PluginTabInfo> pluginTabs) {
         this.pluginTabs = pluginTabs;
     }
+    public Collection<WExtensionInfo> getExtensions() {
+        return extensions;
+    }
+    public void setExtensions(Collection<WExtensionInfo> extensions) {
+        this.extensions = extensions;
+    }
+    
 }
