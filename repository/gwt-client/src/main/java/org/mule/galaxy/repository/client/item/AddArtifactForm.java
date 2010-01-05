@@ -200,7 +200,7 @@ public class AddArtifactForm extends AbstractErrorHandlingPopup {
 
             String name = fname.getRawValue();
 
-            if (name == null || name.isEmpty()) {
+            if (name == null || "".equals(name)) {
                 name = file.getValue();
 
                 if (name.contains("/")) {
