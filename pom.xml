@@ -27,6 +27,31 @@
         </license>
     </licenses>
 
+    <repositories>
+        <repository>
+            <id>muleforge</id>
+            <name>Muleforge</name>
+            <url>http://repository.muleforge.org</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>muleforge-snapshots</id>
+            <name>Muleforge Snapshots</name>
+            <url>http://snapshots.repository.muleforge.org</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
     <modules>
         <module>buildtools</module>
         <module>api</module>
