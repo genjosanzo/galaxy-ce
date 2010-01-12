@@ -12,7 +12,7 @@ public class UrlValidator implements com.extjs.gxt.ui.client.widget.form.Validat
     }
 
     public static boolean isValidUrl(String value) {
-        return value.matches("https?://([-\\w\\.]+)+(:\\d+)?(/([\\w/_\\.]*(\\?\\S+)?)?)?");
+        return value.matches("https?://([-\\w\\.]+)+(:\\d+)?(/([\\w/_\\.\\-]*(\\?\\S+)?)?)?");
     }
 
 
