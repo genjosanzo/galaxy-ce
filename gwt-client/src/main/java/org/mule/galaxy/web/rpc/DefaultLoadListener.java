@@ -20,6 +20,8 @@ package org.mule.galaxy.web.rpc;
 
 import com.extjs.gxt.ui.client.data.LoadEvent;
 import com.extjs.gxt.ui.client.event.LoadListener;
+import com.google.gwt.core.client.GWT;
+
 import org.mule.galaxy.web.client.ErrorPanel;
 
 public class DefaultLoadListener extends LoadListener {
@@ -36,6 +38,7 @@ public class DefaultLoadListener extends LoadListener {
         Throwable caught = le.exception;
         String msg = caught.getMessage();
         
+        GWT.log("Exception loading data.", caught);
         if (msg != null || !"".equals(msg)) {
             errorPanel.setMessage("Error communicating with server: " + caught.getMessage() + "");
         } else {
