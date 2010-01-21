@@ -10,6 +10,7 @@ import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.CardPanel;
 import com.extjs.gxt.ui.client.widget.Component;
+import com.google.gwt.core.client.GWT;
 
 import java.util.List;
 
@@ -65,5 +66,6 @@ public class ShowableCardListener extends SelectionListener {
 
     @Override
     public void componentSelected(ComponentEvent componentEvent) {
+        GWT.log("## Component Selected Event triggered", null);
     }
 }

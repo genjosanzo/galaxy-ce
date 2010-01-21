@@ -5,7 +5,7 @@
 %>
 <html>
 <head>
-    <title>MuleSoft | Tcat Server</title>
+    <title>MuleSoft</title>
     <link type="text/css" rel="stylesheet" href="login.css"/>
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 
@@ -33,7 +33,7 @@
     <form action="./j_acegi_security_check" method="post">
         <div class="loginBox">
             <div class="loginHeader">
-                <img src="images/tcat_logo_main.gif" border="0"/>
+                <img src="images/logo_main.gif" border="0"/>
 
                 <div class="loginHeader-right"></div>
             </div>
@@ -80,7 +80,7 @@
             </div>
 
             <div class="loginBottom">
-                Copyright &copy; 2008-2009 MuleSoft, Inc., All Rights
+                Copyright &copy; 2008-2010 MuleSoft, Inc., All Rights
                 Reserved.
             </div>
         </div>
