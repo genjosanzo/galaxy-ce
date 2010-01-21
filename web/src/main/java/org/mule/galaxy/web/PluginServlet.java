@@ -1,5 +1,7 @@
 package org.mule.galaxy.web;
 
+import org.mule.galaxy.util.IOUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,26 +14,30 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.mule.galaxy.util.IOUtils;
-
 /**
  * Serves out files from plugins which are located in galaxy/web on the classpath.
  */
 public class PluginServlet extends HttpServlet {
-    
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
     }
 
     @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
+            IOException {
+        doGet(req, resp);
+    }
+
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
-        IOException {
-        
+            IOException {
+
         String path = req.getPathInfo();
 
         InputStream resource = getClass().getResourceAsStream("/galaxy/web" + path);
-        
+
         if (resource == null) {
             for (File plugin : WebPluginManager.getPluginLocations()) {
                 File file = new File(plugin, path);
@@ -41,7 +47,7 @@ public class PluginServlet extends HttpServlet {
                 }
             }
         }
-        
+
         if (resource == null) {
             resp.setStatus(404);
             return;
@@ -51,10 +57,11 @@ public class PluginServlet extends HttpServlet {
             resp.setContentType("text/html");
         } else if (path.endsWith(".js")) {
             resp.setContentType("text/javascript");
-        } if (path.endsWith(".png")) {
+        }
+        if (path.endsWith(".png")) {
             resp.setContentType("image/png");
         }
-        
+
         ServletOutputStream out = resp.getOutputStream();
         try {
             IOUtils.copy(resource, out);
