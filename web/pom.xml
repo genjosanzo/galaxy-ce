@@ -34,6 +34,12 @@
 
         <dependency>
             <groupId>org.mule.galaxy</groupId>
+            <artifactId>galaxy-rest</artifactId>
+            <version>${version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-server-mule2</artifactId>
             <version>${version}</version>
         </dependency>

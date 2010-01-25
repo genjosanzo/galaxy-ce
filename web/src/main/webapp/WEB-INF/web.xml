@@ -101,6 +101,11 @@
         <servlet-name>Abdera</servlet-name>
         <servlet-class>org.apache.abdera.spring.SpringAbderaServlet</servlet-class>
     </servlet>
+   
+    <servlet>
+        <servlet-name>Jersey</servlet-name>
+        <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
+    </servlet>
 
     <servlet>
         <servlet-name>PluginServlet</servlet-name>
@@ -161,10 +166,20 @@
         <servlet-name>PluginServlet</servlet-name>
         <url-pattern>/galaxy-plugins/*</url-pattern>
     </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Jersey</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
     
     <servlet-mapping id="abdera-mapping">
         <servlet-name>Abdera</servlet-name>
-        <url-pattern>/api/*</url-pattern>
+        <url-pattern>/api/registry</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>Abdera</servlet-name>
+        <url-pattern>/api/registry/*</url-pattern>
     </servlet-mapping>
 
     <!--<error-page>-->

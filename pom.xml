@@ -63,6 +63,7 @@
         <module>testutils</module>
         <module>repository/gwt-client</module>
         <module>repository/server</module>
+        <module>rest</module>
         <module>web</module>
         <module>gwt-client</module>
         <module>integration</module>
