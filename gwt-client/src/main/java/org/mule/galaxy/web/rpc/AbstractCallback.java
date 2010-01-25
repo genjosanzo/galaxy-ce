@@ -18,6 +18,7 @@
 
 package org.mule.galaxy.web.rpc;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.mule.galaxy.web.client.ErrorPanel;
 
@@ -32,6 +33,7 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
     public void onFailureDirect(Throwable caught) {
         String msg = caught.getMessage();
         
+        GWT.log("Error communicating with server: ", caught);
         if (msg != null || !"".equals(msg)) {
             errorPanel.setMessage("Error communicating with server: " + caught.getMessage() + "");
         } else {
