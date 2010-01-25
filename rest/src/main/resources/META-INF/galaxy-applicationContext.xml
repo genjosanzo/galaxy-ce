@@ -1,0 +1,20 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+    
+    <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider">
+        <constructor-arg>
+            <bean class="org.mule.galaxy.rest.jackson.ObjectMapper">
+                
+            </bean>
+        </constructor-arg>
+    </bean>
+    <bean class="com.sun.jersey.core.impl.provider.entity.InputStreamProvider"/>
+    <bean class="com.sun.jersey.core.impl.provider.entity.MimeMultipartProvider"/>
+    
+</beans>
