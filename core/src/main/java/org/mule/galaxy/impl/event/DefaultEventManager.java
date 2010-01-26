@@ -147,38 +147,49 @@ public class DefaultEventManager implements EventManager {
         }
 
         // get event name and load its class
-        String evtClassName = "org.mule.galaxy.event." + eventName + "Event";
         ClassLoader current = Thread.currentThread().getContextClassLoader();
         List<InternalGalaxyEventListener> allAdapters = new ArrayList<InternalGalaxyEventListener>();
         synchronized (listenersLock) {
+            Class<? extends GalaxyEvent> eventClass = null;
+            
             try {
-                Class<? extends GalaxyEvent> eventClass = Class.forName(evtClassName, true, current).asSubclass(GalaxyEvent.class);
-                List<InternalGalaxyEventListener> evtListeners = event2listeners.get(eventClass);
-                if (evtListeners == null) {
-                    evtListeners = new LinkedList<InternalGalaxyEventListener>();
-                }
-                evtListeners.add(adapter);
-                event2listeners.put(eventClass, evtListeners);
-                allAdapters.add(adapter);
-                
-                if (logger.isDebugEnabled()) {
-                    Object listenerObj = adapter instanceof DelegatingGalaxyEventListener
-                            ? ((DelegatingGalaxyEventListener) adapter).getDelegateListener()
-                            : adapter;
-
-                    final String message =
-                            MessageFormat.format("Registered {0} as a listener for {1}", listenerObj, eventClass.getName());
-                    logger.debug(message);
-                }
-
+                eventClass = Class.forName(eventName, true, current).asSubclass(GalaxyEvent.class);
             } catch (ClassNotFoundException e) {
-                final String realListenerClass = adapter instanceof DelegatingGalaxyEventListener
-                        ? ((DelegatingGalaxyEventListener) adapter).getDelegateListener().getClass().getName()
-                        : adapter.getClass().getName();
-                throw new IllegalArgumentException(String.format("Event class %s not found for listener %s",
-                                                                 evtClassName, realListenerClass));
+                // Try another method below
             }
             
+
+            if (eventClass == null) {
+                String evtClassName = "org.mule.galaxy.event." + eventName + "Event";
+                try {
+                    eventClass = Class.forName(evtClassName, true, current).asSubclass(GalaxyEvent.class);
+                } catch (ClassNotFoundException e) {
+                    final String realListenerClass = adapter instanceof DelegatingGalaxyEventListener
+                            ? ((DelegatingGalaxyEventListener) adapter).getDelegateListener().getClass().getName()
+                            : adapter.getClass().getName();
+                    throw new IllegalArgumentException(String.format("Event class %s not found for listener %s",
+                                                                     evtClassName, realListenerClass));
+                }
+            }
+            
+            List<InternalGalaxyEventListener> evtListeners = event2listeners.get(eventClass);
+            if (evtListeners == null) {
+                evtListeners = new LinkedList<InternalGalaxyEventListener>();
+            }
+            evtListeners.add(adapter);
+            event2listeners.put(eventClass, evtListeners);
+            allAdapters.add(adapter);
+            
+            if (logger.isDebugEnabled()) {
+                Object listenerObj = adapter instanceof DelegatingGalaxyEventListener
+                        ? ((DelegatingGalaxyEventListener) adapter).getDelegateListener()
+                        : adapter;
+
+                final String message =
+                        MessageFormat.format("Registered {0} as a listener for {1}", listenerObj, eventClass.getName());
+                logger.debug(message);
+            }
+        
             listeners.put(listener, allAdapters);
         }
     }

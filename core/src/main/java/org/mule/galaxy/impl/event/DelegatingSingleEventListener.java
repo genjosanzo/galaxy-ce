@@ -22,9 +22,12 @@ class DelegatingSingleEventListener extends AbstractDelegatingGalaxyEventListene
         super(listenerCandidate, executor, sessionFactory);
         this.method = method;
         validateMethodParams(method);
-        final String eventName = ((BindToEvent) annotation).value() + "Event";
-        final String callbackParam = method.getParameterTypes()[0].getSimpleName();
-        if (!callbackParam.equals(eventName)) {
+        
+        final String eventName = ((BindToEvent) annotation).value() ;
+        final Class<?> eventCls = method.getParameterTypes()[0];
+        final String callbackParam = eventCls.getSimpleName();
+        
+        if (!callbackParam.equals(eventName + "Event") && !eventCls.getName().equals(eventName)) {
             throw new IllegalArgumentException(
                     String.format("Listener %s is bound to the %s, but " +
                                   "callback method param %s doesn't match it.",
