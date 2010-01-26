@@ -33,7 +33,7 @@
     <form action="./j_acegi_security_check" method="post">
         <div class="loginBox">
             <div class="loginHeader">
-                <img src="images/logo_main.gif" border="0"/>
+                <img src="galaxy-plugins/images/logo_main.gif" border="0"/>
 
                 <div class="loginHeader-right"></div>
             </div>

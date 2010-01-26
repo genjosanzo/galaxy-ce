@@ -12,7 +12,7 @@ body {
 .loginHeader {
     padding: 10px 0px 10px 0px;
     height:55px;
-    background-image:url(images/header-bg.jpg);
+    background-image:url(galaxy-plugins/images/header-bg.jpg);
 }
 
 .loginHeader img{
@@ -73,7 +73,7 @@ body {
     border-top: 1px solid #C0C0C0;
     color: #707070 ; /* dark gray */
     background-color: #fff;
-    background-image: url("images/header_bg.jpg");
+    background-image: url("galaxy-plugins/images/header_bg.jpg");
     background-repeat:no-repeat;
     background-position: right;
     text-align: right;
