@@ -12,7 +12,9 @@ body {
 .loginHeader {
     padding: 10px 0px 10px 0px;
     height:55px;
-    background-image:url("images/header-bg.jpg");
+    background-image:url("images/header_bg.jpg");
+    background-repeat:no-repeat;
+    background-position: right;
 }
 
 .loginHeader img{
