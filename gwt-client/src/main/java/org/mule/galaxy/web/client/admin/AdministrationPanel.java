@@ -92,7 +92,7 @@ public class AdministrationPanel extends MenuPanel {
                new ScheduleForm(this)));
     }
 
-    private void registrPage(final NavMenuItem item) {
+    private void registerPage(final NavMenuItem item) {
         // handle page creation for list forms
         createPageInfo(item.getTokenBase(), item.getListPanel());
 
@@ -192,7 +192,12 @@ public class AdministrationPanel extends MenuPanel {
 
     protected void createPageInfo(String token, final WidgetHelper composite) {
         final AdministrationPanel aPanel = this;
-        PageInfo page = new PageInfo(token, getGalaxy().getAdminTab()) {
+        PageInfo page = new PageInfo(token) {
+
+            @Override
+            public int getTabIndex() {
+                return galaxy.getAdminTab();
+            }
 
             public AbstractShowable createInstance() {
                 return null;
@@ -242,7 +247,7 @@ public class AdministrationPanel extends MenuPanel {
             pos = utilityItems.size();
         }
         utilityItems.add(pos, item);
-        registrPage(item);
+        registerPage(item);
     }
 
     public void addManageMenuItem(NavMenuItem item) {
@@ -254,7 +259,7 @@ public class AdministrationPanel extends MenuPanel {
             pos = manageItems.size();
         }
         manageItems.add(pos, item);
-        registrPage(item);
+        registerPage(item);
     }
 
 }
