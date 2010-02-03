@@ -17,8 +17,7 @@ public class ProgressIndicatorPopup extends Popup {
         if (message != null) {
             add(WidgetHelper.newLabel(message, "progress-indicator-message")); 
         }
-        //Image image = new Image("images/progressbar_indefinite.gif");
-        Image image = new Image("images/ajax-loader.gif");
+        Image image = new Image("images/progressbar_indefinite.gif");
         add(image);
         setAnimate(true);
         center();
