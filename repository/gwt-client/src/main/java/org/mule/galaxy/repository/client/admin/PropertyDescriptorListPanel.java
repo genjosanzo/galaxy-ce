@@ -78,6 +78,7 @@ public class PropertyDescriptorListPanel
         ContentPanel cp = new ContentPanel();
         cp.setHeading("Properties");
         cp.setAutoWidth(true);
+        cp.setAutoHeight(true);
         cp.setBodyBorder(false);
         cp.setStyleName("x-panel-container-full");
 
@@ -121,6 +122,7 @@ public class PropertyDescriptorListPanel
         grid.setAutoWidth(true);
         grid.setAutoExpandColumn("description");
         grid.addPlugin(r);
+        grid.setAutoHeight(true);
         grid.addListener(Events.CellClick, new Listener<BaseEvent>() {
             public void handleEvent(BaseEvent be) {
                 GridEvent ge = (GridEvent) be;

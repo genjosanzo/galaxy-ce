@@ -80,6 +80,7 @@ public class TypeListPanel
         cp.setBodyBorder(false);
         cp.setStyleName("x-panel-container-full");
         cp.setAutoWidth(true);
+        cp.setAutoHeight(true);
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WType.class);
 
@@ -137,6 +138,7 @@ public class TypeListPanel
         grid.setStripeRows(true);
         grid.addPlugin(r);
         grid.setAutoWidth(true);
+        grid.setAutoHeight(true);
         grid.addListener(Events.CellClick, new Listener<BaseEvent>() {
             public void handleEvent(BaseEvent be) {
                 GridEvent ge = (GridEvent) be;

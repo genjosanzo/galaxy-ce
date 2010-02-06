@@ -68,6 +68,7 @@ public class UserListPanel extends AbstractAdministrationComposite {
         cp.setBodyBorder(false);
         cp.setStyleName("x-panel-container-full");
         cp.setAutoWidth(true);
+        cp.setAutoHeight(true);
 
         // add inline help string and widget
         cp.setTopComponent(
@@ -94,6 +95,7 @@ public class UserListPanel extends AbstractAdministrationComposite {
         grid.setStripeRows(true);
         grid.addPlugin(r);
         grid.setAutoWidth(true);
+        grid.setAutoHeight(true);
         grid.setAutoExpandColumn("email");
         grid.addListener(Events.CellClick, new Listener<BaseEvent>() {
             public void handleEvent(BaseEvent be) {
