@@ -4,25 +4,6 @@
  **
  **/
 
-/* GXT Overrides */
-
-.x-panel-body {
-    border-color:#d0d0d0;
-}
-
-/* Ghosting */
-.x-panel-ghost {
-    background:#e0e0e0;
-}
-
-.x-panel-ghost ul {
-    border-color:#b0b0b0;
-}
-
-.x-grid-panel .x-panel-mc .x-panel-body {
-    border:1px solid #d0d0d0;
-}
-
 
 body {
   color: black;
@@ -211,42 +192,7 @@ a:visited {
     border: 0 !important;
 }
 
-/* x-body is giving us grief, force override*/
-.accordion-wrapper {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-    border:0 !important;
-}
 
-
-
-.x-panel-container-full {
-    min-height: 85%;
-}
-
-.x-panel: before {
-  background: transparent url(extjsresources/images/default/panel/tr-gray.gif) scroll no-repeat top right;
-  margin-bottom: -20px;
-  height: 30px;
-  display: block;
-  border: none;
-  content: url(extjsresources/images/default/panel/tl-gray.gif);
-  padding: 0;
-  line-height: 0.1;
-  font-size: 1px;
-}
-
-.x-panel: after {
-  display: block;
-  line-height: 0.1;
-  font-size: 1px;
-  content:  url(extjsresources/images/default/panel/bl-gray.gif);
-  margin: 0 0 -1px 0;
-  height: 30px;
-  background: white;
-  background: transparent url(extjsresources/images/default/panel/br-gray.gif) scroll no-repeat bottom right ;
-  padding: 0;
-}
 
 .left-menu-button a {
     background-color: #D5E1EE;
@@ -550,23 +496,6 @@ a:visited {
 }
 
 
-/* override content panel */
-.help-panel-inline {
-    background: #fff url("images/icon-info.gif") no-repeat top left;
-    font-family: arial, tahoma, helvetica, sans-serif !important;
-    border-color: white;
-    margin: 2px;
-    padding: 3px 5px 5px 21px;
-    color:black;
-}
-
-.help-panel-inline-no-icon {
-    font-family: arial, tahoma, helvetica, sans-serif !important;
-    border-color: white;
-    margin: 2px;
-    padding: 3px 5px 5px 3px;
-    color:black;
-}
 
 /**
  **
@@ -1714,3 +1643,78 @@ helper styles
 .icon-page {
   background-image: url(images/text.png) !important;
 }
+
+
+
+/* GXT Overrides */
+
+.x-panel-body {
+    border-color:#d0d0d0;
+}
+
+.x-panel-ghost {
+    background:#e0e0e0;
+}
+
+.x-panel-ghost ul {
+    border-color:#b0b0b0;
+}
+
+.x-grid-panel .x-panel-mc .x-panel-body {
+    border:1px solid #d0d0d0;
+}
+
+.x-panel-container-full {
+    min-height: 85%;
+}
+
+.x-panel: before {
+  background: transparent url(extjsresources/images/default/panel/tr-gray.gif) scroll no-repeat top right;
+  margin-bottom: -20px;
+  height: 30px;
+  display: block;
+  border: none;
+  content: url(extjsresources/images/default/panel/tl-gray.gif);
+  padding: 0;
+  line-height: 0.1;
+  font-size: 1px;
+}
+
+.x-panel: after {
+  display: block;
+  line-height: 0.1;
+  font-size: 1px;
+  content:  url(extjsresources/images/default/panel/bl-gray.gif);
+  margin: 0 0 -1px 0;
+  height: 30px;
+  background: white;
+  background: transparent url(extjsresources/images/default/panel/br-gray.gif) scroll no-repeat bottom right ;
+  padding: 0;
+}
+
+/* override content panel */
+.help-panel-inline {
+    background: #fff url("images/icon-info.gif") no-repeat top left;
+    font-family: arial, tahoma, helvetica, sans-serif !important;
+    border-color: white;
+    margin: 2px;
+    padding: 3px 5px 5px 21px;
+    color:black;
+}
+
+.help-panel-inline-no-icon {
+    font-family: arial, tahoma, helvetica, sans-serif !important;
+    border-color: white;
+    margin: 2px;
+    padding: 3px 5px 5px 3px;
+    color:black;
+}
+
+/* x-body is giving us grief, force override*/
+.accordion-wrapper {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    border:0 !important;
+}
+
+
