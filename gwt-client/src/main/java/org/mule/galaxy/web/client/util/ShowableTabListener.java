@@ -87,10 +87,19 @@ public class ShowableTabListener extends SelectionListener<TabPanelEvent> {
      * @param tabName
      */
     public void showTab(String tabName) {
+        // call onHide() on what we were just showing
+        Widget prevWidget = previous.getWidget(0);
+        if (prevWidget instanceof Showable) {
+            ((Showable) prevWidget).hidePage();
+        }
+        
+        // find the next tab according to the URL token
         int idx = tabNames.indexOf(tabName);
         if (idx == -1) {
             idx = 0;
         }
+        
+        // and show it
         TabItem item = tabPanel.getItem(idx);
         Widget widget = item.getWidget(0);
         tabPanel.setSelection(item);
