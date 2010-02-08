@@ -87,7 +87,7 @@ public class PolicyPanel extends AbstractShowable {
         ContentPanel cp = new ContentPanel();
         cp.setHeading("Policies");
         cp.setBodyBorder(false);
-        cp.setStyleName("x-panel-container-full");
+        cp.addStyleName("x-panel-container-full");
         cp.setAutoWidth(true);
         cp.setBodyStyleName("padded-panel");
 
