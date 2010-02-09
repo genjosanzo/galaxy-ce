@@ -50,6 +50,11 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
+        <repository>
+            <id>mule.repository</id>
+            <name>Mule Dependency Repository</name>
+            <url>http://dist.codehaus.org/mule/dependencies/maven2/</url>
+        </repository>
     </repositories>
 
     <modules>
