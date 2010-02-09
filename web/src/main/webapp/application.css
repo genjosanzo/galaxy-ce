@@ -182,7 +182,7 @@ a:visited {
   /*border: 1px solid #c4c4c4;
   border-right: 1px #aaa solid;*/
   width: 205px;
-  min-height: 85%;
+  min-height: 90%;
   height: 80%;
 }
 
@@ -1232,7 +1232,8 @@ helper styles
     border:1px solid #d0d0d0;
 }
 .x-panel-container-full {
-    min-height: 85%;
+    min-height: 90%;
+
 }
 
 .accordion-wrapper {
