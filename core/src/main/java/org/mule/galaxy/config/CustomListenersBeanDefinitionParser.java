@@ -46,9 +46,9 @@ public class CustomListenersBeanDefinitionParser extends AbstractBeanDefinitionP
                 }
                 listeners.add(new RuntimeBeanReference(beanName));
             } else {
-                BeanDefinitionHolder listener = beanParserDelegate.parseBeanDefinitionElement(bean);
                 // need to init defaults
                 beanParserDelegate.initDefaults(bean);
+                BeanDefinitionHolder listener = beanParserDelegate.parseBeanDefinitionElement(bean);
                 listeners.add(listener);
             }
         }
