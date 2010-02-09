@@ -159,7 +159,7 @@ public class WidgetHelper extends Composite {
         alayout.setFill(true);
         ContentPanel accordionPanel = new ContentPanel();
         accordionPanel.setBodyBorder(false);
-        accordionPanel.setStyleName("accordion-wrapper");
+        //accordionPanel.setStyleName("accordion-wrapper");
         accordionPanel.setHeaderVisible(false);
         accordionPanel.setLayout(alayout);
         return accordionPanel;
