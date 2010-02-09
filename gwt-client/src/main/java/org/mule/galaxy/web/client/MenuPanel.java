@@ -35,6 +35,7 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
     private Widget topWidget;
     private LayoutContainer leftMenu;
     private FlowPanel centerPanel;
+
     private boolean firstShow = true;
 
     public MenuPanel() {
@@ -154,5 +155,14 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
     public Widget getMain() {
         return mainWidget;
     }
+
+    public LayoutContainer getLeftMenu() {
+        return leftMenu;
+    }
+
+    public void setLeftMenu(LayoutContainer leftMenu) {
+        this.leftMenu = leftMenu;
+    }
+
 
 }

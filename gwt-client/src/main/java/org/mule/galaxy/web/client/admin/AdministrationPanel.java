@@ -59,6 +59,7 @@ public class AdministrationPanel extends MenuPanel {
     
     public AdministrationPanel(Galaxy galaxy) {
         this(galaxy, true);
+        super.getLeftMenu().setStyleName("left-menu-accordion");
     }
 
     protected void init() {
