@@ -63,15 +63,15 @@ public class UserListPanel extends AbstractAdministrationComposite {
     }
 
     private void showUsers(List<WUser> users) {
-        ContentPanel cp = new ContentPanel();
-        cp.setHeading("Users");
-        cp.setBodyBorder(false);
-        cp.setStyleName("x-panel-container-full");
-        cp.setAutoWidth(true);
-        cp.setAutoHeight(true);
+        ContentPanel contentPanel = new ContentPanel();
+        contentPanel.setHeading("Users");
+        contentPanel.addStyleName("x-panel-container-full");
+        contentPanel.setAutoWidth(true);
+        contentPanel.setAutoHeight(true);
+        contentPanel.setBodyBorder(false);
 
         // add inline help string and widget
-        cp.setTopComponent(
+        contentPanel.setTopComponent(
                 new InlineHelpPanel(adminPanel.getGalaxy().getAdministrationConstants().admin_Users_Tip(), 19));
 
 
@@ -133,7 +133,7 @@ public class UserListPanel extends AbstractAdministrationComposite {
         filter.setFieldLabel("Search");
         filter.setWidth(300);
         filter.setTriggerStyle("x-form-search-trigger");
-        filter.setStyleName("x-form-search-field");
+        filter.addStyleName("x-form-search-field");
         // Bind the filter field to your grid store (grid.getStore())
         filter.bind(store);
 
@@ -144,10 +144,10 @@ public class UserListPanel extends AbstractAdministrationComposite {
         String buttonTip = adminPanel.getGalaxy().getAdministrationConstants().admin_Users_New();
         toolbar.add(createToolbarHistoryButton("New", "users/new", buttonTip));
 
-        cp.add(toolbar);
-        cp.add(grid);
+        contentPanel.add(toolbar);
+        contentPanel.add(grid);
 
-        panel.add(cp);
+        panel.add(contentPanel);
 
     }
 

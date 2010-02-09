@@ -84,14 +84,15 @@ public class ChildItemsPanel extends AbstractFlowComposite {
     private void createItemGrid() {
         panel.clear();
 
-        ContentPanel cp = new ContentPanel();
-        cp.setStyleName("x-panel-container-full");
-        cp.setBodyBorder(false);
-        cp.setHeading(info != null ? info.getName() : "All Items");
-        cp.setAutoWidth(true);
+        ContentPanel contentPanel = new ContentPanel();
+        contentPanel.setBodyBorder(false);
+        contentPanel.setBorders(false);
+        contentPanel.setHeading(info != null ? info.getName() : "All Items");
+        contentPanel.setAutoWidth(true);
+        contentPanel.setAutoHeight(true);
 
         // add inline help string and widget
-        cp.setTopComponent(new InlineHelpPanel(repository.getRepositoryConstants().repo_Tip(), 14));
+        contentPanel.setTopComponent(new InlineHelpPanel(repository.getRepositoryConstants().repo_Tip(), 14));
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(ItemInfo.class);
         List<BeanModel> model = factory.createModel(items);
@@ -128,7 +129,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         filter.setFieldLabel("Search");
         filter.setWidth(300);
         filter.setTriggerStyle("x-form-search-trigger");
-        filter.setStyleName("x-form-search-field");
+        filter.addStyleName("x-form-search-field");
         filter.bind(store);
 
         toolbar.add(filter);
@@ -187,9 +188,9 @@ public class ChildItemsPanel extends AbstractFlowComposite {
             }
         });
 
-        cp.add(toolbar);
+        contentPanel.add(toolbar);
 
-        cp.add(grid);
+        contentPanel.add(grid);
 
         if (info == null || info.isModifiable()) {
             if (info == null || info.getType().equals("Workspace")) {
@@ -239,7 +240,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
             }
         }
 
-        panel.add(cp);
+        panel.add(contentPanel);
     }
 
 

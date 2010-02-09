@@ -71,15 +71,15 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
 
     private void showJobs(List<WScriptJob> jobs) {
 
-        ContentPanel cp = new ContentPanel();
-        cp.setHeading("Scheduled Jobs");
-        cp.setBodyBorder(false);
-        cp.setStyleName("x-panel-container-full");
-        cp.setAutoWidth(true);
-        cp.setAutoHeight(true);
+        ContentPanel contentPanel = new ContentPanel();
+        contentPanel.setHeading("Scheduled Jobs");
+        contentPanel.setBodyBorder(false);
+        contentPanel.addStyleName("x-panel-container-full");
+        contentPanel.setAutoWidth(true);
+        contentPanel.setAutoHeight(true);
 
         // add inline help string and widget
-        cp.setTopComponent(
+        contentPanel.setTopComponent(
                 new InlineHelpPanel(adminPanel.getGalaxy().getAdministrationConstants().admin_Scheduler_Tip(), 12));
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WScriptJob.class);
@@ -146,7 +146,7 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
         filter.setFieldLabel("Search");
         filter.setWidth(300);
         filter.setTriggerStyle("x-form-search-trigger");
-        filter.setStyleName("x-form-search-field");
+        filter.addStyleName("x-form-search-field");
         // Bind the filter field to your grid store (grid.getStore())
         filter.bind(store);
 
@@ -155,10 +155,10 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
         toolbar.add(new FillToolItem());
         toolbar.add(createToolbarHistoryButton("New", "schedules/new"));
 
-        cp.add(toolbar);
-        cp.add(grid);
+        contentPanel.add(toolbar);
+        contentPanel.add(grid);
 
-        panel.add(cp);
+        panel.add(contentPanel);
 
     }
 

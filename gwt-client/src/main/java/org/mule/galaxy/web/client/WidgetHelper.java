@@ -196,7 +196,9 @@ public class WidgetHelper extends Composite {
     public static ToolbarButton createToolbarHistoryButton(String buttonLabel,
                                                            final String token, String style, String toolTip) {
         ToolbarButton newBtn = new ToolbarButton(buttonLabel);
-        newBtn.setStyleName(style);
+
+        newBtn.setStyleName("toolbar-btn");
+        //newBtn.setStyleName(style);
         if (toolTip != null) {
             newBtn.setToolTip(toolTip);
         }

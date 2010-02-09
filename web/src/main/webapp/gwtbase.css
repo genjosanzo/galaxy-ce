@@ -1,0 +1,425 @@
+/**
+ **
+ ** Raw GWT Styles
+ **
+ **/
+
+.gwt-BorderedPanel {
+}
+
+.gwt-Button {
+  background:#f5f5f5;
+  border:1px solid #aaa;
+  border-top:1px solid #ddd;
+  border-left:1px solid #ddd;
+  padding: 2px;
+  margin: 10px;
+  width: 6em;
+  vertical-align: middle;
+}
+
+.gwt-Button:active {
+  border:1px solid #aaa;
+  border-bottom:1px solid #ccc;
+  border-right:1px solid #ccc;
+}
+
+.gwt-Button[disabled] {
+  background: #ccc;
+  border:1px solid #999;
+  border-top:1px solid #ccc;
+  border-left:1px solid #ccc;
+  color: #888;
+}
+
+.gwt-Canvas {
+}
+
+.gwt-CheckBox {
+}
+
+.gwt-DialogBox {
+  border: 2px outset;
+  background-color: white;
+}
+
+.gwt-DialogBox .Caption {
+  background-color: #C3D9FF;
+  padding: 3px;
+  margin: 2px;
+  font-weight: bold;
+  cursor: default;
+}
+
+.bordered {
+    border: solid #A30000 2px;
+}
+
+.gwt-FileUpload {
+}
+
+.gwt-FlexTable {
+    background: white;
+}
+
+.gwt-FlexTable-header {
+    font-weight: bold;
+}
+
+.gwt-Frame {
+}
+
+.gwt-HTML {
+}
+
+
+.gwt-Hyperlink a, gwt-Hyperlink a:visited{
+    color: #016c96;
+    text-decoration: none;
+    cursor: hand;
+    cursor: pointer;
+}
+
+.gwt-Hyperlink  a:hover{
+    text-decoration: underline;
+}
+.hyperlink-NewWindow {
+    padding-right: 14px;
+}
+
+.gwt-Image {
+}
+
+.gwt-Label {
+}
+
+.gwt-ListBox {
+}
+
+.gwt-MenuBar {
+  background-color: #C3D9FF;
+  border: 1px solid #87B3FF;
+  cursor: default;
+}
+
+.gwt-MenuBar .gwt-MenuItem {
+  padding: 1px 4px 1px 4px;
+  cursor: default;
+}
+
+.gwt-MenuBar .gwt-MenuItem-selected {
+  background-color: #E8EEF7;
+}
+
+.gwt-PasswordTextBox {
+    border: 1px solid lightsteelblue;
+}
+
+.gwt-RadioButton {
+}
+
+.gwt-TextArea {
+    border: 1px solid lightsteelblue;
+}
+
+.gwt-TextBox {
+    /*border: 1px solid lightsteelblue; */
+}                                           h
+
+.gwt-TextBox-readonly {
+  border: 1px solid lightsteelblue;
+  color: #888;
+}
+
+.gwt-Tree {
+  background: white;
+}
+
+.gwt-Tree .gwt-TreeItem {
+    cursor: hand;
+    cursor: pointer;
+    background-image: url("images/page_code.gif");
+    background-repeat: no-repeat;
+    padding-left: 20px;
+}
+
+.gwt-Tree .gwt-TreeItem-selected {
+  background-color: #e8e8e8;
+}
+
+.gwt-StackPanel {
+}
+
+.gwt-StackPanel .gwt-StackPanelItem {
+  background-color: #C3D9FF;
+  cursor: pointer;
+  cursor: hand;
+}
+
+.gwt-StackPanel .gwt-StackPanelItem-selected {
+}
+
+.gwt-PushButton-up {
+  background-color: #C3D9FF;
+  padding: 2px;
+  border: 2px solid transparent;
+  border-color: #E8F1FF rgb(157, 174, 205) rgb(157, 174, 205) rgb(232, 241, 255);
+  cursor: pointer;
+  cursor: hand;
+}
+
+.gwt-PushButton-up-hovering {
+  background-color: #C3D9FF;
+  padding: 2px;
+  border: 2px solid transparent;
+  border-color: #E8F1FF rgb(157, 174, 205) rgb(157, 174, 205) rgb(232, 241, 255);
+  cursor: pointer;
+  cursor: hand;
+}
+
+.gwt-PushButton-down {
+  background-color: #C3D9FF;
+  padding: 2px;
+  border: 2px solid transparent;
+  border-color: #9DAECD rgb(232, 241, 255) rgb(232, 241, 255) rgb(157, 174, 205);
+  cursor: pointer;
+  cursor: hand;
+}
+
+.gwt-PushButton-down-hovering {
+  background-color: #C3D9FF;
+  padding: 2px;
+  border: 2px solid transparent;
+  border-color: #9DAECD rgb(232, 241, 255) rgb(232, 241, 255) rgb(157, 174, 205);
+  cursor: pointer;
+  cursor: hand;
+}
+
+.gwt-ToggleButton-up {
+  background-color: #C3D9FF;
+  padding: 2px;
+  border: 2px solid transparent;
+  border-color: #E8F1FF rgb(157, 174, 205) rgb(157, 174, 205) rgb(232, 241, 255);
+  cursor: pointer;
+  cursor: hand;
+}
+
+.gwt-ToggleButton-up-hovering {
+  background-color: #C3D9FF;
+  padding: 2px;
+  border: 2px solid transparent;
+  border-color: #E8F1FF rgb(157, 174, 205) rgb(157, 174, 205) rgb(232, 241, 255);
+  cursor: pointer;
+  cursor: hand;
+}
+
+.gwt-ToggleButton-down {
+  background-color: #C3D9FF;
+  padding: 2px;
+  background-color: #E8F1FF;
+  border: 2px solid transparent;
+  border-color: #9DAECD rgb(232, 241, 255) rgb(232, 241, 255) rgb(157, 174, 205);
+  cursor: pointer;
+  cursor: hand;
+}
+
+.gwt-ToggleButton-down-hovering {
+  background-color: #C3D9FF;
+  padding: 2px;
+  background-color: #E8F1FF;
+  border: 2px solid transparent;
+  border-color: #9DAECD rgb(232, 241, 255) rgb(232, 241, 255) rgb(157, 174, 205);
+  cursor: pointer;
+  cursor: hand;
+}
+
+.gwt-RichTextArea {
+  border: 1px solid black;
+  background-color: white;
+}
+
+.gwt-RichTextToolbar {
+  background-color: #C3D9FF;
+  padding: 2px;
+}
+
+.gwt-RichTextToolbar .gwt-PushButton-up {
+  margin-right: 2px;
+  border: 1px solid #C3D9FF;
+}
+
+.gwt-RichTextToolbar .gwt-PushButton-up-hovering {
+  margin-right: 2px;
+  border: 1px solid #C3D9FF;
+  border-color: #E8F1FF rgb(157, 174, 205) rgb(157, 174, 205) rgb(232, 241, 255);
+}
+
+.gwt-RichTextToolbar .gwt-PushButton-down {
+  margin-right: 2px;
+  border: 1px solid #C3D9FF;
+  border-color: #9DAECD rgb(232, 241, 255) rgb(232, 241, 255) rgb(157, 174, 205);
+}
+
+.gwt-RichTextToolbar .gwt-PushButton-down-hovering {
+  margin-right: 2px;
+  border: 1px solid #C3D9FF;
+  border-color: #9DAECD rgb(232, 241, 255) rgb(232, 241, 255) rgb(157, 174, 205);
+}
+
+.gwt-RichTextToolbar .gwt-ToggleButton-up {
+  margin-right: 2px;
+  border: 1px solid #C3D9FF;
+}
+
+.gwt-RichTextToolbar .gwt-ToggleButton-up-hovering {
+  margin-right: 2px;
+  border: 1px solid #C3D9FF;
+  border-color: #E8F1FF rgb(157, 174, 205) rgb(157, 174, 205) rgb(232, 241, 255);
+}
+
+.gwt-RichTextToolbar .gwt-ToggleButton-down {
+  margin-right: 2px;
+  background-color: #E8F1FF;
+  border: 1px solid #C3D9FF;
+  border-color: #9DAECD rgb(232, 241, 255) rgb(232, 241, 255) rgb(157, 174, 205);
+}
+
+.gwt-RichTextToolbar .gwt-ToggleButton-down-hovering {
+  margin-right: 2px;
+  background-color: #E8F1FF;
+  border: 1px solid #C3D9FF;
+  border-color: #9DAECD rgb(232, 241, 255) rgb(232, 241, 255) rgb(157, 174, 205);
+}
+
+.gwt-HorizontalSplitPanel {
+  /*border: 8px solid #C3D9FF;*/
+}
+
+.gwt-HorizontalSplitPanel .hsplitter {
+  border-right: 2px solid #EDEDED;
+  cursor: e-resize;
+}
+
+.gwt-HorizontalSplitPanel .left {
+  background-color: #E8EEF7;
+}
+
+.gwt-VerticalSplitPanel {
+}
+
+.gwt-VerticalSplitPanel .splitter {
+  background-color: #C3D9FF;
+  height: 8px;
+  cursor: move;
+}
+
+.gwt-SuggestBoxPopup {
+  border: 2px solid #C3D9FF;
+  background-color: white;
+}
+
+.gwt-SuggestBoxPopup .item {
+  padding: 2px;
+}
+
+.gwt-SuggestBoxPopup .item-selected {
+  background-color: #C3D9FF;
+  padding: 2px;
+}
+
+
+.GWTCDatePicker, .GWTCDatePickerCheckout, .GWTCDatePickerCheckin {
+  border: 6px solid #4c0000;
+  background: white;
+  cursor: pointer;
+  cursor: hand;
+}
+
+/**
+Date picker styles, most of these will eventually move into a default resource bundle.
+*/
+.gwt-DatePicker {
+  width: 150px;
+  border: 1px solid #f1f1f1;
+  border-bottom: 2px solid #f1f1f1;
+  color: #6b6b6b;
+  cursor: default;
+
+}
+
+.gwt-DatePicker td {
+  font-family: Arial;
+  font-size: 65%;
+  padding: 2px;
+  text-align: center;
+  padding: 2px;
+  outline: none;
+  -moz-outline: none;
+  cursor: default;
+}
+
+.gwt-DatePicker td,.month-selector td :focus {
+  outline: none
+}
+
+.gwt-TabPanel {
+  margin-top: 4px;
+}
+
+.gwt-TabPanelBottom {
+  background-color: #E8EEF7;
+}
+
+.gwt-TabBar {
+  padding-top: 2px;
+  border-bottom: 4px solid #87B3FF;
+  background-color: #fff;
+}
+
+.gwt-TabBar .gwt-TabBarItem {
+  padding: 4px;
+  cursor: pointer;
+  cursor: hand;
+  background-color: #e8eef7;
+  border-bottom: 2px solid white;
+  margin-right: 2px;
+}
+
+.gwt-TabBar .gwt-TabBarItem-selected {
+  padding: 4px;
+  font-weight: bold;
+  cursor: default;
+  background-color: #87b3ff;
+  border-bottom: 2px solid #87b3ff;
+  margin-right: 2px;
+}
+
+/*  Styles demo*/
+.gwt-DatePicker .red-date {
+  background-color: red;
+}
+
+.gwt-DatePicker .blue-backgroundleft {
+  background-color: blue;
+}
+
+.gwt-DatePicker .red-text {
+  color: red;
+}
+
+.gwt-DatePicker .green-border {
+  border: 5px solid green;
+}
+
+.gwt-DatePicker .big-text {
+  font-size: x-large;
+}
+
+.gwt-DatePicker .underlined-and-bold-text {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.gwt-DatePicker .yellow-background {
+  background-color: yellow;
+}

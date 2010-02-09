@@ -84,7 +84,7 @@ public class ActivityPanel extends AbstractFlowComposite {
         cp.setHeading("Activity Log");
         cp.setBodyBorder(false);
         cp.setAutoWidth(true);
-        cp.setStyleName("x-panel-container-full");
+        cp.addStyleName("x-panel-container-full");
         cp.setBodyStyleName("padded-panel");
 
         // add inline help string and widget

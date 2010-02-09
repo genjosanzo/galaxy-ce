@@ -58,7 +58,7 @@ public class ArtifactTypeListPanel extends AbstractAdministrationComposite {
         ContentPanel cp = new ContentPanel();
         cp.setHeading("Artifact Types");
         cp.setBodyBorder(false);
-        cp.setStyleName("x-panel-container-full");
+        cp.addStyleName("x-panel-container-full");
         cp.setAutoWidth(true);
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WArtifactType.class);
@@ -128,7 +128,7 @@ public class ArtifactTypeListPanel extends AbstractAdministrationComposite {
         filter.setFieldLabel("Search");
         filter.setWidth(300);
         filter.setTriggerStyle("x-form-search-trigger");
-        filter.setStyleName("x-form-search-field");
+        filter.addStyleName("x-form-search-field");
         // Bind the filter field to your grid store (grid.getStore())
         filter.bind(store);
 

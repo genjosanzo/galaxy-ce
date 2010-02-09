@@ -100,7 +100,7 @@ public abstract class AbstractRolePanel extends AbstractFlowComposite {
         ContentPanel cp = new ContentPanel();
         cp.setHeading("Roles");
         cp.setBodyBorder(false);
-        cp.setStyleName("x-panel-container-full");
+        cp.addStyleName("x-panel-container-full");
         cp.setAutoWidth(true);
 
         // add inline help string and widget

@@ -126,7 +126,7 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
         cp.setHeading("Add Item");
         cp.setBodyBorder(false);
         cp.setAutoWidth(true);
-        cp.setStyleName("x-panel-container-full");
+        cp.addStyleName("x-panel-container-full");
         cp.add(form);
 
         // add inline help string and widget

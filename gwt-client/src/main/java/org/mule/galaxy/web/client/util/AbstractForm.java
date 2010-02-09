@@ -92,7 +92,7 @@ public abstract class AbstractForm extends AbstractShowable {
         ContentPanel cp = new ContentPanel(new FormLayout());
         cp.setBodyBorder(false);
         cp.setAutoWidth(true);
-        cp.setStyleName("x-panel-container-full");
+        cp.addStyleName("x-panel-container-full");
         cp.setHeading(getTitle());
 
         // add optional inline help widget

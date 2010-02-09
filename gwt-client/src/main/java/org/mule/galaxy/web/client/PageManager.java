@@ -30,7 +30,9 @@ public class PageManager implements ValueChangeHandler<String>{
     public PageManager() {
         super();
         tabPanel = new TabPanel();
+        tabPanel.setBorderStyle(false);
         tabPanel.setAutoHeight(true);
+        tabPanel.setAutoWidth(true);
     }
     
     public void initialize() {

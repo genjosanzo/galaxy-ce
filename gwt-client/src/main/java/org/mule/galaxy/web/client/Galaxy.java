@@ -99,7 +99,7 @@ public class Galaxy {
 
     public void initialize(final List<GalaxyModule> modules) {
         //GXT.setDefaultTheme(Theme.GRAY, true);
-        GXT.BLANK_IMAGE_URL = "extjsresources/images/default/s.gif";
+        GXT.BLANK_IMAGE_URL = "gxtresources/images/default/s.gif";
         
         this.galaxyService = (GalaxyServiceAsync) GWT.create(GalaxyService.class);
 
@@ -125,6 +125,7 @@ public class Galaxy {
 
         this.administrationConstants = (AdministrationConstants) GWT.create(AdministrationConstants.class);
         base = new Viewport();
+        base.setBorders(false);
         base.setLayout(new BorderLayout());
 
         createHeader(new Image(logoHref));
@@ -179,6 +180,7 @@ public class Galaxy {
     
     private void createFooter() {
         ContentPanel southPanel = new ContentPanel();
+        southPanel.setBodyBorder(false);
         southPanel.setBorders(false);
         southPanel.setHeaderVisible(false);
 
@@ -220,6 +222,7 @@ public class Galaxy {
 
     protected void createHeader(Image logo) {
         ContentPanel northPanel = new ContentPanel();
+        northPanel.setBodyBorder(false);
         northPanel.setBorders(false);
         northPanel.setHeaderVisible(false);
 
@@ -262,6 +265,7 @@ public class Galaxy {
     protected void createBody() {
         centerPanel = new ContentPanel();
         centerPanel.setBorders(false);
+        centerPanel.setBodyBorder(false);
         centerPanel.setHeaderVisible(false);
         centerPanel.setScrollMode(Scroll.NONE);
         centerPanel.setLayout(new FlowLayout());

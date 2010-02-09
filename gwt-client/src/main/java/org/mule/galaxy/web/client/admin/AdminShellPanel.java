@@ -166,7 +166,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         ContentPanel cp = new ContentPanel();
         cp.setBodyBorder(false);
         cp.setAutoWidth(true);
-        cp.setStyleName("x-panel-container-full");
+        cp.addStyleName("x-panel-container-full");
         cp.setHeading("Admin Shell");
         cp.setBodyStyleName("padded-panel");
 

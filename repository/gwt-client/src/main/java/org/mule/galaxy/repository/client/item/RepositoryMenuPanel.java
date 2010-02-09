@@ -228,7 +228,7 @@ public class RepositoryMenuPanel extends MenuPanel {
                 // you are a leaf if you are not a workspace
                 String name = (String)model.get("type");
                 if (name != null && !name.equalsIgnoreCase("Workspace")) {
-                    return IconHelper.createPath("extjsresources/images/default/tree/leaf.gif");
+                    return IconHelper.createPath("gxtresources/images/default/tree/leaf.gif");
                 }
 
                 // else you are a node

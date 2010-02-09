@@ -86,11 +86,11 @@ public class ItemPanel extends AbstractFlowComposite {
     }
 
     private void initTabs() {
-        ContentPanel cp = new ContentPanel();
-        cp.setBodyBorder(false);
-        cp.setStyleName("no-border");
-        cp.setAutoWidth(true);
-        cp.setHeaderVisible(false);
+        ContentPanel contentPanel = new ContentPanel();
+        contentPanel.setAutoHeight(true);
+        contentPanel.setAutoWidth(true);
+        contentPanel.setBodyBorder(false);
+        contentPanel.addStyleName("x-panel-container-full");
 
         tabPanel = new TabPanel();
         tabPanel.setStyleName("x-tab-panel-header_sub1");
@@ -127,8 +127,8 @@ public class ItemPanel extends AbstractFlowComposite {
          */
         tabPanel.addListener(Events.Select, new ShowableTabListener(tabPanel, menuPanel, "items/" + itemId, params, null));
 
-        cp.add(tabPanel);
-        panel.add(cp);
+        contentPanel.add(tabPanel);
+        panel.add(contentPanel);
 
         if (selectedTab > -1) {
             tabPanel.setSelection(tabPanel.getItem(selectedTab));

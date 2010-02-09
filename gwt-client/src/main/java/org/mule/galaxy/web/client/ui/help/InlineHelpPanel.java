@@ -28,7 +28,7 @@ public class InlineHelpPanel extends ContentPanel {
             baseStyle = "help-panel-inline-no-icon";
         }
         setDeferHeight(false);
-        setBorders(false);
+        //setBorders(false);
         setTitleCollapse(true);
         setCollapsible(true);
         setHideCollapseTool(true);

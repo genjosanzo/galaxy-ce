@@ -20,7 +20,8 @@
     <title>MuleSoft | <%=mgr.getProductName()%>
     </title>
     <link type="text/css" rel="stylesheet" href="column-view.css"/>
-    <link type="text/css" rel="stylesheet" href="extjsresources/css/gxt-all.css"/>
+    <link type="text/css" rel="stylesheet" href="gwtbase.css"/>
+    <link type="text/css" rel="stylesheet" href="gxtresources/css/gxt-all.css"/>
     <link type="text/css" rel="stylesheet" href="<%=mgr.getProductCss()%>"/>
 </head>
 
