@@ -1489,6 +1489,11 @@ helper styles
     padding:0;
     position:relative;
     top:-1px;
+    background-color: transparent;
+    border-style: none;
+    font-family: arial, tahoma, helvetica, sans-serif;
+    font-size: 10px;
+    color: #016C96;
 }
 /* Height of toolbar buttons */
 .toolbar-btn-noicon .toolbar-btn-small .toolbar-btn-text{
@@ -1629,7 +1634,7 @@ helper styles
 	background:repeat-x 0 -1096px;
     vertical-align: middle;
 	text-align:center;
-	padding:0 5px;
+	padding:0px;
 	cursor:pointer;
 	white-space:nowrap;
 }
@@ -1667,7 +1672,7 @@ helper styles
 	background:repeat-x 0 -1096px;
     vertical-align: middle;
 	text-align:center;
-	padding:0 5px;
+	padding:0px;
 	cursor:pointer;
 	white-space:nowrap;
 }
@@ -1705,7 +1710,7 @@ helper styles
 	background:repeat-x 0 -1096px;
     vertical-align: middle;
 	text-align:center;
-	padding:0 5px;
+	padding:0px;
 	cursor:pointer;
 	white-space:nowrap;
 }
@@ -1743,7 +1748,7 @@ helper styles
 	background:repeat-x 0 -1096px;
     vertical-align: middle;
 	text-align:center;
-	padding:0 5px;
+	padding:0px;
 	cursor:pointer;
 	white-space:nowrap;
 }
