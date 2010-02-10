@@ -185,7 +185,7 @@ a:visited {
 // TODO: these are not right
 .left-menu {
   margin: 9px 0 0 5px;
-    width: 205px;
+  width: 205px;
   /*border: 1px solid #c4c4c4;
   border-right: 1px #aaa solid; */
   min-height: 85%;
@@ -193,14 +193,14 @@ a:visited {
 }
 
 .left-menu-accordion {
-  margin: 5px 0 0 5px;
+  margin: 0 0 0 5px;
   width: 205px;
   min-height: 85%;
   height: 80%;
 }
 
 .left-menu-container {
-    padding: 0;
+    padding: 6px 0 0 0;
     border-color:white !important;
     border: 0 !important;
 }

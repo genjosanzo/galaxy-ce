@@ -154,14 +154,11 @@ public class WidgetHelper extends Composite {
 
 
     public static ContentPanel createAccodionWrapperPanel() {
-        AccordionLayout alayout = new AccordionLayout();
-        alayout.setHideCollapseTool(true);
-        alayout.setFill(true);
-        ContentPanel accordionPanel = new ContentPanel();
-        accordionPanel.setBodyBorder(false);
-        //accordionPanel.setStyleName("accordion-wrapper");
+        ContentPanel accordionPanel = new ContentPanel(new AccordionLayout());
+        accordionPanel.setCollapsible(false);
         accordionPanel.setHeaderVisible(false);
-        accordionPanel.setLayout(alayout);
+        accordionPanel.setAutoHeight(true);
+        accordionPanel.setAutoWidth(true);
         return accordionPanel;
     }
 
@@ -266,6 +263,7 @@ public class WidgetHelper extends Composite {
     }
 
     // can be used as a spacer or as a tooltip for grid cells, etc.
+
     public static WidgetComponent clearPixel(String height, String width, String tooltip) {
         Image i = new Image("images/clearpixel.gif");
         i.setHeight(height);
