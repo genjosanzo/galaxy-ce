@@ -46,12 +46,7 @@ public class ShowableTabListener extends SelectionListener<TabPanelEvent> {
             return;
         }
         
-        if (previous != null) {
-            Widget widget = previous.getWidget(0);
-            if (widget instanceof Showable) {
-                ((Showable)widget).hidePage();
-            }
-        }
+        hidePrevious();
         
         errorPanel.clearErrorMessage();
         Widget widget = item.getWidget(0);
@@ -88,12 +83,7 @@ public class ShowableTabListener extends SelectionListener<TabPanelEvent> {
      */
     public void showTab(String tabName) {
         // call onHide() on what we were just showing
-        if (previous != null) {
-            Widget prevWidget = previous.getWidget(0);
-            if (prevWidget instanceof Showable) {
-                ((Showable) prevWidget).hidePage();
-            }
-        }
+        hidePrevious();
         
         // find the next tab according to the URL token
         int idx = tabNames.indexOf(tabName);
@@ -113,5 +103,18 @@ public class ShowableTabListener extends SelectionListener<TabPanelEvent> {
         // selection event again until we get new params.
         previousParams = params;
         previous = item;
+    }
+
+    private void hidePrevious() {
+        if (previous != null) {
+            Widget prevWidget = previous.getWidget(0);
+            if (prevWidget instanceof Showable) {
+                ((Showable) prevWidget).hidePage();
+            }
+        }
+    }
+
+    public void hidePage() {
+        hidePrevious();
     }
 }
