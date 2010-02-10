@@ -10,7 +10,7 @@
 
     <properties>
         <slf4jVersion>1.5.0</slf4jVersion>
-        <gwtVersion>1.7.1</gwtVersion>
+        <gwtVersion>2.0.1</gwtVersion>
         <springVersion>2.5.5</springVersion>
         <!--
             Well, it's broken too, and some assemblies override it to
@@ -81,7 +81,7 @@
             <dependency>
                 <groupId>com.extjs</groupId>
                 <artifactId>gxt</artifactId>
-                <version>2.1.1</version>
+                <version>2.1.1-gwt2</version>
 
             </dependency>
             <dependency>

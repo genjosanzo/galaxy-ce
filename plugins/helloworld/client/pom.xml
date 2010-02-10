@@ -64,7 +64,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>gwt-maven-plugin</artifactId>
-                        <version>1.1</version>
+                        <version>1.2</version>
                         <configuration>
                             <module>org.mule.galaxy.helloworld.HelloWorld</module>
                             <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
