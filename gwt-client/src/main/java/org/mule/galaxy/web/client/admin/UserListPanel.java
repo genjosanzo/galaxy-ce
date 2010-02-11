@@ -18,8 +18,12 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
 import org.mule.galaxy.web.client.util.FauxLinkRenderer;
+import org.mule.galaxy.web.client.util.panel.FullContentPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WUser;
 
@@ -42,9 +46,6 @@ import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.user.client.History;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class UserListPanel extends AbstractAdministrationComposite {
     public UserListPanel(AdministrationPanel a) {
         super(a);
@@ -63,12 +64,8 @@ public class UserListPanel extends AbstractAdministrationComposite {
     }
 
     private void showUsers(List<WUser> users) {
-        ContentPanel contentPanel = new ContentPanel();
+        ContentPanel contentPanel = new FullContentPanel();
         contentPanel.setHeading("Users");
-        contentPanel.addStyleName("x-panel-container-full");
-        contentPanel.setAutoWidth(true);
-        contentPanel.setAutoHeight(true);
-        contentPanel.setBodyBorder(false);
 
         // add inline help string and widget
         contentPanel.setTopComponent(

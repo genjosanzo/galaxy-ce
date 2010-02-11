@@ -18,8 +18,12 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.util.FauxLinkRenderer;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
+import org.mule.galaxy.web.client.util.FauxLinkRenderer;
+import org.mule.galaxy.web.client.util.panel.FullContentPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WScriptJob;
 
@@ -41,9 +45,6 @@ import com.extjs.gxt.ui.client.widget.grid.RowNumberer;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.user.client.History;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Show all scheduled items
@@ -71,12 +72,8 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
 
     private void showJobs(List<WScriptJob> jobs) {
 
-        ContentPanel contentPanel = new ContentPanel();
+        ContentPanel contentPanel = new FullContentPanel();
         contentPanel.setHeading("Scheduled Jobs");
-        contentPanel.setBodyBorder(false);
-        contentPanel.addStyleName("x-panel-container-full");
-        contentPanel.setAutoWidth(true);
-        contentPanel.setAutoHeight(true);
 
         // add inline help string and widget
         contentPanel.setTopComponent(

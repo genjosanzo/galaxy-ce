@@ -20,6 +20,7 @@ package org.mule.galaxy.web.client.admin;
 
 import java.util.List;
 
+import org.mule.galaxy.web.client.util.panel.BasicContentPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WScript;
 
@@ -163,10 +164,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
         initLocalWidgets();
 
-        ContentPanel cp = new ContentPanel();
-        cp.setBodyBorder(false);
-        cp.setAutoWidth(true);
-        cp.addStyleName("x-panel-container-full");
+        ContentPanel cp = new BasicContentPanel();
         cp.setHeading("Admin Shell");
         cp.setBodyStyleName("padded-panel");
 

@@ -28,6 +28,7 @@ import java.util.Map;
 import org.mule.galaxy.web.client.AbstractFlowComposite;
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.util.panel.FullContentPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WPermission;
 import org.mule.galaxy.web.rpc.WPermissionGrant;
@@ -97,11 +98,8 @@ public abstract class AbstractRolePanel extends AbstractFlowComposite {
         this.groups2Permissions = groups2Permissions;
         mainPanel.clear();
 
-        ContentPanel cp = new ContentPanel();
+        ContentPanel cp = new FullContentPanel();
         cp.setHeading("Roles");
-        cp.setBodyBorder(false);
-        cp.addStyleName("x-panel-container-full");
-        cp.setAutoWidth(true);
 
         // add inline help string and widget
 //        cp.setTopComponent(new InlineHelpPanel(galaxy.getRepositoryConstants().repo_Security_Tip(), 15));
