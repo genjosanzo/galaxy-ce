@@ -11,6 +11,7 @@ import com.extjs.gxt.ui.client.widget.WidgetComponent;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.TableData;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -277,7 +278,14 @@ public class WidgetHelper extends Composite {
 
 
     public static WidgetComponent deleteImage(String tooltip) {
+       return deleteImage(tooltip, null);
+    }
+    
+    public static WidgetComponent deleteImage(String tooltip, ClickHandler handler) {
         Image i = new Image("images/delete_config.gif");
+        if (handler != null) {
+            i.addClickHandler(handler);
+        }
         WidgetComponent w = new WidgetComponent(i);
         w.setToolTip(tooltip == null ? "Click to Remove Item" : tooltip);
         return w;
