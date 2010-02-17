@@ -10,7 +10,7 @@ public class FullContentPanel extends BasicContentPanel {
 
     public FullContentPanel() {
         super();
-        addStyleName("x-cardPanel-container-full");
+        addStyleName("x-panel-container-full");
         setLayout(new FitLayout());
     }
 
