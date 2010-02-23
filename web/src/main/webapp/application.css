@@ -1231,6 +1231,20 @@ helper styles
   background-image: url(images/text.png) !important;
 }
 
+.title-toolbar {
+	height: 22px !important;
+	padding-top: 1px !important;
+	padding-bottom: 1px !important;
+	padding-left: 5px !important;
+	border-color:#99BBE8;
+}
+.title-toolbar .xtb-title-text{
+	color: rgb(21, 66, 139);
+	font-weight:bold;
+	font-family:tahoma, arial, verdana, sans-serif;
+}
+
+
 /* GXT Overrides */
 .x-panel-body {
     border-color:#d0d0d0;
