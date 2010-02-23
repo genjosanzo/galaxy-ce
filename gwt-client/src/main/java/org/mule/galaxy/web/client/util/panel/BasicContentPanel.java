@@ -11,7 +11,6 @@ public class BasicContentPanel extends ContentPanel {
     public BasicContentPanel() {
         super();
         setBodyBorder(false);
-        setBorders(false);
         setButtonAlign(Style.HorizontalAlignment.CENTER);
         setMonitorWindowResize(true);
         setAutoWidth(true);
