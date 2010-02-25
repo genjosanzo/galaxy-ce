@@ -245,16 +245,36 @@ public class WidgetHelper extends Composite {
         super();
     }
 
-    public static Label ColumnLabel(String s) {
+    public static Label columnLabel(String s) {
         Label l = new Label(s);
         l.addStyleName("bold-right-label");
         return l;
     }
 
-    public static Label LeftColumnLabel(String s) {
+    public static Label leftColumnLabel(String s) {
         Label l = new Label(s);
         l.addStyleName("bold-left-label");
         return l;
+    }
+
+    public static Label cellLabel(String s) {
+        Label l = new Label(s);
+        l.addStyleName("cell-alt");
+        return l;
+    }
+
+    public static Label cellLabel(Long lg) {
+        Label l = longLabel(lg);
+        l.addStyleName("cell-alt");
+        return l;
+    }
+
+    public static Label cellLabel(int i) {
+        return cellLabel(Integer.toString(i));
+    }
+
+    public static Label longLabel(Long l) {
+        return new Label(Long.toString(l));
     }
 
     public static String stringIsBold(String s, boolean isBold) {
@@ -284,9 +304,9 @@ public class WidgetHelper extends Composite {
 
 
     public static WidgetComponent deleteImage(String tooltip) {
-       return deleteImage(tooltip, null);
+        return deleteImage(tooltip, null);
     }
-    
+
     public static WidgetComponent deleteImage(String tooltip, ClickHandler handler) {
         Image i = new Image("images/delete_config.gif");
         if (handler != null) {

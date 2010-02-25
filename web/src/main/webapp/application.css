@@ -461,6 +461,10 @@ a:visited {
     padding: 5px 0 0 5px;
 }
 
+.lr-padded-panel {
+    padding: 0px 5 0 5px;
+}
+
 
 .bold-right-label {
     font-weight: bold;
@@ -470,6 +474,11 @@ a:visited {
 .bold-left-label {
     font-weight: bold;
     text-align: left;
+}
+
+.cell-alt {
+    color: #000;
+    background-color: #F5F5F5
 }
 
 .error-panel {
