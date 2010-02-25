@@ -22,17 +22,18 @@ public class InlineHelpPanel extends ContentPanel {
 
     public InlineHelpPanel(boolean icon) {
         super();
-        if(icon) {
+        if (icon) {
             baseStyle = "help-panel-inline";
         } else {
             baseStyle = "help-panel-inline-no-icon";
         }
-        setDeferHeight(false);
+        setDeferHeight(true);
         //setBorders(false);
         setTitleCollapse(true);
         setCollapsible(true);
         setHideCollapseTool(true);
         setAutoWidth(true);
+        setAutoHeight(true);
         setAnimCollapse(true);
         collapse();
     }
@@ -45,9 +46,9 @@ public class InlineHelpPanel extends ContentPanel {
     public InlineHelpPanel(String content) {
         this(content, -1);
     }
-        
+
     public void setContent(String content) {
-         setContent(content, -1); 
+        setContent(content, -1);
     }
 
     public void setContent(String content, int num) {
@@ -68,7 +69,7 @@ public class InlineHelpPanel extends ContentPanel {
                 String s = header;
                 if (body != null) {
                     s = s + WidgetHelper.createFauxLink(" [less]");
-                    getHeader().setToolTip("Click to Collapse.");
+                    getHeader().setToolTip("Collapse");
                 }
                 setHeading(s);
             }
@@ -79,7 +80,7 @@ public class InlineHelpPanel extends ContentPanel {
                 String s = header;
                 if (body != null) {
                     s = s + WidgetHelper.createFauxLink(" [more]");
-                    getHeader().setToolTip("Click to Expand.");
+                    getHeader().setToolTip("Expand");
                 }
                 setHeading(s);
             }
