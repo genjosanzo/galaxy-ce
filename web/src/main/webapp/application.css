@@ -467,6 +467,11 @@ a:visited {
     text-align: right;
 }
 
+.bold-left-label {
+    font-weight: bold;
+    text-align: left;
+}
+
 .error-panel {
     background: #ffc;
     border: 1px solid #fc0;

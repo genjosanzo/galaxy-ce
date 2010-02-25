@@ -251,6 +251,12 @@ public class WidgetHelper extends Composite {
         return l;
     }
 
+    public static Label LeftColumnLabel(String s) {
+        Label l = new Label(s);
+        l.addStyleName("bold-left-label");
+        return l;
+    }
+
     public static String stringIsBold(String s, boolean isBold) {
         String w = (isBold) ? "bold" : "normal";
         return "<span style=\"font-weight:" + w + ";\">" + s + "</span>";
