@@ -65,6 +65,14 @@ public class LdapUserManager
         throw new UnsupportedOperationException();
     }
 
+    public List<User> find(Map<String, Object> criteria, int start, int count) {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<User> find(Map<String, Object> criteria, String sortByField, boolean asc, int start, int count) {
+        throw new UnsupportedOperationException();    
+    }
+    
     public User authenticate(String username, String password) {
         throw new UnsupportedOperationException();
     }

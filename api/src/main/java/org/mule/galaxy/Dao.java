@@ -16,6 +16,10 @@ public interface Dao<T extends Object> {
     List<T> find(String property, String value);
     
     List<T> find(Map<String, Object> criteria);
+    
+    List<T> find(Map<String, Object> criteria, int start, int count);
+    
+    List<T> find(Map<String, Object> criteria, String sortByField, boolean asc, int start, int count);
 
     Class<T> getTypeClass();
 }

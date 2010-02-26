@@ -3,6 +3,7 @@ package org.mule.galaxy.impl.jcr.onm;
 import static org.mule.galaxy.impl.jcr.JcrUtil.getOrCreate;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +24,10 @@ import javax.jcr.query.QueryResult;
 import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.DuplicateItemException;
-import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.util.SecurityUtils;
+import org.springframework.beans.BeanUtils;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
@@ -37,6 +38,8 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
     protected String idAttributeName;
     protected boolean generateId;
     protected Class<T> type;
+    private Method readIdMethod;
+    private Method writeIdMethod;
     
     protected AbstractDao(Class<T> t, String rootNode) throws Exception {
         this(t, rootNode, false);
@@ -49,7 +52,7 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
     }
     
     public Class<T> getTypeClass() {
-    return type;
+        return type;
     }
 
     @SuppressWarnings("unchecked")
@@ -130,9 +133,15 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
         return doQuery(stmt);
     }
     
-
-    
     public List<T> find(final Map<String, Object> criteria) {
+        return find(criteria, 0, -1);
+    }
+    
+    public List<T> find(final Map<String, Object> criteria, int start, int count) {
+        return find(criteria, null, true, start, count);
+    }
+    
+    public List<T> find(final Map<String, Object> criteria, String sortByField, boolean asc, int start, int count) {
         String stmt = "/*/" + rootNode + "/*[";
         String join = "";
         for (Map.Entry<String, Object> e : criteria.entrySet()) {
@@ -142,7 +151,16 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
             stmt = buildFindPredicate(stmt, e.getKey(), e.getValue());
         }
         stmt += "]";
-        return doQuery(stmt);
+        
+        if (sortByField != null) {
+            stmt += " order by @" + sortByField;
+            if (asc) {
+                stmt += " asecending";
+            } else {
+                stmt += " descending";
+            }
+        }
+        return doQuery(stmt, start, count);
     }
 
     private String buildFindPredicate(String stmt, String key, Object value) {
@@ -174,6 +192,8 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
     }
     
     public void initialize() throws Exception {
+        readIdMethod = BeanUtils.findMethod(type, "getId", new Class[0]);
+        writeIdMethod = BeanUtils.findMethod(type, "setId", new Class[] { String.class });
         SecurityUtils.doPriveleged(new Runnable() {
 
             public void run() {
@@ -315,11 +335,19 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
     }
 
     protected String getId(T t) {
-        return ((Identifiable) t).getId();
+        try {
+            return (String)readIdMethod.invoke(t);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected void setId(T t, String id) {
-        ((Identifiable) t).setId(id);
+        try {
+            writeIdMethod.invoke(t, id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected void move(Session session, Node node, String newName) throws RepositoryException {

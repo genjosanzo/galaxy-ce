@@ -65,6 +65,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 
 /**
@@ -96,6 +97,7 @@ public class Galaxy {
     private GalaxyServiceAsync galaxyService;
     private AdministrationPanel adminPanel;
     private String logoHref = "images/galaxy_logo_main_trans.gif";
+    private SimplePanel alertNotificationArea;
 
     public void initialize(final List<GalaxyModule> modules) {
         //GXT.setDefaultTheme(Theme.GRAY, true);
@@ -233,6 +235,7 @@ public class Galaxy {
         rightHeaderPanel = new InlineFlowPanel();
         rightHeaderPanel.setStyleName("header-right");
         rightHeaderPanel.add(createHeaderOptions());
+        rightHeaderPanel.add(createAlertNotifcationArea());
 
         // custom logo
         FlowPanel header = new FlowPanel();
@@ -248,6 +251,15 @@ public class Galaxy {
 
         northPanel.add(header);
         base.add(northPanel, data);
+    }
+
+    private SimplePanel createAlertNotifcationArea() {
+        alertNotificationArea = new SimplePanel();
+        return alertNotificationArea;
+    }
+
+    public SimplePanel getAlertNotificationArea() {
+        return alertNotificationArea;
     }
 
     protected InlineFlowPanel createHeaderOptions() {

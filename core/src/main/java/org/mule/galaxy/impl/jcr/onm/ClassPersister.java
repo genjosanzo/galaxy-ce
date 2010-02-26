@@ -102,7 +102,7 @@ public class ClassPersister {
                     try {
                         fd.getWriteMethod().invoke(o, value);
                     } catch(IllegalArgumentException e) {
-                        log.error("Error writing " + value + " with type " + value.getClass().getName() + " to" + fd.getName(), e);
+                        log.error("Error writing " + value + " with type " + value.getClass().getName() + " to " + fd.getName(), e);
                     }
                     
                 }

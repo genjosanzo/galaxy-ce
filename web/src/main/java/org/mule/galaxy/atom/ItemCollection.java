@@ -762,6 +762,7 @@ public class ItemCollection
         
         try {
             parent.setProperty("artifact", new Object[] { inputStream, contentType.toString() });
+            registry.save(parent);
         } catch (AccessException e) {
             throw new ResponseContextException(401, e);
         } catch (PropertyException e) {
@@ -769,6 +770,9 @@ public class ItemCollection
             throw new ResponseContextException(500, e);
         } catch (PolicyException e) {
             throw createArtifactPolicyExceptionResponse(e);
+        } catch (RegistryException e) {
+            log.error("Could not save Item.", e);
+            throw new ResponseContextException(500, e);
         } 
     }
 
