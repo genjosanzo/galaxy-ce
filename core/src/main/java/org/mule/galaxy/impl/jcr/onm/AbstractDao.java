@@ -25,6 +25,7 @@ import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.Results;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.beans.BeanUtils;
@@ -134,14 +135,14 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
     }
     
     public List<T> find(final Map<String, Object> criteria) {
-        return find(criteria, 0, -1);
+        return find(criteria, 0, -1).getData();
     }
     
-    public List<T> find(final Map<String, Object> criteria, int start, int count) {
+    public Results<T> find(final Map<String, Object> criteria, int start, int count) {
         return find(criteria, null, true, start, count);
     }
     
-    public List<T> find(final Map<String, Object> criteria, String sortByField, boolean asc, int start, int count) {
+    public Results<T> find(final Map<String, Object> criteria, String sortByField, boolean asc, int start, int count) {
         String stmt = "/*/" + rootNode + "/*[";
         String join = "";
         for (Map.Entry<String, Object> e : criteria.entrySet()) {
@@ -175,12 +176,12 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
     }
     
     protected List<T> doQuery(final String stmt) {
-        return doQuery(stmt, 0, -1);
+        return doQuery(stmt, 0, -1).getData();
     }
 
     @SuppressWarnings("unchecked")
-    protected List<T> doQuery(final String stmt, final int start, final int max) {
-        return (List<T>) execute(new JcrCallback() {
+    protected Results<T> doQuery(final String stmt, final int start, final int max) {
+        return (Results<T>) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 return query(stmt, session, start, max);
             }
@@ -415,10 +416,10 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
     }
     
     protected List<T> query(String stmt, Session session) throws RepositoryException, InvalidQueryException {
-        return query(stmt, session, 0, -1);
+        return query(stmt, session, 0, -1).getData();
     }
     
-    protected List<T> query(String stmt, Session session, int start, int maxResults) throws RepositoryException, InvalidQueryException {
+    protected Results<T> query(String stmt, Session session, int start, int maxResults) throws RepositoryException, InvalidQueryException {
         QueryManager qm = getQueryManager(session);
         Query q = qm.createQuery(stmt, Query.XPATH);
         
@@ -447,7 +448,7 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
             i++;
         }
 
-        return values;
+        return new Results(values, iterator.getSize());
     }
 
 }

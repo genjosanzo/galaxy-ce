@@ -22,6 +22,7 @@ import org.acegisecurity.userdetails.ldap.LdapUserDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.Results;
 import org.mule.galaxy.impl.jcr.onm.DaoPersister;
 import org.mule.galaxy.impl.jcr.onm.PersisterManager;
 import org.mule.galaxy.security.User;
@@ -65,11 +66,11 @@ public class LdapUserManager
         throw new UnsupportedOperationException();
     }
 
-    public List<User> find(Map<String, Object> criteria, int start, int count) {
+    public Results<User> find(Map<String, Object> criteria, int start, int count) {
         throw new UnsupportedOperationException();
     }
 
-    public List<User> find(Map<String, Object> criteria, String sortByField, boolean asc, int start, int count) {
+    public Results<User> find(Map<String, Object> criteria, String sortByField, boolean asc, int start, int count) {
         throw new UnsupportedOperationException();    
     }
     
