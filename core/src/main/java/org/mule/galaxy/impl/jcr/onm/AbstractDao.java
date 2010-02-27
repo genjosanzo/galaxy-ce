@@ -143,7 +143,10 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
     }
     
     public Results<T> find(final Map<String, Object> criteria, String sortByField, boolean asc, int start, int count) {
-        String stmt = "/*/" + rootNode + "/*[";
+        String stmt = "/*/" + rootNode + "/*";
+        if (criteria.size() > 0) {
+            stmt += "[";
+        }
         String join = "";
         for (Map.Entry<String, Object> e : criteria.entrySet()) {
             stmt += join;
@@ -151,7 +154,9 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
             
             stmt = buildFindPredicate(stmt, e.getKey(), e.getValue());
         }
-        stmt += "]";
+        if (criteria.size() > 0) {
+            stmt += "]";
+        }
         
         if (sortByField != null) {
             stmt += " order by @" + sortByField;
@@ -430,7 +435,6 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
         NodeIterator iterator = qr.getNodes();
         iterator.skip(start);
         
-        int i = 0;
         for (NodeIterator nodes = iterator; nodes.hasNext();) {
             try {
                 values.add(build(nodes.nextNode(), session));
@@ -442,12 +446,11 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
                 }
                 throw new RuntimeException(e);
             }
-            if (maxResults >= 0 && values.size() == i) {
+            if (maxResults == values.size()) {
                 break;
             }
-            i++;
         }
-
+        
         return new Results(values, iterator.getSize());
     }
 
