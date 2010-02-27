@@ -255,6 +255,7 @@ public class Galaxy {
 
     private SimplePanel createAlertNotifcationArea() {
         alertNotificationArea = new SimplePanel();
+        alertNotificationArea.setStyleName("alert-header-right");
         return alertNotificationArea;
     }
 
@@ -263,7 +264,6 @@ public class Galaxy {
     }
 
     protected InlineFlowPanel createHeaderOptions() {
-
         InlineFlowPanel options = new InlineFlowPanel();
         options.setStyleName("header-right-options");
 
