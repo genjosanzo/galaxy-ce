@@ -21,14 +21,14 @@ package org.mule.galaxy.web.rpc;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.extjs.gxt.ui.client.data.BeanModelTag;
 
-public class WRole implements IsSerializable, BeanModelTag {
+public class WGroup implements IsSerializable, BeanModelTag {
     private String id;
     private String name;
     
-    public WRole() {
+    public WGroup() {
         super();
     }
-    public WRole(String id, String name) {
+    public WGroup(String id, String name) {
         super();
         this.id = id;
         this.name = name;

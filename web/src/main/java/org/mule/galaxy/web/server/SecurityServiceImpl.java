@@ -49,7 +49,7 @@ import org.mule.galaxy.web.client.admin.PasswordChangeException;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
 import org.mule.galaxy.web.rpc.SecurityService;
-import org.mule.galaxy.web.rpc.WRole;
+import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WPermission;
 import org.mule.galaxy.web.rpc.WPermissionGrant;
 import org.mule.galaxy.web.rpc.WUser;
@@ -196,7 +196,7 @@ public class SecurityServiceImpl implements SecurityService {
         for (Iterator itr = groupToPermissionGrant.entrySet().iterator(); itr.hasNext();) {
             Map.Entry e = (Map.Entry)itr.next();
             
-            WRole wRole = (WRole) e.getKey();
+            WGroup wRole = (WGroup) e.getKey();
             Collection permGrants = (Collection) e.getValue();
             
             try {
@@ -226,12 +226,12 @@ public class SecurityServiceImpl implements SecurityService {
         }
     }
 
-    public Map<WRole, Collection<WPermissionGrant>> getGroupPermissions() {
-        Map<WRole, Collection<WPermissionGrant>> wgroups = new HashMap<WRole, Collection<WPermissionGrant>>();
+    public Map<WGroup, Collection<WPermissionGrant>> getGroupPermissions() {
+        Map<WGroup, Collection<WPermissionGrant>> wgroups = new HashMap<WGroup, Collection<WPermissionGrant>>();
         List<Group> groups = accessControlManager.getGroups();
         
         for (Group g : groups) {
-            WRole wgroup = toWeb(g);
+            WGroup wgroup = toWeb(g);
             List<WPermissionGrant> wpgs = new ArrayList<WPermissionGrant>();
             
             Set<PermissionGrant> grants = accessControlManager.getPermissionGrants(g);
@@ -264,7 +264,7 @@ public class SecurityServiceImpl implements SecurityService {
             for (Iterator itr = groupToPermissionGrant.entrySet().iterator(); itr.hasNext();) {
                 Map.Entry e = (Map.Entry)itr.next();
                 
-                WRole wRole = (WRole) e.getKey();
+                WGroup wRole = (WGroup) e.getKey();
                 Collection permGrants = (Collection) e.getValue();
                 
                 Group group = accessControlManager.getGroup(wRole.getId());
@@ -298,15 +298,15 @@ public class SecurityServiceImpl implements SecurityService {
         }
     }
 
-    public Map<WRole, Collection<WPermissionGrant>> getGroupPermissions(String itemId) throws RPCException {
-        Map<WRole, Collection<WPermissionGrant>> wgroups = new HashMap<WRole, Collection<WPermissionGrant>>();
+    public Map<WGroup, Collection<WPermissionGrant>> getGroupPermissions(String itemId) throws RPCException {
+        Map<WGroup, Collection<WPermissionGrant>> wgroups = new HashMap<WGroup, Collection<WPermissionGrant>>();
         List<Group> groups = accessControlManager.getGroups();
         
         try {
             Item item = registry.getItemById(itemId);
             
             for (Group g : groups) {
-                WRole wgroup = toWeb(g);
+                WGroup wgroup = toWeb(g);
                 List<WPermissionGrant> wpgs = new ArrayList<WPermissionGrant>();
                 
                 Set<PermissionGrant> grants = accessControlManager.getPermissionGrants(g, item);
@@ -343,7 +343,7 @@ public class SecurityServiceImpl implements SecurityService {
             
     }
     
-    public void save(WRole wgroup) throws RPCException, ItemExistsException {
+    public void save(WGroup wgroup) throws RPCException, ItemExistsException {
         try {
             Group g = null;
             if (wgroup.getId() != null) {
@@ -366,7 +366,7 @@ public class SecurityServiceImpl implements SecurityService {
         accessControlManager.deleteGroup(id);
     }
 
-    public WRole getGroup(String id) throws RPCException {
+    public WGroup getGroup(String id) throws RPCException {
         try {
             return toWeb(accessControlManager.getGroup(id));
         } catch (Exception e) {
@@ -374,8 +374,8 @@ public class SecurityServiceImpl implements SecurityService {
         }
     }
 
-    private WRole toWeb(Group g) {
-        return new WRole(g.getId(), g.getName());
+    private WGroup toWeb(Group g) {
+        return new WGroup(g.getId(), g.getName());
     }
 
     public Collection<WPermission> getPermissions(int permissionType) {
@@ -403,8 +403,8 @@ public class SecurityServiceImpl implements SecurityService {
         this.registry = registry;
     }
 
-    public Collection<WRole> getGroups() throws RPCException {
-        ArrayList<WRole> wgroups = new ArrayList<WRole>();
+    public Collection<WGroup> getGroups() throws RPCException {
+        ArrayList<WGroup> wgroups = new ArrayList<WGroup>();
         
         for (Group g : accessControlManager.getGroups()) {
             wgroups.add(toWeb(g));

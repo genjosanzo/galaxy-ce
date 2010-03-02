@@ -9,7 +9,7 @@ import org.mule.galaxy.Item;
 import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.web.rpc.SecurityService;
-import org.mule.galaxy.web.rpc.WRole;
+import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WPermissionGrant;
 import org.mule.galaxy.web.rpc.WUser;
 
@@ -45,11 +45,11 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
         
         assertEquals(2, group2Perm.size());
         
-        WRole g = null;
+        WGroup g = null;
         Collection permGrants = null;
         for (Iterator itr = group2Perm.entrySet().iterator(); itr.hasNext();) {
             Map.Entry e = (Map.Entry) itr.next();
-            g = (WRole) e.getKey();
+            g = (WGroup) e.getKey();
             permGrants = (Collection) e.getValue();
             if (g.getName().equals("Administrators")) break;
         }
@@ -71,11 +71,11 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
         
         assertEquals(2, group2Perm.size());
         
-        WRole g = null;
+        WGroup g = null;
         Collection permGrants = null;
         for (Iterator itr = group2Perm.entrySet().iterator(); itr.hasNext();) {
             Map.Entry e = (Map.Entry) itr.next();
-            g = (WRole) e.getKey();
+            g = (WGroup) e.getKey();
             permGrants = (Collection) e.getValue();
             if (g.getName().equals("Administrators")) break;
         }
@@ -100,7 +100,7 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
         group2Perm = gwtSecurityService.getGroupPermissions(artifact.getId());
         for (Iterator itr = group2Perm.entrySet().iterator(); itr.hasNext();) {
             Map.Entry e = (Map.Entry) itr.next();
-            g = (WRole) e.getKey();
+            g = (WGroup) e.getKey();
             permGrants = (Collection) e.getValue();
             if (g.getName().equals("Administrators")) break;
         }
@@ -120,7 +120,7 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
     }
     
     public void testGroups() throws Exception {
-        WRole g = new WRole();
+        WGroup g = new WGroup();
         g.setName("Test Group");
         gwtSecurityService.save(g);
         
@@ -130,7 +130,7 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
         
         boolean found = false;
         for (Map.Entry<?, ?>  e: groupPermissions.entrySet()) {
-            WRole wg = (WRole) e.getKey();
+            WGroup wg = (WGroup) e.getKey();
             
             if (wg.getName().equals(g.getName())) {
                 found = true;

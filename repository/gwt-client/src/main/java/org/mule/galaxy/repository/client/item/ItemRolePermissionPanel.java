@@ -25,11 +25,11 @@ import java.util.Map;
 
 import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.admin.AbstractRolePanel;
+import org.mule.galaxy.web.client.admin.AbstractGroupPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WPermissionGrant;
 
-public class ItemRolePermissionPanel extends AbstractRolePanel {
+public class ItemRolePermissionPanel extends AbstractGroupPanel {
 
     private String itemId;
     private final int permissionType;

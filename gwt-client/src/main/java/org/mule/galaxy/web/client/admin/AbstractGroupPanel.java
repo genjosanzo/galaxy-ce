@@ -32,7 +32,7 @@ import org.mule.galaxy.web.client.util.panel.FullContentPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WPermission;
 import org.mule.galaxy.web.rpc.WPermissionGrant;
-import org.mule.galaxy.web.rpc.WRole;
+import org.mule.galaxy.web.rpc.WGroup;
 
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
@@ -46,7 +46,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
-public abstract class AbstractRolePanel extends AbstractFlowComposite {
+public abstract class AbstractGroupPanel extends AbstractFlowComposite {
 
     protected final ErrorPanel errorPanel;
     protected FlexTable table;
@@ -58,7 +58,7 @@ public abstract class AbstractRolePanel extends AbstractFlowComposite {
     protected final Galaxy galaxy;
     protected FlowPanel mainPanel;
 
-    public AbstractRolePanel(Galaxy galaxy, ErrorPanel errorPanel) {
+    public AbstractGroupPanel(Galaxy galaxy, ErrorPanel errorPanel) {
         super();
         this.galaxy = galaxy;
         this.errorPanel = errorPanel;
@@ -99,7 +99,7 @@ public abstract class AbstractRolePanel extends AbstractFlowComposite {
         mainPanel.clear();
 
         ContentPanel cp = new FullContentPanel();
-        cp.setHeading("Roles");
+        cp.setHeading("User Groups");
 
         // add inline help string and widget
 //        cp.setTopComponent(new InlineHelpPanel(galaxy.getRepositoryConstants().repo_Security_Tip(), 15));
@@ -119,16 +119,16 @@ public abstract class AbstractRolePanel extends AbstractFlowComposite {
 
         rows = new ArrayList<String>();
         for (Iterator itr = groups2Permissions.keySet().iterator(); itr.hasNext();) {
-            rows.add(((WRole) itr.next()).getName());
+            rows.add(((WGroup) itr.next()).getName());
         }
         Collections.sort(rows);
 
         for (Iterator itr = groups2Permissions.entrySet().iterator(); itr.hasNext();) {
             Map.Entry e = (Map.Entry) itr.next();
 
-            final WRole role = (WRole) e.getKey();
+            final WGroup role = (WGroup) e.getKey();
             final String groupName = role.getName();
-            final Hyperlink hl = new Hyperlink(groupName, "roles/" + role.getId());
+            final Hyperlink hl = new Hyperlink(groupName, "groups/" + role.getId());
 
             int row = rows.indexOf(groupName) + 1;
 
@@ -176,7 +176,7 @@ public abstract class AbstractRolePanel extends AbstractFlowComposite {
         ButtonBar bb = new ButtonBar();
         bb.add(applyButton);
         bb.add(resetButton);
-        bb.add(createHistoryButton("New", "roles/new"));
+        bb.add(createHistoryButton("New", "groups/new"));
 
         //table.setWidget(rows.size() + 1, 0, bb);
         cp.add(bb);
@@ -193,7 +193,7 @@ public abstract class AbstractRolePanel extends AbstractFlowComposite {
         for (Iterator itr = groups2Permissions.entrySet().iterator(); itr.hasNext();) {
             Map.Entry e = (Map.Entry) itr.next();
 
-            WRole g = (WRole) e.getKey();
+            WGroup g = (WGroup) e.getKey();
             Collection permGrants = (Collection) e.getValue();
 
             int row = rows.indexOf(g.getName());

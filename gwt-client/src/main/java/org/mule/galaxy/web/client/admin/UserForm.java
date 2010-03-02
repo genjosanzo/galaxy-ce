@@ -43,7 +43,7 @@ import org.mule.galaxy.web.client.util.SelectionPanel;
 import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
-import org.mule.galaxy.web.rpc.WRole;
+import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WUser;
 
 public class UserForm extends AbstractAdministrationForm {
@@ -195,11 +195,11 @@ public class UserForm extends AbstractAdministrationForm {
         this.wgroups = groups;
         ItemInfo itemInfo = new ItemInfo() {
             public String getText(Object o) {
-                return ((WRole) o).getName();
+                return ((WGroup) o).getName();
             }
 
             public String getValue(Object o) {
-                return ((WRole) o).getId();
+                return ((WGroup) o).getId();
             }
         };
         groupPanel = new SelectionPanel(groups, itemInfo,
@@ -277,7 +277,7 @@ public class UserForm extends AbstractAdministrationForm {
     /* find the key that maps to the Administrator group and verify */
     private String getAdminRoleKey(Collection groups) {
         for (Iterator itr = groups.iterator(); itr.hasNext();) {
-            WRole wg = (WRole) itr.next();
+            WGroup wg = (WGroup) itr.next();
             if (wg.getName().equals(UBER_GROUP)) {
                 return wg.getId();
             }

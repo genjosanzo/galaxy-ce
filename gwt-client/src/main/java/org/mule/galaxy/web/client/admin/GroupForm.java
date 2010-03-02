@@ -18,7 +18,7 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.rpc.WRole;
+import org.mule.galaxy.web.rpc.WGroup;
 
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
@@ -29,14 +29,14 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.user.client.ui.FlexTable;
 
 
-public class RoleForm extends AbstractAdministrationForm {
+public class GroupForm extends AbstractAdministrationForm {
 
-    private WRole role;
+    private WGroup group;
     private TextField<String> nameTB;
 
-    public RoleForm(AdministrationPanel adminPanel) {
-        super(adminPanel, "roles", "Role was saved.", "Role was deleted.",
-                "A role with that name already exists.");
+    public GroupForm(AdministrationPanel adminPanel) {
+        super(adminPanel, "groups", "Group was saved.", "Group was deleted.",
+                "A group with that name already exists.");
     }
 
     protected void addFields(FlexTable table) {
@@ -44,7 +44,7 @@ public class RoleForm extends AbstractAdministrationForm {
 
         nameTB = new TextField<String>();
         nameTB.setAllowBlank(false);
-        nameTB.setValue(role.getName());
+        nameTB.setValue(group.getName());
 
         table.setWidget(0, 1, nameTB);
 
@@ -59,16 +59,16 @@ public class RoleForm extends AbstractAdministrationForm {
         if (newItem) {
             return "Add Role";
         } else {
-            return "Edit Role: " + role.getName();
+            return "Edit Role: " + group.getName();
         }
     }
 
     protected void initializeItem(Object o) {
-        role = (WRole) o;
+        group = (WGroup) o;
     }
 
     protected void initializeNewItem() {
-        role = new WRole();
+        group = new WGroup();
     }
 
     protected void save() {
@@ -79,8 +79,8 @@ public class RoleForm extends AbstractAdministrationForm {
 
 
         super.save();
-        role.setName(nameTB.getValue());
-        getSecurityService().save(role, getSaveCallback());
+        group.setName(nameTB.getValue());
+        getSecurityService().save(group, getSaveCallback());
     }
 
     protected void delete() {
@@ -90,13 +90,13 @@ public class RoleForm extends AbstractAdministrationForm {
             Button btn = ce.getButtonClicked();
 
             if (Dialog.YES.equals(btn.getItemId())) {
-                RoleForm.super.delete();
-                getSecurityService().deleteGroup(role.getId(), getDeleteCallback());
+                GroupForm.super.delete();
+                getSecurityService().deleteGroup(group.getId(), getDeleteCallback());
             }
           }
         };
 
-        MessageBox.confirm("Confirm", "Are you sure you want to delete role " + role.getName() + "?", l);
+        MessageBox.confirm("Confirm", "Are you sure you want to delete group " + group.getName() + "?", l);
     }
 
 }
