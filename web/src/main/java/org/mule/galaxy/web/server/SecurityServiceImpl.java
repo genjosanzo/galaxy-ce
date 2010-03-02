@@ -62,6 +62,8 @@ public class SecurityServiceImpl implements SecurityService {
     private AccessControlManager accessControlManager;
     private Registry registry;
     private Set<Permission> itemPermissions;
+    private Set<Permission> hiddenPermissions = new HashSet<Permission>();
+    private Set<Permission> defaultGrantedPermissions = new HashSet<Permission>();
     
     public SecurityServiceImpl() {
         super();
@@ -204,6 +206,7 @@ public class SecurityServiceImpl implements SecurityService {
                 
                 List<Permission> grants = new ArrayList<Permission>();
                 List<Permission> revocations = new ArrayList<Permission>();
+                grants.addAll(defaultGrantedPermissions);
                 
                 for (Iterator pgItr = permGrants.iterator(); pgItr.hasNext();) {
                     WPermissionGrant permGrant = (WPermissionGrant)pgItr.next();
@@ -238,6 +241,10 @@ public class SecurityServiceImpl implements SecurityService {
             for (PermissionGrant pg : grants) {
                 WPermissionGrant wpg = new WPermissionGrant();
                 
+                if (isPermissionHidden(pg.getPermission())) {
+                    continue;
+                }
+                
                 switch (pg.getGrant()) {
                 case REVOKED:
                     wpg.setGrant(WPermissionGrant.REVOKED);
@@ -256,6 +263,10 @@ public class SecurityServiceImpl implements SecurityService {
             wgroups.put(wgroup, wpgs);
         }
         return wgroups;
+    }
+
+    private boolean isPermissionHidden(Permission permission) {
+        return hiddenPermissions.contains(permission);
     }
 
     public void applyPermissions(String itemId, Map groupToPermissionGrant) throws RPCException {
@@ -353,6 +364,7 @@ public class SecurityServiceImpl implements SecurityService {
             }
             g.setName(wgroup.getName());
             accessControlManager.save(g);
+            accessControlManager.grant(g, defaultGrantedPermissions);
         } catch (AccessException e1) {
             throw new RPCException(e1.getMessage());
         } catch (DuplicateItemException e) {
@@ -384,7 +396,7 @@ public class SecurityServiceImpl implements SecurityService {
         
         for (Permission p : permissions) {
             if ((permissionType == SecurityService.ITEM_PERMISSIONS && itemPermissions.contains(p))
-                    || permissionType == SecurityService.GLOBAL_PERMISSIONS) {
+                    || (permissionType == SecurityService.GLOBAL_PERMISSIONS && !isPermissionHidden(p))) {
                 wperms.add(new WPermission(p.toString(), p.getDescription()));
             }
         }
@@ -411,6 +423,14 @@ public class SecurityServiceImpl implements SecurityService {
         }
         
         return wgroups;
+    }
+
+    public void setHiddenPermissions(Set<Permission> hiddenPermissions) {
+        this.hiddenPermissions = hiddenPermissions;
+    }
+
+    public void setDefaultGrantedPermissions(Set<Permission> defaultGrantedPermissions) {
+        this.defaultGrantedPermissions = defaultGrantedPermissions;
     }
     
 }
