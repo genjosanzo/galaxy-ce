@@ -54,7 +54,7 @@ body {
 
 .header-right-options {
     color: #016c96;
-    padding: 0px 15px 0px 15px;
+    padding: 0 15px 0 15px;
 }
 .header-right-options a, .header-right-options a:visited {
     color: #016c96;
@@ -66,19 +66,18 @@ body {
 }
 
 .headerTabPanel {
-  margin-top: 0px;
-  margin-left: 0px;
+  margin-top: 0;
+  margin-left: 0;
   width: 100%;
   color: black;
 }
 
 .alert-header-right {
     color: #CC3300;
-    padding: 0px 0px 0px 15px;
 }
 .alert-header-icon {
     background: url("images/tab_alerts_on.gif") no-repeat;
-    padding: 0px 0px 0px 15px;
+    padding-left: 15px;
 }
 
 .alert-header-right a, .alert-header-right a:visited {
