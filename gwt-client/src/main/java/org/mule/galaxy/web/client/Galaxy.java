@@ -97,7 +97,7 @@ public class Galaxy {
     private GalaxyServiceAsync galaxyService;
     private AdministrationPanel adminPanel;
     private String logoHref = "images/galaxy_logo_main_trans.gif";
-    private SimplePanel alertNotificationArea;
+    private InlineFlowPanel alertNotificationArea;
 
     public void initialize(final List<GalaxyModule> modules) {
         //GXT.setDefaultTheme(Theme.GRAY, true);
@@ -235,7 +235,6 @@ public class Galaxy {
         rightHeaderPanel = new InlineFlowPanel();
         rightHeaderPanel.setStyleName("header-right");
         rightHeaderPanel.add(createHeaderOptions());
-        rightHeaderPanel.add(createAlertNotifcationArea());
 
         // custom logo
         FlowPanel header = new FlowPanel();
@@ -253,13 +252,13 @@ public class Galaxy {
         base.add(northPanel, data);
     }
 
-    private SimplePanel createAlertNotifcationArea() {
-        alertNotificationArea = new SimplePanel();
+    protected InlineFlowPanel createAlertNotificationArea() {
+        alertNotificationArea = new InlineFlowPanel();
         alertNotificationArea.setStyleName("alert-header-right");
         return alertNotificationArea;
     }
 
-    public SimplePanel getAlertNotificationArea() {
+    public InlineFlowPanel getAlertNotificationArea() {
         return alertNotificationArea;
     }
 
