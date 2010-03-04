@@ -72,9 +72,6 @@ body {
   color: black;
 }
 
-.alert-header-right {
-    color: #CC3300;
-}
 .alert-header-icon {
     background: url("images/tab_alerts_on.gif") no-repeat;
     padding-left: 15px;
@@ -83,7 +80,7 @@ body {
 .alert-header-right a, .alert-header-right a:visited {
     color: #CC3300;
     text-decoration: none;
-    font-style: bold;
+    /*font-weight:bold;*/
 }
 
 .alert-header-right a:hover {
