@@ -184,6 +184,17 @@ a:visited {
     border:1px solid;*/
 }
 
+.file-contents {
+    white-space: pre;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.clickable {
+    cursor: hand;
+    cursor: pointer;
+}
+
 /**
  **
  ** The Left Menu
