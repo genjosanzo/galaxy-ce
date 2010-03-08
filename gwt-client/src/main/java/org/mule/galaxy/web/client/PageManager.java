@@ -52,6 +52,10 @@ public class PageManager implements ValueChangeHandler<String>{
         });
     }
     
+    public PageInfo getCurrentPage() {
+        return curInfo;
+    }
+
     public TabPanel getTabPanel() {
         return tabPanel;
     }
@@ -88,8 +92,6 @@ public class PageManager implements ValueChangeHandler<String>{
                 onHistoryChanged(DEFAULT_PAGE);
             }
         } else {
-            curInfo = page;
-
             show(page, params);
         }
     }
@@ -183,6 +185,7 @@ public class PageManager implements ValueChangeHandler<String>{
             ((Showable) instance).showPage(params);
         }
         suppressTabHistory = false;
+        curInfo = page;
     }
 
     public int createTab(String name, String token, String toolTip) {
