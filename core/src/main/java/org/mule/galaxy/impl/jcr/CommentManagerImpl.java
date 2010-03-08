@@ -9,6 +9,7 @@ import javax.jcr.Session;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.Results;
 import org.mule.galaxy.collab.Comment;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.event.CommentCreatedEvent;
@@ -48,11 +49,11 @@ public class CommentManagerImpl extends AbstractReflectionDao<Comment> implement
 
     @SuppressWarnings("unchecked")
     public List<Comment> getRecentComments(final int maxResults) {
-        return (List<Comment>) execute(new JcrCallback() {
+        return ((Results<Comment>) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 return query("/jcr:root/comments/* order by @date descending", session, 0, maxResults);
             }
-        });
+        })).getData();
     }
 
     public void addComment(Comment c) {
