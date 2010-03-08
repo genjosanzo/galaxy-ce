@@ -22,6 +22,7 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.apache.jackrabbit.util.ISO9075;
+import org.apache.jackrabbit.util.Locked;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
@@ -72,7 +73,7 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
     }
 
     public void save(final T t) throws DuplicateItemException, NotFoundException {
-        executeAndDewrap(new JcrCallback() {
+        executeLockedAndDewrap(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 try {
                     doSave(t, session);
@@ -89,9 +90,9 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
         });
     }
     
-    private void executeAndDewrap(JcrCallback jcrCallback) throws DuplicateItemException, NotFoundException {
+    private void executeLockedAndDewrap(final JcrCallback jcrCallback) throws DuplicateItemException, NotFoundException {
         try {
-            execute(jcrCallback);
+            executeLocked(jcrCallback);
         } catch (RuntimeException e) {
             Throwable cause = e.getCause();
             
@@ -106,7 +107,7 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
     }
 
     public void delete(final String id) {
-        execute(new JcrCallback() {
+        executeLocked(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 doDelete(id, session);
                 session.save();
@@ -114,7 +115,38 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
             }
         });
     }
-
+    
+    private void executeLocked(final JcrCallback jcrCallback) {
+        execute(new JcrCallback() {
+            
+            public Object doInJcr(final Session session) throws IOException, RepositoryException {
+                Node objectsNode = getObjectsNode(session);
+                
+                try {
+                    new Locked() {
+                        @Override
+                        protected Object run(Node node) throws RepositoryException {
+                            try {
+                                return jcrCallback.doInJcr(session);
+                            } catch (IOException e) {
+                               throw new RuntimeException(e);
+                            }
+                        }
+                    }.with(objectsNode, false);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (RuntimeException e) {
+                    if (e.getCause() instanceof IOException) {
+                        throw (IOException) e.getCause();
+                    }
+                    throw e;
+                }
+                return null;
+            }
+        });
+        
+    }
     @SuppressWarnings("unchecked")
     public List<T> listAll() {
         return (List<T>) execute(new JcrCallback() {
