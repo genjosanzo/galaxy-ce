@@ -2,12 +2,12 @@
   <parent>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-parent</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>2.0-M6</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-integration-support</artifactId>
-  <version>2.0-SNAPSHOT</version>
+  <version>2.0-M6</version>
   <packaging>jar</packaging>
   <name>Galaxy Integration Support Classes</name>
 
@@ -28,7 +28,7 @@
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-web</artifactId>
-      <version>2.0-SNAPSHOT</version>
+      <version>2.0-M6</version>
       <optional>true</optional>
     </dependency>
 
