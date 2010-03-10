@@ -117,4 +117,12 @@ public class ShowableTabListener extends SelectionListener<TabPanelEvent> {
     public void hidePage() {
         hidePrevious();
     }
+
+    protected List<String> getTabNames() {
+        return tabNames;
+    }
+
+    protected TabPanel getTabPanel() {
+        return tabPanel;
+    }
 }
