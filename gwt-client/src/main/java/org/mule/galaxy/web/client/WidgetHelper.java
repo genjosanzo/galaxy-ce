@@ -195,8 +195,7 @@ public class WidgetHelper extends Composite {
                                                            final String token, String style, String toolTip) {
         ToolbarButton newBtn = new ToolbarButton(buttonLabel);
 
-        newBtn.setStyleName("toolbar-btn");
-        //newBtn.setStyleName(style);
+        newBtn.setStyleName(style);
         if (toolTip != null) {
             newBtn.setToolTip(toolTip);
         }
