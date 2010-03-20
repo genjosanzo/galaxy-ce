@@ -22,7 +22,11 @@ public class EnumPersister implements FieldPersister {
     }
 
     public void persist(Object o, Node n, FieldDescriptor fd, Session session) throws Exception {
-        JcrUtil.setProperty(fd.getName(), o.toString(), n);
+        if (o != null) {
+            JcrUtil.setProperty(fd.getName(), o.toString(), n);
+        } else {
+            JcrUtil.setProperty(fd.getName(), null, n);
+        }
     }
     
 }
