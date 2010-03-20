@@ -763,7 +763,6 @@ public class ItemCollection
         try {
             parent.setProperty("artifact", new Object[] { inputStream, contentType.toString() });
             registry.save(parent);
-System.out.println("Saved artifact property." + contentType.toString());
         } catch (AccessException e) {
             throw new ResponseContextException(401, e);
         } catch (PropertyException e) {
