@@ -2,12 +2,12 @@
   <parent>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-parent</artifactId>
-    <version>2.0-M5aa-SNAPSHOT</version>
+    <version>2.0-M5a</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.galaxy</groupId>
   <artifactId>galaxy-integration-spring</artifactId>
-  <version>2.0-M5aa-SNAPSHOT</version>
+  <version>2.0-M5a</version>
   <packaging>jar</packaging>
   <name>Galaxy Spring 2 Integration</name>
 
@@ -36,7 +36,7 @@
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-integration-support</artifactId>
-      <version>2.0-M5aa-SNAPSHOT</version>
+      <version>2.0-M5a</version>
     </dependency>
 
     <dependency>
