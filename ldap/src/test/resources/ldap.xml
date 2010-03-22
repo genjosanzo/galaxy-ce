@@ -31,6 +31,7 @@
       <property name="persisterManager" ref="persisterManager" />
       <property name="userSearch" ref="userSearch"/>
       <property name="userMapper" ref="userDetailsMapper"/>
+      <property name="ldapUserMetadataDao" ref="ldapUserMetadataDao"/>
       
       <!-- Configure these two properties -->
       <property name="userSearchBase" value="ou=system"/>

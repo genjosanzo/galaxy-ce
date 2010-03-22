@@ -20,6 +20,7 @@ import org.mule.galaxy.security.Group;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.test.AbstractGalaxyTest;
+import org.mule.galaxy.util.GalaxyUtils;
 import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -37,10 +38,18 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
         UserManager userManager = (UserManager) applicationContext.getBean("userManager");
 
         User user = SecurityUtils.getCurrentUser();
+        assertNotNull(user.getId());
+        assertNotNull(user.getUsername());
+        
         assertEquals(1, user.getGroups().size());
+        
+        user.setProperties(GalaxyUtils.asMap("foo", (Object)"bar"));
+        userManager.save(user);
         
         user = userManager.get(user.getId());
         assertNotNull(user);
+        assertNotNull(user.getProperties());
+        assertEquals("bar", user.getProperties().get("foo"));
         
         List<User> users = userManager.listAll();
         assertNotNull(users);

@@ -21,6 +21,8 @@ import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.acegisecurity.userdetails.ldap.LdapUserDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.Dao;
+import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Results;
 import org.mule.galaxy.impl.jcr.onm.DaoPersister;
@@ -45,6 +47,8 @@ public class LdapUserManager
     private LdapTemplate ldapTemplate;
     private InitialDirContextFactory initialDirContextFactory;
     private PersisterManager persisterManager;
+    
+    private Dao<LdapUserMetadata> ldapUserMetadataDao;
     
     public void initialize() throws Exception {
         persisterManager.getPersisters().put(User.class.getName(), new DaoPersister(this));
@@ -91,11 +95,22 @@ public class LdapUserManager
         try {
             LdapUserDetails d = userSearch.searchForUser(id);
 
-            return (User)userMapper.mapAttributes(d.getDn(), d.getAttributes());
+            User user = (User)userMapper.mapAttributes(d.getDn(), d.getAttributes());
+            user.setProperties(getUserProperties(id));
+            return user;
         } catch (UsernameNotFoundException e) {
             throw new NotFoundException(id);
         } catch (NamingException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private Map<String, Object> getUserProperties(String id) {
+        try {
+            LdapUserMetadata metadata = ldapUserMetadataDao.get(id);
+            return metadata.getProperties();
+        } catch (NotFoundException e) {
+            return null;
         }
     }
 
@@ -124,7 +139,21 @@ public class LdapUserManager
         });
     }
 
-    public void save(User t) {
+    public void save(User user) throws DuplicateItemException, NotFoundException {
+        if (SecurityUtils.SYSTEM_USER.getId().equals(user.getId())) {
+            return;
+        }
+        
+        
+        LdapUserMetadata metadata = null;
+        try {
+            metadata = ldapUserMetadataDao.get(user.getId());
+        } catch (NotFoundException e) {
+            metadata = new LdapUserMetadata();
+            metadata.setId(user.getId());
+        }
+        metadata.setProperties(user.getProperties());
+        ldapUserMetadataDao.save(metadata);
         
     }
 
@@ -181,6 +210,10 @@ public class LdapUserManager
 
     public void setUserMapper(LdapEntryMapper userMapper) {
         this.userMapper = userMapper;
+    }
+
+    public void setLdapUserMetadataDao(Dao<LdapUserMetadata> ldapUserMetadataDao) {
+        this.ldapUserMetadataDao = ldapUserMetadataDao;
     }
 
 }

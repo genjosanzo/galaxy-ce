@@ -65,7 +65,12 @@
       </list>
     </property>
   </bean>
-    
+        
+  <bean id="ldapUserMetadataDao" class="org.mule.galaxy.security.ldap.LdapUserMetadataDaoImpl"
+    init-method="initialize">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
   <import resource="classpath:ldap.xml"/>
   
   

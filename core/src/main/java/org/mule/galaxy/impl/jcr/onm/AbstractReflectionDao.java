@@ -22,9 +22,7 @@ public class AbstractReflectionDao<T> extends AbstractDao<T> {
     @SuppressWarnings("unchecked")
     public T build(Node node, Session session) throws Exception {
         T t = (T) persister.build(node, session);
-        if (generateId) {
-            setId(t, getId(t, node, session));
-        }
+        setId(t, getId(t, node, session));
         return t;
     }
 
