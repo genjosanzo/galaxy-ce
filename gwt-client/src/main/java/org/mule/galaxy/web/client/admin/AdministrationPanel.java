@@ -48,6 +48,7 @@ public class AdministrationPanel extends MenuPanel {
     private final Galaxy galaxy;
     protected List<NavMenuItem> manageItems;
     protected List<NavMenuItem> utilityItems;
+    private ContentPanel accordionPanel ;
 
     protected AdministrationPanel(Galaxy galaxy, boolean init) {
         this.galaxy = galaxy;
@@ -64,6 +65,8 @@ public class AdministrationPanel extends MenuPanel {
 
     protected void init() {
         setId("administrationTabBody");
+
+        accordionPanel = createAccodionWrapperPanel();
         
         manageItems = new ArrayList<NavMenuItem>();
         utilityItems = new ArrayList<NavMenuItem>();
@@ -93,7 +96,7 @@ public class AdministrationPanel extends MenuPanel {
                new ScheduleForm(this)));
     }
 
-    private void registerPage(final NavMenuItem item) {
+    public void registerPage(final NavMenuItem item) {
         // handle page creation for list forms
         createPageInfo(item.getTokenBase(), item.getListPanel());
 
@@ -106,8 +109,6 @@ public class AdministrationPanel extends MenuPanel {
     @Override
     protected void onFirstShow() {
         super.onFirstShow();
-
-        ContentPanel accordionPanel = createAccodionWrapperPanel();
 
         // list of all items for this panel
         accordionPanel.add(createPanelWithListView("Manage", manageItems));
@@ -122,13 +123,11 @@ public class AdministrationPanel extends MenuPanel {
 
 
     /**
-     * Also does the createPageInfo calls..
-     *
      * @param heading
      * @param items
      * @return
      */
-    protected ContentPanel createPanelWithListView(String heading, List<NavMenuItem> items) {
+    public ContentPanel createPanelWithListView(String heading, List<NavMenuItem> items) {
         ContentPanel c = new ContentPanel();
         c.addStyleName("no-border");
         c.setBodyBorder(false);
@@ -263,4 +262,12 @@ public class AdministrationPanel extends MenuPanel {
         registerPage(item);
     }
 
+
+    public ContentPanel getAccordionPanel() {
+        return accordionPanel;
+    }
+
+    public void setAccordionPanel(ContentPanel accordionPanel) {
+        this.accordionPanel = accordionPanel;
+    }
 }
