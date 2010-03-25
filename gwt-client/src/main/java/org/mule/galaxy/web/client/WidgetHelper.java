@@ -4,13 +4,22 @@ import org.mule.galaxy.web.client.util.InlineFlowPanel;
 import org.mule.galaxy.web.client.util.ToolbarButton;
 import org.mule.galaxy.web.client.util.ToolbarButtonEvent;
 
+import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.ListViewEvent;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.ListView;
 import com.extjs.gxt.ui.client.widget.WidgetComponent;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.TableData;
+import com.extjs.gxt.ui.client.widget.menu.Menu;
+import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Composite;
@@ -20,6 +29,8 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.List;
 
 public class WidgetHelper extends Composite {
 
@@ -320,6 +331,71 @@ public class WidgetHelper extends Composite {
         TableData td = new TableData();
         td.setColspan(value);
         return td;
+    }
+
+    /**
+     * @param heading
+     * @param items
+     * @return
+     */
+    public static ContentPanel createPanelWithListView(String heading, List<NavMenuItem> items) {
+        ContentPanel c = new ContentPanel();
+        c.addStyleName("no-border");
+        c.setBodyBorder(false);
+        c.setHeading(heading);
+        c.setAutoHeight(true);
+        c.setAutoHeight(true);
+
+        // store for all menu items in container
+        ListStore<NavMenuItem> ls = new ListStore<NavMenuItem>();
+        ls.add(items);
+
+        ListView<NavMenuItem> lv = new ListView<NavMenuItem>();
+        lv.setStyleName("no-border");
+        lv.setDisplayProperty("title"); // from item
+        lv.setStore(ls);
+
+        Menu contextMenu = new Menu();
+        contextMenu.setWidth(100);
+
+        for (final NavMenuItem item : ls.getModels()) {
+            // we could add a contextual menu item for each add
+            if (item.getFormPanel() != null) {
+                MenuItem insert = new MenuItem();
+                insert.setText("Add " + item.getTitle());
+                insert.addSelectionListener(new SelectionListener<MenuEvent>() {
+                    public void componentSelected(MenuEvent ce) {
+                        History.newItem(item.getTokenBase() + NavMenuItem.NEW);
+                    }
+                });
+                contextMenu.add(insert);
+            }
+
+            lv.addListener(Events.Select, new Listener<BaseEvent>() {
+                public void handleEvent(BaseEvent be) {
+                    ListViewEvent lve = (ListViewEvent) be;
+                    NavMenuItem nmi = (NavMenuItem) lve.getModel();
+                    History.newItem(nmi.getTokenBase());
+                }
+            });
+
+            // double click gives us the "add form"
+            // ... but who would figure that out?
+            if (item.getFormPanel() != null) {
+                lv.addListener(Events.DoubleClick, new Listener<BaseEvent>() {
+                    public void handleEvent(BaseEvent be) {
+                        ListViewEvent lve = (ListViewEvent) be;
+                        NavMenuItem nmi = (NavMenuItem) lve.getModel();
+                        History.newItem(nmi.getTokenBase() + NavMenuItem.NEW);
+                    }
+                });
+            }
+
+        }
+
+        lv.setContextMenu(contextMenu);
+        c.add(lv);
+        return c;
     }
 
 

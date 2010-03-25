@@ -18,9 +18,6 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mule.galaxy.web.client.AbstractShowable;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.MenuPanel;
@@ -30,34 +27,27 @@ import org.mule.galaxy.web.client.PageManager;
 import org.mule.galaxy.web.client.WidgetHelper;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 
-import com.extjs.gxt.ui.client.event.BaseEvent;
-import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.ListViewEvent;
-import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.MenuEvent;
-import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.ListView;
-import com.extjs.gxt.ui.client.widget.menu.Menu;
-import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.google.gwt.user.client.History;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdministrationPanel extends MenuPanel {
 
     private final Galaxy galaxy;
     protected List<NavMenuItem> manageItems;
     protected List<NavMenuItem> utilityItems;
-    private ContentPanel accordionPanel ;
+    private ContentPanel accordionPanel;
 
     protected AdministrationPanel(Galaxy galaxy, boolean init) {
         this.galaxy = galaxy;
-        
+
         if (init) {
             init();
         }
     }
-    
+
     public AdministrationPanel(Galaxy galaxy) {
         this(galaxy, true);
         super.getLeftMenu().setStyleName("left-menu-accordion");
@@ -67,10 +57,10 @@ public class AdministrationPanel extends MenuPanel {
         setId("administrationTabBody");
 
         accordionPanel = createAccodionWrapperPanel();
-        
+
         manageItems = new ArrayList<NavMenuItem>();
         utilityItems = new ArrayList<NavMenuItem>();
-        
+
         if (galaxy.hasPermission("MANAGE_USERS") && galaxy.isUserManagementSupported()) {
             addManageMenuItem(new NavMenuItem("Users",
                     "users",
@@ -84,16 +74,16 @@ public class AdministrationPanel extends MenuPanel {
                     new GroupListPanel(this),
                     new GroupForm(this)));
         }
-        
+
         addUtilityMenuItem(new NavMenuItem("Admin Shell",
-                                           "adminShell",
-                                           new AdminShellPanel(this),
-                                           null));
+                "adminShell",
+                new AdminShellPanel(this),
+                null));
 
         addUtilityMenuItem(new NavMenuItem("Scheduler",
-               "schedules",
-               new ScheduleListPanel(this),
-               new ScheduleForm(this)));
+                "schedules",
+                new ScheduleListPanel(this),
+                new ScheduleForm(this)));
     }
 
     public void registerPage(final NavMenuItem item) {
@@ -122,70 +112,6 @@ public class AdministrationPanel extends MenuPanel {
     }
 
 
-    /**
-     * @param heading
-     * @param items
-     * @return
-     */
-    public ContentPanel createPanelWithListView(String heading, List<NavMenuItem> items) {
-        ContentPanel c = new ContentPanel();
-        c.addStyleName("no-border");
-        c.setBodyBorder(false);
-        c.setHeading(heading);
-        c.setAutoHeight(true);
-        c.setAutoHeight(true);
-
-        // store for all menu items in container
-        ListStore<NavMenuItem> ls = new ListStore<NavMenuItem>();
-        ls.add(items);
-
-        ListView<NavMenuItem> lv = new ListView<NavMenuItem>();
-        lv.setStyleName("no-border");
-        lv.setDisplayProperty("title"); // from item
-        lv.setStore(ls);
-
-        Menu contextMenu = new Menu();
-        contextMenu.setWidth(100);
-
-        for (final NavMenuItem item : ls.getModels()) {
-            // we could add a contextual menu item for each add
-            if (item.getFormPanel() != null) {
-                MenuItem insert = new MenuItem();
-                insert.setText("Add " + item.getTitle());
-                insert.addSelectionListener(new SelectionListener<MenuEvent>() {
-                    public void componentSelected(MenuEvent ce) {
-                        History.newItem(item.getTokenBase() + NavMenuItem.NEW);
-                    }
-                });
-                contextMenu.add(insert);
-            }
-
-            lv.addListener(Events.Select, new Listener<BaseEvent>() {
-                public void handleEvent(BaseEvent be) {
-                    ListViewEvent lve = (ListViewEvent) be;
-                    NavMenuItem nmi = (NavMenuItem) lve.getModel();
-                    History.newItem(nmi.getTokenBase());
-                }
-            });
-
-            // double click gives us the "add form"
-            // ... but who would figure that out?
-            if (item.getFormPanel() != null) {
-                lv.addListener(Events.DoubleClick, new Listener<BaseEvent>() {
-                    public void handleEvent(BaseEvent be) {
-                        ListViewEvent lve = (ListViewEvent) be;
-                        NavMenuItem nmi = (NavMenuItem) lve.getModel();
-                        History.newItem(nmi.getTokenBase() + NavMenuItem.NEW);
-                    }
-                });
-            }
-
-        }
-        lv.setContextMenu(contextMenu);
-        c.add(lv);
-        return c;
-    }
-    
     protected boolean showTypeSystem() {
         return true;
     }
@@ -243,7 +169,7 @@ public class AdministrationPanel extends MenuPanel {
     }
 
     public void addUtilityMenuItem(NavMenuItem item, int pos) {
-        if(pos == -1) {
+        if (pos == -1) {
             pos = utilityItems.size();
         }
         utilityItems.add(pos, item);
@@ -255,7 +181,7 @@ public class AdministrationPanel extends MenuPanel {
     }
 
     public void addManageMenuItem(NavMenuItem item, int pos) {
-        if(pos == -1) {
+        if (pos == -1) {
             pos = manageItems.size();
         }
         manageItems.add(pos, item);
