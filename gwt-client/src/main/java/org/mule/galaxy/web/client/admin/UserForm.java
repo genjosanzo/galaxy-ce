@@ -18,26 +18,9 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.MessageBoxEvent;
-import com.extjs.gxt.ui.client.widget.Dialog;
-import com.extjs.gxt.ui.client.widget.MessageBox;
-import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.util.AbstractErrorHandlingPopup;
 import org.mule.galaxy.web.client.util.LightBox;
 import org.mule.galaxy.web.client.util.SelectionPanel;
 import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
@@ -45,6 +28,25 @@ import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WUser;
+
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.button.ButtonBar;
+import com.extjs.gxt.ui.client.widget.form.FormPanel;
+import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 public class UserForm extends AbstractAdministrationForm {
 
@@ -153,8 +155,8 @@ public class UserForm extends AbstractAdministrationForm {
         styleHeaderColumn(table);
     }
 
-    private TextField createPasswordConfirmTextBox() {
-        TextField confirmTB = new TextField<String>();
+    private TextField<String> createPasswordConfirmTextBox() {
+        TextField<String> confirmTB = new TextField<String>();
         confirmTB.setAllowBlank(false);
         confirmTB.setPassword(true);
         confirmTB.setMinLength(PASSWORD_MIN_LENGTH);
@@ -162,8 +164,8 @@ public class UserForm extends AbstractAdministrationForm {
         return confirmTB;
     }
 
-    private TextField createPasswordTextBox() {
-        TextField passTB = new TextField<String>();
+    private TextField<String> createPasswordTextBox() {
+        TextField<String> passTB = new TextField<String>();
         passTB.setAllowBlank(false);
         passTB.setPassword(true);
         passTB.setToolTip("Must be at least " + PASSWORD_MIN_LENGTH + " characters in length");
@@ -310,33 +312,27 @@ public class UserForm extends AbstractAdministrationForm {
         MessageBox.confirm("Confirm", "Are you sure you want to delete user " + user.getName() + " (" + user.getUsername() + ")?", l);
     }
 
-    private class ResetPasswordDialog extends DialogBox {
+    private class ResetPasswordDialog extends AbstractErrorHandlingPopup {
 
         public ResetPasswordDialog() {
-            setText(" Reset Password ");
 
-            VerticalPanel main = new VerticalPanel();
+            fpanel.setHeaderVisible(true);
+            fpanel.setHeading("Reset&nbsp;Password");
+
             passTB = createPasswordTextBox();
+            passTB.setFieldLabel("New Password");
+
             confirmTB = createPasswordConfirmTextBox();
-            InlineFlowPanel row = new InlineFlowPanel();
-            Label label = new Label("New Password:");
-            label.addStyleName("form-label");
-            row.add(label);
-            row.add(passTB);
-            main.add(row);
+            confirmTB.setFieldLabel("Confirm Password");
 
-            row = new InlineFlowPanel();
-            label = new Label("Confirm Password:");
-            label.addStyleName("form-label");
-            row.add(label);
-            row.add(confirmTB);
-            main.add(row);
+            fpanel.add(passTB);
+            fpanel.add(confirmTB);
 
-            row = new InlineFlowPanel();
-            row.addStyleName("buttonRow");
             Button okButton = new Button("OK");
-            okButton.addClickListener(new ClickListener() {
-                public void onClick(final Widget widget) {
+            okButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+
+                @Override
+                public void componentSelected(ButtonEvent ce) {
                     boolean isOk = passTB.validate();
                     isOk &= confirmTB.validate();
                     if (isOk) {
@@ -345,20 +341,23 @@ public class UserForm extends AbstractAdministrationForm {
                 }
             });
 
-            row.add(okButton);
             Button cancelButton = new Button("Cancel");
-            cancelButton.addClickListener(new ClickListener() {
-                public void onClick(final Widget widget) {
+            cancelButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+
+                @Override
+                public void componentSelected(ButtonEvent ce) {
                     ResetPasswordDialog.this.hide();
                     passTB.setValue(null);
                     confirmTB.setValue(null);
                     resetPassword.setChecked(false);
                 }
             });
-            row.add(cancelButton);
-            main.add(row);
 
-            setWidget(main);
+            ButtonBar bb = new ButtonBar();
+            bb.add(okButton);
+            bb.add(cancelButton);
+
+            fpanel.add(bb);
         }
     }
 
