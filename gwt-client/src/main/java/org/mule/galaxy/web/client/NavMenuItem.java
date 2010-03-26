@@ -6,7 +6,7 @@ import com.extjs.gxt.ui.client.data.BaseModel;
 public class NavMenuItem extends BaseModel {
 
     public static final String NEW = "/new";
-
+    
 
     public NavMenuItem(String title, String tokenBase, AbstractShowable listPanel,
                        AbstractShowable formPanel) {
@@ -14,6 +14,11 @@ public class NavMenuItem extends BaseModel {
         set("tokenBase", tokenBase);
         set("listPanel", listPanel);
         set("formPanel", formPanel);
+    }
+
+    public NavMenuItem(String title, String tokenBase) {
+        set("title", title);
+        set("tokenBase", tokenBase);
     }
 
     public String getTitle() {
