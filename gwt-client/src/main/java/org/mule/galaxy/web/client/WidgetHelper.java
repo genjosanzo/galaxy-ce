@@ -79,20 +79,6 @@ public class WidgetHelper extends Composite {
         return p;
     }
 
-    public static FlexTable createTitledRowTable(Panel panel, String title) {
-        panel.add(createPrimaryTitle(title));
-        FlexTable table = createRowTable();
-        panel.add(table);
-        return table;
-    }
-
-    public static FlexTable createTitledColumnTable(Panel panel, String title) {
-        panel.add(createTitle(title));
-        FlexTable table = createColumnTable();
-        panel.add(table);
-        return table;
-    }
-
     public static FlexTable createRowTable() {
         FlexTable table = new FlexTable();
         table.getRowFormatter().setStyleName(0, "artifactTableHeader");
@@ -355,21 +341,7 @@ public class WidgetHelper extends Composite {
         lv.setDisplayProperty("title"); // from item
         lv.setStore(ls);
 
-        Menu contextMenu = new Menu();
-        contextMenu.setWidth(100);
-
         for (final NavMenuItem item : ls.getModels()) {
-            // we could add a contextual menu item for each add
-            if (item.getFormPanel() != null) {
-                MenuItem insert = new MenuItem();
-                insert.setText("Add " + item.getTitle());
-                insert.addSelectionListener(new SelectionListener<MenuEvent>() {
-                    public void componentSelected(MenuEvent ce) {
-                        History.newItem(item.getTokenBase() + NavMenuItem.NEW);
-                    }
-                });
-                contextMenu.add(insert);
-            }
 
             lv.addListener(Events.Select, new Listener<BaseEvent>() {
                 public void handleEvent(BaseEvent be) {
@@ -380,7 +352,6 @@ public class WidgetHelper extends Composite {
             });
 
             // double click gives us the "add form"
-            // ... but who would figure that out?
             if (item.getFormPanel() != null) {
                 lv.addListener(Events.DoubleClick, new Listener<BaseEvent>() {
                     public void handleEvent(BaseEvent be) {
@@ -390,10 +361,7 @@ public class WidgetHelper extends Composite {
                     }
                 });
             }
-
         }
-
-        lv.setContextMenu(contextMenu);
         c.add(lv);
         return c;
     }

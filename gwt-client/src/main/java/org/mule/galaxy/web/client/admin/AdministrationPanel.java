@@ -77,8 +77,7 @@ public class AdministrationPanel extends MenuPanel {
 
         addUtilityMenuItem(new NavMenuItem("Admin Shell",
                 "adminShell",
-                new AdminShellPanel(this),
-                null));
+                new AdminShellPanel(this)));
 
         addUtilityMenuItem(new NavMenuItem("Scheduler",
                 "schedules",

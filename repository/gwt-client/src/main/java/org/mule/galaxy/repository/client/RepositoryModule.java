@@ -46,8 +46,7 @@ public class RepositoryModule implements GalaxyModule {
         if (galaxy.hasPermission("VIEW_ACTIVITY")) {
             adminPanel.addUtilityMenuItem(new NavMenuItem("Activity",
                                                           "ActivityPanel",
-                                                          new ActivityPanel(adminPanel, galaxy, registryService),
-                                                          null));
+                                                          new ActivityPanel(adminPanel, galaxy, registryService)));
         }
         
         if (isShowTypeSystem()) {
