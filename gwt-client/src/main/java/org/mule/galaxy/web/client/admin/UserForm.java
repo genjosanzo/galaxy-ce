@@ -85,7 +85,7 @@ public class UserForm extends AbstractAdministrationForm {
         } else {
             table.setText(row++, 0, "");
         }
-        table.setText(row++, 0, "Roles:");
+        table.setText(row++, 0, "Groups:");
 
         // reset row counter for input fields
         row = 0;
@@ -143,7 +143,7 @@ public class UserForm extends AbstractAdministrationForm {
         }
 
         row++;
-        table.setText(row, 1, "Loading Roles...");
+        table.setText(row, 1, "Loading Groups...");
         // temp var for anonymous class
         final int groupRow = row;
         getSecurityService().getGroups(new AbstractCallback(adminPanel) {
@@ -206,7 +206,7 @@ public class UserForm extends AbstractAdministrationForm {
         };
         groupPanel = new SelectionPanel(groups, itemInfo,
                 user.getGroupIds(), 6,
-                "Available Roles", "Joined Roles");
+                "Available Groups", "Joined Groups");
         table.setWidget(currentRow, 1, groupPanel);
         FlexTable.FlexCellFormatter cellFormatter = (FlexTable.FlexCellFormatter) table.getCellFormatter();
         cellFormatter.setColSpan(currentRow, 1, 2);
@@ -266,7 +266,7 @@ public class UserForm extends AbstractAdministrationForm {
 
         // make sure admin user is still a member of the Administrators group
         if (!(newItem) && user.getUsername().equals(UBER_USER)) {
-            if (!(groupPanel.getSelectedValues().contains(getAdminRoleKey(this.wgroups)))) {
+            if (!(groupPanel.getSelectedValues().contains(getAdminGroupKey(this.wgroups)))) {
                 getErrorPanel().addMessage(UBER_USER + " user must be a member of the " + UBER_GROUP + " group");
                 isOk = false;
             }
@@ -277,7 +277,7 @@ public class UserForm extends AbstractAdministrationForm {
 
 
     /* find the key that maps to the Administrator group and verify */
-    private String getAdminRoleKey(Collection groups) {
+    private String getAdminGroupKey(Collection groups) {
         for (Iterator itr = groups.iterator(); itr.hasNext();) {
             WGroup wg = (WGroup) itr.next();
             if (wg.getName().equals(UBER_GROUP)) {
