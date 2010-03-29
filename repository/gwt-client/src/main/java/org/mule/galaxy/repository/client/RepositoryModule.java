@@ -42,7 +42,7 @@ public class RepositoryModule implements GalaxyModule {
 
     protected void addAdministrationMenuItems() {
 
-        AdministrationPanel adminPanel = galaxy.getAministrationPanel();
+        AdministrationPanel adminPanel = galaxy.getAdministrationPanel();
         if (galaxy.hasPermission("VIEW_ACTIVITY")) {
             adminPanel.addUtilityMenuItem(new NavMenuItem("Activity",
                                                           "ActivityPanel",

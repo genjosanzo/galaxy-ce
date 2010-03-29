@@ -311,7 +311,7 @@ public class Galaxy {
         }
     }
 
-    public AdministrationPanel getAministrationPanel() {
+    public AdministrationPanel getAdministrationPanel() {
         return adminPanel;
     }
 
