@@ -73,8 +73,8 @@ body {
 }
 
 .alert-header-icon {
-    background: url("images/tab_alerts_on.gif") no-repeat;
-    padding-left: 15px;
+    background:url("images/tab_alerts_on.gif") no-repeat;
+    padding:1px 0 0 17px;
 }
 
 .alert-header-right a, .alert-header-right a:visited {
