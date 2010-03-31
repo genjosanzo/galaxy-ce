@@ -210,10 +210,17 @@ public class Galaxy {
             }
         });
         footerPanel.add(product);
+
+        this.postProductInfoAdded();
+
         footerPanel.add(WidgetHelper.newSpacerPipe());
 
         Label copyright = new Label(getFooterText());
         footerPanel.add(copyright);
+    }
+    
+    protected void postProductInfoAdded() {
+    	
     }
 
     protected AboutPanel getAboutPanel() {
