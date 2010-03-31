@@ -21,6 +21,9 @@ package org.mule.galaxy.web.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.InvocationException;
+import com.google.gwt.user.client.rpc.StatusCodeException;
+
 import org.mule.galaxy.web.client.util.LightBox;
 
 
@@ -110,6 +113,13 @@ class HeartbeatTimer extends Timer
      */
     protected boolean isSessionKilled(Throwable t)
     {
+        if (t instanceof StatusCodeException) {
+            return false;
+        } else if (t instanceof InvocationException) {
+            return true;
+        }
+
+        // else follow the old method, not too a reliable one
         final String msg = t.getMessage();
         if (msg.indexOf("/j_acegi_security_check") > -1)
         {
