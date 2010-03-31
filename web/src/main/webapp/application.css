@@ -1130,6 +1130,13 @@ a:visited {
     margin: 8px;
 }
 
+.padding ul {
+    padding-left: 3em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    list-style: outside;
+}
+
 .buttonRow {
     margin: 8px;
     text-align: center;
