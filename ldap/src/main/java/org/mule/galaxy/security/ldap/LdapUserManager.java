@@ -138,6 +138,31 @@ public class LdapUserManager
             
         });
     }
+    
+    public List<User> getUsersForGroup(String groupId) {
+        return (List<User>) getLdapTemplate().execute(new LdapCallback() {
+
+            public Object doInDirContext(DirContext dirContext) throws NamingException {
+                List<User> users = new ArrayList<User>();
+                
+                BasicAttributes atts = new BasicAttributes();
+                for (Map.Entry<String, String> e : userSearchAttributes.entrySet()) {
+                    atts.put(e.getKey(), e.getValue());
+                }
+                
+                NamingEnumeration<SearchResult> results = dirContext.search(userSearchBase, atts);
+                while (results.hasMore()) {
+                    SearchResult result = results.next();
+                    
+                    users.add((User) userMapper.mapAttributes(null, result.getAttributes()));
+                }
+
+                dirContext.close();
+                return users;
+            }
+            
+        });
+    }
 
     public void save(User user) throws DuplicateItemException, NotFoundException {
         if (SecurityUtils.SYSTEM_USER.getId().equals(user.getId())) {

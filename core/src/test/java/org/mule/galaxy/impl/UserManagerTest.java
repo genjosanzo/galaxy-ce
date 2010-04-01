@@ -67,6 +67,9 @@ public class UserManagerTest extends AbstractGalaxyTest {
         assertEquals("dan", dan.getUsername());
         assertEquals("Dan Diephouse", dan.getName());
         assertNotNull(dan.getCreated());
+        
+        users = userManager.getUsersForGroup(accessControlManager.getGroupByName("Administrators").getId());
+        assertEquals(1, users.size());
     }
     
     public void testUserExistsException() throws Exception {

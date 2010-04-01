@@ -1,5 +1,7 @@
 package org.mule.galaxy.security;
 
+import java.util.List;
+
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.NotFoundException;
 
@@ -14,6 +16,8 @@ public interface UserManager extends Dao<User> {
     void setPassword(User user, String password);
 
     User getByUsername(String string) throws NotFoundException;
+    
+    List<User> getUsersForGroup(String groupId);
     
     /**
      * Whether or not this implementation allows you to update users, change passwords,

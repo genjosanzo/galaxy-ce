@@ -3,7 +3,6 @@ package org.mule.galaxy.impl.jcr;
 import static org.mule.galaxy.impl.jcr.JcrUtil.getStringOrNull;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -258,31 +257,11 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     @SuppressWarnings("unchecked")
     @Override
     protected List<User> doListAll(Session session) throws RepositoryException {
-        return (List<User>) execute(new JcrCallback() {
-            public Object doInJcr(Session session) throws IOException, RepositoryException {
-                QueryManager qm = getQueryManager(session);
-                Query q = qm.createQuery("/jcr:root/users/*[@enabled='true']", Query.XPATH);
-                QueryResult qr = q.execute();
-                
-                ArrayList<User> users = new ArrayList<User>();
-                for (NodeIterator nodes = qr.getNodes(); nodes.hasNext();) {
-                    Node node = nodes.nextNode();
-                    
-                    try {
-                        users.add(build(node, session));
-                    } catch (Exception e) {
-                        if (e instanceof RepositoryException) {
-                            throw (RepositoryException) e;
-                        } else if (e instanceof RuntimeException) {
-                            throw (RuntimeException) e;
-                        }
-                        throw new RuntimeException(e);
-                    }
-                }
+        return doQuery("/jcr:root/users/*[@enabled='true']");
+    }
 
-                return users;
-            }
-        });
+    public List<User> getUsersForGroup(String groupId) {
+        return doQuery("/jcr:root/users/*[@enabled='true' and @groups = '" + groupId + "']");
     }
 
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
