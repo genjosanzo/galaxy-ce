@@ -100,43 +100,45 @@ public class ScriptManagerImpl extends AbstractReflectionDao<Script>
     public String execute(final String scriptText, Script script) throws AccessException, RegistryException {
         accessControlManager.assertAccess(Permission.EXECUTE_ADMIN_SCRIPTS);
 
-        groovy.lang.Script gScript;
-        if (script != null && cache.containsKey(script.getId())) {
-            gScript = cache.get(script.getId());
-        } else {
-            gScript = getGroovyShell().parse(scriptText);
-            final Binding binding = new Binding();
-            binding.setProperty("applicationContext", applicationContext);
-
-            for (Map.Entry<String, Object> e : scriptVariables.entrySet()) {
-                binding.setProperty(e.getKey(), e.getValue());
-            }
-
-            // setup logger for the script
-            final String scriptLog;
-            if (script != null) {
-                // use physical script instance name
-                binding.setProperty("script", script);
-                scriptLog = String.format("admin.shell.script.[%s]", script.getName());
-            } else {
-                // runtime evaluation of an ad-hoc script
-                scriptLog = "admin.shell.script.[$shell]";
-            }
-            binding.setProperty("log", LogFactory.getLog(scriptLog));
-
-
-            gScript.setBinding(binding);
-
-            if (script != null) {
-                groovy.lang.Script newerValue = cache.putIfAbsent(script.getId(), gScript);
-                if (newerValue != null) {
-                    // other thread was faster, use its result instead
-                    gScript = newerValue;
-                }
-            }
-        }
 
         try {
+
+            groovy.lang.Script gScript;
+            if (script != null && cache.containsKey(script.getId())) {
+                gScript = cache.get(script.getId());
+            } else {
+                gScript = getGroovyShell().parse(scriptText);
+                final Binding binding = new Binding();
+                binding.setProperty("applicationContext", applicationContext);
+
+                for (Map.Entry<String, Object> e : scriptVariables.entrySet()) {
+                    binding.setProperty(e.getKey(), e.getValue());
+                }
+
+                // setup logger for the script
+                final String scriptLog;
+                if (script != null) {
+                    // use physical script instance name
+                    binding.setProperty("script", script);
+                    scriptLog = String.format("admin.shell.script.[%s]", script.getName());
+                } else {
+                    // runtime evaluation of an ad-hoc script
+                    scriptLog = "admin.shell.script.[$shell]";
+                }
+                binding.setProperty("log", LogFactory.getLog(scriptLog));
+
+
+                gScript.setBinding(binding);
+
+                if (script != null) {
+                    groovy.lang.Script newerValue = cache.putIfAbsent(script.getId(), gScript);
+                    if (newerValue != null) {
+                        // other thread was faster, use its result instead
+                        gScript = newerValue;
+                    }
+                }
+            }
+            
             final groovy.lang.Script finalGScript = gScript;
             return (String)JcrUtil.doInTransaction(getSessionFactory(), new JcrCallback() {
 
