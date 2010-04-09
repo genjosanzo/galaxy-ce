@@ -295,7 +295,7 @@ public class Galaxy {
     }
 
     protected String getFooterText() {
-        return "Copyright 2009 MuleSoft, Inc. All rights reserved";
+        return "Copyright 2010 MuleSoft, Inc. All rights reserved";
     }
 
     protected native String getProductName()
