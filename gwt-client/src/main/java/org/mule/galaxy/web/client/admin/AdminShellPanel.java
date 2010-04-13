@@ -20,7 +20,7 @@ package org.mule.galaxy.web.client.admin;
 
 import java.util.List;
 
-import org.mule.galaxy.web.client.util.panel.BasicContentPanel;
+import org.mule.galaxy.web.client.ui.panel.BasicContentPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WScript;
 

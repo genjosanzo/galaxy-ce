@@ -21,9 +21,9 @@ package org.mule.galaxy.repository.client.item;
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.client.admin.PolicyPanel;
 import org.mule.galaxy.repository.rpc.ItemInfo;
-import org.mule.galaxy.web.client.AbstractFlowComposite;
+import org.mule.galaxy.web.client.ui.panel.AbstractFlowComposite;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.ShowableTabListener;
+import org.mule.galaxy.web.client.ui.panel.ShowableTabListener;
 import org.mule.galaxy.web.rpc.SecurityService;
 
 import com.extjs.gxt.ui.client.event.Events;

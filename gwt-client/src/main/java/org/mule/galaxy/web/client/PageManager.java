@@ -1,5 +1,8 @@
 package org.mule.galaxy.web.client;
 
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
+import org.mule.galaxy.web.client.ui.panel.Showable;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

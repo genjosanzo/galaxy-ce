@@ -29,7 +29,7 @@ import java.util.Map;
 
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.WApprovalMessage;
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.ui.panel.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 
 public class PolicyResultsPanel extends AbstractErrorShowingComposite {

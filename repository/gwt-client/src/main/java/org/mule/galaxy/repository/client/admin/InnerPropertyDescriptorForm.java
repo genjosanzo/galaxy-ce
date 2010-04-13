@@ -20,7 +20,7 @@ package org.mule.galaxy.repository.client.admin;
 
 import org.mule.galaxy.repository.client.property.PropertyInterfaceManager;
 import org.mule.galaxy.repository.rpc.WPropertyDescriptor;
-import org.mule.galaxy.web.client.AbstractShowable;
+import org.mule.galaxy.web.client.ui.panel.AbstractShowable;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.WExtensionInfo;
 

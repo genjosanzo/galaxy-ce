@@ -7,9 +7,9 @@ import org.mule.galaxy.repository.client.admin.PolicyPanel;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.repository.rpc.WPolicyException;
 import org.mule.galaxy.repository.rpc.WProperty;
-import org.mule.galaxy.web.client.AbstractShowable;
-import org.mule.galaxy.web.client.ErrorPanel;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.ui.panel.AbstractShowable;
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
+import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.extjs.gxt.ui.client.event.Listener;

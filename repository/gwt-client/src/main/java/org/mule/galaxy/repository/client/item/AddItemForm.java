@@ -18,13 +18,6 @@
 
 package org.mule.galaxy.repository.client.item;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.client.browse.PolicyResultsPanel;
 import org.mule.galaxy.repository.client.property.AbstractPropertyRenderer;
@@ -36,12 +29,12 @@ import org.mule.galaxy.repository.client.util.WTypeComparator;
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.WPropertyDescriptor;
 import org.mule.galaxy.repository.rpc.WType;
-import org.mule.galaxy.web.client.AbstractFlowComposite;
-import org.mule.galaxy.web.client.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
-import org.mule.galaxy.web.client.util.StringUtil;
-import org.mule.galaxy.web.client.util.TooltipListener;
+import org.mule.galaxy.web.client.ui.panel.AbstractFlowComposite;
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
+import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
+import org.mule.galaxy.web.client.ui.util.StringUtil;
+import org.mule.galaxy.web.client.ui.util.TooltipListener;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 
@@ -64,12 +57,19 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This form is definitely complex and ugly, so here's a run down of how it works.

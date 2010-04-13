@@ -32,7 +32,7 @@ import org.mule.galaxy.repository.client.property.AbstractPropertyRenderer;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.repository.rpc.WPolicyException;
 import org.mule.galaxy.repository.rpc.WPropertyDescriptor;
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.ui.panel.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SecurityService;

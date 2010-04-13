@@ -17,7 +17,7 @@
  */
 package org.mule.galaxy.web.client;
 
-import static org.mule.galaxy.web.client.WidgetHelper.newSpacerPipe;
+import static org.mule.galaxy.web.client.ui.panel.WidgetHelper.newSpacerPipe;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -25,11 +25,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.client.ui.AdministrationConstants;
-import org.mule.galaxy.web.client.ui.BaseConstants;
-import org.mule.galaxy.web.client.ui.BaseMessages;
-import org.mule.galaxy.web.client.util.ExternalHyperlink;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.ui.help.AdministrationConstants;
+import org.mule.galaxy.web.client.ui.help.BaseConstants;
+import org.mule.galaxy.web.client.ui.help.BaseMessages;
+import org.mule.galaxy.web.client.ui.panel.AboutPanel;
+import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
+import org.mule.galaxy.web.client.ui.ExternalHyperlink;
+import org.mule.galaxy.web.client.ui.panel.PluginPanel;
+import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 import org.mule.galaxy.web.rpc.AdminService;
 import org.mule.galaxy.web.rpc.AdminServiceAsync;
 import org.mule.galaxy.web.rpc.ApplicationInfo;

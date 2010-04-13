@@ -27,10 +27,10 @@ import java.util.Map;
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.WSearchResults;
-import org.mule.galaxy.web.client.AbstractShowable;
+import org.mule.galaxy.web.client.ui.panel.AbstractShowable;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.TooltipListener;
+import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
+import org.mule.galaxy.web.client.ui.util.TooltipListener;
 
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;

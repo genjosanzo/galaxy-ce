@@ -2,8 +2,9 @@ package org.mule.galaxy.repository.client.property;
 
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.Widget;
-import org.mule.galaxy.web.client.util.ExternalHyperlink;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
+
+import org.mule.galaxy.web.client.ui.ExternalHyperlink;
+import org.mule.galaxy.web.client.ui.field.ValidatableTextBox;
 
 public class ArtifactRenderer extends AbstractPropertyRenderer {
 

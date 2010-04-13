@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mule.galaxy.repository.client.RepositoryModule;
-import org.mule.galaxy.web.client.ErrorPanel;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
+import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

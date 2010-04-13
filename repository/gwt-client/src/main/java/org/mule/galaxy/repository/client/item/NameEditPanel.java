@@ -24,9 +24,9 @@ import org.mule.galaxy.repository.client.admin.PolicyPanel;
 import org.mule.galaxy.repository.client.util.ItemPathOracle;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.repository.rpc.WPolicyException;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
+import org.mule.galaxy.web.client.ui.field.ValidatableTextBox;
+import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
+import org.mule.galaxy.web.client.ui.validator.StringNotEmptyValidator;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
 

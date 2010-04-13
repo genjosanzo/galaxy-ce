@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mule.galaxy.web.client.AbstractErrorShowingComposite;
+import org.mule.galaxy.web.client.ui.panel.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
 
 public class PolicyResultsPanel extends AbstractErrorShowingComposite {

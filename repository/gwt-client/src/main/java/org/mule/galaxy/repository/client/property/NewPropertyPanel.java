@@ -27,9 +27,8 @@ import org.mule.galaxy.repository.client.util.PropertyDescriptorComparator;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.repository.rpc.WProperty;
 import org.mule.galaxy.repository.rpc.WPropertyDescriptor;
-import org.mule.galaxy.web.client.ErrorPanel;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
+import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.google.gwt.user.client.ui.Button;
@@ -61,7 +60,7 @@ public class NewPropertyPanel extends Composite {
     private final RepositoryModule repositoryModule;
 
     public NewPropertyPanel(final RepositoryModule repositoryModule,
-                            final ErrorPanel registryPanel, 
+                            final ErrorPanel registryPanel,
                             final RegistryServiceAsync registryService,
                             final String itemId,
                             final Panel propertiesPanel,

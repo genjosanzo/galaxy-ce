@@ -4,8 +4,8 @@ import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.repository.rpc.WArtifactType;
 import org.mule.galaxy.web.client.admin.AbstractAdministrationForm;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.client.util.QNameListBox;
-import org.mule.galaxy.web.client.util.StringListBox;
+import org.mule.galaxy.web.client.ui.field.QNameListBox;
+import org.mule.galaxy.web.client.ui.field.StringListBox;
 
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;

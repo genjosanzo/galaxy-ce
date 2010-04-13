@@ -6,13 +6,13 @@ import java.util.List;
 
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.rpc.ItemInfo;
-import org.mule.galaxy.web.client.AbstractFlowComposite;
+import org.mule.galaxy.web.client.ui.panel.AbstractFlowComposite;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.WidgetHelper;
-import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
-import org.mule.galaxy.web.client.util.LightBox;
-import org.mule.galaxy.web.client.util.ToolbarButton;
-import org.mule.galaxy.web.client.util.ToolbarButtonEvent;
+import org.mule.galaxy.web.client.ui.dialog.LightBox;
+import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
+import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
+import org.mule.galaxy.web.client.ui.button.ToolbarButton;
+import org.mule.galaxy.web.client.ui.button.ToolbarButtonEvent;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.extjs.gxt.ui.client.data.BeanModel;

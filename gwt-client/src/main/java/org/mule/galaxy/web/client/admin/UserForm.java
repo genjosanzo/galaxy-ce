@@ -19,11 +19,11 @@
 package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
-import org.mule.galaxy.web.client.util.AbstractErrorHandlingPopup;
-import org.mule.galaxy.web.client.util.LightBox;
-import org.mule.galaxy.web.client.util.SelectionPanel;
-import org.mule.galaxy.web.client.util.SelectionPanel.ItemInfo;
+import org.mule.galaxy.web.client.ui.AbstractErrorHandlingPopup;
+import org.mule.galaxy.web.client.ui.dialog.LightBox;
+import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
+import org.mule.galaxy.web.client.ui.panel.SelectionPanel;
+import org.mule.galaxy.web.client.ui.panel.SelectionPanel.ItemInfo;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WGroup;
@@ -37,7 +37,6 @@ import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ButtonBar;
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;

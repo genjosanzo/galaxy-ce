@@ -24,13 +24,13 @@ import java.util.Iterator;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.repository.rpc.WLifecycle;
 import org.mule.galaxy.repository.rpc.WPhase;
-import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.ui.field.ValidatableTextBox;
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 import org.mule.galaxy.web.client.admin.AbstractAdministrationForm;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
-import org.mule.galaxy.web.client.util.LightBox;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
+import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
+import org.mule.galaxy.web.client.ui.dialog.LightBox;
+import org.mule.galaxy.web.client.ui.validator.StringNotEmptyValidator;
 
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.Listener;

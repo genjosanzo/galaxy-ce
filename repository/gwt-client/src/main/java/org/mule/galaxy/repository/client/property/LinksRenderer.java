@@ -8,10 +8,10 @@ import java.util.List;
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.client.util.ItemPathOracle;
 import org.mule.galaxy.repository.rpc.WLinks;
-import org.mule.galaxy.web.client.ErrorPanel;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.validation.Validator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableSuggestBox;
+import org.mule.galaxy.web.client.ui.field.ValidatableSuggestBox;
+import org.mule.galaxy.web.client.ui.field.Validator;
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
+import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.LinkInfo;
 

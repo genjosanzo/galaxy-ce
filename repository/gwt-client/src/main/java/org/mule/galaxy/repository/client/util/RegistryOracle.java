@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.client.util.Oracle;
+import org.mule.galaxy.web.client.ui.field.Oracle;
 
 import com.extjs.gxt.ui.client.data.BaseModelData;
 import com.extjs.gxt.ui.client.data.BasePagingLoadResult;

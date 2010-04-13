@@ -3,9 +3,9 @@ package org.mule.galaxy.repository.client.property;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextBox;
+import org.mule.galaxy.web.client.ui.field.ValidatableTextBox;
+import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
+import org.mule.galaxy.web.client.ui.validator.StringNotEmptyValidator;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;

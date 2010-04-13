@@ -4,7 +4,7 @@ import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.repository.rpc.WIndex;
 import org.mule.galaxy.web.client.admin.AbstractAdministrationForm;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.client.util.QNameListBox;
+import org.mule.galaxy.web.client.ui.field.QNameListBox;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;

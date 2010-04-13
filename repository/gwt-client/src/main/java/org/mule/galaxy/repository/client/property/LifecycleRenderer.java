@@ -13,7 +13,7 @@ import java.util.List;
 
 import org.mule.galaxy.repository.rpc.WLifecycle;
 import org.mule.galaxy.repository.rpc.WPhase;
-import org.mule.galaxy.web.client.AbstractShowable;
+import org.mule.galaxy.web.client.ui.panel.AbstractShowable;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 public class LifecycleRenderer extends AbstractPropertyRenderer {

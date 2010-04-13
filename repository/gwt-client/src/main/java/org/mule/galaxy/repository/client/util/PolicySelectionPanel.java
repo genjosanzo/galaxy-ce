@@ -35,11 +35,11 @@ import java.util.Iterator;
 
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.repository.rpc.WPolicy;
-import org.mule.galaxy.web.client.AbstractShowable;
-import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.ui.panel.AbstractShowable;
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
-public class PolicySelectionPanel extends AbstractShowable{
+public class PolicySelectionPanel extends AbstractShowable {
 
     private ListBox unselectedPolicies;
     private ListBox selectedPolicies;

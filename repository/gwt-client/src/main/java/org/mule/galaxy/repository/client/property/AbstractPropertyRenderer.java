@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.google.gwt.user.client.ui.Widget;

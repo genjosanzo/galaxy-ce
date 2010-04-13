@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.repository.rpc.WType;
-import org.mule.galaxy.web.client.WidgetHelper;
+import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 import org.mule.galaxy.web.client.admin.AbstractAdministrationComposite;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;

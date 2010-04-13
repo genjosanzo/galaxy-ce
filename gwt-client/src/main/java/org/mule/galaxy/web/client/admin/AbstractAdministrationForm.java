@@ -19,7 +19,7 @@
 package org.mule.galaxy.web.client.admin;
 
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.AbstractForm;
+import org.mule.galaxy.web.client.ui.panel.AbstractForm;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 
 public abstract class AbstractAdministrationForm extends AbstractForm {

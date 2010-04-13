@@ -6,9 +6,9 @@ import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.repository.rpc.WIndex;
 import org.mule.galaxy.web.client.admin.AbstractAdministrationComposite;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.client.util.ConfirmDialog;
-import org.mule.galaxy.web.client.util.ConfirmDialogAdapter;
-import org.mule.galaxy.web.client.util.LightBox;
+import org.mule.galaxy.web.client.ui.dialog.ConfirmDialog;
+import org.mule.galaxy.web.client.ui.dialog.ConfirmDialogAdapter;
+import org.mule.galaxy.web.client.ui.dialog.LightBox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.google.gwt.event.dom.client.ClickEvent;

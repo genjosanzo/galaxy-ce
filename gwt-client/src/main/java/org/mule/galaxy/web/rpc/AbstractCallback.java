@@ -23,7 +23,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.InvocationException;
 import com.google.gwt.user.client.rpc.StatusCodeException;
 
-import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 
 public abstract class AbstractCallback<T> implements AsyncCallback<T> {
     private ErrorPanel errorPanel;

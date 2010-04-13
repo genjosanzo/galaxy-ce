@@ -18,13 +18,13 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.AbstractShowable;
+import org.mule.galaxy.web.client.ui.panel.AbstractShowable;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.MenuPanel;
-import org.mule.galaxy.web.client.NavMenuItem;
+import org.mule.galaxy.web.client.ui.panel.MenuPanel;
+import org.mule.galaxy.web.client.ui.NavMenuItem;
 import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.PageManager;
-import org.mule.galaxy.web.client.WidgetHelper;
+import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 
 import com.extjs.gxt.ui.client.widget.ContentPanel;

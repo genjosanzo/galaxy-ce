@@ -22,7 +22,7 @@ import com.extjs.gxt.ui.client.data.LoadEvent;
 import com.extjs.gxt.ui.client.event.LoadListener;
 import com.google.gwt.core.client.GWT;
 
-import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 
 public class DefaultLoadListener extends LoadListener {
     private ErrorPanel errorPanel;

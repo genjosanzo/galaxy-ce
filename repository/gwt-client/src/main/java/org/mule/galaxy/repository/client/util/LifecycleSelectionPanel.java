@@ -31,8 +31,8 @@ import java.util.Iterator;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.repository.rpc.WLifecycle;
 import org.mule.galaxy.repository.rpc.WPhase;
-import org.mule.galaxy.web.client.AbstractShowable;
-import org.mule.galaxy.web.client.ErrorPanel;
+import org.mule.galaxy.web.client.ui.panel.AbstractShowable;
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 public class LifecycleSelectionPanel extends AbstractShowable {

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: SessionKilledDialog.java 2230 2010-03-31 20:05:12Z andrew $
  * --------------------------------------------------------------------------------------
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,9 @@
 
 package org.mule.galaxy.web.client;
 
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.HeartbeatTimer;
+import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;

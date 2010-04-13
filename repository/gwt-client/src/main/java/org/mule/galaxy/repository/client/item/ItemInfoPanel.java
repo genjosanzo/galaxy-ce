@@ -25,15 +25,16 @@ import org.mule.galaxy.repository.client.property.EntryMetadataPanel;
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.repository.rpc.WComment;
-import org.mule.galaxy.web.client.AbstractShowable;
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableTextArea;
+import org.mule.galaxy.web.client.ui.panel.AbstractShowable;
+import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
+import org.mule.galaxy.web.client.ui.validator.FieldNotEmptyValidator;
+import org.mule.galaxy.web.client.ui.validator.StringNotEmptyValidator;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.History;
@@ -192,9 +193,11 @@ public class ItemInfoPanel extends AbstractShowable {
         final VerticalPanel addCommentPanel = new VerticalPanel();
         addCommentPanel.setStyleName("addComment");
 
-        final ValidatableTextArea textArea = new ValidatableTextArea(new StringNotEmptyValidator());
-        textArea.getTextArea().setCharacterWidth(60);
-        textArea.getTextArea().setVisibleLines(5);
+        final TextArea textArea = new TextArea();
+        textArea.setValidator(new FieldNotEmptyValidator());
+
+        textArea.setWidth(60);
+        textArea.setHeight(50);
 
         addCommentPanel.add(textArea);
         
@@ -252,7 +255,7 @@ public class ItemInfoPanel extends AbstractShowable {
 
     protected void addComment(final Panel parent,
                               final Panel addCommentPanel, 
-                              final ValidatableTextArea text,
+                              final TextArea text,
                               final Button cancelButton, 
                               final Button addButton, 
                               final String parentId,
@@ -260,17 +263,17 @@ public class ItemInfoPanel extends AbstractShowable {
 
         cancelButton.setEnabled(false);
         addButton.setEnabled(false);
-        text.getTextArea().setEnabled(false);
+        text.setEnabled(false);
         
         RegistryServiceAsync svc = menuPanel.getRepositoryModule().getRegistryService();
-        svc.addComment(info.getId(), parentId, text.getTextArea().getText(), new AbstractCallback(menuPanel) {
+        svc.addComment(info.getId(), parentId, text.getValue(), new AbstractCallback(menuPanel) {
 
             public void onFailure(Throwable caught) {
                 super.onFailure(caught);
                 
                 cancelButton.setEnabled(true);
                 addButton.setEnabled(true);
-                text.getTextArea().setEnabled(true);
+                text.setEnabled(true);
             }
 
             public void onSuccess(Object o) {
@@ -291,7 +294,7 @@ public class ItemInfoPanel extends AbstractShowable {
         });
     }
 
-    protected boolean validateComment(ValidatableTextArea textArea) {
+    protected boolean validateComment(TextArea textArea) {
         boolean isOk = true;
         isOk &= textArea.validate();
         return isOk;

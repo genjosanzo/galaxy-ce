@@ -2,8 +2,8 @@ package org.mule.galaxy.repository.client.property;
 
 import java.util.Collection;
 
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.util.StringListBox;
+import org.mule.galaxy.web.client.ui.field.StringListBox;
+import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
 
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;

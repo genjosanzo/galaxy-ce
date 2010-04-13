@@ -18,7 +18,7 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.AbstractFlowComposite;
+import org.mule.galaxy.web.client.ui.panel.AbstractFlowComposite;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 
 public abstract class AbstractAdministrationComposite extends AbstractFlowComposite {

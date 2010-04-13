@@ -26,9 +26,9 @@ import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.repository.rpc.WLifecycle;
 import org.mule.galaxy.web.client.admin.AbstractAdministrationComposite;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
-import org.mule.galaxy.web.client.util.FauxLinkRenderer;
-import org.mule.galaxy.web.client.util.ListCellRenderer;
+import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
+import org.mule.galaxy.web.client.ui.renderer.FauxLinkRenderer;
+import org.mule.galaxy.web.client.ui.renderer.ListCellRenderer;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.extjs.gxt.ui.client.data.BeanModel;

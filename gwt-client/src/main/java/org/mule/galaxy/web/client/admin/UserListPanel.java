@@ -21,9 +21,9 @@ package org.mule.galaxy.web.client.admin;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
-import org.mule.galaxy.web.client.util.FauxLinkRenderer;
-import org.mule.galaxy.web.client.util.panel.FullContentPanel;
+import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
+import org.mule.galaxy.web.client.ui.renderer.FauxLinkRenderer;
+import org.mule.galaxy.web.client.ui.panel.FullContentPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WUser;
 

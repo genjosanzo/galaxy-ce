@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: HeartbeatTimer.java 2231 2010-03-31 20:28:54Z andrew $
  * --------------------------------------------------------------------------------------
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,17 +18,17 @@
 
 package org.mule.galaxy.web.client;
 
+import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.ui.dialog.LightBox;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.InvocationException;
 import com.google.gwt.user.client.rpc.StatusCodeException;
 
-import org.mule.galaxy.web.client.util.LightBox;
 
-
-class HeartbeatTimer extends Timer
-{
+class HeartbeatTimer extends Timer {
     private Galaxy galaxy;
 
     private volatile boolean dialogVisible = false;
@@ -38,39 +38,30 @@ class HeartbeatTimer extends Timer
     protected SessionKilledDialog dialog;
     protected boolean serverUp = true;
     protected boolean logged = false;
-    
-    public HeartbeatTimer(final Galaxy galaxy)
-    {
+
+    public HeartbeatTimer(final Galaxy galaxy) {
         this.galaxy = galaxy;
         scheduleRepeating(intervalSeconds * 1000); // accepts ms
     }
 
-    public void run()
-    {
+    public void run() {
         // TODO check how we can provide more client info, and if it makes sense to
         galaxy.getHeartbeatService().ping("web", new AsyncCallback() {
 
-            public void onFailure(final Throwable throwable)
-            {
+            public void onFailure(final Throwable throwable) {
                 serverUp = isSessionKilled(throwable);
 
-                if (!dialogVisible)
-                {
+                if (!dialogVisible) {
                     dialog = new SessionKilledDialog(galaxy, HeartbeatTimer.this);
                     new LightBox(dialog).show();
-                }
-                else
-                {
+                } else {
                     // cancel, the dialog will trigger this heartbeat timer again periodically
                     cancel();
                 }
 
-                if (serverUp)
-                {
+                if (serverUp) {
                     dialog.onServerUp();
-                }
-                else
-                {
+                } else {
                     dialog.onServerDown();
                 }
 
@@ -83,8 +74,7 @@ class HeartbeatTimer extends Timer
                 }
             }
 
-            public void onSuccess(final Object o)
-            {
+            public void onSuccess(final Object o) {
                 // everything is fine, do nothing
                 // TODO hide panel, go to app root for login
                 logged = false;
@@ -92,18 +82,15 @@ class HeartbeatTimer extends Timer
         });
     }
 
-    public void scheduleRepeating(final int i)
-    {
+    public void scheduleRepeating(final int i) {
         super.scheduleRepeating(i);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
-    public int getIntervalSeconds()
-    {
+    public int getIntervalSeconds() {
         return intervalSeconds;
     }
 
-    public void onDialogDismissed()
-    {
+    public void onDialogDismissed() {
         dialogVisible = false;
     }
 
@@ -111,8 +98,7 @@ class HeartbeatTimer extends Timer
      * A small hack to workaround GWT 1.4.x limitations. Try to guess from the stacktrace if
      * the server is still up and client session has got killed only.
      */
-    protected boolean isSessionKilled(Throwable t)
-    {
+    protected boolean isSessionKilled(Throwable t) {
         if (t instanceof StatusCodeException) {
             return false;
         } else if (t instanceof InvocationException) {
@@ -121,16 +107,14 @@ class HeartbeatTimer extends Timer
 
         // else follow the old method, not too a reliable one
         final String msg = t.getMessage();
-        if (msg.indexOf("/j_acegi_security_check") > -1)
-        {
+        if (msg.indexOf("/j_acegi_security_check") > -1) {
             return true;
         }
 
         return false;
     }
 
-    public boolean isServerUp()
-    {
+    public boolean isServerUp() {
         return serverUp;
     }
 }

@@ -18,10 +18,8 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.validation.StringNotEmptyValidator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableListBox;
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.ui.help.InlineHelpPanel;
+import org.mule.galaxy.web.client.ui.field.ValidatableListBox;
+import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.AdminServiceAsync;
 import org.mule.galaxy.web.rpc.WScript;
@@ -45,7 +43,7 @@ import java.util.List;
 
 public class ScheduleForm extends AbstractAdministrationForm {
 
-    private ValidatableListBox scriptLB;
+    private ListBox scriptLB;
     private TextField<String> nameTB;
     private TextField<String> cronTB;
     private TextArea descriptionTA;
@@ -84,7 +82,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
         table.setText(row++, 0, "Allow Concurrent Execution:");
 
         row = 0;
-        scriptLB = new ValidatableListBox(new StringNotEmptyValidator());
+        scriptLB = new ListBox();
         table.setWidget(row, 1, scriptLB);
         loadScripts();
 
@@ -134,7 +132,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
     }
 
     protected void finishLoadScripts(List<WScript> scripts) {
-        ListBox lb = scriptLB.getListBox();
+        ListBox lb = scriptLB;
         for (WScript s : scripts) {
             lb.addItem(s.getName(), s.getId());
 
@@ -204,7 +202,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
         job.setExpression(cronTB.getValue());
         job.setConcurrentExecutionAllowed(concurrentCB.getValue());
         
-        ListBox lb = scriptLB.getListBox();
+        ListBox lb = scriptLB;
         int selectedIndex = lb.getSelectedIndex();
         if (selectedIndex != -1) {
             job.setScript(lb.getValue(selectedIndex));

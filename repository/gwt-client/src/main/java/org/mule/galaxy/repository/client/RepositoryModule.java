@@ -14,7 +14,7 @@ import org.mule.galaxy.repository.rpc.RegistryService;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.GalaxyModule;
-import org.mule.galaxy.web.client.NavMenuItem;
+import org.mule.galaxy.web.client.ui.NavMenuItem;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 
 import com.google.gwt.core.client.GWT;

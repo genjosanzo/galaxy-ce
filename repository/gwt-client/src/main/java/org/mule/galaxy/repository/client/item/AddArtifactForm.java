@@ -8,7 +8,7 @@ import java.util.Map;
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.repository.rpc.WType;
-import org.mule.galaxy.web.client.util.AbstractErrorHandlingPopup;
+import org.mule.galaxy.web.client.ui.AbstractErrorHandlingPopup;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;

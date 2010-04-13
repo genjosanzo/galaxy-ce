@@ -3,9 +3,9 @@ package org.mule.galaxy.repository.client.property;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.mule.galaxy.web.client.util.InlineFlowPanel;
-import org.mule.galaxy.web.client.validation.Validator;
-import org.mule.galaxy.web.client.validation.ui.ValidatableWidget;
+import org.mule.galaxy.web.client.ui.field.ValidatableWidget;
+import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
+import org.mule.galaxy.web.client.ui.field.Validator;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WUser;
 

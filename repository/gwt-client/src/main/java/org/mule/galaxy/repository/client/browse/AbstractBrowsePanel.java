@@ -23,9 +23,9 @@ import java.util.List;
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.repository.rpc.WSearchResults;
-import org.mule.galaxy.web.client.AbstractWithTopComposite;
+import org.mule.galaxy.web.client.ui.panel.AbstractWithTopComposite;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.util.Toolbox;
+import org.mule.galaxy.web.client.ui.panel.Toolbox;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.google.gwt.user.client.ui.Widget;
