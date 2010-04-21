@@ -200,7 +200,7 @@ public class DefaultEventManager implements EventManager {
 
     public void removeListener(Object listener) {
         synchronized (listenersLock) {
-            List<InternalGalaxyEventListener> adapters = listeners.get((Object)listener);
+            List<InternalGalaxyEventListener> adapters = listeners.get(listener);
             if (adapters != null) {
                 for (InternalGalaxyEventListener i : adapters) {
                     removeAdapter(i);
