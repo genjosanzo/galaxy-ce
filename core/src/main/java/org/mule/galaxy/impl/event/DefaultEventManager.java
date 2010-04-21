@@ -203,13 +203,13 @@ public class DefaultEventManager implements EventManager {
             List<InternalGalaxyEventListener> adapters = listeners.get((Object)listener);
             if (adapters != null) {
                 for (InternalGalaxyEventListener i : adapters) {
-                    removeAdapater(i);
+                    removeAdapter(i);
                 }
             }
         }
     }
 
-    protected void removeAdapater(InternalGalaxyEventListener i) {
+    protected void removeAdapter(InternalGalaxyEventListener i) {
         for (List<InternalGalaxyEventListener> list : event2listeners.values()) {
             list.remove(i);
         }
