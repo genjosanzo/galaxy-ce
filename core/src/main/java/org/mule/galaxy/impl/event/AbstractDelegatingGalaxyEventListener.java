@@ -1,8 +1,10 @@
 package org.mule.galaxy.impl.event;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -179,13 +181,25 @@ public abstract class AbstractDelegatingGalaxyEventListener implements Delegatin
 
         public void runInTransaction() {
             try {
-                
-                method.invoke(delegate, event);
+                // special handling of dynamic proxies, otherwise
+                // actual method doesn't match an instance (it's a proxy class now)
+                if (Proxy.isProxyClass(delegate.getClass())) {
+                    final InvocationHandler invocationHandler = Proxy.getInvocationHandler(delegate);
+                    invocationHandler.invoke(delegate, method, new Object[]{event});
+                } else {
+                    // straight method invocation on an object, no bells and whistles
+                    method.invoke(delegate, event);
+                }
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             } catch (InvocationTargetException itex) {
                 final Throwable cause = itex.getTargetException();
                 throw new RuntimeException(cause);
+            } catch (Throwable t) {
+                if (t instanceof InvocationTargetException) {
+                    t = ((InvocationTargetException) t).getTargetException();
+                }
+                throw new RuntimeException(t);
             }
         }
     }
