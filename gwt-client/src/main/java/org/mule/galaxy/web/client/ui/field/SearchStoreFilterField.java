@@ -7,7 +7,7 @@ import com.extjs.gxt.ui.client.event.KeyListener;
 import com.extjs.gxt.ui.client.event.KeyboardEvents;
 import com.extjs.gxt.ui.client.widget.form.StoreFilterField;
 
-public abstract class SearchStoreFilterField<M extends ModelData> extends StoreFilterField {
+public abstract class SearchStoreFilterField<M extends ModelData> extends StoreFilterField<M> {
 
     public SearchStoreFilterField() {
         super();

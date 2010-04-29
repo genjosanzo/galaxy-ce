@@ -6,7 +6,7 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.tips.QuickTip;
 
-public class BasicGrid<M extends ModelData> extends Grid {
+public class BasicGrid<M extends ModelData> extends Grid<M> {
 
     public BasicGrid(ListStore<M> store, ColumnModel cm) {
         super(store, cm);
