@@ -54,7 +54,7 @@ public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob> {
         super.doSave(t, node, isNew, isMoved, session);
         
         try {
-            Class cls; 
+            Class<?> cls; 
             if (!t.isConcurrentExecutionAllowed()) {
                 cls = StatefulExecuteScriptJob.class;
             } else {
@@ -67,6 +67,7 @@ public class ScriptJobDaoImpl extends AbstractReflectionDao<ScriptJob> {
             
             CronTrigger trigger = new CronTrigger(name, null, t.getExpression());
             trigger.setJobName(name);
+            trigger.setMisfireInstruction(CronTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW );
             
             if (origName != null) {
                 scheduler.deleteJob(origName, null);
