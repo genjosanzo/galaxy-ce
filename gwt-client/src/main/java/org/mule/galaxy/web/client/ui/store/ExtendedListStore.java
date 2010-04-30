@@ -24,7 +24,11 @@ public class ExtendedListStore<M extends ModelData> extends ListStore<M> {
      * @return the items
      */
     public List<M> getAllModels() {
-      return new ArrayList<M>(snapshot);
+        if (isFiltered()) {
+            return new ArrayList<M>(snapshot);
+        } else {
+            return getModels();
+        }
     }
 
 }
