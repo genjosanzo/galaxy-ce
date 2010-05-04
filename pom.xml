@@ -82,13 +82,12 @@
                 <groupId>com.extjs</groupId>
                 <artifactId>gxt</artifactId>
                 <version>2.1.1-gwt2</version>
-
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <scope>test</scope>
-                <version>3.8.2</version>
+                <version>4.8.1</version>
             </dependency>
             <dependency>
                 <groupId>commons-lang</groupId>
@@ -198,6 +197,10 @@
                     <exclusion>
                         <groupId>commons-logging</groupId>
                         <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.geronimo.specs</groupId>
+                        <artifactId>geronimo-stax-api_1.0_spec</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
