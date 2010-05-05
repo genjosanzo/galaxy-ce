@@ -1,16 +1,18 @@
 package org.mule.galaxy.web.client;
 
-import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
-import org.mule.galaxy.web.client.ui.panel.Showable;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
+import org.mule.galaxy.web.client.ui.panel.Showable;
+
+import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.event.TabPanelEvent;
+import com.extjs.gxt.ui.client.widget.ReloadableTabPanel;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
@@ -29,10 +31,15 @@ public class PageManager implements ValueChangeHandler<String>{
     private boolean suppressTabHistory;
     private Map<String, PageInfo> history = new HashMap<String, PageInfo>();
     private List<String> tabNames = new ArrayList<String>();
-    
+
     public PageManager() {
         super();
-        tabPanel = new TabPanel();
+        tabPanel = new ReloadableTabPanel() {
+            @Override
+            protected void onLastSelectedItemClick(TabItem item, ComponentEvent ce) {
+                PageManager.this.onHistoryChanged(getToken(getCurrentPage()));
+            }
+        };
         tabPanel.setBorderStyle(false);
         tabPanel.setAutoHeight(true);
         tabPanel.setAutoWidth(true);
@@ -54,7 +61,11 @@ public class PageManager implements ValueChangeHandler<String>{
 
         });
     }
-    
+
+    private String getToken(PageInfo page) {
+        return tabNames.get(page.getTabIndex());
+    }
+
     public PageInfo getCurrentPage() {
         return curInfo;
     }
@@ -196,12 +207,12 @@ public class PageManager implements ValueChangeHandler<String>{
         createTab(index, name, token, toolTip);
         return index;
     }
-    
+
     public void createTab(int index, String name, String token, String toolTip) {
         tabPanel.insert(createEmptyTab(name, toolTip), index);
         tabNames.add(index, token);
     }
-    
+
     protected TabItem createEmptyTab(String name, String toolTip) {
         TabItem tab = new TabItem();
         TabItem.HeaderItem header = tab.getHeader();
@@ -213,6 +224,5 @@ public class PageManager implements ValueChangeHandler<String>{
         tab.setLayout(new FlowLayout());
         return tab;
     }
-
 
 }

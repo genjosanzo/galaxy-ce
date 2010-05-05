@@ -21,17 +21,21 @@ public class ReloadableTabPanel extends TabPanel {
     @Override
     void onItemClick(TabItem item, ComponentEvent ce) {
         if (item == lastSelectedItem) {
-            GWT.log("Force reloading the tab " + item.getText(), null);
-            final List<Listener<? extends BaseEvent>> listeners = getListeners(Events.Select);
-            for (Listener<? extends BaseEvent> listener : listeners) {
-                if (listener instanceof ShowableTabListener) {
-                    ShowableTabListener l = (ShowableTabListener) listener;
-                    String tabName = l.getTabName(item);
-                    l.showTab(tabName);
-                }
-            }
+            onLastSelectedItemClick(item, ce);
         } else {
             super.onItemClick(item, ce);
+        }
+    }
+    
+    protected void onLastSelectedItemClick(TabItem item, ComponentEvent ce) {
+        GWT.log("Force reloading the tab " + item.getText(), null);
+        final List<Listener<? extends BaseEvent>> listeners = getListeners(Events.Select);
+        for (Listener<? extends BaseEvent> listener : listeners) {
+            if (listener instanceof ShowableTabListener) {
+                ShowableTabListener l = (ShowableTabListener) listener;
+                String tabName = l.getTabName(item);
+                l.showTab(tabName);
+            }
         }
     }
 
