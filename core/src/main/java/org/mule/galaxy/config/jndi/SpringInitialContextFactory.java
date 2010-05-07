@@ -22,7 +22,7 @@ public class SpringInitialContextFactory implements InitialContextFactory
 {
     private static final transient Log log = LogFactory.getLog(SpringInitialContextFactory.class);
 
-    private static final Map cache = new HashMap();
+    private static final Map<String, BeanFactory> cache = new HashMap<String, BeanFactory>();
 
     private static Context singleton;
 
@@ -80,7 +80,7 @@ public class SpringInitialContextFactory implements InitialContextFactory
     {
         synchronized (cache)
         {
-            BeanFactory answer = (BeanFactory) cache.get(key);
+            BeanFactory answer = cache.get(key);
             if (answer == null)
             {
                 answer = createContext(resource);
