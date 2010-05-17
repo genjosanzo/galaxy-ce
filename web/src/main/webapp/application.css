@@ -503,6 +503,10 @@ a:visited {
     text-align: left;
 }
 
+.bold-label {
+    font-weight: bold;
+}
+
 .cell-alt {
     color: #000;
     background-color: #F5F5F5
