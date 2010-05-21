@@ -1,20 +1,13 @@
 package org.mule.galaxy.repository.client.item;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
-import org.mule.galaxy.web.client.ui.panel.AbstractShowable;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.ui.panel.MenuPanel;
 import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.PageManager;
+import org.mule.galaxy.web.client.ui.panel.AbstractShowable;
+import org.mule.galaxy.web.client.ui.panel.MenuPanel;
 import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
@@ -41,6 +34,13 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 public class RepositoryMenuPanel extends MenuPanel {
 
     private final Galaxy galaxy;
@@ -59,7 +59,7 @@ public class RepositoryMenuPanel extends MenuPanel {
         this.registryService = repository.getRegistryService();
         this.galaxy = repository.getGalaxy();
 
-        createPageInfo("browse", new ChildItemsPanel(galaxy, this, null));
+        createPageInfo("browse", new ChildItemsPanel(galaxy, this, null, null));
         createPageInfo("item/" + PageManager.WILDCARD, new ItemPanel(this));
         createPageInfo("add-item", new AddItemForm(this));
         

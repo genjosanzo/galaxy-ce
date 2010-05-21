@@ -21,8 +21,8 @@ package org.mule.galaxy.repository.client.item;
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.client.admin.PolicyPanel;
 import org.mule.galaxy.repository.rpc.ItemInfo;
-import org.mule.galaxy.web.client.ui.panel.AbstractFlowComposite;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.ui.panel.AbstractFlowComposite;
 import org.mule.galaxy.web.client.ui.panel.ShowableTabListener;
 import org.mule.galaxy.web.rpc.SecurityService;
 
@@ -55,6 +55,7 @@ public class ItemPanel extends AbstractFlowComposite {
     private RepositoryMenuPanel menuPanel;
     private TabPanel tabPanel;
     private RepositoryModule repository;
+    private ContentPanel contentPanel;
 
     public ItemPanel(RepositoryMenuPanel menuPanel) {
         this.galaxy = menuPanel.getGalaxy();
@@ -86,7 +87,7 @@ public class ItemPanel extends AbstractFlowComposite {
     }
 
     private void initTabs() {
-        ContentPanel contentPanel = new ContentPanel();
+        contentPanel = new ContentPanel();
         contentPanel.setAutoHeight(true);
         contentPanel.setAutoWidth(true);
         contentPanel.setBodyBorder(false);
@@ -99,7 +100,7 @@ public class ItemPanel extends AbstractFlowComposite {
 
         TabItem itemsTab = new TabItem("Items");
         itemsTab.getHeader().setToolTip(repository.getRepositoryConstants().repo_Items_TabTip());
-        itemsTab.add(new ChildItemsPanel(galaxy, menuPanel, info));
+        itemsTab.add(new ChildItemsPanel(galaxy, menuPanel, info, this));
         tabPanel.add(itemsTab);
 
 
@@ -140,4 +141,10 @@ public class ItemPanel extends AbstractFlowComposite {
     public String getItemId() {
         return itemId;
     }
+
+    protected void setHeading(String s) {
+        this.contentPanel.setHeading(s);
+    }
+
+
 }

@@ -1,18 +1,18 @@
 package org.mule.galaxy.repository.client.item;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.rpc.ItemInfo;
-import org.mule.galaxy.web.client.ui.panel.AbstractFlowComposite;
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.ui.dialog.LightBox;
-import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
-import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 import org.mule.galaxy.web.client.ui.button.ToolbarButton;
 import org.mule.galaxy.web.client.ui.button.ToolbarButtonEvent;
+import org.mule.galaxy.web.client.ui.dialog.LightBox;
+import org.mule.galaxy.web.client.ui.field.SearchStoreFilterField;
+import org.mule.galaxy.web.client.ui.grid.BasicGrid;
+import org.mule.galaxy.web.client.ui.panel.AbstractFlowComposite;
+import org.mule.galaxy.web.client.ui.panel.FullContentPanel;
+import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
+import org.mule.galaxy.web.client.ui.panel.PaddedContentPanel;
+import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -31,14 +31,16 @@ import com.extjs.gxt.ui.client.store.Store;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
-import com.extjs.gxt.ui.client.widget.form.StoreFilterField;
 import com.extjs.gxt.ui.client.widget.grid.CheckBoxSelectionModel;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
-import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.user.client.History;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class ChildItemsPanel extends AbstractFlowComposite {
 
@@ -48,13 +50,16 @@ public class ChildItemsPanel extends AbstractFlowComposite {
     private final ItemInfo info;
     private CheckBoxSelectionModel<BeanModel> selectionModel;
     private RepositoryModule repository;
+    private ItemPanel itemPanel;
 
-    public ChildItemsPanel(Galaxy galaxy, RepositoryMenuPanel menuPanel, ItemInfo item) {
+    public ChildItemsPanel(Galaxy galaxy, RepositoryMenuPanel menuPanel,
+                           ItemInfo item, ItemPanel itemPanel) {
         super();
         this.galaxy = galaxy;
         this.repository = menuPanel.getRepositoryModule();
         this.menuPanel = menuPanel;
         this.info = item;
+        this.itemPanel = itemPanel;
     }
 
     @Override
@@ -84,11 +89,13 @@ public class ChildItemsPanel extends AbstractFlowComposite {
     private void createItemGrid() {
         panel.clear();
 
-        ContentPanel contentPanel = new ContentPanel();
-        contentPanel.setBodyBorder(false);
-        contentPanel.setBorders(false);
-        contentPanel.setHeading(info != null ? info.getName() : "All Items");
-        contentPanel.setAutoWidth(true);
+        ContentPanel contentPanel = new FullContentPanel();
+        contentPanel.setHeading("All Items");
+        if (info != null) {
+            contentPanel = new PaddedContentPanel();
+            contentPanel.setHeading(info.getName());
+            itemPanel.setHeading(info.getName());
+        }
         contentPanel.setAutoHeight(true);
 
         // add inline help string and widget
@@ -99,10 +106,10 @@ public class ChildItemsPanel extends AbstractFlowComposite {
 
         final ListStore<BeanModel> store = new ListStore<BeanModel>();
         store.add(model);
-        
+
         ToolBar toolbar = new ToolBar();
         // search filter
-        StoreFilterField<BeanModel> filter = new StoreFilterField<BeanModel>() {
+        SearchStoreFilterField<BeanModel> filter = new SearchStoreFilterField<BeanModel>() {
             @Override
             protected boolean doSelect(Store<BeanModel> store, BeanModel parent,
                                        BeanModel record, String property, String filter) {
@@ -125,11 +132,6 @@ public class ChildItemsPanel extends AbstractFlowComposite {
             }
         };
 
-        filter.setName("Search");
-        filter.setFieldLabel("Search");
-        filter.setWidth(300);
-        filter.setTriggerStyle("x-form-search-trigger");
-        filter.addStyleName("x-form-search-field");
         filter.bind(store);
 
         toolbar.add(filter);
@@ -143,14 +145,10 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         columns.add(new ColumnConfig("authorName", "Author", 200));
         columns.add(new ColumnConfig("type", "Type", 300));
 
-        ColumnModel cm = new ColumnModel(columns);
+        ColumnModel columnModel = new ColumnModel(columns);
 
-        Grid grid = new Grid<BeanModel>(store, cm);
-        grid.setStripeRows(true);
-        grid.setAutoWidth(true);
-        grid.setAutoHeight(true);
+        BasicGrid grid = new BasicGrid<BeanModel>(store, columnModel);
         grid.setSelectionModel(selectionModel);
-        grid.setBorders(true);
         grid.addPlugin(selectionModel);
         grid.setAutoExpandColumn("type");
         grid.addListener(Events.CellClick, new Listener<BaseEvent>() {
@@ -204,7 +202,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                 });
                 newWkspaceBtn.setToolTip(repository.getRepositoryConstants().repo_NewWorkspace());
                 toolbar.add(newWkspaceBtn);
-                
+
                 final ToolbarButton newArtifactBtn = new ToolbarButton("New Artifact");
                 newArtifactBtn.setStyleName("toolbar-btn_right");
                 newArtifactBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
@@ -224,7 +222,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                         showArtifactUploadForm(false);
                     }
                 });
-                
+
                 newVersionBtn.setToolTip(repository.getRepositoryConstants().repo_Items_New());
                 toolbar.add(newVersionBtn);
             } else {
