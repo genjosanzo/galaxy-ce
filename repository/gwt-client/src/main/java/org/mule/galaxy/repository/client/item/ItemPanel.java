@@ -70,7 +70,7 @@ public class ItemPanel extends AbstractFlowComposite {
         panel.add(new Label("Loading..."));
 
         if (params.size() >= 2) {
-            selectedTab = new Integer(params.get(1)).intValue();
+            selectedTab = Integer.parseInt(params.get(1));
         } else {
             selectedTab = 0;
         }
@@ -113,14 +113,16 @@ public class ItemPanel extends AbstractFlowComposite {
             TabItem tab = new TabItem("Policies");
             tab.getHeader().setToolTip(repository.getRepositoryConstants().repo_Policies_TabTip());
             tab.add(new PolicyPanel(menuPanel, galaxy, repository.getRegistryService(), itemId));
-            tabPanel.add(tab);
+            // TODO JN disabled for now
+            //tabPanel.add(tab);
         }
 
         if (galaxy.hasPermission("MANAGE_GROUPS") && info.isLocal()) {
             TabItem tab = new TabItem("Security");
             tab.getHeader().setToolTip(repository.getRepositoryConstants().repo_Security_TabTip());
             tab.add(new ItemRolePermissionPanel(galaxy, menuPanel, info.getId(), SecurityService.ITEM_PERMISSIONS));
-            tabPanel.add(tab);
+            // TODO JN disabled for now
+            //tabPanel.add(tab);
         }
 
         /**
