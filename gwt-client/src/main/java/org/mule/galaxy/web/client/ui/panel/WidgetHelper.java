@@ -2,7 +2,6 @@ package org.mule.galaxy.web.client.ui.panel;
 
 import org.mule.galaxy.web.client.ui.NavMenuItem;
 import org.mule.galaxy.web.client.ui.button.ToolbarButton;
-import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
 import org.mule.galaxy.web.client.ui.button.ToolbarButtonEvent;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -259,6 +258,12 @@ public class WidgetHelper extends Composite {
 
     public static Label cellLabel(Long lg) {
         Label l = longLabel(lg);
+        l.addStyleName("cell-alt");
+        return l;
+    }
+
+    public static Label cellLabel(Boolean b) {
+        Label l = new Label(b.toString());
         l.addStyleName("cell-alt");
         return l;
     }
