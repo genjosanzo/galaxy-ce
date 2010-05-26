@@ -79,7 +79,7 @@ public class TreeItem implements Identifiable {
     public String getFullPath(boolean includeRoot) {
         StringBuffer sb = new StringBuffer();
         TreeItem i = this;
-        while (i != null) {
+        while (true) {
             if (sb.length() > 0) {
                 sb.insert(0, '/');
             }
