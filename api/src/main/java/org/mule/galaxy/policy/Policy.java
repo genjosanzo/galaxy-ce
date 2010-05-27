@@ -27,7 +27,7 @@ public interface Policy {
     String getDescription();
 
     /**
-     * Whether or not the policy applies to te specified item.
+     * Whether or not the policy applies to the specified item.
      */
     boolean applies(Item item);
     
@@ -37,6 +37,13 @@ public interface Policy {
      * null or an empty Collection can be returned.
      */
     Collection<ApprovalMessage> isApproved(Item item);
+
+    /**
+     * Approves an item deletion according. If the item delete is not approved,
+     * a Collection of {@link ApprovalMessage}s will be returned. Otherwise,
+     * null or an empty Collection can be returned.
+     */
+    Collection<ApprovalMessage> allowDelete(Item item);
     
     /**
      * Set the {@link Registry} instance for this policy.

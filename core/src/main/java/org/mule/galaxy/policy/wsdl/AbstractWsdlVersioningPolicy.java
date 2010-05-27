@@ -13,6 +13,7 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.artifact.Artifact;
 import org.mule.galaxy.impl.RegistryLocator;
+import org.mule.galaxy.policy.AbstractPolicy;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.type.TypeManager;
@@ -25,11 +26,15 @@ import org.w3c.dom.Document;
 /**
  * Provides means to ensure that WSDL versioning rules are met.
  */
-public abstract class AbstractWsdlVersioningPolicy implements Policy
+public abstract class AbstractWsdlVersioningPolicy extends AbstractPolicy
 {
     private final Log log = LogFactory.getLog(getClass());
     private Registry registry;
     
+    protected AbstractWsdlVersioningPolicy(String id, String name, String description) {
+        super(id, name, description);
+    }
+
     public boolean applies(Item item) {
         return item.getType().inheritsFrom(TypeManager.ARTIFACT_VERSION) &&
             Constants.WSDL_DEFINITION_QNAME.equals(((Artifact)item.getProperty("artifact")).getDocumentType());

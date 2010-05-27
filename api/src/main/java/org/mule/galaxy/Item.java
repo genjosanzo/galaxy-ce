@@ -76,7 +76,7 @@ public interface Item {
 
     void setVisible(String property, boolean visible);
 
-    void delete() throws RegistryException, AccessException;
+    void delete() throws RegistryException, AccessException, PolicyException;
     
     /**
      * Get the default lifecycle for this workspace. If there has been

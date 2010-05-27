@@ -11,7 +11,6 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.mule.galaxy.Item;
-import org.mule.galaxy.Registry;
 import org.mule.galaxy.artifact.Artifact;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.w3c.dom.Document;
@@ -25,21 +24,11 @@ public class RequireNoClientRemotingPolicy extends AbstractMulePolicy
     private XPathExpression xpath;
 
     public RequireNoClientRemotingPolicy() throws XPathExpressionException {
-        super();
+        super(ID, 
+              "Mule: Require No Client Remoting Policy", 
+              "Requires that Client Remote Dispatcher support is not enabled.");
 
         xpath = factory.newXPath().compile("//*[local-name()='remote-dispatcher-agent']");
-    }
-
-    public String getDescription() {
-        return "Requires that Client Remote Dispatcher support is not enabled.";
-    }
-
-    public String getId() {
-        return ID;
-    }
-
-    public String getName() {
-        return "Mule: Require No Client Remoting Policy";
     }
 
     public Collection<ApprovalMessage> isApproved(Item item) {
@@ -57,9 +46,4 @@ public class RequireNoClientRemotingPolicy extends AbstractMulePolicy
         }
         return Collections.emptyList();
     }
-
-    public void setRegistry(Registry registry) {
-
-    }
-
 }

@@ -74,7 +74,7 @@ public class XmlArtifactTypePlugin extends AbstractPlugin
     }
 
     @Override
-    protected void doUpgrade() throws Exception {
+    protected void doUpgrade(int previousVersion) throws Exception {
         loadQNames();
         updateIndexes();
     }

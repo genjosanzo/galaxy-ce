@@ -37,26 +37,15 @@ public class BasicProfilePolicy extends AbstractXmlPolicy
     private Registry registry;
 
     public BasicProfilePolicy() throws Exception {
-        super();
+        super(WSI_BP_1_1_WSDL, 
+              "WSDL: WS-I BasicProfile 1.1 Compliance",
+              "Ensures that WSDLs meet the criteria outlined by the WS-I BasicProfile.");
         
         wsiManager = new WSIRuleManagerImpl();
         rules = wsiManager.getRules(WSIRuleManager.WSI_BP_1_1);
         wsdlReader = WSDLFactory.newInstance().newWSDLReader();
         supportedDocumentTypes.add(Constants.WSDL_DEFINITION_QNAME);
     }
-
-    public String getId() {
-        return WSI_BP_1_1_WSDL;
-    }
-    
-    public String getDescription() {
-        return "Ensures that WSDLs meet the criteria outlined by the WS-I BasicProfile.";
-    }
-
-    public String getName() {
-        return "WSDL: WS-I BasicProfile 1.1 Compliance";
-    }
-
     public Collection<ApprovalMessage> isApproved(Item item) {
         ArrayList<ApprovalMessage> messages = new ArrayList<ApprovalMessage>();
         Artifact v = item.getProperty("artifact");

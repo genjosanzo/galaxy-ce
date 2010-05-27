@@ -53,7 +53,7 @@ public class PolicyInfo {
     }
 
     public boolean appliesTo(Phase p) {
-    return appliesTo.equals(p) || appliesTo.equals(p.getLifecycle());
+        return appliesTo == null || appliesTo.equals(p) || appliesTo.equals(p.getLifecycle());
     }
     
     

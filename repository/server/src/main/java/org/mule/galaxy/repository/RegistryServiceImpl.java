@@ -1608,7 +1608,7 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public void delete(String itemId) throws RPCException, ItemNotFoundException {
+    public void delete(String itemId) throws RPCException, ItemNotFoundException, WPolicyException {
         try {
             Item item = registry.getItemById(itemId);
 
@@ -1620,10 +1620,12 @@ public class RegistryServiceImpl implements RegistryService {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
-        }
+        } catch (PolicyException e) {
+            throw toWeb(e);
+        } 
     }
 
-    public void delete(List<String> ids) throws RPCException, ItemNotFoundException {
+    public void delete(List<String> ids) throws RPCException, ItemNotFoundException, WPolicyException {
         try {
             for (String id : ids) {
                 Item item = registry.getItemById(id);
@@ -1637,7 +1639,9 @@ public class RegistryServiceImpl implements RegistryService {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
-        }
+        } catch (PolicyException e) {
+            throw toWeb(e);
+        } 
     }
 
     public void transition(Collection<String> entryIds, String lifecycle, String phase) throws RPCException, ItemNotFoundException {

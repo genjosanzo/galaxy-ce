@@ -27,26 +27,14 @@ public class RequireSSLPolicy extends AbstractMulePolicy
     private List<XPathExpression> expressions = new ArrayList<XPathExpression>();
 
     public RequireSSLPolicy() throws XPathExpressionException {
-        super();
+        super(ID, "Mule: Require SSL Policy", "Requires all HTTP and TCP endpoints to be SSL enabled.");
 
         expressions.add(factory.newXPath().compile("//*[local-name()='inbound-endpoint' and (starts-with(@address, 'http:') or starts-with(@address, 'tcp:'))]"));
         expressions.add(factory.newXPath().compile("//*[local-name()='outbound-endpoint' and (starts-with(@address, 'http:') or starts-with(@address, 'tcp:'))]"));
         expressions.add(factory.newXPath().compile("//*[namespace-uri()='http://www.mulesource.org/schema/mule/tcp' or namespace-uri()='http://www.mulesource.org/schema/mule/tcp/2.2']"));
         expressions.add(factory.newXPath().compile("//*[namespace-uri()='http://www.mulesource.org/schema/mule/http' or namespace-uri()='http://www.mulesource.org/schema/mule/http/2.2']"));
     }
-
-    public String getDescription() {
-        return "Requires all HTTP and TCP endpoints to be SSL enabled.";
-    }
-
-    public String getId() {
-        return ID;
-    }
-
-    public String getName() {
-        return "Mule: Require SSL Policy";
-    }
-
+    
     public Collection<ApprovalMessage> isApproved(Item item) {
         try {
             Artifact artifact = item.getProperty("artifact");

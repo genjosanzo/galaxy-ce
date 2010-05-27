@@ -566,7 +566,9 @@ public class ItemCollection
             throw new RuntimeException(e);
         } catch (AccessException e) {
             throw new ResponseContextException(405, e);
-        }
+        } catch (PolicyException e) {
+            throw AbderaUtils.createArtifactPolicyExceptionResponse(e);
+        } 
     }
 
     public void deleteMedia(String name, RequestContext request) throws ResponseContextException {
@@ -578,7 +580,9 @@ public class ItemCollection
             throw new RuntimeException(e);
         } catch (AccessException e) {
             throw new ResponseContextException(405, e);
-        }
+        } catch (PolicyException e) {
+            throw AbderaUtils.createArtifactPolicyExceptionResponse(e);
+        } 
     }
 
     private IRI getRelativeLink(RequestContext request, Item entryObj) {

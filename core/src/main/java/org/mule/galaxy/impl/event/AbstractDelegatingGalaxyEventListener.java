@@ -114,6 +114,7 @@ public abstract class AbstractDelegatingGalaxyEventListener implements Delegatin
             } else {
                 // get hold of the native ThreadPoolExecutor which can return Futures
                 ThreadPoolExecutor exec = executor.getThreadPoolExecutor();
+                System.out.println("Active count: " + exec.getActiveCount() + " Task count: " + exec.getTaskCount());
                 // provide the means for cancellation via a cancellable Future
                 Future<?> cancellableTask = exec.submit(wrapper);
 

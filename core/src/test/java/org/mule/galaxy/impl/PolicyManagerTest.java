@@ -52,6 +52,22 @@ public class PolicyManagerTest extends AbstractGalaxyTest {
         }
 
     }
+
+    public void testGlobalPolicyEnablementFailur() throws Exception {
+        AlwaysFailPolicy failPolicy = new AlwaysFailPolicy();
+        policyManager.addPolicy(failPolicy);
+        policyManager.setActivePolicies(failPolicy);
+        
+        try {
+            importHelloWsdl();
+            fail("Expected policy failure.");
+        } catch (PolicyException e) {
+            Map<Item, List<ApprovalMessage>> policyFailures = e.getPolicyFailures();
+            
+            // fails once for the artifact and once for the artifact version
+            assertEquals(1, policyFailures.size());
+        }
+    }
     
     public void testPolicyEnablementFailureOnWorkspace2() throws Exception {
         AlwaysFailPolicy failPolicy = new AlwaysFailPolicy();

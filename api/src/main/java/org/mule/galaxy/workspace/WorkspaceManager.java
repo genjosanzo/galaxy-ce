@@ -31,7 +31,7 @@ public interface WorkspaceManager {
     
     Collection<Item> getWorkspaces() throws AccessException, RegistryException;
 
-    void delete(Item item) throws RegistryException, AccessException;
+    void delete(Item item) throws RegistryException, AccessException, PolicyException;
 
     void save(Item item) throws RegistryException, AccessException, PolicyException, PropertyException;
 

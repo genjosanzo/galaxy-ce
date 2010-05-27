@@ -8,16 +8,8 @@ import org.mule.galaxy.wsdl.diff.DifferenceEvent;
 public class BackwardCompatibilityPolicy extends AbstractWsdlVersioningPolicy {
     private static final String WSDL_BACKWARD_COMPAT = "wsdl-backward-compat";
 
-    public String getId() {
-        return WSDL_BACKWARD_COMPAT;
-    }
-    
-    public String getDescription() {
-        return "Enforces restrictions to ensure all new WSDL versions are backward compatabile.";
-    }
-
-    public String getName() {
-        return "WSDL: Backward Compatability";
+    public BackwardCompatibilityPolicy() {
+        super(WSDL_BACKWARD_COMPAT, "WSDL: Backward Compatability", "Enforces restrictions to ensure all new WSDL versions are backward compatabile.");
     }
 
     protected void check(Collection<ApprovalMessage> messages, DifferenceEvent event) {

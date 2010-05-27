@@ -26,22 +26,12 @@ public class RequireGlobalEndpointsPolicy extends AbstractMulePolicy
     private XPathExpression outboundXPath;
 
     public RequireGlobalEndpointsPolicy() throws XPathExpressionException {
-        super();
+        super(ID,
+              "Mule: Require Non-Local Endpoints Policy",
+              "Requires all All Endpoints are defined as top level Endpoints");
 
         inboundXPath = factory.newXPath().compile("//*[local-name()='service']//*[local-name()='inbound-endpoint'][not(ref)]");
         outboundXPath = factory.newXPath().compile("//*[local-name()='service']//*[local-name()='outbound-endpoint'][not(ref)]");
-    }
-
-    public String getDescription() {
-        return "Requires all All Endpoints are defined as top level Endpoints";
-    }
-
-    public String getId() {
-        return ID;
-    }
-
-    public String getName() {
-        return "Mule: Require Non-Local Endpoints Policy";
     }
 
     public Collection<ApprovalMessage> isApproved(Item item) {

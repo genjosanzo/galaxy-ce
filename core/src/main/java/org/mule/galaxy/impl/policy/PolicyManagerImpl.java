@@ -52,12 +52,14 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     private String phasesNodeId;
     private ApplicationContext applicationContext;
     private TypeManager typeManager;
+    private String activationsNodeId;
     
     public void initilaize() throws Exception{
         Session session = jcrTemplate.getSessionFactory().getSession();
         Node root = session.getRootNode();
         
         Node activations = getOrCreate(root, "policyActivations");
+        activationsNodeId = activations.getUUID();
         lifecyclesNodeId = getOrCreate(activations, "lifecycles").getUUID();
         phasesNodeId = getOrCreate(root, "phases").getUUID();
 
@@ -91,9 +93,13 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     }
 
     public Map<Item, List<ApprovalMessage>> approve(Item item) throws PolicyException, RegistryException {
+        return approve(item, false);
+    }
+    
+    protected Map<Item, List<ApprovalMessage>> approve(Item item, boolean delete) throws PolicyException, RegistryException {
         Map<Item, List<ApprovalMessage>> failures = new HashMap<Item, List<ApprovalMessage>>();
         
-        approveItem(item, failures, getActivePolicies(item));
+        approveItem(item, failures, delete, getActivePolicies(item));
         
         boolean approved = true;
         for (List<ApprovalMessage> msgs : failures.values()) {
@@ -112,6 +118,9 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         return failures;
     }
 
+    public Map<Item, List<ApprovalMessage>> approveDelete(Item item) throws PolicyException, RegistryException {
+        return approve(item, true);
+    }
 
     public Policy getPolicy(String id) {
         return policies.get(id);
@@ -142,7 +151,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                              Policy... policies) 
         throws PolicyException, RegistryException {
 
-        approve(item, item, failures, lifecycle, phases, policies);
+        approve(item, item, failures, false, lifecycle, phases, policies);
         
         if (item instanceof Item) {
             for (Item i : ((Item) item).getItems()) {
@@ -151,8 +160,10 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         }
     }
 
-    private void approve(Item itemToApprove, Item itemWithLifecycle,
+    private void approve(Item itemToApprove, 
+                         Item itemWithLifecycle,
                          Map<Item, List<ApprovalMessage>> failures, 
+                         boolean delete,
                          Lifecycle lifecycle,
                          Collection<Phase> phases,
                          Policy... policies) {
@@ -161,8 +172,8 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
             if (pd != null && pd.getExtension() instanceof LifecycleExtension) {
                 Phase p = pi.getValue();
 
-                if (phases != null && phases.contains(p) || lifecycle != null && lifecycle.equals(p.getLifecycle())) {
-                    List<ApprovalMessage> messages = approve(itemToApprove, policies);
+                if (phases != null && phases.contains(p) || lifecycle != null && lifecycle.equals(p.getLifecycle()) || lifecycle == null && phases == null) {
+                    List<ApprovalMessage> messages = approve(itemToApprove, delete, policies);
                     
                     if (messages != null && messages.size() > 0) {
                         failures.put(itemToApprove, messages);
@@ -174,12 +185,12 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
 
     private void approveItem(Item item, 
                              Map<Item, List<ApprovalMessage>> failures,
-                             Collection<PolicyInfo> activePolicies) throws RegistryException {
-        approve(item, item, failures, activePolicies);
+                             boolean delete, Collection<PolicyInfo> activePolicies) throws RegistryException {
+        approve(item, item, failures, delete, activePolicies);
         
         if (item instanceof Item) {
             for (Item i : ((Item) item).getItems()) {
-                approveItem(i, failures, activePolicies);
+                approveItem(i, failures, delete, activePolicies);
             }
         }
     }
@@ -187,7 +198,9 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
     private void approve(Item itemToApprove, 
                          Item itemWithLifecycle,
                          Map<Item, List<ApprovalMessage>> failures, 
+                         boolean delete, 
                          Collection<PolicyInfo> pis) {
+        // policies which apply to lifecycles and phases
         for (PropertyInfo pi : itemWithLifecycle.getProperties()) {
             PropertyDescriptor pd = pi.getPropertyDescriptor();
             if (pd != null && pd.getExtension() instanceof LifecycleExtension) {
@@ -195,7 +208,7 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
 
                 for (PolicyInfo policyInfo : pis) {
                     if (policyInfo.appliesTo(p)) {
-                        List<ApprovalMessage> messages = approve(itemToApprove, policyInfo.getPolicy());
+                        List<ApprovalMessage> messages = approve(itemToApprove, delete, policyInfo.getPolicy());
                         
                         if (messages != null && messages.size() > 0) {
                             failures.put(itemToApprove, messages);
@@ -204,13 +217,32 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                 }
             }
         }
+        
+        // global policies
+        for (PolicyInfo pi : pis) {
+            if (pi.getAppliesTo() == null) {
+                List<ApprovalMessage> messages = approve(itemToApprove, delete, pi.getPolicy());
+                
+                if (messages != null && messages.size() > 0) {
+                    failures.put(itemToApprove, messages);
+                }
+            }
+        }
     }
-    private List<ApprovalMessage> approve(Item item, Policy... policies) {
+    
+    private List<ApprovalMessage> approve(Item item, boolean delete, Policy... policies) {
         List<ApprovalMessage> messages = null;
         for (Policy p : policies) {
             if (!p.applies(item)) continue;
             
-            Collection<ApprovalMessage> approved = p.isApproved(item);
+            Collection<ApprovalMessage> approved;
+            
+            if (delete) {
+                approved = p.allowDelete(item);
+            } else {
+                approved = p.isApproved(item);
+            }
+            
             boolean failed = false;
             if (approved != null) {
                 for (ApprovalMessage m : approved) {
@@ -288,6 +320,17 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         
         activatePolicy(lifecyclesNodeId, policies, lifecycle.getId());
     }
+    
+
+    public void setActivePolicies(Policy... policies) 
+        throws RegistryException, PolicyException {
+        
+        org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query();
+        
+        approveItems(q, null, null, policies);
+        
+        activatePolicy(activationsNodeId, policies);
+    }    
 
     public void setActivePolicies(Item item, Lifecycle lifecycle, Policy... policies) 
         throws RegistryException, PolicyException {
@@ -437,6 +480,9 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
         final Set<PolicyInfo> activePolicies = new HashSet<PolicyInfo>();
         jcrTemplate.execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
+                // add global policies
+                add(activePolicies, getPolicies(session, activationsNodeId), null);
+                
                 for (PropertyInfo pi : item.getProperties()) {
                     PropertyDescriptor pd = pi.getPropertyDescriptor();
                     if (pd != null && pd.getExtension() instanceof LifecycleExtension) {
@@ -510,6 +556,8 @@ public class PolicyManagerImpl implements PolicyManager, ApplicationContextAware
                 }
             }
         } catch (PathNotFoundException e){
+            
+        } catch (ItemNotFoundException e){
             
         }
         return activePolicies;

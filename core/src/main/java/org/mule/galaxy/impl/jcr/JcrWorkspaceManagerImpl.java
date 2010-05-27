@@ -418,9 +418,10 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
         return Text.escapeIllegalJcrChars(right);
     }
 
-    public void delete(final Item item) throws RegistryException, AccessException {
-    accessControlManager.assertAccess(Permission.DELETE_ITEM);
-
+    public void delete(final Item item) throws RegistryException, AccessException, PolicyException {
+        accessControlManager.assertAccess(Permission.DELETE_ITEM);
+        policyManager.approveDelete(item);
+        
         executeWithRegistryException(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 ItemDeletedEvent evt = new ItemDeletedEvent(item);

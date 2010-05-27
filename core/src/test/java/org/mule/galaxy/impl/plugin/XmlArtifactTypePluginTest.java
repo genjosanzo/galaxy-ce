@@ -81,7 +81,7 @@ public class XmlArtifactTypePluginTest extends AbstractGalaxyTest {
         ns.setUri("http://foo/v2");
         type.getNamespace().add(ns);
         
-        plugin.doUpgrade();
+        plugin.doUpgrade(previousVersion);
 
         Collection<Index> allIndexes3 = indexManager.getIndexes();
         assertEquals(allIndexes2.size(), allIndexes3.size());

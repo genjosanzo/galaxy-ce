@@ -17,6 +17,7 @@ import org.mule.galaxy.Registry;
 import org.mule.galaxy.artifact.Artifact;
 import org.mule.galaxy.impl.artifact.UploadService;
 import org.mule.galaxy.lifecycle.Phase;
+import org.mule.galaxy.policy.AbstractPolicy;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.query.Query;
@@ -397,23 +398,12 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         
     }
     
-    private final class FauxPolicy implements Policy {
-        public String getDescription() {
-            return "Faux policy description";
+    private final class FauxPolicy extends AbstractPolicy {
+        
+        private FauxPolicy() {
+            super("faux", "Faux policy", "Faux policy description");
         }
-
-        public boolean applies(Item item) {
-            return true;
-        }
-
-        public String getId() {
-            return "faux";
-        }
-
-        public String getName() {
-            return "Faux policy";
-        }
-
+        
         public Collection<ApprovalMessage> isApproved(Item item) {
             return Arrays.asList(new ApprovalMessage("Not approved"));
         }

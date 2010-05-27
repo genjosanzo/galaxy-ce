@@ -141,9 +141,9 @@ public interface RegistryService extends RemoteService {
     
     void move(String entryId, String workspaceId, String name) throws RPCException, ItemNotFoundException, WPolicyException;
     
-    void delete(String entryId) throws RPCException, ItemNotFoundException;
+    void delete(String entryId) throws RPCException, ItemNotFoundException, WPolicyException;
 
-    void delete(List<String> ids) throws RPCException, ItemNotFoundException;
+    void delete(List<String> ids) throws RPCException, ItemNotFoundException, WPolicyException;
     
     WComment addComment(String entryId, String parentCommentId, String text) throws RPCException, ItemNotFoundException;
 

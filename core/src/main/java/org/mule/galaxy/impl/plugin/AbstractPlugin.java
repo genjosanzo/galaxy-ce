@@ -81,7 +81,7 @@ public abstract class AbstractPlugin implements Plugin {
                 throw new UpgradeNotSupportedException();
             }
             log.info(String.format("Upgrading plugin from v%d to v%d: %s", previousVersion, getVersion(), getName()));
-            doUpgrade();
+            doUpgrade(previousVersion);
         }
         else if (previousVersion > getVersion())
         {
@@ -115,7 +115,7 @@ public abstract class AbstractPlugin implements Plugin {
         return false;
     }
 
-    protected void doUpgrade() throws Exception
+    protected void doUpgrade(int previousVersion) throws Exception
     {
         // no-op
     }

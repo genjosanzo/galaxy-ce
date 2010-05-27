@@ -169,7 +169,7 @@ public class JcrItem extends AbstractItem {
         return true;
     }
 
-    public void delete() throws RegistryException, AccessException {
+    public void delete() throws RegistryException, AccessException, PolicyException {
         manager.delete(this);
     }
     

@@ -8,15 +8,9 @@ import org.mule.galaxy.wsdl.diff.DifferenceEvent;
 public class ForwardCompatibilityPolicy extends AbstractWsdlVersioningPolicy {
     private static final String WSDL_FORWARD_COMPAT = "wsdl-forward-compat";
 
-    public String getId() {
-        return WSDL_FORWARD_COMPAT;
-    }
-    public String getDescription() {
-        return "Enforces restrictions to ensure all new WSDL versions are forward compatabile.";
-    }
-
-    public String getName() {
-        return "WSDL: Forward Compatability";
+    public ForwardCompatibilityPolicy() {
+        super(WSDL_FORWARD_COMPAT, "WSDL: Forward Compatability", 
+              "Enforces restrictions to ensure all new WSDL versions are forward compatabile.");
     }
 
     protected void check(Collection<ApprovalMessage> messages, DifferenceEvent event) {
