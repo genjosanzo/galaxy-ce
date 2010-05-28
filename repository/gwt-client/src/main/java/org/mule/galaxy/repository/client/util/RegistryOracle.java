@@ -34,7 +34,7 @@ public class RegistryOracle extends Oracle {
 		boolean workspace = "Workspace".equals(type);
         String template = workspace ? getWorkspaceTemplate() : getTemplate();
 		
-        initialize(getProxy(svc, combo, type), template, combo);
+        initialize(getProxy(svc, combo, type), template, combo, "Start typing...");
         
         if (workspace) {
             combo.setDisplayField("fullPath");
