@@ -48,13 +48,13 @@ public abstract class AbstractShowable extends WidgetHelper implements Showable 
 
     public void onBeforeShowPage() {
         if (useLoadingIndicator) {
-            progressIndicatorPopup.show();
+            // progressIndicatorPopup.show();
         }
     }
 
     public void onAfterShowPage() {
         if (useLoadingIndicator) {
-            progressIndicatorPopup.hide();
+            // progressIndicatorPopup.hide();
         }
     }
 

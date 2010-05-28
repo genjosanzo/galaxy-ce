@@ -100,6 +100,7 @@ public class Galaxy {
     private AdministrationPanel adminPanel;
     private String logoHref = "images/galaxy_logo_main_trans.gif";
     private InlineFlowPanel alertNotificationArea;
+    private ApplicationInfo applicationInfo;
 
     public void initialize(final List<GalaxyModule> modules) {
         //GXT.setDefaultTheme(Theme.GRAY, true);
@@ -137,7 +138,11 @@ public class Galaxy {
         this.pageManager = new PageManager();
 
         createBody();
+        createFooter();
 
+        RootPanel.get().add(base);
+        base.layout(true);
+        
         galaxyService.getApplicationInfo(new AsyncCallback<ApplicationInfo>() {
             
             public void onFailure(Throwable e) {
@@ -150,10 +155,6 @@ public class Galaxy {
             }
         });
 
-        createFooter();
-
-        RootPanel.get().add(base);
-        base.layout(true);
 
         new HeartbeatTimer(Galaxy.this);
 
@@ -163,6 +164,8 @@ public class Galaxy {
     }
 
     protected void initializeApplication(ApplicationInfo appInfo, final List<GalaxyModule> modules) {
+        this.applicationInfo = appInfo;
+        
         user = (WUser) appInfo.getUser();
         // always the left most item
         rightHeaderPanel.insert(new Label("Welcome, " + user.getName()), 0);
@@ -180,8 +183,14 @@ public class Galaxy {
         
         loadTabs(Galaxy.this);
         showFirstPage();
+
+        pageManager.initialize();
     }
     
+    public ApplicationInfo getApplicationInfo() {
+        return applicationInfo;
+    }
+
     private void createFooter() {
         ContentPanel southPanel = new ContentPanel();
         southPanel.setBodyBorder(false);
@@ -310,8 +319,6 @@ public class Galaxy {
     protected void loadTabs(final Galaxy galaxy) {
         loadPluginTabs();
         loadAdminTab();
-        
-        pageManager.initialize();
     }
 
     protected void loadAdminTab() {
@@ -357,7 +364,7 @@ public class Galaxy {
         
         // Show the initial screen.
         String initToken = History.getToken();
-        if (initToken.length() > 0) {
+        if (initToken != null && initToken.length() > 0) {
             pageManager.show(initToken);
         } else {
             pageManager.show(getFirstPage());

@@ -70,7 +70,9 @@ public class AbstractErrorShowingComposite
             pos = mainPanel.getWidgetCount();
         }
         errorPanel.add(message);
-        mainPanel.insert(errorPanel, pos);
+        if (!errorPanel.isAttached()) {
+            mainPanel.insert(errorPanel, pos);
+        }
     }
 
     protected int getErrorPanelPosition() {

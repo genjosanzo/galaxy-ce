@@ -71,7 +71,6 @@ public class UserListPanel extends AbstractAdministrationComposite {
         contentPanel.setTopComponent(
                 new InlineHelpPanel(adminPanel.getGalaxy().getAdministrationConstants().admin_Users_Tip(), 19));
 
-
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WUser.class);
 
         List<BeanModel> list = factory.createModel(users);

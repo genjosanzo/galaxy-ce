@@ -52,9 +52,9 @@ public class PageManager implements ValueChangeHandler<String>{
 
             @Override
             public void componentSelected(TabPanelEvent ce) {
-                TabItem item = ce.getItem();
-                int newTab = tabPanel.getItems().indexOf(item);
                 if (!suppressTabHistory) {
+                    TabItem item = ce.getItem();
+                    int newTab = tabPanel.getItems().indexOf(item);
                     History.newItem(tabNames.get(newTab));
                 }
             }
@@ -145,6 +145,10 @@ public class PageManager implements ValueChangeHandler<String>{
 
             // hack to match "foo/*" style tokens
             int slashIdx = token.indexOf("/");
+            if (slashIdx == -1) {
+                slashIdx = token.length();
+            }
+            
             if (slashIdx != -1) {
                 page = history.get(token.substring(0, slashIdx) + "/" + WILDCARD);
             }
@@ -154,6 +158,10 @@ public class PageManager implements ValueChangeHandler<String>{
             }
         }
 
+        if (page == null) {
+            throw new IllegalStateException("Could not find page: " + token);
+        }
+        
         return page;
     }
 
@@ -184,7 +192,7 @@ public class PageManager implements ValueChangeHandler<String>{
         suppressTabHistory = true;
         TabItem p = (TabItem) tabPanel.getWidget(page.getTabIndex());
 
-        if (!tabPanel.getSelectedItem().equals(p)) {
+        if (tabPanel.getSelectedItem() == null || !tabPanel.getSelectedItem().equals(p)) {
             tabPanel.setSelection(p);
         }
 

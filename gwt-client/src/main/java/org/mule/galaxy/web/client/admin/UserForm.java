@@ -237,7 +237,7 @@ public class UserForm extends AbstractAdministrationForm {
         }
     }
 
-    protected boolean validate() {
+    public boolean validate() {
         getErrorPanel().clearErrorMessage();
         boolean isOk = true;
 
@@ -358,6 +358,18 @@ public class UserForm extends AbstractAdministrationForm {
 
             fpanel.add(bb);
         }
+    }
+
+    public TextField<String> getUsernameField() {
+        return usernameTB;
+    }
+
+    public TextField<String> getNameField() {
+        return nameTB;
+    }
+
+    public TextField<String> getEmailField() {
+        return emailTB;
     }
 
 }
