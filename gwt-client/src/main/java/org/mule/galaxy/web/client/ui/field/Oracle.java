@@ -23,10 +23,14 @@ public class Oracle {
     }
 
     public Oracle(DataProxy proxy, String template) {
-        initialize(proxy, template, new ComboBox<ModelData>());
+        initialize(proxy, template, new ComboBox<ModelData>(), "Start typing...");
     }
 
-    protected void initialize(DataProxy proxy, String template, ComboBox<ModelData> combo) {
+    public Oracle(DataProxy proxy, String template, String suggestText) {
+        initialize(proxy, template, new ComboBox<ModelData>(), suggestText);
+    }
+
+    protected void initialize(DataProxy proxy, String template, ComboBox<ModelData> combo, String suggestText) {
         this.combo = combo;
 
         // loader
@@ -45,7 +49,7 @@ public class Oracle {
         combo.setTemplate(template);
         combo.setStore(store);
         combo.setAllowBlank(true);
-        combo.setEmptyText("Start typing...");
+        combo.setEmptyText(suggestText);
         combo.setForceSelection(true);
         combo.setMinLength(0);
         combo.setMinChars(0);
