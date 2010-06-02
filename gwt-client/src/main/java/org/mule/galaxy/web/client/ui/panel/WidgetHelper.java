@@ -384,5 +384,8 @@ public class WidgetHelper extends Composite {
         return s;
     }
 
+    public static Label navSeparator() {
+        return new Label(">");
+    }
 
 }
