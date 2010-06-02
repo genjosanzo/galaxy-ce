@@ -47,7 +47,7 @@ import com.google.gwt.user.client.History;
 public class ChildItemsPanel extends AbstractFlowComposite {
 
     protected Collection items;
-    private final RepositoryMenuPanel menuPanel;
+    protected final RepositoryMenuPanel menuPanel;
     private final Galaxy galaxy;
     private final ItemInfo info;
     private CheckBoxSelectionModel<BeanModel> selectionModel;
