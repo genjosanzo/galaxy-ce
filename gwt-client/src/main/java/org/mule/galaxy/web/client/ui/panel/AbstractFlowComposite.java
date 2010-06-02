@@ -23,7 +23,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 /**
  * A widget which is encapsulated in a FlowPanel (aka &lt;div&gt;).
  */
-public class AbstractFlowComposite extends AbstractShowable {
+public abstract class AbstractFlowComposite extends AbstractShowable {
     protected FlowPanel panel;
 
     public AbstractFlowComposite() {
