@@ -41,6 +41,19 @@ public class RegistryOracle extends Oracle {
         }
     }
 
+    public RegistryOracle(RegistryServiceAsync svc, String type, String suggestText) {
+		ComboBox<ModelData> combo = new ComboBox<ModelData>();
+
+		boolean workspace = "Workspace".equals(type);
+        String template = workspace ? getWorkspaceTemplate() : getTemplate();
+
+        initialize(getProxy(svc, combo, type), template, combo, suggestText);
+
+        if (workspace) {
+            combo.setDisplayField("fullPath");
+        }
+    }
+
 	private static DataProxy getProxy(final RegistryServiceAsync svc, 
 								      final ComboBox<ModelData> combo,
 								      final String searchType) {
