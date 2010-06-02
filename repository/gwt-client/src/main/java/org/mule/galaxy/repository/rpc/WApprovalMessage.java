@@ -18,31 +18,51 @@
 
 package org.mule.galaxy.repository.rpc;
 
+import java.util.List;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class WApprovalMessage implements IsSerializable {
     private String message;
     private boolean warning;
-    
+    private List<String> parameters;
+
     public WApprovalMessage() {
         super();
     }
+
     public WApprovalMessage(String message, boolean warning) {
-        super();
+        this(message, warning, null);
+    }
+
+    public WApprovalMessage(String message, boolean warning, List<String> parameters) {
         this.message = message;
         this.warning = warning;
+        this.parameters = parameters;
     }
+
     public String getMessage() {
         return message;
     }
+
     public void setMessage(String message) {
         this.message = message;
     }
+
     public boolean isWarning() {
         return warning;
     }
+
     public void setWarning(boolean warning) {
         this.warning = warning;
     }
-    
+
+    public List<String> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(List<String> parameters) {
+        this.parameters = parameters;
+    }
+
 }

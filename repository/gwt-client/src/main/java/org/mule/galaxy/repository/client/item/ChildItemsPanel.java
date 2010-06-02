@@ -1,8 +1,14 @@
 package org.mule.galaxy.repository.client.item;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.rpc.ItemInfo;
+import org.mule.galaxy.repository.rpc.WPolicyException;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.ui.button.ToolbarButton;
 import org.mule.galaxy.web.client.ui.button.ToolbarButtonEvent;
 import org.mule.galaxy.web.client.ui.dialog.LightBox;
@@ -37,10 +43,6 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.user.client.History;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class ChildItemsPanel extends AbstractFlowComposite {
 
@@ -258,20 +260,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                 com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
 
                 if (Dialog.YES.equals(btn.getItemId())) {
-                    final List<String> ids = new ArrayList<String>();
-                    for (BeanModel data : selectionModel.getSelectedItems()) {
-                        ids.add((String) data.get("id"));
-                    }
-
-                    // FIXME: delete collection.
-                    repository.getRegistryService().delete(ids, new AbstractCallback(menuPanel) {
-                        public void onSuccess(Object arg0) {
-                            fetchAllItems();
-                            menuPanel.removeItems(info, ids);
-                            menuPanel.setMessage("Items were deleted.");
-                        }
-                    });
-
+                    delete();
                 }
             }
         };
@@ -282,6 +271,42 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         fetchAllItems();
         menuPanel.refresh();
         menuPanel.clearErrorMessage();
+    }
+
+    private void delete() {
+        final List<String> ids = new ArrayList<String>();
+        for (BeanModel data : selectionModel.getSelectedItems()) {
+            ids.add((String) data.get("id"));
+        }
+
+        // FIXME: delete collection.
+        repository.getRegistryService().delete(ids, new AbstractCallback(menuPanel) {
+            
+            @Override
+            public void onFailure(Throwable caught) {
+                if (caught instanceof WPolicyException) {
+                    WPolicyException ex = (WPolicyException)caught;
+                    handlePolicyFailures(caught, ex);
+                } else {
+                    super.onFailure(caught);
+                }
+            }
+
+            public void onSuccess(Object arg0) {
+                fetchAllItems();
+                menuPanel.removeItems(info, ids);
+                menuPanel.setMessage("Items were deleted.");
+            }
+        });
+    }
+
+    protected void handlePolicyFailures(Throwable caught, WPolicyException ex) {
+        PageInfo page =
+                galaxy.getPageManager().createPageInfo("policy-failure-" + caught.hashCode(),
+                        new PolicyResultsPanel(galaxy, ex.getPolicyFailures()),
+                        0);
+
+        History.newItem(page.getName());
     }
 
 }

@@ -100,7 +100,7 @@ public class ItemPanel extends AbstractFlowComposite {
 
         TabItem itemsTab = new TabItem("Items");
         itemsTab.getHeader().setToolTip(repository.getRepositoryConstants().repo_Items_TabTip());
-        itemsTab.add(new ChildItemsPanel(galaxy, menuPanel, info, this));
+        itemsTab.add(menuPanel.getRepositoryModule().createChildItemsPanel(info, this));
         tabPanel.add(itemsTab);
 
 

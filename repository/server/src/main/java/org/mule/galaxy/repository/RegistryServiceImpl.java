@@ -1819,7 +1819,7 @@ public class RegistryServiceImpl implements RegistryService {
     
                 ArrayList<WApprovalMessage> wapprovals = new ArrayList<WApprovalMessage>();
                 for (ApprovalMessage app : approvals) {
-                    wapprovals.add(new WApprovalMessage(app.getMessage(), app.isWarning()));
+                    wapprovals.add(new WApprovalMessage(app.getMessage(), app.isWarning(), app.getParameters()));
                 }
     
                 failures.put(info, wapprovals);

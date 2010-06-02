@@ -8,25 +8,30 @@ import org.mule.galaxy.repository.client.admin.PropertyDescriptorForm;
 import org.mule.galaxy.repository.client.admin.PropertyDescriptorListPanel;
 import org.mule.galaxy.repository.client.admin.TypeForm;
 import org.mule.galaxy.repository.client.admin.TypeListPanel;
+import org.mule.galaxy.repository.client.item.ChildItemsPanel;
+import org.mule.galaxy.repository.client.item.ItemPanel;
 import org.mule.galaxy.repository.client.item.RepositoryMenuPanel;
 import org.mule.galaxy.repository.client.property.PropertyInterfaceManager;
+import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryService;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.GalaxyModule;
-import org.mule.galaxy.web.client.ui.NavMenuItem;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
+import org.mule.galaxy.web.client.ui.NavMenuItem;
+import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
 public class RepositoryModule implements GalaxyModule {
     protected Galaxy galaxy;
-    private PropertyInterfaceManager propertyInterfaceManager = new PropertyInterfaceManager();
+    protected PropertyInterfaceManager propertyInterfaceManager = new PropertyInterfaceManager();
     protected RepositoryConstants repositoryConstants;
     private RegistryServiceAsync registryService;
     private int repositoryTabIndex = 0;
     private boolean showTypeSystem = true;
+    protected RepositoryMenuPanel repositoryMenuPanel;
     
     public void initialize(Galaxy galaxy) {
         this.galaxy = galaxy;
@@ -82,7 +87,9 @@ public class RepositoryModule implements GalaxyModule {
     }
     
     protected RepositoryMenuPanel createRepositoryPanels() {
-        return new RepositoryMenuPanel(this);
+        repositoryMenuPanel = new RepositoryMenuPanel(this);
+        repositoryMenuPanel.createPageInfo("browse", createChildItemsPanel(null, null));
+        return repositoryMenuPanel;
     }
 
     public int getRepositoryTab() {
@@ -127,6 +134,11 @@ public class RepositoryModule implements GalaxyModule {
 
     public void setRepositoryTab(int repositoryTabIndex) {
         this.repositoryTabIndex = repositoryTabIndex;
+    }
+
+    public WidgetHelper createChildItemsPanel(ItemInfo info,
+                                        ItemPanel itemPanel) {
+        return new ChildItemsPanel(galaxy, repositoryMenuPanel, info, itemPanel);
     }
     
 

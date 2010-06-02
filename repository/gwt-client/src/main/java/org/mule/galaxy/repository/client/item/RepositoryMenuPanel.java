@@ -60,7 +60,6 @@ public class RepositoryMenuPanel extends MenuPanel {
         this.galaxy = repository.getGalaxy();
         super.getLeftMenu().setStyleName("left-menu-accordion");
 
-        createPageInfo("browse", new ChildItemsPanel(galaxy, this, null, null));
         createPageInfo("item/" + PageManager.WILDCARD, new ItemPanel(this));
         createPageInfo("add-item", new AddItemForm(this));
         
