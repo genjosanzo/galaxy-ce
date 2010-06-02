@@ -322,6 +322,14 @@ public class WidgetHelper extends Composite {
         return td;
     }
 
+
+    public static TableData paddedCell(int value) {
+        TableData td = new TableData();
+        td.setPadding(value);
+        return td;
+    }
+
+
     /**
      * @param heading
      * @param items
