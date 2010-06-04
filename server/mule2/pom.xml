@@ -47,10 +47,10 @@
             <type>test-jar</type>
         </dependency>
 
-        <dependency>
+        <!--dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
-        </dependency>
+        </dependency-->
 
     </dependencies>
     <build>

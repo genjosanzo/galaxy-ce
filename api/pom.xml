@@ -38,6 +38,12 @@
     <dependency>
       <groupId>org.apache.abdera</groupId>
       <artifactId>abdera-server</artifactId>
+      <exclusions>  
+        <exclusion>
+          <artifactId>xml-apis</artifactId>
+          <groupId>xml-apis</groupId>
+        </exclusion>
+      </exclusions>   
     </dependency>
     
     <!-- Maven/Surefire doesn't like it when this isn't here. -->

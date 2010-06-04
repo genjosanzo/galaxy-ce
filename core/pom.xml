@@ -95,6 +95,10 @@
                     <artifactId>jeceira</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>net.sf.jeceira</groupId>
+                    <artifactId>jeceira</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring</artifactId>
                 </exclusion>
@@ -133,6 +137,10 @@
                 <exclusion>
                     <groupId>xerces</groupId>
                     <artifactId>xmlParserAPIs</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>xml-apis</groupId>
@@ -294,6 +302,10 @@
                     <groupId>xerces</groupId>
                     <artifactId>xmlParserAPIs</artifactId>
                 </exclusion>
+                <!-- exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                </exclusion-->
                 <exclusion>
                     <groupId>xml-apis</groupId>
                     <artifactId>xmlParserAPIs</artifactId>
@@ -346,6 +358,10 @@
                     <artifactId>xmlParserAPIs</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>xml-apis</groupId>
                     <artifactId>xmlParserAPIs</artifactId>
                 </exclusion>
@@ -375,6 +391,10 @@
                 <exclusion>
                     <groupId>xerces</groupId>
                     <artifactId>xmlParserAPIs</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>xml-apis</groupId>
@@ -489,6 +509,12 @@
             <groupId>xalan</groupId>
             <artifactId>xalan</artifactId>
             <version>2.7.0</version>
+            <exclusions>
+              <exclusion>
+                <artifactId>xml-apis</artifactId>
+                <groupId>xml-apis</groupId>
+              </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
