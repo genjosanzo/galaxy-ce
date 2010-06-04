@@ -15,13 +15,26 @@ import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
 public class WebPluginManager extends PluginManagerImpl implements ServletContextAware {
+
     private ServletContext servletContext;
+    private static final String PLUGIN_DIRECTORY = "WEB-INF/plugins";
     private static List<File> pluginLocations = new ArrayList<File>();
-    
+
+    /**
+     * @return plugin directory location
+     */
+    protected final String extractPluginDirectory() {
+        //ServletContext#getRealPath does not work (by specification) with non-exploded wars.
+        //Some containers(WLS) strictly conform to this.
+        //Keep its usage first for backward compatibility.
+        //Workarounded for WLS using a specific configuration in weblogic.xml
+        return servletContext.getRealPath(WebPluginManager.PLUGIN_DIRECTORY);
+    }
+
     @Override
     public void initialize() throws IOException {
-        setPluginDirectory(servletContext.getRealPath("WEB-INF/plugins"));
-        
+        setPluginDirectory(extractPluginDirectory());
+
         super.initialize();
     }
 
