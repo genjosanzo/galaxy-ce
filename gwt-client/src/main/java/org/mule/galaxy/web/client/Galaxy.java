@@ -133,7 +133,7 @@ public class Galaxy {
         base.setBorders(false);
         base.setLayout(new BorderLayout());
 
-        createHeader(new Image(logoHref));
+        createHeader();
 
         this.pageManager = new PageManager();
 
@@ -240,7 +240,7 @@ public class Galaxy {
     }
 
 
-    protected void createHeader(Image logo) {
+    protected void createHeader() {
         ContentPanel northPanel = new ContentPanel();
         northPanel.setBodyBorder(false);
         northPanel.setBorders(false);
@@ -258,16 +258,32 @@ public class Galaxy {
         FlowPanel header = new FlowPanel();
         header.setStyleName("header");
         header.add(rightHeaderPanel);
-        logo.setTitle("Home");
-        logo.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent clickEvent) {
-                History.newItem("browse");
-            }
-        });
-        header.add(logo);
+
+        header.add(createLogo(logoHref));
 
         northPanel.add(header);
         base.add(northPanel, data);
+    }
+
+    protected final Image createLogo(final String url) {
+        final Image logo = new Image(url);
+        logo.setTitle("Home");
+        logo.addClickHandler(new ClickHandler() {
+            public void onClick(final ClickEvent clickEvent) {
+                onLogoClick(clickEvent);
+            }
+        });
+        return logo;
+    }
+
+    /**
+     *
+     * Intercepts click event on logo.
+     *
+     * @param clickEvent
+     */
+    protected void onLogoClick(final ClickEvent clickEvent) {
+        History.newItem("browse");
     }
 
     protected InlineFlowPanel createAlertNotificationArea() {
