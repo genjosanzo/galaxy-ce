@@ -1,8 +1,5 @@
 package org.mule.galaxy.repository.client.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.client.ui.field.Oracle;
@@ -16,48 +13,65 @@ import com.extjs.gxt.ui.client.data.RpcProxy;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 public class RegistryOracle extends Oracle {
 
-	public RegistryOracle(RegistryServiceAsync svc) {
-		this(svc, "Artifact");
+    public RegistryOracle(RegistryServiceAsync svc) {
+        this(svc, "Artifact");
     }
-	
-	/**
-	 * Allows you to specify what types of things this oracle will show. If you
-	 * wish to show "Workspace"s, then it will do some magic to format things differently.
-	 * @param svc
-	 * @param type
-	 */
-	public RegistryOracle(RegistryServiceAsync svc, String type) {
-		ComboBox<ModelData> combo = new ComboBox<ModelData>();
-		
-		boolean workspace = "Workspace".equals(type);
+
+    /**
+     * Allows you to specify what types of things this oracle will show. If you
+     * wish to show "Workspace"s, then it will do some magic to format things differently.
+     *
+     * @param svc
+     * @param type
+     */
+    public RegistryOracle(RegistryServiceAsync svc, String type) {
+        ComboBox<ModelData> combo = new ComboBox<ModelData>();
+
+        boolean workspace = "Workspace".equals(type);
         String template = workspace ? getWorkspaceTemplate() : getTemplate();
-		
+
         initialize(getProxy(svc, combo, type), template, combo, "Start typing...");
-        
+
         if (workspace) {
             combo.setDisplayField("fullPath");
         }
     }
 
     public RegistryOracle(RegistryServiceAsync svc, String type, String suggestText) {
-		ComboBox<ModelData> combo = new ComboBox<ModelData>();
+        this(svc, type, suggestText, "xxx");
+    }
 
-		boolean workspace = "Workspace".equals(type);
+    public RegistryOracle(RegistryServiceAsync svc, String type, String suggestText, String excludePath) {
+
+        ComboBox<ModelData> combo = new ComboBox<ModelData>();
+
+        boolean workspace = "Workspace".equals(type);
         String template = workspace ? getWorkspaceTemplate() : getTemplate();
 
-        initialize(getProxy(svc, combo, type), template, combo, suggestText);
+        initialize(getProxy(svc, combo, type, excludePath), template, combo, suggestText);
 
         if (workspace) {
             combo.setDisplayField("fullPath");
         }
     }
 
-	private static DataProxy getProxy(final RegistryServiceAsync svc, 
-								      final ComboBox<ModelData> combo,
-								      final String searchType) {
-		RpcProxy<PagingLoadResult<ModelData>> proxy = new RpcProxy<PagingLoadResult<ModelData>>() {
+    private static DataProxy getProxy(final RegistryServiceAsync svc,
+                                      final ComboBox<ModelData> combo,
+                                      final String searchType) {
+
+        return getProxy(svc, combo, searchType, "xxx");
+    }
+
+    private static DataProxy getProxy(final RegistryServiceAsync svc,
+                                      final ComboBox<ModelData> combo,
+                                      final String searchType,
+                                      final String excludePath) {
+        RpcProxy<PagingLoadResult<ModelData>> proxy = new RpcProxy<PagingLoadResult<ModelData>>() {
             @Override
             protected void load(Object loadConfig, final AsyncCallback<PagingLoadResult<ModelData>> callback) {
 
@@ -73,7 +87,7 @@ public class RegistryOracle extends Oracle {
                             BaseModelData data = new BaseModelData();
                             data.set("name", i.getName());
                             data.set("path", i.getParentPath());
-                            data.set("fullPath", i.getParentPath() != null ? 
+                            data.set("fullPath", i.getParentPath() != null ?
                                     i.getParentPath() + "/" + i.getName() : "/" + i.getName());
                             data.set("item", i);
                             models.add(data);
@@ -88,14 +102,14 @@ public class RegistryOracle extends Oracle {
                 if (text == null)
                     text = "";
 
-                svc.suggestItems(text, false, "xxx", new String[]{searchType}, wrapper);
+                svc.suggestItems(text, false, excludePath, new String[]{searchType}, wrapper);
             }
         };
 
-        return proxy; 
+        return proxy;
     }
 
-	private static native String getTemplate() /*-{
+    private static native String getTemplate() /*-{
         return [
         '<tpl for="."><div style="padding: 3px; vertical-align: middle;" class="search-item">',
         '<strong>{name}</strong> in {path}',
@@ -103,7 +117,7 @@ public class RegistryOracle extends Oracle {
         ].join("");
     }-*/;
 
-	private static native String getWorkspaceTemplate() /*-{
+    private static native String getWorkspaceTemplate() /*-{
         return [
         '<tpl for="."><div style="padding: 3px; vertical-align: middle;" class="search-item">',
         '<strong>{fullPath}</strong>',
