@@ -199,6 +199,10 @@ a:visited {
 .grid-ajax-loader {
     background:url("images/grid-ajax-loader.gif") no-repeat;
 }
+.grid-ajax-loader-msg {
+    background:url("images/grid-ajax-loader.gif") no-repeat;
+    padding: 2 2 2 20px;
+}
 
 .small-ajax-loader {
     background:url("images/small-ajax-loader.gif") no-repeat;
