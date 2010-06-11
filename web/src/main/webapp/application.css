@@ -196,6 +196,19 @@ a:visited {
     cursor: pointer;
 }
 
+.grid-ajax-loader {
+    background:url("images/grid-ajax-loader.gif") no-repeat;
+}
+
+.small-ajax-loader {
+    background:url("images/small-ajax-loader.gif") no-repeat;
+}
+.small-ajax-padded-msg {
+    background:url("images/small-ajax-loader.gif") no-repeat;
+    padding: 2 2 2 20px;
+}
+
+
 /**
  **
  ** The Left Menu
