@@ -133,6 +133,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
                 
                 if (oldPassword != null && oldPassword.equals(pass)) {
                     node.setProperty(PASSWORD, newPassword);
+                    session.save();
                 } else {
                     return false;
                 }
@@ -151,6 +152,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
                 }
                 
                 node.setProperty(PASSWORD, password);
+                session.save();
                 return null;
             }
         });
@@ -253,8 +255,6 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         session.save();
     }
 
-    
-    @SuppressWarnings("unchecked")
     @Override
     protected List<User> doListAll(Session session) throws RepositoryException {
         return doQuery("/jcr:root/users/*[@enabled='true']");
