@@ -36,6 +36,7 @@ import java.util.Iterator;
 
 public class SelectionPanel extends Composite {
 
+    private static final String MINIMAL_WIDTH = "100px";
     private ListBox left;
     private ListBox right;
 
@@ -69,6 +70,8 @@ public class SelectionPanel extends Composite {
                 left.addItem(itemInfo.getText(o), value);
             }
         }
+        ensureMinimalWidth(left);
+        ensureMinimalWidth(right);
         
         FlexTable table = new FlexTable();
         panel.add(table);
@@ -115,6 +118,13 @@ public class SelectionPanel extends Composite {
 
             to.insertItem(text, val, dest);
             from.removeItem(i);
+        }
+        ensureMinimalWidth(from);
+    }
+
+    protected void ensureMinimalWidth(final ListBox list) {
+        if (list.getItemCount() == 0) {
+            list.setWidth(SelectionPanel.MINIMAL_WIDTH);
         }
     }
 
