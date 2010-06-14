@@ -24,6 +24,7 @@ import org.mule.galaxy.web.client.ui.dialog.LightBox;
 import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
 import org.mule.galaxy.web.client.ui.panel.SelectionPanel;
 import org.mule.galaxy.web.client.ui.panel.SelectionPanel.ItemInfo;
+import org.mule.galaxy.web.client.ui.validator.RegexValidator;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import org.mule.galaxy.web.rpc.WGroup;
@@ -37,6 +38,7 @@ import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ButtonBar;
+import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -92,6 +94,16 @@ public class UserForm extends AbstractAdministrationForm {
         if (newItem) {
             usernameTB = new TextField<String>();
             usernameTB.setAllowBlank(false);
+            usernameTB.setValidator(new RegexValidator("^[/]") {
+                @Override
+                public String validate(Field<?> field, String s) {
+                    final String reason = super.validate(field, s);
+                    if (reason == null) {
+                        return null;
+                    }
+                    return "Cannot contain '/'";
+                }
+            });
             table.setWidget(row, 1, usernameTB);
         } else {
             table.setText(row, 1, user.getUsername());
