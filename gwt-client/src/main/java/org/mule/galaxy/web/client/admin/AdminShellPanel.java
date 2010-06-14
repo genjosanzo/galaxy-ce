@@ -289,6 +289,11 @@ public class AdminShellPanel extends AbstractAdministrationComposite
             ws.setName(saveAsTB.getValue());
             // save as should null out the Id so it creates a new copy
             ws.setId(null);
+        } else {
+            if (ws.getId() == null) {
+                adminPanel.setMessage("Check 'Save As' if saving for the first time.");
+                return;
+            }
         }
         ws.setScript(scriptArea.getText());
         ws.setRunOnStartup(loadOnStartupCB.isChecked());
