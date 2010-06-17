@@ -10,6 +10,8 @@
  <bean id="properties"
   class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
   <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+  <property name="location" value="ldap.properties" />
+  <property name="ignoreResourceNotFound" value="true" />
   <property name="properties">
    <props>
     <prop key="ldap.config">classpath:ldap.xml</prop>
