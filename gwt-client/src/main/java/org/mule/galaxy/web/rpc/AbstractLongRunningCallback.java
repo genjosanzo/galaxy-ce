@@ -20,7 +20,7 @@ public class AbstractLongRunningCallback<T> extends AbstractCallback<T> {
         @Override
         public void run() {
             count++;
-            setErrorMessage("Remote call didn't respond after "+(count*AbstractLongRunningCallback.LONG_CALL_INTERVAL/1000)+" seconds", true);
+            setErrorMessage("Remote call didn't respond after "+(count*AbstractLongRunningCallback.LONG_CALL_INTERVAL/1000)+" seconds");
         }
     };
     private static final int LONG_CALL_INTERVAL = 10000;
