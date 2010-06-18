@@ -28,8 +28,7 @@ import com.google.gwt.user.client.ui.Widget;
 public abstract class AbstractErrorShowingComposite
         extends AbstractShowable implements ErrorPanel {
 
-    private FlowPanel errorPanel;
-    //private ErrorContentPanel errorPanel;
+    private ErrorContentPanel errorPanel;
 
     private FlowPanel mainPanel;
 
@@ -39,20 +38,16 @@ public abstract class AbstractErrorShowingComposite
         mainPanel = new FlowPanel();
         mainPanel.setStyleName("main-panel");
 
-        //errorPanel = new ErrorContentPanel();
-        errorPanel = new FlowPanel();
-        errorPanel.setStyleName("error-panel");
+        errorPanel = new ErrorContentPanel();
     }
 
     public void clearErrorMessage() {
-        //errorPanel.clearState();
-        errorPanel.clear();
+        errorPanel.clearState();
         mainPanel.remove(errorPanel);
     }
 
     public void setMessage(Widget label) {
-        //errorPanel.clearState();
-        errorPanel.clear();
+        errorPanel.clearState();
         addMessage(label);
     }
 
@@ -73,18 +68,15 @@ public abstract class AbstractErrorShowingComposite
         if (!errorPanel.isAttached()) {
             mainPanel.insert(errorPanel, pos);
         }
+        errorPanel.el().setVisible(true);
     }
 
     protected int getErrorPanelPosition() {
         return 0;
     }
 
-    //protected ErrorContentPanel getErrorPanel() {
-    //   return errorPanel;
-    //}
-
-    protected FlowPanel getErrorPanel() {
-        return errorPanel;
+    protected ErrorContentPanel getErrorPanel() {
+       return errorPanel;
     }
 
     protected FlowPanel getMainPanel() {

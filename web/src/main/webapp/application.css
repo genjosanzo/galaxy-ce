@@ -542,6 +542,10 @@ a:visited {
     margin-right: auto
 }
 
+.error-panel-header-text {
+    display: none;
+}
+
 .error-panel .gwt-Label {
     /*padding: 4px 4px 10px 4px; */ /* use with gxt panel */
     padding: 4px;

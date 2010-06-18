@@ -6,11 +6,18 @@ import com.extjs.gxt.ui.client.fx.FxConfig;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.button.ToolButton;
 
+/**
+ *
+ * Specialized {@link ContentPanel} for displaying error messages.
+ * <br />
+ * Can be closed.
+ *
+ */
 public class ErrorContentPanel extends ContentPanel {
 
     public ErrorContentPanel() {
-        super();
-        baseStyle = "error-panel";
+        this.baseStyle = "error-panel";
+
         setDeferHeight(false);
         setStyleName(baseStyle);
         ToolButton btn = new ToolButton("x-tool-close");
@@ -21,6 +28,5 @@ public class ErrorContentPanel extends ContentPanel {
                 el().fadeOut(FxConfig.NONE);
             }
         });
-
     }
 }
