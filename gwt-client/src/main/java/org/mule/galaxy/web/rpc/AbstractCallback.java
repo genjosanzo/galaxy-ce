@@ -28,14 +28,20 @@ import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 public abstract class AbstractCallback<T> implements AsyncCallback<T> {
 
     private ErrorPanel errorPanel;
-    private Timer timer;
-    private static final int AUTO_HIDE_DELAY = 3000;
+    private Timer autoHideErrorMessageTimer = new Timer() {
+        @Override
+        public void run() {
+            errorPanel.clearErrorMessage();
+        }
+    };
+    private static final int AUTO_HIDE_DELAY = 4000;
+
 
     public AbstractCallback(ErrorPanel panel) {
         this.errorPanel = panel;
     }
 
-    public void onFailureDirect(final Throwable caught) {
+    public void onCallFailure(final Throwable caught) {
         String msg = caught.getMessage();
 
         if (caught instanceof InvocationException && !(caught instanceof StatusCodeException)) {
@@ -48,26 +54,35 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
             setErrorMessage("There was an error communicating with the server. Please try again." + caught.getClass().getName(), false);
         }
     }
-    
-    public void setErrorMessage(final String message) {
-        setErrorMessage(message, false);
+
+    public void onFailure(final Throwable caught) {
+        onCallFailure(caught);
     }
 
-    public void setErrorMessage(final String message, final boolean autoHide) {
-        errorPanel.setMessage(message);
-        if (autoHide) {
-            timer = new Timer() {
-                @Override
-                public void run() {
-                    errorPanel.clearErrorMessage();
-                }
-            };
-            timer.schedule(AbstractCallback.AUTO_HIDE_DELAY);
-        }
-    }
-    
-    public void onFailure(final Throwable caught) {
-        onFailureDirect(caught);
-    }
+    /**
+    *
+    * Display an error message. Will not be auto hidden.
+    *
+    * @see ErrorPanel#setMessage(String)
+    * @param message
+    */
+   public void setErrorMessage(final String message) {
+       setErrorMessage(message, false);
+   }
+
+   /**
+   *
+   * Display an error message. Will not be auto hidden.
+   *
+   * @see ErrorPanel#setMessage(String)
+   * @param message
+   * @param autoHide if true error message will be cleared after {@value AbstractCallback#AUTO_HIDE_DELAY} milliseconds.
+   */
+   public void setErrorMessage(final String message, final boolean autoHide) {
+       errorPanel.setMessage(message);
+       if (autoHide) {
+           autoHideErrorMessageTimer.schedule(AbstractCallback.AUTO_HIDE_DELAY);
+       }
+   }
 
 }
