@@ -28,6 +28,12 @@ public class ToolbarButtonBar extends ToolBar {
         setStyles();
     }
 
+    // use the named style
+    public void add(ToolbarButton button, String style) {
+        button.setStyleName(style);
+        super.add(button);
+    }
+
     public void add(List<ToolbarButton> buttons) {
         for(ToolbarButton b : buttons) {
            this.add(b);
