@@ -28,7 +28,7 @@ import org.mule.galaxy.util.SecurityUtils;
 import org.springmodules.jcr.SessionFactory;
 
 public class RegistryInitializer {
-    private static final String REPOSITORY_LAYOUT_VERSION = "version";
+    static final String REPOSITORY_LAYOUT_VERSION = "version";
 
     private Registry registry;
     private SessionFactory sessionFactory;

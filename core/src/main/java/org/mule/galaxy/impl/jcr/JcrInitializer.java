@@ -1,7 +1,14 @@
 package org.mule.galaxy.impl.jcr;
 
 import javax.jcr.NamespaceException;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
+import javax.jcr.version.VersionException;
 
 import org.apache.jackrabbit.core.nodetype.NodeTypeDef;
 import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
@@ -47,14 +54,34 @@ public class JcrInitializer {
             if (!ntreg.isRegistered(ntd.getName())) {
                 ntreg.registerNodeType(ntd);
             }
-                
-            
         }
 //        ntreg.dump(System.out);
-
+        
+        // This would normally go in an upgrader, but this needs to happen before anything else in the system happens
+        final Node workspaces = JcrUtil.getOrCreate(session.getRootNode(), "workspaces", "galaxy:noSiblings");
+        String versionStr = JcrUtil.getStringOrNull(workspaces, RegistryInitializer.REPOSITORY_LAYOUT_VERSION);
+        final int version = Integer.parseInt(versionStr);
+        
+        if (version < 101) {
+            makeLockable(session.getRootNode().getNodes());
+        }
+        session.save();
+        
         session.logout();
     }
-    
+
+    private void makeLockable(NodeIterator itr) throws RepositoryException, NoSuchNodeTypeException, VersionException,
+            ConstraintViolationException, LockException {
+        while (itr.hasNext()) {
+            Node l = itr.nextNode();
+            if (!l.getName().startsWith("jcr:")) {
+                l.addMixin("mix:lockable");
+                
+                makeLockable(l.getNodes());
+            }
+        }
+    }
+        
     public void destroy() throws Exception {
         openSession.logout();
     }
