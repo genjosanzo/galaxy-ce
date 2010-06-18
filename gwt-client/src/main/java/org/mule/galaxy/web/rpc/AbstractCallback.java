@@ -18,7 +18,6 @@
 
 package org.mule.galaxy.web.rpc;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.InvocationException;
 import com.google.gwt.user.client.rpc.StatusCodeException;
@@ -33,24 +32,22 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
         this.errorPanel = panel;
     }
 
-    public void onFailureDirect(Throwable caught) {
+    public void onFailureDirect(final Throwable caught) {
         String msg = caught.getMessage();
-        
-        GWT.log("Error communicating with server: ", caught);
+
         if (caught instanceof InvocationException && !(caught instanceof StatusCodeException)) {
             // happens after server is back online, and got a forward to a login page
             // typically would be displayed with a session killed dialog
             errorPanel.setMessage("Current session has been killed, please re-login.");
         } else if (msg != null || !"".equals(msg)) {
-            errorPanel.setMessage("Error communicating with server: " + caught.getMessage() + "");
+            errorPanel.setMessage("Error communicating with server: " + msg + "");
         } else {
             errorPanel.setMessage("There was an error communicating with the server. Please try again." + caught.getClass().getName());
         }
     }
 
-    public void onFailure(Throwable caught) {
+    public void onFailure(final Throwable caught) {
         onFailureDirect(caught);
     }
-    
-    
+
 }
