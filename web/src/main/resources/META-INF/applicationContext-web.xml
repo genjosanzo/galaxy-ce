@@ -58,4 +58,5 @@
         class="org.mule.galaxy.web.ArtifactUploadServlet">
         <property name="uploadService" ref="uploadService" />
     </bean>
+
 </beans>
