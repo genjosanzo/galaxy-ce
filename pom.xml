@@ -60,6 +60,7 @@
     <modules>
         <module>buildtools</module>
         <module>api</module>
+        <module>atom-client</module>
         <module>core</module>
         <module>ldap</module>
         <module>plugins</module>
@@ -71,9 +72,6 @@
         <module>rest</module>
         <module>web</module>
         <module>gwt-client</module>
-        <module>integration</module>
-        <module>server</module>
-	<module>examples</module>
     </modules>
 
     <dependencyManagement>

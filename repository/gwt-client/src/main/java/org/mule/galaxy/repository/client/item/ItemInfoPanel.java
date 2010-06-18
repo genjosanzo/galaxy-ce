@@ -98,7 +98,7 @@ public class ItemInfoPanel extends AbstractShowable {
         rightGroup.setSpacing(6);
         
         topPanel.add(rightGroup);
-        
+        /*
         if (item.isLocal()) {
             panel.add(newSpacer());
             
@@ -108,7 +108,7 @@ public class ItemInfoPanel extends AbstractShowable {
             initComments();
             panel.add(newSpacer());
 
-        }
+        }*/
         initWidget(panel);
     }
 
