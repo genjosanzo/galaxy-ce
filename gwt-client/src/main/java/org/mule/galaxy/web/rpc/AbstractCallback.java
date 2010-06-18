@@ -31,7 +31,9 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
     private Timer autoHideErrorMessageTimer = new Timer() {
         @Override
         public void run() {
-            errorPanel.clearErrorMessage();
+            if (errorPanel != null) {
+                errorPanel.clearErrorMessage();
+            }
         }
     };
     private static final int AUTO_HIDE_DELAY = 4000;
@@ -79,9 +81,11 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
    * @param autoHide if true error message will be cleared after {@value AbstractCallback#AUTO_HIDE_DELAY} milliseconds.
    */
    public void setErrorMessage(final String message, final boolean autoHide) {
-       errorPanel.setMessage(message);
-       if (autoHide) {
-           autoHideErrorMessageTimer.schedule(AbstractCallback.AUTO_HIDE_DELAY);
+       if (errorPanel != null) {
+           errorPanel.setMessage(message);
+           if (autoHide) {
+               autoHideErrorMessageTimer.schedule(AbstractCallback.AUTO_HIDE_DELAY);
+           }
        }
    }
 
