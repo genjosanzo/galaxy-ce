@@ -145,20 +145,15 @@
     <property name="settings" ref="settings" />
     <property name="upgraders">
         <list>
-            <bean class="org.mule.galaxy.impl.upgrade.V151Upgrader">
-                <property name="typeManager" ref="typeManager" />
-            </bean>
-            <bean class="org.mule.galaxy.impl.upgrade.V152Upgrader">
-                <property name="sessionFactory" ref="sessionFactory"/>
-                <property name="registry" ref="registry"/>
-            </bean>
-            <bean class="org.mule.galaxy.impl.upgrade.V153Upgrader">
-                <property name="sessionFactory" ref="sessionFactory"/>
-            </bean>
+            <ref bean="v101upgrader"/>
         </list>
     </property>
   </bean>  
   
+  <bean id="v101upgrader" class="org.mule.galaxy.impl.upgrade.V101Upgrader">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+            
   <bean id="registry" class="org.mule.galaxy.impl.jcr.JcrRegistryImpl"
         init-method="initialize">
     <property name="accessControlManager" ref="accessControlManager" />

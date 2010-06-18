@@ -31,7 +31,7 @@ public abstract class AbstractSessionUpgrader extends Upgrader {
     public void doUpgrade(final int currentRepositoryVersion, final Session session, final Node root) throws Exception {
         if (currentRepositoryVersion >= repositoryVersion) return;
         
-        log.info("Upgrading to version " + version + "....");
+        log.info("Upgrading database to version " + version + "....");
         
         final QueryManager qm = session.getWorkspace().getQueryManager();
         
@@ -44,7 +44,7 @@ public abstract class AbstractSessionUpgrader extends Upgrader {
             
         });
 
-        log.info("Upgrade to version " + version + " complete!");
+        log.info("Database upgrade to version " + version + " complete!");
     }
 
     protected abstract void doUpgrade(Node root, QueryManager qm, Session session) throws RepositoryException;

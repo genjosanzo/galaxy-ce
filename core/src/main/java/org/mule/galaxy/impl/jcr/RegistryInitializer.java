@@ -40,6 +40,8 @@ public class RegistryInitializer {
     private Extension artifactExtension;
     private JcrWorkspaceManager localWorkspaceManager;
 
+    private int currentVersion = 101;
+    
     public void intialize() throws Exception {
 
         final Session session = sessionFactory.getSession();
@@ -65,7 +67,7 @@ public class RegistryInitializer {
         } else {
             String versionStr = JcrUtil.getStringOrNull(workspaces, REPOSITORY_LAYOUT_VERSION);
             final int version = Integer.parseInt(versionStr);
-            if (version < 6) {
+            if (version < currentVersion) {
                 SecurityUtils.doPriveleged(new Runnable() {
                     public void run() {
                         for (Upgrader u : upgraders) {
@@ -79,7 +81,7 @@ public class RegistryInitializer {
 
                 });
             }
-            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "100");
+            workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "" + currentVersion);
         }
 
         session.save();
@@ -166,7 +168,7 @@ public class RegistryInitializer {
         w.setName(settings.getDefaultWorkspaceName());
         w.setType(workspaceType);
 
-        workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "4");
+        workspaces.setProperty(REPOSITORY_LAYOUT_VERSION, "" + currentVersion);
     }
 
     public void setUpgraders(Collection<Upgrader> upgraders) {

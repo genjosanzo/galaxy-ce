@@ -50,6 +50,14 @@ public class ArtifactTest extends AbstractGalaxyTest {
         assertEquals("test2", new String(byteStream.toByteArray()));
     }
     
+
+    public void testDelete() throws Exception {
+        Item i = importFile(new ByteArrayInputStream("test".getBytes()), "test.txt", "0.1", "text/plain");
+        
+        i.delete();
+    }
+    
+    
     public void testRename() throws Exception {
         Item a = importHelloWsdl();
         a.setName("2.0");
