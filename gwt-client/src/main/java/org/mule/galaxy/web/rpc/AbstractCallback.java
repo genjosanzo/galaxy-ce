@@ -43,7 +43,7 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
         this.errorPanel = panel;
     }
 
-    public void onCallFailure(final Throwable caught) {
+    public void onFailureDirect(final Throwable caught) {
         String msg = caught.getMessage();
 
         if (caught instanceof InvocationException && !(caught instanceof StatusCodeException)) {
@@ -58,7 +58,7 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
     }
 
     public void onFailure(final Throwable caught) {
-        onCallFailure(caught);
+        onFailureDirect(caught);
     }
 
     /**
