@@ -15,12 +15,10 @@ import com.google.gwt.user.client.Timer;
  */
 public class AbstractLongRunningCallback<T> extends AbstractCallback<T> {
 
-    private int count = 0;
     private final Timer longRunningCallTimer = new Timer() {
         @Override
         public void run() {
-            count++;
-            setErrorMessage("Remote call didn't respond after "+(count*AbstractLongRunningCallback.LONG_CALL_INTERVAL/1000)+" seconds");
+            setErrorMessage("Remote call didn't respond after "+AbstractLongRunningCallback.LONG_CALL_INTERVAL/1000+" seconds");
         }
     };
     private static final int LONG_CALL_INTERVAL = 10000;
