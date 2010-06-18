@@ -28,7 +28,7 @@ public class AbstractLongRunningCallback<T> extends AbstractCallback<T> {
     public AbstractLongRunningCallback(final ErrorPanel panel) {
         super(panel);
 
-        this.longRunningCallTimer.scheduleRepeating(AbstractLongRunningCallback.LONG_CALL_INTERVAL);
+        this.longRunningCallTimer.schedule(AbstractLongRunningCallback.LONG_CALL_INTERVAL);
     }
 
     public final void onSuccess(final T result) {
