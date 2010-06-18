@@ -18,6 +18,7 @@
 
 package org.mule.galaxy.web.rpc;
 
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.InvocationException;
 import com.google.gwt.user.client.rpc.StatusCodeException;
@@ -25,10 +26,12 @@ import com.google.gwt.user.client.rpc.StatusCodeException;
 import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 
 public abstract class AbstractCallback<T> implements AsyncCallback<T> {
+
     private ErrorPanel errorPanel;
+    private Timer timer;
+    private static final int AUTO_HIDE_DELAY = 3000;
 
     public AbstractCallback(ErrorPanel panel) {
-        super();
         this.errorPanel = panel;
     }
 
@@ -38,14 +41,31 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
         if (caught instanceof InvocationException && !(caught instanceof StatusCodeException)) {
             // happens after server is back online, and got a forward to a login page
             // typically would be displayed with a session killed dialog
-            errorPanel.setMessage("Current session has been killed, please re-login.");
+            setErrorMessage("Current session has been killed, please re-login.");
         } else if (msg != null || !"".equals(msg)) {
-            errorPanel.setMessage("Error communicating with server: " + msg + "");
+            setErrorMessage("Error communicating with server: " + msg + "", true);
         } else {
-            errorPanel.setMessage("There was an error communicating with the server. Please try again." + caught.getClass().getName());
+            setErrorMessage("There was an error communicating with the server. Please try again." + caught.getClass().getName(), false);
         }
     }
+    
+    public void setErrorMessage(final String message) {
+        setErrorMessage(message, false);
+    }
 
+    public void setErrorMessage(final String message, final boolean autoHide) {
+        errorPanel.setMessage(message);
+        if (autoHide) {
+            timer = new Timer() {
+                @Override
+                public void run() {
+                    errorPanel.clearErrorMessage();
+                }
+            };
+            timer.schedule(AbstractCallback.AUTO_HIDE_DELAY);
+        }
+    }
+    
     public void onFailure(final Throwable caught) {
         onFailureDirect(caught);
     }
