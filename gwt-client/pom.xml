@@ -34,36 +34,7 @@
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-incubator</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>com.octo.gwt.test</groupId>
-            <artifactId>gwt-test-utils</artifactId>
-            <version>0.13-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.1</version>
-            <scope>test</scope>
-        </dependency>
-       
-        <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymock</artifactId>
-            <version>2.4</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymockclassextension</artifactId>
-            <version>2.4</version>
-            <scope>test</scope>
-        </dependency> 
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -83,38 +54,6 @@
                     </execution>
                 </executions>
                     </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>com.octo.gwt.test</groupId>
-                                    <artifactId>gwt-test-utils-bootstrap</artifactId>
-                                    <version>0.13-SNAPSHOT</version>
-                                    <overWrite>true</overWrite>
-                                    <destFileName>bootstrap.jar</destFileName>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <argLine>-javaagent:target/bootstrap.jar</argLine>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
