@@ -60,13 +60,14 @@ public class JcrInitializer {
         // This would normally go in an upgrader, but this needs to happen before anything else in the system happens
         final Node workspaces = JcrUtil.getOrCreate(session.getRootNode(), "workspaces", "galaxy:noSiblings");
         String versionStr = JcrUtil.getStringOrNull(workspaces, RegistryInitializer.REPOSITORY_LAYOUT_VERSION);
-        final int version = Integer.parseInt(versionStr);
-        
-        if (version < 101) {
-            makeLockable(session.getRootNode().getNodes());
+        if (versionStr != null) {
+            final int version = Integer.parseInt(versionStr);
+            
+            if (version < 101) {
+                makeLockable(session.getRootNode().getNodes());
+            }
+            session.save();
         }
-        session.save();
-        
         session.logout();
     }
 
