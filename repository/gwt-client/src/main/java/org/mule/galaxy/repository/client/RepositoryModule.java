@@ -137,7 +137,7 @@ public class RepositoryModule implements GalaxyModule {
     }
 
     public WidgetHelper createChildItemsPanel(ItemInfo info,
-                                        ItemPanel itemPanel) {
+                                              ItemPanel itemPanel) {
         return new ChildItemsPanel(galaxy, repositoryMenuPanel, info, itemPanel);
     }
     
