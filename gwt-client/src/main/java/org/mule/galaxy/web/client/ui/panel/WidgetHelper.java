@@ -148,13 +148,20 @@ public class WidgetHelper extends Composite {
     }
 
 
-    public static ContentPanel createAccodionWrapperPanel() {
-        ContentPanel accordionPanel = new ContentPanel(new AccordionLayout());
+    public static ContentPanel createAccodionWrapperPanel(boolean hideWidget) {
+        AccordionLayout layout = new AccordionLayout();
+        layout.setHideCollapseTool(hideWidget);
+
+        ContentPanel accordionPanel = new ContentPanel(layout);
         accordionPanel.setCollapsible(false);
         accordionPanel.setHeaderVisible(false);
         accordionPanel.setAutoHeight(true);
         accordionPanel.setAutoWidth(true);
         return accordionPanel;
+    }
+
+    public static ContentPanel createAccodionWrapperPanel() {
+        return createAccodionWrapperPanel(false);
     }
 
     /**
