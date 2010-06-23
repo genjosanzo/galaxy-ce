@@ -19,13 +19,6 @@
       <property name="scheduler" ref="scheduler"/>
   </bean>
   
-  <bean class="org.mule.galaxy.policy.wsdl.BackwardCompatibilityPolicy">
-    <property name="registry" ref="registry"/>
-  </bean>
-  <bean class="org.mule.galaxy.policy.wsdl.BasicProfilePolicy">
-    <property name="registry" ref="registry"/>
-  </bean>
-  
   <bean id="scriptManager" class="org.mule.galaxy.impl.script.ScriptManagerImpl"
         init-method="initialize">
     <property name="activityManager" ref="activityManager" />

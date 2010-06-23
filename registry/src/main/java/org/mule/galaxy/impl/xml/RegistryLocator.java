@@ -1,4 +1,4 @@
-package org.mule.galaxy.impl;
+package org.mule.galaxy.impl.xml;
 
 import java.io.IOException;
 import java.io.InputStream;

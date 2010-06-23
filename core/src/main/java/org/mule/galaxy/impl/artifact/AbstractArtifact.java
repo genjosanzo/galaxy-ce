@@ -2,8 +2,7 @@ package org.mule.galaxy.impl.artifact;
 
 import java.io.IOException;
 
-import javax.wsdl.Definition;
-
+import org.aspectj.weaver.loadtime.definition.Definition;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.artifact.Artifact;
 import org.mule.galaxy.artifact.ArtifactType;

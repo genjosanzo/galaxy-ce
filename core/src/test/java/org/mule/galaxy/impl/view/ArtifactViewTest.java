@@ -30,7 +30,7 @@ public class ArtifactViewTest extends AbstractGalaxyTest {
         assertEquals(1, views.size());
         
         Query query = new Query();
-        query.add(OpRestriction.like("wsdl.service", "Hello"));
+        query.add(OpRestriction.like("name", "hello"));
         
         view.setQuery(query.toString());
         

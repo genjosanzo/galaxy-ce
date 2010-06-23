@@ -1,4 +1,4 @@
-package org.mule.galaxy.impl;
+package org.mule.galaxy.impl.xml;
 
 import java.util.Iterator;
 import java.util.Map;

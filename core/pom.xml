@@ -7,29 +7,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-core</artifactId>
-  <version>2.0-SNAPSHOT</version>
+    <version>2.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Galaxy Core</name>
 
     <dependencies>
-
-        <dependency>
-            <groupId>net.sf.saxon</groupId>
-            <artifactId>saxon</artifactId>
-            <version>8.9.0.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.sf.saxon</groupId>
-            <artifactId>saxon-dom</artifactId>
-            <version>8.9.0.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.sf.saxon</groupId>
-            <artifactId>saxon-xqj</artifactId>
-            <version>8.9.0.4</version>
-        </dependency>
 
         <dependency>
             <groupId>javax.activation</groupId>
@@ -39,18 +21,43 @@
 
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring</artifactId>
+            <artifactId>spring-aop</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
         </dependency>
 
         <dependency>
@@ -331,18 +338,6 @@
 
         <dependency>
             <groupId>org.mule.galaxy</groupId>
-            <artifactId>galaxy-wsdldiff</artifactId>
-            <version>${version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mule.galaxy</groupId>
-            <artifactId>galaxy-wsi</artifactId>
-            <version>${version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-testutils</artifactId>
             <version>${version}</version>
             <scope>test</scope>
@@ -502,18 +497,6 @@
                     <groupId>stax</groupId>
                     <artifactId>stax-api</artifactId>
                 </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>xalan</groupId>
-            <artifactId>xalan</artifactId>
-            <version>2.7.0</version>
-            <exclusions>
-              <exclusion>
-                <artifactId>xml-apis</artifactId>
-                <groupId>xml-apis</groupId>
-              </exclusion>
             </exclusions>
         </dependency>
 

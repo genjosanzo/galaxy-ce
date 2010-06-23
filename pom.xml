@@ -11,7 +11,7 @@
     <properties>
         <slf4jVersion>1.5.0</slf4jVersion>
         <gwtVersion>2.0.1</gwtVersion>
-        <springVersion>2.5.5</springVersion>
+        <springVersion>2.5.6</springVersion>
         <!--
             Well, it's broken too, and some assemblies override it to
             fallback to 2.1.
@@ -67,6 +67,7 @@
         <module>wsdldiff</module>
         <module>wsi</module>
         <module>testutils</module>
+        <module>registry</module>
         <module>repository/gwt-client</module>
         <module>repository/server</module>
         <module>rest</module>
@@ -132,6 +133,14 @@
                         <groupId>commons-logging</groupId>
                         <artifactId>commons-logging</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <artifactId>org.apache.geronimo.specs</artifactId>
+                        <groupId>geronimo-activation_1.0.2_spec</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>servlet-api</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
 
@@ -164,9 +173,53 @@
                         <groupId>commons-logging</groupId>
                         <artifactId>commons-logging</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <artifactId>org.apache.geronimo.specs</artifactId>
+                        <groupId>geronimo-activation_1.0.2_spec</groupId>
+                    </exclusion>
                 </exclusions>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.abdera</groupId>
+                <artifactId>abdera-core</artifactId>
+                <version>0.4.0-incubating</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>xml-apis</groupId>
+                        <artifactId>xmlParserAPIs</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>xom</groupId>
+                        <artifactId>xom</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>dom4j</groupId>
+                        <artifactId>dom4j</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>jdom</groupId>
+                        <artifactId>jdom</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>xerces</groupId>
+                        <artifactId>xercesImpl</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.geronimo.specs</groupId>
+                        <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>org.apache.geronimo.specs</artifactId>
+                        <groupId>geronimo-activation_1.0.2_spec</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            
             <dependency>
                 <groupId>org.apache.abdera</groupId>
                 <artifactId>abdera-server</artifactId>
@@ -199,6 +252,10 @@
                     <exclusion>
                         <groupId>org.apache.geronimo.specs</groupId>
                         <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>org.apache.geronimo.specs</artifactId>
+                        <groupId>geronimo-activation_1.0.2_spec</groupId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -285,7 +342,19 @@
 
             <dependency>
                 <groupId>org.springframework</groupId>
-                <artifactId>spring</artifactId>
+                <artifactId>spring-aop</artifactId>
+                <version>${springVersion}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
                 <version>${springVersion}</version>
                 <exclusions>
                     <exclusion>
@@ -297,22 +366,40 @@
 
             <dependency>
                 <groupId>org.springframework</groupId>
-                <artifactId>spring-aop</artifactId>
+                <artifactId>spring-context</artifactId>
                 <version>${springVersion}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
-
+            
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context-support</artifactId>
                 <version>${springVersion}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-jdbc</artifactId>
                 <version>${springVersion}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
-
+            
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-jms</artifactId>

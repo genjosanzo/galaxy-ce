@@ -23,7 +23,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.mule.galaxy.Item;
 import org.mule.galaxy.artifact.XmlContentHandler;
-import org.mule.galaxy.impl.MapNamespaceContext;
+import org.mule.galaxy.impl.xml.MapNamespaceContext;
 import org.mule.galaxy.util.DOMUtils;
 import org.mule.galaxy.util.QNameUtil;
 import org.w3c.dom.Document;

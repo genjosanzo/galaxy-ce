@@ -63,6 +63,8 @@ import org.springmodules.jcr.SessionFactoryUtils;
 public class IndexManagerImpl extends AbstractReflectionDao<Index>
     implements IndexManager, ApplicationContextAware {
 
+    public static final String PROPERTY_NAME = "property";
+    
     private final Log log = LogFactory.getLog(getClass());
 
     private BlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>();
@@ -196,7 +198,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
             return;
         }
         
-        String propName = idx.getConfiguration().get(XPathIndexer.PROPERTY_NAME);
+        String propName = idx.getConfiguration().get(PROPERTY_NAME);
         
         doDelete(id, session);
         

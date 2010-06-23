@@ -25,7 +25,15 @@
         <property name="rmiName" value="jackrabbit"/>
     </bean -->
 
-
+    <bean id="properties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+          <list>
+            <value>classpath:galaxy.properties</value>
+          </list>
+        </property>
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    </bean>
+    
   <bean id="sessionFactory" class="org.mule.galaxy.impl.jcr.JackrabbitSessionFactory">
     <property name="repository" ref="repository"/>
     <property name="credentials">
@@ -36,8 +44,6 @@
      </bean>
     </property>
   </bean>
-  <bean id="indexer.xpath" class="org.mule.galaxy.impl.index.XPathIndexer"/>
-  <bean id="indexer.xquery" class="org.mule.galaxy.impl.index.XQueryIndexer"/>
   
   <bean id="indexer.groovy" class="org.mule.galaxy.impl.index.GroovyIndexer">
     <property name="typeManager" ref="typeManager"/>
@@ -376,9 +382,6 @@
   <bean id="contentService" class="org.mule.galaxy.impl.content.ContentServiceImpl">
     <constructor-arg>
       <list>
-        <bean class="org.mule.galaxy.impl.content.XmlDocumentContentHandler"/>
-        <bean class="org.mule.galaxy.impl.content.WsdlContentHandler"/>
-        <bean class="org.mule.galaxy.impl.content.SchemaContentHandler"/>
       </list>
     </constructor-arg>
   </bean>
