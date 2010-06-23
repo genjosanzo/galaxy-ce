@@ -37,7 +37,7 @@ public class PageManager implements ValueChangeHandler<String>{
         tabPanel = new ReloadableTabPanel() {
             @Override
             protected void onLastSelectedItemClick(TabItem item, ComponentEvent ce) {
-                PageManager.this.onHistoryChanged(getToken(getCurrentPage()));
+                PageManager.this.onHistoryChanged(History.getToken());
             }
         };
         tabPanel.setBorderStyle(false);
@@ -60,10 +60,6 @@ public class PageManager implements ValueChangeHandler<String>{
             }
 
         });
-    }
-
-    private String getToken(PageInfo page) {
-        return tabNames.get(page.getTabIndex());
     }
 
     public PageInfo getCurrentPage() {
