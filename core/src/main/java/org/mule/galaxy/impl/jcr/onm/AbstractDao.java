@@ -81,10 +81,9 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
                     throw new RuntimeException(e);
                 } catch (ItemExistsException e) {
                     throw new RuntimeException(new DuplicateItemException(e));
+                } finally {
+                    JcrUtil.safeSave(session);
                 }
-                
-                session.save();
-                
                 return null;
             }
         });
@@ -151,7 +150,11 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
     public List<T> listAll() {
         return (List<T>) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                return doListAll(session);
+                try {
+                    return doListAll(session);
+                } finally {
+                    JcrUtil.safeSave(session);
+                }
             }
         });
     }
@@ -483,7 +486,7 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
             }
         }
         
-        return new Results(values, iterator.getSize());
+        return new Results<T>(values, iterator.getSize());
     }
 
 }
