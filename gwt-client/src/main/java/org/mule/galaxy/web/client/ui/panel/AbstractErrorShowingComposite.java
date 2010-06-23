@@ -28,51 +28,39 @@ import com.google.gwt.user.client.ui.Widget;
 public abstract class AbstractErrorShowingComposite
         extends AbstractShowable implements ErrorPanel {
 
-    private ErrorContentPanel errorPanel;
-
-    private FlowPanel mainPanel;
+    private final ErrorContentPanel errorPanel = new ErrorContentPanel();
+    private final FlowPanel mainPanel = new FlowPanel();
 
     public AbstractErrorShowingComposite() {
-        super();
-
-        mainPanel = new FlowPanel();
         mainPanel.setStyleName("main-panel");
-
-        errorPanel = new ErrorContentPanel();
+        mainPanel.add(errorPanel);
+        errorPanel.hide();
     }
 
     public void clearErrorMessage() {
-        errorPanel.clearState();
-        mainPanel.remove(errorPanel);
+        errorPanel.removeAllMessages();
+        errorPanel.hide();
     }
 
-    public void setMessage(Widget label) {
-        errorPanel.clearState();
+    protected Widget createStringWidget(final String message) {
+        return new Label(message);
+    }
+    
+    public void setMessage(final Widget label) {
+        clearErrorMessage();
         addMessage(label);
     }
 
-    public void setMessage(String string) {
-        setMessage(new Label(string));
+    public void setMessage(final String message) {
+        setMessage(createStringWidget(message));
     }
 
     public void addMessage(String message) {
-        addMessage(new Label(message));
+        addMessage(createStringWidget(message));
     }
 
-    public void addMessage(Widget message) {
-        int pos = getErrorPanelPosition();
-        if (pos > mainPanel.getWidgetCount()) {
-            pos = mainPanel.getWidgetCount();
-        }
-        errorPanel.add(message);
-        if (!errorPanel.isAttached()) {
-            mainPanel.insert(errorPanel, pos);
-        }
-        errorPanel.el().setVisible(true);
-    }
-
-    protected int getErrorPanelPosition() {
-        return 0;
+    public void addMessage(final Widget message) {
+        errorPanel.addMessage(message);
     }
 
     protected ErrorContentPanel getErrorPanel() {
