@@ -19,7 +19,7 @@
 package org.mule.galaxy.web.client.ui.panel;
 
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -43,7 +43,7 @@ public abstract class AbstractErrorShowingComposite
     }
 
     protected Widget createStringWidget(final String message) {
-        return new Label(message);
+        return new HTML(message);
     }
     
     public void setMessage(final Widget label) {
