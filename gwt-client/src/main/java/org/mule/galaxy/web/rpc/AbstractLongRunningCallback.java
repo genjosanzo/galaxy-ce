@@ -3,6 +3,7 @@ package org.mule.galaxy.web.rpc;
 import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  *
@@ -18,10 +19,11 @@ public class AbstractLongRunningCallback<T> extends AbstractCallback<T> {
     private final Timer longRunningCallTimer = new Timer() {
         @Override
         public void run() {
-            setErrorMessage("Remote call didn't respond after "+AbstractLongRunningCallback.LONG_CALL_INTERVAL/1000+" seconds");
+            setLongRunningErrorMessage();
         }
     };
-    private static final int LONG_CALL_INTERVAL = 10000;
+    private Widget message;
+    private static final int LONG_CALL_INTERVAL = 5000;
 
     public AbstractLongRunningCallback(final ErrorPanel panel) {
         super(panel);
@@ -31,6 +33,7 @@ public class AbstractLongRunningCallback<T> extends AbstractCallback<T> {
 
     public final void onSuccess(final T result) {
         this.longRunningCallTimer.cancel();
+        removeMessage(message);
         onCallSuccess(result);
     }
 
@@ -39,10 +42,14 @@ public class AbstractLongRunningCallback<T> extends AbstractCallback<T> {
 
     public final void onFailure(final Throwable caught) {
         this.longRunningCallTimer.cancel();
+        removeMessage(message);
         onCallFailure(caught);
     }
 
     public void onCallFailure(final Throwable caught) {
     }
 
+    private void setLongRunningErrorMessage() {
+        message = setErrorMessage("Server is taking longer to respond than normal...");
+    }
 }

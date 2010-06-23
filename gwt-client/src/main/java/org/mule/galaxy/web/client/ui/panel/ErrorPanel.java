@@ -25,9 +25,11 @@ public interface ErrorPanel {
     
     void setMessage(Widget label);
     
-    void setMessage(String string);
+    Widget setMessage(String string);
 
-    void addMessage(String message);
+    Widget addMessage(String message);
 
     void addMessage(Widget message);
+    
+    void removeMessage(Widget message);
 }

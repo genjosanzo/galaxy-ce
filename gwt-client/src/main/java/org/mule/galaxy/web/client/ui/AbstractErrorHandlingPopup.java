@@ -47,12 +47,16 @@ public abstract class AbstractErrorHandlingPopup extends PopupPanel implements E
         addMessage(label);
     }
 
-    public void setMessage(String string) {
-        setMessage(new Label(string));
+    public Widget setMessage(String message) {
+        Label w = new Label(message);
+        setMessage(w);
+        return w;
     }
 
-    public void addMessage(String message) {
-        addMessage(new Label(message));
+    public Widget addMessage(String message) {
+        Label w = new Label(message);
+        addMessage(w);
+        return w;
     }
 
     public void addMessage(Widget message) {
@@ -69,5 +73,8 @@ public abstract class AbstractErrorHandlingPopup extends PopupPanel implements E
         return errorPanel;
     }
 
+    public void removeMessage(Widget message) {
+        errorPanel.remove(message);
+    }
 
 }

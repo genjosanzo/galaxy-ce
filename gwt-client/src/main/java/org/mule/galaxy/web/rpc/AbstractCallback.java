@@ -18,12 +18,13 @@
 
 package org.mule.galaxy.web.rpc;
 
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
+
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.InvocationException;
 import com.google.gwt.user.client.rpc.StatusCodeException;
-
-import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public abstract class AbstractCallback<T> implements AsyncCallback<T> {
 
@@ -68,8 +69,8 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
     * @see ErrorPanel#setMessage(String)
     * @param message
     */
-   public void setErrorMessage(final String message) {
-       setErrorMessage(message, false);
+   public Widget setErrorMessage(final String message) {
+       return setErrorMessage(message, false);
    }
 
    /**
@@ -80,12 +81,20 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
    * @param message
    * @param autoHide if true error message will be cleared after {@value AbstractCallback#AUTO_HIDE_DELAY} milliseconds.
    */
-   public void setErrorMessage(final String message, final boolean autoHide) {
+   public Widget setErrorMessage(final String message, final boolean autoHide) {
        if (errorPanel != null) {
-           errorPanel.setMessage(message);
+           Widget w = errorPanel.setMessage(message);
            if (autoHide) {
                autoHideErrorMessageTimer.schedule(AbstractCallback.AUTO_HIDE_DELAY);
            }
+           return w;
+       }
+       return null;
+   }
+
+   public void removeMessage(Widget message) {
+       if (errorPanel != null) {
+           errorPanel.removeMessage(message);
        }
    }
 

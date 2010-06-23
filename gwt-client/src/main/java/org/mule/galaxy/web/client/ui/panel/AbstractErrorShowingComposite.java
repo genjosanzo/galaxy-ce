@@ -51,16 +51,27 @@ public abstract class AbstractErrorShowingComposite
         addMessage(label);
     }
 
-    public void setMessage(final String message) {
-        setMessage(createStringWidget(message));
+    public Widget setMessage(final String message) {
+        Widget w = createStringWidget(message);
+        setMessage(w);
+        return w;
     }
 
-    public void addMessage(String message) {
+    public Widget addMessage(String message) {
+        Widget w = createStringWidget(message);
         addMessage(createStringWidget(message));
+        return w;
     }
 
     public void addMessage(final Widget message) {
         errorPanel.addMessage(message);
+    }
+
+    public void removeMessage(Widget message) {
+        errorPanel.remove(message);
+        if (errorPanel.getItemCount() == 0) {
+            errorPanel.hide();
+        }
     }
 
     protected ErrorContentPanel getErrorPanel() {
