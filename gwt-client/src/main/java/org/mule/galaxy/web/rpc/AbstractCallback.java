@@ -51,9 +51,9 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
             // typically would be displayed with a session killed dialog
             setErrorMessage("Current session has been killed, please re-login.");
         } else if (msg != null && !"".equals(msg)) {
-            setErrorMessage("Error communicating with server: " + msg + "", true);
+            setErrorMessage("Error communicating with server: " + msg + "");
         } else {
-            setErrorMessage("There was an error communicating with the server. Please try again. <br />Exception: " + caught.getClass().getName(), false);
+            setErrorMessage("There was an error communicating with the server. Please try again. <br />Exception: " + caught.getClass().getName());
         }
     }
 
