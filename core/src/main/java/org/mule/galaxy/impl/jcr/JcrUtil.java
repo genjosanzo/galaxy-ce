@@ -58,6 +58,12 @@ public class JcrUtil {
         return ret;
     } 
     
+    public static void safeSave(final Session session) throws RepositoryException {
+        if (session.hasPendingChanges()) {
+            session.save();
+        }
+    }
+    
     /**
      * Convert a string to an XPath 2.0 string literal, suitable for inclusion in
      * a query. See JSR-170 spec v1.0, Sec. 6.6.4.9.
@@ -262,6 +268,9 @@ public class JcrUtil {
             
             for (Map.Entry<String, String> o : c.entrySet()) {
                 keys[i] = new StringValue(o.getKey());
+                if (!(o.getValue() instanceof String)) {
+                    throw new IllegalArgumentException("Only supports Collections of String");
+                }
                 values[i] = new StringValue(o.getValue());
                 i++;
             }
