@@ -37,7 +37,8 @@ public class PageManager implements ValueChangeHandler<String>{
         tabPanel = new ReloadableTabPanel() {
             @Override
             protected void onLastSelectedItemClick(TabItem item, ComponentEvent ce) {
-                PageManager.this.onHistoryChanged(History.getToken());
+                int newTab = tabPanel.getItems().indexOf(item);
+                PageManager.this.onHistoryChanged(tabNames.get(newTab));
             }
         };
         tabPanel.setBorderStyle(false);
