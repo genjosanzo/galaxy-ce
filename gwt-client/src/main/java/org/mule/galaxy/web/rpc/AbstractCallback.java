@@ -38,7 +38,7 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
         }
     };
     private Text message = new Text();
-    private static final int LONG_CALL_INTERVAL = 10000;
+    private static final int LONG_CALL_INTERVAL = 20000;
     private static final String DEFAULT_LONG_RUNNING_CALL_ERROR_MESSAGE = "Server is taking longer to respond than normal.";
 
     public AbstractCallback(final ErrorPanel panel) {
