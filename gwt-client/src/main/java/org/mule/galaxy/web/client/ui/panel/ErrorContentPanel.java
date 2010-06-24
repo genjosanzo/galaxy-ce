@@ -85,6 +85,7 @@ public class ErrorContentPanel extends ContentPanel {
         setVisible(true);
         if (isRendered()) {
             el().fadeIn(FxConfig.NONE);
+            el().dom.getStyle().setProperty("opacity", "1.0");
         }
     }
 
