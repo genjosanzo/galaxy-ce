@@ -20,6 +20,8 @@ package org.mule.galaxy.web.rpc;
 
 import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 
+import com.extjs.gxt.ui.client.widget.Text;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.InvocationException;
 import com.google.gwt.user.client.rpc.StatusCodeException;
@@ -28,9 +30,31 @@ import com.google.gwt.user.client.ui.Widget;
 public abstract class AbstractCallback<T> implements AsyncCallback<T> {
 
     private final ErrorPanel errorPanel;
+    private final Timer longRunningCallTimer = new Timer() {
+        @Override
+        public void run() {
+            message.setText(createLongRunningCallErrorMessage());
+            setErrorMessage(message);
+        }
+    };
+    private Text message = new Text();
+    private static final int LONG_CALL_INTERVAL = 10000;
+    private static final String DEFAULT_LONG_RUNNING_CALL_ERROR_MESSAGE = "Server is taking longer to respond than normal.";
 
     public AbstractCallback(final ErrorPanel panel) {
         this.errorPanel = panel;
+        this.longRunningCallTimer.schedule(AbstractCallback.LONG_CALL_INTERVAL);
+    }
+
+    protected String createLongRunningCallErrorMessage() {
+        return AbstractCallback.DEFAULT_LONG_RUNNING_CALL_ERROR_MESSAGE;
+    }
+
+    protected final void cancelLongRunningCallTimer() {
+        this.longRunningCallTimer.cancel();
+        if (message.isAttached()) {
+            removeMessage(message);
+        }
     }
 
     /**
@@ -60,12 +84,14 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
     }
 
     public final void onFailure(final Throwable caught) {
+        cancelLongRunningCallTimer();
         onCallFailure(caught);
     }
 
     protected abstract void onCallSuccess(final T result);
 
     public final void onSuccess(final T result) {
+        cancelLongRunningCallTimer();
         onCallSuccess(result);
     }
 
@@ -81,6 +107,12 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
            return errorPanel.setMessage(message);
        }
        return null;
+   }
+
+   public void setErrorMessage(final Widget message) {
+       if (errorPanel != null) {
+           errorPanel.setMessage(message);
+       }
    }
 
    public void removeMessage(final Widget message) {

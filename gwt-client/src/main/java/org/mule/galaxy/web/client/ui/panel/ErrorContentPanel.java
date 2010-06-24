@@ -28,7 +28,7 @@ public class ErrorContentPanel extends ContentPanel {
     private Timer autoCloseTimer = new Timer() {
         @Override
         public void run() {
-            close();
+            fadeOut();
         }
     };
     private static final int AUTO_HIDE_DELAY = 4000;
@@ -71,10 +71,14 @@ public class ErrorContentPanel extends ContentPanel {
     .   addSelectionListener(new SelectionListener<IconButtonEvent>() {
             @Override
             public void componentSelected(final IconButtonEvent event) {
-                close();
-                autoCloseTimer.cancel();// It is safe to cancel a non-scheduled timer
+                fadeOut();
+                cancelAutoCloseTimer();
             }
         });
+    }
+
+    protected final void cancelAutoCloseTimer() {
+        autoCloseTimer.cancel();// It is safe to cancel a non-scheduled timer
     }
 
     public void fadeIn() {
@@ -89,6 +93,10 @@ public class ErrorContentPanel extends ContentPanel {
             Fx fx = new Fx(FxConfig.NONE);
             fx.run(new FadeOutAndRemoveMessages(el()));
         }
+    }
+
+    public boolean isEmpty() {
+        return messages.isEmpty();
     }
 
     public void addMessage(final Widget widget) {
@@ -112,10 +120,15 @@ public class ErrorContentPanel extends ContentPanel {
             fadeIn();
         }
         messages.add(widget);
-        autoCloseTimer.cancel();// Cancel eventual previously scheduled timer.
+        cancelAutoCloseTimer();// Cancel eventual previously scheduled timer.
         if (autoHide) {
             autoCloseTimer.schedule(ErrorContentPanel.AUTO_HIDE_DELAY);
         }
+    }
+
+    public void removeMessage(final Widget widget) {
+        remove(widget);
+        messages.remove(widget);
     }
 
     protected void removeAllMessages() {
@@ -123,10 +136,6 @@ public class ErrorContentPanel extends ContentPanel {
             remove(message);
         }
         messages.clear();
-    }
-
-    public void close() {
-        fadeOut();
     }
 
 }

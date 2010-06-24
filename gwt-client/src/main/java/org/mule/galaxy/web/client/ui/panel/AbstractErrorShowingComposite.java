@@ -38,7 +38,7 @@ public abstract class AbstractErrorShowingComposite
     }
 
     public void clearErrorMessage() {
-        errorPanel.close();
+        errorPanel.removeAllMessages();
     }
 
     protected Widget createStringWidget(final String message) {
@@ -67,9 +67,9 @@ public abstract class AbstractErrorShowingComposite
     }
 
     public void removeMessage(Widget message) {
-        errorPanel.remove(message);
-        if (errorPanel.getItemCount() == 0) {
-            errorPanel.hide();
+        errorPanel.removeMessage(message);
+        if (errorPanel.isEmpty()) {
+            errorPanel.fadeOut();
         }
     }
 
