@@ -20,7 +20,6 @@ package org.mule.galaxy.web.rpc;
 
 import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.InvocationException;
 import com.google.gwt.user.client.rpc.StatusCodeException;
@@ -28,25 +27,14 @@ import com.google.gwt.user.client.ui.Widget;
 
 public abstract class AbstractCallback<T> implements AsyncCallback<T> {
 
-    private ErrorPanel errorPanel;
-    private Timer autoHideErrorMessageTimer = new Timer() {
-        @Override
-        public void run() {
-            if (errorPanel != null) {
-                errorPanel.clearErrorMessage();
-            }
-        }
-    };
-    private static final int AUTO_HIDE_DELAY = 4000;
+    private final ErrorPanel errorPanel;
 
-
-    public AbstractCallback(ErrorPanel panel) {
+    public AbstractCallback(final ErrorPanel panel) {
         this.errorPanel = panel;
     }
 
     public void onFailureDirect(final Throwable caught) {
-        String msg = caught.getMessage();
-
+        final String msg = caught.getMessage();
         if (caught instanceof InvocationException && !(caught instanceof StatusCodeException)) {
             // happens after server is back online, and got a forward to a login page
             // typically would be displayed with a session killed dialog
@@ -64,35 +52,19 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
 
     /**
     *
-    * Display an error message. Will not be auto hidden.
+    * Display an error message.
     *
     * @see ErrorPanel#setMessage(String)
     * @param message
     */
    public Widget setErrorMessage(final String message) {
-       return setErrorMessage(message, false);
-   }
-
-   /**
-   *
-   * Display an error message. Will not be auto hidden.
-   *
-   * @see ErrorPanel#setMessage(String)
-   * @param message
-   * @param autoHide if true error message will be cleared after {@value AbstractCallback#AUTO_HIDE_DELAY} milliseconds.
-   */
-   public Widget setErrorMessage(final String message, final boolean autoHide) {
        if (errorPanel != null) {
-           Widget w = errorPanel.setMessage(message);
-           if (autoHide) {
-               autoHideErrorMessageTimer.schedule(AbstractCallback.AUTO_HIDE_DELAY);
-           }
-           return w;
+           return errorPanel.setMessage(message);
        }
        return null;
    }
 
-   public void removeMessage(Widget message) {
+   public void removeMessage(final Widget message) {
        if (errorPanel != null) {
            errorPanel.removeMessage(message);
        }
