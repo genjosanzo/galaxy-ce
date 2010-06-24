@@ -323,6 +323,13 @@ public class WidgetHelper extends Composite {
         return w;
     }
 
+    public static WidgetComponent newImage(String path, String tooltip) {
+        Image i = new Image(path);
+        WidgetComponent w = new WidgetComponent(i);
+        w.setToolTip(tooltip == null ? "" : tooltip);
+        return w;
+    }
+
     public static TableData colspan(int value) {
         TableData td = new TableData();
         td.setColspan(value);
