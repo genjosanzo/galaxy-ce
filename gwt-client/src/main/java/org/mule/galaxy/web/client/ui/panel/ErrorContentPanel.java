@@ -1,8 +1,5 @@
 package org.mule.galaxy.web.client.ui.panel;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.extjs.gxt.ui.client.core.El;
@@ -24,7 +21,6 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class ErrorContentPanel extends ContentPanel {
 
-    private Collection<Widget> messages = new LinkedList<Widget>();
     private Timer autoCloseTimer = new Timer() {
         @Override
         public void run() {
@@ -53,12 +49,42 @@ public class ErrorContentPanel extends ContentPanel {
 
         public void onComplete() {
             el.setVisible(false);
+            el.setStyleAttribute("opacity", 1);
             el.dom.getStyle().setProperty("opacity", "");
             el.dom.getStyle().setProperty("filter", "");
             removeAllMessages();
         }
 
     }
+
+    /**
+     *
+     * 
+     * Fixes some opacity issue.
+     *
+     */
+    private static class FadeIn extends SingleStyleEffect {
+
+        public FadeIn(El el) {
+          super(el, "opacity", 0, 1);
+        }
+
+        @Override
+        public void increase(double value) {
+          el.setStyleAttribute("opacity", value);
+        }
+
+        public void onComplete() {
+          el.dom.getStyle().setProperty("opacity", "1.0");
+          el.setStyleAttribute("filter", "");
+        }
+
+        public void onStart() {
+          el.setStyleAttribute("opacity", 0);
+          el.setVisible(true);
+        }
+
+      }
 
     public ErrorContentPanel() {
         this.baseStyle = "error-panel";
@@ -84,8 +110,8 @@ public class ErrorContentPanel extends ContentPanel {
     public void fadeIn() {
         setVisible(true);
         if (isRendered()) {
-            el().fadeIn(FxConfig.NONE);
-            el().dom.getStyle().setProperty("opacity", "1.0");
+            Fx fx = new Fx(FxConfig.NONE);
+            fx.run(new FadeIn(el()));
         }
     }
 
@@ -94,10 +120,6 @@ public class ErrorContentPanel extends ContentPanel {
             Fx fx = new Fx(FxConfig.NONE);
             fx.run(new FadeOutAndRemoveMessages(el()));
         }
-    }
-
-    public boolean isEmpty() {
-        return messages.isEmpty();
     }
 
     public void addMessage(final Widget widget) {
@@ -115,12 +137,12 @@ public class ErrorContentPanel extends ContentPanel {
      *            {@value AbstractCallback#AUTO_HIDE_DELAY} milliseconds.
      */
     public void addMessage(final Widget widget, final boolean autoHide) {
-        add(widget);
-        layout();
-        if (messages.isEmpty()) {
+        if (getItemCount() == 0) {
             fadeIn();
         }
-        messages.add(widget);
+        add(widget);
+        layout();
+
         cancelAutoCloseTimer();// Cancel eventual previously scheduled timer.
         if (autoHide) {
             autoCloseTimer.schedule(ErrorContentPanel.AUTO_HIDE_DELAY);
@@ -129,14 +151,12 @@ public class ErrorContentPanel extends ContentPanel {
 
     public void removeMessage(final Widget widget) {
         remove(widget);
-        messages.remove(widget);
     }
 
     protected void removeAllMessages() {
-        for (final Widget message : messages) {
-            remove(message);
+        for (int i = 0; i< getItemCount(); i++) {
+            remove(getItem(i));
         }
-        messages.clear();
     }
 
 }
