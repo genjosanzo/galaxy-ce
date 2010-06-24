@@ -110,13 +110,13 @@ public class AdminShellPanel extends AbstractAdministrationComposite
                 if (sender == evaluateBtn) {
                     evaluateBtn.setEnabled(false);
                     adminPanel.getGalaxy().getAdminService().executeScript(scriptArea.getText(), new AbstractCallback(adminPanel) {
-                        public void onFailure(Throwable caught) {
+                        public void onCallFailure(Throwable caught) {
                             evaluateBtn.setEnabled(true);
                             scriptResultsLabel.setText("");
                             super.onFailure(caught);
                         }
 
-                        public void onSuccess(Object o) {
+                        public void onCallSuccess(Object o) {
                             adminPanel.clearErrorMessage();
                             evaluateBtn.setEnabled(true);
                             scriptResultsLabel.setText(o == null ? "No value returned" : o.toString());
@@ -242,11 +242,11 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         });
 
         adminPanel.getGalaxy().getAdminService().getScripts(new AbstractCallback<List<WScript>>(adminPanel) {
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 super.onFailure(caught);
             }
 
-            public void onSuccess(List<WScript> o) {
+            public void onCallSuccess(List<WScript> o) {
                 addTreeItems(o);
             }
         });
@@ -301,12 +301,12 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         // a local ref to satisfy anonymous inner class requirements
         final WScript localCopyWs = ws;
         adminPanel.getGalaxy().getAdminService().save(ws, new AbstractCallback(adminPanel) {
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 saveBtn.setEnabled(true);
                 super.onFailure(caught);
             }
 
-            public void onSuccess(Object o) {
+            public void onCallSuccess(Object o) {
                 saveBtn.setEnabled(true);
                 adminPanel.setMessage("Script '" + localCopyWs.getName() + "' has been saved");
                 refresh();
@@ -327,12 +327,12 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
         deleteBtn.setEnabled(false);
         adminPanel.getGalaxy().getAdminService().deleteScript(wsx.getId(), new AbstractCallback(adminPanel) {
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 deleteBtn.setEnabled(true);
                 super.onFailure(caught);
             }
 
-            public void onSuccess(Object o) {
+            public void onCallSuccess(Object o) {
                 deleteBtn.setEnabled(true);
                 scriptArea.setText(null);
                 adminPanel.setMessage("Script '" + wsx.getName() + "' has been deleted");

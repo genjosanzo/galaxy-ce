@@ -36,7 +36,7 @@ public class IndexDeleteForm extends AbstractAdministrationComposite {
         
         registryService.getIndex(indexId, new AbstractCallback(adminPanel) {
 
-            public void onSuccess(Object index) {
+            public void onCallSuccess(Object index) {
                 showIndex((WIndex) index);
             }
             
@@ -92,7 +92,7 @@ public class IndexDeleteForm extends AbstractAdministrationComposite {
     protected AsyncCallback getDeleteCallback() {
         return new AbstractCallback(adminPanel) {
 
-            public void onSuccess(Object arg0) {
+            public void onCallSuccess(Object arg0) {
                 adminPanel.getGalaxy().setMessageAndGoto("indexes", "Index was deleted.");
             }
             

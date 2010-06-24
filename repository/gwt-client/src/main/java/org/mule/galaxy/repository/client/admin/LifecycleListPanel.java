@@ -65,7 +65,7 @@ public class LifecycleListPanel extends AbstractAdministrationComposite {
 
         registryService.getLifecycles(new AbstractCallback<Collection<WLifecycle>>(adminPanel) {
 
-            public void onSuccess(Collection<WLifecycle> lifecycles) {
+            public void onCallSuccess(Collection<WLifecycle> lifecycles) {
                 showLifecycles(lifecycles);
             }
 

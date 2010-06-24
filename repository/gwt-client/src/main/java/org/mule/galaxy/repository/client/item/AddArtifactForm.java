@@ -151,7 +151,7 @@ public class AddArtifactForm extends AbstractErrorHandlingPopup {
             public void handleEvent(final FormEvent fe) {
 
                 registryService.getTypes(new AbstractCallback<List<WType>>(AddArtifactForm.this) {
-                    public void onSuccess(List<WType> types) {
+                    public void onCallSuccess(List<WType> types) {
                         AddArtifactForm.this.submit(fe, types);
                     }
                 });
@@ -177,13 +177,13 @@ public class AddArtifactForm extends AbstractErrorHandlingPopup {
         versionProperties.put("artifact", fileId);
         
         AbstractCallback callback = new AbstractCallback(this) {
-            public void onSuccess(Object id) {
+            public void onCallSuccess(Object id) {
                 itemsPanel.refresh();
                 hide();
             }
 
             @Override
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 setEnabled(true);
                 if (caught instanceof ItemExistsException) {
                     AddArtifactForm.this.setMessage("An item with that name already exists.");

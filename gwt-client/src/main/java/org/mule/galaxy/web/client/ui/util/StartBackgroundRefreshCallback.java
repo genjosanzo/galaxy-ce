@@ -1,12 +1,12 @@
 package org.mule.galaxy.web.client.ui.util;
 
 import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
-import org.mule.galaxy.web.rpc.AbstractLongRunningCallback;
+import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class StartBackgroundRefreshCallback<T> extends AbstractLongRunningCallback<T> {
+public class StartBackgroundRefreshCallback<T> extends AbstractCallback<T> {
 
     private final AsyncCallback<T> callback;
     private Timer timer;

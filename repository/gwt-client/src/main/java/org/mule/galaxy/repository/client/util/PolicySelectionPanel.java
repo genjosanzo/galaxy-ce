@@ -165,7 +165,7 @@ public class PolicySelectionPanel extends AbstractShowable {
         
         registryService.getPolicies(new AbstractCallback(errorPanel) {
 
-            public void onSuccess(Object o) {
+            public void onCallSuccess(Object o) {
                 policies = (Collection) o;
                 
                 for (Iterator itr = policies.iterator(); itr.hasNext();) {

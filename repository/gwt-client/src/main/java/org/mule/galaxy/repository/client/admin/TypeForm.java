@@ -387,24 +387,24 @@ public class TypeForm extends AbstractAdministrationForm {
 
     protected void intializeTypesAndProperties() {
         registryService.getTypes(new AbstractCallback<List<WType>>(errorPanel) {
-            public void onSuccess(List<WType> types) {
+            public void onCallSuccess(List<WType> types) {
                 initializeTypes(types);
             }
 
             @Override
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 errorPanel.setMessage(caught.getClass().getName());
                 super.onFailure(caught);
             }
         });
 
         registryService.getPropertyDescriptors(false, new AbstractCallback(errorPanel) {
-            public void onSuccess(Object pds) {
+            public void onCallSuccess(Object pds) {
                 initializeProperties((List<WPropertyDescriptor>) pds);
             }
 
             @Override
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 errorPanel.setMessage(caught.getClass().getName());
                 super.onFailure(caught);
             }

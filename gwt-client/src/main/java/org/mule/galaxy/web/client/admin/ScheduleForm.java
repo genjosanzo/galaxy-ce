@@ -124,7 +124,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
     private void loadScripts() {
         adminPanel.getGalaxy().getAdminService().getScripts(new AbstractCallback<List<WScript>>(adminPanel) {
 
-            public void onSuccess(List<WScript> scripts) {
+            public void onCallSuccess(List<WScript> scripts) {
                 finishLoadScripts(scripts);
             }
 

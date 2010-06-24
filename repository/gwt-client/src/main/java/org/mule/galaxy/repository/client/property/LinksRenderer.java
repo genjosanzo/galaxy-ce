@@ -127,7 +127,7 @@ public class LinksRenderer extends AbstractListRenderer {
         
         registryService.itemExists(path, new AbstractCallback<Boolean>(errorPanel) {
 
-            public void onSuccess(Boolean exists) {
+            public void onCallSuccess(Boolean exists) {
                 if (isDuplicate(path)) {
                     verifyLabel.setText("A link to that item already exists.");
                     setEnabled(true);

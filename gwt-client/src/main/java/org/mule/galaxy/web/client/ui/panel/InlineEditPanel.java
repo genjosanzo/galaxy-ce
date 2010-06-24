@@ -113,12 +113,12 @@ public abstract class InlineEditPanel extends Composite {
         return new AbstractCallback(errorPanel) {
 
             @Override
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 setEnabled(true);
                 super.onFailure(caught);
             }
 
-            public void onSuccess(Object arg0) {
+            public void onCallSuccess(Object arg0) {
                 finishSave();
             }
 

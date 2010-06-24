@@ -75,7 +75,7 @@ public class RepositoryMenuPanel extends MenuPanel {
                 itemId = params.get(0);
                 
                 AbstractCallback getItemCallback = new AbstractCallback<ItemInfo>(this) {
-                    public void onSuccess(ItemInfo item) {
+                    public void onCallSuccess(ItemInfo item) {
                         Widget main = getMain();
                         if (main instanceof ItemPanel) {
                             ((ItemPanel)main).initializeItem(item);
@@ -99,7 +99,7 @@ public class RepositoryMenuPanel extends MenuPanel {
     
     private void loadItems(String itemId) {
         AbstractCallback getItemsCallback = new AbstractCallback<Collection<ItemInfo>>(this) {
-            public void onSuccess(Collection<ItemInfo> items) {
+            public void onCallSuccess(Collection<ItemInfo> items) {
                 loadAndExpandItems(items);
             }
         };
@@ -275,7 +275,7 @@ public class RepositoryMenuPanel extends MenuPanel {
                 
                 String id = (String)parent.get("id");
                 repository.getRegistryService().getItems(id, false, new AbstractCallback<Collection<ItemInfo>>(RepositoryMenuPanel.this) {
-                    public void onSuccess(Collection<ItemInfo> items) {
+                    public void onCallSuccess(Collection<ItemInfo> items) {
                         mergeItems(items, parent);
                     }
                 });

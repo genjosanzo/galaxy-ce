@@ -31,7 +31,7 @@ public class LifecycleRenderer extends AbstractPropertyRenderer {
         
         if (lifecycles == null) {
             registryService.getLifecycles(new AbstractCallback(errorPanel) {
-                public void onSuccess(Object o) {
+                public void onCallSuccess(Object o) {
                     lifecycles = (Collection) o;
                     doShowLifecycles();
                 }
@@ -66,7 +66,7 @@ public class LifecycleRenderer extends AbstractPropertyRenderer {
         if (ids != null) {
             registryService.getLifecycle(ids.get(0), new AbstractCallback(errorPanel) {
     
-                public void onSuccess(Object o) {
+                public void onCallSuccess(Object o) {
                     lifecycle = (WLifecycle) o;
                     phase = lifecycle.getPhaseById(ids.get(1));
                     

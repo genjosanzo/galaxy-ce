@@ -28,7 +28,7 @@ public class UserListRenderer extends AbstractListRenderer {
         if (users == null) { 
             repositoryModule.getGalaxy().getSecurityService().getUsers(new AbstractCallback(errorPanel) {
     
-                public void onSuccess(Object o) {
+                public void onCallSuccess(Object o) {
                     users = (Collection) o;
                     onFinishLoad();
                 }

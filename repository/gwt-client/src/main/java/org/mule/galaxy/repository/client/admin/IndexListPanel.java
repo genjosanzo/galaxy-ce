@@ -48,7 +48,7 @@ public class IndexListPanel extends AbstractAdministrationComposite {
 
         registryService.getIndexes(new AbstractCallback<Collection<WIndex>>(adminPanel) {
 
-            public void onSuccess(Collection<WIndex> indexes) {
+            public void onCallSuccess(Collection<WIndex> indexes) {
                 showIndexes(indexes);
             }
 

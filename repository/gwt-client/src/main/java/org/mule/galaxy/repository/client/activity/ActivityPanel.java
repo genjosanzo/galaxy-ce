@@ -118,7 +118,7 @@ public class ActivityPanel extends AbstractFlowComposite {
         userLB.addItem("System", "system");
         searchPanel.add(userLB);
         galaxy.getSecurityService().getUsers(new AbstractCallback(errorPanel) {
-            public void onSuccess(Object result) {
+            public void onCallSuccess(Object result) {
                 initUsers((Collection) result);
             }
         });
@@ -213,7 +213,7 @@ public class ActivityPanel extends AbstractFlowComposite {
         boolean ascending = false;
         AbstractCallback callback = new AbstractCallback(errorPanel) {
 
-            public void onSuccess(Object o) {
+            public void onCallSuccess(Object o) {
                 loadResults((Collection) o);
             }
 

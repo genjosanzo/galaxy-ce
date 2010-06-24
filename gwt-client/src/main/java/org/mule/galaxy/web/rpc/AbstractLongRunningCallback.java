@@ -31,24 +31,15 @@ public class AbstractLongRunningCallback<T> extends AbstractCallback<T> {
         this.longRunningCallTimer.schedule(AbstractLongRunningCallback.LONG_CALL_INTERVAL);
     }
 
-    public final void onSuccess(final T result) {
+    public final void onCallSuccess(final T result) {
         this.longRunningCallTimer.cancel();
         removeMessage(message);
-        onCallSuccess(result);
     }
 
-    public void onCallSuccess(final T result) {
-    }
-
-    public final void onFailure(final Throwable caught) {
+    public final void onCallFailure(final Throwable caught) {
         this.longRunningCallTimer.cancel();
         removeMessage(message);
-        onCallFailure(caught);
     }
-
-    public void onCallFailure(final Throwable caught) {
-    }
-
     private void setLongRunningErrorMessage() {
         message = setErrorMessage("Server is taking longer to respond than normal...");
     }

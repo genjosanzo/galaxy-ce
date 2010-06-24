@@ -126,7 +126,7 @@ public class EntryMetadataPanel extends AbstractShowable {
         
         service.getItemInfo(item.getId(), showHidden, new AbstractCallback<ItemInfo>(errorPanel) {
 
-            public void onSuccess(ItemInfo o) {
+            public void onCallSuccess(ItemInfo o) {
                 item = o;
                 initializeProperties(item.getProperties());
             }

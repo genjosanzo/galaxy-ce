@@ -38,7 +38,7 @@ public class ItemPathOracle extends SuggestOracle {
         registryService.suggestItems(request.getQuery(), recursive, exclude,
             types, new AbstractCallback<Collection<ItemInfo>>(errorPanel) {
 
-            public void onSuccess(Collection<ItemInfo> entries) {
+            public void onCallSuccess(Collection<ItemInfo> entries) {
                 updateSuggestions(entries, request, callback);
             }
             

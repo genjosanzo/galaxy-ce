@@ -268,7 +268,7 @@ public class ItemInfoPanel extends AbstractShowable {
         RegistryServiceAsync svc = menuPanel.getRepositoryModule().getRegistryService();
         svc.addComment(info.getId(), parentId, text.getValue(), new AbstractCallback(menuPanel) {
 
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 super.onFailure(caught);
                 
                 cancelButton.setEnabled(true);
@@ -276,7 +276,7 @@ public class ItemInfoPanel extends AbstractShowable {
                 text.setEnabled(true);
             }
 
-            public void onSuccess(Object o) {
+            public void onCallSuccess(Object o) {
                 parent.remove(addCommentPanel);
                 
                 Widget commentPanel = createCommentPanel((WComment) o);

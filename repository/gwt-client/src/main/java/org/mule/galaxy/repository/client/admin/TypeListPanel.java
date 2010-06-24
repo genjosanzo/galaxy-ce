@@ -66,7 +66,7 @@ public class TypeListPanel
 
         registryService.getTypes(new AbstractCallback<List<WType>>(adminPanel) {
 
-            public void onSuccess(List<WType> types) {
+            public void onCallSuccess(List<WType> types) {
                 TypeListPanel.this.types = types;
                 showTypes(types);
             }

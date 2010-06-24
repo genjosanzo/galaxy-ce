@@ -72,7 +72,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
         mainPanel.add(new Label("Loading..."));
 
         AbstractCallback callback = new AbstractCallback(errorPanel) {
-            public void onSuccess(Object permissions) {
+            public void onCallSuccess(Object permissions) {
                 receivePermissions((Collection) permissions);
             }
         };
@@ -82,7 +82,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
     protected void receivePermissions(Collection permissions) {
         this.permissions = permissions;
         AbstractCallback callback = new AbstractCallback(errorPanel) {
-            public void onSuccess(Object groups) {
+            public void onCallSuccess(Object groups) {
                 receiveGroups((Map) groups);
             }
         };
@@ -209,12 +209,12 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
 
         AbstractCallback callback = new AbstractCallback(errorPanel) {
 
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 super.onFailure(caught);
                 setEnabled(true);
             }
 
-            public void onSuccess(Object arg0) {
+            public void onCallSuccess(Object arg0) {
                 errorPanel.setMessage("Permissions Saved");
                 setEnabled(true);
             }

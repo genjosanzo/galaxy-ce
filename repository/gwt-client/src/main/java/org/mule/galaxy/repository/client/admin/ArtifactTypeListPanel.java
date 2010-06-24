@@ -46,7 +46,7 @@ public class ArtifactTypeListPanel extends AbstractAdministrationComposite {
 
         registryService.getArtifactTypes(new AbstractCallback<Collection<WArtifactType>>(adminPanel) {
 
-            public void onSuccess(Collection<WArtifactType> artifactTypes) {
+            public void onCallSuccess(Collection<WArtifactType> artifactTypes) {
                 showArtifactTypes(artifactTypes);
             }
 

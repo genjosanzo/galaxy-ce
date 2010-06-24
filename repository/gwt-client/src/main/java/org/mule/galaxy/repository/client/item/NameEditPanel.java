@@ -141,7 +141,7 @@ public class NameEditPanel extends Composite {
             registryService.move(itemId, newParent, newName, new AbstractCallback(menuPanel) {
 
                 @Override
-                public void onFailure(Throwable caught) {
+                public void onCallFailure(Throwable caught) {
                     if (caught instanceof ItemNotFoundException) {
                         menuPanel.setMessage("No parent workspace exists with that name!");
                     } else if (caught instanceof WPolicyException) {
@@ -151,7 +151,7 @@ public class NameEditPanel extends Composite {
                     }
                 }
 
-                public void onSuccess(Object arg0) {
+                public void onCallSuccess(Object arg0) {
                     // need to refresh the whole panel to fetch new workspace location and entry name
                     menuPanel.showPage(callbackParams);
                 }

@@ -56,7 +56,7 @@ public class UserListPanel extends AbstractAdministrationComposite {
         super.doShowPage();
         adminPanel.getSecurityService().getUsers(new AbstractCallback<List<WUser>>(adminPanel) {
 
-            public void onSuccess(List<WUser> users) {
+            public void onCallSuccess(List<WUser> users) {
                 panel.clear();
                 showUsers(users);
             }

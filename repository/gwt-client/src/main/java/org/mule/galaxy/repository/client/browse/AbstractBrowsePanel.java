@@ -116,11 +116,11 @@ public abstract class AbstractBrowsePanel extends AbstractWithTopComposite {
         artifactListPanel.showLoadingMessage();
         AbstractCallback callback = new AbstractCallback(this) {
 
-            public void onSuccess(Object o) {
+            public void onCallSuccess(Object o) {
                 artifactListPanel.initArtifacts((WSearchResults) o);
             }
 
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 AbstractBrowsePanel.this.setMessage(caught.getMessage());
                 if (artifactListPanel != null) {
                     artifactListPanel.clear();

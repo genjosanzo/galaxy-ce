@@ -215,7 +215,7 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
      */
     private void updatePropertyListBox() {
         service.getPropertyDescriptors(false, new AbstractCallback(this) {
-            public void onSuccess(Object result) {
+            public void onCallSuccess(Object result) {
                 propertyDescriptors = (Collection) result;
 
                 for (Iterator itr = propertyDescriptors.iterator(); itr.hasNext();) {
@@ -301,11 +301,11 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
     // RPC call to get list of available permissions
     private void fetchPermissions() {
         galaxy.getSecurityService().getPermissions(SecurityService.ITEM_PERMISSIONS, new AbstractCallback(this) {
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 super.onFailure(caught);
             }
 
-            public void onSuccess(Object arg0) {
+            public void onCallSuccess(Object arg0) {
                 // FIXME: this returns empty?
                 setPermissions((Collection)arg0);
             }
@@ -322,11 +322,11 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
     private void fetchGroups() {
         galaxy.getSecurityService().getGroupPermissions(new AbstractCallback(this) {
 
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 super.onFailure(caught);
             }
 
-            public void onSuccess(Object arg0) {
+            public void onCallSuccess(Object arg0) {
                 setGroups((Map) arg0);
             }
 
@@ -401,7 +401,7 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
         AbstractCallback callback = new AbstractCallback(this) {
             
             @Override
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 setEnabled(true);
                 
                 if (caught instanceof WPolicyException) {
@@ -413,7 +413,7 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
                 }
             }
 
-            public void onSuccess(Object arg0) {
+            public void onCallSuccess(Object arg0) {
                 deleteProperty();
             }
         };
@@ -437,7 +437,7 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
     
     private void deleteProperty(String name) {
         AbstractCallback callback = new AbstractCallback(this) {
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 setEnabled(true);
 
                 if (caught instanceof WPolicyException) {
@@ -449,7 +449,7 @@ public class BulkEditPanel extends AbstractErrorShowingComposite
                 }
             }
 
-            public void onSuccess(Object arg0) {
+            public void onCallSuccess(Object arg0) {
                 finishRPCCalls();
             }
         };

@@ -100,7 +100,7 @@ public class NewPropertyPanel extends Composite {
         
         svc.getPropertyDescriptors(false, new AbstractCallback(registryPanel) {
             @SuppressWarnings("unchecked")
-            public void onSuccess(Object o) {
+            public void onCallSuccess(Object o) {
                 initProperties((List<WPropertyDescriptor>) o);
             }
         });

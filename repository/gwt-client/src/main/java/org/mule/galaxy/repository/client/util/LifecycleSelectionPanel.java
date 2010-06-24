@@ -55,7 +55,7 @@ public class LifecycleSelectionPanel extends AbstractShowable {
         //phasesLB.setVisibleItemCount(10);
         
         svc.getLifecycles(new AbstractCallback(menuPanel) {
-            public void onSuccess(Object o) {
+            public void onCallSuccess(Object o) {
                 initLifecycles((Collection)o);
             }
         });

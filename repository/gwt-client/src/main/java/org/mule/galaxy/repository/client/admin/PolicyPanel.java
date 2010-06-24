@@ -141,7 +141,7 @@ public class PolicyPanel extends AbstractShowable {
 
         AbstractCallback callback = new AbstractCallback(menuPanel) {
 
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 reenable();
 
                 if (caught instanceof WPolicyException) {
@@ -159,7 +159,7 @@ public class PolicyPanel extends AbstractShowable {
                 saveButton.setEnabled(true);
             }
 
-            public void onSuccess(Object arg0) {
+            public void onCallSuccess(Object arg0) {
                 saveCount--;
 
                 if (saveCount == 0 && finishedSave) {
@@ -217,7 +217,7 @@ public class PolicyPanel extends AbstractShowable {
 
         AbstractCallback callback = new AbstractCallback(menuPanel) {
             @SuppressWarnings("unchecked")
-            public void onSuccess(Object o) {
+            public void onCallSuccess(Object o) {
                 currentPsPanel.selectAndShow((Collection<String>) o);
             }
 

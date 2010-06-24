@@ -65,7 +65,7 @@ public class PropertyDescriptorListPanel
 
         registryService.getPropertyDescriptors(false, new AbstractCallback<List<WPropertyDescriptor>>(adminPanel) {
 
-            public void onSuccess(List<WPropertyDescriptor> result) {
+            public void onCallSuccess(List<WPropertyDescriptor> result) {
 
                 showProperties(result);
             }

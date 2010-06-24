@@ -86,7 +86,7 @@ public class AddWorkspaceForm extends AbstractErrorHandlingPopup {
     protected void addWorkspace() {
         setEnabled(false);
         registryService.getTypes(new AbstractCallback<List<WType>>(AddWorkspaceForm.this) {
-            public void onSuccess(List<WType> types) {
+            public void onCallSuccess(List<WType> types) {
                 addWorkspace(types);
             }
         });
@@ -97,13 +97,13 @@ public class AddWorkspaceForm extends AbstractErrorHandlingPopup {
         this.types = types;
 
         AbstractCallback callback = new AbstractCallback(this) {
-            public void onSuccess(Object id) {
+            public void onCallSuccess(Object id) {
                 History.newItem("item/" + id);
                 hide();
             }
 
             @Override
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 setEnabled(true);
                 if (caught instanceof ItemExistsException) {
                     AddWorkspaceForm.this.setMessage("An item with that name already exists.");

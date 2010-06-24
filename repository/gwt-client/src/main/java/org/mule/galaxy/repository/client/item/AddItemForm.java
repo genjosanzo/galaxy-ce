@@ -146,7 +146,7 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
         if (params.size() > 0) {
             itemId = params.get(0);
             repositoryModule.getRegistryService().getItemInfo(itemId, false, new AbstractCallback<ItemInfo>(errorPanel) {
-                public void onSuccess(ItemInfo item) {
+                public void onCallSuccess(ItemInfo item) {
                     AddItemForm.this.item = item;
                     finishShow();
                 }
@@ -201,7 +201,7 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
         table.setWidget(2, 2, nameBox);
 
         repositoryModule.getRegistryService().getTypes(new AbstractCallback<List<WType>>(errorPanel) {
-            public void onSuccess(List<WType> wtypes) {
+            public void onCallSuccess(List<WType> wtypes) {
                 Collections.sort(wtypes, new WTypeComparator());
                 AddItemForm.this.types = new HashMap<String, WType>();
                 for (WType type : wtypes) {
@@ -547,12 +547,12 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
 
     private AbstractCallback geAddItemCallback() {
         AbstractCallback callback = new AbstractCallback(errorPanel) {
-            public void onSuccess(Object id) {
+            public void onCallSuccess(Object id) {
                 History.newItem("item/" + id);
             }
 
             @Override
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 resetFormFields();
 
                 if (caught instanceof ItemExistsException) {

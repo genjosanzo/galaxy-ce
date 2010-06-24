@@ -74,7 +74,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
 
     private void fetchAllItems() {
         AbstractCallback callback = new AbstractCallback(menuPanel) {
-            public void onSuccess(Object o) {
+            public void onCallSuccess(Object o) {
                 items = (Collection) o;
                 createItemGrid();
             }
@@ -283,7 +283,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         repository.getRegistryService().delete(ids, new AbstractCallback(menuPanel) {
             
             @Override
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 if (caught instanceof WPolicyException) {
                     WPolicyException ex = (WPolicyException)caught;
                     handlePolicyFailures(caught, ex);
@@ -292,7 +292,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                 }
             }
 
-            public void onSuccess(Object arg0) {
+            public void onCallSuccess(Object arg0) {
                 fetchAllItems();
                 menuPanel.removeItems(info, ids);
                 menuPanel.setMessage("Items were deleted.");

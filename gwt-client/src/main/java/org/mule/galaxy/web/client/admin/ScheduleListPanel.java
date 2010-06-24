@@ -61,7 +61,7 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
         super.doShowPage();
 
         adminPanel.getGalaxy().getAdminService().getScriptJobs(new AbstractCallback<List<WScriptJob>>(adminPanel) {
-            public void onSuccess(List<WScriptJob> jobs) {
+            public void onCallSuccess(List<WScriptJob> jobs) {
                 showJobs(jobs);
             }
 

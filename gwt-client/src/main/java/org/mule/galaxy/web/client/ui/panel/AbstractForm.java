@@ -149,11 +149,11 @@ public abstract class AbstractForm extends AbstractShowable {
     protected AsyncCallback getFetchCallback() {
         return new AbstractCallback(errorPanel) {
 
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 super.onFailure(caught);
             }
 
-            public void onSuccess(Object o) {
+            public void onCallSuccess(Object o) {
                 initializeItem(o);
                 onShowPostInitialize();
             }
@@ -206,11 +206,11 @@ public abstract class AbstractForm extends AbstractShowable {
     protected AsyncCallback getSaveCallback() {
         return new AbstractCallback(errorPanel) {
 
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 onSaveFailure(this, caught);
             }
 
-            public void onSuccess(Object arg0) {
+            public void onCallSuccess(Object arg0) {
                 setEnabled(false);
                 ((AdministrationPanel) errorPanel).getGalaxy().setMessageAndGoto(successToken,
                         successMessage);
@@ -225,19 +225,19 @@ public abstract class AbstractForm extends AbstractShowable {
         if (caught instanceof ItemExistsException) {
             errorPanel.setMessage(existsMessage);
         } else {
-            callback.onFailureDirect(caught);
+            callback.onFailure(caught);
         }
     }
 
     protected AsyncCallback getDeleteCallback() {
         return new AbstractCallback(errorPanel) {
 
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 setEnabled(true);
                 super.onFailure(caught);
             }
 
-            public void onSuccess(Object arg0) {
+            public void onCallSuccess(Object arg0) {
                 setEnabled(false);
                 ((AdministrationPanel) errorPanel).getGalaxy().setMessageAndGoto(successToken,
                         deleteMessage);

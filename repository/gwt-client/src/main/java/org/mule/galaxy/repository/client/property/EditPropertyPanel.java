@@ -163,7 +163,7 @@ public class EditPropertyPanel extends AbstractShowable {
     protected void doDelete() {
         registryService.deleteProperty(itemId, property.getName(), new AbstractCallback(errorPanel) {
 
-            public void onSuccess(Object arg0) {
+            public void onCallSuccess(Object arg0) {
                 deleteListener.onClick(null);
             }
 
@@ -191,7 +191,7 @@ public class EditPropertyPanel extends AbstractShowable {
     protected AbstractCallback getSaveCallback(final Serializable value) {
         AbstractCallback saveCallback = new AbstractCallback(errorPanel) {
 
-            public void onFailure(Throwable caught) {
+            public void onCallFailure(Throwable caught) {
                 if (caught instanceof WPolicyException) {
                     WPolicyException pe = (WPolicyException) caught;
 
@@ -201,7 +201,7 @@ public class EditPropertyPanel extends AbstractShowable {
                 }
             }
 
-            public void onSuccess(Object response) {
+            public void onCallSuccess(Object response) {
                 onSave(value, response);
             }
 
@@ -227,7 +227,7 @@ public class EditPropertyPanel extends AbstractShowable {
     }
 
     protected void onSaveFailure(Throwable caught, AbstractCallback saveCallback) {
-        saveCallback.onFailureDirect(caught);
+        saveCallback.onFailure(caught);
         setEnabled(true);
     }
 

@@ -134,7 +134,7 @@ public class AddItemHelper extends FormPanel {
 
     public ItemInfo fetchAndSetItem(String itemId) {
         registryService.getItemInfo(itemId, false, new AbstractCallback<ItemInfo>(null) {
-            public void onSuccess(ItemInfo item) {
+            public void onCallSuccess(ItemInfo item) {
                 AddItemHelper.this.setItem(item);
             }
         });
@@ -144,7 +144,7 @@ public class AddItemHelper extends FormPanel {
 
     public Map<String, WType> getTypes() {
         registryService.getTypes(new AbstractCallback<List<WType>>(null) {
-            public void onSuccess(List<WType> wtypes) {
+            public void onCallSuccess(List<WType> wtypes) {
                 Collections.sort(wtypes, new WTypeComparator());
                 AddItemHelper.this.types = new HashMap<String, WType>();
                 for (WType type : wtypes) {

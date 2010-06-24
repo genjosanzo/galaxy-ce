@@ -33,21 +33,40 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
         this.errorPanel = panel;
     }
 
-    public void onFailureDirect(final Throwable caught) {
-        final String msg = caught.getMessage();
+    /**
+     *
+     * Creates an appropriate error message from provided {@link Throwable}.
+     *
+     * @param caught
+     * @return
+     */
+    protected String createErrorMessageFromException(final Throwable caught) {
+        final String exceptionMessage = caught.getMessage();
+        final String errorMessage;
         if (caught instanceof InvocationException && !(caught instanceof StatusCodeException)) {
             // happens after server is back online, and got a forward to a login page
             // typically would be displayed with a session killed dialog
-            setErrorMessage("Current session has been killed, please re-login.");
-        } else if (msg != null && !"".equals(msg)) {
-            setErrorMessage("Error communicating with server: " + msg + "");
+            errorMessage = "Current session has been killed, please re-login.";
+        } else if (exceptionMessage != null && !"".equals(exceptionMessage)) {
+            errorMessage = "Error communicating with server: " + exceptionMessage;
         } else {
-            setErrorMessage("There was an error communicating with the server. Please try again. <br />Exception: " + caught.getClass().getName());
+            errorMessage = "There was an error communicating with the server. Please try again. <br />Exception: " + caught.getClass().getName();
         }
+        return errorMessage;
     }
 
-    public void onFailure(final Throwable caught) {
-        onFailureDirect(caught);
+    protected void onCallFailure(final Throwable caught) {
+        setErrorMessage(createErrorMessageFromException(caught));
+    }
+
+    public final void onFailure(final Throwable caught) {
+        onCallFailure(caught);
+    }
+
+    protected abstract void onCallSuccess(final T result);
+
+    public final void onSuccess(final T result) {
+        onCallSuccess(result);
     }
 
     /**

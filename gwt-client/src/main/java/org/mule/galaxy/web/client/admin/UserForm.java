@@ -158,7 +158,7 @@ public class UserForm extends AbstractAdministrationForm {
         // temp var for anonymous class
         final int groupRow = row;
         getSecurityService().getGroups(new AbstractCallback(adminPanel) {
-            public void onSuccess(Object groups) {
+            public void onCallSuccess(Object groups) {
                 receiveGroups((Collection) groups, table, groupRow);
             }
         });
