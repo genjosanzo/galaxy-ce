@@ -43,11 +43,12 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
 
     public AbstractCallback(final ErrorPanel panel) {
         this.errorPanel = panel;
-        this.longRunningCallTimer.schedule(AbstractCallback.LONG_CALL_INTERVAL);
+
+        startLongRunningCallTimer();
     }
 
-    protected String createLongRunningCallErrorMessage() {
-        return AbstractCallback.DEFAULT_LONG_RUNNING_CALL_ERROR_MESSAGE;
+    protected final void startLongRunningCallTimer() {
+        this.longRunningCallTimer.schedule(AbstractCallback.LONG_CALL_INTERVAL);
     }
 
     protected final void cancelLongRunningCallTimer() {
@@ -55,6 +56,10 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
         if (message.isAttached()) {
             removeMessage(message);
         }
+    }
+
+    protected String createLongRunningCallErrorMessage() {
+        return AbstractCallback.DEFAULT_LONG_RUNNING_CALL_ERROR_MESSAGE;
     }
 
     /**

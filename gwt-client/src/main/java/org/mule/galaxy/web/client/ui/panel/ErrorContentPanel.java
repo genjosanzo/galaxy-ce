@@ -21,14 +21,6 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class ErrorContentPanel extends ContentPanel {
 
-    private Timer autoCloseTimer = new Timer() {
-        @Override
-        public void run() {
-            fadeOut();
-        }
-    };
-    private static final int AUTO_HIDE_DELAY = 4000;
-
     /**
      * 
      * Extends BaseEffect$FadeOut by removing messages after the fadeout. <br />
@@ -52,7 +44,7 @@ public class ErrorContentPanel extends ContentPanel {
             el.setStyleAttribute("opacity", 1);
             el.dom.getStyle().setProperty("opacity", "");
             el.dom.getStyle().setProperty("filter", "");
-            removeAllMessages();
+            removeAll();
         }
 
     }
@@ -86,6 +78,14 @@ public class ErrorContentPanel extends ContentPanel {
 
       }
 
+    private Timer autoCloseTimer = new Timer() {
+        @Override
+        public void run() {
+            fadeOut();
+        }
+    };
+    private static final int AUTO_HIDE_DELAY = 4000;
+
     public ErrorContentPanel() {
         this.baseStyle = "error-panel";
 
@@ -105,21 +105,6 @@ public class ErrorContentPanel extends ContentPanel {
 
     protected final void cancelAutoCloseTimer() {
         autoCloseTimer.cancel();// It is safe to cancel a non-scheduled timer
-    }
-
-    public void fadeIn() {
-        setVisible(true);
-        if (isRendered()) {
-            Fx fx = new Fx(FxConfig.NONE);
-            fx.run(new FadeIn(el()));
-        }
-    }
-
-    public void fadeOut() {
-        if (isRendered()) {
-            Fx fx = new Fx(FxConfig.NONE);
-            fx.run(new FadeOutAndRemoveMessages(el()));
-        }
     }
 
     public void addMessage(final Widget widget) {
@@ -149,14 +134,24 @@ public class ErrorContentPanel extends ContentPanel {
         }
     }
 
-    public void removeMessage(final Widget widget) {
-        remove(widget);
+    public void fadeIn() {
+        setVisible(true);
+        if (isRendered()) {
+            Fx fx = new Fx(FxConfig.NONE);
+            fx.run(new FadeIn(el()));
+        }
     }
 
-    protected void removeAllMessages() {
-        for (int i = 0; i< getItemCount(); i++) {
-            remove(getItem(i));
+    public void fadeOut() {
+        if (isRendered()) {
+            Fx fx = new Fx(FxConfig.NONE);
+            fx.run(new FadeOutAndRemoveMessages(el()));
         }
+    }
+
+    protected void close() {
+        hide();
+        removeAll();
     }
 
 }
