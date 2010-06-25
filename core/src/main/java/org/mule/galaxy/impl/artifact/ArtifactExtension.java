@@ -84,6 +84,28 @@ public class ArtifactExtension extends AbstractExtension implements AtomExtensio
         });
     }
     
+    /**
+     * In previous versions we didn't properly clean up artifacts. This method will clean up those old ones
+     * on startup.
+     */
+    public void cleanupOldArtifacts() throws IOException, RepositoryException {
+        JcrUtil.doInTransaction(template.getSessionFactory(), new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                for (NodeIterator artifacts = session.getNodeByUUID(artifactsNodeId).getNodes(); artifacts.hasNext();) {
+                    Node artifact = artifacts.nextNode();
+                    QueryManager qm = session.getWorkspace().getQueryManager();
+                    QueryResult result = qm.createQuery("//element(*, galaxy:item)[@artifact = '" + artifact.getUUID() + "']", Query.XPATH).execute();
+                  
+                    if (result.getNodes().getSize() == 0) {
+                        artifact.remove();
+                    }
+                }
+                return null;
+            }
+        });
+    }
+
     @OnEvent
     public void onItemDeleted(final ItemDeletedEvent e) {
         template.execute(new JcrCallback() {

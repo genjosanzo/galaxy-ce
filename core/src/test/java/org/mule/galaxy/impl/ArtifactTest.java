@@ -57,7 +57,6 @@ public class ArtifactTest extends AbstractGalaxyTest {
         i.getParent().delete();
         
         assertEquals(0, artifactExtension.getArtifactCount());
-        
     }
     
     
