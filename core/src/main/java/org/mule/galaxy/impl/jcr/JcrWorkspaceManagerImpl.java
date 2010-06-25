@@ -422,10 +422,17 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
         accessControlManager.assertAccess(Permission.DELETE_ITEM);
         policyManager.approveDelete(item);
         
+        // Collect items which we're deleting and fire events for them
+        final ArrayList<ItemDeletedEvent> toDelete = new ArrayList<ItemDeletedEvent>();
+        
+        User user = SecurityUtils.getCurrentUser();
+        ItemDeletedEvent event = new ItemDeletedEvent(item);
+        event.setUser(user);
+        toDelete.add(event);
+        addAll(toDelete, user, item.getItems());
+        
         executeWithRegistryException(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
-                ItemDeletedEvent evt = new ItemDeletedEvent(item);
-
                 Node node = ((JcrItem) item).getNode();
                 Node parent = node.getParent();
                 node.remove();
@@ -433,14 +440,25 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
                 
                 session.save();
 
-                evt.setUser(SecurityUtils.getCurrentUser());
-                eventManager.fireEvent(evt);
+                for (ItemDeletedEvent e : toDelete) {
+                    eventManager.fireEvent(e);
+                }
 
                 return null;
             }
         });
     }
     
+    private void addAll(ArrayList<ItemDeletedEvent> toDelete, User user, List<Item> items) throws RegistryException {
+        for (Item i : items) {
+            ItemDeletedEvent event = new ItemDeletedEvent(i);
+            event.setUser(user);
+            toDelete.add(event);
+            
+            addAll(toDelete, user, i.getItems());
+        }
+    }
+
     public void save(Item i) throws AccessException, RegistryException, PolicyException, PropertyException {
         accessControlManager.assertAccess(Permission.MODIFY_ITEM, i);
         

@@ -117,6 +117,7 @@
               <bean class="org.mule.galaxy.event.listener.activity.LifecycleTransitionEventListener" parent="abstractActivityLogger"/>
 
               <ref bean="linkDao"/>
+              <ref bean="artifactExtension"/>
           </list>
       </constructor-arg>
       <constructor-arg ref="sessionFactory"/>

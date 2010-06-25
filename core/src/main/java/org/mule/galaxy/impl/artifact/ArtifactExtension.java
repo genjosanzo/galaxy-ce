@@ -1,5 +1,7 @@
 package org.mule.galaxy.impl.artifact;
 
+import static org.mule.galaxy.event.DefaultEvents.ITEM_DELETED;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -14,6 +16,9 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
 import javax.xml.namespace.QName;
 
 import org.apache.abdera.factory.Factory;
@@ -31,6 +36,9 @@ import org.mule.galaxy.artifact.ArtifactTypeDao;
 import org.mule.galaxy.artifact.ContentHandler;
 import org.mule.galaxy.artifact.ContentService;
 import org.mule.galaxy.artifact.XmlContentHandler;
+import org.mule.galaxy.event.ItemDeletedEvent;
+import org.mule.galaxy.event.annotation.BindToEvent;
+import org.mule.galaxy.event.annotation.OnEvent;
 import org.mule.galaxy.extension.AtomExtension;
 import org.mule.galaxy.impl.extension.AbstractExtension;
 import org.mule.galaxy.impl.jcr.JcrUtil;
@@ -45,6 +53,7 @@ import org.mule.galaxy.util.Message;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
+@BindToEvent(ITEM_DELETED)
 public class ArtifactExtension extends AbstractExtension implements AtomExtension {
     private static final QName ARTIFACT_QNAME = new QName(Constants.ATOM_NAMESPACE, "artifact");
     private static final Collection<QName> UNDERSTOOD = new ArrayList<QName>();
@@ -54,6 +63,7 @@ public class ArtifactExtension extends AbstractExtension implements AtomExtensio
     }
 
     public static final String ID = "artifactExtension";
+    public static final String ITEM_ID = "item";
     
     private JcrTemplate template;
     private String artifactsNodeId;
@@ -69,6 +79,40 @@ public class ArtifactExtension extends AbstractExtension implements AtomExtensio
                 artifactsNodeId = JcrUtil.getOrCreate(session.getRootNode(), "artifacts").getUUID();
                 session.save();
                 return null;
+            }
+            
+        });
+    }
+    
+    @OnEvent
+    public void onItemDeleted(final ItemDeletedEvent e) {
+        template.execute(new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                QueryManager qm = session.getWorkspace().getQueryManager();
+                QueryResult result = qm.createQuery("/jcr:root/artifacts/*[item='" + e.getItemId() + "']", Query.XPATH).execute();
+                
+                for (NodeIterator nodes = result.getNodes(); nodes.hasNext();) {
+                    Node artifact = nodes.nextNode();
+                    
+                    artifact.remove();
+                }
+                session.save();
+                return null;
+            }
+            
+        });
+    }
+
+    /**
+     * Count the number of artifacts in the system. Used for testing to ensure deletes happen properly.
+     * @return
+     */
+    public int getArtifactCount() {
+        return (Integer) template.execute(new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                return new Long(session.getNodeByUUID(artifactsNodeId).getNodes().getSize()).intValue();
             }
             
         });
@@ -150,6 +194,7 @@ public class ArtifactExtension extends AbstractExtension implements AtomExtensio
             }
         }
         
+        node.setProperty(ITEM_ID, item.getId());
         node.setProperty(ArtifactImpl.CONTENT_TYPE, contentType);
         
         createContentNode(node, is, contentType);

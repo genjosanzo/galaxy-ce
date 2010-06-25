@@ -8,12 +8,15 @@ import java.util.Set;
 
 import org.mule.galaxy.Item;
 import org.mule.galaxy.artifact.Artifact;
+import org.mule.galaxy.impl.artifact.ArtifactExtension;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.util.IOUtils;
 
 public class ArtifactTest extends AbstractGalaxyTest {
+    protected ArtifactExtension artifactExtension;
+    
     public void testMove() throws Exception {
         Item a = importHelloWsdl();
         
@@ -46,8 +49,15 @@ public class ArtifactTest extends AbstractGalaxyTest {
 
     public void testDelete() throws Exception {
         Item i = importFile(new ByteArrayInputStream("test".getBytes()), "test.txt", "0.1", "text/plain");
-        
         i.delete();
+        
+        assertEquals(0, artifactExtension.getArtifactCount());
+        
+        i = importFile(new ByteArrayInputStream("test".getBytes()), "test2.txt", "0.1", "text/plain");
+        i.getParent().delete();
+        
+        assertEquals(0, artifactExtension.getArtifactCount());
+        
     }
     
     
