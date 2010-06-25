@@ -28,7 +28,6 @@ import com.extjs.gxt.ui.client.store.StoreSorter;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.util.IconHelper;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -176,7 +175,6 @@ public class RepositoryMenuPanel extends MenuPanel {
         // browse panel
         ContentPanel browsePanel = new ContentPanel();
         browsePanel.setBodyBorder(false);
-        browsePanel.setLayout(new FitLayout());
         browsePanel.setAutoHeight(true);
         browsePanel.setAutoWidth(true);
         browsePanel.setHeading("Browse");
