@@ -27,6 +27,16 @@ import com.google.gwt.user.client.rpc.InvocationException;
 import com.google.gwt.user.client.rpc.StatusCodeException;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ *
+ * Default {@link AsyncCallback} implementation with support for long running call detection.
+ * <br />
+ * <br />
+ * <bold>Caution</bold>
+ * Because an internal {@link Timer} is scheduled in default constructor this {@link AbstractCallback} should only be created at usage time.
+ *
+ * @param <T>
+ */
 public abstract class AbstractCallback<T> implements AsyncCallback<T> {
 
     private final ErrorPanel errorPanel;
