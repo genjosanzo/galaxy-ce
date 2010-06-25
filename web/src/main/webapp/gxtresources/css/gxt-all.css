@@ -5322,6 +5322,8 @@ body.ext-ie6.x-body-masked .x-window select {
   z-index: 3;
   cursor: e-resize;
   cursor: col-resize;
+  background-color: #e0e0e0;
+  width: 2px !important;
 }
 
 .x-hsplitbar {

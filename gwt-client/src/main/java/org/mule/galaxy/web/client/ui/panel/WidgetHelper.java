@@ -18,7 +18,6 @@ import com.extjs.gxt.ui.client.widget.WidgetComponent;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.TableData;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -288,16 +287,9 @@ public class WidgetHelper extends Composite {
         return "<span style=\"font-weight:" + w + ";\">" + s + "</span>";
     }
 
-    public static WidgetComponent restoreImage(String tooltip) {
-        Image i = new Image("images/recycle_icon.gif");
-        WidgetComponent w = new WidgetComponent(i);
-        w.setToolTip(tooltip == null ? "Restore" : tooltip);
-        return w;
-    }
-
-    // can be used as a spacer or as a tooltip for grid cells, etc.
 
     public static WidgetComponent clearPixel(String height, String width, String tooltip) {
+        // can be used as a spacer or as a tooltip for grid cells, etc.
         Image i = new Image("images/clearpixel.gif");
         i.setHeight(height);
         i.setWidth(width);
@@ -308,25 +300,26 @@ public class WidgetHelper extends Composite {
         return w;
     }
 
-
     public static WidgetComponent deleteImage(String tooltip) {
-        return deleteImage(tooltip, null);
+        if (tooltip == null) {
+            tooltip = "Remove this item";
+        }
+        return newImage("images/delete_config.gif", tooltip);
     }
 
-    public static WidgetComponent deleteImage(String tooltip, ClickHandler handler) {
-        Image i = new Image("images/delete_config.gif");
-        if (handler != null) {
-            i.addClickHandler(handler);
+    public static WidgetComponent restoreImage(String tooltip) {
+        if (tooltip == null) {
+            tooltip = "Restore";
         }
-        WidgetComponent w = new WidgetComponent(i);
-        w.setToolTip(tooltip == null ? "Click to Remove Item" : tooltip);
-        return w;
+        return newImage("images/recycle_icon.gif", tooltip);
     }
 
     public static WidgetComponent newImage(String path, String tooltip) {
         Image i = new Image(path);
         WidgetComponent w = new WidgetComponent(i);
-        w.setToolTip(tooltip == null ? "" : tooltip);
+        if (tooltip != null) {
+            w.setToolTip(tooltip);
+        }
         return w;
     }
 

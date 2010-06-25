@@ -18,29 +18,26 @@
 
 package org.mule.galaxy.web.client.ui.panel;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.util.Margins;
-import com.extjs.gxt.ui.client.widget.Layout;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class MenuPanel extends AbstractErrorShowingComposite {
 
     private LayoutContainer mainLayoutContainer;
-    private Layout layout;
     private LayoutContainer leftMenuContainer;
     private Widget mainWidget;
     private FlowPanel topPanel;
     private Widget topWidget;
     private FlowPanel centerPanel;
     private LayoutContainer leftMenu;
-    private BorderLayoutData westData;
     private BorderLayoutData centerData;
 
     private boolean firstShow = true;
@@ -51,16 +48,17 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
 
     public MenuPanel(boolean left) {
         mainLayoutContainer = new LayoutContainer();
-        layout = new BorderLayout();
-        westData = new BorderLayoutData(LayoutRegion.WEST, 220);  
-        westData.setSplit(true);  
+
+        BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 220);
+        westData.setSplit(true);
         westData.setCollapsible(true);  
-        westData.setMargins(new Margins(0,5,0,0));  
+        westData.setMargins(new Margins(0,5,0,0));
 
         centerData = new BorderLayoutData(LayoutRegion.CENTER);  
         centerData.setMargins(new Margins(0));
 
         if (left) {
+
             // the left panel
             leftMenu = new LayoutContainer();
             leftMenu.setStyleName("left-menu");
@@ -76,7 +74,7 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
             leftMenu.layout(false);
 
             mainLayoutContainer.add(leftMenu, westData);  
-            mainLayoutContainer.setLayout(layout);
+            mainLayoutContainer.setLayout(new BorderLayout());
             mainLayoutContainer.setAutoHeight(false);
             mainLayoutContainer.setHeight("900px");
             mainLayoutContainer.setId("border-layout-container");
