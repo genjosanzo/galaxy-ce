@@ -18,23 +18,30 @@
 
 package org.mule.galaxy.web.client.ui.panel;
 
-import com.extjs.gxt.ui.client.widget.LayoutContainer;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HorizontalSplitPanel;
-import com.google.gwt.user.client.ui.Widget;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import com.extjs.gxt.ui.client.Style.LayoutRegion;
+import com.extjs.gxt.ui.client.util.Margins;
+import com.extjs.gxt.ui.client.widget.Layout;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
+import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Widget;
+
 public abstract class MenuPanel extends AbstractErrorShowingComposite {
 
-    private HorizontalSplitPanel panel;
+    private LayoutContainer mainLayoutContainer;
+    private Layout layout;
     private LayoutContainer leftMenuContainer;
     private Widget mainWidget;
     private FlowPanel topPanel;
     private Widget topWidget;
-    private LayoutContainer leftMenu;
     private FlowPanel centerPanel;
+    private LayoutContainer leftMenu;
+    private BorderLayoutData westData;
+    private BorderLayoutData centerData;
 
     private boolean firstShow = true;
 
@@ -43,8 +50,15 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
     }
 
     public MenuPanel(boolean left) {
-        panel = new HorizontalSplitPanel();
-        panel.setSplitPosition("220px");
+        mainLayoutContainer = new LayoutContainer();
+        layout = new BorderLayout();
+        westData = new BorderLayoutData(LayoutRegion.WEST, 220);  
+        westData.setSplit(true);  
+        westData.setCollapsible(true);  
+        westData.setMargins(new Margins(0,5,0,0));  
+
+        centerData = new BorderLayoutData(LayoutRegion.CENTER);  
+        centerData.setMargins(new Margins(0));
 
         if (left) {
             // the left panel
@@ -61,14 +75,18 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
             leftMenu.add(leftMenuContainer);
             leftMenu.layout(false);
 
-            panel.setLeftWidget(leftMenu);
+            mainLayoutContainer.add(leftMenu, westData);  
+            mainLayoutContainer.setLayout(layout);
+            mainLayoutContainer.setAutoHeight(false);
+            mainLayoutContainer.setHeight("900px");
+            mainLayoutContainer.setId("border-layout-container");
         }
 
-        initWidget(panel);
+        initWidget(mainLayoutContainer);
     }
 
     public void setId(String id) {
-        panel.getElement().setId(id);
+        mainLayoutContainer.getElement().setId(id);
     }
     
     @Override
@@ -87,12 +105,12 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
         centerPanel = new FlowPanel();
         centerPanel.setStyleName("main-application-panel");
 
-        panel.setRightWidget(centerPanel);
-
-        centerPanel.add(getMainPanel());
-
+		mainLayoutContainer.add(centerPanel, centerData);
+		centerPanel.add(getMainPanel());
+        
         topPanel = new FlowPanel();
         topPanel.setStyleName("top-panel");
+        mainLayoutContainer.layout();
     }
 
     public boolean isFirstShow() {

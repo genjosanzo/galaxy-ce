@@ -1,5 +1,6 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" session="false" %>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<%@page language="java" pageEncoding="utf-8" contentType="text/html;charset=utf-8"%>
 <%@page import="org.mule.galaxy.web.GwtFacet" %>
 <%@page import="org.mule.galaxy.web.GwtModule" %>
 <%@page import="org.mule.galaxy.web.WebManager" %>
@@ -10,19 +11,29 @@
 <%@page import="java.util.List" %>
 <%@page import="org.springframework.context.ApplicationContext" %>
 <%@page import="org.springframework.web.context.WebApplicationContext" %>
-<html>
 <%
     ApplicationContext ctx = (ApplicationContext) application.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
     WebManager mgr = (WebManager) ctx.getBean("webManager");
     boolean hostedMode = Boolean.valueOf(System.getProperty("hostedMode"));
+    response.setHeader("X-UA-Compatible", "IE=7");
 %>
+<html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>MuleSoft | <%=mgr.getProductName()%>
     </title>
     <link type="text/css" rel="stylesheet" href="column-view.css"/>
     <link type="text/css" rel="stylesheet" href="gwtbase.css"/>
     <link type="text/css" rel="stylesheet" href="gxtresources/css/gxt-all.css"/>
     <link type="text/css" rel="stylesheet" href="<%=mgr.getProductCss()%>"/>
+
+    <style type="text/css">
+        img.center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
 </head>
 
 <!--                                           -->
@@ -31,14 +42,6 @@
 <!-- to create a completely dynamic ui         -->
 <!--                                           -->
 <body>
-
-<style>
-    img.center {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-    }
-</style>
 
 <!-- The loading message div -->
 <div id="loading-msg" style="padding-top:200px;">
@@ -59,7 +62,7 @@
         }
     });
 %>
-<script language='javascript'>
+<script type='text/javascript' language='javascript'>
     var productName = "<%=mgr.getProductName()%>";
     var plugins = new Array();
     var pluginTokens = new Array();
@@ -120,7 +123,7 @@
 <%
     for (Iterator itr = modules.iterator(); itr.hasNext();) {
         GwtModule mod = (GwtModule) itr.next();
-        out.write("<script language='javascript' src='");
+        out.write("<script type='text/javascript' language='javascript' src='");
 
         if (!mod.isCore() && !hostedMode) {
             out.write("galaxy-plugins/");
