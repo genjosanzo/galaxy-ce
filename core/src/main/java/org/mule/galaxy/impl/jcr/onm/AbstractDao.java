@@ -80,7 +80,7 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
                 } catch (NotFoundException e) {
                     throw new RuntimeException(e);
                 } catch (ItemExistsException e) {
-                    throw new RuntimeException(new DuplicateItemException(e));
+                    throw new RuntimeException(new DuplicateItemException(getId(t), e));
                 } finally {
                     JcrUtil.safeSave(session);
                 }
