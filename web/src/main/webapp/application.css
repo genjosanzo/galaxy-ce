@@ -200,7 +200,7 @@ a:visited {
 .grid-ajax-loader-msg {
     background:url("images/grid-ajax-loader.gif") no-repeat;
 	font-style: italic;
-    padding: 2 2 2 20px;
+    padding: 2px 2px 2px 20px;
 }
 
 .small-ajax-loader {
@@ -209,7 +209,7 @@ a:visited {
 .small-ajax-padded-msg {
     background:url("images/small-ajax-loader.gif") no-repeat;
 	font-style: italic;
-    padding: 2 2 2 20px;
+    padding: 2px 2px 2px 20px;
 }
 
 /**
