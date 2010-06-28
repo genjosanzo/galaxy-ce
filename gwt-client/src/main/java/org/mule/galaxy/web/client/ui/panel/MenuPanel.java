@@ -85,16 +85,18 @@ public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer impl
 
     protected void onFirstShow() {
         centerPanel = new ContentPanel();
-        centerPanel.setTopComponent(errorPanel);
-        
-        // need to set this here so the layout can use it in it's calculations
-        errorPanel.setStyleAttribute("margin", "9px"); 
-        errorPanel.setWidth("80%");
-        
         centerPanel.setBodyBorder(false);
         centerPanel.setHeaderVisible(false);
         centerPanel.setStyleName("main-application-panel");
         centerPanel.setScrollMode(Scroll.AUTOY);
+
+        // wrap the error panel in a wrapper so CSS styles can be applied correctly.
+        // Otherwise the centerPanel will set the height directly on the errorPanel, 
+        // overriding our 80% height in the CSS.
+        LayoutContainer errorPanelWrapper = new LayoutContainer();
+        errorPanelWrapper.add(errorPanel);
+        errorPanelWrapper.setStyleName("error-panel-wrapper");
+        centerPanel.setTopComponent(errorPanelWrapper);
         
 		add(centerPanel, centerData);
 		if (mainWidget != null) {

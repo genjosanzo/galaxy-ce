@@ -347,6 +347,7 @@ public class WidgetHelper extends Composite {
     public static ContentPanel createPanelWithListView(String heading, List<NavMenuItem> items) {
         ContentPanel c = new ContentPanel();
         c.addStyleName("no-border");
+        c.setBorders(false);
         c.setBodyBorder(false);
         c.setHeading(heading);
         c.setAutoHeight(true);
