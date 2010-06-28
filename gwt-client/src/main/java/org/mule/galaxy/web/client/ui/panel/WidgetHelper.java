@@ -156,6 +156,8 @@ public class WidgetHelper extends Composite {
         accordionPanel.setHeaderVisible(false);
         accordionPanel.setAutoHeight(true);
         accordionPanel.setAutoWidth(true);
+        accordionPanel.setBorders(false);
+        accordionPanel.setBodyBorder(false);
         return accordionPanel;
     }
 

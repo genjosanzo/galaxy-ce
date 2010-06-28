@@ -25,12 +25,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
+import org.mule.galaxy.web.client.ui.ExternalHyperlink;
 import org.mule.galaxy.web.client.ui.help.AdministrationConstants;
 import org.mule.galaxy.web.client.ui.help.BaseConstants;
 import org.mule.galaxy.web.client.ui.help.BaseMessages;
 import org.mule.galaxy.web.client.ui.panel.AboutPanel;
 import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
-import org.mule.galaxy.web.client.ui.ExternalHyperlink;
 import org.mule.galaxy.web.client.ui.panel.PluginPanel;
 import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 import org.mule.galaxy.web.rpc.AdminService;
@@ -48,7 +48,6 @@ import org.mule.galaxy.web.rpc.WUser;
 
 import com.extjs.gxt.ui.client.GXT;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
@@ -56,7 +55,6 @@ import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.Viewport;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
-import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -141,7 +139,6 @@ public class Galaxy {
         createFooter();
 
         RootPanel.get().add(base);
-        base.layout(true);
         
         galaxyService.getApplicationInfo(new AsyncCallback<ApplicationInfo>() {
             
@@ -196,7 +193,7 @@ public class Galaxy {
         southPanel.setBodyBorder(false);
         southPanel.setBorders(false);
         southPanel.setHeaderVisible(false);
-
+        southPanel.addStyleName("footer-viewport");
         BorderLayoutData data = new BorderLayoutData(LayoutRegion.SOUTH, 45);
         data.setMargins(new Margins());
 
@@ -308,18 +305,10 @@ public class Galaxy {
     }
 
     protected void createBody() {
-        centerPanel = new ContentPanel();
-        centerPanel.setBorders(false);
-        centerPanel.setBodyBorder(false);
-        centerPanel.setHeaderVisible(false);
-        centerPanel.setScrollMode(Scroll.NONE);
-        centerPanel.setLayout(new FlowLayout());
-        centerPanel.add(pageManager.getTabPanel());
-
         BorderLayoutData data = new BorderLayoutData(LayoutRegion.CENTER);
         data.setMargins(new Margins());
 
-        base.add(centerPanel, data);
+        base.add(pageManager.getTabPanel(), data);
     }
 
     protected String getFooterText() {

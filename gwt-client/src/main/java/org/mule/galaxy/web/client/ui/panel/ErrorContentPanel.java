@@ -93,8 +93,7 @@ public class ErrorContentPanel extends ContentPanel {
         setStyleName(baseStyle);
         final ToolButton closeButton = new ToolButton("x-tool-close");
         getHeader().addTool(closeButton);
-        closeButton
-    .   addSelectionListener(new SelectionListener<IconButtonEvent>() {
+        closeButton.addSelectionListener(new SelectionListener<IconButtonEvent>() {
             @Override
             public void componentSelected(final IconButtonEvent event) {
                 fadeOut();

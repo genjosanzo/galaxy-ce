@@ -1,12 +1,18 @@
 package org.mule.galaxy.repository.client.item;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.PageManager;
-import org.mule.galaxy.web.client.ui.panel.AbstractShowable;
 import org.mule.galaxy.web.client.ui.panel.MenuPanel;
 import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -32,13 +38,6 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 public class RepositoryMenuPanel extends MenuPanel {
 
@@ -171,9 +170,10 @@ public class RepositoryMenuPanel extends MenuPanel {
         super.onFirstShow();
 
         ContentPanel accordionPanel = WidgetHelper.createAccodionWrapperPanel();
-
+        
         // browse panel
         ContentPanel browsePanel = new ContentPanel();
+        browsePanel.setBorders(false);
         browsePanel.setBodyBorder(false);
         browsePanel.setAutoHeight(true);
         browsePanel.setAutoWidth(true);
@@ -322,11 +322,11 @@ public class RepositoryMenuPanel extends MenuPanel {
     public void createPageInfo(String token, final WidgetHelper composite) {
         PageInfo page = new PageInfo(token, repository.getRepositoryTab()) {
 
-            public AbstractShowable createInstance() {
+            public Widget createInstance() {
                 return null;
             }
 
-            public AbstractShowable getInstance() {
+            public Widget getInstance() {
                 RepositoryMenuPanel.this.setMain(composite);
                 return RepositoryMenuPanel.this;
             }

@@ -18,20 +18,20 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.ui.panel.AbstractShowable;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.ui.panel.MenuPanel;
-import org.mule.galaxy.web.client.ui.NavMenuItem;
 import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.PageManager;
+import org.mule.galaxy.web.client.ui.NavMenuItem;
+import org.mule.galaxy.web.client.ui.panel.MenuPanel;
 import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.google.gwt.user.client.History;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.google.gwt.user.client.ui.Widget;
 
 public class AdministrationPanel extends MenuPanel {
 
@@ -56,7 +56,7 @@ public class AdministrationPanel extends MenuPanel {
     protected void init() {
         setId("administrationTabBody");
 
-        accordionPanel = createAccodionWrapperPanel();
+        accordionPanel = WidgetHelper.createAccodionWrapperPanel();
 
         manageItems = new ArrayList<NavMenuItem>();
         utilityItems = new ArrayList<NavMenuItem>();
@@ -100,8 +100,8 @@ public class AdministrationPanel extends MenuPanel {
         super.onFirstShow();
 
         // list of all items for this panel
-        accordionPanel.add(createPanelWithListView("Manage", manageItems));
-        accordionPanel.add(createPanelWithListView("Utility", utilityItems));
+        accordionPanel.add(WidgetHelper.createPanelWithListView("Manage", manageItems));
+        accordionPanel.add(WidgetHelper.createPanelWithListView("Utility", utilityItems));
         addMenuItem(accordionPanel);
 
         // default to users panel.
@@ -124,11 +124,11 @@ public class AdministrationPanel extends MenuPanel {
                 return galaxy.getAdminTab();
             }
 
-            public AbstractShowable createInstance() {
+            public Widget createInstance() {
                 return null;
             }
 
-            public AbstractShowable getInstance() {
+            public Widget getInstance() {
                 aPanel.setMain(composite);
                 return aPanel;
             }

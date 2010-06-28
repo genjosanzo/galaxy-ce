@@ -4,7 +4,6 @@
  **
  **/
 
-
 body {
   color: black;
   font-family: arial, tahoma, helvetica, sans-serif;
@@ -20,7 +19,7 @@ body {
 }
 
 .main-application-panel {
-    padding-bottom: 25px !important;
+    padding-right: 3px;
 }
 
 .header {
@@ -213,7 +212,6 @@ a:visited {
     padding: 2 2 2 20px;
 }
 
-
 /**
  **
  ** The Left Menu
@@ -227,30 +225,26 @@ a:visited {
     font-size: px; /*for IE*/
 }
 
-// TODO: these are not right
 .left-menu {
-  margin: 9px 0 0 5px;
   width: 205px;
-  /*border: 1px solid #c4c4c4;
-  border-right: 1px #aaa solid; */
-  min-height: 85%;
-  height: 80%;
 }
 
 .left-menu-accordion {
-  margin: 0 0 0 5px;
   width: 205px;
-  min-height: 85%;
-  height: 80%;
+}
+.x-accordion-hd {
+    height: 22px;
+}
+
+.tree-container {
+    padding-top: 4px;
 }
 
 .left-menu-container {
-    padding: 6px 0 0 0;
+    padding: 0;
     border-color:white !important;
     border: 0 !important;
 }
-
-
 
 .left-menu-button a {
     background-color: #D5E1EE;
@@ -277,78 +271,6 @@ a:visited {
 .workspaces .gwt-TreeItem-selected {
     background-color: #D5E1EE;
     font-weight: bold;
-}
-
-
-/**
- **
- ** Top Styles
- **
- **/
-
-.top-panel {
-    background-color: #E5EDF5;
-    padding: 5px;
-    color: white;
-}
-
-.top-panel .gwt-Hyperlink a {
-    color: black;
-    text-decoration: underline;
-    margin-left: 5px;
-}
-
-.top-panel .toolbar .gwt-Hyperlink {
-    float: right;
-    padding-right: 10px;
-}
-
-.top-panel .column-view,
-.top-panel .search-panel {
-     margin: 0 auto 5px;
-}
-
-.top-panel .title {
-    background-color: #E5EDF5;
-}
-/**
- **
- ** Search Panel
- **
- **/
-
-.search-panel {
-    padding-top: 1.5em;
-    width: 603px;
-    color: white;
-}
-
-.search-panel .gwt-Hyperlink {
-    text-align: left;
-    margin-left: 1em;
-    padding-bottom: 0.2em;
-}
-
-.search-button-panel {
-    text-align: right;
-    padding: 0.3em 0;
-}
-
-.search-button-panel .gwt-Hyperlink {
-    float: left;
-}
-
-.search-button-panel .gwt-Hyperlink a {
-    color: black;
-    font-size: 0.9em;
-}
-
-.search-panel table {
-    color: black;
-}
-
-.search-panel-field {
-  padding-bottom: 6px;
 }
 
 /**
@@ -538,8 +460,7 @@ a:visited {
     text-align: center;
     width: 80%;
     display: block;
-    margin-left: auto;
-    margin-right: auto
+    margin: 9px;
 }
 
 .error-panel-header-text {
@@ -560,6 +481,10 @@ a:visited {
     font-family: arial, tahoma, helvetica, sans-serif;
     height: 50px;
     padding: 1.1em;
+}
+
+.footer-viewport {
+    margin-top: 0px;
 }
 
 .footer .footer-link {
@@ -1332,9 +1257,15 @@ helper styles
 .x-grid-panel .x-panel-mc .x-panel-body {
     border:1px solid #d0d0d0;
 }
-.x-panel-container-full {
-    min-height: 90%;
 
+.x-panel-noborder {
+    margin-top:0px;
+    border-width: 1px;
+}
+
+.x-panel-container-full {
+    margin-top:4px;
+    margin-bottom:4px;
 }
 
 /* override content panel */

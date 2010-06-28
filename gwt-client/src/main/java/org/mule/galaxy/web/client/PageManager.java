@@ -15,7 +15,7 @@ import com.extjs.gxt.ui.client.event.TabPanelEvent;
 import com.extjs.gxt.ui.client.widget.ReloadableTabPanel;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
-import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
@@ -42,8 +42,7 @@ public class PageManager implements ValueChangeHandler<String>{
             }
         };
         tabPanel.setBorderStyle(false);
-        tabPanel.setAutoHeight(true);
-        tabPanel.setAutoWidth(true);
+        tabPanel.setBodyBorder(false);
     }
     
     public void initialize() {
@@ -226,7 +225,7 @@ public class PageManager implements ValueChangeHandler<String>{
         if (toolTip != null) {
             header.setToolTip(toolTip);
         }
-        tab.setLayout(new FlowLayout());
+        tab.setLayout(new FitLayout());
         return tab;
     }
 

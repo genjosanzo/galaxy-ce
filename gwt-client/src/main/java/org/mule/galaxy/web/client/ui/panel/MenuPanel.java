@@ -18,37 +18,31 @@
 
 package org.mule.galaxy.web.client.ui.panel;
 
+import java.util.List;
+
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
+import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.util.Margins;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.ArrayList;
-import java.util.List;
+public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer implements Showable {
 
-public abstract class MenuPanel extends AbstractErrorShowingComposite {
-
-    private LayoutContainer mainLayoutContainer;
     private LayoutContainer leftMenuContainer;
     private Widget mainWidget;
-    private FlowPanel topPanel;
-    private Widget topWidget;
-    private FlowPanel centerPanel;
+    private ContentPanel centerPanel;
     private LayoutContainer leftMenu;
     private BorderLayoutData centerData;
 
     private boolean firstShow = true;
 
     public MenuPanel() {
-        this(true);
-    }
-
-    public MenuPanel(boolean left) {
-        mainLayoutContainer = new LayoutContainer();
-
+        setId("menu-panel");
+        
         BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 220);
         westData.setSplit(true);
         westData.setCollapsible(true);  
@@ -57,37 +51,27 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
         centerData = new BorderLayoutData(LayoutRegion.CENTER);  
         centerData.setMargins(new Margins(0));
 
-        if (left) {
+        setLayout(new BorderLayout());
 
-            // the left panel
-            leftMenu = new LayoutContainer();
-            leftMenu.setStyleName("left-menu");
+        // the left panel
+        leftMenu = new LayoutContainer();
+        leftMenu.setStyleName("left-menu");
+        leftMenu.setLayout(new FitLayout());
+        
+        // wrapper/container for menu widgets in the left panel
+        leftMenuContainer = new LayoutContainer();
+        leftMenuContainer.setLayoutOnChange(true);
+        leftMenuContainer.setLayout(new FitLayout());
+        leftMenuContainer.setStyleName("left-menu-container");
+        leftMenuContainer.layout(true);
+        leftMenuContainer.setMonitorWindowResize(true);
 
-            // wrapper/container for menu widgets in the left panel
-            leftMenuContainer = new LayoutContainer();
-            leftMenuContainer.setLayoutOnChange(true);
-            leftMenuContainer.setStyleName("left-menu-container");
-            leftMenuContainer.layout(true);
-            leftMenuContainer.setMonitorWindowResize(true);
+        leftMenu.add(leftMenuContainer);
+        leftMenu.layout(false);
 
-            leftMenu.add(leftMenuContainer);
-            leftMenu.layout(false);
-
-            mainLayoutContainer.add(leftMenu, westData);  
-            mainLayoutContainer.setLayout(new BorderLayout());
-            mainLayoutContainer.setAutoHeight(false);
-            mainLayoutContainer.setHeight("900px");
-            mainLayoutContainer.setId("border-layout-container");
-        }
-
-        initWidget(mainLayoutContainer);
-    }
-
-    public void setId(String id) {
-        mainLayoutContainer.getElement().setId(id);
+        add(leftMenu, westData);  
     }
     
-    @Override
     public void showPage(List<String> params) {
         if (firstShow) {
             firstShow = false;
@@ -100,15 +84,24 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
     }
 
     protected void onFirstShow() {
-        centerPanel = new FlowPanel();
-        centerPanel.setStyleName("main-application-panel");
-
-		mainLayoutContainer.add(centerPanel, centerData);
-		centerPanel.add(getMainPanel());
+        centerPanel = new ContentPanel();
+        centerPanel.setTopComponent(errorPanel);
         
-        topPanel = new FlowPanel();
-        topPanel.setStyleName("top-panel");
-        mainLayoutContainer.layout();
+        // need to set this here so the layout can use it in it's calculations
+        errorPanel.setStyleAttribute("margin", "9px"); 
+        errorPanel.setWidth("80%");
+        
+        centerPanel.setBodyBorder(false);
+        centerPanel.setHeaderVisible(false);
+        centerPanel.setStyleName("main-application-panel");
+        centerPanel.setScrollMode(Scroll.AUTOY);
+        
+		add(centerPanel, centerData);
+		if (mainWidget != null) {
+		    centerPanel.add(mainWidget);
+		}
+		
+        layout();
     }
 
     public boolean isFirstShow() {
@@ -138,34 +131,18 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
     }
 
     public void setMain(Widget widget) {
-        FlowPanel mainPanel = getMainPanel();
-
         if (mainWidget != null) {
-            mainPanel.remove(mainWidget);
+            centerPanel.remove(mainWidget);
         }
-
-        clearErrorMessage();
-
         this.mainWidget = widget;
 
-        mainPanel.add(widget);
-    }
-
-    public void setTop(Widget widget) {
-        if (centerPanel.getWidgetIndex(topPanel) == -1) {
-            centerPanel.insert(topPanel, 0);
+        if (centerPanel == null) {
+            return;
         }
+        
+        clearErrorMessage();
 
-        if (topWidget != null)
-            topPanel.remove(topWidget);
-
-        if (widget instanceof Showable) {
-            ((Showable) widget).showPage(new ArrayList<String>());
-        }
-        topWidget = widget;
-        if (widget != null) {
-            topPanel.add(widget);
-        }
+        centerPanel.add(widget);
     }
 
     public Widget getMain() {
@@ -179,6 +156,5 @@ public abstract class MenuPanel extends AbstractErrorShowingComposite {
     public void setLeftMenu(LayoutContainer leftMenu) {
         this.leftMenu = leftMenu;
     }
-
 
 }
