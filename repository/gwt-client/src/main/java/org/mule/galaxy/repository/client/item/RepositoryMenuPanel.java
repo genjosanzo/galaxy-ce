@@ -1,12 +1,5 @@
 package org.mule.galaxy.repository.client.item;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
@@ -39,6 +32,13 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 public class RepositoryMenuPanel extends MenuPanel {
 
     private final Galaxy galaxy;
@@ -56,7 +56,6 @@ public class RepositoryMenuPanel extends MenuPanel {
         this.repository = repository;
         this.registryService = repository.getRegistryService();
         this.galaxy = repository.getGalaxy();
-        super.getLeftMenu().setStyleName("left-menu-accordion");
 
         createPageInfo("item/" + PageManager.WILDCARD, new ItemPanel(this));
         createPageInfo("add-item", new AddItemForm(this));

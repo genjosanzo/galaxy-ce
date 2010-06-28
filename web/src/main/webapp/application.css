@@ -229,9 +229,6 @@ a:visited {
   width: 205px;
 }
 
-.left-menu-accordion {
-  width: 205px;
-}
 .x-accordion-hd {
     height: 22px;
 }
@@ -2068,4 +2065,3 @@ helper styles
 {
     background-image:url(../images/default/button/s-arrow-bo.gif);
 }
-

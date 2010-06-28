@@ -152,6 +152,7 @@ public class WidgetHelper extends Composite {
         layout.setHideCollapseTool(hideWidget);
 
         ContentPanel accordionPanel = new ContentPanel(layout);
+        accordionPanel.setStyleAttribute("paddingTop", "5px");
         accordionPanel.setCollapsible(false);
         accordionPanel.setHeaderVisible(false);
         accordionPanel.setAutoHeight(true);

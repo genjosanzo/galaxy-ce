@@ -18,8 +18,6 @@
 
 package org.mule.galaxy.web.client.ui.panel;
 
-import java.util.List;
-
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.util.Margins;
@@ -29,6 +27,8 @@ import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.List;
 
 public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer implements Showable {
 
@@ -69,7 +69,7 @@ public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer impl
         leftMenu.add(leftMenuContainer);
         leftMenu.layout(false);
 
-        add(leftMenu, westData);  
+        add(leftMenu, westData);
     }
     
     public void showPage(List<String> params) {

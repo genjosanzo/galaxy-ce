@@ -18,9 +18,6 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.PageManager;
@@ -32,6 +29,9 @@ import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdministrationPanel extends MenuPanel {
 
@@ -50,7 +50,6 @@ public class AdministrationPanel extends MenuPanel {
 
     public AdministrationPanel(Galaxy galaxy) {
         this(galaxy, true);
-        super.getLeftMenu().setStyleName("left-menu-accordion");
     }
 
     protected void init() {
