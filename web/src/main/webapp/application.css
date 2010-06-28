@@ -330,7 +330,7 @@ a:visited {
 }
 
 .no-border {
-    border-width:0; !important;
+    border-width:0 !important;
 }
 
 /**
@@ -429,7 +429,7 @@ a:visited {
 }
 
 .lr-padded-panel {
-    padding: 0px 5 0 5px;
+    padding: 0px 5px 0 5px;
 }
 
 
