@@ -254,6 +254,10 @@ a:visited {
     text-align: center;
 }
 
+.left-menu-accordion {
+    padding-top: 5px;
+}
+
 .workspaces {
     padding: 2px 0 2px 0;
     background-color: white;
