@@ -272,7 +272,11 @@ public class RegistryServiceImpl implements RegistryService {
                                    Map<String, Serializable> properties,
                                    Map<String, Serializable> versionProperties) throws RPCException,
         ItemNotFoundException, ItemExistsException, WPolicyException {
-        addItem(parentPath, name, lifecycleId, typeId, properties);
+        try {
+            addItem(parentPath, name, lifecycleId, typeId, properties);
+        } catch (ItemExistsException e) {
+            // ignore, just add it to the child.
+        }
         
         if (!parentPath.endsWith("/")) {
             parentPath += "/";
