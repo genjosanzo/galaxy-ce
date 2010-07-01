@@ -1,9 +1,5 @@
 package org.mule.galaxy.repository.client.item;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.WPolicyException;
@@ -18,12 +14,15 @@ import org.mule.galaxy.web.client.ui.panel.AbstractFlowComposite;
 import org.mule.galaxy.web.client.ui.panel.FullContentPanel;
 import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
 import org.mule.galaxy.web.client.ui.panel.PaddedContentPanel;
+import org.mule.galaxy.web.client.ui.panel.ToolbarButtonBar;
 import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
+import org.mule.galaxy.web.client.ui.util.Images;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
 import com.extjs.gxt.ui.client.data.BeanModelLookup;
+import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.GridEvent;
@@ -39,10 +38,17 @@ import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.grid.CheckBoxSelectionModel;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
+import com.extjs.gxt.ui.client.widget.grid.ColumnData;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
+import com.extjs.gxt.ui.client.widget.grid.Grid;
+import com.extjs.gxt.ui.client.widget.grid.GridCellRenderer;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
-import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.ui.Image;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class ChildItemsPanel extends AbstractFlowComposite {
 
@@ -109,7 +115,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         final ListStore<BeanModel> store = new ListStore<BeanModel>();
         store.add(model);
 
-        ToolBar toolbar = new ToolBar();
+        ToolbarButtonBar toolbar = new ToolbarButtonBar();
         // search filter
         SearchStoreFilterField<BeanModel> filter = new SearchStoreFilterField<BeanModel>() {
             @Override
@@ -143,6 +149,19 @@ public class ChildItemsPanel extends AbstractFlowComposite {
 
         List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
         columns.add(selectionModel.getColumn());
+
+        ColumnConfig icon = new ColumnConfig("type", " ", 23);
+        icon.setRenderer(new GridCellRenderer() {
+            public Object render(ModelData modelData, String s, ColumnData columnData, int i, int i1, ListStore listStore, Grid grid) {
+                if(modelData.get(s).equals("Workspace")) {
+                           return  new Image(Images.ICON_FOLDER);
+                }
+                return new Image(Images.ICON_TEXT);
+            }
+        });
+        columns.add(icon);
+
+
         columns.add(new ColumnConfig("name", "Name", 250));
         columns.add(new ColumnConfig("authorName", "Author", 200));
         columns.add(new ColumnConfig("type", "Type", 300));
@@ -167,9 +186,58 @@ public class ChildItemsPanel extends AbstractFlowComposite {
             }
         });
 
+        contentPanel.add(toolbar);
+        contentPanel.add(grid);
+
+        if (info == null || info.isModifiable()) {
+            if (info == null || info.getType().equals("Workspace")) {
+                /*final ToolbarButton newWkspaceBtn = new ToolbarButton("New Workspace");
+                newWkspaceBtn.setStyleName("toolbar-btn_center");
+                newWkspaceBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
+                    @Override
+                    public void componentSelected(ToolbarButtonEvent ce) {
+                        showNewWorkspace();
+                    }
+                });
+                newWkspaceBtn.setToolTip(repository.getRepositoryConstants().repo_NewWorkspace());
+                toolbar.add(newWkspaceBtn);
+                */
+
+                final ToolbarButton newArtifactBtn = new ToolbarButton("New Artifact");
+                newArtifactBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
+                    @Override
+                    public void componentSelected(ToolbarButtonEvent ce) {
+                        showArtifactUploadForm(true);
+                    }
+                });
+                newArtifactBtn.setToolTip(repository.getRepositoryConstants().repo_NewArtifact());
+                toolbar.add(newArtifactBtn);
+
+            } else if (info.getType().equals("Artifact")) {
+                final ToolbarButton newVersionBtn = new ToolbarButton("New Version");
+                newVersionBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
+                    @Override
+                    public void componentSelected(ToolbarButtonEvent ce) {
+                        showArtifactUploadForm(false);
+                    }
+                });
+
+                newVersionBtn.setToolTip(repository.getRepositoryConstants().repo_Items_New());
+                toolbar.add(newVersionBtn);
+            } else {
+                String token;
+                if (info.getId() != null) {
+                    token = "add-item/" + info.getId();
+                } else {
+                    token = "add-item/";
+                }
+                ToolbarButton newBtn = WidgetHelper.createToolbarHistoryButton("New", token, repository.getRepositoryConstants().repo_Items_New());
+                toolbar.add(newBtn);
+            }
+        }
+
         final ToolbarButton delBtn = new ToolbarButton("Delete");
         delBtn.setToolTip(repository.getRepositoryConstants().repo_Delete());
-        delBtn.setStyleName("toolbar-btn_left");
         delBtn.setEnabled(false);
         delBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
             @Override
@@ -188,57 +256,6 @@ public class ChildItemsPanel extends AbstractFlowComposite {
             }
         });
 
-        contentPanel.add(toolbar);
-
-        contentPanel.add(grid);
-
-        if (info == null || info.isModifiable()) {
-            if (info == null || info.getType().equals("Workspace")) {
-                final ToolbarButton newWkspaceBtn = new ToolbarButton("New Workspace");
-                newWkspaceBtn.setStyleName("toolbar-btn_center");
-                newWkspaceBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
-                    @Override
-                    public void componentSelected(ToolbarButtonEvent ce) {
-                        showNewWorkspace();
-                    }
-                });
-                newWkspaceBtn.setToolTip(repository.getRepositoryConstants().repo_NewWorkspace());
-                toolbar.add(newWkspaceBtn);
-
-                final ToolbarButton newArtifactBtn = new ToolbarButton("New Artifact");
-                newArtifactBtn.setStyleName("toolbar-btn_right");
-                newArtifactBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
-                    @Override
-                    public void componentSelected(ToolbarButtonEvent ce) {
-                        showArtifactUploadForm(true);
-                    }
-                });
-                newArtifactBtn.setToolTip(repository.getRepositoryConstants().repo_NewArtifact());
-                toolbar.add(newArtifactBtn);
-            } else if (info.getType().equals("Artifact")) {
-                final ToolbarButton newVersionBtn = new ToolbarButton("New Version");
-                newVersionBtn.setStyleName("toolbar-btn_right");
-                newVersionBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
-                    @Override
-                    public void componentSelected(ToolbarButtonEvent ce) {
-                        showArtifactUploadForm(false);
-                    }
-                });
-
-                newVersionBtn.setToolTip(repository.getRepositoryConstants().repo_Items_New());
-                toolbar.add(newVersionBtn);
-            } else {
-                String token;
-                if (info != null) {
-                    token = "add-item/" + info.getId();
-                } else {
-                    token = "add-item/";
-                }
-                ToolbarButton newBtn = WidgetHelper.createToolbarHistoryButton("New", token,
-                        "toolbar-btn_right", repository.getRepositoryConstants().repo_Items_New());
-                toolbar.add(newBtn);
-            }
-        }
 
         panel.add(contentPanel);
     }
