@@ -3,6 +3,7 @@ package org.mule.galaxy.repository.client.item;
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
+import org.mule.galaxy.repository.rpc.WPolicyException;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.PageManager;
@@ -14,11 +15,13 @@ import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 import org.mule.galaxy.web.client.ui.util.Images;
 import org.mule.galaxy.web.client.ui.util.UIUtil;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.ItemNotFoundException;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BaseTreeModel;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
+import com.extjs.gxt.ui.client.data.ModelKeyProvider;
 import com.extjs.gxt.ui.client.data.TreeModel;
 import com.extjs.gxt.ui.client.data.TreeModelReader;
 import com.extjs.gxt.ui.client.event.Events;
@@ -44,6 +47,7 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -126,7 +130,6 @@ public class RepositoryMenuPanel extends MenuPanel {
     private void mergeItems(Collection<ItemInfo> items, TreeModel parent) {
         if (itemId != null && itemId.equals(parent.get("id"))) {
             tree.getSelectionModel().select(parent, false);
-            GWT.log("1");
         }
 
         if (items == null) {
@@ -180,6 +183,20 @@ public class RepositoryMenuPanel extends MenuPanel {
         }
     }
 
+    /**
+     * The item was updated somewhere else in the UI. Update the tree too.
+     *
+     * @param item
+     */
+    public void updateItem(ModelData item) {
+        ModelData itemModel = idToData.get(item.get("id"));
+        if (itemModel != null) {
+            itemModel.set("name", item.get("name"));
+            store.update(itemModel);
+        }
+        loadItems(item.<String>get("id"));
+    }
+
 
     @Override
     protected void onFirstShow() {
@@ -207,7 +224,11 @@ public class RepositoryMenuPanel extends MenuPanel {
 
         store = new TreeStore<ModelData>(loader);
         store.setMonitorChanges(true);
-
+        store.setKeyProvider(new ModelKeyProvider<ModelData>() {
+            public String getKey(ModelData model) {
+                return model.get("id");
+            }
+        });
         tree = new TreePanel<ModelData>(store);
         tree.addStyleName("left-menu-tree");
         tree.setDisplayProperty("name");
@@ -310,9 +331,8 @@ public class RepositoryMenuPanel extends MenuPanel {
                             if (!UIUtil.validatePromptInput(be, "Workspace name is required")) {
                                 return;
                             }
-                            // TODO:
                             // all checks passed, save
-                            //saveWorkspace(new ServerGroup(null, be.getValue()));
+                            newWorkspace(null, be.getValue());
                         }
                     });
                 } else if (btn == renameBtn) {
@@ -326,25 +346,14 @@ public class RepositoryMenuPanel extends MenuPanel {
                                 if (!UIUtil.validatePromptInput(be, "Workspace name is required")) {
                                     return;
                                 }
-                                // TODO:
-                                //renameWorkspace(selectedItem, be.getValue());
+                                renameWorkspace(selectedItem, be.getValue());
                             }
                         });
                     }
                 } else if (btn == deleteBtn) {
                     // only if they have something selected in the tree
                     if (itemSelected) {
-
-                        Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
-                            public void handleEvent(MessageBoxEvent ce) {
-                                com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
-                                if (Dialog.YES.equals(btn.getItemId())) {
-                                    // TODO:
-                                    //deleteWorkspace(gid);
-                                }
-                            }
-                        };
-                        MessageBox.confirm("Confirm", "Are you sure you want to delete this Workspace?", l);
+                        warnDelete(gid);
                     }
                 }
 
@@ -367,6 +376,40 @@ public class RepositoryMenuPanel extends MenuPanel {
         addMenuItem(panel);
 
         tree.getSelectionModel().select(root, false);
+    }
+
+
+    private void newWorkspace(String parentPath, String name) {
+
+    }
+
+    private void renameWorkspace(final ModelData selectedItem, String newName) {
+
+        String itemId = selectedItem.get("id");
+        String parentPath = selectedItem.get("parentPath");
+
+        GWT.log(parentPath + ":" + itemId);
+
+        // save only if name or workspace changed
+        registryService.move(itemId, parentPath, newName, new AbstractCallback(this) {
+
+            @Override
+            public void onCallFailure(Throwable caught) {
+                if (caught instanceof ItemNotFoundException) {
+                    //setMessage("No parent workspace exists with that name!");
+                } else if (caught instanceof WPolicyException) {
+                    //PolicyPanel.handlePolicyFailure(errorPanel.getGalaxy(), (WPolicyException) caught);
+                } else {
+                    super.onFailure(caught);
+                }
+            }
+
+            public void onCallSuccess(Object arg0) {
+                // reload tree?
+                updateItem(selectedItem);
+            }
+
+        });
     }
 
     protected BaseTreeModel toModel(ItemInfo i) {
@@ -429,4 +472,38 @@ public class RepositoryMenuPanel extends MenuPanel {
             }
         }
     }
+
+    protected void warnDelete(final String itemId) {
+        final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
+            public void handleEvent(MessageBoxEvent ce) {
+                com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
+
+                if (Dialog.YES.equals(btn.getItemId())) {
+                    deleteWorkspace(itemId);
+                }
+            }
+        };
+        MessageBox.confirm("Confirm", "Are you sure you want to delete this workspace?", l);
+    }
+
+    private void deleteWorkspace(final String id) {
+        repository.getRegistryService().delete(id, new AbstractCallback(this) {
+
+            @Override
+            public void onCallFailure(Throwable caught) {
+                if (caught instanceof WPolicyException) {
+                    WPolicyException ex = (WPolicyException) caught;
+                    //handlePolicyFailures(caught, ex);
+                } else {
+                    super.onFailure(caught);
+                }
+            }
+
+            public void onCallSuccess(Object arg0) {
+                removeItems(null, Arrays.asList(id));
+                //this.setMessage("Items were deleted.");
+            }
+        });
+    }
+
 }
