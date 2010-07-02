@@ -4,7 +4,7 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 
-public class KillableMessageBox extends MessageBox {
+public class ExtendedMessageBox extends MessageBox {
 
     public static MessageBox wait(String title, String msg, String progressText,
                                   Listener<MessageBoxEvent> callback) {
@@ -45,6 +45,20 @@ public class KillableMessageBox extends MessageBox {
         box.show();
         return box;
     }
+
+    public static MessageBox confirmCancel(String title, String msg, Listener<MessageBoxEvent> callback) {
+        MessageBox box = new MessageBox();
+        box.setButtons(MessageBox.YESNOCANCEL);
+        box.setIcon(MessageBox.QUESTION);
+        box.setTitle(title);
+        box.setMessage(msg);
+        if (callback != null) {
+            box.addCallback(callback);
+        }
+        box.show();
+        return box;
+    }
+
 
 
 }
