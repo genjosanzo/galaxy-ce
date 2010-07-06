@@ -19,8 +19,6 @@
 package org.mule.galaxy.web.client.ui.panel;
 
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -41,9 +39,7 @@ public abstract class AbstractErrorShowingLayoutContainer
     }
 
     protected Widget createStringWidget(final String message) {
-        final Element div = DOM.createDiv();
-        DOM.setInnerText(div, message);
-        return new HTML(DOM.getInnerHTML(div));
+        return new HTML(message);
     }
     
     public void setMessage(final Widget label) {
