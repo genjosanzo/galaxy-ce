@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
+import org.apache.jackrabbit.util.ISO9075;
 import org.mule.galaxy.TreeItem;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
@@ -34,18 +35,18 @@ public class TreeItemDaoImpl extends AbstractReflectionDao<TreeItem> implements 
     }
 
     public TreeItem getTreeItem(String path) {
-        String[] paths = path.split("/");
-        
-        Map<String,Object> criteria = new HashMap<String,Object>();
+        final String[] paths = path.split("/");
+
+        final Map<String,Object> criteria = new HashMap<String,Object>();
         criteria.put("name", paths[0]);
         criteria.put("parent", null);
-        
-        List results = find(criteria);
+
+        final List<TreeItem> results = find(criteria);
         if (results.size() == 0) {
             return null;
         }
-        
-        TreeItem item = (TreeItem) results.get(0);
+
+        TreeItem item = results.get(0);
         for (int i = 1; i < paths.length; i++) {
             item = item.getChild(paths[i]);
          
@@ -56,5 +57,15 @@ public class TreeItemDaoImpl extends AbstractReflectionDao<TreeItem> implements 
         
         return item;
     }
-    
+
+    @Override
+    protected String generateNodeName(TreeItem t) {
+        return ISO9075.encode(t.getName());
+    }
+
+    @Override
+    protected String getObjectNodeName(TreeItem t) {
+        return t.getName();
+    }
+
 }
