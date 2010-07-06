@@ -18,6 +18,8 @@
 
 package org.mule.galaxy.web.client.ui.panel;
 
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
@@ -42,7 +44,9 @@ public abstract class AbstractErrorShowingComposite
     }
 
     protected Widget createStringWidget(final String message) {
-        return new HTML(message);
+        final Element div = DOM.createDiv();
+        DOM.setInnerText(div, message);
+        return new HTML(DOM.getInnerHTML(div));
     }
     
     public void setMessage(final Widget label) {
@@ -58,7 +62,7 @@ public abstract class AbstractErrorShowingComposite
 
     public Widget addMessage(String message) {
         Widget w = createStringWidget(message);
-        addMessage(createStringWidget(message));
+        addMessage(w);
         return w;
     }
 
