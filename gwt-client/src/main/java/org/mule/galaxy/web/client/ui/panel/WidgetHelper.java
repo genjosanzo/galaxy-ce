@@ -3,6 +3,7 @@ package org.mule.galaxy.web.client.ui.panel;
 import org.mule.galaxy.web.client.ui.NavMenuItem;
 import org.mule.galaxy.web.client.ui.button.ToolbarButton;
 import org.mule.galaxy.web.client.ui.button.ToolbarButtonEvent;
+import org.mule.galaxy.web.client.ui.util.Images;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -293,7 +294,7 @@ public class WidgetHelper extends Composite {
 
     public static WidgetComponent clearPixel(String height, String width, String tooltip) {
         // can be used as a spacer or as a tooltip for grid cells, etc.
-        Image i = new Image("images/clearpixel.gif");
+        Image i = new Image(Images.CLEAR_PIXEL);
         i.setHeight(height);
         i.setWidth(width);
         WidgetComponent w = new WidgetComponent(i);
@@ -307,14 +308,14 @@ public class WidgetHelper extends Composite {
         if (tooltip == null) {
             tooltip = "Remove this item";
         }
-        return newImage("images/delete_config.gif", tooltip);
+        return newImage(Images.ICON_DELETE, tooltip);
     }
 
     public static WidgetComponent restoreImage(String tooltip) {
         if (tooltip == null) {
             tooltip = "Restore";
         }
-        return newImage("images/recycle_icon.gif", tooltip);
+        return newImage(Images.ICON_RECYCLE, tooltip);
     }
 
     public static WidgetComponent newImage(String path, String tooltip) {
