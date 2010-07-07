@@ -1,5 +1,6 @@
 package org.mule.galaxy.atom.client;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.mule.galaxy.Item;
@@ -18,19 +19,15 @@ public class AtomGwtTest extends AbstractAtomTest {
                             "1.0", 
                             "application/xml");
         
-        
-        WSearchResults artifacts = gwtRegistry.getArtifacts(attached.getId(), null, true, null, null, 0, 10);
-        assertNotNull(artifacts);
-        
-        List<ItemInfo> rows = artifacts.getRows();
-        assertEquals(1, rows.size());
-        
         ItemInfo item = gwtRegistry.getItemInfo(a.getParent().getId(), true);
         assertEquals("hello.wsdl", item.getName());
         
         item = gwtRegistry.getItemInfo(a.getId(), true);
         assertEquals("1.0", item.getName());
         assertNotNull(item.getArtifactFeedLink());
+        
+        Collection<ItemInfo> items = gwtRegistry.getItems(attached.getId(), false);
+        assertEquals(1, items.size());
     }
 
     @Override

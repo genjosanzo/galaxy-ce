@@ -23,12 +23,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
-import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.WActivity;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -60,34 +58,6 @@ public interface RegistryService extends RemoteService {
                             Map<String, Serializable> properties, 
                             Map<String, Serializable> versionProperties) 
         throws RPCException, ItemNotFoundException, ItemExistsException, WPolicyException;
-
-    WArtifactType getArtifactType(String id) throws RPCException;
-    
-    Collection<WArtifactType> getArtifactTypes();
-
-    void saveArtifactType(WArtifactType artifactType) throws RPCException, ItemExistsException;
-    
-    void deleteArtifactType(String id) throws RPCException;
-
-    WSearchResults getArtifacts(String workspaceId, 
-                                String workspacePath, 
-                                boolean includeChildWkspcs,
-                                Set<SearchPredicate> searchPredicates, 
-                                String freeformQuery, 
-                                int start, 
-                                int maxResults) throws RPCException;
-    
-    WSearchResults getArtifactsForView(String viewId, int resultStart, int maxResults) throws RPCException;
-
-    public Collection<WArtifactView> getArtifactViews() throws RPCException;
-
-    public Collection<WArtifactView> getRecentArtifactViews() throws RPCException;
-    
-    public WArtifactView getArtifactView(String id) throws RPCException, ItemExistsException, ItemNotFoundException;
- 
-    public String saveArtifactView(WArtifactView view) throws RPCException;
-    
-    public void deleteArtifactView(String id) throws RPCException;
 
     Collection<WIndex> getIndexes();
     

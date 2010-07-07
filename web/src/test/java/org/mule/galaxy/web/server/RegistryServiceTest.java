@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,13 +18,11 @@ import org.mule.galaxy.impl.artifact.UploadService;
 import org.mule.galaxy.lifecycle.Phase;
 import org.mule.galaxy.policy.AbstractPolicy;
 import org.mule.galaxy.policy.ApprovalMessage;
-import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.repository.RegistryServiceImpl;
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryService;
 import org.mule.galaxy.repository.rpc.WApprovalMessage;
-import org.mule.galaxy.repository.rpc.WArtifactType;
 import org.mule.galaxy.repository.rpc.WComment;
 import org.mule.galaxy.repository.rpc.WIndex;
 import org.mule.galaxy.repository.rpc.WLifecycle;
@@ -33,7 +30,6 @@ import org.mule.galaxy.repository.rpc.WLinks;
 import org.mule.galaxy.repository.rpc.WPolicyException;
 import org.mule.galaxy.repository.rpc.WProperty;
 import org.mule.galaxy.repository.rpc.WPropertyDescriptor;
-import org.mule.galaxy.repository.rpc.WSearchResults;
 import org.mule.galaxy.repository.rpc.WType;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.type.PropertyDescriptor;
@@ -122,19 +118,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         Collection<ItemInfo> workspaces = gwtRegistry.getItems(null, false);
         assertEquals(1, workspaces.size());
 
-        Collection<WArtifactType> artifactTypes = gwtRegistry.getArtifactTypes();
-        assertTrue(artifactTypes.size() > 0);
-        
-        // Grab a group of artifacts
-        WSearchResults results = gwtRegistry.getArtifacts(null, null, true, new HashSet<SearchPredicate>(), null, 0, 20);
-        
-        List<String> columns = results.getColumns();
-        assertTrue(columns.size() > 0);
-
-        List<ItemInfo> rows = results.getRows();
-        assertTrue(rows.size() > 0);
-        
-        Collection<ItemInfo> artifacts = results.getRows();
+        Collection<ItemInfo> artifacts = gwtRegistry.getItems(workspaces.iterator().next().getId(), false);
         ItemInfo wsdl = null;
         for (ItemInfo info : artifacts) {
             if (info.getName().equals("hello.wsdl"))

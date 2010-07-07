@@ -23,9 +23,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import org.mule.galaxy.web.rpc.SearchPredicate;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -57,25 +54,6 @@ public interface RegistryServiceAsync {
                           Map<String, Serializable> properties,
                           Map<String, Serializable> versionProperties,
                           AsyncCallback callback); 
-    
-    void getArtifactType(String id, AsyncCallback c);
-    
-    void getArtifactTypes(AsyncCallback callback);
-    
-    void saveArtifactType(WArtifactType artifactType, 
-                      AsyncCallback callback);
-    
-    void deleteArtifactType(String id, 
-                            AsyncCallback callback);
-
-    void getArtifacts(String workspace, 
-                      String workspacePath, 
-                      boolean includeChildWkspcs,
-                      Set<SearchPredicate> searchPredicates, 
-                      String freeformQuery, 
-                      int start, 
-                      int maxResults, 
-                      AsyncCallback callback);
     
     void suggestItems(String query, boolean recursive, String exclude, String[] type, AsyncCallback<Collection<ItemInfo>> callback);
     
@@ -165,18 +143,6 @@ public interface RegistryServiceAsync {
     void deleteLifecycle(String id, AsyncCallback abstractCallback);
 
     void getPropertyDescriptor(String id, AsyncCallback fetchCallback);
-
-    void getArtifactsForView(String viewId, int resultStart, int maxResults, AsyncCallback callback);
-    
-    void getArtifactViews(AsyncCallback callback);
-    
-    void getArtifactView(String id, AsyncCallback callback);
-    
-    void saveArtifactView(WArtifactView view, AsyncCallback callback);
-    
-    void deleteArtifactView(String id, AsyncCallback callback);
-    
-    void getRecentArtifactViews(AsyncCallback callback);
 
     void getActivities(Date from, 
                        Date to, 
