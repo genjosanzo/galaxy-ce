@@ -153,11 +153,19 @@ public abstract class AbstractDelegatingGalaxyEventListener implements Delegatin
         }
         
         public void run() {
-            SecurityUtils.doPriveleged(new Runnable() {
-                public void run() {
-                    runAsAdmin();
+            try {
+                SecurityUtils.doPriveleged(new Runnable() {
+                    public void run() {
+                        runAsAdmin();
+                    }
+                }); 
+            } catch (Throwable e) {
+                //When executed by a threadpool exception thrown by run method is not re-thrown by execute method
+                //Intercept exception here
+                if (logger.isWarnEnabled()) {
+                    logger.warn("Failed to execute <"+this.method+"> on <"+this.event+">", e);
                 }
-            }); 
+            }
         }
         
         public void runAsAdmin() {
