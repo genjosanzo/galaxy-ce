@@ -51,7 +51,6 @@ import java.util.Collection;
 import java.util.List;
 
 public class ChildItemsPanel extends AbstractFlowComposite {
-
     protected Collection items;
     protected final RepositoryMenuPanel menuPanel;
     private final Galaxy galaxy;
@@ -164,11 +163,11 @@ public class ChildItemsPanel extends AbstractFlowComposite {
 
         columns.add(new ColumnConfig("name", "Name", 250));
         columns.add(new ColumnConfig("authorName", "Author", 200));
-        columns.add(new ColumnConfig("type", "Type", 300));
+        columns.add(new ColumnConfig("type", "Type", 200));
 
         ColumnModel columnModel = new ColumnModel(columns);
 
-        BasicGrid grid = new BasicGrid<BeanModel>(store, columnModel);
+        BasicGrid<BeanModel> grid = new BasicGrid<BeanModel>(store, columnModel);
         grid.setSelectionModel(selectionModel);
         grid.addPlugin(selectionModel);
         grid.setAutoExpandColumn("type");
@@ -191,7 +190,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
 
         if (info == null || info.isModifiable()) {
             if (info == null || info.getType().equals("Workspace")) {
-                /*final ToolbarButton newWkspaceBtn = new ToolbarButton("New Workspace");
+                final ToolbarButton newWkspaceBtn = new ToolbarButton("New Workspace");
                 newWkspaceBtn.setStyleName("toolbar-btn_center");
                 newWkspaceBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
                     @Override
@@ -201,7 +200,6 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                 });
                 newWkspaceBtn.setToolTip(repository.getRepositoryConstants().repo_NewWorkspace());
                 toolbar.add(newWkspaceBtn);
-                */
 
                 final ToolbarButton newArtifactBtn = new ToolbarButton("New Artifact");
                 newArtifactBtn.addSelectionListener(new SelectionListener<ToolbarButtonEvent>() {
@@ -277,7 +275,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                 com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
 
                 if (Dialog.YES.equals(btn.getItemId())) {
-                    delete();
+                    delete(selectionModel.getSelectedItems());
                 }
             }
         };
@@ -290,9 +288,9 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         menuPanel.clearErrorMessage();
     }
 
-    private void delete() {
+    private void delete(List<BeanModel> seletedItems) {
         final List<String> ids = new ArrayList<String>();
-        for (BeanModel data : selectionModel.getSelectedItems()) {
+        for (BeanModel data : seletedItems) {
             ids.add((String) data.get("id"));
         }
 
@@ -324,6 +322,14 @@ public class ChildItemsPanel extends AbstractFlowComposite {
                         0);
 
         History.newItem(page.getName());
+    }
+
+    public CheckBoxSelectionModel<BeanModel> getSelectionModel() {
+        return selectionModel;
+    }
+
+    public void setSelectionModel(CheckBoxSelectionModel<BeanModel> selectionModel) {
+        this.selectionModel = selectionModel;
     }
 
 }

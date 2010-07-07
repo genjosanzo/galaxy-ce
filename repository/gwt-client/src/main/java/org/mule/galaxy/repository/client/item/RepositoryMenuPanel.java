@@ -7,13 +7,9 @@ import org.mule.galaxy.repository.rpc.WPolicyException;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.PageManager;
-import org.mule.galaxy.web.client.ui.button.ToolbarButton;
-import org.mule.galaxy.web.client.ui.button.ToolbarButtonEvent;
 import org.mule.galaxy.web.client.ui.panel.MenuPanel;
-import org.mule.galaxy.web.client.ui.panel.ToolbarButtonBar;
 import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 import org.mule.galaxy.web.client.ui.util.Images;
-import org.mule.galaxy.web.client.ui.util.UIUtil;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
 
@@ -29,7 +25,6 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
-import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.event.TreePanelEvent;
 import com.extjs.gxt.ui.client.store.Store;
 import com.extjs.gxt.ui.client.store.StoreSorter;
@@ -39,7 +34,6 @@ import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
-import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
@@ -47,7 +41,6 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -65,9 +58,11 @@ public class RepositoryMenuPanel extends MenuPanel {
     private final RepositoryModule repository;
     private RegistryServiceAsync registryService;
 
+    /*
     private ToolbarButton addBtn;
     private ToolbarButton deleteBtn;
     private ToolbarButton renameBtn;
+    */
 
     public RepositoryMenuPanel(RepositoryModule repository) {
         super();
@@ -206,6 +201,7 @@ public class RepositoryMenuPanel extends MenuPanel {
         panel.setCollapsible(false);
         panel.setHeaderVisible(false);
         panel.setLayout(new FitLayout());
+        panel.setStyleAttribute("paddingTop", "5px"); // TODO:remove when button bar returns
         panel.addStyleName("tree-container");
 
         final BaseTreeLoader<ModelData> loader = new BaseTreeLoader<ModelData>(new TreeModelReader<List<ModelData>>()) {
@@ -269,9 +265,9 @@ public class RepositoryMenuPanel extends MenuPanel {
                 }
 
                 // toggle the delete group button
-                boolean isWorkspace = "Workspace".equals(selected.get("type"));
-                deleteBtn.setEnabled(isWorkspace);
-                renameBtn.setEnabled(isWorkspace);
+                //boolean isWorkspace = "Workspace".equals(selected.get("type"));
+                //deleteBtn.setEnabled(isWorkspace);
+                //renameBtn.setEnabled(isWorkspace);
 
                 String token = (String) selected.get("token");
                 if (token != null) {
@@ -303,7 +299,7 @@ public class RepositoryMenuPanel extends MenuPanel {
         });
 
 
-        ToolbarButtonBar actionBar = new ToolbarButtonBar();
+        /*ToolbarButtonBar actionBar = new ToolbarButtonBar();
 
         // Button actions
         SelectionListener<ToolbarButtonEvent> btnListener = new SelectionListener<ToolbarButtonEvent>() {
@@ -371,6 +367,8 @@ public class RepositoryMenuPanel extends MenuPanel {
         actionBar.add(deleteBtn);
 
         panel.setTopComponent(actionBar);
+
+        */
 
         panel.add(tree);
         addMenuItem(panel);
@@ -479,31 +477,11 @@ public class RepositoryMenuPanel extends MenuPanel {
                 com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
 
                 if (Dialog.YES.equals(btn.getItemId())) {
-                    deleteWorkspace(itemId);
+                    //deleteWorkspace(itemId);
                 }
             }
         };
         MessageBox.confirm("Confirm", "Are you sure you want to delete this workspace?", l);
-    }
-
-    private void deleteWorkspace(final String id) {
-        repository.getRegistryService().delete(id, new AbstractCallback(this) {
-
-            @Override
-            public void onCallFailure(Throwable caught) {
-                if (caught instanceof WPolicyException) {
-                    WPolicyException ex = (WPolicyException) caught;
-                    //handlePolicyFailures(caught, ex);
-                } else {
-                    super.onFailure(caught);
-                }
-            }
-
-            public void onCallSuccess(Object arg0) {
-                removeItems(null, Arrays.asList(id));
-                //this.setMessage("Items were deleted.");
-            }
-        });
     }
 
 }
