@@ -230,6 +230,10 @@
                         <artifactId>xmlParserAPIs</artifactId>
                     </exclusion>
                     <exclusion>
+                        <groupId>xml-apis</groupId>
+                        <artifactId>xml-apis</artifactId>
+                    </exclusion>
+                    <exclusion>
                         <groupId>xom</groupId>
                         <artifactId>xom</artifactId>
                     </exclusion>
