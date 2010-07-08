@@ -109,14 +109,15 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
                 if (sender == evaluateBtn) {
                     evaluateBtn.setEnabled(false);
-                    adminPanel.getGalaxy().getAdminService().executeScript(scriptArea.getText(), new AbstractCallback(adminPanel) {
-                        public void onCallFailure(Throwable caught) {
+                    adminPanel.getGalaxy().getAdminService().executeScript(scriptArea.getText(), new AbstractCallback<Object>(adminPanel) {
+                        @Override
+                        public void onCallFailure(final Throwable caught) {
+                            setErrorMessage("Script execution failure: "+caught.getMessage());
                             evaluateBtn.setEnabled(true);
                             scriptResultsLabel.setText("");
-                            super.onFailure(caught);
                         }
-
-                        public void onCallSuccess(Object o) {
+                        @Override
+                        public void onCallSuccess(final Object o) {
                             adminPanel.clearErrorMessage();
                             evaluateBtn.setEnabled(true);
                             scriptResultsLabel.setText(o == null ? "No value returned" : o.toString());
