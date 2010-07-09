@@ -95,17 +95,23 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
 
         columns.add(new ColumnConfig("scriptName", "Script", 150));
         columns.add(new ColumnConfig("expression", "Cron Expression", 150));
-        columns.add(new ColumnConfig("description", "Description", 250));
+        final ColumnConfig description = new ColumnConfig();
+        description.setId("description");
+        description.setHeader("Description");
+        columns.add(description);
         ColumnModel cm = new ColumnModel(columns);
 
-        Grid grid = new Grid<BeanModel>(store, cm);
+        Grid<BeanModel> grid = new Grid<BeanModel>(store, cm);
         grid.setStripeRows(true);
         grid.addPlugin(r);
         grid.setAutoWidth(true);
         grid.setAutoHeight(true);
+        grid.setAutoExpandColumn("description");
+        grid.setAutoExpandMin(250);
         grid.addListener(Events.CellClick, new Listener<BaseEvent>() {
+            @SuppressWarnings("unchecked")
             public void handleEvent(BaseEvent be) {
-                GridEvent ge = (GridEvent) be;
+                GridEvent<BeanModel> ge = (GridEvent<BeanModel>) be;
                 WScriptJob s = store.getAt(ge.getRowIndex()).getBean();
                 History.newItem("schedules/" + s.getId());
             }
