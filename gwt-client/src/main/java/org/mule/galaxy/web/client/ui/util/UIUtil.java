@@ -47,8 +47,7 @@ public class UIUtil {
 
     public static String getExceptionMessage(Throwable value, String name,
             String generalExceptionPreface) {
-        return getExceptionMessage(name, generalExceptionPreface, value
-                .getMessage());
+        return getExceptionMessage(name, generalExceptionPreface, value.toString());
     }
 
     public static String getExceptionMessage(String name,
