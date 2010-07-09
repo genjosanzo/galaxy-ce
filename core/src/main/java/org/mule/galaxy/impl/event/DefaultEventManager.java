@@ -233,8 +233,8 @@ public class DefaultEventManager implements EventManager {
                     }
                 }
             } else {
-                if (logger.isInfoEnabled()) {
-                    logger.info("No listeners registered for " + event.getClass().getName() + ", ignoring");
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No listeners registered for " + event.getClass().getName() + ", ignoring");
                 }
             }
         }
