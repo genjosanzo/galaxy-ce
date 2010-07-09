@@ -108,7 +108,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
         
         ToolTipConfig ttcfg = new ToolTipConfig("Cron Help:", getCronHelpString());
         ttcfg.setTrackMouse(true);
-        ttcfg.setAutoHide(false);
+        ttcfg.setAutoHide(true);
         cronTB.setToolTip(ttcfg);
 
         table.setWidget(row, 1, cronTB);
