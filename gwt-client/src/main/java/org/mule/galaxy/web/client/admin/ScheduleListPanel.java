@@ -95,10 +95,7 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
 
         columns.add(new ColumnConfig("scriptName", "Script", 150));
         columns.add(new ColumnConfig("expression", "Cron Expression", 150));
-        final ColumnConfig description = new ColumnConfig();
-        description.setId("description");
-        description.setHeader("Description");
-        columns.add(description);
+        columns.add(new ColumnConfig("description", "Description", 300));
         ColumnModel cm = new ColumnModel(columns);
 
         Grid<BeanModel> grid = new Grid<BeanModel>(store, cm);
@@ -106,8 +103,6 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
         grid.addPlugin(r);
         grid.setAutoWidth(true);
         grid.setAutoHeight(true);
-        grid.setAutoExpandColumn("description");
-        grid.setAutoExpandMin(250);
         grid.addListener(Events.CellClick, new Listener<BaseEvent>() {
             @SuppressWarnings("unchecked")
             public void handleEvent(BaseEvent be) {
