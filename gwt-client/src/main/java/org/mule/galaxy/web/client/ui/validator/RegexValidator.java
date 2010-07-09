@@ -42,7 +42,7 @@ public class RegexValidator implements com.extjs.gxt.ui.client.widget.form.Valid
         if (value == null) {
             return false;
         }
-        return ((String) value).matches(pattern);
+        return !((String) value).matches(pattern);
     }
 
 

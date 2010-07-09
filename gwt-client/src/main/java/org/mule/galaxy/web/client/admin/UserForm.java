@@ -94,7 +94,7 @@ public class UserForm extends AbstractAdministrationForm {
         if (newItem) {
             usernameTB = new TextField<String>();
             usernameTB.setAllowBlank(false);
-            usernameTB.setValidator(new RegexValidator("^[/]") {
+            usernameTB.setValidator(new RegexValidator(".*/.*") {
                 @Override
                 public String validate(Field<?> field, String s) {
                     final String reason = super.validate(field, s);
