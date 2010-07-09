@@ -66,6 +66,10 @@ public class LdapUserManager
         throw new UnsupportedOperationException();
     }
 
+    public long count(Map<String, Object> criteria) {
+        return 0;
+    }
+
     public List<User> find(String property, String value) {
         throw new UnsupportedOperationException();
     }

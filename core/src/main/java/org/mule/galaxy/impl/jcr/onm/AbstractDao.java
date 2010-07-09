@@ -169,15 +169,7 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
         return doQuery(stmt);
     }
     
-    public List<T> find(final Map<String, Object> criteria) {
-        return find(criteria, 0, -1).getData();
-    }
-    
-    public Results<T> find(final Map<String, Object> criteria, int start, int count) {
-        return find(criteria, null, true, start, count);
-    }
-    
-    public Results<T> find(final Map<String, Object> criteria, String sortByField, boolean asc, int start, int count) {
+    protected final String createStatement(final Map<String, Object> criteria, String sortByField, boolean asc) {
         String stmt = "/*/" + rootNode + "/*";
         if (criteria.size() > 0) {
             stmt += "[";
@@ -201,6 +193,34 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
                 stmt += " descending";
             }
         }
+        return stmt;
+    }
+    
+    public long count(final Map<String, Object> criteria) {
+        return ((Long)execute(new JcrCallback() {
+            public Object doInJcr(final Session session) throws IOException, RepositoryException {
+                try {
+                    final QueryManager qm = getQueryManager(session);
+                    final Query q = qm.createQuery(createStatement(criteria, null, true), Query.XPATH);
+                    return Long.valueOf(q.execute().getNodes().getSize());
+                } finally {
+                    JcrUtil.safeSave(session);
+                }
+            }
+        })).longValue();
+
+    }
+    
+    public List<T> find(final Map<String, Object> criteria) {
+        return find(criteria, 0, -1).getData();
+    }
+    
+    public Results<T> find(final Map<String, Object> criteria, int start, int count) {
+        return find(criteria, null, true, start, count);
+    }
+    
+    public Results<T> find(final Map<String, Object> criteria, String sortByField, boolean asc, int start, int count) {
+        final String stmt = createStatement(criteria, sortByField, asc);
         return doQuery(stmt, start, count);
     }
 

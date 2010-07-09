@@ -13,6 +13,12 @@ public interface Dao<T extends Object> {
     
     List<T> listAll();
     
+    /**
+     * @param criteria
+     * @return number of nodes matching provided criteria
+     */
+    long count(Map<String, Object> criteria);
+    
     List<T> find(String property, String value);
     
     List<T> find(Map<String, Object> criteria);
