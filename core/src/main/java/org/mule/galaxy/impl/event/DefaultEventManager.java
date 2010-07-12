@@ -27,7 +27,7 @@ public class DefaultEventManager implements EventManager {
 
     protected final Object listenersLock = new Object();
 
-    protected LinkedHashMap<Class, List<InternalGalaxyEventListener>> event2listeners = new LinkedHashMap<Class, List<InternalGalaxyEventListener>>();
+    protected LinkedHashMap<Class<?>, List<InternalGalaxyEventListener>> event2listeners = new LinkedHashMap<Class<?>, List<InternalGalaxyEventListener>>();
 
     protected Map<Object, List<InternalGalaxyEventListener>> listeners = new HashMap<Object, List<InternalGalaxyEventListener>>();
      
@@ -200,7 +200,7 @@ public class DefaultEventManager implements EventManager {
 
     public void removeListener(Object listener) {
         synchronized (listenersLock) {
-            List<InternalGalaxyEventListener> adapters = listeners.get(listener);
+            List<InternalGalaxyEventListener> adapters = listeners.remove(listener);
             if (adapters != null) {
                 for (InternalGalaxyEventListener i : adapters) {
                     removeAdapter(i);
