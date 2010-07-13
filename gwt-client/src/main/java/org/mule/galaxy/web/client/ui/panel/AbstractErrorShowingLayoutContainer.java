@@ -64,10 +64,7 @@ public abstract class AbstractErrorShowingLayoutContainer
     }
 
     public void removeMessage(Widget message) {
-        errorPanel.remove(message);
-        if (errorPanel.getItemCount() == 0) {
-            errorPanel.fadeOut();
-        }
+        errorPanel.removeMessage(message);
     }
 
     protected ErrorContentPanel getErrorPanel() {

@@ -78,6 +78,7 @@ public class ErrorContentPanel extends ContentPanel {
 
       }
 
+    private final Fx fx = new Fx(FxConfig.NONE);
     private Timer autoCloseTimer = new Timer() {
         @Override
         public void run() {
@@ -133,18 +134,25 @@ public class ErrorContentPanel extends ContentPanel {
         }
     }
 
-    public void fadeIn() {
-        setVisible(true);
-        if (isRendered()) {
-            Fx fx = new Fx(FxConfig.NONE);
-            fx.run(new FadeIn(el()));
+    public void removeMessage(final Widget widget) {
+        remove(widget);
+        if (getItemCount() == 0) {
+            fadeOut();
         }
     }
 
-    public void fadeOut() {
+    private void fadeIn() {
+        setVisible(true);
         if (isRendered()) {
-            Fx fx = new Fx(FxConfig.NONE);
-            fx.run(new FadeOutAndRemoveMessages(el()));
+            this.fx.cancel();
+            this.fx.run(new FadeIn(el()));
+        }
+    }
+
+    private void fadeOut() {
+        if (isRendered()) {
+            this.fx.cancel();
+            this.fx.run(new FadeOutAndRemoveMessages(el()));
         }
     }
 
