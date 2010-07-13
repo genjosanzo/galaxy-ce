@@ -74,14 +74,16 @@ public class AdministrationPanel extends MenuPanel {
                     new GroupForm(this)));
         }
 
-        addUtilityMenuItem(new NavMenuItem("Admin Shell",
-                "adminShell",
-                new AdminShellPanel(this)));
-
-        addUtilityMenuItem(new NavMenuItem("Scheduler",
-                "schedules",
-                new ScheduleListPanel(this),
-                new ScheduleForm(this)));
+        if (galaxy.hasPermission("EXECUTE_ADMIN_SCRIPTS")) {
+            addUtilityMenuItem(new NavMenuItem("Admin Shell",
+                    "adminShell",
+                    new AdminShellPanel(this)));
+    
+            addUtilityMenuItem(new NavMenuItem("Scheduler",
+                    "schedules",
+                    new ScheduleListPanel(this),
+                    new ScheduleForm(this)));
+        }
     }
 
     public void registerPage(final NavMenuItem item) {
