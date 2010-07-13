@@ -16,5 +16,4 @@
     </bean>
     <bean class="com.sun.jersey.core.impl.provider.entity.InputStreamProvider"/>
     <bean class="com.sun.jersey.core.impl.provider.entity.MimeMultipartProvider"/>
-    
 </beans>

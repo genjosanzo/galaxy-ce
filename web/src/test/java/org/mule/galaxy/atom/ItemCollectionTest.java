@@ -142,7 +142,7 @@ public class ItemCollectionTest extends AbstractAtomTest {
         res = client.post(defaultWkspcCol, getWsdl(), opts);
         assertEquals(201, res.getStatus());
         prettyPrint(res.getDocument());
-        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl?version=0.1", 
+        assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl/0.1;atom", 
                      res.getLocation().toString());
         res.release();
         
@@ -263,7 +263,7 @@ public class ItemCollectionTest extends AbstractAtomTest {
         // post is what should work instead
         res = client.post(colUri.toString() + "/Default%20Workspace/hello_world.wsdl", getWsdl(), opts);
         assertEquals(201, res.getStatus());
-        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl?version=0.2", res.getLocation().toString());
+        assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl/0.2;atom", res.getLocation().toString());
         res.release();
         
         // can we update the file?
@@ -382,7 +382,7 @@ public class ItemCollectionTest extends AbstractAtomTest {
         ClientResponse res = client.post(collection + "/Default%20Workspace", getWsdl(), opts);
         assertEquals(201, res.getStatus());
         
-        assertEquals("/api/registry/Default%20Workspace/hello_world.wsdl?version=0.1", 
+        assertEquals("http://localhost:9002/api/registry/Default%20Workspace/hello_world.wsdl/0.1;atom", 
                      res.getLocation().toString());
         res.release();
         

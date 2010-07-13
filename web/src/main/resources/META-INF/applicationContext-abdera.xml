@@ -36,19 +36,20 @@
         <!-- These are the workspaces we'll be listing out in the services doc -->
         <property name="workspaces">
           <list>
-            <bean class="org.apache.abdera.protocol.server.impl.SimpleWorkspaceInfo">
-              <property name="title" value="Mule Galaxy Registry &amp; Repository"/>
-              <property name="collections">
-                <list>
-                  <ref bean="itemCollection"/>
-                  <ref bean="commentCollection"/>
-                </list>
-              </property>
-            </bean> 
+            <ref bean="atomWorkspace"/>
           </list>
         </property>
       </bean>
     </property>
   </bean>
   
+  <bean id="atomWorkspace" class="org.apache.abdera.protocol.server.impl.SimpleWorkspaceInfo">
+    <property name="title" value="Mule Galaxy Registry &amp; Repository"/>
+    <property name="collections">
+      <list>
+        <ref bean="itemCollection"/>
+        <ref bean="commentCollection"/>
+      </list>
+    </property>
+  </bean> 
 </beans>
