@@ -83,7 +83,7 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
         Set<PermissionGrant> pgs = accessControlManager.getPermissionGrants(group, artifact);
         
         for (PermissionGrant pg : pgs) {
-            if (pg.getPermission().equals(Permission.DELETE_ITEM)) {
+            if (pg.getPermission().getId().equals(Permission.DELETE_ITEM)) {
                 assertEquals(PermissionGrant.Grant.REVOKED, pg.getGrant());
             } else {
                 assertEquals("Permission for " + pg.getPermission() + " should be inherited.",
@@ -96,7 +96,7 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
         pgs = accessControlManager.getPermissionGrants(group, artifact);
         
         for (PermissionGrant pg : pgs) {
-            if (pg.getPermission().equals(Permission.DELETE_ITEM)) {
+            if (pg.getPermission().getId().equals(Permission.DELETE_ITEM)) {
                 assertEquals(PermissionGrant.Grant.GRANTED, pg.getGrant());
             } else {
                 assertEquals("Permission for " + pg.getPermission() + " should be inherited.",

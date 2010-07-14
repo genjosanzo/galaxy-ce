@@ -88,12 +88,18 @@
   </bean>
   
   <bean id="accessControlManager" 
-        class="org.mule.galaxy.impl.jcr.AccessControlManagerImpl"
+        class="org.mule.galaxy.impl.security.AccessControlManagerImpl"
         init-method="initialize"
         depends-on="jcrInitializer">
     <property name="sessionFactory" ref="sessionFactory" />
+    <property name="permissionDao" ref="permissionDao" />
     <property name="userManager" ref="userManager" />
-
+  </bean>
+  
+  <bean id="permissionDao" 
+        class="org.mule.galaxy.impl.security.PermissionDaoImpl"
+        init-method="initialize">
+    <property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
   <bean id="jcrTemplate" class="org.springmodules.jcr.JcrTemplate">

@@ -17,13 +17,13 @@ public interface AccessControlManager {
      * @param role
      * @param p
      */
-    void grant(Group group, Permission p) throws AccessException;
+    void grant(Group group, String p) throws AccessException;
     
-    void grant(Group group, Collection<Permission> perms) throws AccessException;
+    void grant(Group group, Collection<String> perms) throws AccessException;
     
-    void revoke(Group group, Permission p) throws AccessException;
+    void revoke(Group group, String p) throws AccessException;
     
-    void revoke(Group group, Collection<Permission> perms) throws AccessException;
+    void revoke(Group group, Collection<String> perms) throws AccessException;
     
     /**
      * Get all the global permissions which are available.
@@ -46,9 +46,9 @@ public interface AccessControlManager {
      * @param w
      * @throws AccessException 
      */
-    void grant(Group group, Permission p, Item item) throws AccessException;
+    void grant(Group group, String p, Item item) throws AccessException;
     
-    void revoke(Group group, Permission p, Item item) throws AccessException;
+    void revoke(Group group, String p, Item item) throws AccessException;
 
     /**
      * Grant a permission on a specific workspace.
@@ -56,9 +56,9 @@ public interface AccessControlManager {
      * @param p
      * @param w
      */
-    void grant(Group group, Collection<Permission> perms, Item item) throws AccessException;
+    void grant(Group group, Collection<String> perms, Item item) throws AccessException;
     
-    void revoke(Group group, Collection<Permission> perms, Item item) throws AccessException;
+    void revoke(Group group, Collection<String> perms, Item item) throws AccessException;
     
     /**
      * Clear permission grants/revocations on a specific item for a Group. This means 
@@ -74,9 +74,9 @@ public interface AccessControlManager {
     
     Set<Permission> getPermissions(User user, Item item);
 
-    void assertAccess(Permission permission) throws AccessException;
+    void assertAccess(String permission) throws AccessException;
 
-    void assertAccess(Permission permission, Item item) throws AccessException;
+    void assertAccess(String permission, Item item) throws AccessException;
 
     Group getGroup(String id) throws NotFoundException;
 
@@ -85,6 +85,10 @@ public interface AccessControlManager {
     Group getGroupByName(String name) throws NotFoundException;
 
     void deleteGroup(String id);
+
+    Permission getPermission(String permission) throws NotFoundException;
+
+    void save(Permission permission) throws DuplicateItemException, NotFoundException;
     
     
 }       

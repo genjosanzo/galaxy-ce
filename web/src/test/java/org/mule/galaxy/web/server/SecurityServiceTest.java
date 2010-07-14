@@ -91,7 +91,7 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
         
         /* Revoke all the artifactpermissions and test things again.
          */
-        ArrayList<Permission> toRevoke = new ArrayList<Permission>();
+        ArrayList<String> toRevoke = new ArrayList<String>();
         toRevoke.add(Permission.DELETE_ITEM);
         accessControlManager.revoke(accessControlManager.getGroup(g.getId()),
                                     toRevoke,

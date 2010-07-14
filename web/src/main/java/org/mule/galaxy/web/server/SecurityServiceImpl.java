@@ -61,13 +61,13 @@ public class SecurityServiceImpl implements SecurityService {
     private UserManager userManager;
     private AccessControlManager accessControlManager;
     private Registry registry;
-    private Set<Permission> itemPermissions;
-    private Set<Permission> hiddenPermissions = new HashSet<Permission>();
-    private Set<Permission> defaultGrantedPermissions = new HashSet<Permission>();
+    private Set<String> itemPermissions;
+    private Set<String> hiddenPermissions = new HashSet<String>();
+    private Set<String> defaultGrantedPermissions = new HashSet<String>();
     
     public SecurityServiceImpl() {
         super();
-        itemPermissions = new HashSet<Permission>();
+        itemPermissions = new HashSet<String>();
         itemPermissions.add(Permission.DELETE_ITEM);
         itemPermissions.add(Permission.MANAGE_POLICIES);
         itemPermissions.add(Permission.MODIFY_ITEM);
@@ -204,14 +204,14 @@ public class SecurityServiceImpl implements SecurityService {
             try {
                 Group group = accessControlManager.getGroup(wRole.getId());
                 
-                List<Permission> grants = new ArrayList<Permission>();
-                List<Permission> revocations = new ArrayList<Permission>();
+                List<String> grants = new ArrayList<String>();
+                List<String> revocations = new ArrayList<String>();
                 grants.addAll(defaultGrantedPermissions);
                 
                 for (Iterator pgItr = permGrants.iterator(); pgItr.hasNext();) {
                     WPermissionGrant permGrant = (WPermissionGrant)pgItr.next();
                     
-                    Permission p = Permission.valueOf(permGrant.getPermission());
+                    String p = permGrant.getPermission();
                     if (permGrant.getGrant() == WPermissionGrant.GRANTED) {
                         grants.add(p);
                     } else {
@@ -280,13 +280,13 @@ public class SecurityServiceImpl implements SecurityService {
                 
                 Group group = accessControlManager.getGroup(wRole.getId());
                 
-                List<Permission> grants = new ArrayList<Permission>();
-                List<Permission> revocations = new ArrayList<Permission>();
+                List<String> grants = new ArrayList<String>();
+                List<String> revocations = new ArrayList<String>();
                 
                 for (Iterator pgItr = permGrants.iterator(); pgItr.hasNext();) {
                     WPermissionGrant permGrant = (WPermissionGrant)pgItr.next();
                     
-                    Permission p = Permission.valueOf(permGrant.getPermission());
+                    String p = permGrant.getPermission();
                     if (permGrant.getGrant() == WPermissionGrant.GRANTED) {
                         grants.add(p);
                     } else if (permGrant.getGrant() == WPermissionGrant.REVOKED) {
@@ -366,6 +366,7 @@ public class SecurityServiceImpl implements SecurityService {
             accessControlManager.save(g);
             accessControlManager.grant(g, defaultGrantedPermissions);
         } catch (AccessException e1) {
+            e1.printStackTrace();
             throw new RPCException(e1.getMessage());
         } catch (DuplicateItemException e) {
             throw new ItemExistsException();
@@ -397,7 +398,7 @@ public class SecurityServiceImpl implements SecurityService {
         for (Permission p : permissions) {
             if ((permissionType == SecurityService.ITEM_PERMISSIONS && itemPermissions.contains(p))
                     || (permissionType == SecurityService.GLOBAL_PERMISSIONS && !isPermissionHidden(p))) {
-                wperms.add(new WPermission(p.toString(), p.getDescription()));
+                wperms.add(new WPermission(p.getId(), p.getName()));
             }
         }
         return wperms;
@@ -425,11 +426,11 @@ public class SecurityServiceImpl implements SecurityService {
         return wgroups;
     }
 
-    public void setHiddenPermissions(Set<Permission> hiddenPermissions) {
+    public void setHiddenPermissions(Set<String> hiddenPermissions) {
         this.hiddenPermissions = hiddenPermissions;
     }
 
-    public void setDefaultGrantedPermissions(Set<Permission> defaultGrantedPermissions) {
+    public void setDefaultGrantedPermissions(Set<String> defaultGrantedPermissions) {
         this.defaultGrantedPermissions = defaultGrantedPermissions;
     }
     
