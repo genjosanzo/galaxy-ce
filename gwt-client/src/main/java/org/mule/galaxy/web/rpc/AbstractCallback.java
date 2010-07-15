@@ -48,17 +48,23 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
         }
     };
     private Text message = new Text();
-    private static final int LONG_CALL_INTERVAL = 20000;
+    private final int longRunningCallTimeout;
+    private static final int DEFAULT_LONG_RUNNING_CALL_TIMEOUT = 20000;
     private static final String DEFAULT_LONG_RUNNING_CALL_ERROR_MESSAGE = "Server is taking longer to respond than normal.";
 
     public AbstractCallback(final ErrorPanel panel) {
+        this(panel, AbstractCallback.DEFAULT_LONG_RUNNING_CALL_TIMEOUT);
+    }
+
+    public AbstractCallback(final ErrorPanel panel, final int longRunningCallTimeout) {
         this.errorPanel = panel;
+        this.longRunningCallTimeout = longRunningCallTimeout;
 
         startLongRunningCallTimer();
     }
 
     protected final void startLongRunningCallTimer() {
-        this.longRunningCallTimer.schedule(AbstractCallback.LONG_CALL_INTERVAL);
+        this.longRunningCallTimer.schedule(this.longRunningCallTimeout);
     }
 
     protected final void cancelLongRunningCallTimer() {
