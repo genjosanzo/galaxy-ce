@@ -35,6 +35,7 @@ public class PermissionDaoImpl extends AbstractReflectionDao<Permission> {
 
     protected void addPermission(Node objectsNode, String id, String name, boolean objectPermission) throws RepositoryException {
         Node node = JcrUtil.getOrCreate(objectsNode, id);
+        node.addMixin("mix:lockable");
         node.setProperty("name", name);
         if (objectPermission) {
             node.setProperty("objectPermission", objectPermission);
