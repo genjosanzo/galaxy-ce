@@ -35,5 +35,4 @@ public class LdapUserMetadataDaoImpl extends AbstractReflectionDao<LdapUserMetad
     protected void doSave(LdapUserMetadata t, Session session) throws RepositoryException, NotFoundException {
         super.doSave(t, session);
     }
-    
 }
