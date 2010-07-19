@@ -76,6 +76,6 @@
   <property name="sessionFactory" ref="sessionFactory" />
  </bean>
 
- <import resource="ldap.xml" />
+ <import resource="classpath:ldap.xml" />
 
 </beans>
