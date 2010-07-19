@@ -574,9 +574,11 @@ html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,bloc
   position: absolute;
   left: 0;;
   top: 0;
+  cursor: move;
 }.x-tab-panel {
   overflow: hidden;
   -moz-outline: none;
+  outline: 0 none;
 }
 .x-tab-panel-header,.x-tab-panel-footer {
   border: 1px solid;
@@ -1373,6 +1375,7 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 
 .ext-gecko .x-form-item {
   -moz-outline: none;
+  outline: 0 none;
 }
 
 .x-hide-label label.x-form-item-label {
@@ -2142,6 +2145,12 @@ div.x-toolbar-no-items {
   overflow: hidden;
 }
 
+.x-grid-panel {
+  -moz-outline: none;
+  -moz-user-focus: normal;
+  outline: 0 none;
+}
+
 .x-grid-panel .x-panel-body {
   overflow: hidden !important;
 }
@@ -2162,12 +2171,14 @@ div.x-toolbar-no-items {
 .x-grid3-hd-row .x-grid3-hd,.x-grid3-row .x-grid3-hd,.x-grid3-summary-row .x-grid3-hd {
   -moz-outline: none;
   -moz-user-focus: normal;
+  outline: 0 none;
 }
 
  .x-grid3-summary-row{
   -moz-user-select: none;
   -khtml-user-select: none;
   -webkit-user-select: ignore;
+  outline: 0 none;
 }
 
 .x-grid3-row td.x-grid3-cell,.x-grid3-summary-row td.x-grid3-cell {
@@ -2176,6 +2187,7 @@ div.x-toolbar-no-items {
   padding-left: 1px;
   padding-right: 1px;
   -moz-outline: none;
+  outline: 0 none;
 }
 
 /* Grid Column titles */
@@ -2871,6 +2883,7 @@ a.x-grid3-hd-btn:hover {
 .my-tree-item,.my-tree-item table,.my-tree-item table td {
 	-moz-outline: none;
 	-moz-user-focus: normal;
+	outline: 0 none;
 	font-size: 11px;
 }
 
@@ -2903,6 +2916,7 @@ a.x-grid3-hd-btn:hover {
 .my-tree-item,.my-treeitem-wrap {
 	-moz-outline: none;
 	-moz-user-focus: normal;
+	outline: 0 none;
 }
 
 .my-tree-check div {
@@ -3186,6 +3200,7 @@ a.x-grid3-hd-btn:hover {
 .x-treegrid {
 	-moz-outline: none;
 	-moz-user-focus: none;
+	outline: 0 none;
 }
 
 .x-treegrid .x-treegrid-column .x-grid3-cell-inner {
@@ -3196,6 +3211,7 @@ a.x-grid3-hd-btn:hover {
 	cursor: default;
 	-moz-outline: none;
 	-moz-user-focus: none;
+	outline: 0 none;
 }
 
 .x-tree3-node {
@@ -3643,6 +3659,7 @@ td.x-date-mp-sep {
   zoom: 1;
   background: repeat-y;
   -moz-outline: none;
+  outline: 0 none;
 }
 
 .x-menu a {
@@ -3664,7 +3681,7 @@ td.x-date-mp-sep {
 
 .ext-strict .ext-ie .x-menu-list {
   position: relative;
-}#
+}
 
 .x-menu x-menu-sep-li {
   font-size: 1px;
@@ -5123,6 +5140,7 @@ body.ext-ie6.x-body-masked .x-window select {
 .my-list {
   border: 1px solid #99BBE8;
   -moz-outline: none;
+  outline: 0 none;
   -moz-user-focus: normal;
   background-color: white;
   font-family: "Myriad Pro", "Myriad Web", "Tahoma", "Helvetica", "Arial", sans-serif;
@@ -5149,6 +5167,7 @@ body.ext-ie6.x-body-masked .x-window select {
 .my-list-flat {
   border: 1px solid #6593cf;
   -moz-outline: none;
+  outline: 0 none;
   -moz-user-focus: normal;
   background-color: white;
   cursor: default;
@@ -5157,6 +5176,7 @@ body.ext-ie6.x-body-masked .x-window select {
 .my-list-item {
   cursor: pointer;
   -moz-outline: none;
+  outline: 0 none;
   -moz-user-focus: normal;
 }
 
@@ -5253,6 +5273,7 @@ body.ext-ie6.x-body-masked .x-window select {
 }.x-view {
   -moz-outline: none;
   -moz-user-focus: normal;
+  outline: 0 none;
   padding: 1px;
   background-color: white;
   cursor: default;
@@ -5314,6 +5335,7 @@ body.ext-ie6.x-body-masked .x-window select {
   user-select: none;
   -moz-outline: none;
   -moz-user-focus: normal;
+  outline: 0 none;
 }
 
 .x-vsplitbar {
@@ -5357,6 +5379,7 @@ body.ext-ie6.x-body-masked .x-window select {
   user-select: none;
   -moz-outline: none;
   -moz-user-focus: normal;
+  outline: 0 none;
 }
 
 .my-splitbar-transparent {
@@ -5400,6 +5423,7 @@ body.ext-ie6.x-body-masked .x-window select {
   overflow: hidden;
   -moz-outline: none;
   -moz-user-focus: normal;
+  outline: 0 none;
   font-family: arial, tahoma, helvetica, sans-serif;
   font-size: 11px;
   table-layout: fixed;
@@ -5469,6 +5493,7 @@ body.ext-ie6.x-body-masked .x-window select {
   overflow: hidden;
   -moz-outline: none;
   -moz-user-focus: normal;
+  outline: 0 none;
 }
 
 .my-tbl-item {
@@ -5478,23 +5503,27 @@ body.ext-ie6.x-body-masked .x-window select {
   cursor: default;
   -moz-outline: none;
   -moz-user-focus: normal;
+  outline: 0 none;
 }
 
 .my-tbl-item table {
   -moz-outline: none;
   -moz-user-focus: normal;
   table-layout: fixed;
+  outline: 0 none;
 }
 
 .my-tbl-data .my-tbl-item-cell {
   -moz-outline: none;
   -moz-user-focus: normal;
+  outline: 0 none;
 }
 
 .my-tbl-item td {
   -moz-user-select: none;
   -moz-outline: none;
   -moz-user-focus: normal;
+  outline: 0 none;
 }
 
 .my-tbl-vlines .my-tbl-data .my-tbl-item-cell-overflow {
@@ -5506,6 +5535,7 @@ body.ext-ie6.x-body-masked .x-window select {
   overflow: hidden;
   -moz-outline: none;
   -moz-user-focus: normal;
+  outline: 0 none;
 }
 
 .my-tbl-data .my-tbl-item-cell-text {
@@ -5514,6 +5544,7 @@ body.ext-ie6.x-body-masked .x-window select {
   font-size: 11px;
   -moz-outline: none;
   -moz-user-focus: normal;
+  outline: 0 none;
 }
 
 .my-tbl-data .my-tbl-item-cell-widget {
@@ -5555,6 +5586,7 @@ body.ext-ie6.x-body-masked .x-window select {
 .my-treetblitem,.my-treetblitem table,.my-treetblitem table td {
   -moz-outline: none;
   -moz-user-focus: normal;
+  outline: 0 none;
 }
 
 .my-treetblitem td {
@@ -5684,12 +5716,14 @@ body.ext-ie6.x-body-masked .x-window select {
   overflow: hidden;
   -moz-outline: none;
   -moz-user-focus: normal;
+  outline: 0 none;
 }
 
 .my-treetbl-col-overflow {
   overflow: hidden;
   -moz-outline: none;
   -moz-user-focus: normal;
+  outline: 0 none;
 }
 
 .my-treetbl-col-text {
@@ -5744,6 +5778,7 @@ body.ext-ie6.x-body-masked .x-window select {
   height: 20px;
   -moz-outline: none;
   -moz-user-focus: normal;
+  outline: 0 none;
 }
 
 .my-treetbl-data .my-treetbl-cell-overflow {
@@ -5768,6 +5803,7 @@ body.ext-ie6.x-body-masked .x-window select {
   cursor: default;
   -moz-outline: none;
   -moz-user-focus: normal;
+  outline: 0 none;
 }
 
 .my-treetbl-item-over {
