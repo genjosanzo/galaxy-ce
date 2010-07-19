@@ -7,18 +7,6 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://www.springmodules.org/schema/ehcache http://www.springmodules.org/schema/cache/springmodules-ehcache.xsd">
 
- <bean id="properties"
-  class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-  <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
-  <property name="location" value="ldap.properties" />
-  <property name="ignoreResourceNotFound" value="true" />
-  <property name="properties">
-   <props>
-    <prop key="ldap.config">classpath:ldap.xml</prop>
-   </props>
-  </property>
- </bean>
-
  <bean id="ldapAuthProvider"
   class="org.mule.galaxy.security.ldap.GalaxyAuthenticationProvider">
   <constructor-arg>
@@ -88,7 +76,6 @@
   <property name="sessionFactory" ref="sessionFactory" />
  </bean>
 
- <import resource="${ldap.config}" />
-
+ <import resource="ldap.xml" />
 
 </beans>
